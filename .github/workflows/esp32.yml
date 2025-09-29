@@ -1,0 +1,79 @@
+name: ESP32 Build
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'esp32/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'esp32/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [esp32, esp32s3]
+        variant: [obd, io, cam]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp-idf-version: v5.0
+          target: ${{ matrix.target }}
+
+      - name: Build firmware
+        run: |
+          cd esp32/firmware-${{ matrix.variant }}
+          idf.py set-target ${{ matrix.target }}
+          idf.py build
+
+      - name: Create firmware package
+        run: |
+          cd esp32/firmware-${{ matrix.variant }}
+          mkdir -p dist
+          cp build/ai-servis-${{ matrix.variant }}.bin dist/
+          cp build/partition-table.bin dist/
+          cp build/bootloader.bin dist/
+          echo '{
+            "version": "1.0.0",
+            "target": "'${{ matrix.target }}'",
+            "variant": "'${{ matrix.variant }}'",
+            "files": [
+              "ai-servis-'${{ matrix.variant }}'.bin",
+              "partition-table.bin",
+              "bootloader.bin"
+            ],
+            "checksums": {
+              "ai-servis-'${{ matrix.variant }}'.bin": "'$(sha256sum build/ai-servis-${{ matrix.variant }}.bin | cut -d" " -f1)'"
+            }
+          }' > dist/manifest.json
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: esp32-${{ matrix.target }}-${{ matrix.variant }}
+          path: esp32/firmware-${{ matrix.variant }}/dist/
+
+      - name: Create release (main branch)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            esp32/firmware-${{ matrix.variant }}/dist/*
+          tag_name: v${{ github.run_number }}-${{ matrix.target }}-${{ matrix.variant }}
+          name: ESP32 ${{ matrix.target }} ${{ matrix.variant }} v${{ github.run_number }}
+          body: |
+            ESP32 firmware for ${{ matrix.target }} ${{ matrix.variant }} variant
+            
+            - Target: ${{ matrix.target }}
+            - Variant: ${{ matrix.variant }}
+            - Build: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}
+

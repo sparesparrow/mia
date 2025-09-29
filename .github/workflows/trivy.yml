@@ -1,0 +1,60 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 4 * * 1'
+
+jobs:
+  trivy-fs:
+    name: Trivy FS Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.18.0
+        with:
+          scan-type: 'fs'
+          format: 'sarif'
+          output: 'trivy-fs.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+          ignore-unfixed: true
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-fs.sarif'
+
+  trivy-config:
+    name: Trivy Config Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy config (IaC) scan
+        uses: aquasecurity/trivy-action@0.18.0
+        with:
+          scan-type: 'config'
+          format: 'sarif'
+          output: 'trivy-config.sarif'
+          exit-code: '0'
+          scanners: 'misconfig'
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-config.sarif'
+
