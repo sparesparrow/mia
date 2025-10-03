@@ -51,7 +51,7 @@ common:
       cs: Konfigurovat systém
     watch_demo:
       en: Watch Demo
-      cs: Sledovat ukázku
+      cs: Sledovat demo
   features:
     key_features:
       en: Key Features
@@ -283,21 +283,21 @@ common:
       cs: MCP protokol
     mcp_description:
       en: Model Context Protocol for seamless AI agent integration and discovery tools
-      cs: Model Context Protocol pro bezproblémovou integraci AI agentů a nástroje
-        pro vyhledávání
+      cs: Model Context Protocol pro bezproblémovou integraci AI agentů a discovery
+        nástrojů
     edge_ai:
       en: Edge AI
       cs: Edge AI
     edge_ai_benefits:
       en: Local processing ensures privacy, speed and offline capabilities
-      cs: Lokální zpracování zajišťuje soukromí, rychlost a offline funkce
+      cs: Lokální zpracování zajišťuje soukromí, rychlost a offline schopnosti
   cta:
     ready_to_transform_your_vehicle:
       en: Ready to Transform Your Vehicle?
       cs: Připraveni transformovat vaše vozidlo?
     join_the_revolution:
       en: Join the automotive AI revolution. Start with AI-SERVIS today.
-      cs: Připojte se k automobilové AI revoluci. Začněte s AI-SERVIS již dnes.
+      cs: Připojte se k automobilové AI revoluci. Začněte s AI-SERVIS už dnes.
     configure_your_system:
       en: Configure Your System
       cs: Konfigurovat váš systém
