@@ -27,9 +27,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install AWS CLI
-        uses: aws-actions/setup-aws-cli@v2
-
       - name: Install Dependencies
         run: |
           cd web
