@@ -7,8 +7,8 @@ family:
     description:
       en: Comprehensive family safety and protection with intelligent surveillance
         and privacy-first design
-      cs: Comprehensive family safety and protection with intelligent surveillance
-        and privacy-first design
+      cs: Komplexní bezpečnost a ochrana rodiny s inteligentním sledováním
+        a designem zaměřeným na soukromí
   navigation:
     family_protection_first:
       en: Family Protection First
@@ -46,13 +46,13 @@ family:
       cs: Komplexní bezpečnost rodiny
     stalker_detection:
       en: Stalker Detection
-      cs: Detekce stalkera
+      cs: Detekce pronásledování
     family_location_sharing:
       en: Family Location Sharing
       cs: Sdílení polohy rodiny
     smart_alerts:
       en: Smart Alerts
-      cs: Chytrá upozornění
+      cs: Inteligentní upozornění
     privacy_first:
       en: Privacy First
       cs: Soukromí na prvním místě
@@ -212,7 +212,7 @@ family:
       cs: Začněte ochranu rodiny
     schedule_family_demo:
       en: Schedule Family Demo
-      cs: Naplánujte rodinnou demo
+      cs: Naplánujte rodinnou ukázku
     family_safety_protection:
       en: Family Safety & Protection
       cs: Bezpečnost a ochrana rodiny

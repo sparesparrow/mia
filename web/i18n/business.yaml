@@ -6,7 +6,7 @@ business:
         cs: AI-SERVIS - Profesionální AI pro obchodní vozidla
     description:
         en: Professional AI solutions for business vehicles with productivity boost and enterprise security
-        cs: Profesionální AI řešení pro obchodní vozidla s nárůstem produktivity a podnikovou bezpečností
+        cs: Profesionální AI řešení pro obchodní vozidla se zvýšením produktivity a podnikovou bezpečností
   navigation:
     business_intelligence_on_wheels:
       en: Business Intelligence on Wheels
@@ -24,24 +24,30 @@ business:
       en: Technology
       cs: Technologie
     get_demo:
-      en: Get Demo
-      cs: Získat demo
+      en: I want to TRY IT for free
+      cs: Můžeš to dokonce zadarmo vyzkoušet
+    map_location:
+      en: Find us on the map
+      cs: Najdi nás na mapě
+    highlighted_map_link:
+      en: 🗺️ Click here for directions
+      cs: 🗺️ Klikni zde pro navigaci
   hero:
     aipowered_business_vehicle_intelligence:
       en: AI-Powered Business Vehicle Intelligence
       cs: AI poháněná obchodní vozidlová inteligence
     productivity_boost:
       en: Productivity Boost
-      cs: Nárůst produktivity
+      cs: Zvýšení produktivity
     business_hours:
       en: Business Hours
-      cs: Obchodní hodiny
+      cs: Pracovní doba
     handsfree:
       en: Hands-Free
-      cs: Bez rukou
+      cs: Bez použití rukou
     schedule_demo:
       en: Schedule Demo
-      cs: Naplánovat demo
+      cs: Naplánovat ukázku
     download_brochure:
       en: Download Brochure
       cs: Stáhnout brožuru
@@ -57,7 +63,7 @@ business:
       cs: Podniková bezpečnost
     smart_navigation:
       en: Smart Navigation
-      cs: Chytrá navigace
+      cs: Inteligentní navigace
     business_analytics:
       en: Business Analytics
       cs: Obchodní analýzy
@@ -70,13 +76,13 @@ business:
       cs: Obchodní týmy
     handsfree_crm_access:
       en: Hands-Free CRM Access
-      cs: CRM bez rukou
+      cs: CRM bez použití rukou
     voicetotext_meeting_notes:
       en: Voice-to-Text Meeting Notes
       cs: Hlasové poznámky ze schůzek
     lead_tracking_and_routing:
       en: Lead Tracking and Routing
-      cs: Sledování a směrování leadů
+      cs: Sledování a směrování potenciálních zákazníků
     territory_optimization:
       en: Territory Optimization
       cs: Optimalizace teritoria
@@ -91,7 +97,7 @@ business:
       cs: Integrace s dispečinkem
     voiceactivated_checklists:
       en: Voice-Activated Checklists
-      cs: Hlasové checklisty
+      cs: Hlasové kontrolní seznamy
     realtime_eta_updates:
       en: Real-Time ETA Updates
       cs: Aktualizace času příjezdu
@@ -103,22 +109,22 @@ business:
       cs: Terénní servis
     executive_transportation:
       en: Executive Transportation
-      cs: Vedení společnosti
+      cs: Doprava pro vedení
     secure_voice_encryption:
       en: Secure Voice Encryption
       cs: Bezpečná hlasová šifrace
     executive_calendar_sync:
       en: Executive Calendar Sync
-      cs: Synchronizace exekutivního kalendáře
+      cs: Synchronizace kalendáře vedení
     document_voice_review:
       en: Document Voice Review
-      cs: Hlasový přezkoumání dokumentů
+      cs: Hlasové přezkoumání dokumentů
     privacyfirst_design:
       en: Privacy-First Design
       cs: Design zaměřený na soukromí
     executive_transport:
       en: Executive Transport
-      cs: Exekutivní doprava
+      cs: Doprava pro vedení
   pricing:
     business_pricing:
       en: Business Pricing
@@ -220,7 +226,13 @@ business:
       cs: Připraveni transformovat váš obchodní vozový park?
     schedule_enterprise_demo:
       en: Schedule Enterprise Demo
-      cs: Naplánovat podnikové demo
+      cs: Naplánovat podnikovou ukázku
+    try_free_now:
+      en: Try it FREE now!
+      cs: Vyzkoušej to ZADARMO hned!
+    visit_our_office:
+      en: Visit our office for a live demo
+      cs: Navštiv naši kancelář pro živou ukázku
     download_case_studies:
       en: Download Case Studies
       cs: Stáhnout případové studie
@@ -255,6 +267,15 @@ business:
     contact:
       en: Contact
       cs: Kontakt
+    visit_us:
+      en: Visit us at our location
+      cs: Navštiv nás na naší adrese
+    map_link:
+      en: View on Map
+      cs: Zobrazit na mapě
+    address:
+      en: Business District, Prague
+      cs: Obchodní čtvrť, Praha
     copyright:
       en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
       cs: © 2025 AI-SERVIS Business Solutions. Všechna práva vyhrazena.
