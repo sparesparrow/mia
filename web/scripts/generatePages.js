@@ -48,29 +48,42 @@ const customers = [
 function renderTemplate(template, data) {
     let result = template;
     
-    // Replace simple variables {{variable}}
+    // Handle {{#if}} conditions first
+    result = result.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+        const value = getNestedValue(data, condition.trim());
+        if (value && value !== '' && value !== false && value !== 0) {
+            return content;
+        }
+        return '';
+    });
+    
+    // Handle {{#each}} loops - process multiple times to handle nested loops
+    let previousResult = '';
+    while (result !== previousResult) {
+        previousResult = result;
+        result = result.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayKey, loopTemplate) => {
+            const array = getNestedValue(data, arrayKey.trim());
+            if (!Array.isArray(array)) return '';
+            
+            return array.map(item => {
+                let itemTemplate = loopTemplate;
+                // Replace {{this.property}} with item.property
+                itemTemplate = itemTemplate.replace(/\{\{this\.([^}]+)\}\}/g, (m, prop) => {
+                    return getNestedValue(item, prop.trim()) || '';
+                });
+                // Replace {{../property}} with parent data
+                itemTemplate = itemTemplate.replace(/\{\{\.\.\/([^}]+)\}\}/g, (m, prop) => {
+                    return getNestedValue(data, prop.trim()) || '';
+                });
+                return itemTemplate;
+            }).join('');
+        });
+    }
+    
+    // Replace simple variables {{variable}} - do this last
     result = result.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
         const value = getNestedValue(data, key.trim());
         return value !== undefined ? value : match;
-    });
-    
-    // Handle {{#each}} loops
-    result = result.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayKey, loopTemplate) => {
-        const array = getNestedValue(data, arrayKey.trim());
-        if (!Array.isArray(array)) return '';
-        
-        return array.map(item => {
-            let itemTemplate = loopTemplate;
-            // Replace {{this.property}} with item.property
-            itemTemplate = itemTemplate.replace(/\{\{this\.([^}]+)\}\}/g, (m, prop) => {
-                return getNestedValue(item, prop.trim()) || '';
-            });
-            // Replace {{../property}} with parent data
-            itemTemplate = itemTemplate.replace(/\{\{\.\.\/([^}]+)\}\}/g, (m, prop) => {
-                return getNestedValue(data, prop.trim()) || '';
-            });
-            return itemTemplate;
-        }).join('');
     });
     
     return result;
@@ -101,6 +114,7 @@ function generatePageData(customer, yamlData) {
     return {
         language: customer.language,
         namespace: namespace,
+        customer_name: customer.name,
         page: {
             title: data.page?.title?.[customer.language] || `${namespace} - AI-SERVIS`,
             description: data.page?.description?.[customer.language] || 'AI-SERVIS solution'
@@ -377,8 +391,16 @@ customers.forEach(customer => {
 
     // Copy customer-specific assets
     assetsToCopy.forEach(asset => {
-        const sourcePath = path.join(__dirname, '..', 'customers', `${customer.name}`, asset);
+        let sourcePath = path.join(__dirname, '..', 'customers', `${customer.name}`, asset);
         const destPath = path.join(distDir, `${customer.name}`, asset);
+        
+        // Special case for journalists - use gonzo-styles.css
+        if (customer.name === 'journalists' && asset === 'styles.css') {
+            const gonzoStylesPath = path.join(__dirname, '..', 'customers', `${customer.name}`, 'gonzo-styles.css');
+            if (fs.existsSync(gonzoStylesPath)) {
+                sourcePath = gonzoStylesPath;
+            }
+        }
         
         if (fs.existsSync(sourcePath)) {
             // Ensure destination directory exists
@@ -435,6 +457,19 @@ fs.readdirSync(i18nSourceDir).forEach(file => {
         const destPath = path.join(i18nDestDir, file);
         fs.copyFileSync(sourcePath, destPath);
         console.log(`✓ Copied i18n/${file}`);
+    }
+});
+
+// Copy JavaScript files
+const jsFiles = ['app.js', 'i18n-loader.js'];
+jsFiles.forEach(jsFile => {
+    const sourcePath = path.join(__dirname, jsFile);
+    const destPath = path.join(distDir, jsFile);
+    if (fs.existsSync(sourcePath)) {
+        fs.copyFileSync(sourcePath, destPath);
+        console.log(`✓ Copied ${jsFile}`);
+    } else {
+        console.warn(`⚠️  JavaScript file ${jsFile} not found`);
     }
 });
 

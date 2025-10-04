@@ -58,7 +58,12 @@ class I18nLoader {
     }
 
     parseYAML(yamlText) {
-        // Simple YAML parser for our specific format
+        // Use js-yaml library if available, otherwise fallback to simple parser
+        if (typeof YAML !== 'undefined') {
+            return YAML.parse(yamlText);
+        }
+        
+        // Fallback: simple YAML parser for our specific format
         const lines = yamlText.split('\n');
         const result = {};
         let currentSection = null;
