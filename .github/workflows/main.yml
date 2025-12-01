@@ -59,7 +59,6 @@ jobs:
         with:
           languages: python, cpp, javascript
           config-file: ./.github/codeql/codeql-config.yml
-          build-mode: manual
 
       - name: Install C++ build dependencies
         run: |
@@ -82,13 +81,18 @@ jobs:
           conan profile detect --force || echo "Conan profile detection skipped"
 
       - name: Prepare Python for CodeQL
+        id: python_prep
         run: |
           # Install Python dependencies so CodeQL can analyze them
-          pip install -r requirements.txt || echo "Requirements install completed with warnings"
+          if ! pip install -r requirements.txt; then
+            echo "::warning::Some Python dependencies failed to install, but continuing CodeQL analysis"
+            echo "Failed dependencies may affect analysis completeness"
+          fi
           # Create a dummy build command for Python (no-op)
           echo "Python analysis ready"
 
       - name: Build C++ for CodeQL
+        id: cpp_build
         continue-on-error: true
         run: |
           cd platforms/cpp || exit 0
@@ -97,6 +101,11 @@ jobs:
           # Try CMake build - CodeQL will use the compile commands
           cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON || echo "CMake configuration completed with warnings"
           cmake --build . -j$(nproc) || echo "C++ build completed with warnings - CodeQL will analyze available code"
+      
+      - name: Report C++ build status
+        if: steps.cpp_build.outcome == 'failure'
+        run: |
+          echo "::warning::C++ build failed but continuing CodeQL analysis"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
@@ -276,7 +285,7 @@ jobs:
     name: 📱 Android Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[android]') || contains(join(github.event.commits.*.message), 'android/') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.head_commit.message, '[android]') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Checkout code
@@ -315,7 +324,7 @@ jobs:
     name: 🔌 ESP32 Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[esp32]') || contains(join(github.event.commits.*.message), 'esp32/') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.head_commit.message, '[esp32]') || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
         target: [esp32, esp32s3]
