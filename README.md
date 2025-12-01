@@ -196,10 +196,12 @@ graph TB
 ### ⚙️ **C++ Platform Components**
 **Hardware control and message processing layer**
 - 📖 [Platform Documentation](./platforms/cpp/README.md)
+- 📖 [Raspberry Pi Deployment Guide](./platforms/cpp/core/README-RASPBERRY-PI.md)
 - 🔧 [Hybrid Messaging Guide](./docs/architecture/hybrid-messaging.md)
 - 🎯 **Hlavní komponenty**: Hardware Server, MCP Server, WebGrab Core
 - 🏠 **Home Use Case**: Raspberry Pi GPIO control and local AI processing
 - 🚗 **Car Use Case**: ESP32 integration and real-time vehicle control
+- 🚀 **CI/CD**: Automated builds via [GitHub Actions](.github/workflows/raspberry-pi-cpp.yml)
 
 #### 🔧 **Hardware Server**
 **GPIO control and hardware interfacing**
@@ -243,17 +245,37 @@ docker-compose logs -f ai-audio-assistant
 
 ### 🔨 **Building C++ Platform Components**
 
-The C++ platform components use Conan for dependency management with automatic FlatBuffers header generation:
+#### For Raspberry Pi (Recommended)
+
+```bash
+# Quick build and deploy for Raspberry Pi
+./scripts/build-raspberry-pi.sh
+sudo ./scripts/deploy-raspberry-pi.sh
+sudo systemctl start ai-servis
+
+# Or build manually
+cd platforms/cpp/core
+mkdir -p build-raspberry-pi
+cd build-raspberry-pi
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
+
+# Components built:
+# - ai-servis-rpi: Main Raspberry Pi application
+# - hardware-server: GPIO control (port 8081)
+# - tests: Test suite
+```
+
+#### For Other Platforms (Conan-based)
+
+The C++ platform components can also use Conan for dependency management:
 
 ```bash
 # Install Conan (if not already installed)
 pip install conan
 conan profile detect --force
 
-# Build all C++ components (hardware server, MCP server, webgrab core)
-./scripts/build-hardware-server.sh
-
-# Or build manually
+# Build all C++ components
 cd platforms/cpp
 conan install .. --profile ../profiles/linux-release --build missing
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
@@ -265,22 +287,34 @@ cmake --build build -j$(nproc)
 # - webgrab-client/server: Download management
 ```
 
+**📖 For detailed Raspberry Pi deployment instructions, see [README-RASPBERRY-PI.md](platforms/cpp/core/README-RASPBERRY-PI.md)**
+
 ### 🔧 **Testing C++ Components**
 
 ```bash
-# Test hardware server (requires GPIO hardware)
-cd platforms/cpp/build
-./hardware-server &
+# Run test suite
+cd build-raspberry-pi
+./tests
 
-# Test MCP server
-./mcp-server &
+# Or use the test script
+./scripts/test-raspberry-pi.sh
+
+# Test hardware server (requires GPIO hardware on Raspberry Pi)
+cd build-raspberry-pi
+sudo ./hardware-server &
+
+# Test main application
+sudo ./ai-servis-rpi
 
 # Test Python integration
 cd modules/hardware-bridge
 python test_integration.py
 ```
 
-For detailed Conan setup instructions, see [docs/conan-setup.md](docs/conan-setup.md).
+**📖 For detailed testing and deployment, see:**
+- [Raspberry Pi Deployment Guide](platforms/cpp/core/README-RASPBERRY-PI.md)
+- [Quick Start Guide](QUICK-START-RASPBERRY-PI.md)
+- [Deployment Checklist](DEPLOYMENT-CHECKLIST.md)
 
 ### 🏠 **Home Installation (AMD64)**
 

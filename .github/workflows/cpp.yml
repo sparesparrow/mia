@@ -1,4 +1,4 @@
-name: C++ Build
+name: C++ Build (Multi-Platform)
 
 on:
   push:
@@ -8,11 +8,12 @@ on:
       - 'conanfile.py'
       - 'profiles/**'
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
     paths:
       - 'platforms/cpp/**'
       - 'conanfile.py'
       - 'profiles/**'
+  workflow_dispatch:
 
 jobs:
   build-cpp:
