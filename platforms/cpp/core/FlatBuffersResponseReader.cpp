@@ -3,6 +3,10 @@
 #include "webgrab_generated.h"
 #include <cstring>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <thread>
+#include <chrono>
 
 FlatBuffersResponseReader::FlatBuffersResponseReader(std::shared_ptr<TcpSocket> socket)
     : socket_(socket) {}
@@ -29,23 +33,96 @@ bool FlatBuffersResponseReader::recv(StatusResponse& out) {
 }
 
 bool FlatBuffersResponseReader::recv(ErrorResponse& out) {
-    // Implement based on schema
-    return false; // Placeholder
+    if (!receiveMessage()) return false;
+    auto resp = webgrab::GetErrorResponse(buffer_.data());
+    if (!resp) return false;
+    out.error = resp->error() ? resp->error()->str() : "";
+    return true;
 }
 
 bool FlatBuffersResponseReader::tryRecv(DownloadResponse& out, std::chrono::milliseconds timeout) {
-    // Implement with timeout
-    return recv(out); // Placeholder
+    if (!socket_ || !socket_->isConnected()) return false;
+    
+    // Set socket to non-blocking mode temporarily
+    int flags = fcntl(socket_->getFd(), F_GETFL, 0);
+    if (flags < 0) return false;
+    fcntl(socket_->getFd(), F_SETFL, flags | O_NONBLOCK);
+    
+    auto start = std::chrono::steady_clock::now();
+    bool result = false;
+    
+    while (std::chrono::steady_clock::now() - start < timeout) {
+        if (receiveMessage()) {
+            auto resp = webgrab::GetDownloadResponse(buffer_.data());
+            if (resp) {
+                out.sessionId = resp->sessionId();
+                result = true;
+                break;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    
+    // Restore blocking mode
+    fcntl(socket_->getFd(), F_SETFL, flags);
+    return result;
 }
 
 bool FlatBuffersResponseReader::tryRecv(StatusResponse& out, std::chrono::milliseconds timeout) {
-    // Implement with timeout
-    return recv(out); // Placeholder
+    if (!socket_ || !socket_->isConnected()) return false;
+    
+    // Set socket to non-blocking mode temporarily
+    int flags = fcntl(socket_->getFd(), F_GETFL, 0);
+    if (flags < 0) return false;
+    fcntl(socket_->getFd(), F_SETFL, flags | O_NONBLOCK);
+    
+    auto start = std::chrono::steady_clock::now();
+    bool result = false;
+    
+    while (std::chrono::steady_clock::now() - start < timeout) {
+        if (receiveMessage()) {
+            auto resp = webgrab::GetDownloadStatusResponse(buffer_.data());
+            if (resp) {
+                out.sessionId = 0; // StatusResponse doesn't have sessionId in the struct
+                out.status = resp->status() ? resp->status()->str() : "";
+                result = true;
+                break;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    
+    // Restore blocking mode
+    fcntl(socket_->getFd(), F_SETFL, flags);
+    return result;
 }
 
 bool FlatBuffersResponseReader::tryRecv(ErrorResponse& out, std::chrono::milliseconds timeout) {
-    // Implement with timeout
-    return recv(out); // Placeholder
+    if (!socket_ || !socket_->isConnected()) return false;
+    
+    // Set socket to non-blocking mode temporarily
+    int flags = fcntl(socket_->getFd(), F_GETFL, 0);
+    if (flags < 0) return false;
+    fcntl(socket_->getFd(), F_SETFL, flags | O_NONBLOCK);
+    
+    auto start = std::chrono::steady_clock::now();
+    bool result = false;
+    
+    while (std::chrono::steady_clock::now() - start < timeout) {
+        if (receiveMessage()) {
+            auto resp = webgrab::GetErrorResponse(buffer_.data());
+            if (resp) {
+                out.error = resp->error() ? resp->error()->str() : "";
+                result = true;
+                break;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    
+    // Restore blocking mode
+    fcntl(socket_->getFd(), F_SETFL, flags);
+    return result;
 }
 
 void FlatBuffersResponseReader::close() {

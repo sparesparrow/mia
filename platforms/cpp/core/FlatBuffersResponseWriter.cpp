@@ -27,13 +27,17 @@ bool FlatBuffersResponseWriter::write(const webgrab::StatusResponse& resp) {
 }
 
 bool FlatBuffersResponseWriter::write(const webgrab::ErrorResponse& resp) {
-    // Implement
-    return true; // Placeholder
+    builder_.Clear();
+    auto error_str = builder_.CreateString(resp.error()->str());
+    auto fb_resp = webgrab::CreateErrorResponse(builder_, error_str);
+    builder_.Finish(fb_resp);
+    return sendResponse();
 }
 
 bool FlatBuffersResponseWriter::flush() {
-    // Implement flush
-    return true; // Placeholder
+    // For TCP sockets, data is sent immediately, but we can ensure it's flushed
+    // In a real implementation, you might want to use TCP_NODELAY or similar
+    return client_socket_ && client_socket_->isConnected();
 }
 
 void FlatBuffersResponseWriter::close() {

@@ -4,7 +4,11 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <thread>
+#include <chrono>
 #include <unistd.h>
+#include <mosquitto.h>
+#include <json/json.h>
 
 namespace WebGrab {
 
@@ -30,6 +34,11 @@ bool HardwareControlServer::Start() {
         return false;
     }
 
+    if (!InitializeMQTT()) {
+        std::cerr << "Failed to initialize MQTT (continuing without MQTT)" << std::endl;
+        // Continue without MQTT - it's optional
+    }
+
     running = true;
     acceptThread = std::thread(&HardwareControlServer::AcceptConnections, this);
 
@@ -47,6 +56,17 @@ void HardwareControlServer::Stop() {
     if (serverSocket != -1) {
         close(serverSocket);
         serverSocket = -1;
+    }
+
+    // Clean up MQTT
+    if (mqtt_client) {
+        mosquitto_disconnect(mqtt_client);
+        mosquitto_destroy(mqtt_client);
+        mqtt_client = nullptr;
+    }
+
+    if (mqttThread.joinable()) {
+        mqttThread.join();
     }
 
     activeLines.clear();
@@ -288,6 +308,116 @@ bool HardwareControlServer::GetGPIOPin(int pin, bool& value) {
     } catch (const std::exception& e) {
         std::cerr << "Failed to get GPIO pin " << pin << ": " << e.what() << std::endl;
         return false;
+    }
+}
+
+bool HardwareControlServer::InitializeMQTT() {
+    mosquitto_lib_init();
+    
+    mqtt_client = mosquitto_new("hardware-control-server", true, this);
+    if (!mqtt_client) {
+        std::cerr << "Failed to create MQTT client" << std::endl;
+        return false;
+    }
+
+    mosquitto_connect_callback_set(mqtt_client, on_mqtt_connect);
+    mosquitto_message_callback_set(mqtt_client, on_mqtt_message);
+
+    int rc = mosquitto_connect(mqtt_client, mqtt_host.c_str(), mqtt_port, 60);
+    if (rc != MOSQ_ERR_SUCCESS) {
+        std::cerr << "Failed to connect to MQTT broker: " << mosquitto_strerror(rc) << std::endl;
+        mosquitto_destroy(mqtt_client);
+        mqtt_client = nullptr;
+        return false;
+    }
+
+    // Subscribe to GPIO control topics
+    mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/control", 0);
+    mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/status", 0);
+
+    // Start MQTT loop thread
+    mqttThread = std::thread(&HardwareControlServer::MQTTLoop, this);
+
+    std::cout << "MQTT initialized and connected to " << mqtt_host << ":" << mqtt_port << std::endl;
+    return true;
+}
+
+void HardwareControlServer::MQTTLoop() {
+    while (running && mqtt_client) {
+        int rc = mosquitto_loop(mqtt_client, 100, 1);
+        if (rc != MOSQ_ERR_SUCCESS) {
+            if (running) {
+                std::cerr << "MQTT loop error: " << mosquitto_strerror(rc) << std::endl;
+                // Try to reconnect
+                mosquitto_reconnect(mqtt_client);
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void HardwareControlServer::on_mqtt_connect(struct mosquitto* mosq, void* obj, int rc) {
+    auto* server = static_cast<HardwareControlServer*>(obj);
+    if (rc == 0) {
+        std::cout << "MQTT connected successfully" << std::endl;
+    } else {
+        std::cerr << "MQTT connection failed: " << mosquitto_connack_string(rc) << std::endl;
+    }
+}
+
+void HardwareControlServer::on_mqtt_message(struct mosquitto* mosq, void* obj,
+                                           const struct mosquitto_message* msg) {
+    auto* server = static_cast<HardwareControlServer*>(obj);
+    if (!server || !msg || !msg->payload) {
+        return;
+    }
+
+    std::string topic(msg->topic);
+    std::string payload(static_cast<const char*>(msg->payload), msg->payloadlen);
+
+    server->HandleMQTTMessage(topic, payload);
+}
+
+void HardwareControlServer::HandleMQTTMessage(const std::string& topic, const std::string& payload) {
+    std::lock_guard<std::mutex> lock(mqttMutex);
+
+    if (topic == "hardware/gpio/control") {
+        // Handle GPIO control via MQTT
+        std::string response = HandleGPIOControl(payload);
+        
+        // Publish response
+        if (mqtt_client) {
+            mosquitto_publish(mqtt_client, nullptr, "hardware/gpio/response", 
+                           response.length(), response.c_str(), 0, false);
+        }
+    } else if (topic == "hardware/gpio/status") {
+        // Handle status request
+        Json::Value status;
+        status["active_pins"] = static_cast<int>(activeLines.size());
+        
+        Json::Value pins(Json::arrayValue);
+        for (const auto& [pin, line] : activeLines) {
+            Json::Value pinInfo;
+            pinInfo["pin"] = pin;
+            try {
+                bool value;
+                if (GetGPIOPin(pin, value)) {
+                    pinInfo["value"] = value ? 1 : 0;
+                }
+            } catch (...) {
+                // Ignore errors
+            }
+            pins.append(pinInfo);
+        }
+        status["pins"] = pins;
+        
+        Json::StreamWriterBuilder builder;
+        std::string statusJson = Json::writeString(builder, status);
+        
+        if (mqtt_client) {
+            mosquitto_publish(mqtt_client, nullptr, "hardware/gpio/status_response",
+                           statusJson.length(), statusJson.c_str(), 0, false);
+        }
     }
 }
 

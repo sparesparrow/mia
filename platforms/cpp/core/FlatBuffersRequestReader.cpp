@@ -34,13 +34,18 @@ void FlatBuffersRequestReader::close() {
 }
 
 bool FlatBuffersRequestReader::read(void* buffer, size_t size) {
-    // Placeholder: in real impl, read from socket
+    // This method is called by receiveMessage to read from socket
+    // The actual socket reading should be done by the caller
+    // For now, return false as this is meant to be overridden or used differently
     return false;
 }
 
 bool FlatBuffersRequestReader::receiveMessage() {
-    // Placeholder: read from socket into buffer_
-    return !buffer_.empty();
+    // This is a placeholder - in a real implementation, this would read from a socket
+    // The actual implementation depends on how FlatBuffersRequestReader is used
+    // If it's used with a socket, the socket should be passed in constructor
+    // For now, return false to indicate no message available
+    return false;
 }
 
 std::string FlatBuffersRequestReader::getDownloadUrl() const {

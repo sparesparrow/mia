@@ -41,7 +41,6 @@ std::unique_ptr<TcpSocket> TcpListener::accept() {
     int clientfd = ::accept(listenfd_, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
     if (clientfd < 0) return nullptr;
 
-    // Placeholder: proper implementation would wrap the fd
-    close(clientfd); // Avoid fd leak
-    return nullptr; // TODO: implement proper TcpSocket from fd
+    // Create TcpSocket from accepted file descriptor
+    return std::make_unique<TcpSocket>(clientfd);
 }
