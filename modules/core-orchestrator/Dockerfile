@@ -7,13 +7,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy mcp_framework from parent directory first (needed by requirements)
+COPY modules/mcp_framework.py ./mcp_framework.py
+
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+COPY modules/core-orchestrator/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
-COPY ../mcp_framework.py ./mcp_framework.py
+COPY modules/core-orchestrator/*.py .
 
 # Expose port
 EXPOSE 8080 8081
