@@ -2,12 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for audio
+# Install system dependencies for audio and PyAudio build
 RUN apt-get update && apt-get install -y \
     curl \
     alsa-utils \
     pulseaudio \
     pipewire \
+    build-essential \
+    portaudio19-dev \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
