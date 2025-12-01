@@ -201,7 +201,7 @@ graph TB
 - 🎯 **Hlavní komponenty**: Hardware Server, MCP Server, WebGrab Core
 - 🏠 **Home Use Case**: Raspberry Pi GPIO control and local AI processing
 - 🚗 **Car Use Case**: ESP32 integration and real-time vehicle control
-- 🚀 **CI/CD**: Automated builds via [GitHub Actions](.github/workflows/raspberry-pi-cpp.yml)
+- 🚀 **CI/CD**: Automated builds via [GitHub Actions](.github/workflows/main.yml) (includes Raspberry Pi builds)
 
 #### 🔧 **Hardware Server**
 **GPIO control and hardware interfacing**

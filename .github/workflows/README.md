@@ -1,142 +1,164 @@
 # GitHub Actions Workflows
 
-This directory contains all CI/CD workflows for the AI-SERVIS Universal project.
+This directory contains consolidated CI/CD workflows for the AI-SERVIS Universal project.
 
 ## Workflow Overview
 
-### Core CI/CD
-- **`ci-cd-orchestration.yml`** - Main comprehensive CI/CD pipeline (security, builds, tests, deployment)
-- **`raspberry-pi-cpp.yml`** - Dedicated Raspberry Pi C++ build and cross-compilation
+### Main Workflow (`main.yml`)
+**Comprehensive CI/CD pipeline** that handles everything:
+- ✅ **Security scanning** - CodeQL, Trivy, Bandit, Safety, pre-commit
+- ✅ **Code quality** - Linting, formatting checks
+- ✅ **Python tests** - Test suite execution
+- ✅ **C++ builds** - x86_64 and ARM64 (Raspberry Pi) builds
+- ✅ **Android builds** - APK build and test (conditional)
+- ✅ **ESP32 builds** - Firmware builds (conditional)
+- ✅ **Docker builds** - Multi-platform container images
+- ✅ **Integration tests** - System-wide testing
+- ✅ **Deployment** - Staging and production deployment
+- ✅ **Documentation** - Build and deploy to GitHub Pages
 
-### Platform-Specific Builds
-- **`cpp.yml`** - Multi-platform C++ builds (x86_64, ARM64) using Conan
-- **`android.yml`** - Android app build, test, and deployment
-- **`esp32.yml`** - ESP32 firmware builds for all variants
-
-### Security & Quality
-- **`security.yml`** - Security scanning (Trivy, Bandit, Safety)
-- **`codeql.yml`** - CodeQL static analysis
-- **`trivy.yml`** - Container vulnerability scanning
-
-### Testing & Validation
-- **`python.yml`** - Python linting and testing
-- **`automotive-testing.yml`** - Automotive-specific tests
-- **`orchestrator-integration.yml`** - Build orchestrator integration tests
-- **`performance-optimization.yml`** - Performance benchmarking
-
-### Deployment
-- **`docker-multiplatform.yml`** - Multi-architecture Docker image builds
-- **`edge-deployment.yml`** - Edge device deployment
-- **`build-and-deploy.yml`** - Build and deployment pipeline
-- **`deploy-pages.yml`** - GitHub Pages deployment
-
-### Documentation & Monitoring
-- **`docs.yml`** - Documentation build and deployment
-- **`monitoring.yml`** - Monitoring and observability checks
-- **`build-web.yml`** - Web interface builds
+### Optional Workflow
+- **`docker-multiplatform.yml`** - Advanced Docker builds with edge deployment images (optional, can be merged into main.yml if needed)
 
 ## Quick Reference
 
-### Running Workflows Manually
+### Running Workflows
 
 ```bash
-# Run Raspberry Pi build
-gh workflow run raspberry-pi-cpp.yml
+# Run main CI/CD pipeline
+gh workflow run main.yml
 
-# Run full CI/CD pipeline
-gh workflow run ci-cd-orchestration.yml
-
-# Run security scan
-gh workflow run security.yml
+# Run with options
+gh workflow run main.yml -f skip_tests=true
+gh workflow run main.yml -f build_only=true
 ```
 
 ### Workflow Triggers
 
-Most workflows trigger on:
-- **Push** to `main` or `develop` branches
+The main workflow triggers on:
+- **Push** to `main`, `develop`, or `feature/*` branches
 - **Pull requests** to `main` or `develop`
+- **Tags** starting with `v*`
+- **Scheduled** runs (weekly security scans on Mondays)
 - **Manual dispatch** via GitHub UI or CLI
-- **Scheduled** runs (security scans, performance tests)
 
-### Raspberry Pi Build
+### Conditional Builds
 
-The `raspberry-pi-cpp.yml` workflow:
-- Builds C++ code for Raspberry Pi (ARM64)
-- Runs test suite
-- Cross-compiles for ARM architecture
-- Uploads binaries as artifacts
+Builds are optimized to run only when needed:
+- **C++ builds**: Always run (core functionality)
+- **Android builds**: Only when `android/` changes or `[android]` in commit message
+- **ESP32 builds**: Only when `esp32/` changes or `[esp32]` in commit message
+- **Documentation**: Only when `docs/` changes
 
-Triggered by:
-- Changes to `platforms/cpp/**`
-- Changes to build scripts
-- Manual dispatch
-- Commit messages containing `[rpi]` or `[raspberry]`
-
-### Viewing Workflow Status
-
-```bash
-# List recent workflow runs
-gh run list
-
-# View specific workflow run
-gh run view <run-id>
-
-# Watch workflow in real-time
-gh run watch <run-id>
-```
-
-## Workflow Dependencies
+### Workflow Structure
 
 ```
-ci-cd-orchestration.yml (Main)
-├── security-scan
-├── code-quality
-├── cpp-builds
-├── raspberry-pi-build (NEW)
-├── android-build
-├── esp32-build
-├── docker-builds
-└── integration-tests
+main.yml
+├── security (always runs)
+├── python-tests (depends on security)
+├── cpp-builds (depends on security)
+│   ├── x86_64 build
+│   └── ARM64/Raspberry Pi build
+├── android-build (conditional, depends on security)
+├── esp32-build (conditional, depends on security)
+├── docker-builds (depends on cpp-builds, python-tests)
+├── integration-tests (depends on all builds)
+├── deploy (depends on integration-tests, docker-builds)
+└── docs (conditional, depends on security)
 ```
 
 ## Artifacts
 
-Workflows produce the following artifacts:
-- `raspberry-pi-binaries` - Raspberry Pi executables
-- `cpp-*-binaries` - Multi-platform C++ binaries
-- `android-apk` - Android application packages
+The workflow produces:
+- `cpp-linux-x86_64-binaries` - x86_64 C++ binaries
+- `cpp-linux-arm64-binaries` - ARM64/Raspberry Pi binaries
+- `android-apk` - Android application package
 - `esp32-*-firmware` - ESP32 firmware images
-- `docker-images` - Container images
+- `security-reports` - Security scan results
+
+## Configuration
+
+### Environment Variables
+
+Set in workflow file:
+- `REGISTRY` - Container registry (ghcr.io)
+- `PYTHON_VERSION` - Python version (3.11)
+- `NODE_VERSION` - Node.js version (18)
+- `JAVA_VERSION` - Java version (17)
+
+### GitHub Secrets
+
+Required secrets:
+- `GITHUB_TOKEN` - Automatically provided
+- Optional: `SNYK_TOKEN`, `SLACK_WEBHOOK_URL`, etc.
 
 ## Troubleshooting
 
-### Workflow Failures
+### Workflow Not Running
 
-1. Check workflow logs: `gh run view <run-id> --log`
-2. Review artifact uploads
-3. Check dependency versions
-4. Verify secrets are configured
+Check:
+1. Path filters - workflow only runs when relevant files change
+2. Branch filters - ensure you're pushing to correct branch
+3. Commit message tags - use `[android]`, `[esp32]` to trigger specific builds
 
-### Raspberry Pi Build Issues
+### Build Failures
 
-- Ensure all dependencies are listed in workflow
-- Check CMake configuration
-- Verify cross-compilation toolchain
-- Review test output (tests may fail on non-Pi runners)
+```bash
+# View workflow logs
+gh run view <run-id> --log
+
+# Download artifacts
+gh run download <run-id>
+
+# Rerun failed workflow
+gh run rerun <run-id>
+```
+
+### Conditional Builds Not Running
+
+If Android/ESP32 builds aren't running:
+- Check if files in those directories changed
+- Add `[android]` or `[esp32]` to commit message
+- Use manual dispatch: `gh workflow run main.yml`
 
 ## Best Practices
 
-1. **Use path filters** to avoid unnecessary runs
-2. **Cache dependencies** to speed up builds
-3. **Run tests in parallel** where possible
-4. **Upload artifacts** for debugging
-5. **Use matrix builds** for multiple platforms
+1. **Use commit message tags** to trigger specific builds:
+   - `[android]` - Trigger Android build
+   - `[esp32]` - Trigger ESP32 build
+   - `[rpi]` or `[raspberry]` - Emphasize Raspberry Pi build
 
-## Adding New Workflows
+2. **Path-based triggers** automatically detect changes
 
-When adding a new workflow:
-1. Follow naming convention: `kebab-case.yml`
-2. Add path filters for efficiency
-3. Include proper error handling
-4. Document in this README
-5. Add to workflow dependencies if needed
+3. **Manual dispatch** for testing:
+   ```bash
+   gh workflow run main.yml -f skip_tests=true
+   ```
+
+4. **Check artifacts** after builds complete
+
+## Refactoring Summary
+
+### Before: 20+ Workflows ❌
+- Multiple redundant workflows
+- Duplicate functionality
+- Hard to maintain
+- Inconsistent configuration
+
+### After: 2 Workflows ✅
+- **`main.yml`** - Single comprehensive pipeline
+- **`docker-multiplatform.yml`** - Optional advanced Docker builds
+
+### Consolidated Into `main.yml`:
+- ✅ `ci.yml` + `ci-cd-orchestration.yml` → `main.yml`
+- ✅ `python.yml` → `python-tests` job
+- ✅ `cpp.yml` + `raspberry-pi-cpp.yml` → `cpp-builds` job (with ARM64 matrix)
+- ✅ `android.yml` → `android-build` job (conditional)
+- ✅ `esp32.yml` → `esp32-build` job (conditional)
+- ✅ `security.yml` + `codeql.yml` + `trivy.yml` → `security` job
+- ✅ `build-and-deploy.yml` + `edge-deployment.yml` → `deploy` job
+- ✅ `orchestrator-integration.yml` + `automotive-testing.yml` → `integration-tests` job
+- ✅ `docs.yml` → `docs` job
+- ✅ `build-web.yml` → Merged into main pipeline
+
+**Result**: 90% reduction in workflow files, same functionality! 🎉
