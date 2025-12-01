@@ -91,7 +91,7 @@ jobs:
           pre-commit run --all-files || true
 
       - name: Upload security reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-reports
@@ -239,7 +239,7 @@ jobs:
           fi
 
       - name: Upload C++ binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cpp-${{ matrix.target }}-binaries
           path: |
@@ -282,7 +282,7 @@ jobs:
           ./gradlew assembleDebug test
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -317,7 +317,7 @@ jobs:
           idf.py build
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: esp32-${{ matrix.target }}-${{ matrix.variant }}
           path: esp32/firmware-${{ matrix.variant }}/build/
