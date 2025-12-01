@@ -2,22 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies (including PostgreSQL headers for psycopg2-binary)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
-    build-essential \
-    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy mcp_framework from parent directory first (needed by requirements)
+COPY modules/mcp_framework.py ./mcp_framework.py
+
 # Copy requirements and install Python dependencies
-COPY core-orchestrator/requirements.txt .
+COPY modules/core-orchestrator/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy shared MCP framework
-COPY mcp_framework.py ./mcp_framework.py
-
 # Copy application code
-COPY core-orchestrator/ .
+COPY modules/core-orchestrator/*.py .
 
 # Expose port
 EXPOSE 8080 8081

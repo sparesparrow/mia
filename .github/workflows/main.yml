@@ -361,9 +361,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
-
+            type=sha,prefix=sha-,format=short
+          
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
@@ -376,10 +375,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            BUILDPLATFORM=${{ matrix.platform || 'linux/amd64' }}
-            TARGETPLATFORM=${{ matrix.platform || 'linux/amd64' }}
+            BUILDPLATFORM=linux/amd64
+            TARGETPLATFORM=linux/amd64
             VCS_REF=${{ github.sha }}
-            VERSION=${{ github.ref_name }}
+            VERSION=${{ github.ref_name || 'dev' }}
 
   # ================================
   # INTEGRATION TESTS
