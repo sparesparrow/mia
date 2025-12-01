@@ -70,7 +70,7 @@ jobs:
     - name: Build and push Core Orchestrator
       uses: docker/build-push-action@v5
       with:
-        context: ./modules/core-orchestrator
+        context: ./modules
         file: ./modules/core-orchestrator/Dockerfile
         platforms: ${{ matrix.platform }}
         push: ${{ github.event.inputs.push_images == 'true' || github.event_name == 'push' }}
@@ -131,7 +131,7 @@ jobs:
     - name: Build and push AI Audio Assistant
       uses: docker/build-push-action@v5
       with:
-        context: ./modules/ai-audio-assistant
+        context: ./modules
         file: ./modules/ai-audio-assistant/Dockerfile
         platforms: ${{ matrix.platform }}
         push: ${{ github.event.inputs.push_images == 'true' || github.event_name == 'push' }}
@@ -193,7 +193,7 @@ jobs:
     - name: Build and push Hardware Bridge
       uses: docker/build-push-action@v5
       with:
-        context: ./modules/hardware-bridge
+        context: ./modules
         file: ./modules/hardware-bridge/Dockerfile
         platforms: ${{ matrix.platform }}
         push: ${{ github.event.inputs.push_images == 'true' || github.event_name == 'push' }}
@@ -255,7 +255,7 @@ jobs:
     - name: Build and push AI Security Module
       uses: docker/build-push-action@v5
       with:
-        context: ./modules/ai-security
+        context: ./modules
         file: ./modules/ai-security/Dockerfile
         platforms: ${{ matrix.platform }}
         push: ${{ github.event.inputs.push_images == 'true' || github.event_name == 'push' }}

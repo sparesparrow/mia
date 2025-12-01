@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy automotive security scanner code
-COPY ../security-scanner/automotive_security.py ./automotive_security.py
+COPY security-scanner/automotive_security.py ./automotive_security.py
 
 # Install minimal Python dependencies for automotive_security.py
 # (Keep this light to avoid heavy image, extend as needed)
