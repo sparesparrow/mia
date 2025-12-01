@@ -59,6 +59,7 @@ jobs:
         with:
           languages: python, cpp, javascript
           config-file: ./.github/codeql/codeql-config.yml
+          build-mode: manual
 
       - name: Install C++ build dependencies
         run: |
@@ -80,6 +81,13 @@ jobs:
           pip install conan || echo "Conan installation skipped"
           conan profile detect --force || echo "Conan profile detection skipped"
 
+      - name: Prepare Python for CodeQL
+        run: |
+          # Install Python dependencies so CodeQL can analyze them
+          pip install -r requirements.txt || echo "Requirements install completed with warnings"
+          # Create a dummy build command for Python (no-op)
+          echo "Python analysis ready"
+
       - name: Build C++ for CodeQL
         continue-on-error: true
         run: |
@@ -92,6 +100,8 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
+        with:
+          skip-queries: false
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master

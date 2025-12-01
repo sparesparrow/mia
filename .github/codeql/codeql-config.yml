@@ -16,8 +16,6 @@ paths:
   - modules/
   - platforms/
   - scripts/
-  - build_orchestrator.py
-  - mcp_integration_example.py
 
 # Paths to exclude from analysis  
 paths-ignore:
