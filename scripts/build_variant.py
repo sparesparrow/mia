@@ -1,73 +1,96 @@
 #!/usr/bin/env python3
-import os
 import sys
-import yaml
+import json
+from datetime import datetime
 import shutil
 from pathlib import Path
-from jinja2 import Environment, FileSystemLoader
+from typing import Any, Dict
 
-def build_variant(variant_name, i18n_file=None):
-    """Build specific variant of the website"""
-    
-    # Use i18n_file parameter if provided, otherwise use variant_name
-    i18n_name = i18n_file if i18n_file else variant_name.replace('-car', '')
-    
-    # Load i18n data for variant
-    i18n_file_path = f"web/i18n/{i18n_name}.yaml"
-    if not Path(i18n_file_path).exists():
-        print(f"Error: {i18n_file_path} not found")
-        sys.exit(1)
-    
-    with open(i18n_file_path, 'r', encoding='utf-8') as f:
-        i18n_data = yaml.safe_load(f)
-    
-    # Load common i18n data
-    common_path = "web/i18n/common.yaml"
-    if Path(common_path).exists():
-        with open(common_path, 'r', encoding='utf-8') as f:
-            common_data = yaml.safe_load(f)
-        build_data = {**common_data, **i18n_data}
-    else:
-        build_data = i18n_data
-    
-    # Create output directory
-    output_dir = f"dist/{variant_name}"
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-    
-    # Setup Jinja2 environment
-    env = Environment(loader=FileSystemLoader('web/templates'))
-    
-    # Build index.html with base path
-    template = env.get_template('index.html')
+import yaml
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+
+def load_yaml(path: Path) -> Dict[str, Any]:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return yaml.safe_load(handle) or {}
+    except yaml.YAMLError as exc:
+        raise RuntimeError(f"YAML parsing failed for {path}: {exc}") from exc
+
+
+def build_variant(variant_name: str, i18n_file: str | None = None) -> None:
+    """Render a single variant into dist/<variant_name>/ using Jinja2."""
+
+    variant_key = i18n_file or variant_name.replace("-car", "")
+    i18n_path = Path("web/i18n") / f"{variant_key}.yaml"
+    if not i18n_path.exists():
+        raise FileNotFoundError(f"Missing translation file: {i18n_path}")
+
+    common_path = Path("web/i18n/common.yaml")
+    build_data: Dict[str, Any] = {}
+
+    if common_path.exists():
+        build_data.update(load_yaml(common_path))
+
+    build_data.update(load_yaml(i18n_path))
+
+    output_dir = Path("dist") / variant_name
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    env = Environment(
+        loader=FileSystemLoader("web/templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+
+    template = env.get_template("index.html")
+    base_path = f"/{variant_name}".rstrip("/")
+
     html_content = template.render(
         variant=variant_name,
+        variant_key=variant_key,
         data=build_data,
-        theme=os.getenv('THEME', variant_name),
-        domain=os.getenv('DOMAIN', 'ai.sparetools.dev'),
-        base_path=os.getenv('BASE_PATH', f'/{variant_name}')
+        theme=variant_key,
+        base_path=base_path,
+        current_year=datetime.now().year,
     )
-    
-    with open(f"{output_dir}/index.html", 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    # Copy CSS (variant-specific)
-    css_source = f"web/css/{i18n_name}.css"
-    if Path(css_source).exists():
-        shutil.copy2(css_source, f"{output_dir}/style.css")
-    elif Path("web/css/default.css").exists():
-        shutil.copy2("web/css/default.css", f"{output_dir}/style.css")
-    
-    # Copy JavaScript
-    if Path("web/js").exists():
-        shutil.copytree("web/js", f"{output_dir}/js", dirs_exist_ok=True)
-    
-    print(f"✅ Built variant: {variant_name} (using i18n: {i18n_name})")
 
-if __name__ == "__main__":
+    (output_dir / "index.html").write_text(html_content, encoding="utf-8")
+
+    css_source = Path("web/css") / f"{variant_key}.css"
+    fallback_css = Path("web/css/default.css")
+
+    if css_source.exists():
+        shutil.copy2(css_source, output_dir / "style.css")
+    elif fallback_css.exists():
+        shutil.copy2(fallback_css, output_dir / "style.css")
+
+    if fallback_css.exists():
+        shutil.copy2(fallback_css, output_dir / "base.css")
+
+    js_source = Path("web/js")
+    if js_source.exists():
+        shutil.copytree(js_source, output_dir / "js", dirs_exist_ok=True)
+
+    assets_source = Path("web/assets")
+    if assets_source.exists():
+        shutil.copytree(assets_source, output_dir / "assets", dirs_exist_ok=True)
+
+    print(json.dumps({"status": "ok", "variant": variant_name, "base_path": base_path}))
+
+
+def main() -> None:
     if len(sys.argv) < 2:
-        print("Usage: python build_variant.py <variant_name> [i18n_file]")
-        sys.exit(1)
-    
+        raise SystemExit("Usage: python scripts/build_variant.py <variant_name> [i18n_file]")
+
     variant = sys.argv[1]
     i18n_file = sys.argv[2] if len(sys.argv) > 2 else None
-    build_variant(variant, i18n_file)
+
+    try:
+        build_variant(variant, i18n_file)
+    except Exception as exc:  # pragma: no cover - surfaced to CI log
+        print(f"❌ Failed to build variant '{variant}': {exc}")
+        raise
+
+
+if __name__ == "__main__":
+    main()

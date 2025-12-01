@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: "Inter", system-ui, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        text-align: center;
+      }
+      .container {
+        max-width: 32rem;
+        padding: 2rem;
+      }
+      a {
+        color: #38bdf8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Redirecting to AI-SERVIS</h1>
+      <p>
+        Nezáleží, ze které stránky jste přišli – přesměrováváme vás zpět na správnou variantu webu.
+      </p>
+      <p>
+        Pokud nedojde k přesměrování automaticky, <a id="redirect-link" href="/">klikněte zde</a>.
+      </p>
+    </div>
+    <script>
+      (function () {
+        const VARIANTS = ["business-car", "gonzo-car", "family-car", "dj-car"];
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+
+        const segments = path.split("/").filter(Boolean);
+        const variantIndex = segments.findIndex((segment) =>
+          VARIANTS.includes(segment)
+        );
+
+        let targetSegments = [];
+        if (variantIndex >= 0) {
+          targetSegments = segments.slice(0, variantIndex + 1);
+        } else if (segments.length > 0) {
+          // Likely project site (/<repo>/...), keep first segment (repo name)
+          targetSegments = [segments[0]];
+        }
+
+        const targetPath = `/${targetSegments.join("/")}/`.replace(/\/+/g, "/");
+        const redirectUrl = `${window.location.origin}${targetPath}?redirect=${encodeURIComponent(
+          `${path}${search}${hash}`
+        )}`;
+
+        document.getElementById("redirect-link").setAttribute("href", redirectUrl);
+        window.location.replace(redirectUrl);
+      })();
+    </script>
+  </body>
+</html>

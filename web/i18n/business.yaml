@@ -2,12 +2,13 @@
 business:
   page:
     title:
-        en: AI-SERVIS - Professional AI for Business Vehicles
-        cs: AI-SERVIS - Profesionální AI pro obchodní vozidla
+      en: AI-SERVIS - Professional AI for Business Vehicles
+      cs: AI-SERVIS - Profesionální AI pro obchodní vozidla
     description:
-        en: Professional AI solutions for business vehicles with productivity boost and enterprise security
-        cs: Profesionální AI řešení pro vozidla Vaší společnosti.
-        Dosáhnete vyšší produktivity za dodržení bezpečnostních standardů, kterých si doba žádá.
+      en: Professional AI solutions for business vehicles with productivity boost and enterprise security
+      cs: >
+        Profesionální AI řešení pro vozidla vaší společnosti. Dosáhnete vyšší produktivity při zachování bezpečnostních
+        standardů, které současná doba vyžaduje.
   navigation:
     business_intelligence_on_wheels:
       en: Business Intelligence on Wheels
@@ -25,18 +26,18 @@ business:
       en: Technology
       cs: Technologie
     get_demo:
-      en: I want to TRY IT for free
+      en: Request a FREE trial
       cs: Stojím o možnost vyzkoušení zdarma
     map_location:
       en: Find us on the map
-      cs: Najdi nás na mapě
+      cs: Najděte nás na mapě
     highlighted_map_link:
       en: 🗺️ Click here for directions
-      cs: 🗺️ Klikni zde pro navigaci
+      cs: 🗺️ Klikněte pro navigaci
   hero:
     aipowered_business_vehicle_intelligence:
       en: AI-Powered Business Vehicle Intelligence
-      cs: Služba umělé inteligence v zájmu cílů, se kterými vozidla Vaši společnosti denně vyjíždí.
+      cs: Služba umělé inteligence podporující cíle, s nimiž vozidla vaší společnosti denně vyjíždějí.
     productivity_boost:
       en: Productivity Boost
       cs: Zvýšení produktivity
@@ -183,7 +184,7 @@ business:
       cs: Prioritní podpora
     enterprise_fleet:
       en: Enterprise Fleet
-      cs: Enterprise Fleet
+      cs: Firemní flotila
     fleet_management_solution:
       en: Fleet Management Solution
       cs: Řešení pro správu vozového parku
@@ -230,10 +231,10 @@ business:
       cs: Naplánovat podnikovou ukázku
     try_free_now:
       en: Try it FREE now!
-      cs: Vyzkoušej to ZADARMO hned!
+      cs: Vyzkoušejte ji ZDARMA ještě dnes!
     visit_our_office:
       en: Visit our office for a live demo
-      cs: Navštiv naši kancelář pro živou ukázku
+      cs: Navštivte naši kancelář na živou ukázku
     download_case_studies:
       en: Download Case Studies
       cs: Stáhnout případové studie
@@ -270,7 +271,7 @@ business:
       cs: Kontakt
     visit_us:
       en: Visit us at our location
-      cs: Navštiv nás na naší adrese
+      cs: Navštivte nás na naší adrese
     map_link:
       en: View on Map
       cs: Zobrazit na mapě
