@@ -15,7 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
   DOMAIN: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
 jobs:
@@ -25,15 +24,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Setup Python (for i18n processing)
         uses: actions/setup-python@v4
         with:
@@ -41,7 +31,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install pyyaml jinja2
+          python3 -m pip install --user -r web/requirements.txt
 
       - name: Prepare dist directory
         run: |
@@ -51,22 +41,22 @@ jobs:
       - name: Build business-car variant
         run: |
           VARIANT=business-car THEME=corporate DOMAIN=${{ env.DOMAIN }} BASE_PATH=/business-car \
-            python scripts/build_variant.py business-car business
+            python3 scripts/build_variant.py business-car business
 
       - name: Build gonzo-car variant
         run: |
           VARIANT=gonzo-car THEME=gonzo DOMAIN=${{ env.DOMAIN }} BASE_PATH=/gonzo-car \
-            python scripts/build_variant.py gonzo-car gonzo
+            python3 scripts/build_variant.py gonzo-car gonzo
 
       - name: Build family-car variant
         run: |
           VARIANT=family-car THEME=family DOMAIN=${{ env.DOMAIN }} BASE_PATH=/family-car \
-            python scripts/build_variant.py family-car family
+            python3 scripts/build_variant.py family-car family
 
       - name: Build dj-car variant
         run: |
           VARIANT=dj-car THEME=creative DOMAIN=${{ env.DOMAIN }} BASE_PATH=/dj-car \
-            python scripts/build_variant.py dj-car musicians
+            python3 scripts/build_variant.py dj-car musicians
 
       - name: Generate root index page
         run: |
@@ -98,6 +88,13 @@ jobs:
           </body>
           </html>
           EOF
+
+      - name: Copy shared GitHub Pages assets
+        run: |
+          cp web/404.html dist/404.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v4
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
