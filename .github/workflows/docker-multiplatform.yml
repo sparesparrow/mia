@@ -408,7 +408,7 @@ jobs:
     - name: Run Trivy vulnerability scanner on Core Orchestrator
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/core-orchestrator:sha-${{ github.sha }}'
+        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/core-orchestrator:${{ github.ref_name }}-${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-core-results.sarif'
       continue-on-error: true
@@ -416,7 +416,7 @@ jobs:
     - name: Run Trivy on AI Audio Assistant
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ai-audio-assistant:sha-${{ github.sha }}'
+        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ai-audio-assistant:${{ github.ref_name }}-${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-audio-results.sarif'
       continue-on-error: true
@@ -424,7 +424,7 @@ jobs:
     - name: Run Trivy on Hardware Bridge
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/hardware-bridge:sha-${{ github.sha }}'
+        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/hardware-bridge:${{ github.ref_name }}-${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-hardware-results.sarif'
       continue-on-error: true
@@ -432,14 +432,14 @@ jobs:
     - name: Run Trivy on AI Security
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ai-security:sha-${{ github.sha }}'
+        image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/ai-security:${{ github.ref_name }}-${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-security-results.sarif'
       continue-on-error: true
     
     - name: Upload Trivy scan results
       if: always()
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: |
           trivy-core-results.sarif
