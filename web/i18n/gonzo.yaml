@@ -1,0 +1,343 @@
+# Journalists page texts
+journalists:
+  page:
+    title:
+      en: AI-SERVIS - Investigative Journalism AI
+      cs: AI-SERVIS - Investigativní žurnalistická AI
+    description:
+      en: Ultimate tool for investigative reporting with real-time surveillance and voice transcription
+      cs: Ultimátní nástroj pro investigativní reportování s sledováním v reálném čase a hlasovým přepisem
+  navigation:
+    gonzo_journalism:
+      en: Gonzo Journalism
+      cs: Gonzo žurnalistika
+    manifesto:
+      en: Manifesto
+      cs: Manifest
+    weaponry:
+      en: Arsenal
+      cs: Arsenal
+    stories:
+      en: Stories
+      cs: Příběhy
+    resistance:
+      en: Resistance
+      cs: Odpor
+    surveillance:
+      en: Surveillance
+      cs: Sledování
+    evidence:
+      en: Evidence
+      cs: Důkazy
+    reporting:
+      en: Reporting
+      cs: Reportování
+    pricing:
+      en: Pricing
+      cs: Ceny
+    start_investigating:
+      en: Start Investigating
+      cs: Začít vyšetřovat
+    panic_mode:
+      en: Emergency Mode
+      cs: Nouzový režim
+  hero:
+    main_title:
+      en: When They Watch You, You Watch Them Back
+      cs: Když tě sledují, sleduj je zpět
+    subtitle:
+      en: Digital Paranoia on Wheels
+      cs: Digitální paranoia na kolech
+    description:
+      en: We live in an era of digital surveillance. Every movement, every license plate, every stop at the gas station - everything is a record in someone's database. AI-SERVIS gives you the weapon back in your hands. Edge AI that doesn't talk, doesn't suppress, and doesn't sell your data to corporate hyenas.
+      cs: Žijeme v éře digitálního sledování. Každý pohyb, každá SPZ, každé zastavení u pumpy - všechno je záznam v něčí databázi. AI-SERVIS ti dává zbraň zpět do rukou. Edge AI, které nemluví, netlumí a neprodává tvoje data korporátním hyenám.
+    ultimate_tool_for_investigative_reporting:
+      en: Ultimate Tool for Investigative Reporting
+      cs: Ultimátní nástroj pro investigativní žurnalistiku
+    track_suspicious_vehicles:
+      en: Track Suspicious Vehicles
+      cs: Sledujte podezřelá vozidla
+    voice_notes_hands_free:
+      en: Voice Notes Hands-Free
+      cs: Nahrávejte hlasové poznámky bez použití rukou
+    realtime_reporting:
+      en: Real-Time Reporting
+      cs: Tvořte reportáže v reálném čase během jízdy
+    mobile_newsroom:
+      en: Mobile Newsroom
+      cs: Vaše mobilní redakce s AI sledováním
+    stats:
+      savings:
+        en: 93% SAVINGS VS. CORPORATE SCUM
+        cs: 93% úspora vs. korporátní šmejdi
+      monitoring:
+        en: 24/7 WATCHFUL EYE TECHNOLOGY
+        cs: 24/7 bdělý oko technologie
+      resistance:
+        en: ∞ FUCK THE ESTABLISHMENT
+        cs: ∞ FUCK THE ESTABLISHMENT
+    buttons:
+      join_resistance:
+        en: JOIN THE RESISTANCE
+        cs: Vstoupit do odporu
+      watch_manifesto:
+        en: WATCH MANIFESTO
+        cs: Sledovat manifest
+  weaponry:
+    title:
+      en: Arsenal for Digital Guerrilla
+      cs: Arsenal pro digitální guerillu
+    anti_stalker_protocol:
+      title:
+        en: Anti-Stalker Protocol
+        cs: Anti-stalker protokol
+      description:
+        en: 'When the night fog in Prague dissipates and your rear wiper catches the same number for the sixth time - AI-SERVIS finally screams: Watch out! You have a parasite on your tail!'
+        cs: 'Když se noční mlha v Praze rozplyne a tvůj zadní stěrač zahlédne už pošesté to stejné číslo - AI-SERVIS konečně křičí: Pozor! Máš parazita na ocase!'
+      quote:
+        en: "The mobile light flashes like a magnesium flash - a second of truth for both the stalked and the one who thinks they're invisible."
+        cs: "Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro pronásledovaného i toho, kdo si myslí, že je neviditelný."
+    covert_ops_interface:
+      title:
+        en: Covert Ops Interface
+        cs: Covert ops rozhraní
+      description:
+        en: All secret services love invisibility. This screen can only be operated by you and the dark boys in civilian clothes. Repeated license plates are stored below the surface of awareness.
+        cs: Všechny tajné služby mají rády neviditelnost. Tuto obrazovku může ovládat jen ty a temní chlapci v civilu. Opakované SPZ se ukládají pod hladinu povědomí.
+      quote:
+        en: "Who watches the watchers? We do."
+        cs: "Kdo hlídá hlídače? Hlídáme my."
+    gonzo_command_center:
+      title:
+        en: Gonzo Command Center
+        cs: Gonzo velitelské centrum
+      description:
+        en: 'The control center of the paranoid universe: Everything on one control panel. Charts, alerts, control lights burning like cocaine ampoules in Vegas.'
+        cs: 'Centrum řízení paranoidního vesmíru: Všechno na jednom řídícím stole. Grafy, upozornění, kontrolky hoří jak kokainové ampule ve Vegas.'
+      quote:
+        en: "If something escapes you, it was just a bad trip."
+        cs: "Pokud ti něco unikne, byl to jen špatný trip."
+    matrix_tracking_map:
+      title:
+        en: Matrix Tracking Map
+        cs: Matrix sledovací mapa
+      description:
+        en: God protects those who have a map and information. Vehicles push glow on the screen like crazy bugs with their own trajectories and heart in the bowels of the city.
+        cs: Bůh chrání ty, kdo mají mapu a informace. Vozidla tlačí záři na obrazovce jako šílení brouci s vlastními trajektoriemi a srdcem v útrobách města.
+      quote:
+        en: "One movement, one wrong license plate - and history is written online."
+        cs: "Jeden pohyb, jedna chybná SPZ – a historie se píše online."
+  features:
+    realtime_surveillance_tracking:
+      en: Real-Time Surveillance Tracking
+      cs: Sledování v reálném čase
+    voicetotext_transcription:
+      en: Voice-to-Text Transcription
+      cs: Přepis hlasu na text
+    encrypted_evidence_storage:
+      en: Encrypted Evidence Storage
+      cs: Šifrované úložiště důkazů
+    anonymous_operation_mode:
+      en: Anonymous Operation Mode
+      cs: Anonymní režim provozu
+  stories:
+    title:
+      en: Stories from the Front
+      cs: Příběhy z fronty
+    gonzo_investigator:
+      title:
+        en: Gonzo Investigator
+        cs: GONZO INVESTIGATOR
+      description:
+        en: 'Every report starts with a question: Who is watching me and why? Mobile newsroom in the car, AI as co-pilot, voice notes without using hands. Ultimate tool for investigative journalism.'
+        cs: 'Každý report začíná otázkou: Kdo mě sleduje a proč? Mobilní redakce v autě, AI jako co-pilot, hlasové poznámky bez použití rukou. Ultimátní nástroj pro investigativní žurnalistiku.'
+      features:
+        - en: Real-time surveillance
+          cs: Real-time surveillance
+        - en: Voice transcription
+          cs: Voice transcription
+        - en: Encrypted evidence
+          cs: Encrypted evidence
+    mobile_dj_revolution:
+      title:
+        en: Mobile DJ Revolution
+        cs: MOBILE DJ REVOLUTION
+      description:
+        en: Traffic jam on the highway? Show must go on! RTP-MIDI connection to remote DAW, car as mobile DJ booth. Party starts on time, even when you're in traffic hell.
+        cs: Kolona na dálnici? Show must go on! RTP-MIDI připojení k vzdálenému DAW, auto jako mobilní DJ pult. Párty startuje včas, i když jsi v pekle dopravy.
+      features:
+        - en: RTP-MIDI sync
+          cs: RTP-MIDI sync
+        - en: Live streaming
+          cs: Live streaming
+        - en: Multi-car collaboration
+          cs: Multi-car collaboration
+  pricing:
+    title:
+      en: Join the Resistance
+      cs: PŘIPOJ SE K ODBOJI
+    description:
+      en: 'Freedom has no price. But technology does. Choose your resistance level:'
+      cs: 'Svoboda nemá cenu. Ale technologie ano. Vyber si svůj level resistance:'
+    phone_rebel:
+      title:
+        en: Phone Rebel
+        cs: PHONE REBEL
+      price:
+        en: 22K - 38K Kč
+        cs: 22K - 38K Kč
+      description:
+        en: BYOD Guerilla Mode
+        cs: BYOD Guerilla Mode
+      features:
+        - en: ESP32 OBD-2 brain implant
+          cs: ESP32 OBD-2 brain implant
+        - en: Basic ANPR on your phone
+          cs: Basic ANPR na tvém telefonu
+        - en: Voice alerts
+          cs: Hlasová upozornění
+        - en: BLE underground communication
+          cs: BLE underground komunikace
+      button:
+        en: JOIN
+        cs: VSTOUPIT
+    hybrid_warrior:
+      title:
+        en: Hybrid Warrior
+        cs: HYBRID WARRIOR
+      badge:
+        en: GONZO CHOICE
+        cs: GONZO CHOICE
+      price:
+        en: 48K - 89K Kč
+        cs: 48K - 89K Kč
+      description:
+        en: Phone + Mini DVR Matrix
+        cs: Phone + Mini DVR Matrix
+      features:
+        - en: Everything from Phone Rebel + bonus
+          cs: Vše z Phone Rebel + bonus
+        - en: AI voice assistant with balls
+          cs: AI hlasový asistent s balls
+        - en: 24/7 DVR surveillance
+          cs: 24/7 DVR surveillance
+        - en: Parking mode paranoia
+          cs: Parking mode paranoia
+        - en: WiFi Direct underground network
+          cs: WiFi Direct podzemní síť
+      button:
+        en: FULL GONZO
+        cs: FULL GONZO
+    pro_resistance:
+      title:
+        en: Pro Resistance
+        cs: PRO RESISTANCE
+      price:
+        en: 89K - 143K Kč
+        cs: 89K - 143K Kč
+      description:
+        en: Vehicle PC Death Machine
+        cs: Vehicle PC Death Machine
+      features:
+        - en: Everything from Hybrid + nuclear option
+          cs: Vše z Hybrid + nuclear option
+        - en: Multi-camera surveillance
+          cs: Multi-kamerový surveillance
+        - en: Advanced ANPR with AI brain
+          cs: Advanced ANPR s AI brain
+        - en: Fleet management API
+          cs: Fleet management API
+        - en: 24/7 priority backup
+          cs: 24/7 prioritní backup
+      button:
+        en: FULL METAL
+        cs: FULL METAL
+  manifesto:
+    title:
+      en: Digital Guerrilla Manifesto
+      cs: Náš digitální odboj
+    content:
+      paragraph1:
+        en: "We, guerrilla fighters of the digital age, refuse to be mere data points in corporate hyena databases. We refuse to be watched without the ability to watch back."
+        cs: "V neprospěch korporátního molocha se nám do nejzazšího integrovaného obvodu příčí být jen stopou v databázi.
+V digitální epoše nám sejde na právech dopadu a odrazu.
+Skrze něj se starejme o své blízké."
+      paragraph2:
+        en: "AI-SERVIS is not just technology. It's a Statement. Rebel yell. Digital molotov against surveillance state that thinks it has a monopoly on information."
+        cs: "AI-SERVIS není jen technologie. Je to Statement. Rebel yell. Digitální molotov proti surveillance state, která si myslí, že má monopol na informace."
+      paragraph3:
+        en: "Every ESP32 module in your car is a small act of revolt. Every recognized license plate is a middle finger to the system. Every voice note is bullets into the establishment."
+        cs: "Každý ESP32 modul v tvém autě je malý akt revolty. Každé rozpoznané SPZ je middle finger systemu. Každá hlasová poznámka je bullets do establishment."
+      paragraph4:
+        en: "Join us. Or stay sheep in the digital slaughterhouse. Choice is yours, freedom fighter."
+        cs: "Připoj se k nám. Nebo zůstaň sheep in the digital slaughterhouse. Choice is yours, freedom fighter."
+  cta:
+    ready_to_investigate:
+      en: Ready to Investigate?
+      cs: Připraveni vyšetřovat?
+    start_investigative_journalism:
+      en: Start Investigative Journalism
+      cs: Začít investigativní žurnalistiku
+    book_surveillance_demo:
+      en: Book Surveillance Demo
+      cs: Rezervovat ukázku sledování
+  footer:
+    brand:
+      title:
+        en: AI-SERVIS
+        cs: AI-SERVIS
+      subtitle:
+        en: DIGITAL PARANOIA CORP. EST. 2025
+        cs: DIGITÁLNÍ PARANOIA CORP. EST. 2025
+      motto:
+        en: "WHEN THEY WATCH YOU, WATCH THEM BACK"
+        cs: "KDYŽ TĚ SLEDUJOU, SLEDUJ JE ZPĚT"
+    underground_contact:
+      title:
+        en: Underground Contact
+        cs: UNDERGROUND KONTAKT
+      email:
+        en: resistance@ai-servis.gonzo
+        cs: resistance@ai-servis.gonzo
+      phone:
+        en: +420 xxx PARANOIA
+        cs: +420 xxx PARANOIA
+      location:
+        en: Brno Underground, Czech Republic
+        cs: Brno Underground, Česká Republika
+    legal_disclaimer:
+      title:
+        en: Legal Disclaimer
+        cs: LEGAL DISCLAIMER
+      text:
+        en: 'Use at your own risk. We are not responsible for:'
+        cs: 'Use at your own risk. We are not responsible for:'
+      disclaimers:
+        - en: Paranoid episodes
+          cs: Paranoid episodes
+        - en: Government surveillance
+          cs: Government surveillance
+        - en: Reality distortion
+          cs: Reality distortion
+        - en: Addiction to truth
+          cs: Addiction to truth
+    copyright:
+      en: © 2025 AI-SERVIS GONZO EDITION. ALL RIGHTS RESERVED TO FREEDOM FIGHTERS.
+      cs: © 2025 AI-SERVIS GONZO EDITION. ALL RIGHTS RESERVED TO FREEDOM FIGHTERS.
+    hunter_quote:
+      en: "In a world of thieves, the only final sin is stupidity."
+      cs: "In a world of thieves, the only final sin is stupidity."
+  panic_mode:
+    title:
+      en: 🚨 EMERGENCY MODE ACTIVATED 🚨
+      cs: 🚨 NOUZOVÝ REŽIM AKTIVOVÁN 🚨
+    description:
+      en: All data is immediately encrypted and ready for self-destruction.
+      cs: Všechna data jsou okamžitě šifrována a připravena k self-destruction.
+    countdown:
+      text:
+        en: seconds until digital erasure
+        cs: sekund do digital erasure
+    cancel_button:
+      en: CANCEL SELF-DESTRUCTION
+      cs: ZRUŠIT SAMODESTRUKCI

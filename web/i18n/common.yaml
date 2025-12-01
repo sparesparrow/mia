@@ -1,0 +1,343 @@
+# Common page texts
+common:
+  page:
+    title:
+      en: AI-SERVIS
+      cs: AI-SERVIS
+    description:
+      en: Revolutionary AI for your vehicle - Edge AI processing, ANPR surveillance,
+        voice assistant and OBD diagnostics
+      cs: Revolutionary AI for your vehicle - Edge AI processing, ANPR surveillance,
+        voice assistant and OBD diagnostics
+  navigation:
+    future_of_automotive_technology:
+      en: Future of Automotive Technology
+      cs: Budoucnost automobilové technologie
+    features:
+      en: Features
+      cs: Funkce
+    use_cases:
+      en: Use Cases
+      cs: Použití
+    pricing:
+      en: Pricing
+      cs: Ceny
+    technology:
+      en: Technology
+      cs: Technologie
+    get_started:
+      en: Get Started
+      cs: Začít
+  hero:
+    revolutionary_ai_for_your_vehicle:
+      en: Revolutionary AI for Your Vehicle
+      cs: Revoluční AI pro vaše vozidlo
+    edge_ai_processing_description:
+      en: Edge AI processing, ANPR surveillance, voice assistant and OBD diagnostics
+        - all in one system. Save 70-93% compared to traditional solutions.
+      cs: Edge AI zpracování, ANPR sledování, hlasový asistent a OBD diagnostika -
+        vše v jednom systému. Ušetřete 70-93% oproti tradičním řešením.
+    cost_savings:
+      en: Cost Savings
+      cs: Úspora nákladů
+    installation_time:
+      en: Installation Time
+      cs: Doba instalace
+    monitoring:
+      en: Monitoring
+      cs: Monitoring
+    configure_system:
+      en: Configure System
+      cs: Konfigurovat systém
+    watch_demo:
+      en: Watch Demo
+      cs: Sledovat ukázku
+  features:
+    key_features:
+      en: Key Features
+      cs: Klíčové funkce
+    anpr_surveillance:
+      en: ANPR Surveillance
+      cs: ANPR sledování
+    anpr_description:
+      en: Real-time license plate recognition and tracking. Alerts for recurring plates
+        or suspicious vehicles.
+      cs: Rozpoznávání a sledování SPZ v reálném čase. Upozornění na opakující se
+        SPZ nebo podezřelá vozidla.
+    voice_ai_assistant:
+      en: Voice AI Assistant
+      cs: Hlasový AI asistent
+    voice_assistant_description:
+      en: Hands-free control with ElevenLabs integration. Control navigation, music,
+        calls and diagnostics by voice.
+      cs: Ovládání bez použití rukou s integrací ElevenLabs. Ovládejte navigaci, hudbu,
+        hovory a diagnostiku hlasem.
+    obd2_diagnostics:
+      en: OBD-2 Diagnostics
+      cs: OBD-2 diagnostika
+    obd_description:
+      en: Real-time vehicle health monitoring. Voice alerts for fuel level, engine
+        temperature and error codes.
+      cs: Monitoring stavu vozidla v reálném čase. Hlasové upozornění na hladinu paliva,
+        teplotu motoru a chybové kódy.
+    edge_ai_processing:
+      en: Edge AI Processing
+      cs: Edge AI zpracování
+    edge_ai_description:
+      en: Local processing ensures privacy and speed. No cloud dependency, GDPR compliant,
+        encrypted data.
+      cs: Lokální zpracování zajišťuje soukromí a rychlost. Bez závislosti na cloudu,
+        GDPR kompatibilní, šifrovaná data.
+  use_cases:
+    perfect_for_everyone:
+      en: Perfect for Everyone
+      cs: Ideální pro každého
+    for_gonzo_journalists:
+      en: For Gonzo Journalists
+      cs: Pro gonzo novináře
+    journalists_description:
+      en: Ultimate tool for investigative journalism. Track suspicious vehicles, record
+        voice notes hands-free, create reports in real-time while driving. Your mobile
+        newsroom with AI surveillance.
+      cs: Ultimátní nástroj pro investigativní žurnalistiku. Sledujte podezřelá vozidla,
+        nahrávejte hlasové poznámky bez použití rukou, tvořte reportáže v reálném
+        čase během jízdy. Vaše mobilní redakce s AI sledováním.
+    realtime_surveillance_tracking:
+      en: Real-Time Surveillance Tracking
+      cs: Sledování v reálném čase
+    voicetotext_transcription:
+      en: Voice-to-Text Transcription
+      cs: Přepis hlasu na text
+    encrypted_evidence_storage:
+      en: Encrypted Evidence Storage
+      cs: Šifrované úložiště důkazů
+    anonymous_operation_mode:
+      en: Anonymous Operation Mode
+      cs: Anonymní režim provozu
+    for_djs_musicians:
+      en: For DJs & Musicians
+      cs: Pro DJe a hudebníky
+    musicians_description:
+      en: Transform your car into a mobile DJ booth. Connect to remote DAWs via RTP-MIDI,
+        stream live performances and never miss a gig even in traffic. Your mobile
+        studio awaits.
+      cs: Proměňte své auto v mobilní DJ booth. Připojte se ke vzdáleným DAW přes
+        RTP-MIDI, streamujte živé performance a nikdy nepropásněte gig ani v koloně.
+        Vaše mobilní studio čeká.
+    rtpmidi_network_integration:
+      en: RTP-MIDI Network Integration
+      cs: RTP-MIDI síťová integrace
+    live_streaming_capabilities:
+      en: Live Streaming Capabilities
+      cs: Možnosti živého streamování
+    multicar_synchronization:
+      en: Multi-Car Synchronization
+      cs: Synchronizace více aut
+    professional_audio_routing:
+      en: Professional Audio Routing
+      cs: Profesionální audio routing
+    for_business_professionals:
+      en: For Business Professionals
+      cs: Pro obchodní profesionály
+    business_description:
+      en: Maximize productivity while driving safely. Handle calls, read emails, manage
+        calendar and get traffic information in real-time - all hands-free.
+      cs: Maximalizujte produktivitu při bezpečném řízení. Zvládejte hovory, čtěte
+        e-maily, spravujte kalendář a získávejte dopravní informace v reálném čase
+        - vše bez použití rukou.
+    handsfree_email_and_calendar:
+      en: Hands-Free Email & Calendar
+      cs: E-mail a kalendář bez rukou
+    voicecontrolled_navigation:
+      en: Voice-Controlled Navigation
+      cs: Hlasem ovládaná navigace
+    meeting_transcription:
+      en: Meeting Transcription
+      cs: Přepis schůzek
+    crm_integration_ready:
+      en: CRM Integration Ready
+      cs: Připraveno pro CRM integraci
+    business_professional:
+      en: Business Professional
+      cs: Obchodní profesionál
+    for_family_safety:
+      en: For Family Safety
+      cs: Pro bezpečnost rodiny
+    family_description:
+      en: Protect your loved ones with intelligent surveillance. Get alerts when the
+        same vehicle follows you repeatedly. Peace of mind for parents and partners.
+      cs: Chraňte své blízké inteligentním sledováním. Dostávejte upozornění, když
+        vás stejné vozidlo opakovaně sleduje. Klid pro rodiče a partnery.
+    stalker_detection_alerts:
+      en: Stalker Detection & Alerts
+      cs: Detekce a upozornění na stalkery
+    emergency_contact_sharing:
+      en: Emergency Contact Sharing
+      cs: Sdílení nouzových kontaktů
+    route_documentation:
+      en: Route Documentation
+      cs: Dokumentace tras
+    family_location_sharing:
+      en: Family Location Sharing
+      cs: Sdílení polohy rodiny
+    family_safety:
+      en: Family Safety
+      cs: Bezpečnost rodiny
+  pricing:
+    choose_your_edition:
+      en: Choose Your Edition
+      cs: Vyberte si edici
+    phone_edition:
+      en: Phone Edition
+      cs: Phone Edition
+    byod_approach:
+      en: BYOD Approach
+      cs: BYOD přístup
+    price_38000:
+      en: '- 38.000'
+      cs: '- 38.000'
+    esp32_obd2_module:
+      en: ESP32 OBD-2 Module
+      cs: ESP32 OBD-2 modul
+    basic_anpr_on_phone:
+      en: Basic ANPR on Phone
+      cs: Základní ANPR na telefonu
+    voice_alerts:
+      en: Voice Alerts
+      cs: Hlasová upozornění
+    ble_communication:
+      en: BLE Communication
+      cs: BLE komunikace
+    installation_152h:
+      en: 1.5-2h Installation
+      cs: 1,5-2h instalace
+    most_popular:
+      en: Most Popular
+      cs: Nejoblíbenější
+    hybrid_edition:
+      en: Hybrid Edition
+      cs: Hybrid Edition
+    phone_mini_dvr:
+      en: Phone + Mini DVR
+      cs: Telefon + Mini DVR
+    price_89000:
+      en: '- 89.000'
+      cs: '- 89.000'
+    everything_in_phone_edition:
+      en: Everything in Phone Edition
+      cs: Vše z Phone Edition
+    ai_voice_assistant:
+      en: AI Voice Assistant
+      cs: AI hlasový asistent
+    dvr_recording_247:
+      en: 24/7 DVR Recording
+      cs: 24/7 DVR nahrávání
+    parking_mode:
+      en: Parking Mode
+      cs: Parkovací režim
+    wifi_direct_communication:
+      en: WiFi Direct Communication
+      cs: WiFi Direct komunikace
+    pro_edition:
+      en: Pro Edition
+      cs: Pro Edition
+    full_vehicle_pc:
+      en: Full Vehicle PC
+      cs: Kompletní Vehicle PC
+    price_143000:
+      en: '- 143.000'
+      cs: '- 143.000'
+    everything_in_hybrid_edition:
+      en: Everything in Hybrid Edition
+      cs: Vše z Hybrid Edition
+    multicamera_dvr:
+      en: Multi-Camera DVR
+      cs: Multi-kamerový DVR
+    advanced_anpr_analysis:
+      en: Advanced ANPR Analysis
+      cs: Pokročilá ANPR analýza
+    fleet_management_api:
+      en: Fleet Management API
+      cs: Fleet management API
+    priority_support_247:
+      en: 24/7 Priority Support
+      cs: 24/7 prioritní podpora
+  technology:
+    cuttingedge_technology:
+      en: Cutting-Edge Technology
+      cs: Nejmodernější technologie
+    esp32_brain:
+      en: ESP32 Brain
+      cs: ESP32 mozek
+    esp32_description:
+      en: Dual-core 240MHz processor with Wi-Fi, Bluetooth and CAN bus integration
+      cs: Dual-core 240MHz procesor s Wi-Fi, Bluetooth a CAN bus integrací
+    elevenlabs_voice:
+      en: ElevenLabs Voice
+      cs: ElevenLabs hlas
+    elevenlabs_description:
+      en: Premium text-to-speech with natural voice synthesis and multi-language support
+      cs: Prémiová syntéza řeči s přirozeným hlasem a podporou více jazyků
+    mcp_protocol:
+      en: MCP Protocol
+      cs: MCP protokol
+    mcp_description:
+      en: Model Context Protocol for seamless AI agent integration and discovery tools
+      cs: Model Context Protocol pro bezproblémovou integraci AI agentů a nástroje
+        pro vyhledávání
+    edge_ai:
+      en: Edge AI
+      cs: Edge AI
+    edge_ai_benefits:
+      en: Local processing ensures privacy, speed and offline capabilities
+      cs: Lokální zpracování zajišťuje soukromí, rychlost a offline funkce
+  cta:
+    ready_to_transform_your_vehicle:
+      en: Ready to Transform Your Vehicle?
+      cs: Připraveni transformovat vaše vozidlo?
+    join_the_revolution:
+      en: Join the automotive AI revolution. Start with AI-SERVIS today.
+      cs: Připojte se k automobilové AI revoluci. Začněte s AI-SERVIS již dnes.
+    configure_your_system:
+      en: Configure Your System
+      cs: Konfigurovat váš systém
+    contact_sales:
+      en: Contact Sales
+      cs: Kontaktovat prodej
+    revolutionary_automotive_ai_technology:
+      en: Revolutionary Automotive AI Technology
+      cs: Revoluční automobilová AI technologie
+  footer:
+    product:
+      en: Product
+      cs: Produkt
+    documentation:
+      en: Documentation
+      cs: Dokumentace
+    support:
+      en: Support
+      cs: Podpora
+    help_center:
+      en: Help Center
+      cs: Centrum nápovědy
+    installation_guide:
+      en: Installation Guide
+      cs: Instalační průvodce
+    contact:
+      en: Contact
+      cs: Kontakt
+    company:
+      en: Company
+      cs: Společnost
+    about:
+      en: About
+      cs: O nás
+    blog:
+      en: Blog
+      cs: Blog
+    careers:
+      en: Careers
+      cs: Kariéra
+    copyright:
+      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
+      cs: © 2025 AI-SERVIS. Všechna práva vyhrazena.

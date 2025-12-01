@@ -1,0 +1,256 @@
+# Family page texts
+family:
+  page:
+    title:
+      en: AI-SERVIS - Family Safety & Protection
+      cs: AI-SERVIS - Family Safety & Protection
+    description:
+      en: Comprehensive family safety and protection with intelligent surveillance
+        and privacy-first design
+      cs: Komplexní bezpečnost a ochrana rodiny s inteligentním sledováním
+        a designem zaměřeným na soukromí
+  navigation:
+    family_protection_first:
+      en: Family Protection First
+      cs: Ochrana rodiny na prvním místě
+    safety:
+      en: Safety
+      cs: Bezpečnost
+    protection:
+      en: Protection
+      cs: Ochrana
+    connect:
+      en: Connect
+      cs: Spojení
+    pricing:
+      en: Pricing
+      cs: Ceny
+    protect_family:
+      en: Protect Family
+      cs: Chraň rodinu
+    alerts:
+      en: Alerts
+      cs: Upozornění
+    secure:
+      en: Secure
+      cs: Bezpečně
+    get_protected:
+      en: Get Protected
+      cs: Získej ochranu
+    how_it_works:
+      en: How It Works
+      cs: Jak to funguje
+  hero:
+    comprehensive_family_safety:
+      en: Comprehensive Family Safety
+      cs: Komplexní bezpečnost rodiny
+    stalker_detection:
+      en: Stalker Detection
+      cs: Detekce pronásledování
+    family_location_sharing:
+      en: Family Location Sharing
+      cs: Sdílení polohy rodiny
+    smart_alerts:
+      en: Smart Alerts
+      cs: Inteligentní upozornění
+    privacy_first:
+      en: Privacy First
+      cs: Soukromí na prvním místě
+    protection_that_matters:
+      en: Protection That Matters
+      cs: Ochrana, na které záleží
+  scenarios:
+    parent_child_safety:
+      en: Parent-Child Safety
+      cs: Bezpečnost rodičů a dětí
+    teen_driver_monitoring:
+      en: Teen Driver Monitoring
+      cs: Sledování mladých řidičů
+    family_arrival_notifications:
+      en: Family Arrival Notifications
+      cs: Upozornění na příjezd rodiny
+    safe_driving_alerts:
+      en: Safe Driving Alerts
+      cs: Upozornění na bezpečnou jízdu
+    emergency_contact_system:
+      en: Emergency Contact System
+      cs: Systém nouzového kontaktu
+    parent:
+      en: Parent
+      cs: Rodič
+    teen:
+      en: Teen
+      cs: Teenager
+    partner_safety:
+      en: Partner Safety
+      cs: Bezpečnost partnera
+    coupled_location_sharing:
+      en: Coupled Location Sharing
+      cs: Sdílení polohy v páru
+    mutual_safety_alerts:
+      en: Mutual Safety Alerts
+      cs: Vzájemná bezpečnostní upozornění
+    trusted_partner_network:
+      en: Trusted Partner Network
+      cs: Síť důvěryhodných partnerů
+    privacy_controls:
+      en: Privacy Controls
+      cs: Ovládání soukromí
+    senior_family_care:
+      en: Senior Family Care
+      cs: Péče o seniory
+    independence_monitoring:
+      en: Independence Monitoring
+      cs: Sledování nezávislosti
+    health_safety_alerts:
+      en: Health & Safety Alerts
+      cs: Upozornění na zdraví a bezpečnost
+    battery_system_monitoring:
+      en: Battery & System Monitoring
+      cs: Sledování baterie a systému
+    trusted_caregiver_network:
+      en: Trusted Caregiver Network
+      cs: Síť důvěryhodných pečovatelů
+  features:
+    stay_connected_stay_safe:
+      en: Stay Connected, Stay Safe
+      cs: Zůstaňte propojení, zůstaňte v bezpečí
+    family_hub:
+      en: Family Hub
+      cs: Rodinné centrum
+    emergency_response:
+      en: Emergency Response
+      cs: Nouzová odezva
+    smart_notifications:
+      en: Smart Notifications
+      cs: Chytrá upozornění
+    protect_what_matters_most:
+      en: Protect What Matters Most
+      cs: Chraňte to nejdůležitější
+  pricing:
+    family_basic:
+      en: Family Basic
+      cs: Rodina Basic
+    essential_family_protection:
+      en: Essential Family Protection
+      cs: Základní ochrana rodiny
+    price_40000:
+      en: '- 40.000'
+      cs: '- 40.000'
+    basic_stalker_detection:
+      en: Basic Stalker Detection
+      cs: Základní detekce stalkera
+    emergency_alerts:
+      en: Emergency Alerts
+      cs: Nouzová upozornění
+    obd_health_monitoring:
+      en: OBD Health Monitoring
+      cs: OBD sledování zdraví
+    installation_15h:
+      en: 1.5h Installation
+      cs: 1,5h instalace
+    most_protected:
+      en: Most Protected
+      cs: Nejchráněnější
+    family_complete:
+      en: Family Complete
+      cs: Rodina Kompletní
+    full_family_safety_suite:
+      en: Full Family Safety Suite
+      cs: Kompletní balíček bezpečnosti rodiny
+    price_85000:
+      en: '- 85.000'
+      cs: '- 85.000'
+    everything_in_basic:
+      en: Everything in Basic
+      cs: Vše z Basic
+    advanced_ai_protection:
+      en: Advanced AI Protection
+      cs: Pokročilá AI ochrana
+    multivehicle_tracking:
+      en: Multi-Vehicle Tracking
+      cs: Sledování více vozidel
+    smart_notification_system:
+      en: Smart Notification System
+      cs: Chytrý systém upozornění
+    priority_support:
+      en: Priority Support
+      cs: Prioritní podpora
+    complete_protection:
+      en: Complete Protection
+      cs: Kompletní ochrana
+    extended_family:
+      en: Extended Family
+      cs: Rozšířená rodina
+    multigeneration_protection:
+      en: Multi-Generation Protection
+      cs: Ochrana více generací
+    price_145000:
+      en: '- 145.000'
+      cs: '- 145.000'
+    everything_in_complete:
+      en: Everything in Complete
+      cs: Vše z Kompletní
+    senior_care_features:
+      en: Senior Care Features
+      cs: Funkce péče o seniory
+    family_health_integration:
+      en: Family Health Integration
+      cs: Integrace zdraví rodiny
+    support_247_family:
+      en: 24/7 Family Support
+      cs: 24/7 rodinná podpora
+    protect_everyone:
+      en: Protect Everyone
+      cs: Chraň všechny
+  cta:
+    give_your_family_the_protection_they_deserve:
+      en: Give Your Family the Protection They Deserve
+      cs: Dejte své rodině ochranu, kterou si zaslouží
+    start_family_protection:
+      en: Start Family Protection
+      cs: Začněte ochranu rodiny
+    schedule_family_demo:
+      en: Schedule Family Demo
+      cs: Naplánujte rodinnou ukázku
+    family_safety_protection:
+      en: Family Safety & Protection
+      cs: Bezpečnost a ochrana rodiny
+  content:
+    safety_features:
+      en: Safety Features
+      cs: Bezpečnostní funkce
+    protection_scenarios:
+      en: Protection Scenarios
+      cs: Scénáře ochrany
+    family_connection:
+      en: Family Connection
+      cs: Rodinné spojení
+  footer:
+    support:
+      en: Support
+      cs: Podpora
+    family_support:
+      en: Family Support
+      cs: Rodinná podpora
+    safety_guide:
+      en: Safety Guide
+      cs: Bezpečnostní průvodce
+    privacy_policy:
+      en: Privacy Policy
+      cs: Zásady soukromí
+    resources:
+      en: Resources
+      cs: Zdroje
+    safety_tips:
+      en: Safety Tips
+      cs: Bezpečnostní tipy
+    family_guide:
+      en: Family Guide
+      cs: Rodinný průvodce
+    contact:
+      en: Contact
+      cs: Kontakt
+    copyright:
+      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
+      cs: © 2025 AI-SERVIS Family Protection. Všechna práva vyhrazena.

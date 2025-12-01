@@ -16,6 +16,10 @@ Kompletní řešení pro autoservisy kombinující ANPR, OBD diagnostiku, hlasov
 
 **AI-SERVIS Universal** představuje evoluci našeho automotive AI asistenta do komplexního, modulárního ekosystému, který bezproblémově funguje napříč vozidly, domovy a všemi výpočetními platformami.
 
+## 🌩️ **AWS Deployment Preview**
+
+Volitelná AWS pipeline nyní žije ve větvi `feature/aws-deployment`. Najdete v ní workflow `.github/workflows/deploy-variants.yml`, skript `scripts/check_and_update_certificates.py` a podpůrné soubory `aws-setup-commands.sh` a `bucket-policy.json`. Pokud budete chtít web nasadit na S3/CloudFront místo GitHub Pages, přepněte se do této větve a postupujte podle popsaných kroků.
+
 ## 🏗️ **Architektura Systému**
 
 ```mermaid

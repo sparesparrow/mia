@@ -1,0 +1,283 @@
+# Business page texts
+business:
+  page:
+    title:
+      en: AI-SERVIS - Professional AI for Business Vehicles
+      cs: AI-SERVIS - Profesionální AI pro obchodní vozidla
+    description:
+      en: Professional AI solutions for business vehicles with productivity boost and enterprise security
+      cs: >
+        Profesionální AI řešení pro vozidla vaší společnosti. Dosáhnete vyšší produktivity při zachování bezpečnostních
+        standardů, které současná doba vyžaduje.
+  navigation:
+    business_intelligence_on_wheels:
+      en: Business Intelligence on Wheels
+      cs: Obchodní inteligence na kolech
+    features:
+      en: Features
+      cs: Funkce
+    solutions:
+      en: Solutions
+      cs: Řešení
+    pricing:
+      en: Pricing
+      cs: Ceny
+    technology:
+      en: Technology
+      cs: Technologie
+    get_demo:
+      en: Request a FREE trial
+      cs: Stojím o možnost vyzkoušení zdarma
+    map_location:
+      en: Find us on the map
+      cs: Najděte nás na mapě
+    highlighted_map_link:
+      en: 🗺️ Click here for directions
+      cs: 🗺️ Klikněte pro navigaci
+  hero:
+    aipowered_business_vehicle_intelligence:
+      en: AI-Powered Business Vehicle Intelligence
+      cs: Služba umělé inteligence podporující cíle, s nimiž vozidla vaší společnosti denně vyjíždějí.
+    productivity_boost:
+      en: Productivity Boost
+      cs: Zvýšení produktivity
+    business_hours:
+      en: Business Hours
+      cs: Pracovní doba
+    handsfree:
+      en: Hands-Free
+      cs: Bez použití rukou
+    schedule_demo:
+      en: Schedule Demo
+      cs: Naplánovat ukázku
+    download_brochure:
+      en: Download Brochure
+      cs: Stáhnout brožuru
+  features:
+    professional_features:
+      en: Professional Features
+      cs: Profesionální funkce
+    voice_ai_assistant:
+      en: Voice AI Assistant
+      cs: Hlasový AI asistent
+    enterprise_security:
+      en: Enterprise Security
+      cs: Podniková bezpečnost
+    smart_navigation:
+      en: Smart Navigation
+      cs: Inteligentní navigace
+    business_analytics:
+      en: Business Analytics
+      cs: Obchodní analýzy
+  solutions:
+    business_solutions:
+      en: Business Solutions
+      cs: Obchodní řešení
+    sales_teams:
+      en: Sales Teams
+      cs: Obchodní týmy
+    handsfree_crm_access:
+      en: Hands-Free CRM Access
+      cs: CRM bez použití rukou
+    voicetotext_meeting_notes:
+      en: Voice-to-Text Meeting Notes
+      cs: Hlasové poznámky ze schůzek
+    lead_tracking_and_routing:
+      en: Lead Tracking and Routing
+      cs: Sledování a směrování potenciálních zákazníků
+    territory_optimization:
+      en: Territory Optimization
+      cs: Optimalizace teritoria
+    sales_excellence:
+      en: Sales Excellence
+      cs: Obchodní excelence
+    field_service_professionals:
+      en: Field Service Professionals
+      cs: Terénní pracovníci
+    job_dispatch_integration:
+      en: Job Dispatch Integration
+      cs: Integrace s dispečinkem
+    voiceactivated_checklists:
+      en: Voice-Activated Checklists
+      cs: Hlasové kontrolní seznamy
+    realtime_eta_updates:
+      en: Real-Time ETA Updates
+      cs: Aktualizace času příjezdu
+    service_report_generation:
+      en: Service Report Generation
+      cs: Generování servisních zpráv
+    field_service:
+      en: Field Service
+      cs: Terénní servis
+    executive_transportation:
+      en: Executive Transportation
+      cs: Doprava pro vedení
+    secure_voice_encryption:
+      en: Secure Voice Encryption
+      cs: Bezpečná hlasová šifrace
+    executive_calendar_sync:
+      en: Executive Calendar Sync
+      cs: Synchronizace kalendáře vedení
+    document_voice_review:
+      en: Document Voice Review
+      cs: Hlasové přezkoumání dokumentů
+    privacyfirst_design:
+      en: Privacy-First Design
+      cs: Design zaměřený na soukromí
+    executive_transport:
+      en: Executive Transport
+      cs: Doprava pro vedení
+  pricing:
+    business_pricing:
+      en: Business Pricing
+      cs: Obchodní ceny
+    business_starter:
+      en: Business Starter
+      cs: Business Starter
+    essential_business_features:
+      en: Essential Business Features
+      cs: Základní obchodní funkce
+    price_55000:
+      en: '- 55.000'
+      cs: '- 55.000'
+    voice_assistant_calls:
+      en: Voice Assistant & Calls
+      cs: Hlasový asistent a hovory
+    basic_navigation:
+      en: Basic Navigation
+      cs: Základní navigace
+    email_integration:
+      en: Email Integration
+      cs: Integrace e-mailu
+    obd_diagnostics:
+      en: OBD Diagnostics
+      cs: OBD diagnostika
+    installation_2h:
+      en: 2h Installation
+      cs: 2h instalace
+    get_quote:
+      en: Get Quote
+      cs: Získat nabídku
+    most_popular:
+      en: Most Popular
+      cs: Nejoblíbenější
+    business_professional:
+      en: Business Professional
+      cs: Business Professional
+    complete_business_solution:
+      en: Complete Business Solution
+      cs: Kompletní obchodní řešení
+    price_105000:
+      en: '- 105.000'
+      cs: '- 105.000'
+    everything_in_starter:
+      en: Everything in Starter
+      cs: Vše ze Starter
+    crm_integration:
+      en: CRM Integration
+      cs: CRM integrace
+    advanced_navigation:
+      en: Advanced Navigation
+      cs: Pokročilá navigace
+    priority_support:
+      en: Priority Support
+      cs: Prioritní podpora
+    enterprise_fleet:
+      en: Enterprise Fleet
+      cs: Firemní flotila
+    fleet_management_solution:
+      en: Fleet Management Solution
+      cs: Řešení pro správu vozového parku
+    price_195000:
+      en: '- 195.000'
+      cs: '- 195.000'
+    everything_in_professional:
+      en: Everything in Professional
+      cs: Vše z Professional
+    fleet_management_api:
+      en: Fleet Management API
+      cs: Fleet management API
+    advanced_anpr_tracking:
+      en: Advanced ANPR Tracking
+      cs: Pokročilé ANPR sledování
+    custom_integrations:
+      en: Custom Integrations
+      cs: Vlastní integrace
+    dedicated_support:
+      en: Dedicated Support
+      cs: Vyhrazená podpora
+    contact_sales:
+      en: Contact Sales
+      cs: Kontaktovat obchod
+  technology:
+    enterprise_technology:
+      en: Enterprise Technology
+      cs: Podniková technologie
+    api_integration:
+      en: API Integration
+      cs: API integrace
+    fleet_management:
+      en: Fleet Management
+      cs: Správa vozového parku
+    reliability_247:
+      en: 24/7 Reliability
+      cs: 24/7 spolehlivost
+  cta:
+    ready_to_transform_your_business_fleet:
+      en: Ready to Transform Your Business Fleet?
+      cs: Připraveni transformovat váš obchodní vozový park?
+    schedule_enterprise_demo:
+      en: Schedule Enterprise Demo
+      cs: Naplánovat podnikovou ukázku
+    try_free_now:
+      en: Try it FREE now!
+      cs: Vyzkoušejte ji ZDARMA ještě dnes!
+    visit_our_office:
+      en: Visit our office for a live demo
+      cs: Navštivte naši kancelář na živou ukázku
+    download_case_studies:
+      en: Download Case Studies
+      cs: Stáhnout případové studie
+    enterprise_ai_for_business_vehicles:
+      en: Enterprise AI for Business Vehicles
+      cs: Podniková AI pro obchodní vozidla
+  footer:
+    executives:
+      en: Executives
+      cs: Vedení
+    support:
+      en: Support
+      cs: Podpora
+    enterprise_support:
+      en: Enterprise Support
+      cs: Podniková podpora
+    api_documentation:
+      en: API Documentation
+      cs: API dokumentace
+    training:
+      en: Training
+      cs: Školení
+    company:
+      en: Company
+      cs: Společnost
+    about:
+      en: About
+      cs: O nás
+    careers:
+      en: Careers
+      cs: Kariéra
+    contact:
+      en: Contact
+      cs: Kontakt
+    visit_us:
+      en: Visit us at our location
+      cs: Navštivte nás na naší adrese
+    map_link:
+      en: View on Map
+      cs: Zobrazit na mapě
+    address:
+      en: Business District, Prague
+      cs: Obchodní čtvrť, Praha
+    copyright:
+      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
+      cs: © 2025 AI-SERVIS Business Solutions. Všechna práva vyhrazena.

@@ -1,0 +1,66 @@
+name: Build Web Pages
+
+on:
+  push:
+    paths:
+      - 'web/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install AWS CLI
+        uses: aws-actions/setup-aws-cli@v2
+
+      - name: Install Dependencies
+        run: |
+          cd web
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Generate Web Pages
+        run: |
+          cd web
+          node scripts/generatePages.js
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-pages
+          path: web/dist/
+
+      - name: Deploy Gonzo to AWS S3
+        run: |
+          cd deploy/aws
+          aws s3 sync ../../web/dist/ s3://ai-servis-web-journalists/
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            aws cloudfront create-invalidation \
+              --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+              --paths "/*"
+            echo "Requested CloudFront invalidation for distribution ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
+          else
+            echo "CLOUDFRONT_DISTRIBUTION_ID not set; skipping CloudFront invalidation."
+          fi
+
+          

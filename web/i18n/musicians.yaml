@@ -1,0 +1,271 @@
+# Musicians page texts
+musicians:
+  page:
+    title:
+      en: AI-SERVIS - Mobile DJ & Music Production AI
+      cs: AI-SERVIS - Mobile DJ & Music Production AI
+    description:
+      en: Transform your car into a mobile DJ booth and music production studio with
+        AI-powered tools
+      cs: Proměňte své auto v mobilní DJ pult a hudební produkční studio s
+        AI nástroji
+  navigation:
+    mobile_music_revolution:
+      en: Mobile Music Revolution
+      cs: Mobilní hudební revoluce
+    features:
+      en: Features
+      cs: Funkce
+    performances:
+      en: Performances
+      cs: Vystoupení
+    studio:
+      en: Studio
+      cs: Studio
+    pricing:
+      en: Pricing
+      cs: Ceny
+    start_creating:
+      en: Start Creating
+      cs: Začít tvořit
+    studio_mode:
+      en: Studio Mode
+      cs: Studio režim
+    creativity:
+      en: Creativity
+      cs: Kreativita
+    network_sync:
+      en: Network Sync
+      cs: Síťová synchronizace
+    setup_studio:
+      en: Setup Studio
+      cs: Nastavit studio
+    watch_performance:
+      en: Watch Performance
+      cs: Sledovat vystoupení
+  hero:
+    studiograde_features:
+      en: Studio-Grade Features
+      cs: Funkce studiové kvality
+    rtpmidi_network:
+      en: RTP-MIDI Network
+      cs: RTP-MIDI síť
+    multizone_audio:
+      en: Multi-Zone Audio
+      cs: Multi-zónový audio
+    voice_synthesis:
+      en: Voice Synthesis
+      cs: Hlasová syntéza
+    ai_music_production:
+      en: AI Music Production
+      cs: AI hudební produkce
+    live_performance_ready:
+      en: Live Performance Ready
+      cs: Připraveno na živé vystoupení
+  features:
+    mobile_dj_revolution:
+      en: Mobile DJ Revolution
+      cs: Mobilní DJ revoluce
+    remote_deck_synchronization:
+      en: Remote Deck Synchronization
+      cs: Synchronizace vzdálených mixážních pultů
+    live_streaming_capabilities:
+      en: Live Streaming Capabilities
+      cs: Možnosti živého streamování
+    multicar_collaboration:
+      en: Multi-Car Collaboration
+      cs: Spolupráce více aut
+    emergency_backup_systems:
+      en: Emergency Backup Systems
+      cs: Záložní systémy
+    band_collaboration:
+      en: Band Collaboration
+      cs: Kapelní spolupráce
+    realtime_audio_sync:
+      en: Real-Time Audio Sync
+      cs: Real-time audio synchronizace
+    distributed_recording:
+      en: Distributed Recording
+      cs: Distribuované nahrávání
+    cloud_collaboration:
+      en: Cloud Collaboration
+      cs: Cloud spolupráce
+    mobile_mixing_desk:
+      en: Mobile Mixing Desk
+      cs: Mobilní mixážní pult
+    band_sync:
+      en: Band Sync
+      cs: Kapelní synchronizace
+    solo_artist_freedom:
+      en: Solo Artist Freedom
+      cs: Svoboda sólového umělce
+    creative_access_247:
+      en: 24/7 Creative Access
+      cs: 24/7 kreativní přístup
+    instant_recording_setup:
+      en: Instant Recording Setup
+      cs: Okamžité nastavení nahrávání
+    mobile_performance_rig:
+      en: Mobile Performance Rig
+      cs: Mobilní sestava pro vystoupení
+    creative_freedom:
+      en: Creative Freedom
+      cs: Kreativní svoboda
+    solo_creation:
+      en: Solo Creation
+      cs: Sólo tvorba
+  studio:
+    professional_studio_in_your_car:
+      en: Professional Studio in Your Car
+      cs: Profesionální studio ve vašem autě
+    digital_audio_workstation:
+      en: Digital Audio Workstation
+      cs: Digitální audio pracovní stanice
+    live_mixing_console:
+      en: Live Mixing Console
+      cs: Živý mixážní pult
+    voice_processing_lab:
+      en: Voice Processing Lab
+      cs: Laboratoř hlasového zpracování
+    virtual_instruments:
+      en: Virtual Instruments
+      cs: Virtuální nástroje
+    start_your_music_revolution:
+      en: Start Your Music Revolution
+      cs: Začněte svou hudební revoluci
+  pricing:
+    studio_starter:
+      en: Studio Starter
+      cs: Studio Starter
+    essential_recording_tools:
+      en: Essential Recording Tools
+      cs: Základní nahrávací nástroje
+    price_45000:
+      en: '- 45.000'
+      cs: '- 45.000'
+    basic_rtpmidi_setup:
+      en: Basic RTP-MIDI Setup
+      cs: Základní RTP-MIDI nastavení
+    voice_recording_effects:
+      en: Voice Recording & Effects
+      cs: Hlasové nahrávání a efekty
+    mobile_daw_access:
+      en: Mobile DAW Access
+      cs: Mobilní DAW přístup
+    basic_audio_zones:
+      en: Basic Audio Zones
+      cs: Základní audio zóny
+    setup_time_2h:
+      en: 2h Setup Time
+      cs: 2h čas nastavení
+    start_recording:
+      en: Start Recording
+      cs: Začít nahrávat
+    artist_choice:
+      en: Artist Choice
+      cs: Umělcova volba
+    performance_pro:
+      en: Performance Pro
+      cs: Performance Pro
+    complete_mobile_studio:
+      en: Complete Mobile Studio
+      cs: Kompletní mobilní studio
+    price_95000:
+      en: '- 95.000'
+      cs: '- 95.000'
+    everything_in_starter:
+      en: Everything in Starter
+      cs: Vše ze Starter
+    multizone_audio_system:
+      en: Multi-Zone Audio System
+      cs: Multi-zónový audio systém
+    live_streaming_integration:
+      en: Live Streaming Integration
+      cs: Integrace živého streamování
+    professional_support:
+      en: Professional Support
+      cs: Profesionální podpora
+    go_pro:
+      en: Go Pro
+      cs: Jít na Pro
+    band_master:
+      en: Band Master
+      cs: Kapelní mistr
+    multiartist_collaboration:
+      en: Multi-Artist Collaboration
+      cs: Spolupráce více umělců
+    price_155000:
+      en: '- 155.000'
+      cs: '- 155.000'
+    everything_in_pro:
+      en: Everything in Pro
+      cs: Vše z Pro
+    multicar_synchronization:
+      en: Multi-Car Synchronization
+      cs: Synchronizace více aut
+    cloud_collaboration_tools:
+      en: Cloud Collaboration Tools
+      cs: Nástroje pro cloudovou spolupráci
+    advanced_midi_networking:
+      en: Advanced MIDI Networking
+      cs: Pokročilá MIDI síť
+    priority_support:
+      en: Priority Support
+      cs: Prioritní podpora
+    band_up:
+      en: Band Up
+      cs: Kapela nahoru
+  cta:
+    ready_to_make_music_everywhere:
+      en: Ready to Make Music Everywhere?
+      cs: Připraveni dělat hudbu všude?
+    start_creating_music:
+      en: Start Creating Music
+      cs: Začít tvořit hudbu
+    book_studio_demo:
+      en: Book Studio Demo
+      cs: Rezervovat studio ukázku
+    mobile_music_production_ai:
+      en: Mobile Music Production AI
+      cs: AI pro mobilní hudební produkci
+  content:
+    create:
+      en: Create
+      cs: Tvořit
+    studio_features:
+      en: Studio Features
+      cs: Studio funkce
+    live_performance:
+      en: Live Performance
+      cs: Živé vystoupení
+    recording_tools:
+      en: Recording Tools
+      cs: Nahrávací nástroje
+    learn:
+      en: Learn
+      cs: Učit se
+    setup_guide:
+      en: Setup Guide
+      cs: Průvodce nastavením
+    tutorials:
+      en: Tutorials
+      cs: Tutoriály
+    community:
+      en: Community
+      cs: Komunita
+  footer:
+    support:
+      en: Support
+      cs: Podpora
+    contact:
+      en: Contact
+      cs: Kontakt
+    faq:
+      en: FAQ
+      cs: FAQ
+    forum:
+      en: Forum
+      cs: Forum
+    copyright:
+      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
+      cs: © 2025 AI-SERVIS Music. Všechna práva vyhrazena.
