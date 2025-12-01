@@ -54,63 +54,17 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+      - name: CodeQL Analysis
+        uses: github/codeql-action/init@v3
         with:
           languages: python, cpp, javascript
           config-file: ./.github/codeql/codeql-config.yml
 
-      - name: Install C++ build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            cmake \
-            pkg-config \
-            libcurl4-openssl-dev \
-            libmosquitto-dev \
-            libgpiod-dev \
-            libjsoncpp-dev \
-            libflatbuffers-dev \
-            flatbuffers-compiler || echo "Some packages may not be available"
-
-      - name: Set up Conan for C++ build (optional)
-        continue-on-error: true
-        run: |
-          pip install conan || echo "Conan installation skipped"
-          conan profile detect --force || echo "Conan profile detection skipped"
-
-      - name: Prepare Python for CodeQL
-        id: python_prep
-        run: |
-          # Install Python dependencies so CodeQL can analyze them
-          if ! pip install -r requirements.txt; then
-            echo "::warning::Some Python dependencies failed to install, but continuing CodeQL analysis"
-            echo "Failed dependencies may affect analysis completeness"
-          fi
-          # Create a dummy build command for Python (no-op)
-          echo "Python analysis ready"
-
-      - name: Build C++ for CodeQL
-        id: cpp_build
-        continue-on-error: true
-        run: |
-          cd platforms/cpp || exit 0
-          mkdir -p build
-          cd build
-          # Try CMake build - CodeQL will use the compile commands
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON || echo "CMake configuration completed with warnings"
-          cmake --build . -j$(nproc) || echo "C++ build completed with warnings - CodeQL will analyze available code"
-      
-      - name: Report C++ build status
-        if: steps.cpp_build.outcome == 'failure'
-        run: |
-          echo "::warning::C++ build failed but continuing CodeQL analysis"
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-        with:
-          skip-queries: false
+        uses: github/codeql-action/analyze@v3
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -121,15 +75,15 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
       - name: Python security check
         run: |
           pip install bandit safety
-          bandit -r . -f json -o bandit-report.json || echo "{}" > bandit-report.json
-          safety check --json --output safety-report.json || echo "{}" > safety-report.json
+          bandit -r . -f json -o bandit-report.json || true
+          safety check --json --output safety-report.json || true
 
       - name: Run pre-commit hooks
         run: |
@@ -137,14 +91,13 @@ jobs:
           pre-commit run --all-files || true
 
       - name: Upload security reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: security-reports
           path: |
             bandit-report.json
             safety-report.json
-          if-no-files-found: warn
 
   # ================================
   # PYTHON TESTS
@@ -286,7 +239,7 @@ jobs:
           fi
 
       - name: Upload C++ binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: cpp-${{ matrix.target }}-binaries
           path: |
@@ -302,7 +255,7 @@ jobs:
     name: 📱 Android Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[android]') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.head_commit.message, '[android]') || contains(join(github.event.commits.*.message), 'android/') || github.event_name == 'workflow_dispatch'
     
     steps:
       - name: Checkout code
@@ -329,7 +282,7 @@ jobs:
           ./gradlew assembleDebug test
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -341,7 +294,7 @@ jobs:
     name: 🔌 ESP32 Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[esp32]') || github.event_name == 'workflow_dispatch'
+    if: contains(github.event.head_commit.message, '[esp32]') || contains(join(github.event.commits.*.message), 'esp32/') || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
         target: [esp32, esp32s3]
@@ -364,7 +317,7 @@ jobs:
           idf.py build
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: esp32-${{ matrix.target }}-${{ matrix.variant }}
           path: esp32/firmware-${{ matrix.variant }}/build/
@@ -408,8 +361,9 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
-            type=sha,prefix=sha-,format=short
-          
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
@@ -422,10 +376,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            BUILDPLATFORM=linux/amd64
-            TARGETPLATFORM=linux/amd64
+            BUILDPLATFORM=${{ matrix.platform || 'linux/amd64' }}
+            TARGETPLATFORM=${{ matrix.platform || 'linux/amd64' }}
             VCS_REF=${{ github.sha }}
-            VERSION=${{ github.ref_name || 'dev' }}
+            VERSION=${{ github.ref_name }}
 
   # ================================
   # INTEGRATION TESTS
