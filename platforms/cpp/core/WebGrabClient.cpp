@@ -16,23 +16,25 @@ bool WebGrabClient::connect() {
     return true;
 }
 
-bool WebGrabClient::executeDownload(const std::string& url) {
+bool WebGrabClient::executeDownload(const std::string& url, uint32_t& sessionId) {
     DownloadRequest req{url};
     if (!writer_->send(req)) return false;
     DownloadResponse resp;
     if (reader_->recv(resp)) {
+        sessionId = resp.sessionId;
         std::cout << "Download started, session ID: " << resp.sessionId << std::endl;
         return true;
     }
     return false;
 }
 
-bool WebGrabClient::executeStatus(uint32_t sessionId) {
+bool WebGrabClient::executeStatus(uint32_t sessionId, std::string& status) {
     DownloadStatusRequest req{sessionId};
     if (!writer_->send(req)) return false;
     StatusResponse resp;
     if (reader_->recv(resp)) {
-        std::cout << "Status for " << resp.sessionId << ": " << resp.status << std::endl;
+        status = resp.status;
+        std::cout << "Status for " << sessionId << ": " << resp.status << std::endl;
         return true;
     }
     return false;
