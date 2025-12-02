@@ -54,6 +54,7 @@ android {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
+            testCoverageEnabled true
         }
     }
 
@@ -84,6 +85,15 @@ android {
 kapt {
     correctErrorTypes = true
     includeCompileClasspath = true
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events "passed", "skipped", "failed"
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
 }
 
 dependencies {
@@ -134,6 +144,7 @@ dependencies {
     implementation 'androidx.camera:camera-camera2:1.3.1'
     implementation 'androidx.camera:camera-lifecycle:1.3.1'
     implementation 'androidx.camera:camera-view:1.3.1'
+    implementation 'androidx.camera:camera-video:1.3.1'
 
     // ML Kit for ANPR
     implementation 'com.google.mlkit:text-recognition:16.0.0'

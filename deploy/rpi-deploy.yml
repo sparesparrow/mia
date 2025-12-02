@@ -1,0 +1,58 @@
+# Raspberry Pi Deployment Configuration
+# For use with deployment automation tools
+
+deployment:
+  name: "raspberry-pi-arduino-led"
+  target:
+    host: "192.168.200.139"
+    user: "mia"
+    port: 22
+    path: "/home/mia/ai-servis"
+  
+  ssh:
+    key_path: ""  # Optional: path to SSH private key
+    timeout: 30
+  
+  components:
+    - name: "arduino-led-controller"
+      type: "python-module"
+      source: "modules/hardware-bridge/arduino_led_controller.py"
+      destination: "modules/hardware-bridge/"
+      
+    - name: "arduino-led-mcp"
+      type: "python-module"
+      source: "modules/hardware-bridge/arduino_led_mcp.py"
+      destination: "modules/hardware-bridge/"
+      
+    - name: "arduino-test"
+      type: "python-script"
+      source: "modules/hardware-bridge/test_arduino_led.py"
+      destination: "modules/hardware-bridge/"
+      
+    - name: "arduino-code"
+      type: "arduino-sketch"
+      source: "arduino/led_strip_controller/"
+      destination: "arduino/led_strip_controller/"
+      
+    - name: "requirements"
+      type: "requirements-file"
+      source: "modules/hardware-bridge/requirements.txt"
+      destination: "modules/hardware-bridge/"
+  
+  post_deploy:
+    - command: "python3 -m pip install --user -r modules/hardware-bridge/requirements.txt"
+      description: "Install Python dependencies"
+      
+    - command: "python3 -c 'import sys; sys.path.insert(0, \"modules/hardware-bridge\"); from arduino_led_controller import ArduinoLEDController; print(\"OK\")'"
+      description: "Verify module imports"
+  
+  services:
+    - name: "arduino-led-mqtt"
+      type: "python-script"
+      command: "python3 -m modules.hardware_bridge.arduino_led_controller /dev/ttyUSB0 localhost"
+      working_dir: "/home/mia/ai-servis"
+      
+    - name: "arduino-led-mcp"
+      type: "python-script"
+      command: "python3 -m modules.hardware_bridge.arduino_led_mcp /dev/ttyUSB0 8084"
+      working_dir: "/home/mia/ai-servis"

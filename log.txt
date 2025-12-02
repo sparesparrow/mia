@@ -1,0 +1,1657 @@
+ 
+(venv) mia@mia:~/ai-servis $ ./tools/init.sh
+
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║         AI-SERVIS Development Environment                      ║
+  ║         Zero-Copy Bootstrap via Cloudsmith                     ║
+  ╚═══════════════════════════════════════════════════════════════╝
+
+Starting AI-SERVIS environment setup...
+
+Setting up Conan remotes...
+Conan not found. Will be installed during bootstrap.
+Creating AI-SERVIS build environment...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AI-SERVIS Zero-Copy Environment Setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Checking for Conan...
+Attempting pip install (may require --break-system-packages on newer systems)
+Requirement already satisfied: conan==2.3.2 in /home/mia/.local/lib/python3.13/site-packages (2.3.2)
+Requirement already satisfied: requests<3.0.0,>=2.25 in /usr/lib/python3/dist-packages (from conan==2.3.2) (2.32.3)
+Requirement already satisfied: urllib3<1.27,>=1.26.6 in /home/mia/.local/lib/python3.13/site-packages (from conan==2.3.2) (1.26.20)
+Requirement already satisfied: colorama<0.5.0,>=0.4.3 in /home/mia/.local/lib/python3.13/site-packages (from conan==2.3.2) (0.4.6)
+Requirement already satisfied: PyYAML<7.0,>=6.0 in /usr/lib/python3/dist-packages (from conan==2.3.2) (6.0.2)
+Requirement already satisfied: patch-ng<1.18,>=1.17.4 in /home/mia/.local/lib/python3.13/site-packages (from conan==2.3.2) (1.17.4)
+Requirement already satisfied: fasteners>=0.15 in /home/mia/.local/lib/python3.13/site-packages (from conan==2.3.2) (0.20)
+Requirement already satisfied: distro<=1.8.0,>=1.4.0 in /home/mia/.local/lib/python3.13/site-packages (from conan==2.3.2) (1.8.0)
+Requirement already satisfied: Jinja2<4.0.0,>=3.0 in /usr/lib/python3/dist-packages (from conan==2.3.2) (3.1.6)
+Requirement already satisfied: python-dateutil<3,>=2.8.0 in /usr/lib/python3/dist-packages (from conan==2.3.2) (2.9.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/lib/python3/dist-packages (from Jinja2<4.0.0,>=3.0->conan==2.3.2) (2.1.5)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/lib/python3/dist-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /usr/lib/python3/dist-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.10)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (2025.1.31)
+Setting up Conan remotes...
+  ✓ Cloudsmith remote configured
+detect_api: Found cc=gcc-14.2
+detect_api: gcc>=5, using the major as version
+detect_api: gcc C++ standard library: libstdc++11
+
+Detected profile:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+WARN: This profile is a guess of your environment, please check it.
+WARN: The output of this command is not guaranteed to be stable and can change in future Conan versions.
+WARN: Use your own profile files for stability.
+Saving detected profile to /home/mia/ai-servis/.buildenv/conan/profiles/default
+  ✓ Default profile created
+Installing sparetools-cpython/3.12.7 from Conan...
+  ⚠ sparetools-cpython not available from Cloudsmith
+  Using system Python fallback...
+Creating zero-copy symlinks...
+  Using system Python for venv...
+Setting up with system Python...
+  Using: python3 (3.13.5)
+  ✓ Virtual environment created
+Installing build tools in venv...
+Requirement already satisfied: pip in ./.buildenv/venv/lib/python3.13/site-packages (25.1.1)
+Collecting pip
+  Using cached pip-25.3-py3-none-any.whl.metadata (4.7 kB)
+Collecting setuptools
+  Using cached setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting wheel
+  Using cached wheel-0.45.1-py3-none-any.whl.metadata (2.3 kB)
+Using cached pip-25.3-py3-none-any.whl (1.8 MB)
+Using cached setuptools-80.9.0-py3-none-any.whl (1.2 MB)
+Using cached wheel-0.45.1-py3-none-any.whl (72 kB)
+Installing collected packages: wheel, setuptools, pip
+  Attempting uninstall: pip
+    Found existing installation: pip 25.1.1
+    Uninstalling pip-25.1.1:
+      Successfully uninstalled pip-25.1.1
+Successfully installed pip-25.3 setuptools-80.9.0 wheel-0.45.1
+Collecting conan==2.3.2
+  Using cached conan-2.3.2-py3-none-any.whl
+Collecting requests<3.0.0,>=2.25 (from conan==2.3.2)
+  Using cached requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
+Collecting urllib3<1.27,>=1.26.6 (from conan==2.3.2)
+  Using cached urllib3-1.26.20-py2.py3-none-any.whl.metadata (50 kB)
+Collecting colorama<0.5.0,>=0.4.3 (from conan==2.3.2)
+  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Collecting PyYAML<7.0,>=6.0 (from conan==2.3.2)
+  Using cached pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (2.4 kB)
+Collecting patch-ng<1.18,>=1.17.4 (from conan==2.3.2)
+  Using cached patch_ng-1.17.4-py3-none-any.whl
+Collecting fasteners>=0.15 (from conan==2.3.2)
+  Using cached fasteners-0.20-py3-none-any.whl.metadata (4.8 kB)
+Collecting distro<=1.8.0,>=1.4.0 (from conan==2.3.2)
+  Using cached distro-1.8.0-py3-none-any.whl.metadata (6.9 kB)
+Collecting Jinja2<4.0.0,>=3.0 (from conan==2.3.2)
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting python-dateutil<3,>=2.8.0 (from conan==2.3.2)
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting MarkupSafe>=2.0 (from Jinja2<4.0.0,>=3.0->conan==2.3.2)
+  Using cached markupsafe-3.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (2.7 kB)
+Collecting six>=1.5 (from python-dateutil<3,>=2.8.0->conan==2.3.2)
+  Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting charset_normalizer<4,>=2 (from requests<3.0.0,>=2.25->conan==2.3.2)
+  Using cached charset_normalizer-3.4.4-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (37 kB)
+Collecting idna<4,>=2.5 (from requests<3.0.0,>=2.25->conan==2.3.2)
+  Using cached idna-3.11-py3-none-any.whl.metadata (8.4 kB)
+Collecting certifi>=2017.4.17 (from requests<3.0.0,>=2.25->conan==2.3.2)
+  Using cached certifi-2025.11.12-py3-none-any.whl.metadata (2.5 kB)
+Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Using cached distro-1.8.0-py3-none-any.whl (20 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Using cached pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (767 kB)
+Using cached requests-2.32.5-py3-none-any.whl (64 kB)
+Using cached charset_normalizer-3.4.4-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (147 kB)
+Using cached idna-3.11-py3-none-any.whl (71 kB)
+Using cached urllib3-1.26.20-py2.py3-none-any.whl (144 kB)
+Using cached certifi-2025.11.12-py3-none-any.whl (159 kB)
+Using cached fasteners-0.20-py3-none-any.whl (18 kB)
+Using cached markupsafe-3.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (24 kB)
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Installing collected packages: patch-ng, urllib3, six, PyYAML, MarkupSafe, idna, fasteners, distro, colorama, charset_normalizer, certifi, requests, python-dateutil, Jinja2, conan
+Successfully installed Jinja2-3.1.6 MarkupSafe-3.0.3 PyYAML-6.0.3 certifi-2025.11.12 charset_normalizer-3.4.4 colorama-0.4.6 conan-2.3.2 distro-1.8.0 fasteners-0.20 idna-3.11 patch-ng-1.17.4 python-dateutil-2.9.0.post0 requests-2.32.5 six-1.17.0 urllib3-1.26.20
+Collecting ninja
+  Using cached ninja-1.13.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (5.1 kB)
+Collecting cmake
+  Using cached cmake-4.2.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (6.5 kB)
+Collecting meson
+  Using cached meson-1.9.1-py3-none-any.whl.metadata (1.8 kB)
+Using cached ninja-1.13.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (177 kB)
+Using cached cmake-4.2.0-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (29.0 MB)
+Using cached meson-1.9.1-py3-none-any.whl (1.0 MB)
+Installing collected packages: ninja, meson, cmake
+Successfully installed cmake-4.2.0 meson-1.9.1 ninja-1.13.0
+  ✓ Build tools installed
+Configuring Conan for AI-SERVIS...
+detect_api: Found cc=gcc-14.2
+detect_api: gcc>=5, using the major as version
+detect_api: gcc C++ standard library: libstdc++11
+
+Detected profile:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+WARN: This profile is a guess of your environment, please check it.
+WARN: The output of this command is not guaranteed to be stable and can change in future Conan versions.
+WARN: Use your own profile files for stability.
+Saving detected profile to /home/mia/ai-servis/.buildenv/conan/profiles/default
+    Installed profile: linux-arm64
+    Installed profile: linux-release
+    Installed profile: linux-simulation
+    Installed profile: macos-release
+    Installed profile: windows-release
+  ✓ Conan configured
+Verifying setup...
+  ✓ Python: Python 3.13.5
+  ✓ Conan: Conan version 2.3.2
+  ✓ CMake: cmake version 4.2.0
+  ✓ Zero-copy: 4 symlinks, 7432 files
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Zero-Copy Environment Ready!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  To activate:
+    source /home/mia/ai-servis/.buildenv/activate.sh
+
+  Or from project root:
+    source tools/env.sh
+
+  Environment location: /home/mia/ai-servis/.buildenv
+Generating AI-SERVIS activation script...
+  ✓ Activation scripts created
+Installing AI-SERVIS Conan dependencies...
+AI-SERVIS build environment activated.
+Run 'ai-servis-info' for help.
+Installing dependencies from conanfile.py...
+
+======== Input profiles ========
+Profile host:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+Profile build:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+
+======== Computing dependency graph ========
+jsoncpp/1.9.6: Not found in local cache, looking in remotes...
+jsoncpp/1.9.6: Checking remote: conancenter
+jsoncpp/1.9.6: Downloaded recipe revision c3730c7936aefa462eb6c6560a5e1fd8
+flatbuffers/24.3.25: Not found in local cache, looking in remotes...
+flatbuffers/24.3.25: Checking remote: conancenter
+flatbuffers/24.3.25: Downloaded recipe revision 8fc25e15ac8ef302e2c42497d10c95e9
+libcurl/8.11.1: Not found in local cache, looking in remotes...
+libcurl/8.11.1: Checking remote: conancenter
+libcurl/8.11.1: Checking remote: sparesparrow-conan
+Graph root
+    conanfile.py (ai-servis/1.0): /home/mia/ai-servis/conanfile.py
+Requirements
+    flatbuffers/24.3.25#8fc25e15ac8ef302e2c42497d10c95e9 - Downloaded (conancenter)
+    jsoncpp/1.9.6#c3730c7936aefa462eb6c6560a5e1fd8 - Downloaded (conancenter)
+ERROR: Package 'libcurl/8.11.1' not resolved: Unable to find 'libcurl/8.11.1' in remotes.
+Conan install with options failed, trying basic install...
+
+======== Input profiles ========
+Profile host:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+Profile build:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+
+======== Computing dependency graph ========
+libcurl/8.11.1: Not found in local cache, looking in remotes...
+libcurl/8.11.1: Checking remote: conancenter
+libcurl/8.11.1: Checking remote: sparesparrow-conan
+Graph root
+    conanfile.py (ai-servis/1.0): /home/mia/ai-servis/conanfile.py
+Requirements
+    flatbuffers/24.3.25#8fc25e15ac8ef302e2c42497d10c95e9 - Cache
+    jsoncpp/1.9.6#c3730c7936aefa462eb6c6560a5e1fd8 - Cache
+ERROR: Package 'libcurl/8.11.1' not resolved: Unable to find 'libcurl/8.11.1' in remotes.
+(venv) mia@mia:~/ai-servis $ source tools/env.sh
+AI-SERVIS build environment activated.
+Run 'ai-servis-info' for help.
+(venv) mia@mia:~/ai-servis $ ./tools/build.sh
+-bash: ./tools/build.sh: No such file or directory
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/install-deps-rpi.sh
+========================================
+  Raspberry Pi Dependencies Installer
+========================================
+
+Note: Some commands will use sudo
+Updating package lists...
+Hit:1 http://deb.debian.org/debian trixie InRelease
+Hit:2 http://deb.debian.org/debian trixie-updates InRelease
+Hit:3 http://deb.debian.org/debian-security trixie-security InRelease
+Hit:4 http://archive.raspberrypi.com/debian trixie InRelease
+Reading package lists... Done
+Installing essential build tools...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+build-essential is already the newest version (12.12).
+ninja-build is already the newest version (1.12.1-1+b1).
+ninja-build set to manually installed.
+pkg-config is already the newest version (1.8.1-4).
+git is already the newest version (1:2.47.3-0+deb13u1).
+git set to manually installed.
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+The following additional packages will be installed:
+  cmake-data libjsoncpp26 librhash1
+Suggested packages:
+  cmake-doc cmake-format elpa-cmake-mode
+The following NEW packages will be installed:
+  cmake cmake-data libjsoncpp26 librhash1
+0 upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Need to get 12.4 MB of archives.
+After this operation, 48.8 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian trixie/main arm64 cmake-data all 3.31.6-2 [2,268 kB]
+Get:2 http://deb.debian.org/debian trixie/main arm64 libjsoncpp26 arm64 1.9.6-3 [72.9 kB]
+Get:3 http://deb.debian.org/debian trixie/main arm64 librhash1 arm64 1.4.5-1 [129 kB]
+Get:4 http://deb.debian.org/debian trixie/main arm64 cmake arm64 3.31.6-2 [9,906 kB]
+Fetched 12.4 MB in 5s (2,712 kB/s)  
+Selecting previously unselected package cmake-data.
+(Reading database ... 121049 files and directories currently installed.)
+Preparing to unpack .../cmake-data_3.31.6-2_all.deb ...
+Unpacking cmake-data (3.31.6-2) ...
+Selecting previously unselected package libjsoncpp26:arm64.
+Preparing to unpack .../libjsoncpp26_1.9.6-3_arm64.deb ...
+Unpacking libjsoncpp26:arm64 (1.9.6-3) ...
+Selecting previously unselected package librhash1:arm64.
+Preparing to unpack .../librhash1_1.4.5-1_arm64.deb ...
+Unpacking librhash1:arm64 (1.4.5-1) ...
+Selecting previously unselected package cmake.
+Preparing to unpack .../cmake_3.31.6-2_arm64.deb ...
+Unpacking cmake (3.31.6-2) ...
+Setting up libjsoncpp26:arm64 (1.9.6-3) ...
+Setting up cmake-data (3.31.6-2) ...
+Setting up librhash1:arm64 (1.4.5-1) ...
+Setting up cmake (3.31.6-2) ...
+Processing triggers for man-db (2.13.1-1) ...
+Processing triggers for libc-bin (2.41-12+rpt1) ...
+Installing Python packages...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+python3 is already the newest version (3.13.5-1).
+python3 set to manually installed.
+python3-venv is already the newest version (3.13.5-1).
+python3-pip is already the newest version (25.1.1+dfsg-1).
+python3-pip set to manually installed.
+python3-dev is already the newest version (3.13.5-1).
+python3-dev set to manually installed.
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Installing C++ development libraries...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+zlib1g-dev is already the newest version (1:1.3.dfsg+really1.3.1-1+b1).
+zlib1g-dev set to manually installed.
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+The following additional packages will be installed:
+  comerr-dev krb5-multidev libbrotli-dev libgmp-dev libgmpxx4ldbl libgnutls-dane0t64 libgnutls-openssl27t64 libgnutls28-dev
+  libgssrpc4t64 libidn2-dev libkadm5clnt-mit12 libkadm5srv-mit12 libkdb5-10t64 libkrb5-dev libldap-dev libmosquitto1 libnghttp2-dev
+  libnghttp3-dev libp11-kit-dev libpsl-dev librtmp-dev libssh2-1-dev libtasn1-6-dev libtasn1-doc libunbound8 libzstd-dev nettle-dev
+Suggested packages:
+  doc-base krb5-doc libcurl4-doc libidn-dev gmp-doc libgmp10-doc libmpfr-dev gnutls-bin gnutls-doc libgpiod-doc krb5-user
+  libnghttp2-doc p11-kit-doc libssl-doc
+The following NEW packages will be installed:
+  comerr-dev krb5-multidev libbrotli-dev libcurl4-openssl-dev libgmp-dev libgmpxx4ldbl libgnutls-dane0t64 libgnutls-openssl27t64
+  libgnutls28-dev libgpiod-dev libgssrpc4t64 libidn2-dev libjsoncpp-dev libkadm5clnt-mit12 libkadm5srv-mit12 libkdb5-10t64
+  libkrb5-dev libldap-dev libmosquitto-dev libmosquitto1 libnghttp2-dev libnghttp3-dev libp11-kit-dev libpsl-dev librtmp-dev
+  libssh2-1-dev libssl-dev libtasn1-6-dev libtasn1-doc libunbound8 libzstd-dev nettle-dev
+0 upgraded, 32 newly installed, 0 to remove and 0 not upgraded.
+Need to get 13.6 MB of archives.
+After this operation, 45.5 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian trixie/main arm64 comerr-dev arm64 2.1-1.47.2-3+b3 [56.9 kB]
+Get:2 http://archive.raspberrypi.com/debian trixie/main arm64 libssl-dev arm64 3.5.4-1~deb13u1+rpt1 [4,818 kB]
+Get:3 http://deb.debian.org/debian trixie/main arm64 libgssrpc4t64 arm64 1.21.3-5 [57.2 kB]
+Get:4 http://deb.debian.org/debian trixie/main arm64 libkadm5clnt-mit12 arm64 1.21.3-5 [41.1 kB]
+Get:5 http://deb.debian.org/debian trixie/main arm64 libkdb5-10t64 arm64 1.21.3-5 [41.3 kB]
+Get:6 http://deb.debian.org/debian trixie/main arm64 libkadm5srv-mit12 arm64 1.21.3-5 [53.0 kB]
+Get:7 http://deb.debian.org/debian trixie/main arm64 krb5-multidev arm64 1.21.3-5 [126 kB]
+Get:8 http://deb.debian.org/debian trixie/main arm64 libbrotli-dev arm64 1.1.0-2+b7 [308 kB]
+Get:9 http://deb.debian.org/debian trixie/main arm64 libidn2-dev arm64 2.3.8-2 [101 kB]
+Get:10 http://deb.debian.org/debian trixie/main arm64 libkrb5-dev arm64 1.21.3-5 [16.1 kB]
+Get:11 http://deb.debian.org/debian trixie/main arm64 libldap-dev arm64 2.6.10+dfsg-1 [305 kB]
+Get:12 http://deb.debian.org/debian trixie/main arm64 libnghttp2-dev arm64 1.64.0-1.1 [112 kB]
+Get:13 http://deb.debian.org/debian trixie/main arm64 libnghttp3-dev arm64 1.8.0-1 [89.4 kB]
+Get:14 http://deb.debian.org/debian trixie/main arm64 libpsl-dev arm64 0.21.2-1.1+b1 [77.9 kB]
+Get:15 http://deb.debian.org/debian trixie/main arm64 libgmpxx4ldbl arm64 2:6.3.0+dfsg-3 [329 kB]
+Get:16 http://deb.debian.org/debian trixie/main arm64 libgmp-dev arm64 2:6.3.0+dfsg-3 [621 kB]
+Get:17 http://deb.debian.org/debian trixie/main arm64 libunbound8 arm64 1.22.0-2 [553 kB]
+Get:18 http://deb.debian.org/debian trixie/main arm64 libgnutls-dane0t64 arm64 3.8.9-3 [453 kB]
+Get:19 http://deb.debian.org/debian trixie/main arm64 libgnutls-openssl27t64 arm64 3.8.9-3 [453 kB]
+Get:20 http://deb.debian.org/debian trixie/main arm64 libp11-kit-dev arm64 0.25.5-3 [208 kB]
+Get:21 http://deb.debian.org/debian trixie/main arm64 libtasn1-6-dev arm64 4.20.0-2 [96.7 kB]
+Get:22 http://deb.debian.org/debian trixie/main arm64 nettle-dev arm64 3.10.1-1 [1,325 kB]
+Get:23 http://deb.debian.org/debian trixie/main arm64 libgnutls28-dev arm64 3.8.9-3 [1,416 kB]
+Get:24 http://deb.debian.org/debian trixie/main arm64 librtmp-dev arm64 2.4+20151223.gitfa8646d.1-2+b5 [67.5 kB]
+Get:25 http://deb.debian.org/debian trixie/main arm64 libssh2-1-dev arm64 1.11.1-1 [388 kB]
+Get:26 http://deb.debian.org/debian trixie/main arm64 libzstd-dev arm64 1.5.7+dfsg-1 [335 kB]
+Get:27 http://deb.debian.org/debian trixie/main arm64 libcurl4-openssl-dev arm64 8.14.1-2+deb13u2 [495 kB]
+Get:28 http://deb.debian.org/debian trixie/main arm64 libgpiod-dev arm64 2.2.1-2+deb13u1 [93.6 kB]
+Get:29 http://deb.debian.org/debian trixie/main arm64 libjsoncpp-dev arm64 1.9.6-3 [25.0 kB]
+Get:30 http://deb.debian.org/debian trixie/main arm64 libmosquitto1 arm64 2.0.21-1 [93.1 kB]
+Get:31 http://deb.debian.org/debian trixie/main arm64 libmosquitto-dev arm64 2.0.21-1 [75.3 kB]
+Get:32 http://deb.debian.org/debian trixie/main arm64 libtasn1-doc all 4.20.0-2 [325 kB]
+Fetched 13.6 MB in 5s (2,593 kB/s)     
+Extracting templates from packages: 100%
+Selecting previously unselected package comerr-dev:arm64.
+(Reading database ... 124923 files and directories currently installed.)
+Preparing to unpack .../00-comerr-dev_2.1-1.47.2-3+b3_arm64.deb ...
+Unpacking comerr-dev:arm64 (2.1-1.47.2-3+b3) ...
+Selecting previously unselected package libgssrpc4t64:arm64.
+Preparing to unpack .../01-libgssrpc4t64_1.21.3-5_arm64.deb ...
+Unpacking libgssrpc4t64:arm64 (1.21.3-5) ...
+Selecting previously unselected package libkadm5clnt-mit12:arm64.
+Preparing to unpack .../02-libkadm5clnt-mit12_1.21.3-5_arm64.deb ...
+Unpacking libkadm5clnt-mit12:arm64 (1.21.3-5) ...
+Selecting previously unselected package libkdb5-10t64:arm64.
+Preparing to unpack .../03-libkdb5-10t64_1.21.3-5_arm64.deb ...
+Unpacking libkdb5-10t64:arm64 (1.21.3-5) ...
+Selecting previously unselected package libkadm5srv-mit12:arm64.
+Preparing to unpack .../04-libkadm5srv-mit12_1.21.3-5_arm64.deb ...
+Unpacking libkadm5srv-mit12:arm64 (1.21.3-5) ...
+Selecting previously unselected package krb5-multidev:arm64.
+Preparing to unpack .../05-krb5-multidev_1.21.3-5_arm64.deb ...
+Unpacking krb5-multidev:arm64 (1.21.3-5) ...
+Selecting previously unselected package libbrotli-dev:arm64.
+Preparing to unpack .../06-libbrotli-dev_1.1.0-2+b7_arm64.deb ...
+Unpacking libbrotli-dev:arm64 (1.1.0-2+b7) ...
+Selecting previously unselected package libidn2-dev:arm64.
+Preparing to unpack .../07-libidn2-dev_2.3.8-2_arm64.deb ...
+Unpacking libidn2-dev:arm64 (2.3.8-2) ...
+Selecting previously unselected package libkrb5-dev:arm64.
+Preparing to unpack .../08-libkrb5-dev_1.21.3-5_arm64.deb ...
+Unpacking libkrb5-dev:arm64 (1.21.3-5) ...
+Selecting previously unselected package libldap-dev:arm64.
+Preparing to unpack .../09-libldap-dev_2.6.10+dfsg-1_arm64.deb ...
+Unpacking libldap-dev:arm64 (2.6.10+dfsg-1) ...
+Selecting previously unselected package libnghttp2-dev:arm64.
+Preparing to unpack .../10-libnghttp2-dev_1.64.0-1.1_arm64.deb ...
+Unpacking libnghttp2-dev:arm64 (1.64.0-1.1) ...
+Selecting previously unselected package libnghttp3-dev:arm64.
+Preparing to unpack .../11-libnghttp3-dev_1.8.0-1_arm64.deb ...
+Unpacking libnghttp3-dev:arm64 (1.8.0-1) ...
+Selecting previously unselected package libpsl-dev:arm64.
+Preparing to unpack .../12-libpsl-dev_0.21.2-1.1+b1_arm64.deb ...
+Unpacking libpsl-dev:arm64 (0.21.2-1.1+b1) ...
+Selecting previously unselected package libgmpxx4ldbl:arm64.
+Preparing to unpack .../13-libgmpxx4ldbl_2%3a6.3.0+dfsg-3_arm64.deb ...
+Unpacking libgmpxx4ldbl:arm64 (2:6.3.0+dfsg-3) ...
+Selecting previously unselected package libgmp-dev:arm64.
+Preparing to unpack .../14-libgmp-dev_2%3a6.3.0+dfsg-3_arm64.deb ...
+Unpacking libgmp-dev:arm64 (2:6.3.0+dfsg-3) ...
+Selecting previously unselected package libunbound8:arm64.
+Preparing to unpack .../15-libunbound8_1.22.0-2_arm64.deb ...
+Unpacking libunbound8:arm64 (1.22.0-2) ...
+Selecting previously unselected package libgnutls-dane0t64:arm64.
+Preparing to unpack .../16-libgnutls-dane0t64_3.8.9-3_arm64.deb ...
+Unpacking libgnutls-dane0t64:arm64 (3.8.9-3) ...
+Selecting previously unselected package libgnutls-openssl27t64:arm64.
+Preparing to unpack .../17-libgnutls-openssl27t64_3.8.9-3_arm64.deb ...
+Unpacking libgnutls-openssl27t64:arm64 (3.8.9-3) ...
+Selecting previously unselected package libp11-kit-dev:arm64.
+Preparing to unpack .../18-libp11-kit-dev_0.25.5-3_arm64.deb ...
+Unpacking libp11-kit-dev:arm64 (0.25.5-3) ...
+Selecting previously unselected package libtasn1-6-dev:arm64.
+Preparing to unpack .../19-libtasn1-6-dev_4.20.0-2_arm64.deb ...
+Unpacking libtasn1-6-dev:arm64 (4.20.0-2) ...
+Selecting previously unselected package nettle-dev:arm64.
+Preparing to unpack .../20-nettle-dev_3.10.1-1_arm64.deb ...
+Unpacking nettle-dev:arm64 (3.10.1-1) ...
+Selecting previously unselected package libgnutls28-dev:arm64.
+Preparing to unpack .../21-libgnutls28-dev_3.8.9-3_arm64.deb ...
+Unpacking libgnutls28-dev:arm64 (3.8.9-3) ...
+Selecting previously unselected package librtmp-dev:arm64.
+Preparing to unpack .../22-librtmp-dev_2.4+20151223.gitfa8646d.1-2+b5_arm64.deb ...
+Unpacking librtmp-dev:arm64 (2.4+20151223.gitfa8646d.1-2+b5) ...
+Selecting previously unselected package libssl-dev:arm64.
+Preparing to unpack .../23-libssl-dev_3.5.4-1~deb13u1+rpt1_arm64.deb ...
+Unpacking libssl-dev:arm64 (3.5.4-1~deb13u1+rpt1) ...
+Selecting previously unselected package libssh2-1-dev:arm64.
+Preparing to unpack .../24-libssh2-1-dev_1.11.1-1_arm64.deb ...
+Unpacking libssh2-1-dev:arm64 (1.11.1-1) ...
+Selecting previously unselected package libzstd-dev:arm64.
+Preparing to unpack .../25-libzstd-dev_1.5.7+dfsg-1_arm64.deb ...
+Unpacking libzstd-dev:arm64 (1.5.7+dfsg-1) ...
+Selecting previously unselected package libcurl4-openssl-dev:arm64.
+Preparing to unpack .../26-libcurl4-openssl-dev_8.14.1-2+deb13u2_arm64.deb ...
+Unpacking libcurl4-openssl-dev:arm64 (8.14.1-2+deb13u2) ...
+Selecting previously unselected package libgpiod-dev:arm64.
+Preparing to unpack .../27-libgpiod-dev_2.2.1-2+deb13u1_arm64.deb ...
+Unpacking libgpiod-dev:arm64 (2.2.1-2+deb13u1) ...
+Selecting previously unselected package libjsoncpp-dev:arm64.
+Preparing to unpack .../28-libjsoncpp-dev_1.9.6-3_arm64.deb ...
+Unpacking libjsoncpp-dev:arm64 (1.9.6-3) ...
+Selecting previously unselected package libmosquitto1:arm64.
+Preparing to unpack .../29-libmosquitto1_2.0.21-1_arm64.deb ...
+Unpacking libmosquitto1:arm64 (2.0.21-1) ...
+Selecting previously unselected package libmosquitto-dev:arm64.
+Preparing to unpack .../30-libmosquitto-dev_2.0.21-1_arm64.deb ...
+Unpacking libmosquitto-dev:arm64 (2.0.21-1) ...
+Selecting previously unselected package libtasn1-doc.
+Preparing to unpack .../31-libtasn1-doc_4.20.0-2_all.deb ...
+Unpacking libtasn1-doc (4.20.0-2) ...
+Setting up libgnutls-openssl27t64:arm64 (3.8.9-3) ...
+Setting up libnghttp2-dev:arm64 (1.64.0-1.1) ...
+Setting up libjsoncpp-dev:arm64 (1.9.6-3) ...
+Setting up libzstd-dev:arm64 (1.5.7+dfsg-1) ...
+Setting up libmosquitto1:arm64 (2.0.21-1) ...
+Setting up libtasn1-doc (4.20.0-2) ...
+Setting up libpsl-dev:arm64 (0.21.2-1.1+b1) ...
+Setting up libunbound8:arm64 (1.22.0-2) ...
+Setting up libgmpxx4ldbl:arm64 (2:6.3.0+dfsg-3) ...
+Setting up libgnutls-dane0t64:arm64 (3.8.9-3) ...
+Setting up libgssrpc4t64:arm64 (1.21.3-5) ...
+Setting up libldap-dev:arm64 (2.6.10+dfsg-1) ...
+Setting up comerr-dev:arm64 (2.1-1.47.2-3+b3) ...
+Setting up libmosquitto-dev:arm64 (2.0.21-1) ...
+Setting up libssl-dev:arm64 (3.5.4-1~deb13u1+rpt1) ...
+Setting up libssh2-1-dev:arm64 (1.11.1-1) ...
+Setting up libidn2-dev:arm64 (2.3.8-2) ...
+Setting up libnghttp3-dev:arm64 (1.8.0-1) ...
+Setting up libgpiod-dev:arm64 (2.2.1-2+deb13u1) ...
+Setting up libtasn1-6-dev:arm64 (4.20.0-2) ...
+Setting up libbrotli-dev:arm64 (1.1.0-2+b7) ...
+Setting up libp11-kit-dev:arm64 (0.25.5-3) ...
+Setting up libkadm5clnt-mit12:arm64 (1.21.3-5) ...
+Setting up libgmp-dev:arm64 (2:6.3.0+dfsg-3) ...
+Setting up nettle-dev:arm64 (3.10.1-1) ...
+Setting up libkdb5-10t64:arm64 (1.21.3-5) ...
+Setting up libkadm5srv-mit12:arm64 (1.21.3-5) ...
+Setting up krb5-multidev:arm64 (1.21.3-5) ...
+Setting up libgnutls28-dev:arm64 (3.8.9-3) ...
+Setting up libkrb5-dev:arm64 (1.21.3-5) ...
+Setting up librtmp-dev:arm64 (2.4+20151223.gitfa8646d.1-2+b5) ...
+Setting up libcurl4-openssl-dev:arm64 (8.14.1-2+deb13u2) ...
+Processing triggers for man-db (2.13.1-1) ...
+Processing triggers for libc-bin (2.41-12+rpt1) ...
+Installing optional development tools...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+gdb is already the newest version (16.3-1).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+The following additional packages will be installed:
+  clang-19 clang-format-19 clang-tidy-19 clang-tools-19 libc6-dbg libclang-common-19-dev libclang-cpp19 libclang-rt-19-dev
+  libclang1-19 libffi-dev libgc1 libhiredis1.1.0 libncurses-dev libobjc-14-dev libobjc4 libpfm4 libxml2-dev libz3-dev llvm-19
+  llvm-19-dev llvm-19-linker-tools llvm-19-runtime llvm-19-tools
+Suggested packages:
+  distcc | icecc clang-19-doc wasi-libc ncurses-doc llvm-19-doc valgrind-mpi kcachegrind
+The following NEW packages will be installed:
+  ccache clang-19 clang-format clang-format-19 clang-tidy clang-tidy-19 clang-tools-19 libc6-dbg libclang-common-19-dev
+  libclang-cpp19 libclang-rt-19-dev libclang1-19 libffi-dev libgc1 libhiredis1.1.0 libncurses-dev libobjc-14-dev libobjc4 libpfm4
+  libxml2-dev libz3-dev llvm-19 llvm-19-dev llvm-19-linker-tools llvm-19-runtime llvm-19-tools valgrind
+0 upgraded, 27 newly installed, 0 to remove and 0 not upgraded.
+Need to get 108 MB of archives.
+After this operation, 713 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian trixie/main arm64 libhiredis1.1.0 arm64 1.2.0-6+b3 [48.5 kB]
+Get:2 http://deb.debian.org/debian trixie/main arm64 ccache arm64 4.11.2-2 [620 kB]                
+Get:3 http://archive.raspberrypi.com/debian trixie/main arm64 libc6-dbg arm64 2.41-12+rpt1 [8,275 kB]
+Get:4 http://deb.debian.org/debian trixie/main arm64 libclang-cpp19 arm64 1:19.1.7-3+b1 [12.0 MB]
+Get:5 http://deb.debian.org/debian trixie/main arm64 libgc1 arm64 1:8.2.8-1 [241 kB]                                                 
+Get:6 http://deb.debian.org/debian trixie/main arm64 libobjc4 arm64 14.2.0-19 [39.4 kB]                                              
+Get:7 http://deb.debian.org/debian trixie/main arm64 libobjc-14-dev arm64 14.2.0-19 [166 kB]                                         
+Get:8 http://deb.debian.org/debian trixie/main arm64 libclang-common-19-dev arm64 1:19.1.7-3+b1 [740 kB]                             
+Get:9 http://deb.debian.org/debian trixie/main arm64 llvm-19-linker-tools arm64 1:19.1.7-3+b1 [1,100 kB]                             
+Get:10 http://deb.debian.org/debian trixie/main arm64 libclang1-19 arm64 1:19.1.7-3+b1 [6,866 kB]                                    
+Get:11 http://deb.debian.org/debian trixie/main arm64 clang-19 arm64 1:19.1.7-3+b1 [113 kB]                                          
+Get:12 http://deb.debian.org/debian trixie/main arm64 clang-format-19 arm64 1:19.1.7-3+b1 [91.2 kB]                                  
+Get:13 http://deb.debian.org/debian trixie/main arm64 clang-format arm64 1:19.0-63 [6,352 B]                                         
+Get:14 http://deb.debian.org/debian trixie/main arm64 clang-tools-19 arm64 1:19.1.7-3+b1 [8,105 kB]                                  
+Get:15 http://deb.debian.org/debian trixie/main arm64 clang-tidy-19 arm64 1:19.1.7-3+b1 [1,901 kB]                                   
+Get:16 http://deb.debian.org/debian trixie/main arm64 clang-tidy arm64 1:19.0-63 [6,116 B]                                           
+Get:17 http://deb.debian.org/debian trixie/main arm64 libclang-rt-19-dev arm64 1:19.1.7-3+b1 [2,024 kB]                              
+Get:18 http://deb.debian.org/debian trixie/main arm64 libffi-dev arm64 3.4.8-2 [57.2 kB]                                             
+Get:19 http://deb.debian.org/debian trixie/main arm64 libncurses-dev arm64 6.5+20250216-2 [340 kB]                                   
+Get:20 http://deb.debian.org/debian trixie/main arm64 libpfm4 arm64 4.13.0+git99-gc5587f9-1 [73.1 kB]                                
+Get:21 http://deb.debian.org/debian trixie/main arm64 libxml2-dev arm64 2.12.7+dfsg+really2.9.14-2.1+deb13u2 [753 kB]                
+Get:22 http://deb.debian.org/debian trixie/main arm64 libz3-dev arm64 4.13.3-1 [107 kB]                                              
+Get:23 http://deb.debian.org/debian trixie/main arm64 llvm-19-runtime arm64 1:19.1.7-3+b1 [504 kB]                                   
+Get:24 http://deb.debian.org/debian trixie/main arm64 llvm-19 arm64 1:19.1.7-3+b1 [14.7 MB]                                          
+Get:25 http://deb.debian.org/debian trixie/main arm64 llvm-19-tools arm64 1:19.1.7-3+b1 [487 kB]                                     
+Get:26 http://deb.debian.org/debian trixie/main arm64 llvm-19-dev arm64 1:19.1.7-3+b1 [40.1 MB]                                      
+Get:27 http://deb.debian.org/debian trixie/main arm64 valgrind arm64 1:3.24.0-3 [8,820 kB]                                           
+Fetched 108 MB in 40s (2,736 kB/s)                                                                                                   
+Selecting previously unselected package libhiredis1.1.0:arm64.
+(Reading database ... 126225 files and directories currently installed.)
+Preparing to unpack .../00-libhiredis1.1.0_1.2.0-6+b3_arm64.deb ...
+Unpacking libhiredis1.1.0:arm64 (1.2.0-6+b3) ...
+Selecting previously unselected package ccache.
+Preparing to unpack .../01-ccache_4.11.2-2_arm64.deb ...
+Unpacking ccache (4.11.2-2) ...
+Selecting previously unselected package libclang-cpp19.
+Preparing to unpack .../02-libclang-cpp19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking libclang-cpp19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package libgc1:arm64.
+Preparing to unpack .../03-libgc1_1%3a8.2.8-1_arm64.deb ...
+Unpacking libgc1:arm64 (1:8.2.8-1) ...
+Selecting previously unselected package libobjc4:arm64.
+Preparing to unpack .../04-libobjc4_14.2.0-19_arm64.deb ...
+Unpacking libobjc4:arm64 (14.2.0-19) ...
+Selecting previously unselected package libobjc-14-dev:arm64.
+Preparing to unpack .../05-libobjc-14-dev_14.2.0-19_arm64.deb ...
+Unpacking libobjc-14-dev:arm64 (14.2.0-19) ...
+Selecting previously unselected package libclang-common-19-dev:arm64.
+Preparing to unpack .../06-libclang-common-19-dev_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking libclang-common-19-dev:arm64 (1:19.1.7-3+b1) ...
+Selecting previously unselected package llvm-19-linker-tools.
+Preparing to unpack .../07-llvm-19-linker-tools_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking llvm-19-linker-tools (1:19.1.7-3+b1) ...
+Selecting previously unselected package libclang1-19.
+Preparing to unpack .../08-libclang1-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking libclang1-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package clang-19.
+Preparing to unpack .../09-clang-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking clang-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package clang-format-19.
+Preparing to unpack .../10-clang-format-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking clang-format-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package clang-format:arm64.
+Preparing to unpack .../11-clang-format_1%3a19.0-63_arm64.deb ...
+Unpacking clang-format:arm64 (1:19.0-63) ...
+Selecting previously unselected package clang-tools-19.
+Preparing to unpack .../12-clang-tools-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking clang-tools-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package clang-tidy-19.
+Preparing to unpack .../13-clang-tidy-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking clang-tidy-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package clang-tidy.
+Preparing to unpack .../14-clang-tidy_1%3a19.0-63_arm64.deb ...
+Unpacking clang-tidy (1:19.0-63) ...
+Selecting previously unselected package libc6-dbg:arm64.
+Preparing to unpack .../15-libc6-dbg_2.41-12+rpt1_arm64.deb ...
+Unpacking libc6-dbg:arm64 (2.41-12+rpt1) ...
+Selecting previously unselected package libclang-rt-19-dev:arm64.
+Preparing to unpack .../16-libclang-rt-19-dev_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking libclang-rt-19-dev:arm64 (1:19.1.7-3+b1) ...
+Selecting previously unselected package libffi-dev:arm64.
+Preparing to unpack .../17-libffi-dev_3.4.8-2_arm64.deb ...
+Unpacking libffi-dev:arm64 (3.4.8-2) ...
+Selecting previously unselected package libncurses-dev:arm64.
+Preparing to unpack .../18-libncurses-dev_6.5+20250216-2_arm64.deb ...
+Unpacking libncurses-dev:arm64 (6.5+20250216-2) ...
+Selecting previously unselected package libpfm4:arm64.
+Preparing to unpack .../19-libpfm4_4.13.0+git99-gc5587f9-1_arm64.deb ...
+Unpacking libpfm4:arm64 (4.13.0+git99-gc5587f9-1) ...
+Selecting previously unselected package libxml2-dev:arm64.
+Preparing to unpack .../20-libxml2-dev_2.12.7+dfsg+really2.9.14-2.1+deb13u2_arm64.deb ...
+Unpacking libxml2-dev:arm64 (2.12.7+dfsg+really2.9.14-2.1+deb13u2) ...
+Selecting previously unselected package libz3-dev:arm64.
+Preparing to unpack .../21-libz3-dev_4.13.3-1_arm64.deb ...
+Unpacking libz3-dev:arm64 (4.13.3-1) ...
+Selecting previously unselected package llvm-19-runtime.
+Preparing to unpack .../22-llvm-19-runtime_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking llvm-19-runtime (1:19.1.7-3+b1) ...
+Selecting previously unselected package llvm-19.
+Preparing to unpack .../23-llvm-19_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking llvm-19 (1:19.1.7-3+b1) ...
+Selecting previously unselected package llvm-19-tools.
+Preparing to unpack .../24-llvm-19-tools_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking llvm-19-tools (1:19.1.7-3+b1) ...
+Selecting previously unselected package llvm-19-dev.
+Preparing to unpack .../25-llvm-19-dev_1%3a19.1.7-3+b1_arm64.deb ...
+Unpacking llvm-19-dev (1:19.1.7-3+b1) ...
+Selecting previously unselected package valgrind.
+Preparing to unpack .../26-valgrind_1%3a3.24.0-3_arm64.deb ...
+Unpacking valgrind (1:3.24.0-3) ...
+Setting up libz3-dev:arm64 (4.13.3-1) ...
+Setting up libncurses-dev:arm64 (6.5+20250216-2) ...
+Setting up libclang1-19 (1:19.1.7-3+b1) ...
+Setting up libclang-common-19-dev:arm64 (1:19.1.7-3+b1) ...
+Setting up libffi-dev:arm64 (3.4.8-2) ...
+Setting up libc6-dbg:arm64 (2.41-12+rpt1) ...
+Setting up libxml2-dev:arm64 (2.12.7+dfsg+really2.9.14-2.1+deb13u2) ...
+Setting up libpfm4:arm64 (4.13.0+git99-gc5587f9-1) ...
+Setting up libgc1:arm64 (1:8.2.8-1) ...
+Setting up libclang-rt-19-dev:arm64 (1:19.1.7-3+b1) ...
+Setting up llvm-19-linker-tools (1:19.1.7-3+b1) ...
+Setting up llvm-19-runtime (1:19.1.7-3+b1) ...
+Setting up valgrind (1:3.24.0-3) ...
+Setting up llvm-19-tools (1:19.1.7-3+b1) ...
+Setting up libhiredis1.1.0:arm64 (1.2.0-6+b3) ...
+Setting up libclang-cpp19 (1:19.1.7-3+b1) ...
+Setting up clang-format-19 (1:19.1.7-3+b1) ...
+Setting up ccache (4.11.2-2) ...
+Updating symlinks in /usr/lib/ccache ...
+Setting up libobjc4:arm64 (14.2.0-19) ...
+Setting up libobjc-14-dev:arm64 (14.2.0-19) ...
+Setting up clang-19 (1:19.1.7-3+b1) ...
+Setting up clang-tools-19 (1:19.1.7-3+b1) ...
+Setting up llvm-19 (1:19.1.7-3+b1) ...
+Setting up clang-format:arm64 (1:19.0-63) ...
+Setting up clang-tidy-19 (1:19.1.7-3+b1) ...
+Setting up llvm-19-dev (1:19.1.7-3+b1) ...
+Setting up clang-tidy (1:19.0-63) ...
+Processing triggers for systemd (257.9-1~deb13u1) ...
+Processing triggers for man-db (2.13.1-1) ...
+Processing triggers for libc-bin (2.41-12+rpt1) ...
+Installing runtime packages...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package libgpiod2
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/create-zero-copy-env.sh 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AI-SERVIS Zero-Copy Environment Setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Checking for Conan...
+  ✓ Conan found: Conan version 2.3.2
+Setting up Conan remotes...
+  ✓ Cloudsmith remote configured
+Installing sparetools-cpython/3.12.7 from Conan...
+  ⚠ sparetools-cpython not available from Cloudsmith
+  Using system Python fallback...
+Creating zero-copy symlinks...
+  Using system Python for venv...
+Setting up with system Python...
+  Using: python3 (3.13.5)
+  ✓ Virtual environment created
+Installing build tools in venv...
+Requirement already satisfied: pip in ./.buildenv/venv/lib/python3.13/site-packages (25.3)
+Requirement already satisfied: setuptools in ./.buildenv/venv/lib/python3.13/site-packages (80.9.0)
+Requirement already satisfied: wheel in ./.buildenv/venv/lib/python3.13/site-packages (0.45.1)
+Requirement already satisfied: conan==2.3.2 in ./.buildenv/venv/lib/python3.13/site-packages (2.3.2)
+Requirement already satisfied: requests<3.0.0,>=2.25 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (2.32.5)
+Requirement already satisfied: urllib3<1.27,>=1.26.6 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.26.20)
+Requirement already satisfied: colorama<0.5.0,>=0.4.3 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (0.4.6)
+Requirement already satisfied: PyYAML<7.0,>=6.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (6.0.3)
+Requirement already satisfied: patch-ng<1.18,>=1.17.4 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.17.4)
+Requirement already satisfied: fasteners>=0.15 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (0.20)
+Requirement already satisfied: distro<=1.8.0,>=1.4.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.8.0)
+Requirement already satisfied: Jinja2<4.0.0,>=3.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (3.1.6)
+Requirement already satisfied: python-dateutil<3,>=2.8.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (2.9.0.post0)
+Requirement already satisfied: MarkupSafe>=2.0 in ./.buildenv/venv/lib/python3.13/site-packages (from Jinja2<4.0.0,>=3.0->conan==2.3.2) (3.0.3)
+Requirement already satisfied: six>=1.5 in ./.buildenv/venv/lib/python3.13/site-packages (from python-dateutil<3,>=2.8.0->conan==2.3.2) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.11)
+Requirement already satisfied: certifi>=2017.4.17 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (2025.11.12)
+Requirement already satisfied: ninja in ./.buildenv/venv/lib/python3.13/site-packages (1.13.0)
+Requirement already satisfied: cmake in ./.buildenv/venv/lib/python3.13/site-packages (4.2.0)
+Requirement already satisfied: meson in ./.buildenv/venv/lib/python3.13/site-packages (1.9.1)
+  ✓ Build tools installed
+Configuring Conan for AI-SERVIS...
+detect_api: Found cc=gcc-14.2
+detect_api: gcc>=5, using the major as version
+detect_api: gcc C++ standard library: libstdc++11
+
+Detected profile:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+WARN: This profile is a guess of your environment, please check it.
+WARN: The output of this command is not guaranteed to be stable and can change in future Conan versions.
+WARN: Use your own profile files for stability.
+Saving detected profile to /home/mia/ai-servis/.buildenv/conan/profiles/default
+    Installed profile: linux-arm64
+    Installed profile: linux-release
+    Installed profile: linux-simulation
+    Installed profile: macos-release
+    Installed profile: windows-release
+  ✓ Conan configured
+Verifying setup...
+  ✓ Python: Python 3.13.5
+  ✓ Conan: Conan version 2.3.2
+  ✓ CMake: cmake version 4.2.0
+  ✓ Zero-copy: 4 symlinks, 7441 files
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Zero-Copy Environment Ready!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  To activate:
+    source /home/mia/ai-servis/.buildenv/activate.sh
+
+  Or from project root:
+    source tools/env.sh
+
+  Environment location: /home/mia/ai-servis/.buildenv
+(venv) mia@mia:~/ai-servis $ source /home/mia/ai-servis/.buildenv/activate.sh
+AI-SERVIS build environment activated.
+Run 'ai-servis-info' for help.
+(venv) mia@mia:~/ai-servis $ ai-servis-info
+AI-SERVIS Build Environment
+  Project Root: /home/mia/ai-servis
+  Build Env:    /home/mia/ai-servis/.buildenv
+  Python:       /home/mia/ai-servis/.buildenv/venv/bin/python3
+  Conan:        /home/mia/ai-servis/.buildenv/venv/bin/conan
+  Conan Home:   /home/mia/ai-servis/.buildenv/conan
+
+Available commands:
+  ai-servis-build [target]  - Build components
+  ai-servis-clean           - Clean build directories
+  ai-servis-info            - Show this info
+(venv) mia@mia:~/ai-servis $ ai-servis-build 
+ai-servis-universal/                    docker-compose.monitoring.yml           profiles/
+android/                                docker-compose.pi-simulation.yml        PROOF_CICD_INFRASTRUCTURE.md
+arduino/                                docker-compose.yml                      PROOF_CODE_QUALITY.md
+.backups/                               docs/                                   PROOF_DOCUMENTATION_FOUNDATION.md
+bin/                                    edge-compat/                            PROOF_PERFORMANCE_BENCHMARKS.md
+build-all.sh                            .env.example                            PR_RESOLUTION_SUMMARY.md
+.buildenv/                              esp32/                                  QUICK-START-RASPBERRY-PI.md
+BUILD-FIX-SUMMARY.md                    exported-assets/                        README-CICD.md
+build_orchestrator.py                   external/                               README.md
+build-release/                          FINAL_ACCOMPLISHMENTS_REPORT.md         README-VM-TESTING.md
+CHECKS_FIXED_REPORT.md                  .git/                                   reports/
+CHECKS_STATUS_SUMMARY.md                .github/                                requirements-dev.txt
+ci/                                     .gitignore                              requirements.txt
+CICD_IMPROVEMENTS_SUMMARY.md            IMPLEMENTATION-COMPLETE.md              scripts/
+conanfile.py                            IMPLEMENTATION_PROGRESS_SUMMARY.md      SECURITY_FIXES_SUMMARY.md
+conan-recipes/                          IMPLEMENTATION_STATUS_REPORT.md         site/
+CONFLICT_RESOLUTION_SUMMARY.md          IMPLEMENTATION-SUMMARY.md               test_orchestrator.py
+CONSOLIDATION_AND_IMPROVEMENTS.md       LICENSE                                 test_orchestrator_simple.py
+containers/                             mcp-cpp-bridge/                         tests/
+contracts/                              mcp_integration_example.py              TODO.md
+.cursor/                                MILESTONE_COMPLETE.md                   tools/
+deploy/                                 mkdocs.yml                              .tool-versions
+DEPLOYMENT-CHECKLIST.md                 modules/                                web/
+DEPLOYMENT_CHECKLIST.md                 monitoring/                             WORK_COMPLETED_SUMMARY.md
+.devcontainer/                          orchestrator-config.yaml                WORKFLOW-REFACTOR-COMPLETE.md
+DEVELOPMENT.md                          ORCHESTRATOR_IMPLEMENTATION_SUMMARY.md  WORKFLOW-REFACTOR-SUMMARY.md
+docker/                                 platforms/                              
+(venv) mia@mia:~/ai-servis $ ai-servis-build 
+-bash: /home/mia/ai-servis/tools/build.sh: No such file or directory
+(venv) mia@mia:~/ai-servis $ source tools/env.sh
+AI-SERVIS build environment activated.
+Run 'ai-servis-info' for help.
+(venv) mia@mia:~/ai-servis $ ./tools/install-deps-rpi.sh
+========================================
+  Raspberry Pi Dependencies Installer
+========================================
+
+Note: Some commands will use sudo
+Updating package lists...
+Hit:1 http://deb.debian.org/debian trixie InRelease
+Hit:2 http://deb.debian.org/debian trixie-updates InRelease
+Hit:3 http://deb.debian.org/debian-security trixie-security InRelease
+Hit:4 http://archive.raspberrypi.com/debian trixie InRelease
+Reading package lists... Done
+Installing essential build tools...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+build-essential is already the newest version (12.12).
+cmake is already the newest version (3.31.6-2).
+ninja-build is already the newest version (1.12.1-1+b1).
+pkg-config is already the newest version (1.8.1-4).
+git is already the newest version (1:2.47.3-0+deb13u1).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Installing Python packages...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+python3 is already the newest version (3.13.5-1).
+python3-venv is already the newest version (3.13.5-1).
+python3-pip is already the newest version (25.1.1+dfsg-1).
+python3-dev is already the newest version (3.13.5-1).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Installing C++ development libraries...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+libgpiod-dev is already the newest version (2.2.1-2+deb13u1).
+libmosquitto-dev is already the newest version (2.0.21-1).
+libcurl4-openssl-dev is already the newest version (8.14.1-2+deb13u2).
+libssl-dev is already the newest version (3.5.4-1~deb13u1+rpt1).
+zlib1g-dev is already the newest version (1:1.3.dfsg+really1.3.1-1+b1).
+libjsoncpp-dev is already the newest version (1.9.6-3).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Installing optional development tools...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+ccache is already the newest version (4.11.2-2).
+gdb is already the newest version (16.3-1).
+valgrind is already the newest version (1:3.24.0-3).
+clang-format is already the newest version (1:19.0-63).
+clang-tidy is already the newest version (1:19.0-63).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Installing runtime packages...
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package libgpiod2
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod2
+Error: Unable to locate package libgpiod2
+(venv) mia@mia:~/ai-servis $ pip  install libgpiod2
+ERROR: Could not find a version that satisfies the requirement libgpiod2 (from versions: none)
+ERROR: No matching distribution found for libgpiod2
+(venv) mia@mia:~/ai-servis $ sudo apt install pythonlibgpiod2
+Display all 6272 possibilities? (y or n)
+(venv) mia@mia:~/ai-servis $ sudo apt install python3-libgpiod2
+Error: Unable to locate package python3-libgpiod2
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpio
+libgpiod3           libgpiod-dev        libgpiod-doc        libgpiolib0         libgpiolib0-dbgsym  libgpiolib-dev
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod
+libgpiod3     libgpiod-dev  libgpiod-doc  
+(venv) mia@mia:~/ai-servis $ sudo apt install libgpiod*
+Note, selecting 'libgpiod-dev' for glob 'libgpiod*'
+Note, selecting 'libgpiod-doc' for glob 'libgpiod*'
+Note, selecting 'libgpiod3' for glob 'libgpiod*'
+libgpiod3 is already the newest version (2.2.1-2+deb13u1).
+libgpiod3 set to manually installed.
+libgpiod-dev is already the newest version (2.2.1-2+deb13u1).
+The following package was automatically installed and is no longer required:
+  libwlroots-0.18
+Use 'sudo apt autoremove' to remove it.
+
+Installing:
+  libgpiod-doc
+
+Summary:
+  Upgrading: 0, Installing: 1, Removing: 0, Not Upgrading: 0
+  Download size: 647 kB
+  Space needed: 3,126 kB / 20.4 GB available
+
+Continue? [Y/n] 
+Get:1 http://deb.debian.org/debian trixie/main arm64 libgpiod-doc all 2.2.1-2+deb13u1 [647 kB]
+Fetched 647 kB in 0s (2,283 kB/s)    
+Selecting previously unselected package libgpiod-doc.
+(Reading database ... 131220 files and directories currently installed.)
+Preparing to unpack .../libgpiod-doc_2.2.1-2+deb13u1_all.deb ...
+Unpacking libgpiod-doc (2.2.1-2+deb13u1) ...
+Setting up libgpiod-doc (2.2.1-2+deb13u1) ...
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./t
+tests/ tools/ 
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/
+bootstrap.sh             create-zero-copy-env.sh  env.sh                   init.sh                  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./tools/bootstrap.sh 
+════════════════════════════════════════════════════════════════
+  AI-SERVIS Build Environment Setup (Sparetools Integration)
+════════════════════════════════════════════════════════════════
+
+Detected platform: linux-aarch64
+Checking for Conan (for bootstrap)...
+  ✓ Conan 2.x found: Conan version 2.3.2
+Configuring Conan remotes...
+  ✓ Cloudsmith remote configured
+Installing sparetools-cpython/3.12.7 from Conan...
+  sparetools-cpython not on Cloudsmith. Using system Python fallback.
+Using system Python fallback...
+Setting up virtual environment using system Python...
+Using system Python: python3 (3.13.5)
+Installing build tools...
+Requirement already satisfied: pip in ./.buildenv/venv/lib/python3.13/site-packages (25.3)
+Requirement already satisfied: setuptools in ./.buildenv/venv/lib/python3.13/site-packages (80.9.0)
+Requirement already satisfied: wheel in ./.buildenv/venv/lib/python3.13/site-packages (0.45.1)
+Installing Conan 2.3.2...
+Requirement already satisfied: conan==2.3.2 in ./.buildenv/venv/lib/python3.13/site-packages (2.3.2)
+Requirement already satisfied: requests<3.0.0,>=2.25 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (2.32.5)
+Requirement already satisfied: urllib3<1.27,>=1.26.6 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.26.20)
+Requirement already satisfied: colorama<0.5.0,>=0.4.3 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (0.4.6)
+Requirement already satisfied: PyYAML<7.0,>=6.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (6.0.3)
+Requirement already satisfied: patch-ng<1.18,>=1.17.4 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.17.4)
+Requirement already satisfied: fasteners>=0.15 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (0.20)
+Requirement already satisfied: distro<=1.8.0,>=1.4.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (1.8.0)
+Requirement already satisfied: Jinja2<4.0.0,>=3.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (3.1.6)
+Requirement already satisfied: python-dateutil<3,>=2.8.0 in ./.buildenv/venv/lib/python3.13/site-packages (from conan==2.3.2) (2.9.0.post0)
+Requirement already satisfied: MarkupSafe>=2.0 in ./.buildenv/venv/lib/python3.13/site-packages (from Jinja2<4.0.0,>=3.0->conan==2.3.2) (3.0.3)
+Requirement already satisfied: six>=1.5 in ./.buildenv/venv/lib/python3.13/site-packages (from python-dateutil<3,>=2.8.0->conan==2.3.2) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (3.11)
+Requirement already satisfied: certifi>=2017.4.17 in ./.buildenv/venv/lib/python3.13/site-packages (from requests<3.0.0,>=2.25->conan==2.3.2) (2025.11.12)
+Requirement already satisfied: ninja in ./.buildenv/venv/lib/python3.13/site-packages (1.13.0)
+Requirement already satisfied: meson in ./.buildenv/venv/lib/python3.13/site-packages (1.9.1)
+Configuring Conan...
+detect_api: Found cc=gcc-14.2
+detect_api: gcc>=5, using the major as version
+detect_api: gcc C++ standard library: libstdc++11
+
+Detected profile:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+WARN: This profile is a guess of your environment, please check it.
+WARN: The output of this command is not guaranteed to be stable and can change in future Conan versions.
+WARN: Use your own profile files for stability.
+Saving detected profile to /home/mia/ai-servis/.buildenv/conan/profiles/default
+Installing project Conan profiles...
+  Installed profile: linux-arm64
+  Installed profile: linux-release
+  Installed profile: linux-simulation
+  Installed profile: macos-release
+  Installed profile: windows-release
+Creating environment activation script...
+
+════════════════════════════════════════════════════════════════
+  Setup Complete!
+════════════════════════════════════════════════════════════════
+
+Environment type: Standard venv (system Python)
+
+To activate the build environment:
+  source tools/env.sh
+
+To build all C++ components:
+  ./tools/build.sh
+
+For help:
+  ./tools/build.sh --help
+
+(venv) mia@mia:~/ai-servis $ ll  t
+test_orchestrator.py         test_orchestrator_simple.py  tests/                       tools/
+(venv) mia@mia:~/ai-servis $ ll  t
+test_orchestrator.py         test_orchestrator_simple.py  tests/                       tools/
+(venv) mia@mia:~/ai-servis $ ll  tools/
+-bash: ll: command not found
+(venv) mia@mia:~/ai-servis $ ls  tools/
+bootstrap.sh  create-zero-copy-env.sh  env.sh  init.sh  install-deps-rpi.sh
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           .cursor/             esp32/               modules/             site/
+android/             build-release/       deploy/              exported-assets/     monitoring/          tests/
+arduino/             ci/                  .devcontainer/       external/            platforms/           tools/
+.backups/            conan-recipes/       docker/              .git/                profiles/            web/
+bin/                 containers/          docs/                .github/             reports/             
+build-all.sh         contracts/           edge-compat/         mcp-cpp-bridge/      scripts/             
+(venv) mia@mia:~/ai-servis $ ./b
+bin/           build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ ./b
+bin/           build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ ./build-all.sh 
+{"status": "ok", "variant": "business-car", "base_path": "/business-car"}
+{"status": "ok", "variant": "gonzo-car", "base_path": "/gonzo-car"}
+{"status": "ok", "variant": "family-car", "base_path": "/family-car"}
+{"status": "ok", "variant": "dj-car", "base_path": "/dj-car"}
+✅ All variants built successfully
+(venv) mia@mia:~/ai-servis $ ./bin/arduino-cli 
+ai-servis-universal/                    docker-compose.dev.yml                  .pre-commit-config.yaml
+android/                                docker-compose.monitoring.yml           profiles/
+arduino/                                docker-compose.pi-simulation.yml        PROOF_CICD_INFRASTRUCTURE.md
+.backups/                               docker-compose.yml                      PROOF_CODE_QUALITY.md
+bin/                                    docs/                                   PROOF_DOCUMENTATION_FOUNDATION.md
+build-all.sh                            edge-compat/                            PROOF_PERFORMANCE_BENCHMARKS.md
+.buildenv/                              .env.example                            PR_RESOLUTION_SUMMARY.md
+BUILD-FIX-SUMMARY.md                    esp32/                                  QUICK-START-RASPBERRY-PI.md
+build_orchestrator.py                   exported-assets/                        README-CICD.md
+build-release/                          external/                               README.md
+CHECKS_FIXED_REPORT.md                  FINAL_ACCOMPLISHMENTS_REPORT.md         README-VM-TESTING.md
+CHECKS_STATUS_SUMMARY.md                .git/                                   reports/
+ci/                                     .github/                                requirements-dev.txt
+CICD_IMPROVEMENTS_SUMMARY.md            .gitignore                              requirements.txt
+conanfile.py                            IMPLEMENTATION-COMPLETE.md              scripts/
+conan-recipes/                          IMPLEMENTATION_PROGRESS_SUMMARY.md      SECURITY_FIXES_SUMMARY.md
+CONFLICT_RESOLUTION_SUMMARY.md          IMPLEMENTATION_STATUS_REPORT.md         site/
+CONSOLIDATION_AND_IMPROVEMENTS.md       IMPLEMENTATION-SUMMARY.md               test_orchestrator.py
+containers/                             LICENSE                                 test_orchestrator_simple.py
+contracts/                              mcp-cpp-bridge/                         tests/
+.cursor/                                mcp_integration_example.py              TODO.md
+deploy/                                 MILESTONE_COMPLETE.md                   tools/
+DEPLOYMENT-CHECKLIST.md                 mkdocs.yml                              .tool-versions
+DEPLOYMENT_CHECKLIST.md                 modules/                                web/
+.devcontainer/                          monitoring/                             WORK_COMPLETED_SUMMARY.md
+DEVELOPMENT.md                          orchestrator-config.yaml                WORKFLOW-REFACTOR-COMPLETE.md
+dist/                                   ORCHESTRATOR_IMPLEMENTATION_SUMMARY.md  WORKFLOW-REFACTOR-SUMMARY.md
+(venv) mia@mia:~/ai-servis $ ./b
+bin/           build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ ./b
+bin/           build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ ./build-
+build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ ./build-
+build-all.sh   build-release/ 
+(venv) mia@mia:~/ai-servis $ scripts/
+automotive-performance-test.py  deploy-raspberry-pi.sh          health-check.sh                 test-hardware-server.sh
+build-hardware-server.sh        dev-environment.sh              performance-tests.sh            test-raspberry-pi.sh
+build-raspberry-pi.sh           dev-setup.sh                    setup-tinymcp.sh                validate-security-fixes.sh
+build_variant.py                docker-build-multiplatform.sh   smoke-tests.sh                  vm-quick-test.sh
+deploy-automotive-ai.sh         docker-orchestration.sh         system-tests.sh                 vm-test-setup.sh
+(venv) mia@mia:~/ai-servis $ scripts/
+automotive-performance-test.py  deploy-raspberry-pi.sh          health-check.sh                 test-hardware-server.sh
+build-hardware-server.sh        dev-environment.sh              performance-tests.sh            test-raspberry-pi.sh
+build-raspberry-pi.sh           dev-setup.sh                    setup-tinymcp.sh                validate-security-fixes.sh
+build_variant.py                docker-build-multiplatform.sh   smoke-tests.sh                  vm-quick-test.sh
+deploy-automotive-ai.sh         docker-orchestration.sh         system-tests.sh                 vm-test-setup.sh
+(venv) mia@mia:~/ai-servis $ scripts/
+automotive-performance-test.py  deploy-raspberry-pi.sh          health-check.sh                 test-hardware-server.sh
+build-hardware-server.sh        dev-environment.sh              performance-tests.sh            test-raspberry-pi.sh
+build-raspberry-pi.sh           dev-setup.sh                    setup-tinymcp.sh                validate-security-fixes.sh
+build_variant.py                docker-build-multiplatform.sh   smoke-tests.sh                  vm-quick-test.sh
+deploy-automotive-ai.sh         docker-orchestration.sh         system-tests.sh                 vm-test-setup.sh
+(venv) mia@mia:~/ai-servis $ scripts/
+automotive-performance-test.py  deploy-raspberry-pi.sh          health-check.sh                 test-hardware-server.sh
+build-hardware-server.sh        dev-environment.sh              performance-tests.sh            test-raspberry-pi.sh
+build-raspberry-pi.sh           dev-setup.sh                    setup-tinymcp.sh                validate-security-fixes.sh
+build_variant.py                docker-build-multiplatform.sh   smoke-tests.sh                  vm-quick-test.sh
+deploy-automotive-ai.sh         docker-orchestration.sh         system-tests.sh                 vm-test-setup.sh
+(venv) mia@mia:~/ai-servis $ ./scripts/build-raspberry-pi.sh
+========================================
+  AI-SERVIS Raspberry Pi Build
+========================================
+
+Configuring CMake...
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found CURL: /usr/lib/aarch64-linux-gnu/libcurl.so (found version "8.14.1")
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+-- Checking for module 'jsoncpp'
+--   Found jsoncpp, version 1.9.6
+-- Checking for module 'mosquitto'
+--   Package 'mosquitto', required by 'virtual:world', not found
+CMake Error at CMakeLists.txt:23 (message):
+  FlatBuffers library not found
+
+
+-- Configuring incomplete, errors occurred!
+(venv) mia@mia:~/ai-servis $ ./scripts/dev-environment.sh
+AI-Servis Development Environment Manager
+
+Usage: ./scripts/dev-environment.sh <command> [environment] [options]
+
+Commands:
+  up       Start the environment
+  down     Stop the environment
+  restart  Restart the environment
+  status   Show environment status
+  logs     Show logs for services
+  build    Build/rebuild containers
+  clean    Clean up containers, volumes, and images
+  health   Check health of all services
+  shell    Open shell in a service container
+  test     Run tests in the environment
+  backup   Backup environment data
+  restore  Restore environment data
+
+Environments:
+  dev          Development environment with hot reloading
+  prod         Production-like environment
+  pi-sim       Raspberry Pi simulation environment
+  monitoring   Monitoring and observability stack
+  full         Complete environment with all services
+
+Options:
+  --build        Force rebuild containers
+  --pull         Pull latest images
+  --no-deps      Don't start dependent services
+  --detach       Run in background (default)
+  --follow       Follow logs output
+
+Examples:
+  ./scripts/dev-environment.sh up dev                    # Start development environment
+  ./scripts/dev-environment.sh up full --build          # Start all services with rebuild
+  ./scripts/dev-environment.sh logs dev core-orchestrator # Show logs for specific service
+  ./scripts/dev-environment.sh shell dev ai-servis-core  # Open shell in core service
+  ./scripts/dev-environment.sh test dev                  # Run tests in dev environment
+(venv) mia@mia:~/ai-servis $ ./scripts/dev-environment.sh ./
+ai-servis-universal/                    docker/                                 platforms/
+android/                                docker-compose.dev.yml                  .pre-commit-config.yaml
+arduino/                                docker-compose.monitoring.yml           profiles/
+.backups/                               docker-compose.pi-simulation.yml        PROOF_CICD_INFRASTRUCTURE.md
+bin/                                    docker-compose.yml                      PROOF_CODE_QUALITY.md
+build-all.sh                            docs/                                   PROOF_DOCUMENTATION_FOUNDATION.md
+.buildenv/                              edge-compat/                            PROOF_PERFORMANCE_BENCHMARKS.md
+BUILD-FIX-SUMMARY.md                    .env.example                            PR_RESOLUTION_SUMMARY.md
+build_orchestrator.py                   esp32/                                  QUICK-START-RASPBERRY-PI.md
+build-raspberry-pi/                     exported-assets/                        README-CICD.md
+build-release/                          external/                               README.md
+CHECKS_FIXED_REPORT.md                  FINAL_ACCOMPLISHMENTS_REPORT.md         README-VM-TESTING.md
+CHECKS_STATUS_SUMMARY.md                .git/                                   reports/
+ci/                                     .github/                                requirements-dev.txt
+CICD_IMPROVEMENTS_SUMMARY.md            .gitignore                              requirements.txt
+conanfile.py                            IMPLEMENTATION-COMPLETE.md              scripts/
+conan-recipes/                          IMPLEMENTATION_PROGRESS_SUMMARY.md      SECURITY_FIXES_SUMMARY.md
+CONFLICT_RESOLUTION_SUMMARY.md          IMPLEMENTATION_STATUS_REPORT.md         site/
+CONSOLIDATION_AND_IMPROVEMENTS.md       IMPLEMENTATION-SUMMARY.md               test_orchestrator.py
+containers/                             LICENSE                                 test_orchestrator_simple.py
+contracts/                              mcp-cpp-bridge/                         tests/
+.cursor/                                mcp_integration_example.py              TODO.md
+deploy/                                 MILESTONE_COMPLETE.md                   tools/
+DEPLOYMENT-CHECKLIST.md                 mkdocs.yml                              .tool-versions
+DEPLOYMENT_CHECKLIST.md                 modules/                                web/
+.devcontainer/                          monitoring/                             WORK_COMPLETED_SUMMARY.md
+DEVELOPMENT.md                          orchestrator-config.yaml                WORKFLOW-REFACTOR-COMPLETE.md
+--More--^C
+(venv) mia@mia:~/ai-servis $ ./m
+mcp-cpp-bridge/ modules/        monitoring/     
+(venv) mia@mia:~/ai-servis $ ./m
+mcp-cpp-bridge/ modules/        monitoring/     
+(venv) mia@mia:~/ai-servis $ ./m
+mcp-cpp-bridge/ modules/        monitoring/     
+(venv) mia@mia:~/ai-servis $ ./m
+mcp-cpp-bridge/ modules/        monitoring/     
+(venv) mia@mia:~/ai-servis $ ./modules/
+ai-audio-assistant/      ai-platform-controllers/ automotive-mcp-bridge/   hardware-bridge/         service-discovery/
+ai-communications/       ai-security/             core-orchestrator/       security-scanner/        
+(venv) mia@mia:~/ai-servis $ ./modules/
+ai-audio-assistant/      ai-platform-controllers/ automotive-mcp-bridge/   hardware-bridge/         service-discovery/
+ai-communications/       ai-security/             core-orchestrator/       security-scanner/        
+(venv) mia@mia:~/ai-servis $ ./modules/
+ai-audio-assistant/      ai-platform-controllers/ automotive-mcp-bridge/   hardware-bridge/         service-discovery/
+ai-communications/       ai-security/             core-orchestrator/       security-scanner/        
+(venv) mia@mia:~/ai-servis $ ./modules/
+ai-audio-assistant/      ai-platform-controllers/ automotive-mcp-bridge/   hardware-bridge/         service-discovery/
+ai-communications/       ai-security/             core-orchestrator/       security-scanner/        
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           contracts/           docs/                .github/             reports/
+android/             build-raspberry-pi/  .cursor/             edge-compat/         mcp-cpp-bridge/      scripts/
+arduino/             build-release/       deploy/              esp32/               modules/             site/
+.backups/            ci/                  .devcontainer/       exported-assets/     monitoring/          tests/
+bin/                 conan-recipes/       dist/                external/            platforms/           tools/
+build-all.sh         containers/          docker/              .git/                profiles/            web/
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           contracts/           docs/                .github/             reports/
+android/             build-raspberry-pi/  .cursor/             edge-compat/         mcp-cpp-bridge/      scripts/
+arduino/             build-release/       deploy/              esp32/               modules/             site/
+.backups/            ci/                  .devcontainer/       exported-assets/     monitoring/          tests/
+bin/                 conan-recipes/       dist/                external/            platforms/           tools/
+build-all.sh         containers/          docker/              .git/                profiles/            web/
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           contracts/           docs/                .github/             reports/
+android/             build-raspberry-pi/  .cursor/             edge-compat/         mcp-cpp-bridge/      scripts/
+arduino/             build-release/       deploy/              esp32/               modules/             site/
+.backups/            ci/                  .devcontainer/       exported-assets/     monitoring/          tests/
+bin/                 conan-recipes/       dist/                external/            platforms/           tools/
+build-all.sh         containers/          docker/              .git/                profiles/            web/
+(venv) mia@mia:~/ai-servis $ ./
+ai-servis-universal/ .buildenv/           contracts/           docs/                .github/             reports/
+android/             build-raspberry-pi/  .cursor/             edge-compat/         mcp-cpp-bridge/      scripts/
+arduino/             build-release/       deploy/              esp32/               modules/             site/
+.backups/            ci/                  .devcontainer/       exported-assets/     monitoring/          tests/
+bin/                 conan-recipes/       dist/                external/            platforms/           tools/
+build-all.sh         containers/          docker/              .git/                profiles/            web/
+(venv) mia@mia:~/ai-servis $ ./e
+edge-compat/     esp32/           exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./e
+edge-compat/     esp32/           exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./e
+edge-compat/     esp32/           exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./ex
+exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./ex
+exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./ex
+exported-assets/ external/        
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/
+cmake/   include/ src/     
+(venv) mia@mia:~/ai-servis $ ./external/tinymcp/^C
+(venv) mia@mia:~/ai-servis $ ^C
+(venv) mia@mia:~/ai-servis $ ^C
+(venv) mia@mia:~/ai-servis $ ^C
+(venv) mia@mia:~/ai-servis $ ^C
+(venv) mia@mia:~/ai-servis $ conan install . 
+
+======== Input profiles ========
+Profile host:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+Profile build:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+
+======== Computing dependency graph ========
+libcurl/8.11.1: Not found in local cache, looking in remotes...
+libcurl/8.11.1: Checking remote: conancenter
+libcurl/8.11.1: Checking remote: sparesparrow-conan
+Graph root
+    conanfile.py (ai-servis/1.0): /home/mia/ai-servis/conanfile.py
+Requirements
+    flatbuffers/24.3.25#8fc25e15ac8ef302e2c42497d10c95e9 - Cache
+    jsoncpp/1.9.6#c3730c7936aefa462eb6c6560a5e1fd8 - Cache
+ERROR: Package 'libcurl/8.11.1' not resolved: Unable to find 'libcurl/8.11.1' in remotes.
+(venv) mia@mia:~/ai-servis $ conan con
+conanfile.py   conan-recipes/ containers/    contracts/     
+(venv) mia@mia:~/ai-servis $ conan con
+conanfile.py   conan-recipes/ containers/    contracts/     
+(venv) mia@mia:~/ai-servis $ conan con
+conanfile.py   conan-recipes/ containers/    contracts/     
+(venv) mia@mia:~/ai-servis $ conan config
+usage: conan config [-h] [-v [V]] [-cc CORE_CONF] {home,install,install-pkg,list,show} ...
+conan config: error: the following arguments are required: subcommand
+ERROR: Exiting with code: 2
+(venv) mia@mia:~/ai-servis $ conan config install
+usage: conan config install [-h] [-v [V]] [-cc CORE_CONF] [--verify-ssl [VERIFY_SSL] | --insecure] [-t {git,dir,file,url}] [-a ARGS]
+                            [-sf SOURCE_FOLDER] [-tf TARGET_FOLDER]
+                            item
+conan config install: error: the following arguments are required: item
+ERROR: Exiting with code: 2
+(venv) mia@mia:~/ai-servis $ conan config install 
+ai-servis-universal/                    docker/                                 platforms/
+android/                                docker-compose.dev.yml                  .pre-commit-config.yaml
+arduino/                                docker-compose.monitoring.yml           profiles/
+.backups/                               docker-compose.pi-simulation.yml        PROOF_CICD_INFRASTRUCTURE.md
+bin/                                    docker-compose.yml                      PROOF_CODE_QUALITY.md
+build-all.sh                            docs/                                   PROOF_DOCUMENTATION_FOUNDATION.md
+.buildenv/                              edge-compat/                            PROOF_PERFORMANCE_BENCHMARKS.md
+BUILD-FIX-SUMMARY.md                    .env.example                            PR_RESOLUTION_SUMMARY.md
+build_orchestrator.py                   esp32/                                  QUICK-START-RASPBERRY-PI.md
+build-raspberry-pi/                     exported-assets/                        README-CICD.md
+build-release/                          external/                               README.md
+CHECKS_FIXED_REPORT.md                  FINAL_ACCOMPLISHMENTS_REPORT.md         README-VM-TESTING.md
+CHECKS_STATUS_SUMMARY.md                .git/                                   reports/
+ci/                                     .github/                                requirements-dev.txt
+CICD_IMPROVEMENTS_SUMMARY.md            .gitignore                              requirements.txt
+conanfile.py                            IMPLEMENTATION-COMPLETE.md              scripts/
+conan-recipes/                          IMPLEMENTATION_PROGRESS_SUMMARY.md      SECURITY_FIXES_SUMMARY.md
+CONFLICT_RESOLUTION_SUMMARY.md          IMPLEMENTATION_STATUS_REPORT.md         site/
+CONSOLIDATION_AND_IMPROVEMENTS.md       IMPLEMENTATION-SUMMARY.md               test_orchestrator.py
+containers/                             LICENSE                                 test_orchestrator_simple.py
+contracts/                              mcp-cpp-bridge/                         tests/
+.cursor/                                mcp_integration_example.py              TODO.md
+deploy/                                 MILESTONE_COMPLETE.md                   tools/
+DEPLOYMENT-CHECKLIST.md                 mkdocs.yml                              .tool-versions
+DEPLOYMENT_CHECKLIST.md                 modules/                                web/
+.devcontainer/                          monitoring/                             WORK_COMPLETED_SUMMARY.md
+DEVELOPMENT.md                          orchestrator-config.yaml                WORKFLOW-REFACTOR-COMPLETE.md
+(venv) mia@mia:~/ai-servis $ conan config install 
+usage: conan config install [-h] [-v [V]] [-cc CORE_CONF] [--verify-ssl [VERIFY_SSL] | --insecure] [-t {git,dir,file,url}] [-a ARGS]
+                            [-sf SOURCE_FOLDER] [-tf TARGET_FOLDER]
+                            item
+conan config install: error: the following arguments are required: item
+ERROR: Exiting with code: 2
+(venv) mia@mia:~/ai-servis $ conan config install ^C
+(venv) mia@mia:~/ai-servis $ conan install . 
+ai-servis-universal/                    docker/                                 platforms/
+android/                                docker-compose.dev.yml                  .pre-commit-config.yaml
+arduino/                                docker-compose.monitoring.yml           profiles/
+.backups/                               docker-compose.pi-simulation.yml        PROOF_CICD_INFRASTRUCTURE.md
+bin/                                    docker-compose.yml                      PROOF_CODE_QUALITY.md
+build-all.sh                            docs/                                   PROOF_DOCUMENTATION_FOUNDATION.md
+.buildenv/                              edge-compat/                            PROOF_PERFORMANCE_BENCHMARKS.md
+BUILD-FIX-SUMMARY.md                    .env.example                            PR_RESOLUTION_SUMMARY.md
+build_orchestrator.py                   esp32/                                  QUICK-START-RASPBERRY-PI.md
+build-raspberry-pi/                     exported-assets/                        README-CICD.md
+build-release/                          external/                               README.md
+CHECKS_FIXED_REPORT.md                  FINAL_ACCOMPLISHMENTS_REPORT.md         README-VM-TESTING.md
+CHECKS_STATUS_SUMMARY.md                .git/                                   reports/
+ci/                                     .github/                                requirements-dev.txt
+CICD_IMPROVEMENTS_SUMMARY.md            .gitignore                              requirements.txt
+conanfile.py                            IMPLEMENTATION-COMPLETE.md              scripts/
+conan-recipes/                          IMPLEMENTATION_PROGRESS_SUMMARY.md      SECURITY_FIXES_SUMMARY.md
+CONFLICT_RESOLUTION_SUMMARY.md          IMPLEMENTATION_STATUS_REPORT.md         site/
+CONSOLIDATION_AND_IMPROVEMENTS.md       IMPLEMENTATION-SUMMARY.md               test_orchestrator.py
+containers/                             LICENSE                                 test_orchestrator_simple.py
+contracts/                              mcp-cpp-bridge/                         tests/
+.cursor/                                mcp_integration_example.py              TODO.md
+deploy/                                 MILESTONE_COMPLETE.md                   tools/
+DEPLOYMENT-CHECKLIST.md                 mkdocs.yml                              .tool-versions
+DEPLOYMENT_CHECKLIST.md                 modules/                                web/
+.devcontainer/                          monitoring/                             WORK_COMPLETED_SUMMARY.md
+DEVELOPMENT.md                          orchestrator-config.yaml                WORKFLOW-REFACTOR-COMPLETE.md
+(venv) mia@mia:~/ai-servis $ conan install . --build=missing
+
+======== Input profiles ========
+Profile host:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+Profile build:
+[settings]
+arch=armv8
+build_type=Release
+compiler=gcc
+compiler.cppstd=gnu17
+compiler.libcxx=libstdc++11
+compiler.version=14
+os=Linux
+
+
+======== Computing dependency graph ========
+libcurl/8.11.1: Not found in local cache, looking in remotes...
+libcurl/8.11.1: Checking remote: conancenter
+libcurl/8.11.1: Checking remote: sparesparrow-conan
+Graph root
+    conanfile.py (ai-servis/1.0): /home/mia/ai-servis/conanfile.py
+Requirements
+    flatbuffers/24.3.25#8fc25e15ac8ef302e2c42497d10c95e9 - Cache
+    jsoncpp/1.9.6#c3730c7936aefa462eb6c6560a5e1fd8 - Cache
+ERROR: Package 'libcurl/8.11.1' not resolved: Unable to find 'libcurl/8.11.1' in remotes.
+(venv) mia@mia:~/ai-servis $ cat /home/mia/ai-servis/conanfile.py
+from conan import ConanFile
+from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
+from conan.tools.layout import basic_layout
+
+
+class AiServisConan(ConanFile):
+    name = "ai-servis"
+    version = "1.0"
+    description = "AI Service with MCP and Hardware Control"
+    settings = "os", "compiler", "build_type", "arch"
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+        "with_hardware": [True, False],
+        "with_mcp": [True, False]
+    }
+    default_options = {
+        "shared": False,
+        "fPIC": True,
+        "with_hardware": True,
+        "with_mcp": True
+    }
+
+    def configure(self):
+        if self.settings.os == "Windows":
+            del self.options.fPIC
+
+    def requirements(self):
+        # Core dependencies - always required
+        # NOTE: Using newer versions for CMake 4.x compatibility (cmake_minimum_required >= 3.5)
+        self.requires("jsoncpp/1.9.6")       # JSON handling for all components
+        self.requires("flatbuffers/24.3.25") # Serialization for all components
+        self.requires("libcurl/8.11.1")      # HTTP client for downloads and APIs
+        self.requires("openssl/3.4.0")       # SSL/TLS support
+        self.requires("zlib/1.3.1")          # Compression support
+
+        # Hardware-specific dependencies
+        if self.options.with_hardware:
+            self.requires("libgpiod/2.1.3")      # GPIO control for Raspberry Pi
+            self.requires("mosquitto/2.0.18")    # MQTT communication
+
+        # MCP-specific dependencies
+        if self.options.with_mcp:
+            # MCP integration may need additional deps
+            pass
+
+    def build_requirements(self):
+        # Tools needed for building
+        self.tool_requires("flatbuffers/24.3.25")  # For flatc compiler
+        
+        # Note: sparetools-cpython available from sparesparrow-conan Cloudsmith remote
+        # The bootstrap scripts handle Python environment setup automatically
+
+    def layout(self):
+        basic_layout(self)
+
+    def generate(self):
+        # Generate CMake toolchain and dependencies
+        tc = CMakeToolchain(self)
+        tc.generate()
+
+        deps = CMakeDeps(self)
+        deps.generate()
+
+    def build(self):
+        # Generate FlatBuffers headers before building
+        self._generate_flatbuffers()
+
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
+
+    def _generate_flatbuffers(self):
+        """Generate C++ headers from FlatBuffers schema"""
+        import os
+        from pathlib import Path
+
+        # Find flatc executable
+        flatc_path = None
+        if hasattr(self, 'deps_cpp_info') and self.deps_cpp_info.has_components:
+            # Try to get flatc from Conan dependencies
+            try:
+                flatbuffers_info = self.deps_cpp_info["flatbuffers"]
+                flatc_path = os.path.join(flatbuffers_info.bin_paths[0], "flatc")
+            except:
+                pass
+
+        if not flatc_path or not os.path.exists(flatc_path):
+            # Try system flatc
+            import shutil
+            flatc_path = shutil.which("flatc")
+
+        if not flatc_path:
+            self.output.warning("FlatBuffers compiler (flatc) not found. C++ headers will not be generated.")
+            return
+
+        # Schema and output paths
+        schema_dir = os.path.join(self.source_folder, "platforms", "cpp", "core")
+        schema_file = os.path.join(schema_dir, "webgrab.fbs")
+        output_file = os.path.join(schema_dir, "webgrab_generated.h")
+
+        if not os.path.exists(schema_file):
+            self.output.warning(f"FlatBuffers schema not found: {schema_file}")
+            return
+
+        # Generate headers
+        import subprocess
+        cmd = [
+            flatc_path,
+            "--cpp",
+            "--gen-mutable",
+            "-o", schema_dir,
+            schema_file
+        ]
+
+        try:
+            self.output.info(f"Generating FlatBuffers headers: {' '.join(cmd)}")
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+            self.output.info(f"FlatBuffers headers generated successfully: {output_file}")
+        except subprocess.CalledProcessError as e:
+            self.output.error(f"Failed to generate FlatBuffers headers: {e}")
+            self.output.error(f"stdout: {e.stdout}")
+            self.output.error(f"stderr: {e.stderr}")
+            raise
+
+    def package(self):
+        # Package the executables and libraries
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        # Define library information
+        self.cpp_info.libs = ["webgrab_core"]
+
+        if self.options.with_hardware:
+            self.cpp_info.libs.append("hardware-server")
+
+        if self.options.with_mcp:
+            self.cpp_info.libs.append("mcp-server")
+
+        if self.settings.os == "Linux":
+            self.cpp_info.system_libs = ["pthread", "dl", "rt"]
+        elif self.settings.os == "Windows":
+            self.cpp_info.system_libs = ["ws2_32", "crypt32", "advapi32"](venv)
+

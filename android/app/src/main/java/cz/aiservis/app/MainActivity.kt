@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
@@ -37,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.aiservis.app.core.background.DrivingService
@@ -52,7 +57,11 @@ import cz.aiservis.app.features.dashboard.DashboardViewModel
 import cz.aiservis.app.features.dashboard.PolicyViewModel
 import cz.aiservis.app.features.settings.SettingsViewModel
 import cz.aiservis.app.ui.components.DashboardGauges
+import cz.aiservis.app.ui.screens.CameraPreviewScreen
+import cz.aiservis.app.ui.screens.OBDPairingScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -94,13 +103,13 @@ class MainActivity : ComponentActivity() {
 						selected = selected == 2,
 						onClick = { selected = 2 },
 						icon = { Icon(Icons.Default.CameraAlt, contentDescription = null) },
-						label = { Text("ANPR") }
+						label = { Text("Camera") }
 					)
 					NavigationBarItem(
 						selected = selected == 3,
 						onClick = { selected = 3 },
-						icon = { Icon(Icons.Default.VideoLibrary, contentDescription = null) },
-						label = { Text("Clips") }
+						icon = { Icon(Icons.Default.Bluetooth, contentDescription = null) },
+						label = { Text("OBD") }
 					)
 					NavigationBarItem(
 						selected = selected == 4,
@@ -114,8 +123,8 @@ class MainActivity : ComponentActivity() {
 			when (selected) {
 				0 -> DashboardScreen(Modifier.padding(padding))
 				1 -> AlertsScreen(Modifier.padding(padding))
-				2 -> AnprScreen(Modifier.padding(padding))
-				3 -> ClipsScreen(Modifier.padding(padding))
+				2 -> CameraPreviewScreen(Modifier.padding(padding))
+				3 -> OBDPairingScreen(Modifier.padding(padding))
 				else -> SettingsScreen(Modifier.padding(padding))
 			}
 		}
@@ -127,15 +136,60 @@ class MainActivity : ComponentActivity() {
 		val policyVm: PolicyViewModel = hiltViewModel()
 		val latest = vm.latest.value
 		val policy = policyVm.state.value
+		var isServiceRunning by remember { mutableStateOf(false) }
+		
 		Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-			Text("Dashboard")
+			Text(
+				text = "Dashboard",
+				style = MaterialTheme.typography.headlineMedium
+			)
+			
+			Spacer(Modifier.height(8.dp))
+			
 			PolicyAdvisory(policy.advisoryMessage, policy.samplingMode.name, policy.batteryPercent)
-			Spacer(Modifier.height(8.dp))
-			DashboardGauges(latest)
+			
 			Spacer(Modifier.height(16.dp))
-			Button(onClick = { startDrivingService() }) { Text("Start Driving Service") }
-			Spacer(Modifier.height(8.dp))
-			Button(onClick = { stopDrivingService() }) { Text("Stop Driving Service") }
+			
+			DashboardGauges(latest)
+			
+			Spacer(Modifier.height(16.dp))
+			
+			// Service control buttons
+			Row(modifier = Modifier.fillMaxWidth()) {
+				Button(
+					onClick = { 
+						startDrivingService()
+						isServiceRunning = true
+					},
+					enabled = !isServiceRunning,
+					modifier = Modifier.weight(1f),
+					colors = ButtonDefaults.buttonColors(
+						containerColor = MaterialTheme.colorScheme.primary
+					)
+				) { 
+					Icon(Icons.Default.PlayArrow, contentDescription = null)
+					Spacer(Modifier.height(4.dp))
+					Text("Start Service") 
+				}
+				
+				Spacer(Modifier.height(8.dp))
+				
+				OutlinedButton(
+					onClick = { 
+						stopDrivingService()
+						isServiceRunning = false
+					},
+					enabled = isServiceRunning,
+					modifier = Modifier.weight(1f),
+					colors = ButtonDefaults.outlinedButtonColors(
+						contentColor = Color.Red
+					)
+				) {
+					Icon(Icons.Default.Stop, contentDescription = null)
+					Spacer(Modifier.height(4.dp))
+					Text("Stop Service") 
+				}
+			}
 		}
 	}
 
