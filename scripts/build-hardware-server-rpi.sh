@@ -69,10 +69,19 @@ if [ "$CLEAN_BUILD" = true ]; then
 fi
 
 mkdir -p "$BUILD_DIR"
-cd "$BUILD_DIR"
 
-# Copy the minimal CMakeLists.txt
-cp "$CMAKE_FILE" "$BUILD_DIR/CMakeLists.txt"
+# Create a temporary source directory with just the files we need
+TEMP_SRC="$BUILD_DIR/src"
+mkdir -p "$TEMP_SRC"
+
+# Copy only the required source files
+echo -e "${CYAN}Copying source files...${NC}"
+cp "$CMAKE_FILE" "$TEMP_SRC/CMakeLists.txt"
+cp "$SOURCE_DIR/main_hardware_server.cpp" "$TEMP_SRC/"
+cp "$SOURCE_DIR/HardwareControlServer.cpp" "$TEMP_SRC/"
+cp "$SOURCE_DIR/HardwareControlServer.h" "$TEMP_SRC/"
+
+cd "$BUILD_DIR"
 
 # Determine generator
 GENERATOR=""
@@ -89,7 +98,7 @@ echo -e "${CYAN}Configuring CMake...${NC}"
 cmake $GENERATOR \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    "$SOURCE_DIR"
+    "$TEMP_SRC"
 
 # Build
 echo ""
