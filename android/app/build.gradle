@@ -4,50 +4,27 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
-    id 'jacoco'
-    id 'com.github.ben-manes.versions'
-    id 'org.jlleitschuh.gradle.ktlint'
-    id 'io.gitlab.arturbosch.detekt'
 }
 
 android {
     namespace 'cz.aiservis.app'
     compileSdk 34
 
-    // CI-driven versioning
-    def githubRunNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
-    def githubSha = (System.getenv("GITHUB_SHA") ?: "dev").take(7)
-    def githubRefType = System.getenv("GITHUB_REF_TYPE") ?: "branch"
-    def githubRefName = System.getenv("GITHUB_REF_NAME") ?: "local"
-    def isTagBuild = githubRefType == 'tag' && githubRefName?.startsWith('v')
-    def computedVersionName = isTagBuild ? githubRefName.replaceFirst('v','') : "0.0.0-ci.${githubRunNumber}+${githubSha}"
-
     defaultConfig {
         applicationId "cz.aiservis.app"
         minSdk 24
         targetSdk 34
-        
-        // Dynamic versioning based on Git
-        versionCode getVersionCode()
-        versionName getVersionName()
+        versionCode (System.getenv("VERSION_CODE")?.toInteger()) ?: 1
+        versionName System.getenv("VERSION_NAME") ?: "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
         }
 
-        // Build config fields
-        buildConfigField "String", "BUILD_TIME", "\"${getBuildTime()}\""
-        buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
-        buildConfigField "String", "GIT_BRANCH", "\"${getGitBranch()}\""
-        buildConfigField "String", "VERSION_NAME", "\"${getVersionName()}\""
+        buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
         buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
         buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
-    }
-
-    lintOptions {
-        abortOnError false
-        ignoreWarnings true
     }
 
     signingConfigs {
@@ -99,7 +76,6 @@ android {
     }
     testOptions {
         unitTests.includeAndroidResources = true
-        unitTests.returnDefaultValues = true
     }
     packaging {
         resources {
@@ -231,130 +207,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'com.google.dagger:hilt-android-testing:2.48.1'
     kaptAndroidTest 'com.google.dagger:hilt-compiler:2.48.1'
-
-    // Additional androidTest dependencies for instrumented tests
-    androidTestImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'io.mockk:mockk:1.13.8'
-    androidTestImplementation 'org.jetbrains.kotlin:kotlin-test:1.9.22'
-    androidTestImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.9.22'
-    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
-    androidTestImplementation 'androidx.room:room-testing:2.6.1'
-    androidTestImplementation 'app.cash.turbine:turbine:1.0.0'
     
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
-}
-
-// Versioning functions
-def getVersionCode() {
-    def versionCode = System.getenv("VERSION_CODE") as Integer
-    if (versionCode != null) {
-        return versionCode
-    }
-    
-    // Try to get from git commit count
-    try {
-        def gitCommitCount = "git rev-list --count HEAD".execute().text.trim()
-        return gitCommitCount as Integer
-    } catch (Exception e) {
-        return 1
-    }
-}
-
-def getVersionName() {
-    def versionName = System.getenv("VERSION_NAME")
-    if (versionName != null) {
-        return versionName
-    }
-    
-    // Try to get from git tag
-    try {
-        def gitTag = "git describe --tags --abbrev=0".execute().text.trim()
-        if (gitTag && !gitTag.isEmpty()) {
-            return gitTag.replaceFirst("^v", "")
-        }
-    } catch (Exception e) {
-        // Fallback to default
-    }
-    
-    return "1.0.0"
-}
-
-def getBuildTime() {
-    return new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
-}
-
-def getGitHash() {
-    try {
-        return "git rev-parse --short HEAD".execute().text.trim()
-    } catch (Exception e) {
-        return "unknown"
-    }
-}
-
-def getGitBranch() {
-    try {
-        return "git rev-parse --abbrev-ref HEAD".execute().text.trim()
-    } catch (Exception e) {
-        return "unknown"
-    }
-}
-
-// Test coverage configuration
-jacoco {
-    toolVersion = "0.8.8"
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*']
-}
-
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-    
-    def fileFilter = [
-        '**/R.class',
-        '**/R$*.class',
-        '**/BuildConfig.*',
-        '**/Manifest*.*',
-        '**/*Test*.*',
-        'android/**/*.*',
-        '**/di/**',
-        '**/hilt/**'
-    ]
-    
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-    
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: buildDir, includes: [
-        'jacoco/testDebugUnitTest.exec',
-        'outputs/code-coverage/connected/*coverage.ec'
-    ]))
-}
-
-// ktlint configuration
-ktlint {
-    version = "1.0.1"
-    debug = true
-    verbose = true
-    android = true
-    outputToConsole = true
-    outputColorName = "RED"
-    ignoreFailures = true  // Allow builds to continue with lint issues
-    enableExperimentalRules = false
-}
-
-// detekt configuration
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config.setFrom("$projectDir/detekt.yml")
-    baseline = file("$projectDir/baseline.xml")
-    ignoreFailures = true  // Allow builds to continue with detekt issues
 }

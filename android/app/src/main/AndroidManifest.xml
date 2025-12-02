@@ -10,7 +10,7 @@
 	
 	<!-- Android 12+ Bluetooth permissions -->
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 	
 	<!-- Location permission for BLE scanning -->
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -39,9 +39,6 @@
 		android:roundIcon="@drawable/ic_car"
 		android:allowBackup="true"
 		android:supportsRtl="true">
-
-		<!-- Disable Sentry auto-init since we initialize manually in AIServisApplication -->
-		<meta-data android:name="io.sentry.auto-init" android:value="false" />
 
 		<activity
 			android:name=".MainActivity"
