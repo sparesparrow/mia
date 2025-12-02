@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
@@ -18,13 +19,19 @@ import android.content.Context
 import android.os.Build
 import android.os.ParcelUuid
 import android.util.Log
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
 import cz.mia.app.core.networking.Backoff
 import cz.mia.app.utils.PermissionHelper
+=======
+import cz.aiservis.app.core.networking.Backoff
+import cz.aiservis.app.utils.PermissionHelper
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +39,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
@@ -91,9 +100,13 @@ interface BLEManager {
     fun isConnected(): Boolean
     
     /** Cleanup resources and cancel all operations */
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
     suspend fun cleanup() {
         // Default no-op implementation
     }
+=======
+    suspend fun cleanup()
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
 }
 
 @Singleton
@@ -112,6 +125,9 @@ class BLEManagerImpl @Inject constructor(
         val NUS_TX_CHAR_UUID: UUID = UUID.fromString("6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
         val NUS_RX_CHAR_UUID: UUID = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
         
+        // Client Characteristic Configuration Descriptor UUID
+        private val CCCD_UUID: UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+        
         // Common OBD adapter device names
         private val OBD_DEVICE_NAMES = listOf("OBD", "ELM327", "VGATE", "VEEPEAK", "BAFX")
         
@@ -120,7 +136,12 @@ class BLEManagerImpl @Inject constructor(
         private const val CONNECTION_TIMEOUT_MS = 15_000L
     }
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    // Explicit job tracking for proper cleanup
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.IO)
+    
+    // Mutex for thread-safe connection state management
+    private val connectionMutex = Mutex()
     
     private val bluetoothManager: BluetoothManager? = 
         context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
@@ -137,7 +158,11 @@ class BLEManagerImpl @Inject constructor(
     private val _discoveredDevices = MutableStateFlow<List<BleDeviceInfo>>(emptyList())
     override val discoveredDevices: StateFlow<List<BleDeviceInfo>> = _discoveredDevices.asStateFlow()
     
-    private val responseChannel = Channel<String>(Channel.BUFFERED)
+    // Bounded channel with overflow policy to prevent memory issues
+    private val responseChannel = Channel<String>(
+        capacity = 16,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     private var connectionDeferred: CompletableDeferred<Boolean>? = null
     
     private val responseBuffer = StringBuilder()
@@ -154,8 +179,17 @@ class BLEManagerImpl @Inject constructor(
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     Log.d(TAG, "Disconnected from GATT server")
                     _connectionState.value = BleConnectionState.Disconnected
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
                     connectionDeferred?.complete(false)
                     cleanupInternal()
+=======
+                    scope.launch {
+                        connectionMutex.withLock {
+                            connectionDeferred?.complete(false)
+                        }
+                    }
+                    cleanupGatt()
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
                 }
             }
         }
@@ -174,17 +208,26 @@ class BLEManagerImpl @Inject constructor(
                     // Enable notifications on RX characteristic
                     rxCharacteristic?.let { rx ->
                         gatt.setCharacteristicNotification(rx, true)
-                        val descriptor = rx.getDescriptor(
-                            UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-                        )
-                        descriptor?.let {
-                            it.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            gatt.writeDescriptor(it)
+                        val descriptor = rx.getDescriptor(CCCD_UUID)
+                        descriptor?.let { desc ->
+                            // Use proper API versioning for Android 13+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                gatt.writeDescriptor(desc, BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+                            } else {
+                                @Suppress("DEPRECATION")
+                                desc.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                @Suppress("DEPRECATION")
+                                gatt.writeDescriptor(desc)
+                            }
                         }
                     }
                     
                     _connectionState.value = BleConnectionState.Connected
-                    connectionDeferred?.complete(true)
+                    scope.launch {
+                        connectionMutex.withLock {
+                            connectionDeferred?.complete(true)
+                        }
+                    }
                 } else {
                     // Try to find any writable characteristic for OBD commands
                     gatt?.services?.forEach { service ->
@@ -201,16 +244,28 @@ class BLEManagerImpl @Inject constructor(
                     
                     if (txCharacteristic != null) {
                         _connectionState.value = BleConnectionState.Connected
-                        connectionDeferred?.complete(true)
+                        scope.launch {
+                            connectionMutex.withLock {
+                                connectionDeferred?.complete(true)
+                            }
+                        }
                     } else {
                         _connectionState.value = BleConnectionState.Error("No compatible UART service found")
-                        connectionDeferred?.complete(false)
+                        scope.launch {
+                            connectionMutex.withLock {
+                                connectionDeferred?.complete(false)
+                            }
+                        }
                     }
                 }
             } else {
                 Log.e(TAG, "Service discovery failed with status: $status")
                 _connectionState.value = BleConnectionState.Error("Service discovery failed")
-                connectionDeferred?.complete(false)
+                scope.launch {
+                    connectionMutex.withLock {
+                        connectionDeferred?.complete(false)
+                    }
+                }
             }
         }
         
@@ -286,6 +341,13 @@ class BLEManagerImpl @Inject constructor(
     
     @SuppressLint("MissingPermission")
     override suspend fun initialize() = withContext(Dispatchers.Main) {
+        // Check for required Bluetooth permissions
+        if (!PermissionHelper.hasBluetoothPermissions(context)) {
+            val missing = PermissionHelper.getMissingBluetoothPermissions(context)
+            _connectionState.value = BleConnectionState.Error("Missing permissions: ${missing.joinToString()}")
+            return@withContext
+        }
+        
         if (bluetoothAdapter == null) {
             _connectionState.value = BleConnectionState.Error("Bluetooth not supported")
             return@withContext
@@ -366,14 +428,18 @@ class BLEManagerImpl @Inject constructor(
             return@withContext false
         }
         
-        connectionDeferred = CompletableDeferred()
+        connectionMutex.withLock {
+            connectionDeferred = CompletableDeferred()
+        }
         _connectionState.value = BleConnectionState.Connecting
         
         try {
             bluetoothGatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
             
             val result = withTimeoutOrNull(CONNECTION_TIMEOUT_MS) {
-                connectionDeferred?.await() ?: false
+                connectionMutex.withLock {
+                    connectionDeferred?.await() ?: false
+                }
             } ?: false
             
             if (result) {
@@ -400,21 +466,52 @@ class BLEManagerImpl @Inject constructor(
         withContext(Dispatchers.Main) {
             try {
                 bluetoothGatt?.disconnect()
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
                 cleanupInternal()
                 _connectionState.value = BleConnectionState.Disconnected
+=======
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
             } catch (e: Exception) {
-                Log.e(TAG, "Disconnect failed", e)
+                Log.e(TAG, "Disconnect threw exception", e)
+            } finally {
+                cleanupGatt()
+                _connectionState.value = BleConnectionState.Disconnected
             }
         }
     }
     
     @SuppressLint("MissingPermission")
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
     private fun cleanupInternal() {
         bluetoothGatt?.close()
         bluetoothGatt = null
         txCharacteristic = null
         rxCharacteristic = null
         responseBuffer.clear()
+=======
+    private fun cleanupGatt() {
+        try {
+            bluetoothGatt?.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error closing GATT", e)
+        } finally {
+            bluetoothGatt = null
+            txCharacteristic = null
+            rxCharacteristic = null
+            responseBuffer.clear()
+        }
+    }
+    
+    override suspend fun cleanup() {
+        withContext(Dispatchers.Main) {
+            try {
+                disconnect()
+            } finally {
+                job.cancel()
+                responseChannel.close()
+            }
+        }
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
     }
 
     override suspend fun cleanup() {
@@ -437,10 +534,17 @@ class BLEManagerImpl @Inject constructor(
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
             
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
             val writeInitiated = withContext(Dispatchers.Main) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
                     result == 0 // BluetoothStatusCodes.SUCCESS = 0
+=======
+            withContext(Dispatchers.Main) {
+                // Use proper API versioning for Android 13+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+>>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
                 } else {
                     @Suppress("DEPRECATION")
                     tx.value = bytes
@@ -464,9 +568,4 @@ class BLEManagerImpl @Inject constructor(
     }
     
     override fun isConnected(): Boolean = _connectionState.value is BleConnectionState.Connected
-}
-
-// Dummy import for descriptor constant
-private object BluetoothGattDescriptor {
-    val ENABLE_NOTIFICATION_VALUE: ByteArray = byteArrayOf(0x01, 0x00)
 }

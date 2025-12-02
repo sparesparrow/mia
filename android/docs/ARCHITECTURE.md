@@ -257,7 +257,7 @@ class BleDevicesViewModelTest {
 ## Package Structure
 
 ```
-cz.mia.app/
+cz.aiservis.app/
 ├── core/
 │   ├── background/     # Background services, BLE, MQTT
 │   ├── camera/         # Camera/ANPR processing
@@ -280,7 +280,7 @@ cz.mia.app/
 │   ├── components/     # Reusable UI components
 │   └── screens/        # Screen composables + ViewModels
 ├── utils/              # Utility classes
-├── MIAApplication.kt
+├── AIServisApplication.kt
 └── MainActivity.kt
 ```
 

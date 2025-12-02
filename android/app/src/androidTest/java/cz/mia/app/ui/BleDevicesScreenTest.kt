@@ -1,4 +1,4 @@
-package cz.mia.app.ui
+package cz.aiservis.app.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -7,11 +7,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import cz.mia.app.core.background.BLEManager
-import cz.mia.app.core.background.BleConnectionState
-import cz.mia.app.core.background.BleDeviceInfo
-import cz.mia.app.ui.screens.devices.BleDevicesScreen
-import cz.mia.app.ui.screens.devices.BleDevicesViewModel
+import cz.aiservis.app.core.background.BLEManager
+import cz.aiservis.app.core.background.BleConnectionState
+import cz.aiservis.app.core.background.BleDeviceInfo
+import cz.aiservis.app.ui.screens.devices.BleDevicesScreen
+import cz.aiservis.app.ui.screens.devices.BleDevicesViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.coEvery
