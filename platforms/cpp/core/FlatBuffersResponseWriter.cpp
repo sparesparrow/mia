@@ -18,9 +18,9 @@ bool FlatBuffersResponseWriter::write(const webgrab::DownloadResponse& resp) {
     return sendResponse();
 }
 
-bool FlatBuffersResponseWriter::write(const webgrab::StatusResponse& resp) {
+bool FlatBuffersResponseWriter::write(const webgrab::DownloadStatusResponse& resp) {
     builder_.Clear();
-    auto status_str = builder_.CreateString(resp.status()->str());
+    auto status_str = builder_.CreateString(resp.status() ? resp.status()->str() : "");
     auto fb_resp = webgrab::CreateDownloadStatusResponse(builder_, status_str);
     builder_.Finish(fb_resp);
     return sendResponse();
@@ -28,7 +28,7 @@ bool FlatBuffersResponseWriter::write(const webgrab::StatusResponse& resp) {
 
 bool FlatBuffersResponseWriter::write(const webgrab::ErrorResponse& resp) {
     builder_.Clear();
-    auto error_str = builder_.CreateString(resp.error()->str());
+    auto error_str = builder_.CreateString(resp.error() ? resp.error()->str() : "");
     auto fb_resp = webgrab::CreateErrorResponse(builder_, error_str);
     builder_.Finish(fb_resp);
     return sendResponse();
