@@ -1,7 +1,16 @@
 package cz.aiservis.app.core.background
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import cz.aiservis.app.utils.PermissionHelper
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -15,9 +24,28 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class BLEManagerTest {
 
+    private lateinit var mockContext: Context
+    private lateinit var mockBluetoothManager: BluetoothManager
+    private lateinit var mockBluetoothAdapter: BluetoothAdapter
+
     @Before
     fun setup() {
-        // Setup is done without context for unit tests
+        mockContext = mockk(relaxed = true)
+        mockBluetoothManager = mockk(relaxed = true)
+        mockBluetoothAdapter = mockk(relaxed = true)
+        
+        every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns mockBluetoothManager
+        every { mockBluetoothManager.adapter } returns mockBluetoothAdapter
+        
+        // Mock PermissionHelper
+        mockkObject(PermissionHelper)
+        every { PermissionHelper.hasBluetoothPermissions(any()) } returns true
+        every { PermissionHelper.getMissingBluetoothPermissions(any()) } returns emptyList()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkObject(PermissionHelper)
     }
 
     @Test
@@ -187,5 +215,59 @@ class BLEManagerTest {
             .trim()
         
         assertEquals("OK", cleanedResponse)
+    }
+
+    @Test
+    fun `initialize sets state to error when bluetooth not supported`() = runTest {
+        every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
+        
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
+        val state = bleManager.connectionState.value
+        assertTrue(state is BleConnectionState.Error)
+        assertEquals("Bluetooth not supported", (state as BleConnectionState.Error).message)
+    }
+
+    @Test
+    fun `initialize sets state to error when bluetooth disabled`() = runTest {
+        every { mockBluetoothAdapter.isEnabled } returns false
+        
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
+        val state = bleManager.connectionState.value
+        assertTrue(state is BleConnectionState.Error)
+        assertEquals("Bluetooth is disabled", (state as BleConnectionState.Error).message)
+    }
+
+    @Test
+    fun `initialize sets state to error when permissions missing`() = runTest {
+        every { PermissionHelper.hasBluetoothPermissions(any()) } returns false
+        every { PermissionHelper.getMissingBluetoothPermissions(any()) } returns listOf("BLUETOOTH_SCAN", "BLUETOOTH_CONNECT")
+        
+        every { mockBluetoothAdapter.isEnabled } returns true
+        
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
+        val state = bleManager.connectionState.value
+        assertTrue(state is BleConnectionState.Error)
+        assertTrue((state as BleConnectionState.Error).message.contains("Missing permissions"))
+    }
+
+    @Test
+    fun `isConnected returns false when disconnected`() {
+        val bleManager = BLEManagerImpl(mockContext)
+        assertFalse(bleManager.isConnected())
+    }
+
+    @Test
+    fun `BLEManager interface has all required methods`() {
+        // Verify the interface contract
+        val bleManager: BLEManager = BLEManagerImpl(mockContext)
+        
+        assertNotNull(bleManager.connectionState)
+        assertNotNull(bleManager.discoveredDevices)
     }
 }
