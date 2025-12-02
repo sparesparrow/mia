@@ -43,7 +43,11 @@
 		android:allowBackup="true"
 		android:supportsRtl="true">
 
+<<<<<<< HEAD
 		<!-- Disable Sentry auto-init since we initialize manually in MIAApplication -->
+=======
+		<!-- Disable Sentry auto-init since we initialize manually in AIServisApplication -->
+>>>>>>> 11a921a (fix(android): disable Sentry auto-init and add defensive error handling)
 		<meta-data android:name="io.sentry.auto-init" android:value="false" />
 
 		<activity
