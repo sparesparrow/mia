@@ -1,0 +1,8 @@
+# AI-SERVIS Build Tool Versions
+# Managed by tools/bootstrap.sh
+# This file documents the pinned versions used by the build environment
+
+python 3.11.9
+conan 2.3.2
+cmake 3.29.3
+ninja 1.11.1

@@ -1,1 +1,1 @@
-. "/workspace/build-release/conan/conanrunenv-release-x86_64.sh"
+. "/home/sparrow/projects/ai-servis/build-release/conan/conanrunenv-release-x86_64.sh"

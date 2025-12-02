@@ -3,3 +3,4 @@ asyncio-mqtt>=0.11.1
 flatbuffers>=23.5.26
 websockets>=11.0.3  # For WebSocket MCP transport if needed
 asyncio>=3.4
+pyserial>=3.5  # For Arduino serial communication

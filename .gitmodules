@@ -1,0 +1,3 @@
+[submodule "external/sparetools"]
+	path = external/sparetools
+	url = https://github.com/sparesparrow/sparetools.git

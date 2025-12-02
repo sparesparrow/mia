@@ -1,1 +1,1 @@
-. "/workspace/build-release/conan/deactivate_conanrunenv-release-x86_64.sh"
+. "/home/sparrow/projects/ai-servis/build-release/conan/deactivate_conanrunenv-release-x86_64.sh"

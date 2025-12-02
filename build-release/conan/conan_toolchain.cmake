@@ -61,9 +61,9 @@ function(conan_modify_std_watch variable access value current_list_file stack)
     unset(conan_watched_std_variable)
 endfunction()
 
-message(STATUS "Conan toolchain: C++ Standard 17 with extensions ON")
+message(STATUS "Conan toolchain: C++ Standard 17 with extensions OFF")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 variable_watch(CMAKE_CXX_STANDARD conan_modify_std_watch)
 
@@ -139,19 +139,19 @@ else()
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
 # Definition of CMAKE_MODULE_PATH
-list(PREPEND CMAKE_MODULE_PATH "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p/lib/cmake")
+list(PREPEND CMAKE_MODULE_PATH "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/lib/cmake")
 # the generators folder (where conan generates files, like this toolchain)
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # Definition of CMAKE_PREFIX_PATH, CMAKE_XXXXX_PATH
 # The explicitly defined "builddirs" of "host" context dependencies must be in PREFIX_PATH
-list(PREPEND CMAKE_PREFIX_PATH "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p/lib/cmake")
+list(PREPEND CMAKE_PREFIX_PATH "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/lib/cmake")
 # The Conan local "generators" folder, where this toolchain is saved.
 list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR} )
-list(PREPEND CMAKE_PROGRAM_PATH "/home/ubuntu/.conan2/p/b/flatb183dc26bbfaa3/p/bin")
-list(PREPEND CMAKE_LIBRARY_PATH "/home/ubuntu/.conan2/p/b/jsonc484b8bb7fff05/p/lib" "/home/ubuntu/.conan2/p/b/flatb8d37c5b4aca92/p/lib" "/home/ubuntu/.conan2/p/b/libcua6502767fcf9d/p/lib" "/home/ubuntu/.conan2/p/b/libgp5d681beccc8fc/p/lib" "lib" "/home/ubuntu/.conan2/p/b/mosqud951cbb7e5a18/p/lib" "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p/lib" "/home/ubuntu/.conan2/p/b/zlibaa65c0103429b/p/lib")
-list(PREPEND CMAKE_INCLUDE_PATH "/home/ubuntu/.conan2/p/b/jsonc484b8bb7fff05/p/include" "/home/ubuntu/.conan2/p/b/flatb8d37c5b4aca92/p/include" "/home/ubuntu/.conan2/p/b/libcua6502767fcf9d/p/include" "/home/ubuntu/.conan2/p/b/libgp5d681beccc8fc/p/include" "include" "/home/ubuntu/.conan2/p/b/mosqud951cbb7e5a18/p/include" "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p/include" "/home/ubuntu/.conan2/p/b/zlibaa65c0103429b/p/include")
-set(CONAN_RUNTIME_LIB_DIRS "/home/ubuntu/.conan2/p/b/jsonc484b8bb7fff05/p/lib" "/home/ubuntu/.conan2/p/b/flatb8d37c5b4aca92/p/lib" "/home/ubuntu/.conan2/p/b/libcua6502767fcf9d/p/lib" "/home/ubuntu/.conan2/p/b/libgp5d681beccc8fc/p/lib" "lib" "/home/ubuntu/.conan2/p/b/mosqud951cbb7e5a18/p/lib" "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p/lib" "/home/ubuntu/.conan2/p/b/zlibaa65c0103429b/p/lib" )
+list(PREPEND CMAKE_PROGRAM_PATH "/home/sparrow/.conan2/p/b/flatbf81590caced44/p/bin")
+list(PREPEND CMAKE_LIBRARY_PATH "/home/sparrow/.conan2/p/b/jsonc4b203a5c2cc96/p/lib" "/home/sparrow/.conan2/p/b/flatb7a8cd53aeab01/p/lib" "/home/sparrow/.conan2/p/b/libcu4873b887301d6/p/lib" "/home/sparrow/.conan2/p/b/libgp40522341e0abf/p/lib" "lib" "/home/sparrow/.conan2/p/b/mosqu00aa8e8e20dd5/p/lib" "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/lib" "/home/sparrow/.conan2/p/b/zlib5eb4843f71e85/p/lib")
+list(PREPEND CMAKE_INCLUDE_PATH "/home/sparrow/.conan2/p/b/jsonc4b203a5c2cc96/p/include" "/home/sparrow/.conan2/p/b/flatb7a8cd53aeab01/p/include" "/home/sparrow/.conan2/p/b/libcu4873b887301d6/p/include" "/home/sparrow/.conan2/p/b/libgp40522341e0abf/p/include" "include" "/home/sparrow/.conan2/p/b/mosqu00aa8e8e20dd5/p/include" "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/include" "/home/sparrow/.conan2/p/b/zlib5eb4843f71e85/p/include")
+set(CONAN_RUNTIME_LIB_DIRS "/home/sparrow/.conan2/p/b/jsonc4b203a5c2cc96/p/lib" "/home/sparrow/.conan2/p/b/flatb7a8cd53aeab01/p/lib" "/home/sparrow/.conan2/p/b/libcu4873b887301d6/p/lib" "/home/sparrow/.conan2/p/b/libgp40522341e0abf/p/lib" "lib" "/home/sparrow/.conan2/p/b/mosqu00aa8e8e20dd5/p/lib" "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/lib" "/home/sparrow/.conan2/p/b/zlib5eb4843f71e85/p/lib" )
 
 endif()
 

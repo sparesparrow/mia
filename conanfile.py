@@ -46,6 +46,15 @@ class AiServisConan(ConanFile):
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
+        
+        # Optional: Use sparetools-cpython for consistent Python environment
+        # This provides a portable CPython from Conan cache (zero-copy symlinks)
+        # Uncomment if you want Conan to manage Python:
+        # self.tool_requires("sparetools-cpython/3.12.7")
+        #
+        # Note: sparetools-cpython is available from:
+        # https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/
+        # Add remote: conan remote add sparesparrow-conan <url>
 
     def layout(self):
         basic_layout(self)
