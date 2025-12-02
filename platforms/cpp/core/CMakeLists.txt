@@ -11,8 +11,8 @@ find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JSONCPP jsoncpp)
 
-# Find Mosquitto MQTT library
-pkg_check_modules(MOSQUITTO mosquitto)
+# Find Mosquitto MQTT library (pkg-config name is libmosquitto on Debian)
+pkg_check_modules(MOSQUITTO libmosquitto)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(/usr/include) # For FlatBuffers
@@ -74,7 +74,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Hardware Control Server
-find_package(PkgConfig REQUIRED)
+# pkg-config name is libgpiod on most systems
 pkg_check_modules(GPIOD REQUIRED libgpiod)
 add_executable(hardware-server
     main_hardware_server.cpp

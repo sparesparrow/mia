@@ -27,16 +27,16 @@ class AiServisConan(ConanFile):
 
     def requirements(self):
         # Core dependencies - always required
-        # NOTE: Using newer versions for CMake 4.x compatibility (cmake_minimum_required >= 3.5)
+        # NOTE: Using versions available on Conan Center with CMake 4.x compatibility
         self.requires("jsoncpp/1.9.6")       # JSON handling for all components
         self.requires("flatbuffers/24.3.25") # Serialization for all components
-        self.requires("libcurl/8.11.1")      # HTTP client for downloads and APIs
-        self.requires("openssl/3.4.0")       # SSL/TLS support
+        self.requires("libcurl/8.10.1")      # HTTP client for downloads and APIs
+        self.requires("openssl/3.3.2")       # SSL/TLS support
         self.requires("zlib/1.3.1")          # Compression support
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
-            self.requires("libgpiod/2.1.3")      # GPIO control for Raspberry Pi
+            self.requires("libgpiod/2.0.2")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
         # MCP-specific dependencies

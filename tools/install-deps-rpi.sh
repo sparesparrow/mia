@@ -97,6 +97,8 @@ CPP_DEV_PKGS=(
     libssl-dev
     zlib1g-dev
     libjsoncpp-dev
+    libflatbuffers-dev
+    flatbuffers-compiler
 )
 
 # Optional but useful packages
@@ -108,11 +110,10 @@ OPTIONAL_PKGS=(
     clang-tidy
 )
 
-# Runtime packages
+# Runtime packages (libgpiod3 for Debian Trixie, libgpiod2 for older)
 RUNTIME_PKGS=(
     mosquitto
     mosquitto-clients
-    libgpiod2
 )
 
 echo -e "${CYAN}Installing essential build tools...${NC}"
