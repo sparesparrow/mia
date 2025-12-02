@@ -11,24 +11,24 @@ FlatBuffersResponseWriter::~FlatBuffersResponseWriter() {
     close();
 }
 
-bool FlatBuffersResponseWriter::write(const webgrab::DownloadResponse& resp) {
+bool FlatBuffersResponseWriter::write(const DownloadResponse& resp) {
     builder_.Clear();
-    auto fb_resp = webgrab::CreateDownloadResponse(builder_, resp.sessionId());
+    auto fb_resp = webgrab::CreateDownloadResponse(builder_, resp.sessionId);
     builder_.Finish(fb_resp);
     return sendResponse();
 }
 
-bool FlatBuffersResponseWriter::write(const webgrab::DownloadStatusResponse& resp) {
+bool FlatBuffersResponseWriter::write(const StatusResponse& resp) {
     builder_.Clear();
-    auto status_str = builder_.CreateString(resp.status() ? resp.status()->str() : "");
+    auto status_str = builder_.CreateString(resp.status);
     auto fb_resp = webgrab::CreateDownloadStatusResponse(builder_, status_str);
     builder_.Finish(fb_resp);
     return sendResponse();
 }
 
-bool FlatBuffersResponseWriter::write(const webgrab::ErrorResponse& resp) {
+bool FlatBuffersResponseWriter::write(const ErrorResponse& resp) {
     builder_.Clear();
-    auto error_str = builder_.CreateString(resp.error() ? resp.error()->str() : "");
+    auto error_str = builder_.CreateString(resp.error);
     auto fb_resp = webgrab::CreateErrorResponse(builder_, error_str);
     builder_.Finish(fb_resp);
     return sendResponse();

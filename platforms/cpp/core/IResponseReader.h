@@ -3,19 +3,7 @@
 #include <string>
 #include <cstdint>
 #include <chrono>
-
-struct DownloadResponse {
-    uint32_t sessionId;
-};
-
-struct StatusResponse {
-    uint32_t sessionId;
-    std::string status;
-};
-
-struct ErrorResponse {
-    std::string error;
-};
+#include "IResponseWriter.h"  // For DownloadResponse, StatusResponse, ErrorResponse
 
 class IResponseReader {
 public:
