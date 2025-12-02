@@ -2,8 +2,8 @@
 # =============================================================================
 # AI-SERVIS Development Environment Initialization
 # =============================================================================
-# Simple entry point that leverages sparetools zero-copy bootstrap
-# and then sets up AI-SERVIS specific tooling.
+# Simple entry point that sets up the AI-SERVIS build environment.
+# Uses Cloudsmith Conan remote for sparetools-cpython packages.
 #
 # Usage:
 #   ./tools/init.sh              # Full setup
@@ -26,7 +26,6 @@ NC='\033[0m' # No Color
 # Get script and project root directories
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SPARETOOLS_DIR="$PROJECT_ROOT/external/sparetools"
 BUILDENV_DIR="$PROJECT_ROOT/.buildenv"
 
 # Display banner
@@ -34,25 +33,9 @@ show_banner() {
     echo -e "${CYAN}"
     echo "  ╔═══════════════════════════════════════════════════════════════╗"
     echo "  ║         AI-SERVIS Development Environment                      ║"
-    echo "  ║         Zero-Copy Bootstrap via Sparetools                     ║"
+    echo "  ║         Zero-Copy Bootstrap via Cloudsmith                     ║"
     echo "  ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
-}
-
-# Check if sparetools submodule is initialized
-check_submodule() {
-    if [ ! -f "$SPARETOOLS_DIR/init.sh" ]; then
-        echo -e "${YELLOW}Sparetools submodule not initialized. Initializing...${NC}"
-        cd "$PROJECT_ROOT"
-        git submodule update --init --recursive external/sparetools
-        
-        if [ ! -f "$SPARETOOLS_DIR/init.sh" ]; then
-            echo -e "${RED}Failed to initialize sparetools submodule.${NC}"
-            echo -e "${YELLOW}Try manually: git submodule update --init external/sparetools${NC}"
-            exit 1
-        fi
-        echo -e "${GREEN}Sparetools submodule initialized.${NC}"
-    fi
 }
 
 # Setup Conan remote for sparetools packages
@@ -73,20 +56,6 @@ setup_conan_remotes() {
     # Verify remote was added
     if conan remote list | grep -q "sparesparrow-conan"; then
         echo -e "${GREEN}  ✓ Cloudsmith remote configured${NC}"
-    fi
-}
-
-# Run sparetools bootstrap
-run_sparetools_bootstrap() {
-    echo -e "${CYAN}Running sparetools zero-copy bootstrap...${NC}"
-    
-    if [ -f "$SPARETOOLS_DIR/init.sh" ]; then
-        cd "$SPARETOOLS_DIR"
-        bash ./init.sh
-        cd "$PROJECT_ROOT"
-    else
-        echo -e "${RED}Sparetools init.sh not found at: $SPARETOOLS_DIR/init.sh${NC}"
-        exit 1
     fi
 }
 
@@ -303,9 +272,7 @@ main() {
     echo -e "${BLUE}Starting AI-SERVIS environment setup...${NC}"
     echo ""
     
-    check_submodule
     setup_conan_remotes
-    run_sparetools_bootstrap
     create_ai_servis_env
     generate_activation_script
     install_ai_servis_deps

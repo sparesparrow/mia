@@ -2,44 +2,41 @@
 
 This guide covers setting up the AI-SERVIS build environment on Raspberry Pi (and other Debian-based ARM systems) without requiring system-level pip installations.
 
-The setup uses **sparetools** infrastructure for zero-copy Python environment management via Conan packages.
+The setup uses **sparetools-cpython** packages from Cloudsmith for zero-copy Python environment management via Conan.
 
 ## Quick Start (Recommended)
-
-```bash
-# 1. Clone the repository with submodules
-git clone --recursive https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
-
-# 2. Install system dependencies (requires sudo)
-./tools/install-deps-rpi.sh
-
-# 3. Initialize the environment (uses sparetools)
-./tools/init.sh
-
-# 4. Activate and build
-source tools/env.sh
-ai-servis-build
-```
-
-## Alternative: Direct Bootstrap
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/sparesparrow/ai-servis.git
 cd ai-servis
 
-# 2. Initialize submodules
-git submodule update --init --recursive
-
-# 3. Install system dependencies (requires sudo)
+# 2. Install system dependencies (requires sudo)
 ./tools/install-deps-rpi.sh
 
-# 4. Bootstrap the build environment (no sudo needed)
+# 3. Bootstrap environment (downloads from Cloudsmith)
 ./tools/bootstrap.sh
 
-# 5. Build all C++ components
+# 4. Build
 ./tools/build.sh
+```
+
+## Alternative: Using init.sh
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/sparesparrow/ai-servis.git
+cd ai-servis
+
+# 2. Install system dependencies (requires sudo)
+./tools/install-deps-rpi.sh
+
+# 3. Initialize the environment (sets up everything)
+./tools/init.sh
+
+# 4. Activate and build
+source tools/env.sh
+ai-servis-build
 ```
 
 ## Detailed Setup
@@ -89,16 +86,16 @@ This:
 
 The environment is isolated from system Python, avoiding PEP 668 issues.
 
-### Sparetools Integration
+### Cloudsmith Remote Integration
 
-The project includes `sparetools` as a git submodule in `external/sparetools/`. This provides:
+The project uses **sparetools-cpython** packages from Cloudsmith for zero-copy Python environments:
 
 - **sparetools-cpython**: Portable CPython 3.12.7 via Conan
 - **Zero-copy symlinks**: Saves disk space by linking to Conan cache
 - **Cloudsmith remote**: Pre-built packages available at:
   `https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/`
 
-To manually set up the Conan remote:
+The bootstrap scripts automatically configure the Conan remote. To manually set it up:
 
 ```bash
 conan remote add sparesparrow-conan \
