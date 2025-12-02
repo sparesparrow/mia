@@ -1,10 +1,11 @@
 #pragma once
 
-// Third-party includes (alphabetically)
-#include <gpiod.hpp>
+// Use libgpiod C API for compatibility with both 1.x and 2.x
+#include <gpiod.h>
 #include <json/json.h>
+#include <mosquitto.h>
 
-// Standard library includes (alphabetically)
+// Standard library includes
 #include <atomic>
 #include <memory>
 #include <netinet/in.h>
@@ -13,57 +14,34 @@
 #include <unordered_map>
 #include <mutex>
 
-// Project includes
-#include "MessageQueueProcessor.h"
-#include "MQTTBridge.h"
-
 namespace WebGrab {
+
+/**
+ * @brief GPIO Line Info for tracking configured pins
+ */
+struct GPIOLineInfo {
+    struct gpiod_line_request* request;
+    unsigned int offset;
+    bool is_output;
+    
+    GPIOLineInfo() : request(nullptr), offset(0), is_output(false) {}
+};
 
 /**
  * @brief Hardware Control Server for GPIO operations
  *
  * This server provides GPIO control capabilities for Raspberry Pi
- * via hybrid TCP + MQTT communication. It implements a multi-threaded
- * TCP server for direct hardware access and MQTT integration for
- * cross-process communication with Python orchestrator.
- *
- * Uses MessageQueueProcessor for job management and MQTTBridge for
- * pub/sub messaging, maintaining compatibility with existing interfaces.
+ * via hybrid TCP + MQTT communication. Uses libgpiod C API for
+ * maximum compatibility across different libgpiod versions.
  */
 class HardwareControlServer {
 public:
-    /**
-     * @brief Construct a new Hardware Control Server object
-     *
-     * @param port TCP port to listen on (default: 8081)
-     * @param mqtt_host MQTT broker hostname (default: localhost)
-     * @param mqtt_port MQTT broker port (default: 1883)
-     * @param working_dir Working directory for file operations
-     */
     explicit HardwareControlServer(int port = 8081,
                                    const std::string& mqtt_host = "localhost",
-                                   int mqtt_port = 1883,
-                                   const std::string& working_dir = "/tmp/webgrab");
-
-    /**
-     * @brief Destroy the Hardware Control Server object
-     */
+                                   int mqtt_port = 1883);
     ~HardwareControlServer();
 
-    /**
-     * @brief Start the server
-     *
-     * Initializes GPIO, MQTT bridge, and message queue processor.
-     *
-     * @return true if server started successfully, false otherwise
-     */
     bool Start();
-
-    /**
-     * @brief Stop the server
-     *
-     * Stops accepting new connections and cleans up resources.
-     */
     void Stop();
 
 private:
@@ -80,12 +58,14 @@ private:
     std::thread mqttThread;
     std::mutex mqttMutex;
 
-    // GPIO chip and line management
-    std::unique_ptr<gpiod::chip> chip;
-    std::unordered_map<int, gpiod::line> activeLines;
+    // GPIO management using C API
+    struct gpiod_chip* chip;
+    std::unordered_map<int, GPIOLineInfo> activeLines;
+    std::mutex gpioMutex;
 
     // Server methods
     bool InitializeGPIO();
+    void CleanupGPIO();
     bool SetupServerSocket();
     bool InitializeMQTT();
     void AcceptConnections();
