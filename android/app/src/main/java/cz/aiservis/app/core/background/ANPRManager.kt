@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.ExecutorService
@@ -204,18 +203,20 @@ class ANPRManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun stopDetection() = withContext(Dispatchers.Main) {
-        try {
-            cameraProvider?.unbindAll()
-            cameraExecutor?.shutdown()
-            cameraExecutor = null
-            
-            recentPlates.clear()
-            _state.value = ANPRState.Idle
-            Log.d(TAG, "ANPR detection stopped")
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "Error stopping detection", e)
+    override suspend fun stopDetection() {
+        withContext(Dispatchers.Main) {
+            try {
+                cameraProvider?.unbindAll()
+                cameraExecutor?.shutdown()
+                cameraExecutor = null
+                
+                recentPlates.clear()
+                _state.value = ANPRState.Idle
+                Log.d(TAG, "ANPR detection stopped")
+                
+            } catch (e: Exception) {
+                Log.e(TAG, "Error stopping detection", e)
+            }
         }
     }
 

@@ -294,30 +294,32 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
-    override suspend fun startScanning() = withContext(Dispatchers.Main) {
-        if (bluetoothLeScanner == null) {
-            initialize()
-        }
-        
-        _discoveredDevices.value = emptyList()
-        _connectionState.value = BleConnectionState.Scanning
-        
-        val scanSettings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-            .build()
-        
-        try {
-            bluetoothLeScanner?.startScan(null, scanSettings, scanCallback)
-            Log.d(TAG, "Started BLE scanning")
-            
-            // Auto-stop after timeout
-            scope.launch {
-                delay(SCAN_TIMEOUT_MS)
-                stopScanning()
+    override suspend fun startScanning() {
+        withContext(Dispatchers.Main) {
+            if (bluetoothLeScanner == null) {
+                initialize()
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to start scanning", e)
-            _connectionState.value = BleConnectionState.Error("Scan failed: ${e.message}")
+            
+            _discoveredDevices.value = emptyList()
+            _connectionState.value = BleConnectionState.Scanning
+            
+            val scanSettings = ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .build()
+            
+            try {
+                bluetoothLeScanner?.startScan(null, scanSettings, scanCallback)
+                Log.d(TAG, "Started BLE scanning")
+                
+                // Auto-stop after timeout
+                scope.launch {
+                    delay(SCAN_TIMEOUT_MS)
+                    stopScanning()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start scanning", e)
+                _connectionState.value = BleConnectionState.Error("Scan failed: ${e.message}")
+            }
         }
     }
     
@@ -387,13 +389,15 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
-    override suspend fun disconnect() = withContext(Dispatchers.Main) {
-        try {
-            bluetoothGatt?.disconnect()
-            cleanup()
-            _connectionState.value = BleConnectionState.Disconnected
-        } catch (e: Exception) {
-            Log.e(TAG, "Disconnect failed", e)
+    override suspend fun disconnect() {
+        withContext(Dispatchers.Main) {
+            try {
+                bluetoothGatt?.disconnect()
+                cleanup()
+                _connectionState.value = BleConnectionState.Disconnected
+            } catch (e: Exception) {
+                Log.e(TAG, "Disconnect failed", e)
+            }
         }
     }
     
