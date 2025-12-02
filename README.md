@@ -228,11 +228,11 @@ graph TB
 
 ### ⚡ **Zero-Copy Bootstrap (Recommended)**
 
-The fastest way to set up the development environment using sparetools infrastructure:
+The fastest way to set up the development environment:
 
 ```bash
-# 1. Clone the repository with submodules
-git clone --recursive https://github.com/sparesparrow/ai-servis.git
+# 1. Clone the repository
+git clone https://github.com/sparesparrow/ai-servis.git
 cd ai-servis
 
 # 2. Run the initialization script (sets up everything)
@@ -245,7 +245,7 @@ source tools/env.sh
 ai-servis-build
 ```
 
-This approach uses **sparetools-cpython** from Conan to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
+This approach uses **sparetools-cpython** from Cloudsmith to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
 
 ### 🐳 **Docker Development Environment**
 
@@ -268,17 +268,17 @@ docker-compose logs -f ai-audio-assistant
 
 #### Self-Contained Build (Recommended for Raspberry Pi)
 
-This approach uses sparetools zero-copy bootstrap for a portable Python/Conan environment:
+This approach uses Cloudsmith packages for a portable Python/Conan environment:
 
 ```bash
-# 1. Clone the repository with submodules
-git clone --recursive https://github.com/sparesparrow/ai-servis.git
+# 1. Clone the repository
+git clone https://github.com/sparesparrow/ai-servis.git
 cd ai-servis
 
 # 2. Install system dependencies (requires sudo)
 ./tools/install-deps-rpi.sh
 
-# 3. Bootstrap the build environment (uses sparetools)
+# 3. Bootstrap the build environment (downloads from Cloudsmith)
 ./tools/bootstrap.sh
 
 # 4. Build all C++ components

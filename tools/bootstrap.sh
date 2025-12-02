@@ -139,7 +139,7 @@ install_cpython_conan() {
         return 1
     fi
     
-    # Try to install from remote
+    # Try to install from Cloudsmith remote
     conan install --tool-requires="sparetools-cpython/${CPYTHON_VERSION}@" \
         --build=missing \
         -s build_type=Release 2>/dev/null && {
@@ -147,21 +147,8 @@ install_cpython_conan() {
         return 0
     }
     
-    # Try to build from sparetools submodule if available
-    local sparetools_cpython="$PROJECT_ROOT/external/sparetools/packages/sparetools-cpython"
-    
-    if [ -d "$sparetools_cpython" ]; then
-        echo -e "${YELLOW}  Building sparetools-cpython from submodule...${NC}"
-        cd "$sparetools_cpython"
-        conan create . --version="${CPYTHON_VERSION}" --build=missing && {
-            cd "$PROJECT_ROOT"
-            echo -e "${GREEN}  ✓ sparetools-cpython built locally${NC}"
-            return 0
-        }
-        cd "$PROJECT_ROOT"
-    fi
-    
-    echo -e "${YELLOW}  ⚠ Could not install sparetools-cpython${NC}"
+    # Cloudsmith is the only source - no submodule fallback
+    echo -e "${YELLOW}  sparetools-cpython not on Cloudsmith. Using system Python fallback.${NC}"
     return 1
 }
 
