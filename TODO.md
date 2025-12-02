@@ -347,3 +347,216 @@ git commit -m 'chore: Remove obsolete architecture documentation from old ROS2/M
 **Status**: Manual execution required via Git CLI (GitHub web UI limitations for batch file deletion)
 **Priority**: Medium (cleanup task, not blocking feature development)
 **Assigned to**: DevOps team lead or project maintainer
+
+---
+
+## MCP Ecosystem Integration (Conan-Based)
+
+### Architecture: Modular Dependency Management
+
+MIA integrates with the MCP ecosystem via **Conan dependency management** (no git submodules). Each component is independently maintained as a fork, versioned in Conan, and composable:
+
+```
+sparetools/packages/
+├── shared-dev-tools/          # Python reusable tools library
+├── tinymcp/                   # C++ tool servers (stdio transport)
+├── mcp-server-cpp/            # C++ JSON-RPC server (HTTP/HTTPS)
+└── conanfile.py               # Central package definitions
+
+mcp-prompts/
+├── src/                       # Python MCP server
+└── conanfile.py              # Python package
+
+mcp-transport-telegram/
+├── src/                       # Python MCP server
+└── conanfile.py              # Python package
+
+mia/
+├── conanfile.py              # Declares optional MCP dependencies
+├── requirements/
+│   ├── base.txt              # core only
+│   ├── mcp.txt               # all MCP components
+│   └── tools.txt             # TinyMCP tools
+└── docker-compose.yml        # Multi-service deployment
+```
+
+### Conan Dependency Declaration (mia/conanfile.py)
+
+```python
+from conan import ConanFile
+
+class MIAConan(ConanFile):
+    name = "mia"
+    version = "0.1.0"
+    
+    # Core dependencies (always included)
+    requires = (
+        "zeromq/4.3.4",
+        "flatbuffers/23.5.26",
+    )
+    
+    # MCP optional dependencies (via profiles)
+    options = {
+        "with_mcp_tools": [True, False],      # TinyMCP
+        "with_mcp_server": [True, False],    # MCPServer.cpp
+        "with_mcp_prompts": [True, False],   # mcp-prompts
+        "with_telegram": [True, False],      # mcp-transport-telegram
+    }
+    
+    default_options = {
+        "with_mcp_tools": False,
+        "with_mcp_server": False,
+        "with_mcp_prompts": False,
+        "with_telegram": False,
+    }
+    
+    def configure(self):
+        # Conan recipes for fork/remote packages
+        if self.options.with_mcp_tools:
+            self.requires.append("tinymcp/0.1.0@sparesparrow/stable")
+        if self.options.with_mcp_server:
+            self.requires.append("mcp-server-cpp/0.1.0@sparesparrow/stable")
+        if self.options.with_mcp_prompts:
+            self.requires.append("mcp-prompts/0.1.0@sparesparrow/stable")
+        if self.options.with_telegram:
+            self.requires.append("mcp-transport-telegram/0.1.0@sparesparrow/stable")
+```
+
+### Installation Profiles
+
+**Minimal (RPi with local tools only):**
+```bash
+conan install . -o mia:with_mcp_tools=True
+```
+
+**Full-featured (all MCP components):**
+```bash
+conan install . -o mia:with_mcp_tools=True -o mia:with_mcp_server=True \
+  -o mia:with_mcp_prompts=True -o mia:with_telegram=True
+```
+
+**From profiles file:**
+```bash
+conan install . --profile:build=default --profile:host=rpi_minimal
+conan install . --profile:build=default --profile:host=rpi_full
+```
+
+### Python Shared Tools (via sparetools)
+
+Reusable Python utilities maintained in `sparetools/packages/shared-dev-tools/`:
+
+```
+sparetools/packages/shared-dev-tools/
+├── mia_tools/
+│   ├── device_registry.py     # Device discovery/management
+│   ├── gpio_abstraction.py    # GPIO driver wrappers
+│   ├── sensor_drivers.py      # I2C/SPI sensor drivers
+│   ├── message_formatting.py  # MCP message helpers
+│   └── __init__.py
+├── setup.py                   # PyPI package: mia-shared-tools
+└── conanfile.py              # Conan recipe version
+```
+
+**Usage in MIA:**
+```python
+# MIA imports from shared-dev-tools
+from mia_tools.device_registry import DeviceRegistry
+from mia_tools.gpio_abstraction import GPIOController
+from mia_tools.sensor_drivers import I2CSensorDriver
+```
+
+### Boot Sequence with Conan
+
+```bash
+# 1. Install dependencies (with profile)
+conan install . --profile:host=rpi_full
+
+# 2. Start MCP components (managed by docker-compose or systemd)
+if [ -d "generators/" ]; then
+  source ./generators/deactivate_conanbuild.sh
+  source ./generators/conanbuild.sh
+fi
+
+# 3. Start services in order
+systemctl start mcp-prompts        # Prompt catalog
+sleep 2
+systemctl start tinymcp-gpio       # GPIO tool server
+systemctl start tinymcp-sensors    # Sensor tool server
+sleep 2
+systemctl start mcp-transport-telegram  # Telegram bridge
+sleep 2
+systemctl start mia                # Main orchestrator
+```
+
+### Docker Compose (Multi-service Deployment)
+
+```yaml
+# docker-compose.yml - Full deployment
+version: '3.8'
+services:
+  mcp-prompts:
+    build: ./mcp-prompts
+    ports: ["5555:5555"]
+    environment:
+      - STORAGE=postgres
+      - DB_URL=postgresql://prompts:pass@postgres:5432/mia_prompts
+  
+  tinymcp-gpio:
+    build: ./sparetools/packages/tinymcp
+    command: python -m tinymcp.gpio_server --stdio
+    
+  tinymcp-sensors:
+    build: ./sparetools/packages/tinymcp
+    command: python -m tinymcp.sensor_server --stdio
+    devices:
+      - /dev/i2c-1:/dev/i2c-1
+  
+  mcp-transport-telegram:
+    build: ./mcp-transport-telegram
+    environment:
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+  
+  mia:
+    build: .
+    ports: ["8000:8000"]
+    depends_on:
+      - mcp-prompts
+      - tinymcp-gpio
+      - tinymcp-sensors
+      - mcp-transport-telegram
+    environment:
+      - MCP_PROMPTS_URL=http://mcp-prompts:5555
+      - TELEGRAM_MCP_URL=http://mcp-transport-telegram:5556
+```
+
+### Phase 1 Task: Setup Conan Infrastructure
+
+- [ ] Create `conanfile.py` in MIA root with optional MCP dependencies
+- [ ] Create Conan recipes for each MCP repo fork (in respective repos)
+- [ ] Publish recipes to local Conan cache or remote (artifactory/bintray)
+- [ ] Create RPi deployment profiles (minimal/full)
+- [ ] Create docker-compose.yml (production deployment)
+- [ ] Document Conan installation workflow
+
+### Phase 2 Task: Python Shared Tools Library
+
+- [ ] Consolidate device/GPIO/sensor utilities in `sparetools/packages/shared-dev-tools`
+- [ ] Create PyPI package: `mia-shared-tools`
+- [ ] Publish Conan recipe for shared-dev-tools
+- [ ] Update MIA to import from shared-dev-tools instead of local copies
+
+### Benefits of Conan-Based Approach
+
+1. **No Git Submodules**: Clean dependency management
+2. **Cross-Repo**: sparetools, mcp-prompts, tinymcp all independently versioned
+3. **Flexible Deployments**: RPi minimal vs full via profiles
+4. **Reusable Tools**: Python tools in sparetools/shared-dev-tools used by all repos
+5. **Production-Ready**: Docker Compose + Conan for enterprise CI/CD
+6. **Upstream-Friendly**: Each fork remains independently forkable/upgradable
+
+### See Also
+- [SpareTools - Conan Recipes Hub](https://github.com/sparesparrow/sparetools)
+- [MCP Prompts - Prompt Catalog](https://github.com/sparesparrow/mcp-prompts)
+- [MCP Transport Telegram - Telegram MCP](https://github.com/sparesparrow/mcp-transport-telegram)
