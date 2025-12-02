@@ -27,15 +27,16 @@ class AiServisConan(ConanFile):
 
     def requirements(self):
         # Core dependencies - always required
-        self.requires("jsoncpp/1.9.5")       # JSON handling for all components
-        self.requires("flatbuffers/23.5.26") # Serialization for all components
-        self.requires("libcurl/8.5.0")       # HTTP client for downloads and APIs
-        self.requires("openssl/3.0.8")       # SSL/TLS support
-        self.requires("zlib/1.2.13")         # Compression support
+        # NOTE: Using newer versions for CMake 4.x compatibility (cmake_minimum_required >= 3.5)
+        self.requires("jsoncpp/1.9.6")       # JSON handling for all components
+        self.requires("flatbuffers/24.3.25") # Serialization for all components
+        self.requires("libcurl/8.11.1")      # HTTP client for downloads and APIs
+        self.requires("openssl/3.4.0")       # SSL/TLS support
+        self.requires("zlib/1.3.1")          # Compression support
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
-            self.requires("libgpiod/1.6.3")      # GPIO control for Raspberry Pi
+            self.requires("libgpiod/2.1.3")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
         # MCP-specific dependencies
@@ -45,7 +46,7 @@ class AiServisConan(ConanFile):
 
     def build_requirements(self):
         # Tools needed for building
-        self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
+        self.tool_requires("flatbuffers/24.3.25")  # For flatc compiler
         
         # Note: sparetools-cpython available from sparesparrow-conan Cloudsmith remote
         # The bootstrap scripts handle Python environment setup automatically
