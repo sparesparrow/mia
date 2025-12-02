@@ -47,9 +47,6 @@ class AiServisConan(ConanFile):
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/24.3.25")  # For flatc compiler
-        
-        # Note: sparetools-cpython available from sparesparrow-conan Cloudsmith remote
-        # The bootstrap scripts handle Python environment setup automatically
 
     def layout(self):
         basic_layout(self)
