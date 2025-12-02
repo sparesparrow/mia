@@ -13,7 +13,7 @@ set(ZLIB_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(openssl_PACKAGE_FOLDER_RELEASE "/home/ubuntu/.conan2/p/b/opensb30ca48d628c7/p")
+set(openssl_PACKAGE_FOLDER_RELEASE "/home/sparrow/.conan2/p/b/opens32cd66a727f71/p")
 set(openssl_BUILD_MODULES_PATHS_RELEASE "${openssl_PACKAGE_FOLDER_RELEASE}/lib/cmake/conan-official-openssl-variables.cmake")
 
 

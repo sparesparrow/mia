@@ -144,11 +144,13 @@ public:
 private:
     uint16_t httpPort;
     bool running;
-    std::unique_ptr<class HTTPServer> httpServer;
+    int httpServerSocket;
+    std::thread httpServerThread;
     std::unordered_map<std::string, UIContext> activeSessions;
     
     void handleHttpRequest(const std::string& path, const std::string& body, std::string& response);
     void handleWebSocketMessage(const std::string& sessionId, const std::string& message);
+    void httpServerLoop();
     std::string generateSessionId();
 };
 

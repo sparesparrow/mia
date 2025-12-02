@@ -196,10 +196,12 @@ graph TB
 ### ⚙️ **C++ Platform Components**
 **Hardware control and message processing layer**
 - 📖 [Platform Documentation](./platforms/cpp/README.md)
+- 📖 [Raspberry Pi Deployment Guide](./platforms/cpp/core/README-RASPBERRY-PI.md)
 - 🔧 [Hybrid Messaging Guide](./docs/architecture/hybrid-messaging.md)
 - 🎯 **Hlavní komponenty**: Hardware Server, MCP Server, WebGrab Core
 - 🏠 **Home Use Case**: Raspberry Pi GPIO control and local AI processing
 - 🚗 **Car Use Case**: ESP32 integration and real-time vehicle control
+- 🚀 **CI/CD**: Automated builds via [GitHub Actions](.github/workflows/main.yml) (includes Raspberry Pi builds)
 
 #### 🔧 **Hardware Server**
 **GPIO control and hardware interfacing**
@@ -224,6 +226,27 @@ graph TB
 
 ## 🚀 **Rychlý Start**
 
+### ⚡ **Zero-Copy Bootstrap (Recommended)**
+
+The fastest way to set up the development environment:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/sparesparrow/ai-servis.git
+cd ai-servis
+
+# 2. Run the initialization script (sets up everything)
+./tools/init.sh
+
+# 3. Activate the environment
+source tools/env.sh
+
+# 4. Build all C++ components
+ai-servis-build
+```
+
+This approach uses **sparetools-cpython** from Cloudsmith to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
+
 ### 🐳 **Docker Development Environment**
 
 ```bash
@@ -243,21 +266,23 @@ docker-compose logs -f ai-audio-assistant
 
 ### 🔨 **Building C++ Platform Components**
 
-The C++ platform components use Conan for dependency management with automatic FlatBuffers header generation:
+#### Self-Contained Build (Recommended for Raspberry Pi)
+
+This approach uses Cloudsmith packages for a portable Python/Conan environment:
 
 ```bash
-# Install Conan (if not already installed)
-pip install conan
-conan profile detect --force
+# 1. Clone the repository
+git clone https://github.com/sparesparrow/ai-servis.git
+cd ai-servis
 
-# Build all C++ components (hardware server, MCP server, webgrab core)
-./scripts/build-hardware-server.sh
+# 2. Install system dependencies (requires sudo)
+./tools/install-deps-rpi.sh
 
-# Or build manually
-cd platforms/cpp
-conan install .. --profile ../profiles/linux-release --build missing
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-cmake --build build -j$(nproc)
+# 3. Bootstrap the build environment (downloads from Cloudsmith)
+./tools/bootstrap.sh
+
+# 4. Build all C++ components
+./tools/build.sh
 
 # Components built:
 # - hardware-server: GPIO control (port 8081)
@@ -265,22 +290,65 @@ cmake --build build -j$(nproc)
 # - webgrab-client/server: Download management
 ```
 
+**📖 For detailed Raspberry Pi setup, see [RASPBERRY_PI_SETUP.md](docs/RASPBERRY_PI_SETUP.md)**
+
+#### Quick Build for Raspberry Pi (System Python)
+
+If you prefer using system packages without the bundled environment:
+
+```bash
+# Install dependencies
+sudo apt install cmake ninja-build g++ \
+    libgpiod-dev libmosquitto-dev libcurl4-openssl-dev
+
+# Quick build and deploy
+./scripts/build-raspberry-pi.sh
+sudo ./scripts/deploy-raspberry-pi.sh
+sudo systemctl start ai-servis
+```
+
+#### Interactive Development
+
+For active development, activate the build environment:
+
+```bash
+# Activate environment (after bootstrap)
+source tools/env.sh
+
+# Now you have conan, cmake, etc. on PATH
+ai-servis-info   # Show environment info
+ai-servis-build  # Build all components
+ai-servis-clean  # Clean build directories
+```
+
+**📖 For detailed Raspberry Pi deployment instructions, see [README-RASPBERRY-PI.md](platforms/cpp/core/README-RASPBERRY-PI.md)**
+
 ### 🔧 **Testing C++ Components**
 
 ```bash
-# Test hardware server (requires GPIO hardware)
-cd platforms/cpp/build
-./hardware-server &
+# Run test suite
+cd build-raspberry-pi
+./tests
 
-# Test MCP server
-./mcp-server &
+# Or use the test script
+./scripts/test-raspberry-pi.sh
+
+# Test hardware server (requires GPIO hardware on Raspberry Pi)
+cd build-raspberry-pi
+sudo ./hardware-server &
+
+# Test main application
+sudo ./ai-servis-rpi
 
 # Test Python integration
 cd modules/hardware-bridge
 python test_integration.py
 ```
 
-For detailed Conan setup instructions, see [docs/conan-setup.md](docs/conan-setup.md).
+**📖 For detailed testing and deployment, see:**
+- [Raspberry Pi Deployment Guide](platforms/cpp/core/README-RASPBERRY-PI.md)
+- [Quick Start Guide](QUICK-START-RASPBERRY-PI.md)
+- [Deployment Checklist](DEPLOYMENT-CHECKLIST.md)
 
 ### 🏠 **Home Installation (AMD64)**
 

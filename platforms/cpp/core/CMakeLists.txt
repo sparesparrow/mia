@@ -7,6 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(CURL REQUIRED)
 find_package(Threads REQUIRED)
 
+# Find JSON library
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP jsoncpp)
+
+# Find Mosquitto MQTT library (pkg-config name is libmosquitto on Debian)
+pkg_check_modules(MOSQUITTO libmosquitto)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(/usr/include) # For FlatBuffers
 
@@ -29,13 +36,19 @@ add_library(webgrab_lib
     JobWorker.cpp
     TcpListener.cpp
     CurlClientWrapper.cpp
+    CoreOrchestrator.cpp
+    UIAdapter.cpp
+    ContextManager.cpp
 )
 
 target_link_libraries(webgrab_lib
     ${FLATBUFFERS_LIBRARY}
     CURL::libcurl
     Threads::Threads
+    ${JSONCPP_LIBRARIES}
 )
+
+target_include_directories(webgrab_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
 
 add_executable(webgrab-client main_client.cpp)
 target_link_libraries(webgrab-client webgrab_lib)
@@ -61,7 +74,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Hardware Control Server
-find_package(PkgConfig REQUIRED)
+# pkg-config name is libgpiod on most systems
 pkg_check_modules(GPIOD REQUIRED libgpiod)
 add_executable(hardware-server
     main_hardware_server.cpp
@@ -70,8 +83,14 @@ add_executable(hardware-server
 target_link_libraries(hardware-server
     webgrab_lib
     ${GPIOD_LIBRARIES}
+    ${MOSQUITTO_LIBRARIES}
+    ${JSONCPP_LIBRARIES}
 )
-target_include_directories(hardware-server PRIVATE ${GPIOD_INCLUDE_DIRS})
+target_include_directories(hardware-server PRIVATE 
+    ${GPIOD_INCLUDE_DIRS}
+    ${MOSQUITTO_INCLUDE_DIRS}
+    ${JSONCPP_INCLUDE_DIRS}
+)
 
 # Optional: Windows DLL (placeholder for MinGW)
 if(WIN32)
@@ -79,6 +98,31 @@ if(WIN32)
     target_link_libraries(webgrab_dll webgrab_lib)
 endif()
 
-# Unit tests (placeholder)
-# add_executable(tests test_main.cpp)
-# target_link_libraries(tests webgrab_lib gtest_main)
+# Raspberry Pi Main Application
+add_executable(ai-servis-rpi main_raspberry_pi.cpp)
+target_link_libraries(ai-servis-rpi
+    webgrab_lib
+    ${JSONCPP_LIBRARIES}
+)
+target_include_directories(ai-servis-rpi PRIVATE ${JSONCPP_INCLUDE_DIRS})
+
+# Unit tests
+enable_testing()
+add_executable(tests 
+    tests/test_main.cpp
+    tests/test_tcp_socket.cpp
+    tests/test_gpio_control.cpp
+    tests/test_orchestrator.cpp
+    tests/test_gpio_tcp.cpp
+)
+target_link_libraries(tests
+    webgrab_lib
+    ${GPIOD_LIBRARIES}
+    ${JSONCPP_LIBRARIES}
+    Threads::Threads
+)
+target_include_directories(tests PRIVATE 
+    ${GPIOD_INCLUDE_DIRS}
+    ${JSONCPP_INCLUDE_DIRS}
+)
+add_test(NAME BasicTests COMMAND tests)

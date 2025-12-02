@@ -9,6 +9,9 @@
 TcpSocket::TcpSocket(const std::string& host, uint16_t port)
     : sockfd_(-1), host_(host), port_(port), connected_(false) {}
 
+TcpSocket::TcpSocket(int sockfd)
+    : sockfd_(sockfd), host_(""), port_(0), connected_(sockfd >= 0) {}
+
 TcpSocket::~TcpSocket() {
     disconnect();
 }

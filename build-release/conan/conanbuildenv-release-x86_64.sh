@@ -1,4 +1,4 @@
-script_folder="/workspace/build-release/conan"
+script_folder="/home/sparrow/projects/ai-servis/build-release/conan"
 echo "echo Restoring environment" > "$script_folder/deactivate_conanbuildenv-release-x86_64.sh"
 for v in PATH LD_LIBRARY_PATH DYLD_LIBRARY_PATH
 do
@@ -13,6 +13,6 @@ do
 done
 
 
-export PATH="/home/ubuntu/.conan2/p/b/flatb183dc26bbfaa3/p/bin:$PATH"
-export LD_LIBRARY_PATH="/home/ubuntu/.conan2/p/b/flatb183dc26bbfaa3/p/lib:$LD_LIBRARY_PATH"
-export DYLD_LIBRARY_PATH="/home/ubuntu/.conan2/p/b/flatb183dc26bbfaa3/p/lib:$DYLD_LIBRARY_PATH"
+export PATH="/home/sparrow/.conan2/p/b/flatbf81590caced44/p/bin:$PATH"
+export LD_LIBRARY_PATH="/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib:$LD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib:$DYLD_LIBRARY_PATH"

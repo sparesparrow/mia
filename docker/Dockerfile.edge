@@ -1,0 +1,42 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    libgpiod-dev \
+    pkg-config \
+    mosquitto-clients \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements from all modules
+COPY modules/core-orchestrator/requirements.txt ./core-orchestrator-requirements.txt
+COPY modules/ai-audio-assistant/requirements.txt ./ai-audio-assistant-requirements.txt
+COPY modules/hardware-bridge/requirements.txt ./hardware-bridge-requirements.txt
+
+# Install all Python dependencies
+RUN pip install --no-cache-dir \
+    -r core-orchestrator-requirements.txt \
+    -r ai-audio-assistant-requirements.txt \
+    -r hardware-bridge-requirements.txt
+
+# Copy application code from modules
+COPY modules/core-orchestrator/ ./core-orchestrator/
+COPY modules/ai-audio-assistant/ ./ai-audio-assistant/
+COPY modules/hardware-bridge/ ./hardware-bridge/
+COPY modules/mcp_framework.py ./mcp_framework.py
+
+# Copy edge compatibility layer
+COPY edge-compat/pi-gateway/ ./pi-gateway/
+
+# Expose ports
+EXPOSE 8080 8081 1883
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+# Run edge deployment (can be overridden)
+CMD ["python", "-m", "core_orchestrator.main"]

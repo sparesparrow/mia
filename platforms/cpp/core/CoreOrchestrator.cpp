@@ -13,6 +13,9 @@
 #include <sstream>
 #include <utility>
 
+// Third-party includes
+#include <curl/curl.h>
+
 namespace WebGrab {
 
 // NLPProcessor implementation
@@ -488,12 +491,44 @@ std::string CoreOrchestrator::callHttpService(const std::string& host,
                                             uint16_t port,
                                             const std::string& endpoint,
                                             const std::string& payload) {
-    // Simplified HTTP call implementation
-    // In a real implementation, you would use a proper HTTP client library
-    std::cout << "HTTP call to " << host << ":" << port << endpoint 
-              << " with payload: " << payload << std::endl;
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+        std::cerr << "Failed to initialize CURL" << std::endl;
+        return "";
+    }
     
-    return "HTTP response placeholder";
+    std::string response_data;
+    std::string url = "http://" + host + ":" + std::to_string(port) + endpoint;
+    
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](void* contents, size_t size, size_t nmemb, void* userp) -> size_t {
+        ((std::string*)userp)->append((char*)contents, size * nmemb);
+        return size * nmemb;
+    });
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L);
+    
+    CURLcode res = curl_easy_perform(curl);
+    long response_code = 0;
+    if (res == CURLE_OK) {
+        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+    } else {
+        std::cerr << "CURL error: " << curl_easy_strerror(res) << std::endl;
+    }
+    
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    
+    if (res != CURLE_OK || response_code != 200) {
+        return "";
+    }
+    
+    return response_data;
 }
 
 void CoreOrchestrator::acceptLoop() {

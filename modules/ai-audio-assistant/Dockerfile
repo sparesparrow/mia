@@ -2,21 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for audio
+# Install system dependencies for audio and PyAudio build
 RUN apt-get update && apt-get install -y \
     curl \
     alsa-utils \
     pulseaudio \
     pipewire \
+    build-essential \
+    portaudio19-dev \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+COPY ai-audio-assistant/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy shared MCP framework
+COPY mcp_framework.py ./mcp_framework.py
+
 # Copy application code
-COPY . .
-COPY ../mcp_framework.py ./mcp_framework.py
+COPY ai-audio-assistant/ .
 
 # Expose port
 EXPOSE 8082

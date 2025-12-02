@@ -16,8 +16,8 @@ public:
     ~WebGrabClient();
 
     bool connect();
-    bool executeDownload(const std::string& url);
-    bool executeStatus(uint32_t sessionId);
+    bool executeDownload(const std::string& url, uint32_t& sessionId);
+    bool executeStatus(uint32_t sessionId, std::string& status);
     bool executeAbort(uint32_t sessionId);
     bool executeQuit();
 };

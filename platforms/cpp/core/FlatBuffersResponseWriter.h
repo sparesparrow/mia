@@ -16,9 +16,9 @@ public:
     ~FlatBuffersResponseWriter() override;
 
     // IResponseWriter
-    bool write(const webgrab::DownloadResponse& resp) override;
-    bool write(const webgrab::StatusResponse& resp) override;
-    bool write(const webgrab::ErrorResponse& resp) override;
+    bool write(const DownloadResponse& resp) override;
+    bool write(const StatusResponse& resp) override;
+    bool write(const ErrorResponse& resp) override;
     bool flush() override;
     void close() override;
 

@@ -13,7 +13,7 @@ set(OpenSSL_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(mosquitto_PACKAGE_FOLDER_RELEASE "/home/ubuntu/.conan2/p/b/mosqud951cbb7e5a18/p")
+set(mosquitto_PACKAGE_FOLDER_RELEASE "/home/sparrow/.conan2/p/b/mosqu00aa8e8e20dd5/p")
 set(mosquitto_BUILD_MODULES_PATHS_RELEASE )
 
 

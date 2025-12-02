@@ -8,17 +8,40 @@ FlatBuffersRequestReader::FlatBuffersRequestReader()
 bool FlatBuffersRequestReader::next(RequestEnvelope& out) {
     if (!receiveMessage()) return false;
 
-    // Determine type
-    if (webgrab::GetDownloadRequest(buffer_.data())) {
-        current_type_ = RequestType::Download;
-    } else if (webgrab::GetDownloadStatusRequest(buffer_.data())) {
-        current_type_ = RequestType::Status;
-    } else if (webgrab::GetDownloadAbortRequest(buffer_.data())) {
-        current_type_ = RequestType::Abort;
-    } else if (webgrab::GetShutdownRequest(buffer_.data())) {
-        current_type_ = RequestType::Shutdown;
+    // Try to parse as Message union first
+    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
+    if (msg && msg->request_type() != webgrab::Request_NONE) {
+        switch (msg->request_type()) {
+            case webgrab::Request_DownloadRequest:
+                current_type_ = RequestType::Download;
+                break;
+            case webgrab::Request_DownloadStatusRequest:
+                current_type_ = RequestType::Status;
+                break;
+            case webgrab::Request_DownloadAbortRequest:
+                current_type_ = RequestType::Abort;
+                break;
+            case webgrab::Request_ShutdownRequest:
+                current_type_ = RequestType::Shutdown;
+                break;
+            default:
+                current_type_ = RequestType::Unknown;
+                break;
+        }
     } else {
-        current_type_ = RequestType::Unknown;
+        // Fallback: try to parse as individual message types
+        flatbuffers::Verifier verifier(buffer_.data(), buffer_.size());
+        if (verifier.VerifyBuffer<webgrab::DownloadRequest>(nullptr)) {
+            current_type_ = RequestType::Download;
+        } else if (verifier.VerifyBuffer<webgrab::DownloadStatusRequest>(nullptr)) {
+            current_type_ = RequestType::Status;
+        } else if (verifier.VerifyBuffer<webgrab::DownloadAbortRequest>(nullptr)) {
+            current_type_ = RequestType::Abort;
+        } else if (verifier.VerifyBuffer<webgrab::ShutdownRequest>(nullptr)) {
+            current_type_ = RequestType::Shutdown;
+        } else {
+            current_type_ = RequestType::Unknown;
+        }
     }
 
     out.type = current_type_;
@@ -34,30 +57,52 @@ void FlatBuffersRequestReader::close() {
 }
 
 bool FlatBuffersRequestReader::read(void* buffer, size_t size) {
-    // Placeholder: in real impl, read from socket
+    // This method is called by receiveMessage to read from socket
+    // The actual socket reading should be done by the caller
+    // For now, return false as this is meant to be overridden or used differently
     return false;
 }
 
 bool FlatBuffersRequestReader::receiveMessage() {
-    // Placeholder: read from socket into buffer_
-    return !buffer_.empty();
+    // This is a placeholder - in a real implementation, this would read from a socket
+    // The actual implementation depends on how FlatBuffersRequestReader is used
+    // If it's used with a socket, the socket should be passed in constructor
+    // For now, return false to indicate no message available
+    return false;
 }
 
 std::string FlatBuffersRequestReader::getDownloadUrl() const {
     if (current_type_ == RequestType::Download) {
-        auto req = webgrab::GetDownloadRequest(buffer_.data());
-        return req->url()->str();
+        // Try Message union first
+        auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
+        if (msg && msg->request_type() == webgrab::Request_DownloadRequest) {
+            auto req = msg->request_as_DownloadRequest();
+            return req && req->url() ? req->url()->str() : "";
+        }
+        // Fallback to direct parsing
+        auto req = flatbuffers::GetRoot<webgrab::DownloadRequest>(buffer_.data());
+        return req && req->url() ? req->url()->str() : "";
     }
     return "";
 }
 
 uint32_t FlatBuffersRequestReader::getSessionId() const {
+    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
+    
     if (current_type_ == RequestType::Status) {
-        auto req = webgrab::GetDownloadStatusRequest(buffer_.data());
-        return req->sessionId();
+        if (msg && msg->request_type() == webgrab::Request_DownloadStatusRequest) {
+            auto req = msg->request_as_DownloadStatusRequest();
+            return req ? req->sessionId() : 0;
+        }
+        auto req = flatbuffers::GetRoot<webgrab::DownloadStatusRequest>(buffer_.data());
+        return req ? req->sessionId() : 0;
     } else if (current_type_ == RequestType::Abort) {
-        auto req = webgrab::GetDownloadAbortRequest(buffer_.data());
-        return req->sessionId();
+        if (msg && msg->request_type() == webgrab::Request_DownloadAbortRequest) {
+            auto req = msg->request_as_DownloadAbortRequest();
+            return req ? req->sessionId() : 0;
+        }
+        auto req = flatbuffers::GetRoot<webgrab::DownloadAbortRequest>(buffer_.data());
+        return req ? req->sessionId() : 0;
     }
     return 0;
 }

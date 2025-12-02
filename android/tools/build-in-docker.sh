@@ -8,6 +8,7 @@ SDK_VOL=ai_servis_android_sdk
 
 # Optional args
 BUILD_TASK="assembleDebug"
+COVERAGE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --task)
@@ -16,9 +17,42 @@ while [[ $# -gt 0 ]]; do
       export VERSION_CODE="$2"; shift 2 ;;
     --version-name)
       export VERSION_NAME="$2"; shift 2 ;;
-    *) echo "Unknown option: $1"; exit 1 ;;
+    --coverage)
+      COVERAGE="createDebugCoverageReport"; shift ;;
+    --test)
+      BUILD_TASK="test"; shift ;;
+    --lint)
+      BUILD_TASK="lint"; shift ;;
+    --connected-test)
+      BUILD_TASK="connectedAndroidTest"; shift ;;
+    --all)
+      BUILD_TASK="assembleDebug test lint"; shift ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: $0 [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --task TASK         Run specific Gradle task (default: assembleDebug)"
+      echo "  --test              Run unit tests"
+      echo "  --lint              Run lint checks"
+      echo "  --connected-test    Run instrumented tests (requires device/emulator)"
+      echo "  --coverage          Generate test coverage report"
+      echo "  --all               Run assembleDebug, test, and lint"
+      echo "  --version-code N    Set version code"
+      echo "  --version-name V    Set version name"
+      exit 1 ;;
   esac
 done
+
+# Append coverage task if requested
+if [[ -n "$COVERAGE" ]]; then
+  BUILD_TASK="$BUILD_TASK $COVERAGE"
+fi
+
+echo "=== AI-SERVIS Android Build ==="
+echo "Task: $BUILD_TASK"
+echo "Directory: $ANDROID_DIR"
+echo ""
 
 # Build image (use android/ as build context)
 cd "$ANDROID_DIR"

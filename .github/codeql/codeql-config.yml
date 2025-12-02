@@ -16,8 +16,6 @@ paths:
   - modules/
   - platforms/
   - scripts/
-  - build_orchestrator.py
-  - mcp_integration_example.py
 
 # Paths to exclude from analysis  
 paths-ignore:
@@ -36,16 +34,8 @@ python:
   setup-python-dependencies: true
   
 cpp:
-  # Specify build command for C++ analysis
-  after-prepare: |
-    # Install Conan dependencies
-    pip install conan
-    conan profile detect --force
-    
-    # Build C++ components for analysis
-    cd platforms/cpp
-    conan install ../.. --profile ../../profiles/linux-release --build missing
-    cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+  # Build is handled in workflow steps
+  # CodeQL will automatically detect compile commands from CMake build
     
 javascript:
   # Include TypeScript files
