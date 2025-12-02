@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.content.ContextCompat
 
 /**
@@ -12,6 +13,8 @@ import androidx.core.content.ContextCompat
  */
 object PermissionHelper {
 
+    private const val TAG = "PermissionHelper"
+
     /**
      * Get the required Bluetooth permissions based on Android version.
      * - Android 12+ (API 31+): BLUETOOTH_SCAN, BLUETOOTH_CONNECT
@@ -19,18 +22,23 @@ object PermissionHelper {
      * - Android 6-9 (API 23-28): ACCESS_COARSE_LOCATION
      */
     fun getRequiredBluetoothPermissions(): Array<String> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 12+ requires new Bluetooth permissions
-            arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            )
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Android 10-11 requires fine location for BLE scanning
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        } else {
-            // Android 6-9 can use coarse location
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Android 12+ requires new Bluetooth permissions
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10-11 requires fine location for BLE scanning
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+            } else {
+                // Android 6-9 can use coarse location
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting permissions", e)
+            emptyArray()
         }
     }
 
@@ -57,8 +65,15 @@ object PermissionHelper {
      * Check if all required Bluetooth permissions are granted.
      */
     fun hasBluetoothPermissions(context: Context): Boolean {
-        return getRequiredBluetoothPermissions().all { permission ->
-            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        return try {
+            val permissions = getRequiredBluetoothPermissions()
+            if (permissions.isEmpty()) return true
+            permissions.all { permission ->
+                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking permissions", e)
+            true // Return true to allow initialization to proceed
         }
     }
 
@@ -66,8 +81,13 @@ object PermissionHelper {
      * Get list of missing Bluetooth permissions.
      */
     fun getMissingBluetoothPermissions(context: Context): List<String> {
-        return getRequiredBluetoothPermissions().filter { permission ->
-            ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+        return try {
+            getRequiredBluetoothPermissions().filter { permission ->
+                ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting missing permissions", e)
+            emptyList()
         }
     }
 
