@@ -226,6 +226,27 @@ graph TB
 
 ## 🚀 **Rychlý Start**
 
+### ⚡ **Zero-Copy Bootstrap (Recommended)**
+
+The fastest way to set up the development environment using sparetools infrastructure:
+
+```bash
+# 1. Clone the repository with submodules
+git clone --recursive https://github.com/sparesparrow/ai-servis.git
+cd ai-servis
+
+# 2. Run the initialization script (sets up everything)
+./tools/init.sh
+
+# 3. Activate the environment
+source tools/env.sh
+
+# 4. Build all C++ components
+ai-servis-build
+```
+
+This approach uses **sparetools-cpython** from Conan to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
+
 ### 🐳 **Docker Development Environment**
 
 ```bash
@@ -245,46 +266,59 @@ docker-compose logs -f ai-audio-assistant
 
 ### 🔨 **Building C++ Platform Components**
 
-#### For Raspberry Pi (Recommended)
+#### Self-Contained Build (Recommended for Raspberry Pi)
+
+This approach uses sparetools zero-copy bootstrap for a portable Python/Conan environment:
 
 ```bash
-# Quick build and deploy for Raspberry Pi
-./scripts/build-raspberry-pi.sh
-sudo ./scripts/deploy-raspberry-pi.sh
-sudo systemctl start ai-servis
+# 1. Clone the repository with submodules
+git clone --recursive https://github.com/sparesparrow/ai-servis.git
+cd ai-servis
 
-# Or build manually
-cd platforms/cpp/core
-mkdir -p build-raspberry-pi
-cd build-raspberry-pi
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
+# 2. Install system dependencies (requires sudo)
+./tools/install-deps-rpi.sh
 
-# Components built:
-# - ai-servis-rpi: Main Raspberry Pi application
-# - hardware-server: GPIO control (port 8081)
-# - tests: Test suite
-```
+# 3. Bootstrap the build environment (uses sparetools)
+./tools/bootstrap.sh
 
-#### For Other Platforms (Conan-based)
-
-The C++ platform components can also use Conan for dependency management:
-
-```bash
-# Install Conan (if not already installed)
-pip install conan
-conan profile detect --force
-
-# Build all C++ components
-cd platforms/cpp
-conan install .. --profile ../profiles/linux-release --build missing
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-cmake --build build -j$(nproc)
+# 4. Build all C++ components
+./tools/build.sh
 
 # Components built:
 # - hardware-server: GPIO control (port 8081)
 # - mcp-server: MCP tools for hardware tasks
 # - webgrab-client/server: Download management
+```
+
+**📖 For detailed Raspberry Pi setup, see [RASPBERRY_PI_SETUP.md](docs/RASPBERRY_PI_SETUP.md)**
+
+#### Quick Build for Raspberry Pi (System Python)
+
+If you prefer using system packages without the bundled environment:
+
+```bash
+# Install dependencies
+sudo apt install cmake ninja-build g++ \
+    libgpiod-dev libmosquitto-dev libcurl4-openssl-dev
+
+# Quick build and deploy
+./scripts/build-raspberry-pi.sh
+sudo ./scripts/deploy-raspberry-pi.sh
+sudo systemctl start ai-servis
+```
+
+#### Interactive Development
+
+For active development, activate the build environment:
+
+```bash
+# Activate environment (after bootstrap)
+source tools/env.sh
+
+# Now you have conan, cmake, etc. on PATH
+ai-servis-info   # Show environment info
+ai-servis-build  # Build all components
+ai-servis-clean  # Clean build directories
 ```
 
 **📖 For detailed Raspberry Pi deployment instructions, see [README-RASPBERRY-PI.md](platforms/cpp/core/README-RASPBERRY-PI.md)**

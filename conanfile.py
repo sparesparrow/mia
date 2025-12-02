@@ -31,16 +31,15 @@ class AiServisConan(ConanFile):
 
     def requirements(self):
         # Core dependencies - always required
-        # NOTE: Using versions available on Conan Center with CMake 4.x compatibility
-        self.requires("jsoncpp/1.9.6")       # JSON handling for all components
-        self.requires("flatbuffers/24.3.25") # Serialization for all components
-        self.requires("libcurl/8.10.1")      # HTTP client for downloads and APIs
-        self.requires("openssl/3.3.2")       # SSL/TLS support
-        self.requires("zlib/1.3.1")          # Compression support
+        self.requires("jsoncpp/1.9.5")       # JSON handling for all components
+        self.requires("flatbuffers/23.5.26") # Serialization for all components
+        self.requires("libcurl/8.5.0")       # HTTP client for downloads and APIs
+        self.requires("openssl/3.0.8")       # SSL/TLS support
+        self.requires("zlib/1.2.13")         # Compression support
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
-            self.requires("libgpiod/2.0.2")      # GPIO control for Raspberry Pi
+            self.requires("libgpiod/1.6.3")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
         # MCP-specific dependencies
@@ -60,10 +59,18 @@ class AiServisConan(ConanFile):
             # Python dependencies are managed via requirements.txt
             # This option allows Conan to track the dependency
             pass
-
     def build_requirements(self):
         # Tools needed for building
-        self.tool_requires("flatbuffers/24.3.25")  # For flatc compiler
+        self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
+        
+        # Optional: Use sparetools-cpython for consistent Python environment
+        # This provides a portable CPython from Conan cache (zero-copy symlinks)
+        # Uncomment if you want Conan to manage Python:
+        # self.tool_requires("sparetools-cpython/3.12.7")
+        #
+        # Note: sparetools-cpython is available from:
+        # https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/
+        # Add remote: conan remote add sparesparrow-conan <url>
 
     def layout(self):
         basic_layout(self)
@@ -151,9 +158,6 @@ class AiServisConan(ConanFile):
 
         if self.options.with_mcp:
             self.cpp_info.libs.append("mcp-server")
-
-        if self.options.with_proxy_mcp:
-            self.cpp_info.libs.append("kernun-mcp-tools")
 
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["pthread", "dl", "rt"]
