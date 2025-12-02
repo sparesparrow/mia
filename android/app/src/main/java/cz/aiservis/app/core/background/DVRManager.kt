@@ -153,7 +153,7 @@ class DVRManagerImpl @Inject constructor(
         private const val MAX_CLIP_SIZE_BYTES = 100_000_000L // 100MB
         private const val MIN_FREE_SPACE_BYTES = 500_000_000L // 500MB minimum free space
         
-        private val VIDEO_QUALITY = Quality.HD
+        private const val VIDEO_QUALITY = Quality.HD
         private const val CLIPS_DIRECTORY = "ai-servis-clips"
         
         private val DATE_FORMAT = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
@@ -341,11 +341,9 @@ class DVRManagerImpl @Inject constructor(
         clipsDao.snapshotRecent(100).filter { !it.offloaded }
     }
 
-    override suspend fun markClipOffloaded(clipId: Long) {
-        withContext(Dispatchers.IO) {
-            clipsDao.markOffloaded(clipId)
-            Log.d(TAG, "Clip $clipId marked as offloaded")
-        }
+    override suspend fun markClipOffloaded(clipId: Long) = withContext(Dispatchers.IO) {
+        clipsDao.markOffloaded(clipId)
+        Log.d(TAG, "Clip $clipId marked as offloaded")
     }
 
     override suspend fun cleanupOldClips(retentionDays: Int): Int = withContext(Dispatchers.IO) {

@@ -13,9 +13,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.Preview
-import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -41,6 +38,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.ExecutorService
@@ -188,17 +186,8 @@ class ANPRManagerImpl @Inject constructor(
             
             cameraProvider = getCameraProvider()
             
-            val resolutionSelector = ResolutionSelector.Builder()
-                .setResolutionStrategy(
-                    ResolutionStrategy(
-                        Size(TARGET_WIDTH, TARGET_HEIGHT),
-                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
-                    )
-                )
-                .build()
-
             imageAnalysis = ImageAnalysis.Builder()
-                .setResolutionSelector(resolutionSelector)
+                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also { analysis ->
@@ -206,7 +195,7 @@ class ANPRManagerImpl @Inject constructor(
                 }
             
             preview = Preview.Builder()
-                .setResolutionSelector(resolutionSelector)
+                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
                 .build()
             
             _state.value = ANPRState.Active
@@ -218,20 +207,18 @@ class ANPRManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun stopDetection() {
-        withContext(Dispatchers.Main) {
-            try {
-                cameraProvider?.unbindAll()
-                cameraExecutor?.shutdown()
-                cameraExecutor = null
-                
-                recentPlates.clear()
-                _state.value = ANPRState.Idle
-                Log.d(TAG, "ANPR detection stopped")
-                
-            } catch (e: Exception) {
-                Log.e(TAG, "Error stopping detection", e)
-            }
+    override suspend fun stopDetection() = withContext(Dispatchers.Main) {
+        try {
+            cameraProvider?.unbindAll()
+            cameraExecutor?.shutdown()
+            cameraExecutor = null
+            
+            recentPlates.clear()
+            _state.value = ANPRState.Idle
+            Log.d(TAG, "ANPR detection stopped")
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping detection", e)
         }
     }
 
