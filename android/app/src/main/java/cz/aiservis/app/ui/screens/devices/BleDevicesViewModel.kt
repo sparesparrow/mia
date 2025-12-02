@@ -181,7 +181,8 @@ class BleDevicesViewModel @Inject constructor(
     
     override fun onCleared() {
         super.onCleared()
-        // Note: cleanup is handled by the singleton BLEManager's lifecycle
-        // We don't call cleanup here as it would affect other consumers
+        viewModelScope.launch {
+            bleManager.cleanup()
+        }
     }
 }

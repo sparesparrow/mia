@@ -95,9 +95,7 @@ interface BLEManager {
     fun isConnected(): Boolean
     
     /** Cleanup resources and cancel all operations */
-    suspend fun cleanup() {
-        // Default no-op implementation
-    }
+    suspend fun cleanup()
 }
 
 @Singleton
@@ -510,6 +508,7 @@ class BLEManagerImpl @Inject constructor(
                     @Suppress("DEPRECATION")
                     gatt.writeCharacteristic(tx)
                 }
+<<<<<<< HEAD
             // Use proper API versioning for Android 13+ with write callback
             val writeResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 withContext(Dispatchers.Main) {
@@ -557,7 +556,7 @@ class BLEManagerImpl @Inject constructor(
                     if (success) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_FAILURE
                 }
             }
-            
+
             if (writeResult != BluetoothGatt.GATT_SUCCESS) {
                 Log.e(TAG, "Write failed with status: $writeResult")
                 return@withContext null
