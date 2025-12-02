@@ -101,12 +101,18 @@ interface BLEManager {
     
     /** Cleanup resources and cancel all operations */
 <<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
+<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
     suspend fun cleanup() {
         // Default no-op implementation
     }
 =======
     suspend fun cleanup()
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
+=======
+    suspend fun cleanup() {
+        // Default no-op implementation
+    }
+>>>>>>> 0dbc668 (android app bugfixing updates):android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
 }
 
 @Singleton
