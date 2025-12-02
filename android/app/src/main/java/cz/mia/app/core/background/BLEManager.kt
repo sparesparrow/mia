@@ -90,7 +90,9 @@ interface BLEManager {
     fun isConnected(): Boolean
     
     /** Cleanup resources and cancel all operations */
-    suspend fun cleanup()
+    suspend fun cleanup() {
+        // Default no-op implementation
+    }
 }
 
 @Singleton

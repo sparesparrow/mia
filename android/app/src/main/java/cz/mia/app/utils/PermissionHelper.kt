@@ -21,7 +21,7 @@ object PermissionHelper {
      * - Android 10-11 (API 29-30): ACCESS_FINE_LOCATION
      * - Android 6-9 (API 23-28): ACCESS_COARSE_LOCATION
      */
-      fun getRequiredBluetoothPermissions(): Array<String> {
+    fun getRequiredBluetoothPermissions(): Array<String> {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // Android 12+ requires new Bluetooth permissions
@@ -64,7 +64,7 @@ object PermissionHelper {
     /**
      * Check if all required Bluetooth permissions are granted.
      */
-      fun hasBluetoothPermissions(context: Context): Boolean {
+    fun hasBluetoothPermissions(context: Context): Boolean {
         return try {
             val permissions = getRequiredBluetoothPermissions()
             if (permissions.isEmpty()) return true
@@ -80,7 +80,7 @@ object PermissionHelper {
     /**
      * Get list of missing Bluetooth permissions.
      */
-      fun getMissingBluetoothPermissions(context: Context): List<String> {
+    fun getMissingBluetoothPermissions(context: Context): List<String> {
         return try {
             getRequiredBluetoothPermissions().filter { permission ->
                 ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
