@@ -319,3 +319,31 @@ mia/
 
 ## Change Log
 - **v1.0** (2025-01-XX): Initial architecture document. Replaced old ROS2/MCP-heavy design with Lean ZeroMQ+FlatBuffers+FastAPI approach. Approved by user after extensive feedback on RPi-only deployment simplicity.
+
+
+---
+
+## Repository Cleanup Tasks
+
+### Removing Obsolete Documentation
+The following files in `docs/` folder should be removed using Git CLI, as they relate to the old AI-SERVIS/ROS2 architecture and are now superseded by this TODO.md:
+
+```bash
+# Remove individual TODO files from old design
+git rm docs/TODO-master-list.md
+git rm docs/TODO-michal-ci-cd.md
+git rm docs/TODO-pavel-architecture.md
+git rm docs/TODO-vojtech-implementation.md
+
+# Remove obsolete architecture documentation
+git rm docs/ai-servis-universal-proposal.md
+git rm docs/core-orchestrator-enhanced.md
+git rm docs/implementation-ready-summary.md
+
+# Commit the cleanup
+git commit -m 'chore: Remove obsolete architecture documentation from old ROS2/MCP design'
+```
+
+**Status**: Manual execution required via Git CLI (GitHub web UI limitations for batch file deletion)
+**Priority**: Medium (cleanup task, not blocking feature development)
+**Assigned to**: DevOps team lead or project maintainer
