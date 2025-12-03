@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
 """
 AI-SERVIS Universal: Repository-Agnostic CPython Bootstrap
@@ -16,6 +17,9 @@ This script uses only stdlib (urllib, tarfile, subprocess) - no external deps.
 """
 
 import sys 
+=======
+import sys
+>>>>>>> ec9bdcd (build: replace bootstrap script with zero-dependency implementation)
 import os
 import platform
 import urllib.request
@@ -24,6 +28,7 @@ import subprocess
 import shutil
 import json
 from pathlib import Path
+<<<<<<< HEAD
 from enum import Enum
 
 # --- REPOSITORY CONFIGURATION ---
@@ -81,11 +86,23 @@ def get_platform_str():
              "ANDROID_ROOT" in os.environ)):
         return "android-arm64"  # Android typically runs on ARM64
 
+=======
+
+# --- CONFIGURATION ---
+CPY_VERSION = "3.12.7"
+CLOUDSMITH_BASE = "https://dl.cloudsmith.io/sparesparrow/cpy/raw/versions"
+
+def get_platform_str():
+    """Determines Cloudsmith platform string (linux-x86_64, macos-arm64, etc.)"""
+    machine = platform.machine()
+    system = sys.platform
+>>>>>>> ec9bdcd (build: replace bootstrap script with zero-dependency implementation)
     if system == "win32":
         return "windows-x86_64"
     elif system == "darwin":
         return "macos-arm64" if machine == "arm64" else "macos-x86_64"
     else:
+<<<<<<< HEAD
         # Linux variants
         if machine == "x86_64" or machine == "amd64":
             return "linux-x86_64"
@@ -205,6 +222,41 @@ def extract_cpython_tool(archive_path: Path, work_dir: Path) -> Path:
 
 def setup_python_environment(extract_dir: Path) -> dict:
     """Set up PYTHONHOME and PATH for bundled CPython"""
+=======
+        return "linux-x86_64" if machine == "x86_64" else f"linux-{machine}"
+
+def main():
+    print(">>> [MIA] Starting Multi-Agent Bootstrap...")
+    
+    # 1. Platform Detection
+    plat = get_platform_str()
+    work_dir = Path(os.getcwd())
+    tools_dir = work_dir / "tools"
+    tools_dir.mkdir(exist_ok=True)
+    
+    # 2. Download Artifact
+    filename = f"cpython-tool-{CPY_VERSION}-{plat}.tar.gz"
+    url = f"{CLOUDSMITH_BASE}/{CPY_VERSION}/{filename}"
+    dest = tools_dir / filename
+    
+    if not dest.exists():
+        print(f"Downloading {url}...")
+        try:
+            with urllib.request.urlopen(url) as response, open(dest, 'wb') as out_file:
+                shutil.copyfileobj(response, out_file)
+        except Exception as e:
+            print(f"Download failed: {e}")
+            sys.exit(1)
+
+    # 3. Extract & Configure
+    extract_dir = tools_dir / "cpython"
+    if not extract_dir.exists():
+        print(f"Extracting to {extract_dir}...")
+        with tarfile.open(dest, 'r:gz') as tar:
+            tar.extractall(path=extract_dir)
+
+    # 4. Runtime Environment
+>>>>>>> ec9bdcd (build: replace bootstrap script with zero-dependency implementation)
     env = os.environ.copy()
     env["PYTHONHOME"] = str(extract_dir)
     if sys.platform == "win32":
@@ -213,6 +265,7 @@ def setup_python_environment(extract_dir: Path) -> dict:
     else:
         py_bin = extract_dir / "bin" / "python3"
         env["PATH"] = str(extract_dir / "bin") + ":" + env.get("PATH", "")
+<<<<<<< HEAD
     
     return env, py_bin
 
@@ -528,6 +581,27 @@ def main():
     print("  export ARTIFACT_REPO=cloudsmith")
     print()
 
+=======
+
+    # 5. Validation & Handoff
+    try:
+        # Validate Python version
+        subprocess.check_call([str(py_bin), "--version"], env=env)
+        
+        # Generate Success Marker for CI
+        with open("validation-report.json", "w") as f:
+            json.dump({
+                "status": "success",
+                "platform": plat,
+                "binary": str(py_bin),
+                "compliant": True
+            }, f)
+        print(">>> [MIA] Bootstrap Complete. Validation marker written.")
+        
+    except subprocess.CalledProcessError as e:
+        print(f"!!! Bootstrap Verification Failed: {e}")
+        sys.exit(1)
+>>>>>>> ec9bdcd (build: replace bootstrap script with zero-dependency implementation)
 
 if __name__ == "__main__":
     main()
