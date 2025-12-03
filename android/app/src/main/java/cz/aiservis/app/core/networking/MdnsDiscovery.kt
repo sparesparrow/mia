@@ -3,12 +3,14 @@ package cz.aiservis.app.core.networking
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
 import android.net.wifi.WifiManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withTimeoutOrNull
+import java.util.concurrent.Executors
 
 @Singleton
 class MdnsDiscovery @Inject constructor(
@@ -41,7 +43,28 @@ class MdnsDiscovery @Inject constructor(
 			override fun onServiceFound(serviceInfo: NsdServiceInfo) {
 				// Only resolve MQTT
 				if (serviceInfo.serviceType?.contains("_mqtt._tcp") == true) {
-					nsd.resolveService(serviceInfo, resolveListener)
+					if (Build.VERSION.SDK_INT >= 34) {
+						nsd.registerServiceInfoCallback(
+							serviceInfo,
+							Executors.newSingleThreadExecutor(),
+							object : NsdManager.ServiceInfoCallback {
+								override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {}
+								override fun onServiceUpdated(info: NsdServiceInfo) {
+									resolveListener.onServiceResolved(info)
+									try {
+										nsd.unregisterServiceInfoCallback(this)
+									} catch (e: Exception) {
+										// Ignore if already unregistered
+									}
+								}
+								override fun onServiceLost() {}
+								override fun onServiceInfoCallbackUnregistered() {}
+							}
+						)
+					} else {
+						@Suppress("DEPRECATION")
+						nsd.resolveService(serviceInfo, resolveListener)
+					}
 				}
 			}
 			override fun onServiceLost(serviceInfo: NsdServiceInfo) {}
