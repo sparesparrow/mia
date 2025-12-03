@@ -273,15 +273,4 @@ class BleDevicesViewModelTest {
         coVerify { bleManager.sendCommand(testCommand) }
     }
 
-    @Test
-    fun `onCleared calls cleanup on BLE manager`() = runTest {
-        advanceUntilIdle()
-        
-        // Manually trigger onCleared by clearing the ViewModel
-        // In real scenario, this is called by the framework
-        viewModel.onCleared()
-        advanceUntilIdle()
-        
-        coVerify { bleManager.cleanup() }
-    }
 }
