@@ -123,3 +123,4 @@ build-Release/
 
 # Conan local cache (if used outside .buildenv)
 ~/.conan2/
+kernun
