@@ -37,6 +37,12 @@ class AIServisApplication : Application(), Configuration.Provider {
 		scheduleMetricsWorker()
 	}
 
+	override fun onTerminate() {
+		super.onTerminate()
+		// Note: BLEManager cleanup is handled by its singleton lifecycle
+		// Individual components should clean up their own resources
+	}
+
 	private fun initSentry() {
 		val dsn = System.getenv("AI_SERVIS_SENTRY_DSN")
 		if (!dsn.isNullOrBlank()) {
