@@ -500,16 +500,24 @@ class BLEManagerImpl @Inject constructor(
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
             
-            withContext(Dispatchers.Main) {
+            val writeInitiated = withContext(Dispatchers.Main) {
                 // Use proper API versioning for Android 13+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                    val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                    // On Android 13+, returns BluetoothStatusCodes constant
+                    // BluetoothStatusCodes.SUCCESS = 0
+                    result == 0
                 } else {
                     @Suppress("DEPRECATION")
                     tx.value = bytes
                     @Suppress("DEPRECATION")
                     gatt.writeCharacteristic(tx)
                 }
+            }
+            
+            if (!writeInitiated) {
+                Log.e(TAG, "Failed to initiate write for command: $command")
+                return@withContext null
             }
             
             // Wait for response with timeout
