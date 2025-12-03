@@ -518,18 +518,20 @@ class BLEManagerImpl @Inject constructor(
                         // Store callback temporarily - in real implementation, we'd need to track this
                         // For now, use the synchronous API but handle errors properly
                         try {
-                            val success = gatt.writeCharacteristic(
+                            val writeStatus = gatt.writeCharacteristic(
                                 tx,
                                 bytes,
                                 BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
                             )
-                            if (success) {
+                            // On Android 13+, writeCharacteristic returns an Int status code
+                            // BluetoothStatusCodes.SUCCESS (0) means the write was initiated
+                            if (writeStatus == BluetoothGatt.GATT_SUCCESS) {
                                 // On Android 13+, writeCharacteristic returns immediately
                                 // The actual write happens asynchronously
                                 // We'll wait a short time for the write to complete
                                 continuation.resume(BluetoothGatt.GATT_SUCCESS)
                             } else {
-                                continuation.resume(BluetoothGatt.GATT_FAILURE)
+                                continuation.resume(writeStatus)
                             }
                         } catch (e: Exception) {
                             continuation.resume(BluetoothGatt.GATT_FAILURE)
