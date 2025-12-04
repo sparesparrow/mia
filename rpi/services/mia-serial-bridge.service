@@ -1,0 +1,17 @@
+[Unit]
+Description=MIA Serial Bridge - ESP32/Arduino to ZeroMQ
+After=network.target zmq-broker.service
+Wants=zmq-broker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/ai-servis/rpi
+ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

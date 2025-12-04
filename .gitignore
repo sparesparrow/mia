@@ -124,3 +124,7 @@ build-Release/
 # Conan local cache (if used outside .buildenv)
 ~/.conan2/
 kernun
+
+*_generated.h
+build-hardware-server/
+build-raspberry-pi/

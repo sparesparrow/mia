@@ -8,9 +8,9 @@
 
 // Ensure the included flatbuffers.h is the same version as when this file was
 // generated, otherwise it may not be compatible.
-static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
-              FLATBUFFERS_VERSION_MINOR == 5 &&
-              FLATBUFFERS_VERSION_REVISION == 26,
+static_assert(FLATBUFFERS_VERSION_MAJOR == 24 &&
+              FLATBUFFERS_VERSION_MINOR == 3 &&
+              FLATBUFFERS_VERSION_REVISION == 25,
              "Non-compatible flatbuffers version included");
 
 namespace webgrab {
@@ -253,9 +253,6 @@ struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ::flatbuffers::String *url() const {
     return GetPointer<const ::flatbuffers::String *>(VT_URL);
   }
-  ::flatbuffers::String *mutable_url() {
-    return GetPointer<::flatbuffers::String *>(VT_URL);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_URL) &&
@@ -307,9 +304,6 @@ struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint32_t sessionId() const {
     return GetField<uint32_t>(VT_SESSIONID, 0);
   }
-  bool mutate_sessionId(uint32_t _sessionId = 0) {
-    return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSIONID, 4) &&
@@ -351,9 +345,6 @@ struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
   uint32_t sessionId() const {
     return GetField<uint32_t>(VT_SESSIONID, 0);
   }
-  bool mutate_sessionId(uint32_t _sessionId = 0) {
-    return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
-  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSIONID, 4) &&
@@ -394,9 +385,6 @@ struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
   };
   const ::flatbuffers::String *status() const {
     return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
-  }
-  ::flatbuffers::String *mutable_status() {
-    return GetPointer<::flatbuffers::String *>(VT_STATUS);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -448,9 +436,6 @@ struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
   };
   uint32_t sessionId() const {
     return GetField<uint32_t>(VT_SESSIONID, 0);
-  }
-  bool mutate_sessionId(uint32_t _sessionId = 0) {
-    return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -523,14 +508,8 @@ struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   const ::flatbuffers::String *direction() const {
     return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
-  }
-  ::flatbuffers::String *mutable_direction() {
-    return GetPointer<::flatbuffers::String *>(VT_DIRECTION);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -592,14 +571,8 @@ struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
-  }
-  bool mutate_value(bool _value = 0) {
-    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -647,9 +620,6 @@ struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   };
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
-  }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -722,14 +692,8 @@ struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
-  }
-  bool mutate_success(bool _success = 0) {
-    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -779,14 +743,8 @@ struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
-  }
-  bool mutate_success(bool _success = 0) {
-    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -837,20 +795,11 @@ struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
   }
-  bool mutate_value(bool _value = 0) {
-    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
-  }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
-  }
-  bool mutate_success(bool _success = 0) {
-    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -904,9 +853,6 @@ struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   };
   const ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *pins() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
-  }
-  ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *mutable_pins() {
-    return GetPointer<::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -962,20 +908,11 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool mutate_pin(int32_t _pin = 0) {
-    return SetField<int32_t>(VT_PIN, _pin, 0);
-  }
   const ::flatbuffers::String *direction() const {
     return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
   }
-  ::flatbuffers::String *mutable_direction() {
-    return GetPointer<::flatbuffers::String *>(VT_DIRECTION);
-  }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
-  }
-  bool mutate_value(bool _value = 0) {
-    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1047,26 +984,14 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ::flatbuffers::String *topic() const {
     return GetPointer<const ::flatbuffers::String *>(VT_TOPIC);
   }
-  ::flatbuffers::String *mutable_topic() {
-    return GetPointer<::flatbuffers::String *>(VT_TOPIC);
-  }
   const ::flatbuffers::String *payload() const {
     return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
-  }
-  ::flatbuffers::String *mutable_payload() {
-    return GetPointer<::flatbuffers::String *>(VT_PAYLOAD);
   }
   int32_t qos() const {
     return GetField<int32_t>(VT_QOS, 0);
   }
-  bool mutate_qos(int32_t _qos = 0) {
-    return SetField<int32_t>(VT_QOS, _qos, 0);
-  }
   bool retain() const {
     return GetField<uint8_t>(VT_RETAIN, 0) != 0;
-  }
-  bool mutate_retain(bool _retain = 0) {
-    return SetField<uint8_t>(VT_RETAIN, static_cast<uint8_t>(_retain), 0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1144,9 +1069,6 @@ struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   };
   const ::flatbuffers::String *error() const {
     return GetPointer<const ::flatbuffers::String *>(VT_ERROR);
-  }
-  ::flatbuffers::String *mutable_error() {
-    return GetPointer<::flatbuffers::String *>(VT_ERROR);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1230,9 +1152,6 @@ struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const webgrab::GPIOStatusRequest *request_as_GPIOStatusRequest() const {
     return request_type() == webgrab::Request_GPIOStatusRequest ? static_cast<const webgrab::GPIOStatusRequest *>(request()) : nullptr;
   }
-  void *mutable_request() {
-    return GetPointer<void *>(VT_REQUEST);
-  }
   webgrab::Response response_type() const {
     return static_cast<webgrab::Response>(GetField<uint8_t>(VT_RESPONSE_TYPE, 0));
   }
@@ -1260,9 +1179,6 @@ struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   const webgrab::GPIOStatusResponse *response_as_GPIOStatusResponse() const {
     return response_type() == webgrab::Response_GPIOStatusResponse ? static_cast<const webgrab::GPIOStatusResponse *>(response()) : nullptr;
-  }
-  void *mutable_response() {
-    return GetPointer<void *>(VT_RESPONSE);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1389,32 +1305,17 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   const ::flatbuffers::String *message_id() const {
     return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE_ID);
   }
-  ::flatbuffers::String *mutable_message_id() {
-    return GetPointer<::flatbuffers::String *>(VT_MESSAGE_ID);
-  }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
-  }
-  bool mutate_timestamp(uint64_t _timestamp = 0) {
-    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
   }
   const ::flatbuffers::String *source() const {
     return GetPointer<const ::flatbuffers::String *>(VT_SOURCE);
   }
-  ::flatbuffers::String *mutable_source() {
-    return GetPointer<::flatbuffers::String *>(VT_SOURCE);
-  }
   const ::flatbuffers::String *target() const {
     return GetPointer<const ::flatbuffers::String *>(VT_TARGET);
   }
-  ::flatbuffers::String *mutable_target() {
-    return GetPointer<::flatbuffers::String *>(VT_TARGET);
-  }
   const webgrab::Message *payload() const {
     return GetPointer<const webgrab::Message *>(VT_PAYLOAD);
-  }
-  webgrab::Message *mutable_payload() {
-    return GetPointer<webgrab::Message *>(VT_PAYLOAD);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1604,14 +1505,6 @@ inline const webgrab::Message *GetMessage(const void *buf) {
 
 inline const webgrab::Message *GetSizePrefixedMessage(const void *buf) {
   return ::flatbuffers::GetSizePrefixedRoot<webgrab::Message>(buf);
-}
-
-inline Message *GetMutableMessage(void *buf) {
-  return ::flatbuffers::GetMutableRoot<Message>(buf);
-}
-
-inline webgrab::Message *GetMutableSizePrefixedMessage(void *buf) {
-  return ::flatbuffers::GetMutableSizePrefixedRoot<webgrab::Message>(buf);
 }
 
 inline bool VerifyMessageBuffer(
