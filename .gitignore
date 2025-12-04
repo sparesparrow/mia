@@ -125,7 +125,10 @@ build-Release/
 ~/.conan2/
 kernun
 
+# Generated headers
 *_generated.h
+
+# Build directories
 build-hardware-server/
 build-raspberry-pi/
 kernun
