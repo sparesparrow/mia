@@ -500,6 +500,16 @@ class BLEManagerImpl @Inject constructor(
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
             
+            withContext(Dispatchers.Main) {
+                // Use proper API versioning for Android 13+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                } else {
+                    @Suppress("DEPRECATION")
+                    tx.value = bytes
+                    @Suppress("DEPRECATION")
+                    gatt.writeCharacteristic(tx)
+                }
             // Use proper API versioning for Android 13+ with write callback
             val writeResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 withContext(Dispatchers.Main) {
