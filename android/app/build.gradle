@@ -36,18 +36,9 @@ android {
             useSupportLibrary true
         }
 
-        // Build config fields
-        buildConfigField "String", "BUILD_TIME", "\"${getBuildTime()}\""
-        buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
-        buildConfigField "String", "GIT_BRANCH", "\"${getGitBranch()}\""
-        buildConfigField "String", "VERSION_NAME", "\"${getVersionName()}\""
+        buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
         buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
         buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
-    }
-
-    lintOptions {
-        abortOnError false
-        ignoreWarnings true
     }
 
     signingConfigs {
