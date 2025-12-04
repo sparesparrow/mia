@@ -6,9 +6,6 @@ venv/
 android/.gradle/
 android/build/
 android/app/build/
-android/gradle/
-android/gradlew
-android/gradlew.bat
 android/local.properties
 android/.idea/
 android/*.iml
@@ -126,3 +123,4 @@ build-Release/
 
 # Conan local cache (if used outside .buildenv)
 ~/.conan2/
+kernun

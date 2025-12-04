@@ -23,6 +23,8 @@ android {
         }
 
         buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
+        buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
+        buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
     }
 
     signingConfigs {
@@ -131,6 +133,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     implementation 'com.squareup.moshi:moshi-kotlin:1.15.0'
 
+    // WebSocket
+    implementation 'org.java-websocket:Java-WebSocket:1.5.5'
+
     // Bluetooth LE
     implementation 'no.nordicsemi.android:ble:2.7.2'
     implementation 'no.nordicsemi.android:ble-common:2.7.2'
@@ -191,6 +196,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
     testImplementation 'androidx.room:room-testing:2.6.1'
+    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation 'app.cash.turbine:turbine:1.0.0'
     
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

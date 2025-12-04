@@ -4,10 +4,15 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
-	<uses-permission android:name="android.permission.BLUETOOTH" />
-	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	<!-- Legacy Bluetooth permissions (Android 11 and below) -->
+	<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+	
+	<!-- Android 12+ Bluetooth permissions -->
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+	
+	<!-- Location permission for BLE scanning -->
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 	<uses-permission android:name="android.permission.CAMERA" />
@@ -22,7 +27,10 @@
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 	<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+	
+	<!-- Hardware features -->
 	<uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
+	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
 
 	<application
 		android:name=".AIServisApplication"
@@ -31,6 +39,9 @@
 		android:roundIcon="@drawable/ic_car"
 		android:allowBackup="true"
 		android:supportsRtl="true">
+
+		<!-- Disable Sentry auto-init since we initialize manually in AIServisApplication -->
+		<meta-data android:name="io.sentry.auto-init" android:value="false" />
 
 		<activity
 			android:name=".MainActivity"

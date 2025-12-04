@@ -9,6 +9,9 @@ import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -182,8 +185,17 @@ class ANPRManagerImpl @Inject constructor(
             
             cameraProvider = getCameraProvider()
             
+            val resolutionSelector = ResolutionSelector.Builder()
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(TARGET_WIDTH, TARGET_HEIGHT),
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                    )
+                )
+                .build()
+
             imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also { analysis ->
@@ -191,7 +203,7 @@ class ANPRManagerImpl @Inject constructor(
                 }
             
             preview = Preview.Builder()
-                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
+                .setResolutionSelector(resolutionSelector)
                 .build()
             
             _state.value = ANPRState.Active
@@ -338,7 +350,7 @@ class ANPRManagerImpl @Inject constructor(
         }
         
         private fun calculateConfidence(line: Text.Line, normalized: String): Float {
-            var baseConfidence = line.confidence ?: 0.5f
+            var baseConfidence = line.confidence
             
             // Apply region heuristics
             scope.launch {

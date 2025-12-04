@@ -101,7 +101,12 @@ class DrivingService : LifecycleService() {
 	override fun onDestroy() {
 		super.onDestroy()
 		serviceScope.cancel()
-		stopForeground(true)
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+			stopForeground(STOP_FOREGROUND_REMOVE)
+		} else {
+			@Suppress("DEPRECATION")
+			stopForeground(true)
+		}
 	}
 
 	private fun startService() {
