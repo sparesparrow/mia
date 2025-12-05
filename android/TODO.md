@@ -9,6 +9,93 @@ This TODO list provides detailed, actionable tasks for implementing robust Andro
 
 ***
 
+## Status Summary (Last Updated: 2025-12-03)
+
+### ✅ Completed Tasks
+- **P0 Critical Bugs**: All fixed (BLEManager memory leaks, race conditions, deprecated APIs, permissions)
+- **P1 Architecture/API**: Complete (MVVM setup, Hilt DI, FastAPI integration)
+- **P2 UI/Tests**: Complete (BLE screens, telemetry display, unit tests)
+- **P3 Documentation**: Complete (architecture docs, user guides)
+
+### 🔄 New Features Added
+- **Kernun Proxy MCP Integration**: Optional security analysis via Conan package
+- **CPython Bootstrap**: Shared bundled CPython for Android tools (`android/tools/lib/cpython_bootstrap.py`)
+- **OBD Simulator**: Development tool for BLE testing (`android/tools/bootstrap-obd.py`)
+
+***
+
+## Kernun Proxy MCP Integration (NEW)
+
+### Overview
+Optional integration with Kernun proxy MCP server for network security analysis.
+Enabled via `with_proxy_mcp=True` in Conan configuration.
+
+### Available MCP Tools
+- `analyze_traffic` - Network traffic analysis
+- `inspect_session` - Session inspection
+- `modify_tls_policy` - TLS policy management
+- `update_proxy_rules` - Firewall rules management
+- `update_clearweb_database` - Content categorization
+
+### Files
+| File | Purpose |
+|------|---------|
+| `conan-recipes/kernun-mcp-tools/conanfile.py` | Conan recipe for MCP tools |
+| `conanfile.py` | Root config with `with_proxy_mcp` option |
+| `modules/security/proxy_mcp_client.py` | Python MCP client wrapper |
+
+### Usage
+```python
+from modules.security import ProxyMCPClient
+
+async with ProxyMCPClient("localhost", 3000) as client:
+    result = await client.analyze_traffic(time_range_seconds=300)
+    print(result)
+```
+
+***
+
+## CPython Bootstrap Extension (NEW)
+
+### Overview
+Shared CPython bootstrap module for Android development tools.
+Provides bundled CPython 3.12.7 for cross-platform tool development.
+
+### Features
+- Downloads standalone CPython from GitHub releases
+- Supports Linux (x86_64, aarch64), macOS (x86_64, arm64), Windows (x86_64)
+- Automatic version verification and caching
+- Context manager and CLI interface
+
+### Files
+| File | Purpose |
+|------|---------|
+| `android/tools/lib/cpython_bootstrap.py` | Shared CPython bootstrap module |
+| `android/tools/lib/__init__.py` | Module exports |
+| `android/tools/bootstrap-obd.py` | OBD simulator using bundled CPython |
+
+### Usage
+```python
+from lib.cpython_bootstrap import CPythonBootstrap
+
+with CPythonBootstrap() as python_path:
+    subprocess.run([python_path, "script.py"])
+```
+
+### CLI
+```bash
+# Show installation info
+python3 android/tools/lib/cpython_bootstrap.py --info
+
+# Run script with bundled Python
+python3 android/tools/lib/cpython_bootstrap.py script.py [args...]
+
+# Force re-download
+python3 android/tools/lib/cpython_bootstrap.py --force
+```
+
+***
+
 ## 1. Critical Bug Fixes (Priority: P0 - Must Fix First)
 
 ### 1.1 Fix Memory Leak in BLEManager

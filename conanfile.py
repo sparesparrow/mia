@@ -12,13 +12,15 @@ class AiServisConan(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
         "with_hardware": [True, False],
-        "with_mcp": [True, False]
+        "with_mcp": [True, False],
+        "with_proxy_mcp": [True, False]  # Kernun proxy MCP integration
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "with_hardware": True,
-        "with_mcp": True
+        "with_mcp": True,
+        "with_proxy_mcp": False  # Optional, disabled by default
     }
 
     def configure(self):
@@ -43,6 +45,13 @@ class AiServisConan(ConanFile):
         if self.options.with_mcp:
             # MCP integration may need additional deps
             pass
+
+        # Kernun proxy MCP integration (optional)
+        if self.options.with_proxy_mcp:
+            # Kernun MCP tools for network security analysis
+            # Provides: analyze_traffic, inspect_session, modify_tls_policy,
+            #           update_proxy_rules, update_clearweb_database
+            self.requires("kernun-mcp-tools/0.1.0")
 
     def build_requirements(self):
         # Tools needed for building
@@ -134,6 +143,9 @@ class AiServisConan(ConanFile):
 
         if self.options.with_mcp:
             self.cpp_info.libs.append("mcp-server")
+
+        if self.options.with_proxy_mcp:
+            self.cpp_info.libs.append("kernun-mcp-tools")
 
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["pthread", "dl", "rt"]

@@ -122,6 +122,19 @@ else()
     message(WARNING "FlatBuffers compiler (flatc) not found. MCP server will not be built. Install with: conan install ... --build flatbuffers")
 endif()
 
+# Messages MCP Server (does not depend on FlatBuffers)
+add_executable(messages-mcp-server
+    core/MCPIntegration/MessagesServer/src/MessagesMCPServer.cpp
+    core/MCPIntegration/MessagesServer/src/MessagesMCPServerImpl.cpp
+)
+
+# Link against core to reuse jsoncpp/libcurl/threads linkage
+target_link_libraries(messages-mcp-server webgrab_core)
+
+# Copy Messages MCP config
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/core/MCPIntegration/MessagesServer/config.ini
+               ${CMAKE_CURRENT_BINARY_DIR}/messages.config.ini COPYONLY)
+
 # Legacy executables (for compatibility)
 add_executable(webgrab-client core/main_client.cpp)
 target_link_libraries(webgrab-client webgrab_core)
@@ -150,7 +163,7 @@ if(WIN32)
 endif()
 
 # Installation rules
-install(TARGETS hardware-server mcp-server webgrab_core
+install(TARGETS hardware-server mcp-server messages-mcp-server webgrab_core
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -161,3 +174,7 @@ if(FLATBUFFERS_FLATC_EXECUTABLE)
         DESTINATION etc/aiservis
     )
 endif()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/messages.config.ini
+    DESTINATION etc/aiservis
+)

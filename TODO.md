@@ -283,6 +283,81 @@ mia/
 
 ---
 
+## MCP Security Module (NEW - Phase 7)
+
+### Overview
+Integration with Kernun proxy MCP server for network security analysis.
+Optional module enabled via Conan configuration.
+
+### 7.1 Kernun MCP Tools Conan Package
+- [x] Create Conan recipe (`conan-recipes/kernun-mcp-tools/conanfile.py`)
+- [x] Implement C++ wrapper library with MCP tools
+- [x] Add CMakeLists.txt for build configuration
+- [x] Support shared/static library options
+
+### 7.2 Root Conanfile Integration
+- [x] Add `with_proxy_mcp` option (default: False)
+- [x] Conditional dependency on kernun-mcp-tools
+- [x] Update package_info with library export
+
+### 7.3 Python MCP Client
+- [x] Create `modules/security/proxy_mcp_client.py`
+- [x] Implement async client with aiohttp
+- [x] Support WebSocket and HTTP fallback
+- [x] Add FastAPI integration helper
+- [x] Create data classes for type safety
+
+### 7.4 Available MCP Tools
+| Tool | Description |
+|------|-------------|
+| `analyze_traffic` | Network traffic analysis with threat detection |
+| `inspect_session` | Detailed session inspection (TLS, ciphers) |
+| `modify_tls_policy` | TLS/SSL policy configuration |
+| `update_proxy_rules` | Firewall and proxy rule management |
+| `update_clearweb_database` | Content categorization database |
+
+### Usage Example
+```python
+from modules.security import ProxyMCPClient
+
+async with ProxyMCPClient("localhost", 3000) as client:
+    # Analyze traffic
+    result = await client.analyze_traffic(time_range_seconds=300)
+    
+    # Get TLS policies
+    policies = await client.get_tls_policies()
+    
+    # Update proxy rule
+    await client.update_proxy_rules([{
+        "rule_id": "block-malware",
+        "name": "Block Malware Domains",
+        "action": "deny",
+        "dest_pattern": "*.malware.com"
+    }])
+```
+
+---
+
+## CPython Bootstrap Tools (NEW)
+
+### Overview
+Shared CPython bootstrap module for Android development tools.
+
+### Features
+- [x] Bundled CPython 3.12.7 from GitHub releases
+- [x] Multi-platform support (Linux, macOS, Windows)
+- [x] Automatic download and caching
+- [x] Context manager and CLI interface
+- [x] OBD simulator example tool
+
+### Files
+| File | Purpose |
+|------|---------|
+| `android/tools/lib/cpython_bootstrap.py` | Shared bootstrap module |
+| `android/tools/bootstrap-obd.py` | OBD-II simulator tool |
+
+---
+
 ## Notes for Future Reference
 
 ### Why FlatBuffers instead of JSON?

@@ -35,11 +35,11 @@ class DatabaseTest {
             .allowMainThreadQueries()
             .build()
         
-        telemetryDao = db.telemetryDao()
-        alertDao = db.alertDao()
-        anprEventDao = db.anprEventDao()
-        clipsDao = db.clipsDao()
-        auditDao = db.auditDao()
+        telemetryDao = db.telemetry()
+        alertDao = db.alerts()
+        anprEventDao = db.anpr()
+        clipsDao = db.clips()
+        auditDao = db.audit()
     }
 
     @After
