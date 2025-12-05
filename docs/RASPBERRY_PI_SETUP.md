@@ -1,6 +1,6 @@
-# AI-SERVIS Raspberry Pi Setup Guide
+# MIA Raspberry Pi Setup Guide
 
-This guide covers setting up the AI-SERVIS build environment on Raspberry Pi (and other Debian-based ARM systems) without requiring system-level pip installations.
+This guide covers setting up the MIA build environment on Raspberry Pi (and other Debian-based ARM systems) without requiring system-level pip installations.
 
 The setup uses **sparetools-cpython** packages from Cloudsmith for zero-copy Python environment management via Conan.
 
@@ -8,8 +8,8 @@ The setup uses **sparetools-cpython** packages from Cloudsmith for zero-copy Pyt
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # 2. Install system dependencies (requires sudo)
 ./tools/install-deps-rpi.sh
@@ -25,8 +25,8 @@ cd ai-servis
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # 2. Install system dependencies (requires sudo)
 ./tools/install-deps-rpi.sh
@@ -36,7 +36,7 @@ cd ai-servis
 
 # 4. Activate and build
 source tools/env.sh
-ai-servis-build
+mia-build
 ```
 
 ## Detailed Setup
@@ -113,7 +113,7 @@ source tools/env.sh
 This provides:
 - Activated Python virtual environment
 - `conan` and `cmake` on PATH
-- Helper functions: `ai-servis-build`, `ai-servis-clean`, `ai-servis-info`
+- Helper functions: `mia-build`, `mia-clean`, `mia-info`
 
 ### Step 4: Build
 

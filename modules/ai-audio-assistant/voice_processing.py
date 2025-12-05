@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI-SERVIS Universal: Advanced Voice Processing Framework
+MIA Universal: Advanced Voice Processing Framework
 Provides TTS/STT with ElevenLabs, OpenAI Whisper, wake word detection, and VAD
 """
 

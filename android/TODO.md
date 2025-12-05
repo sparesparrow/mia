@@ -333,7 +333,7 @@ override suspend fun sendCommand(command: String): String? = withContext(Dispatc
 
 **Create PermissionHelper.kt**:
 ```kotlin
-package cz.aiservis.app.utils
+package cz.mia.app.utils
 
 import android.Manifest
 import android.content.Context
@@ -536,11 +536,11 @@ plugins {
 }
 
 android {
-    namespace = "cz.aiservis.app"
+    namespace = "cz.mia.app"
     compileSdk = 34
     
     defaultConfig {
-        applicationId = "cz.aiservis.app"
+        applicationId = "cz.mia.app"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -633,7 +633,7 @@ dependencies {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app
+package cz.mia.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
@@ -731,13 +731,13 @@ android/app/src/main/java/cz/aiservis/app/
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.di
+package cz.mia.app.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import cz.aiservis.app.BuildConfig
-import cz.aiservis.app.data.remote.api.DeviceApi
-import cz.aiservis.app.data.remote.api.TelemetryApi
+import cz.mia.app.BuildConfig
+import cz.mia.app.data.remote.api.DeviceApi
+import cz.mia.app.data.remote.api.TelemetryApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -803,11 +803,11 @@ object NetworkModule {
 **File**: `android/app/src/main/java/cz/aiservis/app/di/BluetoothModule.kt`
 
 ```kotlin
-package cz.aiservis.app.di
+package cz.mia.app.di
 
 import android.content.Context
-import cz.aiservis.app.core.background.BLEManager
-import cz.aiservis.app.core.background.BLEManagerImpl
+import cz.mia.app.core.background.BLEManager
+import cz.mia.app.core.background.BLEManagerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -841,7 +841,7 @@ object BluetoothModule {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.data.remote.dto
+package cz.mia.app.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
@@ -908,9 +908,9 @@ data class SystemStatus(
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.data.remote.api
+package cz.mia.app.data.remote.api
 
-import cz.aiservis.app.data.remote.dto.*
+import cz.mia.app.data.remote.dto.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -948,10 +948,10 @@ interface DeviceApi {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.data.remote.api
+package cz.mia.app.data.remote.api
 
-import cz.aiservis.app.data.remote.dto.TelemetryBatch
-import cz.aiservis.app.data.remote.dto.TelemetryReading
+import cz.mia.app.data.remote.dto.TelemetryBatch
+import cz.mia.app.data.remote.dto.TelemetryReading
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -989,11 +989,11 @@ interface TelemetryApi {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.data.remote.websocket
+package cz.mia.app.data.remote.websocket
 
 import com.google.gson.Gson
-import cz.aiservis.app.BuildConfig
-import cz.aiservis.app.data.remote.dto.TelemetryReading
+import cz.mia.app.BuildConfig
+import cz.mia.app.data.remote.dto.TelemetryReading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -1144,10 +1144,10 @@ class TelemetryWebSocket @Inject constructor(
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.data.repository
+package cz.mia.app.data.repository
 
-import cz.aiservis.app.data.remote.api.DeviceApi
-import cz.aiservis.app.data.remote.dto.*
+import cz.mia.app.data.remote.api.DeviceApi
+import cz.mia.app.data.remote.dto.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -1243,13 +1243,13 @@ class DeviceRepository @Inject constructor(
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.ui.screens.devices
+package cz.mia.app.ui.screens.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cz.aiservis.app.core.background.BLEManager
-import cz.aiservis.app.core.background.BleConnectionState
-import cz.aiservis.app.core.background.BleDeviceInfo
+import cz.mia.app.core.background.BLEManager
+import cz.mia.app.core.background.BleConnectionState
+import cz.mia.app.core.background.BleDeviceInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -1366,7 +1366,7 @@ class BleDevicesViewModel @Inject constructor(
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.ui.screens.devices
+package cz.mia.app.ui.screens.devices
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -1379,8 +1379,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cz.aiservis.app.core.background.BleConnectionState
-import cz.aiservis.app.core.background.BleDeviceInfo
+import cz.mia.app.core.background.BleConnectionState
+import cz.mia.app.core.background.BleDeviceInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1604,7 +1604,7 @@ private fun DeviceItem(
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.core.background
+package cz.mia.app.core.background
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -1715,12 +1715,12 @@ class BLEManagerTest {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.ui.screens.devices
+package cz.mia.app.ui.screens.devices
 
 import app.cash.turbine.test
-import cz.aiservis.app.core.background.BLEManager
-import cz.aiservis.app.core.background.BleConnectionState
-import cz.aiservis.app.core.background.BleDeviceInfo
+import cz.mia.app.core.background.BLEManager
+import cz.mia.app.core.background.BleConnectionState
+import cz.mia.app.core.background.BleDeviceInfo
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -1831,11 +1831,11 @@ class BleDevicesViewModelTest {
 
 **Implementation**:
 ```kotlin
-package cz.aiservis.app.ui
+package cz.mia.app.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import cz.aiservis.app.MainActivity
+import cz.mia.app.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before

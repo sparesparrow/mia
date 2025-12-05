@@ -1,6 +1,6 @@
-# AI-SERVIS Documentation
+# MIA Documentation
 
-AI-SERVIS je modulární Car AI systém kombinující ANPR, OBD diagnostiku, hlasového asistenta a volitelný DVR gateway. Tento web shrnuje instalaci, architekturu, kontrakty a podporu.
+MIA je modulární Car AI systém kombinující ANPR, OBD diagnostiku, hlasového asistenta a volitelný DVR gateway. Tento web shrnuje instalaci, architekturu, kontrakty a podporu.
 
 ## Rychlý přehled
 - Phone Edition: Android jako hub + ESP32 OBD/IO. Viz [instalace](install/phone.md).

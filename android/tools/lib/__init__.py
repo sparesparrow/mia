@@ -1,5 +1,5 @@
 """
-AI-SERVIS Android Tools Library
+MIA Android Tools Library
 
 Provides shared utilities for Android tool development.
 """

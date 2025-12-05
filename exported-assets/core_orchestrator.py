@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Core Orchestrator
+MIA Universal: Core Orchestrator
 Main MCP host that coordinates all AI modules
 """
 
@@ -159,7 +159,7 @@ class CoreOrchestrator(MCPServer):
     """Main orchestrator that coordinates all AI modules"""
     
     def __init__(self):
-        super().__init__("ai-servis-core", "1.0.0")
+        super().__init__("mia-core", "1.0.0")
         self.services: Dict[str, ServiceInfo] = {}
         self.mcp_clients: Dict[str, MCPClient] = {}
         self.nlp_processor = NLPProcessor()
@@ -408,7 +408,7 @@ class CoreOrchestrator(MCPServer):
 
 async def main():
     """Main entry point"""
-    logger.info("Starting AI-SERVIS Core Orchestrator")
+    logger.info("Starting MIA Core Orchestrator")
     
     # Create orchestrator
     orchestrator = CoreOrchestrator()

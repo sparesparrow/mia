@@ -189,7 +189,7 @@ jobs:
     
     - name: Run integration tests
       run: |
-        docker-compose exec -T ai-servis-core python -m pytest tests/integration/ -v
+        docker-compose exec -T mia-core python -m pytest tests/integration/ -v
     
     - name: Run system tests
       run: |
@@ -200,7 +200,7 @@ jobs:
       run: |
         mkdir -p test-logs
         docker-compose logs > test-logs/docker-compose.log
-        docker-compose logs ai-servis-core > test-logs/core.log
+        docker-compose logs mia-core > test-logs/core.log
         docker-compose logs ai-audio-assistant > test-logs/audio.log
     
     - name: Upload test logs

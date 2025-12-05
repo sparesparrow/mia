@@ -9,7 +9,7 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-REGISTRY="${REGISTRY:-ghcr.io/sparesparrow/ai-servis-universal}"
+REGISTRY="${REGISTRY:-ghcr.io/sparesparrow/mia-universal}"
 VERSION="${VERSION:-latest}"
 PLATFORM="${PLATFORM:-linux/amd64,linux/arm64}"
 BUILD_ARGS="${BUILD_ARGS:-}"
@@ -58,7 +58,7 @@ check_dependencies() {
 
 # Setup buildx builder
 setup_builder() {
-    local builder_name="ai-servis-builder"
+    local builder_name="mia-builder"
     
     if ! docker buildx ls | grep -q "$builder_name"; then
         log_info "Creating buildx builder: $builder_name"
@@ -93,7 +93,7 @@ build_component() {
         --label "org.opencontainers.image.title=$component"
         --label "org.opencontainers.image.version=$VERSION"
         --label "org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-        --label "org.opencontainers.image.source=https://github.com/sparesparrow/ai-servis-universal"
+        --label "org.opencontainers.image.source=https://github.com/sparesparrow/mia-universal"
         --label "org.opencontainers.image.vendor=AI-SERVIS"
         --label "ai.servis.component=$component"
         --label "ai.servis.automotive=true"
@@ -365,7 +365,7 @@ Actions:
   help            Show this help
 
 Environment Variables:
-  REGISTRY        Container registry (default: ghcr.io/sparesparrow/ai-servis-universal)
+  REGISTRY        Container registry (default: ghcr.io/sparesparrow/mia-universal)
   VERSION         Image version tag (default: latest)
   PLATFORM        Target platforms (default: linux/amd64,linux/arm64)
   BUILD_ARGS      Additional build arguments (comma-separated)

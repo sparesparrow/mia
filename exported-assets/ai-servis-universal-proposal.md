@@ -1,15 +1,15 @@
-# 🏠🚗 AI-SERVIS Universal: From Automotive to Multi-Platform AI Assistant Ecosystem
+# 🏠🚗 MIA Universal: From Automotive to Multi-Platform AI Assistant Ecosystem
 
 ## 📋 Executive Summary
 
-**AI-SERVIS Universal** represents the evolution of our automotive AI assistant into a comprehensive, modular ecosystem that seamlessly operates across vehicles, homes, and all computing platforms. By leveraging the Model Context Protocol (MCP), containerization, and cross-platform architecture, we create a unified AI experience that adapts to any environment while maintaining the privacy-first, edge-computing principles established in the automotive domain.
+**MIA Universal** represents the evolution of our automotive AI assistant into a comprehensive, modular ecosystem that seamlessly operates across vehicles, homes, and all computing platforms. By leveraging the Model Context Protocol (MCP), containerization, and cross-platform architecture, we create a unified AI experience that adapts to any environment while maintaining the privacy-first, edge-computing principles established in the automotive domain.
 
 ### 🎯 **Vision Statement**
 *"One AI assistant that knows you everywhere - from your car to your kitchen, from your phone to your desktop - while keeping your data private and under your control."*
 
 ## 🔍 **Current State Analysis**
 
-### **AI-SERVIS Automotive Foundation**
+### **MIA Automotive Foundation**
 Our existing automotive platform provides:
 - **Voice Control**: Hands-free interaction via ElevenLabs TTS/STT
 - **OBD-2 Integration**: Real-time vehicle diagnostics
@@ -47,7 +47,7 @@ graph TB
         UI5[Voice-Only Interface]
     end
 
-    subgraph "AI-SERVIS Universal Core"
+    subgraph "MIA Universal Core"
         CORE[Core Orchestrator<br/>MCP Host]
         AUTH[Authentication & Context]
         AUDIO[Audio Management Hub]
@@ -421,8 +421,8 @@ RUN apt-get install -y qemu-user-static
 RUN docker buildx create --platform linux/amd64,linux/arm64
 
 # Test execution
-COPY . /ai-servis-universal
-WORKDIR /ai-servis-universal
+COPY . /mia-universal
+WORKDIR /mia-universal
 RUN ./scripts/run-integration-tests.sh
 ```
 
@@ -578,6 +578,6 @@ RUN ./scripts/run-integration-tests.sh
 
 ---
 
-**AI-SERVIS Universal represents the natural evolution from automotive-specific AI to a comprehensive, privacy-respecting, cross-platform AI ecosystem. By building on our proven automotive foundation and embracing industry standards like MCP, we create a sustainable competitive advantage in the rapidly growing AI assistant market while maintaining the core values of privacy, modularity, and user control that differentiate us from big tech solutions.**
+**MIA Universal represents the natural evolution from automotive-specific AI to a comprehensive, privacy-respecting, cross-platform AI ecosystem. By building on our proven automotive foundation and embracing industry standards like MCP, we create a sustainable competitive advantage in the rapidly growing AI assistant market while maintaining the core values of privacy, modularity, and user control that differentiate us from big tech solutions.**
 
 **This proposal positions us to capture significant market share across multiple verticals while building a thriving ecosystem of third-party developers and integrators, creating a network effect that compounds our market position over time.**

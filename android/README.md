@@ -1,4 +1,4 @@
-# AI-SERVIS Android Application
+# MIA Android Application
 
 A comprehensive Android application for vehicle telematics, ANPR (Automatic Number Plate Recognition), DVR recording, and OBD-II communication.
 
@@ -114,7 +114,7 @@ The application follows a clean architecture pattern with the following layers:
 
 ```bash
 git clone https://github.com/your-org/ai-servis.git
-cd ai-servis/android
+cd mia/android
 ```
 
 Open the `android` folder in Android Studio.
@@ -238,7 +238,10 @@ android/
 │   └── build.gradle                    # App build config
 ├── tools/
 │   ├── build-in-docker.sh              # Docker build script
-│   └── validate-apk.sh                 # APK validation
+│   ├── validate-apk.sh                 # APK validation
+│   ├── bootstrap-obd.py                # OBD-II simulator
+│   └── lib/
+│       └── cpython_bootstrap.py        # Bundled CPython module
 ├── build.gradle                        # Project build config
 └── Dockerfile                          # Build environment
 ```
@@ -352,6 +355,58 @@ Bluetooth device scanner with:
 - Connection status
 - Auto-discovery of OBD adapters
 
+## 🛠️ Development Tools
+
+### OBD-II Simulator
+
+For testing BLE OBD integration without hardware:
+
+```bash
+# Interactive mode
+python3 tools/bootstrap-obd.py
+
+# Demo mode (60 seconds of simulated telemetry)
+python3 tools/bootstrap-obd.py --demo 60
+
+# Use bundled CPython (recommended)
+python3 tools/bootstrap-obd.py --device "Test OBD"
+```
+
+### Bundled CPython
+
+The `tools/lib/cpython_bootstrap.py` module provides bundled CPython 3.12.7 for cross-platform tool development:
+
+```python
+from lib.cpython_bootstrap import CPythonBootstrap
+
+# Ensure Python is available
+with CPythonBootstrap() as python_path:
+    subprocess.run([python_path, "my_script.py"])
+
+# Or use CLI
+python3 tools/lib/cpython_bootstrap.py --info
+python3 tools/lib/cpython_bootstrap.py script.py [args...]
+```
+
+Supported platforms:
+- Linux (x86_64, aarch64)
+- macOS (x86_64, arm64)
+- Windows (x86_64)
+
+### APK Deployment
+
+After building, deploy to a connected Android device:
+
+```bash
+# Via KDE Connect (wireless)
+kdeconnect-cli --list-devices
+kdeconnect-cli --device <ID> --share app/build/outputs/apk/debug/app-debug.apk
+
+# Via ADB (USB)
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n cz.mia.app/.MainActivity
+```
+
 ## 🤝 Contributing
 
 ### Code Style
@@ -382,4 +437,4 @@ refactor: Refactor code without changing behavior
 
 ## 📄 License
 
-Copyright © 2024 AI-SERVIS. All rights reserved.
+Copyright © 2024 MIA. All rights reserved.

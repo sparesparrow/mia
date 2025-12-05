@@ -442,7 +442,7 @@ Shared CPython bootstrap module for Android development tools.
 ## Repository Cleanup Tasks
 
 ### Removing Obsolete Documentation
-The following files in `docs/` folder should be removed using Git CLI, as they relate to the old AI-SERVIS/ROS2 architecture and are now superseded by this TODO.md:
+The following files in `docs/` folder should be removed using Git CLI, as they relate to the old MIA/ROS2 architecture and are now superseded by this TODO.md:
 
 ```bash
 # Remove individual TODO files from old design
@@ -452,7 +452,7 @@ git rm docs/TODO-pavel-architecture.md
 git rm docs/TODO-vojtech-implementation.md
 
 # Remove obsolete architecture documentation
-git rm docs/ai-servis-universal-proposal.md
+git rm docs/mia-universal-proposal.md
 git rm docs/core-orchestrator-enhanced.md
 git rm docs/implementation-ready-summary.md
 

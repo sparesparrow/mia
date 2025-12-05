@@ -45,7 +45,7 @@ services:
     networks: [veh_net]
 
   lpr-engine:
-    image: ghcr.io/ai-servis/lpr-engine:latest
+    image: ghcr.io/mia/lpr-engine:latest
     container_name: lpr-engine
     restart: unless-stopped
     environment:

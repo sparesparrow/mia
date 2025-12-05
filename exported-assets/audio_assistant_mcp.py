@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Audio Assistant MCP Server
+MIA Universal: Audio Assistant MCP Server
 Handles voice processing, music playback, and audio output management
 """
 

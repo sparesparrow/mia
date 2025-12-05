@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace 'cz.aiservis.app'
+    namespace 'cz.mia.app'
     compileSdk 34
 
     defaultConfig {
-        applicationId "cz.aiservis.app"
+        applicationId "cz.mia.app"
         minSdk 24
         targetSdk 34
         versionCode (System.getenv("VERSION_CODE")?.toInteger()) ?: 1

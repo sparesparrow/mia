@@ -1,4 +1,4 @@
-# 🚀 AI-SERVIS Deployment Checklist for ai.sparetools.dev
+# 🚀 MIA Deployment Checklist for ai.sparetools.dev
 
 ## Pre-Deployment Setup
 

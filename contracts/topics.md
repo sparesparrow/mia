@@ -1,4 +1,4 @@
-# AI-SERVIS MQTT Topics Specification v1.0
+# MIA MQTT Topics Specification v1.0
 
 ## Topic Structure
 All topics follow the pattern: `{domain}/{action}/{device-id}`

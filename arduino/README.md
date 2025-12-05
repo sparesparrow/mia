@@ -1,6 +1,6 @@
 # Arduino Hardware Integration
 
-This directory contains Arduino code for hardware integration with the AI-SERVIS Universal platform.
+This directory contains Arduino code for hardware integration with the MIA Universal platform.
 
 ## Available Modules
 
@@ -66,4 +66,4 @@ response = json.loads(ser.readline().decode())
 
 ## License
 
-Part of the AI-SERVIS Universal project. See main LICENSE file.
+Part of the MIA Universal project. See main LICENSE file.

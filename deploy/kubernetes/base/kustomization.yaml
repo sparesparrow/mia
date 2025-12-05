@@ -2,11 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 metadata:
-  name: ai-servis-universal-base
+  name: mia-universal-base
 
 # Common labels applied to all resources
 commonLabels:
-  app.kubernetes.io/name: ai-servis-universal
+  app.kubernetes.io/name: mia-universal
   app.kubernetes.io/version: v1.0.0
   app.kubernetes.io/component: automotive-ai
   app.kubernetes.io/part-of: ai-servis-platform
@@ -63,20 +63,20 @@ secretGenerator:
 
 # Images to use
 images:
-  - name: ai-servis/core-orchestrator
-    newName: ghcr.io/sparesparrow/ai-servis-universal/core-orchestrator
+  - name: mia/core-orchestrator
+    newName: ghcr.io/sparesparrow/mia-universal/core-orchestrator
     newTag: latest
-  - name: ai-servis/ai-audio-assistant
-    newName: ghcr.io/sparesparrow/ai-servis-universal/ai-audio-assistant
+  - name: mia/ai-audio-assistant
+    newName: ghcr.io/sparesparrow/mia-universal/ai-audio-assistant
     newTag: latest
-  - name: ai-servis/hardware-bridge
-    newName: ghcr.io/sparesparrow/ai-servis-universal/hardware-bridge
+  - name: mia/hardware-bridge
+    newName: ghcr.io/sparesparrow/mia-universal/hardware-bridge
     newTag: latest
-  - name: ai-servis/ai-security
-    newName: ghcr.io/sparesparrow/ai-servis-universal/ai-security
+  - name: mia/ai-security
+    newName: ghcr.io/sparesparrow/mia-universal/ai-security
     newTag: latest
-  - name: ai-servis/service-discovery
-    newName: ghcr.io/sparesparrow/ai-servis-universal/service-discovery
+  - name: mia/service-discovery
+    newName: ghcr.io/sparesparrow/mia-universal/service-discovery
     newTag: latest
 
 # Common annotations

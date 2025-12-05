@@ -1,6 +1,6 @@
 # Core Orchestrator Module
 
-The central orchestration service for AI-SERVIS Universal.
+The central orchestration service for MIA Universal.
 
 ## Overview
 The Core Orchestrator acts as the main MCP host that manages:

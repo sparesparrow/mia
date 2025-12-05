@@ -2,7 +2,7 @@
 
 # 🔬 Comprehensive Research: Embedded AI LLM Agents, ESP32, CAN Bus, ElevenLabs \& MCP
 
-Based on extensive research across 2025's latest developments, here's a comprehensive overview of cutting-edge technologies for AI-SERVIS implementation.
+Based on extensive research across 2025's latest developments, here's a comprehensive overview of cutting-edge technologies for MIA implementation.
 
 ## 🤖 Embedded AI LLM Agents on ESP32
 
@@ -160,7 +160,7 @@ mcp_tool_t vehicle_tools[] = {
 
 mcp_server_t *server = mcp_server_init(
     "ai_servis_vehicle",
-    "AI-SERVIS Vehicle MCP Server",
+    "MIA Vehicle MCP Server",
     "mqtts://broker.ai-servis.cz",
     "esp32_vehicle_001",
     username, password, cert
@@ -173,7 +173,7 @@ mcp_server_run(server);
 
 ### **MCP Architecture Benefits**
 
-**For AI-SERVIS:**
+**For MIA:**
 
 - **Standardized tool discovery** - AI agents automatically find available vehicle functions
 - **Secure tool execution** - OAuth 2.0 + policy-based access control
@@ -188,14 +188,14 @@ mcp_server_run(server);
 - **Zero-trust architecture** compatible
 
 
-## 🎯 AI-SERVIS Integration Architecture
+## 🎯 MIA Integration Architecture
 
 ### **Complete System Design**
 
 **ESP32 Hub (Vehicle Edge):**
 
 ```cpp
-// AI-SERVIS ESP32 Architecture
+// MIA ESP32 Architecture
 class AIServISHub {
     TwaiController can_bus;
     ElevenLabsTTS voice_synthesis;  
@@ -273,7 +273,7 @@ async def vehicle_assistant():
 - **Federated learning** for privacy-preserving vehicle AI training
 
 
-### **AI-SERVIS Competitive Advantages**
+### **MIA Competitive Advantages**
 
 1. **First-mover advantage** in MCP over MQTT for vehicles
 2. **Edge-first architecture** reducing cloud dependencies
@@ -281,7 +281,7 @@ async def vehicle_assistant():
 4. **Voice-native interaction** via ElevenLabs integration
 5. **Open-source foundation** enabling rapid ecosystem development
 
-**This research reveals AI-SERVIS is positioned at the intersection of four major technology trends: embedded AI democratization, voice interface maturation, automotive protocol standardization, and AI agent interoperability - creating a unique market opportunity in 2025.**
+**This research reveals MIA is positioned at the intersection of four major technology trends: embedded AI democratization, voice interface maturation, automotive protocol standardization, and AI agent interoperability - creating a unique market opportunity in 2025.**
 <span style="display:none">[^100][^101][^102][^103][^104][^105][^106][^107][^108][^109][^11][^110][^111][^112][^113][^114][^115][^116][^117][^118][^119][^12][^120][^121][^122][^123][^124][^125][^126][^127][^128][^129][^13][^130][^14][^15][^16][^17][^18][^19][^20][^21][^22][^23][^24][^25][^26][^27][^28][^29][^30][^31][^32][^33][^34][^35][^36][^37][^38][^39][^40][^41][^42][^43][^44][^45][^46][^47][^48][^49][^50][^51][^52][^53][^54][^55][^56][^57][^58][^59][^60][^61][^62][^63][^64][^65][^66][^67][^68][^69][^70][^71][^72][^73][^74][^75][^76][^77][^78][^79][^80][^81][^82][^83][^84][^85][^86][^87][^88][^89][^90][^91][^92][^93][^94][^95][^96][^97][^98][^99]</span>
 
 <div style="text-align: center">⁂</div>

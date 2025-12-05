@@ -1,0 +1,5 @@
+version: "3.9"
+services:
+  placeholder:
+    image: busybox
+    command: ["/bin/sh","-c","echo mia-universal placeholder && sleep 3600"]

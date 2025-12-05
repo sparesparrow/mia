@@ -99,12 +99,12 @@ if(WIN32)
 endif()
 
 # Raspberry Pi Main Application
-add_executable(ai-servis-rpi main_raspberry_pi.cpp)
-target_link_libraries(ai-servis-rpi
+add_executable(mia-rpi main_raspberry_pi.cpp)
+target_link_libraries(mia-rpi
     webgrab_lib
     ${JSONCPP_LIBRARIES}
 )
-target_include_directories(ai-servis-rpi PRIVATE ${JSONCPP_INCLUDE_DIRS})
+target_include_directories(mia-rpi PRIVATE ${JSONCPP_INCLUDE_DIRS})
 
 # Unit tests
 enable_testing()

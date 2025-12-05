@@ -1,7 +1,7 @@
-# AI-SERVIS BLE GATT Specification v1.0
+# MIA BLE GATT Specification v1.0
 
 ## Overview
-Bluetooth Low Energy (BLE) GATT services for ESP32 to Android communication in AI-SERVIS system.
+Bluetooth Low Energy (BLE) GATT services for ESP32 to Android communication in MIA system.
 
 ## Service UUIDs
 - **Telemetry Service**: `0xFFF0`
@@ -114,7 +114,7 @@ Bluetooth Low Energy (BLE) GATT services for ESP32 to Android communication in A
 **Configuration Structure**:
 ```json
 {
-  "device_name": "AI-SERVIS-OBD-001",
+  "device_name": "MIA-OBD-001",
   "telemetry_interval": 1000,
   "obd_pids": ["05", "0C", "0D", "11", "15"],
   "alert_thresholds": {

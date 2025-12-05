@@ -1,6 +1,6 @@
-# AI-SERVIS Universal - Raspberry Pi Deployment Guide
+# MIA Universal - Raspberry Pi Deployment Guide
 
-This guide will help you build, deploy, and test the AI-SERVIS Universal system on a Raspberry Pi.
+This guide will help you build, deploy, and test the MIA Universal system on a Raspberry Pi.
 
 ## Prerequisites
 
@@ -91,7 +91,7 @@ make -j$(nproc)
 
 ```bash
 # Run the main application
-sudo ./ai-servis-rpi
+sudo ./mia-rpi
 
 # Or run hardware server separately
 sudo ./hardware-server
@@ -126,7 +126,7 @@ To use GPIO features, you need proper permissions:
 sudo usermod -a -G gpio $USER
 
 # Or run with sudo
-sudo ./ai-servis-rpi
+sudo ./mia-rpi
 ```
 
 ## Testing GPIO
@@ -179,7 +179,7 @@ View system logs:
 sudo journalctl -u ai-servis -f
 
 # Application logs (if running manually)
-./ai-servis-rpi 2>&1 | tee ai-servis.log
+./mia-rpi 2>&1 | tee ai-servis.log
 ```
 
 ## Configuration

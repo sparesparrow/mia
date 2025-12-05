@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   # Core Orchestrator - Development mode with hot reloading
-  ai-servis-core:
+  mia-core:
     build:
       context: ./modules/core-orchestrator
       dockerfile: Dockerfile.dev
-    container_name: ai-servis-core-dev
+    container_name: mia-core-dev
     restart: unless-stopped
     environment:
       - MCP_DISCOVERY_PORT=8080

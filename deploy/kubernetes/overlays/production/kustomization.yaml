@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 metadata:
-  name: ai-servis-universal-production
+  name: mia-universal-production
 
 # Base configuration
 bases:
@@ -26,20 +26,20 @@ commonAnnotations:
 
 # Production images with specific tags
 images:
-  - name: ai-servis/core-orchestrator
-    newName: ghcr.io/sparesparrow/ai-servis-universal/core-orchestrator
+  - name: mia/core-orchestrator
+    newName: ghcr.io/sparesparrow/mia-universal/core-orchestrator
     newTag: v1.0.0
-  - name: ai-servis/ai-audio-assistant
-    newName: ghcr.io/sparesparrow/ai-servis-universal/ai-audio-assistant
+  - name: mia/ai-audio-assistant
+    newName: ghcr.io/sparesparrow/mia-universal/ai-audio-assistant
     newTag: v1.0.0
-  - name: ai-servis/hardware-bridge
-    newName: ghcr.io/sparesparrow/ai-servis-universal/hardware-bridge
+  - name: mia/hardware-bridge
+    newName: ghcr.io/sparesparrow/mia-universal/hardware-bridge
     newTag: v1.0.0
-  - name: ai-servis/ai-security
-    newName: ghcr.io/sparesparrow/ai-servis-universal/ai-security
+  - name: mia/ai-security
+    newName: ghcr.io/sparesparrow/mia-universal/ai-security
     newTag: v1.0.0
-  - name: ai-servis/service-discovery
-    newName: ghcr.io/sparesparrow/ai-servis-universal/service-discovery
+  - name: mia/service-discovery
+    newName: ghcr.io/sparesparrow/mia-universal/service-discovery
     newTag: v1.0.0
 
 # Production-specific configuration

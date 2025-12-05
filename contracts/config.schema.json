@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AI-SERVIS Device Configuration Schema",
-  "description": "Configuration schema for AI-SERVIS devices (Android, ESP32, Pi)",
+  "title": "MIA Device Configuration Schema",
+  "description": "Configuration schema for MIA devices (Android, ESP32, Pi)",
   "type": "object",
   "properties": {
     "device": {

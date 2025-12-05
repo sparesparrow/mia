@@ -1,4 +1,4 @@
-# AI-SERVIS Web Pages Generator
+# MIA Web Pages Generator
 
 This system generates multiple web page variants from a shared template using native web technologies and GitHub Actions.
 

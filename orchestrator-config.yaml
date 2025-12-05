@@ -2,7 +2,7 @@
 # Advanced build and deployment automation
 
 metadata:
-  name: ai-servis-universal
+  name: mia-universal
   version: 1.0.0
   description: AI-SERVIS Universal Platform Build Configuration
 
@@ -295,7 +295,7 @@ monitoring:
     format: json
     outputs:
       - type: file
-        path: /var/log/ai-servis/
+        path: /var/log/mia/
       - type: elasticsearch
         url: http://elasticsearch:9200
         
