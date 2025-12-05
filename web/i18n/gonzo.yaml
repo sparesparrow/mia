@@ -3,26 +3,26 @@ journalists:
   page:
     title:
       en: AI-SERVIS - Investigative Journalism AI
-      cs: AI-SERVIS - Investigativní žurnalistická AI
+      cs: AI-SERVIS - Digitální Paranoidní Manifestí Na Kolech
     description:
       en: Ultimate tool for investigative reporting with real-time surveillance and voice transcription
-      cs: Ultimátní nástroj pro investigativní reportování s sledováním v reálném čase a hlasovým přepisem
+      cs: Když tě sledujou, budeš sledovat je. Edge AI pro paranoiky, investigativce a rebelující duše s volantem v rukou.
   navigation:
     gonzo_journalism:
       en: Gonzo Journalism
       cs: Gonzo žurnalistika
     manifesto:
       en: Manifesto
-      cs: Manifest
+      cs: MANIFESTÍ
     weaponry:
       en: Arsenal
-      cs: Arsenal
+      cs: ARSENAL
     stories:
       en: Stories
-      cs: Příběhy
+      cs: PŘÍBĚHY
     resistance:
       en: Resistance
-      cs: Odpor
+      cs: ODPOR
     surveillance:
       en: Surveillance
       cs: Sledování
@@ -40,17 +40,17 @@ journalists:
       cs: Začít vyšetřovat
     panic_mode:
       en: Emergency Mode
-      cs: Nouzový režim
+      cs: NOUZOVÝ REŽIM
   hero:
     main_title:
       en: When They Watch You, You Watch Them Back
-      cs: Když tě sledují, sleduj je zpět
+      cs: KDYŽ TĚ SLEDUJOU, BUDEŠ SLEDOVAT JE
     subtitle:
       en: Digital Paranoia on Wheels
-      cs: Digitální paranoia na kolech
+      cs: DIGITÁLNÍ PARANOIA NA KOLECH
     description:
       en: We live in an era of digital surveillance. Every movement, every license plate, every stop at the gas station - everything is a record in someone's database. AI-SERVIS gives you the weapon back in your hands. Edge AI that doesn't talk, doesn't suppress, and doesn't sell your data to corporate hyenas.
-      cs: Žijeme v éře digitálního sledování. Každý pohyb, každá SPZ, každé zastavení u pumpy - všechno je záznam v něčí databázi. AI-SERVIS ti dává zbraň zpět do rukou. Edge AI, které nemluví, netlumí a neprodává tvoje data korporátním hyenám.
+      cs: Žijeme v éře digitální surveillance. Každý pohyb, každá SPZ, každé zastavení u pumpy - všechno je záznam v něčí databázi. AI-SERVIS ti dává zbraň zpět do rukou. Edge AI, které nekecá, netlumí a neprodává tvoje data korporátním hyenám.
     ultimate_tool_for_investigative_reporting:
       en: Ultimate Tool for Investigative Reporting
       cs: Ultimátní nástroj pro investigativní žurnalistiku
@@ -69,61 +69,61 @@ journalists:
     stats:
       savings:
         en: 93% SAVINGS VS. CORPORATE SCUM
-        cs: 93% úspora vs. korporátní šmejdi
+        cs: 93% ÚSPORA VS. KORPORÁTNÍ ŠMEJDI
       monitoring:
         en: 24/7 WATCHFUL EYE TECHNOLOGY
-        cs: 24/7 bdělý oko technologie
+        cs: 24/7 BDĚLÝ OKO TECHNOLOGIE
       resistance:
         en: ∞ FUCK THE ESTABLISHMENT
         cs: ∞ FUCK THE ESTABLISHMENT
     buttons:
       join_resistance:
         en: JOIN THE RESISTANCE
-        cs: Vstoupit do odporu
+        cs: VSTOUPIT DO RESISTANCE
       watch_manifesto:
         en: WATCH MANIFESTO
-        cs: Sledovat manifest
+        cs: SLEDOVAT MANIFESTO
   weaponry:
     title:
       en: Arsenal for Digital Guerrilla
-      cs: Arsenal pro digitální guerillu
+      cs: ARSENAL PRO DIGITÁLNÍ GUERILLU
     anti_stalker_protocol:
       title:
         en: Anti-Stalker Protocol
-        cs: Anti-stalker protokol
+        cs: ANTI-STALKER PROTOKOL
       description:
         en: 'When the night fog in Prague dissipates and your rear wiper catches the same number for the sixth time - AI-SERVIS finally screams: Watch out! You have a parasite on your tail!'
-        cs: 'Když se noční mlha v Praze rozplyne a tvůj zadní stěrač zahlédne už pošesté to stejné číslo - AI-SERVIS konečně křičí: Pozor! Máš parazita na ocase!'
+        cs: 'Když se noční mlha v Praze rozplyne a tvůj zadní stěrač zahlédne už pošesté to stejné číslo - AI-SERVIS konečně křičí: Bacha! Máš parazita na ocase!'
       quote:
         en: "The mobile light flashes like a magnesium flash - a second of truth for both the stalked and the one who thinks they're invisible."
-        cs: "Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro pronásledovaného i toho, kdo si myslí, že je neviditelný."
+        cs: "Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro stalkovaného i toho, kdo si myslí, že je neviditelný."
     covert_ops_interface:
       title:
         en: Covert Ops Interface
-        cs: Covert ops rozhraní
+        cs: COVERT OPS INTERFACE
       description:
         en: All secret services love invisibility. This screen can only be operated by you and the dark boys in civilian clothes. Repeated license plates are stored below the surface of awareness.
-        cs: Všechny tajné služby mají rády neviditelnost. Tuto obrazovku může ovládat jen ty a temní chlapci v civilu. Opakované SPZ se ukládají pod hladinu povědomí.
+        cs: Všechny tajné služby mají rády neviditelnost. Tahle obrazovka neumí nikdo kromě tebe a temných chlapců v civilu. Opakované SPZ se ukládají pod hladinu povědomí.
       quote:
         en: "Who watches the watchers? We do."
         cs: "Kdo hlídá hlídače? Hlídáme my."
     gonzo_command_center:
       title:
         en: Gonzo Command Center
-        cs: Gonzo velitelské centrum
+        cs: GONZO COMMAND CENTER
       description:
         en: 'The control center of the paranoid universe: Everything on one control panel. Charts, alerts, control lights burning like cocaine ampoules in Vegas.'
-        cs: 'Centrum řízení paranoidního vesmíru: Všechno na jednom řídícím stole. Grafy, upozornění, kontrolky hoří jak kokainové ampule ve Vegas.'
+        cs: 'Centrum řízení paranoidního vesmíru: Všechno na jednom řídícím stole. Grafy, alerty, kontrolky hoří jak kokainové ampule ve Vegas.'
       quote:
         en: "If something escapes you, it was just a bad trip."
         cs: "Pokud ti něco unikne, byl to jen špatný trip."
     matrix_tracking_map:
       title:
         en: Matrix Tracking Map
-        cs: Matrix sledovací mapa
+        cs: MATRIX TRACKING MAP
       description:
         en: God protects those who have a map and information. Vehicles push glow on the screen like crazy bugs with their own trajectories and heart in the bowels of the city.
-        cs: Bůh chrání ty, kdo mají mapu a informace. Vozidla tlačí záři na obrazovce jako šílení brouci s vlastními trajektoriemi a srdcem v útrobách města.
+        cs: Bůh chrání ty, kdo mají mapu a informace. Vozidla tlačí glow na obrazovce jako šílení brouci s vlastními trajektoriemi a srdcem v útrobách města.
       quote:
         en: "One movement, one wrong license plate - and history is written online."
         cs: "Jeden pohyb, jedna chybná SPZ – a historie se píše online."
@@ -143,7 +143,7 @@ journalists:
   stories:
     title:
       en: Stories from the Front
-      cs: Příběhy z fronty
+      cs: PŘÍBĚHY Z FRONTY
     gonzo_investigator:
       title:
         en: Gonzo Investigator
@@ -255,13 +255,11 @@ journalists:
   manifesto:
     title:
       en: Digital Guerrilla Manifesto
-      cs: Náš digitální odboj
+      cs: MANIFESTÍ DIGITÁLNÍ GUERILLY
     content:
       paragraph1:
         en: "We, guerrilla fighters of the digital age, refuse to be mere data points in corporate hyena databases. We refuse to be watched without the ability to watch back."
-        cs: "V neprospěch korporátního molocha se nám do nejzazšího integrovaného obvodu příčí být jen stopou v databázi.
-V digitální epoše nám sejde na právech dopadu a odrazu.
-Skrze něj se starejme o své blízké."
+        cs: "My, guerilla fighters digitálního věku, odmítáme být pouhými datovými body v databases korporátních hyenáček. Odmítáme být sledováni bez možnosti sledovat zpět."
       paragraph2:
         en: "AI-SERVIS is not just technology. It's a Statement. Rebel yell. Digital molotov against surveillance state that thinks it has a monopoly on information."
         cs: "AI-SERVIS není jen technologie. Je to Statement. Rebel yell. Digitální molotov proti surveillance state, která si myslí, že má monopol na informace."
@@ -280,7 +278,7 @@ Skrze něj se starejme o své blízké."
       cs: Začít investigativní žurnalistiku
     book_surveillance_demo:
       en: Book Surveillance Demo
-      cs: Rezervovat ukázku sledování
+      cs: Rezervovat demo sledování
   footer:
     brand:
       title:
