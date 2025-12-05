@@ -1,0 +1,697 @@
+name: Performance Optimization Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Performance tests every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+    inputs:
+      optimization_type:
+        description: 'Type of optimization'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - memory
+        - cpu
+        - network
+        - storage
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  # =============================================================================
+  # PERFORMANCE BASELINE MEASUREMENT
+  # =============================================================================
+  performance-baseline:
+    name: Performance Baseline Measurement
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install performance testing tools
+      run: |
+        pip install pytest-benchmark locust psutil memory-profiler
+        pip install py-spy line-profiler
+    
+    - name: Start services for baseline measurement
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60  # Wait for services to stabilize
+    
+    - name: Measure baseline performance
+      run: |
+        python << 'EOF'
+        import time
+        import psutil
+        import requests
+        import json
+        from datetime import datetime
+        
+        # Baseline performance measurement
+        baseline = {
+            "timestamp": datetime.now().isoformat(),
+            "system_info": {
+                "cpu_count": psutil.cpu_count(),
+                "memory_total": psutil.virtual_memory().total,
+                "disk_total": psutil.disk_usage('/').total
+            },
+            "endpoints": [
+                "http://localhost:8080/health",
+                "http://localhost:8081/health",
+                "http://localhost:8082/health",
+                "http://localhost:5555/health"
+            ],
+            "measurements": []
+        }
+        
+        # Measure response times
+        for endpoint in baseline["endpoints"]:
+            response_times = []
+            for i in range(100):
+                try:
+                    start_time = time.time()
+                    response = requests.get(endpoint, timeout=10)
+                    end_time = time.time()
+                    
+                    if response.status_code == 200:
+                        response_times.append(end_time - start_time)
+                except Exception as e:
+                    print(f"Error testing {endpoint}: {e}")
+                
+                time.sleep(0.1)
+            
+            if response_times:
+                baseline["measurements"].append({
+                    "endpoint": endpoint,
+                    "avg_response_time": sum(response_times) / len(response_times),
+                    "min_response_time": min(response_times),
+                    "max_response_time": max(response_times),
+                    "p95_response_time": sorted(response_times)[int(0.95 * len(response_times))],
+                    "success_rate": len(response_times) / 100 * 100
+                })
+        
+        # Measure system resource usage
+        baseline["system_usage"] = {
+            "cpu_percent": psutil.cpu_percent(interval=1),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage('/').percent
+        }
+        
+        with open("performance-baseline.json", "w") as f:
+            json.dump(baseline, f, indent=2)
+        
+        print("Performance baseline measurement completed")
+        for measurement in baseline["measurements"]:
+            print(f"{measurement['endpoint']}: {measurement['avg_response_time']:.3f}s avg")
+        EOF
+    
+    - name: Upload baseline results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-baseline
+        path: performance-baseline.json
+
+  # =============================================================================
+  # MEMORY OPTIMIZATION
+  # =============================================================================
+  memory-optimization:
+    name: Memory Optimization Analysis
+    runs-on: ubuntu-latest
+    if: ${{ inputs.optimization_type == 'memory' || inputs.optimization_type == 'full' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install memory profiling tools
+      run: |
+        pip install memory-profiler pympler objgraph
+        pip install psutil
+    
+    - name: Start services for memory analysis
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run memory profiling
+      run: |
+        python << 'EOF'
+        import psutil
+        import json
+        import time
+        from datetime import datetime
+        
+        # Memory profiling analysis
+        memory_analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "analysis_type": "memory_optimization",
+            "processes": [],
+            "recommendations": []
+        }
+        
+        # Analyze memory usage of AI-SERVIS processes
+        for proc in psutil.process_iter(['pid', 'name', 'memory_info', 'memory_percent']):
+            try:
+                if 'python' in proc.info['name'].lower() or 'ai-servis' in proc.info['name'].lower():
+                    memory_analysis["processes"].append({
+                        "pid": proc.info['pid'],
+                        "name": proc.info['name'],
+                        "memory_rss": proc.info['memory_info'].rss,
+                        "memory_vms": proc.info['memory_info'].vms,
+                        "memory_percent": proc.info['memory_percent']
+                    })
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        
+        # Generate memory optimization recommendations
+        total_memory = sum(proc['memory_rss'] for proc in memory_analysis["processes"])
+        if total_memory > 500 * 1024 * 1024:  # 500MB
+            memory_analysis["recommendations"].append("High memory usage detected - consider memory optimization")
+        
+        high_memory_processes = [proc for proc in memory_analysis["processes"] if proc['memory_percent'] > 10]
+        if high_memory_processes:
+            memory_analysis["recommendations"].append("Some processes using >10% memory - investigate memory leaks")
+        
+        with open("memory-analysis.json", "w") as f:
+            json.dump(memory_analysis, f, indent=2)
+        
+        print("Memory analysis completed")
+        print(f"Total memory usage: {total_memory / 1024 / 1024:.1f} MB")
+        print(f"Recommendations: {len(memory_analysis['recommendations'])}")
+        EOF
+    
+    - name: Upload memory analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: memory-analysis
+        path: memory-analysis.json
+
+  # =============================================================================
+  # CPU OPTIMIZATION
+  # =============================================================================
+  cpu-optimization:
+    name: CPU Optimization Analysis
+    runs-on: ubuntu-latest
+    if: ${{ inputs.optimization_type == 'cpu' || inputs.optimization_type == 'full' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install CPU profiling tools
+      run: |
+        pip install py-spy cProfile line-profiler
+        pip install psutil
+    
+    - name: Start services for CPU analysis
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run CPU profiling
+      run: |
+        python << 'EOF'
+        import psutil
+        import json
+        import time
+        from datetime import datetime
+        
+        # CPU profiling analysis
+        cpu_analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "analysis_type": "cpu_optimization",
+            "system_cpu": {},
+            "processes": [],
+            "recommendations": []
+        }
+        
+        # Measure system CPU usage
+        cpu_analysis["system_cpu"] = {
+            "cpu_percent": psutil.cpu_percent(interval=1),
+            "cpu_count": psutil.cpu_count(),
+            "load_average": psutil.getloadavg()
+        }
+        
+        # Analyze CPU usage of AI-SERVIS processes
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'num_threads']):
+            try:
+                if 'python' in proc.info['name'].lower() or 'ai-servis' in proc.info['name'].lower():
+                    proc.info()  # Update process info
+                    cpu_analysis["processes"].append({
+                        "pid": proc.info['pid'],
+                        "name": proc.info['name'],
+                        "cpu_percent": proc.info['cpu_percent'],
+                        "num_threads": proc.info['num_threads']
+                    })
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        
+        # Generate CPU optimization recommendations
+        if cpu_analysis["system_cpu"]["cpu_percent"] > 80:
+            cpu_analysis["recommendations"].append("High CPU usage detected - consider CPU optimization")
+        
+        high_cpu_processes = [proc for proc in cpu_analysis["processes"] if proc['cpu_percent'] > 20]
+        if high_cpu_processes:
+            cpu_analysis["recommendations"].append("Some processes using >20% CPU - investigate performance bottlenecks")
+        
+        if cpu_analysis["system_cpu"]["load_average"][0] > cpu_analysis["system_cpu"]["cpu_count"]:
+            cpu_analysis["recommendations"].append("High load average - system may be overloaded")
+        
+        with open("cpu-analysis.json", "w") as f:
+            json.dump(cpu_analysis, f, indent=2)
+        
+        print("CPU analysis completed")
+        print(f"System CPU usage: {cpu_analysis['system_cpu']['cpu_percent']:.1f}%")
+        print(f"Load average: {cpu_analysis['system_cpu']['load_average'][0]:.2f}")
+        print(f"Recommendations: {len(cpu_analysis['recommendations'])}")
+        EOF
+    
+    - name: Upload CPU analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: cpu-analysis
+        path: cpu-analysis.json
+
+  # =============================================================================
+  # NETWORK OPTIMIZATION
+  # =============================================================================
+  network-optimization:
+    name: Network Optimization Analysis
+    runs-on: ubuntu-latest
+    if: ${{ inputs.optimization_type == 'network' || inputs.optimization_type == 'full' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install network analysis tools
+      run: |
+        pip install requests psutil
+        sudo apt-get update
+        sudo apt-get install -y netstat-ss
+    
+    - name: Start services for network analysis
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run network analysis
+      run: |
+        python << 'EOF'
+        import psutil
+        import json
+        import time
+        import requests
+        from datetime import datetime
+        
+        # Network analysis
+        network_analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "analysis_type": "network_optimization",
+            "connections": [],
+            "bandwidth_tests": [],
+            "recommendations": []
+        }
+        
+        # Analyze network connections
+        for conn in psutil.net_connections(kind='inet'):
+            if conn.laddr.port in [8080, 8081, 8082, 5555, 1883]:  # AI-SERVIS ports
+                network_analysis["connections"].append({
+                    "local_address": f"{conn.laddr.ip}:{conn.laddr.port}",
+                    "remote_address": f"{conn.raddr.ip}:{conn.raddr.port}" if conn.raddr else "None",
+                    "status": conn.status,
+                    "pid": conn.pid
+                })
+        
+        # Test network performance
+        test_endpoints = [
+            "http://localhost:8080/health",
+            "http://localhost:8081/health",
+            "http://localhost:8082/health",
+            "http://localhost:5555/health"
+        ]
+        
+        for endpoint in test_endpoints:
+            response_times = []
+            for i in range(50):
+                try:
+                    start_time = time.time()
+                    response = requests.get(endpoint, timeout=5)
+                    end_time = time.time()
+                    
+                    if response.status_code == 200:
+                        response_times.append(end_time - start_time)
+                except Exception as e:
+                    print(f"Error testing {endpoint}: {e}")
+                
+                time.sleep(0.1)
+            
+            if response_times:
+                network_analysis["bandwidth_tests"].append({
+                    "endpoint": endpoint,
+                    "avg_response_time": sum(response_times) / len(response_times),
+                    "min_response_time": min(response_times),
+                    "max_response_time": max(response_times),
+                    "throughput": len(response_times) / sum(response_times)  # requests per second
+                })
+        
+        # Generate network optimization recommendations
+        slow_endpoints = [test for test in network_analysis["bandwidth_tests"] 
+                         if test["avg_response_time"] > 0.5]
+        if slow_endpoints:
+            network_analysis["recommendations"].append("Some endpoints have slow response times - investigate network bottlenecks")
+        
+        high_connection_count = len(network_analysis["connections"])
+        if high_connection_count > 100:
+            network_analysis["recommendations"].append("High number of network connections - consider connection pooling")
+        
+        with open("network-analysis.json", "w") as f:
+            json.dump(network_analysis, f, indent=2)
+        
+        print("Network analysis completed")
+        print(f"Active connections: {len(network_analysis['connections'])}")
+        print(f"Endpoints tested: {len(network_analysis['bandwidth_tests'])}")
+        print(f"Recommendations: {len(network_analysis['recommendations'])}")
+        EOF
+    
+    - name: Upload network analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: network-analysis
+        path: network-analysis.json
+
+  # =============================================================================
+  # STORAGE OPTIMIZATION
+  # =============================================================================
+  storage-optimization:
+    name: Storage Optimization Analysis
+    runs-on: ubuntu-latest
+    if: ${{ inputs.optimization_type == 'storage' || inputs.optimization_type == 'full' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install storage analysis tools
+      run: |
+        pip install psutil
+        sudo apt-get update
+        sudo apt-get install -y ncdu
+    
+    - name: Start services for storage analysis
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run storage analysis
+      run: |
+        python << 'EOF'
+        import psutil
+        import json
+        import os
+        from datetime import datetime
+        
+        # Storage analysis
+        storage_analysis = {
+            "timestamp": datetime.now().isoformat(),
+            "analysis_type": "storage_optimization",
+            "disk_usage": {},
+            "file_analysis": {},
+            "recommendations": []
+        }
+        
+        # Analyze disk usage
+        disk_usage = psutil.disk_usage('/')
+        storage_analysis["disk_usage"] = {
+            "total": disk_usage.total,
+            "used": disk_usage.used,
+            "free": disk_usage.free,
+            "percent": (disk_usage.used / disk_usage.total) * 100
+        }
+        
+        # Analyze file sizes in project directory
+        file_sizes = []
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    file_size = os.path.getsize(file_path)
+                    file_sizes.append({
+                        "path": file_path,
+                        "size": file_size
+                    })
+                except OSError:
+                    pass
+        
+        # Sort by size and get largest files
+        file_sizes.sort(key=lambda x: x["size"], reverse=True)
+        storage_analysis["file_analysis"] = {
+            "total_files": len(file_sizes),
+            "total_size": sum(f["size"] for f in file_sizes),
+            "largest_files": file_sizes[:10]  # Top 10 largest files
+        }
+        
+        # Generate storage optimization recommendations
+        if storage_analysis["disk_usage"]["percent"] > 80:
+            storage_analysis["recommendations"].append("High disk usage - consider cleanup or expansion")
+        
+        large_files = [f for f in file_sizes if f["size"] > 100 * 1024 * 1024]  # >100MB
+        if large_files:
+            storage_analysis["recommendations"].append("Large files detected - consider compression or archiving")
+        
+        # Check for common optimization opportunities
+        log_files = [f for f in file_sizes if f["path"].endswith('.log')]
+        if log_files:
+            storage_analysis["recommendations"].append("Log files detected - consider log rotation")
+        
+        cache_files = [f for f in file_sizes if 'cache' in f["path"].lower()]
+        if cache_files:
+            storage_analysis["recommendations"].append("Cache files detected - consider cache cleanup")
+        
+        with open("storage-analysis.json", "w") as f:
+            json.dump(storage_analysis, f, indent=2)
+        
+        print("Storage analysis completed")
+        print(f"Disk usage: {storage_analysis['disk_usage']['percent']:.1f}%")
+        print(f"Total files: {storage_analysis['file_analysis']['total_files']}")
+        print(f"Total size: {storage_analysis['file_analysis']['total_size'] / 1024 / 1024:.1f} MB")
+        print(f"Recommendations: {len(storage_analysis['recommendations'])}")
+        EOF
+    
+    - name: Upload storage analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: storage-analysis
+        path: storage-analysis.json
+
+  # =============================================================================
+  # PERFORMANCE OPTIMIZATION REPORT
+  # =============================================================================
+  optimization-report:
+    name: Generate Optimization Report
+    runs-on: ubuntu-latest
+    needs: [performance-baseline, memory-optimization, cpu-optimization, network-optimization, storage-optimization]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all analysis artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./analysis-results
+    
+    - name: Generate comprehensive optimization report
+      run: |
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+        
+        # Load all analysis results
+        analyses = {}
+        
+        # Load baseline
+        if os.path.exists("analysis-results/performance-baseline.json"):
+            with open("analysis-results/performance-baseline.json") as f:
+                analyses["baseline"] = json.load(f)
+        
+        # Load optimization analyses
+        analysis_types = ["memory", "cpu", "network", "storage"]
+        for analysis_type in analysis_types:
+            file_path = f"analysis-results/{analysis_type}-analysis.json"
+            if os.path.exists(file_path):
+                with open(file_path) as f:
+                    analyses[analysis_type] = json.load(f)
+        
+        # Generate comprehensive report
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "repository": os.environ.get("GITHUB_REPOSITORY", "unknown"),
+            "commit": os.environ.get("GITHUB_SHA", "unknown"),
+            "branch": os.environ.get("GITHUB_REF_NAME", "unknown"),
+            "optimization_type": os.environ.get("INPUT_OPTIMIZATION_TYPE", "full"),
+            "analyses_completed": list(analyses.keys()),
+            "summary": {
+                "total_recommendations": 0,
+                "critical_issues": 0,
+                "optimization_opportunities": 0
+            },
+            "detailed_analyses": analyses,
+            "optimization_plan": []
+        }
+        
+        # Aggregate recommendations
+        all_recommendations = []
+        for analysis_type, analysis in analyses.items():
+            if "recommendations" in analysis:
+                all_recommendations.extend(analysis["recommendations"])
+        
+        report["summary"]["total_recommendations"] = len(all_recommendations)
+        
+        # Categorize recommendations
+        critical_keywords = ["critical", "high", "failed", "error"]
+        for rec in all_recommendations:
+            if any(keyword in rec.lower() for keyword in critical_keywords):
+                report["summary"]["critical_issues"] += 1
+            else:
+                report["summary"]["optimization_opportunities"] += 1
+        
+        # Generate optimization plan
+        if report["summary"]["critical_issues"] > 0:
+            report["optimization_plan"].append("Address critical performance issues immediately")
+        
+        if "memory" in analyses and analyses["memory"].get("recommendations"):
+            report["optimization_plan"].append("Implement memory optimization strategies")
+        
+        if "cpu" in analyses and analyses["cpu"].get("recommendations"):
+            report["optimization_plan"].append("Optimize CPU usage and processing efficiency")
+        
+        if "network" in analyses and analyses["network"].get("recommendations"):
+            report["optimization_plan"].append("Improve network performance and reduce latency")
+        
+        if "storage" in analyses and analyses["storage"].get("recommendations"):
+            report["optimization_plan"].append("Optimize storage usage and implement cleanup")
+        
+        # Save report
+        with open("performance-optimization-report.json", "w") as f:
+            json.dump(report, f, indent=2)
+        
+        print("Performance optimization report generated")
+        print(f"Analyses completed: {len(report['analyses_completed'])}")
+        print(f"Total recommendations: {report['summary']['total_recommendations']}")
+        print(f"Critical issues: {report['summary']['critical_issues']}")
+        print(f"Optimization opportunities: {report['summary']['optimization_opportunities']}")
+        EOF
+    
+    - name: Upload optimization report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-optimization-report
+        path: performance-optimization-report.json
+    
+    - name: Comment on PR with optimization results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('performance-optimization-report.json', 'utf8'));
+          
+          let comment = '## ⚡ Performance Optimization Results\n\n';
+          comment += `**Repository:** ${report.repository}\n`;
+          comment += `**Commit:** ${report.commit.substring(0, 7)}\n`;
+          comment += `**Branch:** ${report.branch}\n\n`;
+          
+          comment += '### Analysis Summary:\n';
+          comment += `- **Analyses Completed:** ${report.analyses_completed.join(', ')}\n`;
+          comment += `- **Total Recommendations:** ${report.summary.total_recommendations}\n`;
+          comment += `- **Critical Issues:** ${report.summary.critical_issues}\n`;
+          comment += `- **Optimization Opportunities:** ${report.summary.optimization_opportunities}\n\n`;
+          
+          if (report.optimization_plan.length > 0) {
+            comment += '### Optimization Plan:\n';
+            for (const plan of report.optimization_plan) {
+              comment += `- ${plan}\n`;
+            }
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  # =============================================================================
+  # OPTIMIZATION NOTIFICATION
+  # =============================================================================
+  optimization-notify:
+    name: Notify Optimization Results
+    runs-on: ubuntu-latest
+    needs: [optimization-report]
+    if: always()
+    
+    steps:
+    - name: Notify optimization results
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#performance'
+        webhook_url: ${{ secrets.PERFORMANCE_SLACK_WEBHOOK }}
+        custom_payload: |
+          {
+            "text": "⚡ Performance Optimization Complete",
+            "attachments": [{
+              "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
+              "fields": [{
+                "title": "Repository",
+                "value": "${{ github.repository }}",
+                "short": true
+              }, {
+                "title": "Optimization Type",
+                "value": "${{ inputs.optimization_type }}",
+                "short": true
+              }, {
+                "title": "Status",
+                "value": "${{ job.status }}",
+                "short": true
+              }]
+            }]
+          }

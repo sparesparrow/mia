@@ -3,12 +3,9 @@
   "version": "1.0.0",
   "description": "MIA Web Pages Generator",
   "scripts": {
+    "build": "node scripts/generatePages.js",
     "clean": "rm -rf dist/",
-    "build:business-car": "python3 scripts/build_variant.py business-car business",
-    "build:gonzo-car": "python3 scripts/build_variant.py gonzo-car gonzo",
-    "build:family-car": "python3 scripts/build_variant.py family-car family",
-    "build:dj-car": "python3 scripts/build_variant.py dj-car musicians",
-    "build": "npm run clean && npm run build:business-car && npm run build:gonzo-car && npm run build:family-car && npm run build:dj-car"
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
