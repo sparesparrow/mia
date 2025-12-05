@@ -42,10 +42,10 @@ class EventRepositoryTest {
             .allowMainThreadQueries()
             .build()
         
-        telemetryDao = db.telemetry()
-        alertDao = db.alerts()
-        anprEventDao = db.anpr()
-        clipsDao = db.clips()
+        telemetryDao = db.telemetryDao()
+        alertDao = db.alertDao()
+        anprEventDao = db.anprEventDao()
+        clipsDao = db.clipsDao()
         
         repository = EventRepositoryImpl(telemetryDao, alertDao, anprEventDao, clipsDao, Gson())
     }

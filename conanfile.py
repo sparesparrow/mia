@@ -60,7 +60,6 @@ class AiServisConan(ConanFile):
             # Python dependencies are managed via requirements.txt
             # This option allows Conan to track the dependency
             pass
-
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/24.3.25")  # For flatc compiler
@@ -151,9 +150,6 @@ class AiServisConan(ConanFile):
 
         if self.options.with_mcp:
             self.cpp_info.libs.append("mcp-server")
-
-        if self.options.with_proxy_mcp:
-            self.cpp_info.libs.append("kernun-mcp-tools")
 
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["pthread", "dl", "rt"]

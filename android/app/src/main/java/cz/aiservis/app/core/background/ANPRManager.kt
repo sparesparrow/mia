@@ -13,9 +13,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.Preview
-import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -188,17 +185,8 @@ class ANPRManagerImpl @Inject constructor(
             
             cameraProvider = getCameraProvider()
             
-            val resolutionSelector = ResolutionSelector.Builder()
-                .setResolutionStrategy(
-                    ResolutionStrategy(
-                        Size(TARGET_WIDTH, TARGET_HEIGHT),
-                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
-                    )
-                )
-                .build()
-
             imageAnalysis = ImageAnalysis.Builder()
-                .setResolutionSelector(resolutionSelector)
+                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also { analysis ->
@@ -206,7 +194,7 @@ class ANPRManagerImpl @Inject constructor(
                 }
             
             preview = Preview.Builder()
-                .setResolutionSelector(resolutionSelector)
+                .setTargetResolution(Size(TARGET_WIDTH, TARGET_HEIGHT))
                 .build()
             
             _state.value = ANPRState.Active
