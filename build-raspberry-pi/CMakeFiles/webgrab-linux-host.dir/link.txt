@@ -1,0 +1,1 @@
+/usr/bin/g++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/webgrab-linux-host.dir/link.d "CMakeFiles/webgrab-linux-host.dir/main_linux.cpp.o" "CMakeFiles/webgrab-linux-host.dir/HotReloadManager.cpp.o" -o webgrab-linux-host  -ldl

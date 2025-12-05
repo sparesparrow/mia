@@ -1,0 +1,4 @@
+# ninja log v6
+1	7654	1764643480818506874	CMakeFiles/hardware-server.dir/main_hardware_server.cpp.o	4aaf82c5f5a60249
+2	11002	1764643480818506874	CMakeFiles/hardware-server.dir/HardwareControlServer.cpp.o	fc53d131fb3dafe7
+11002	11355	1764643491818394712	hardware-server	f3f6ee0df66b62fd

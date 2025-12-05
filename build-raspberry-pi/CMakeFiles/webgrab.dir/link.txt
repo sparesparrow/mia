@@ -1,0 +1,1 @@
+/usr/bin/g++ -fPIC -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/webgrab.dir/link.d -shared -Wl,-soname,libwebgrab.so.1 -o libwebgrab.so.1.0.0 CMakeFiles/webgrab.dir/WebGrabDll.cpp.o  libwebgrab_lib.a /usr/lib/aarch64-linux-gnu/libflatbuffers.so /usr/lib/aarch64-linux-gnu/libcurl.so -ljsoncpp

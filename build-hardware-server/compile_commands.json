@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/mia/ai-servis/build-hardware-server",
+  "command": "/usr/bin/c++ -DWITH_MQTT=1 -I/home/mia/ai-servis/build-hardware-server/src -I/usr/include/jsoncpp -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/hardware-server.dir/main_hardware_server.cpp.o -c /home/mia/ai-servis/build-hardware-server/src/main_hardware_server.cpp",
+  "file": "/home/mia/ai-servis/build-hardware-server/src/main_hardware_server.cpp",
+  "output": "CMakeFiles/hardware-server.dir/main_hardware_server.cpp.o"
+},
+{
+  "directory": "/home/mia/ai-servis/build-hardware-server",
+  "command": "/usr/bin/c++ -DWITH_MQTT=1 -I/home/mia/ai-servis/build-hardware-server/src -I/usr/include/jsoncpp -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/hardware-server.dir/HardwareControlServer.cpp.o -c /home/mia/ai-servis/build-hardware-server/src/HardwareControlServer.cpp",
+  "file": "/home/mia/ai-servis/build-hardware-server/src/HardwareControlServer.cpp",
+  "output": "CMakeFiles/hardware-server.dir/HardwareControlServer.cpp.o"
+}
+]

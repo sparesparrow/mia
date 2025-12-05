@@ -1,0 +1,7 @@
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/hardware-server.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/edit_cache.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/rebuild_cache.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/list_install_components.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/install.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/install/local.dir
+/home/mia/ai-servis/build-hardware-server/CMakeFiles/install/strip.dir

@@ -1,0 +1,1 @@
+/usr/bin/g++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/webgrab-server.dir/link.d "CMakeFiles/webgrab-server.dir/main_server.cpp.o" -o webgrab-server  libwebgrab_lib.a /usr/lib/aarch64-linux-gnu/libflatbuffers.so /usr/lib/aarch64-linux-gnu/libcurl.so -ljsoncpp

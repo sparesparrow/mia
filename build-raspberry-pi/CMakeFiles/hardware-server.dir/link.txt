@@ -1,0 +1,1 @@
+/usr/bin/g++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/hardware-server.dir/link.d "CMakeFiles/hardware-server.dir/main_hardware_server.cpp.o" "CMakeFiles/hardware-server.dir/HardwareControlServer.cpp.o" -o hardware-server  libwebgrab_lib.a -lgpiod -lmosquitto -ljsoncpp /usr/lib/aarch64-linux-gnu/libflatbuffers.so /usr/lib/aarch64-linux-gnu/libcurl.so -ljsoncpp
