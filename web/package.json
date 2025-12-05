@@ -2,7 +2,7 @@
   "name": "mia-web",
   "version": "1.0.0",
   "description": "MIA Web Pages Generator",
-  "main": "scripts/generatePages.js"
+  "main": "scripts/generatePages.js",
   "scripts": {
     "build": "node scripts/generatePages.js",
     "clean": "rm -rf dist/",

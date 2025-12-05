@@ -71,10 +71,12 @@ function renderTemplate(template, data) {
                 itemTemplate = itemTemplate.replace(/\{\{this\.([^}]+)\}\}/g, (m, prop) => {
                     return getNestedValue(item, prop.trim()) || '';
                 });
-                // Replace {{../property}} with parent data
-                itemTemplate = itemTemplate.replace(/\{\{\.\.\/([^}]+)\}\}/g, (m, prop) => {
-                    return getNestedValue(data, prop.trim()) || '';
-                });
+            // Replace {{../property}} and {{../../property}} with parent data
+            itemTemplate = itemTemplate.replace(/\{\{(\.\.\/)+([^}]+)\}\}/g, (m, dots, prop) => {
+                // For {{../../namespace}}, we still use the same parent data
+                // The number of ../ doesn't change the data context in this case
+                return getNestedValue(data, prop.trim()) || '';
+            });
                 return itemTemplate;
             }).join('');
         });

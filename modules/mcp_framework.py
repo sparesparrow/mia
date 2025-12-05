@@ -539,14 +539,14 @@ class MCPClient:
             "name": "ai-servis-client",
             "version": "1.0.0"
         }
-        self.transport_factory: Optional[Callable[[], MCPTransport]] = None
+        self.transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None
 
     def _next_id(self) -> int:
         """Generate next request ID"""
         self.request_id += 1
         return self.request_id
 
-    async def connect(self, transport: MCPTransport, transport_factory: Optional[Callable[[], MCPTransport]] = None, timeout: float = 30.0) -> None:
+    async def connect(self, transport: MCPTransport, transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None, timeout: float = 30.0) -> None:
         """Connect to MCP server with persistent connection"""
         self.transport_factory = transport_factory or (lambda: transport)
 
@@ -566,7 +566,7 @@ class MCPClient:
             raise MCPError(-32603, "No transport factory available")
 
         try:
-            self.transport = self.transport_factory()
+            self.transport = await self.transport_factory()
             self.connected = True
 
             # Initialize the connection
