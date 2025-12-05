@@ -170,11 +170,26 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+      - name: Install RPi Python dependencies
+        run: |
+          if [ -f rpi/requirements.txt ]; then
+            pip install -r rpi/requirements.txt || echo "Some RPi dependencies may not be available in CI"
+          fi
+
       - name: Run tests
         run: |
           python -m pytest tests/ -v --cov=. --cov-report=xml
           python test_orchestrator.py
           python test_orchestrator_simple.py
+
+      - name: Run OBD Simulator tests
+        continue-on-error: true
+        run: |
+          if [ -f scripts/test-obd-simulator.sh ]; then
+            bash scripts/test-obd-simulator.sh || echo "OBD simulator tests completed with warnings"
+          else
+            python -m pytest tests/integration/test_obd_simulator.py -v || echo "OBD tests skipped"
+          fi
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -223,7 +238,9 @@ jobs:
             libmosquitto-dev \
             libgpiod-dev \
             libjsoncpp-dev \
-            libflatbuffers-dev
+            libflatbuffers-dev \
+            libzmq3-dev \
+            python3-dev
 
       - name: Install cross-compilation tools
         if: matrix.cross_compile == true

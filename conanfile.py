@@ -13,14 +13,16 @@ class AiServisConan(ConanFile):
         "fPIC": [True, False],
         "with_hardware": [True, False],
         "with_mcp": [True, False],
-        "with_proxy_mcp": [True, False]  # Kernun proxy MCP integration
+        "with_proxy_mcp": [True, False],  # Kernun proxy MCP integration
+        "with_rpi_python": [True, False]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "with_hardware": True,
         "with_mcp": True,
-        "with_proxy_mcp": False  # Optional, disabled by default
+        "with_proxy_mcp": False,  # Optional, disabled by default
+        "with_rpi_python": False
     }
 
     def configure(self):
@@ -52,6 +54,12 @@ class AiServisConan(ConanFile):
             # Provides: analyze_traffic, inspect_session, modify_tls_policy,
             #           update_proxy_rules, update_clearweb_database
             self.requires("kernun-mcp-tools/0.1.0")
+
+        # RPi Python services dependencies
+        if self.options.with_rpi_python:
+            # Python dependencies are managed via requirements.txt
+            # This option allows Conan to track the dependency
+            pass
 
     def build_requirements(self):
         # Tools needed for building
