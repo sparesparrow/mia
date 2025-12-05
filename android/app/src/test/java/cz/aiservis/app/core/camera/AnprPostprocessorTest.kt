@@ -7,7 +7,7 @@ class AnprPostprocessorTest {
 	@Test
 	fun normalize_replacesAmbiguousChars() {
 		val n = AnprPostprocessor.normalize(" b0 0o ")
-		assertEquals("B000", n)
+		assertEquals("8000", n)  // b→B→8, 0→0, 0→0, o→O→0
 	}
 
 	@Test

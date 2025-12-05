@@ -1,6 +1,6 @@
 package cz.aiservis.app.core.security
 
-import android.util.Base64
+import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -19,6 +19,6 @@ object PlateHasher {
 		val mac = Mac.getInstance(HMAC_ALGO)
 		mac.init(SecretKeySpec(secret, HMAC_ALGO))
 		val raw = mac.doFinal(normalized.toByteArray(Charsets.UTF_8))
-		return Base64.encodeToString(raw, Base64.NO_WRAP)
+		return Base64.getEncoder().encodeToString(raw)
 	}
 }
