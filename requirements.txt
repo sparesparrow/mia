@@ -46,10 +46,15 @@ locust==2.17.0
 
 # Security scanning
 bandit==1.7.5
-safety==2.3.5
+# Note: safety 2.3.5 conflicts with black 24.3.0 (packaging version conflict)
+# Using pip-tools or allowing pip to resolve is recommended for complex dependencies
+# For now, we'll let pip resolve the conflict or skip safety in CI if needed
+safety>=2.3.5
 
 # Development tools (security fixes)
-black==24.3.0
+# Note: black 24.3.0 requires packaging>=22.0, but safety 2.3.5 requires packaging<22.0
+# Using black 23.x to be compatible with safety
+black==23.12.1
 isort==5.12.0
 mypy==1.7.1
 
