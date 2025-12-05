@@ -15,9 +15,6 @@ import kotlinx.coroutines.launch
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
 /**
  * WebSocket connection states.
@@ -31,10 +28,11 @@ sealed class WebSocketState {
 
 /**
  * WebSocket client for real-time telemetry data.
+ * Note: Not using @Singleton/@Inject to avoid eager initialization issues.
+ * Instantiate manually when needed.
  */
-@Singleton
-class TelemetryWebSocket @Inject constructor(
-    @Named("ws_base_url") private val wsBaseUrl: String,
+class TelemetryWebSocket(
+    private val wsBaseUrl: String,
     private val gson: Gson
 ) {
     companion object {
@@ -65,7 +63,6 @@ class TelemetryWebSocket @Inject constructor(
     val stateFlow: SharedFlow<WebSocketState> = _stateFlow.asSharedFlow()
     
     init {
-<<<<<<< HEAD
         // Initialize state lazily to avoid issues during DI construction
         try {
             scope.launch {
@@ -73,10 +70,6 @@ class TelemetryWebSocket @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing state", e)
-=======
-        scope.launch {
-            _stateFlow.emit(WebSocketState.Disconnected)
->>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements)
         }
     }
     

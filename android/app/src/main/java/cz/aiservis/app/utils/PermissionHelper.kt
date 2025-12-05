@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 object PermissionHelper {
 
     private const val TAG = "PermissionHelper"
+
     /**
      * Get the required Bluetooth permissions based on Android version.
      * - Android 12+ (API 31+): BLUETOOTH_SCAN, BLUETOOTH_CONNECT
