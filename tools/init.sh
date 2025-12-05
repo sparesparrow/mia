@@ -3,10 +3,10 @@
 # AI-SERVIS Development Environment Initialization
 # =============================================================================
 # Simple entry point that sets up the AI-SERVIS build environment.
-# Uses Cloudsmith Conan remote for sparetools-cpython packages.
+# Uses Cloudsmith-centric CPython-tool bootstrap (complete-bootstrap.py).
 #
 # Usage:
-#   ./tools/init.sh              # Full setup
+#   ./tools/init.sh              # Full setup (calls complete-bootstrap.py)
 #   ./tools/init.sh --update     # Update existing environment
 #   ./tools/init.sh --clean      # Remove and reinstall
 #   source tools/init.sh --shell # Initialize for interactive use
@@ -250,7 +250,6 @@ main() {
     if [ "$mode" = "clean" ]; then
         echo -e "${YELLOW}Removing existing environment...${NC}"
         rm -rf "$BUILDENV_DIR"
-        rm -rf "${HOME}/.openssl-devenv"
         mode="setup"
     fi
     
@@ -268,13 +267,29 @@ main() {
         exit 0
     fi
     
-    # Full setup
+    # Full setup - use Cloudsmith-centric bootstrap
     echo -e "${BLUE}Starting AI-SERVIS environment setup...${NC}"
     echo ""
     
-    setup_conan_remotes
-    create_ai_servis_env
-    generate_activation_script
+    # Check if complete-bootstrap.py exists and run it
+    if [ -f "$PROJECT_ROOT/complete-bootstrap.py" ]; then
+        echo -e "${CYAN}Running Cloudsmith-centric bootstrap...${NC}"
+        python3 "$PROJECT_ROOT/complete-bootstrap.py" || {
+            echo -e "${YELLOW}Bootstrap script failed, falling back to legacy approach...${NC}"
+            setup_conan_remotes
+            create_ai_servis_env
+        }
+    else
+        echo -e "${YELLOW}complete-bootstrap.py not found, using legacy approach...${NC}"
+        setup_conan_remotes
+        create_ai_servis_env
+    fi
+    
+    # Generate activation script if it doesn't exist
+    if [ ! -f "$BUILDENV_DIR/activate.sh" ]; then
+        generate_activation_script
+    fi
+    
     install_ai_servis_deps
     
     echo ""

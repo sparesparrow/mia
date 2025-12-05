@@ -1,20 +1,21 @@
 #!/bin/bash
 # =============================================================================
-# AI-SERVIS Build Environment Bootstrap (Sparetools Integration)
+# AI-SERVIS Build Environment Bootstrap (Cloudsmith-Centric)
 # =============================================================================
-# Uses sparetools zero-copy bootstrap approach with sparetools-cpython Conan
-# package for a consistent, portable Python/Conan development environment.
+# Canonical bootstrap following CPython-tool pattern:
+# 1. Downloads cpython-tool-3.12.7-{platform}.tar.gz from Cloudsmith cpy repo
+# 2. Extracts into self-contained tool prefix (.buildenv/cpython)
+# 3. Uses bundled interpreter to install/configure Conan 2.21.0
+# 4. Sets Conan remotes to Cloudsmith Conan repos
 #
-# This script leverages:
-# - sparetools-cpython/3.12.7 from Conan (or builds locally if needed)
-# - Cloudsmith remote: https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/
-# - Zero-copy symlinks from Conan cache to .buildenv/
+# This script delegates to complete-bootstrap.py (stdlib-only, no external deps)
+# for the actual bootstrap work.
 #
 # Usage:
-#   ./tools/bootstrap.sh              # Full setup
+#   ./tools/bootstrap.sh              # Full setup (calls complete-bootstrap.py)
 #   ./tools/bootstrap.sh --update     # Update existing environment
 #   ./tools/bootstrap.sh --clean      # Remove and reinstall
-#   ./tools/bootstrap.sh --no-conan   # Skip Conan setup (system Python only)
+#   ./tools/bootstrap.sh --legacy     # Use legacy Conan-based approach (deprecated)
 #
 # Environment is created in: .buildenv/
 # =============================================================================
@@ -419,10 +420,49 @@ update_gitignore() {
     done
 }
 
+# Run Cloudsmith-centric bootstrap (canonical approach)
+run_cloudsmith_bootstrap() {
+    echo -e "${CYAN}Running Cloudsmith-centric bootstrap (complete-bootstrap.py)...${NC}"
+    echo ""
+    
+    # Check if complete-bootstrap.py exists
+    if [ ! -f "$PROJECT_ROOT/complete-bootstrap.py" ]; then
+        echo -e "${RED}Error: complete-bootstrap.py not found at $PROJECT_ROOT/complete-bootstrap.py${NC}"
+        echo -e "${YELLOW}Falling back to legacy Conan-based approach...${NC}"
+        return 1
+    fi
+    
+    # Use system Python to run the bootstrap script (stdlib-only, no deps needed)
+    local python_cmd
+    for cmd in python3.12 python3.11 python3.10 python3; do
+        if command -v "$cmd" &> /dev/null; then
+            python_cmd="$cmd"
+            break
+        fi
+    done
+    
+    if [ -z "$python_cmd" ]; then
+        echo -e "${RED}No Python found to run complete-bootstrap.py${NC}"
+        return 1
+    fi
+    
+    # Run the bootstrap script
+    cd "$PROJECT_ROOT"
+    "$python_cmd" "$PROJECT_ROOT/complete-bootstrap.py"
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Cloudsmith bootstrap completed successfully${NC}"
+        return 0
+    else
+        echo -e "${YELLOW}Cloudsmith bootstrap failed, falling back to legacy approach...${NC}"
+        return 1
+    fi
+}
+
 # Main setup function
 main() {
     local mode="setup"
-    local use_conan=true
+    local use_legacy=false
     
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -434,8 +474,8 @@ main() {
                 mode="clean"
                 shift
                 ;;
-            --no-conan)
-                use_conan=false
+            --legacy)
+                use_legacy=true
                 shift
                 ;;
             -h|--help)
@@ -444,11 +484,12 @@ main() {
                 echo "Options:"
                 echo "  --update      Update existing environment"
                 echo "  --clean       Remove and reinstall everything"
-                echo "  --no-conan    Skip Conan CPython, use system Python only"
+                echo "  --legacy      Use legacy Conan-based approach (deprecated)"
                 echo "  -h, --help    Show this help"
                 echo ""
-                echo "This script uses sparetools infrastructure for zero-copy"
-                echo "Python environment setup via Conan packages."
+                echo "This script uses Cloudsmith-centric CPython-tool bootstrap"
+                echo "by default (complete-bootstrap.py). The legacy Conan-based"
+                echo "approach is deprecated and will be removed."
                 exit 0
                 ;;
             *)
@@ -459,7 +500,7 @@ main() {
     done
     
     echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}  AI-SERVIS Build Environment Setup (Sparetools Integration)${NC}"
+    echo -e "${GREEN}  AI-SERVIS Build Environment Setup (Cloudsmith-Centric)${NC}"
     echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
     echo ""
     
@@ -478,6 +519,36 @@ main() {
         exit 0
     fi
     
+    # Try Cloudsmith-centric approach first (unless --legacy is specified)
+    if [ "$use_legacy" = false ]; then
+        if run_cloudsmith_bootstrap; then
+            echo ""
+            echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
+            echo -e "${GREEN}  Setup Complete!${NC}"
+            echo -e "${GREEN}════════════════════════════════════════════════════════════════${NC}"
+            echo ""
+    echo -e "${CYAN}To activate the build environment:${NC}"
+    echo -e "  ${YELLOW}source .buildenv/activate.sh${NC}"
+    echo ""
+    echo -e "${CYAN}Or from project root:${NC}"
+    echo -e "  ${YELLOW}source tools/env.sh${NC}"
+    echo ""
+    echo -e "${CYAN}To switch between Cloudsmith and GitHub Packages:${NC}"
+    echo -e "  ${YELLOW}source tools/repo-config.sh cloudsmith${NC}  # Use Cloudsmith (default)"
+    echo -e "  ${YELLOW}source tools/repo-config.sh github${NC}      # Use GitHub Packages"
+    echo ""
+    exit 0
+        fi
+        echo ""
+        echo -e "${YELLOW}Falling back to legacy Conan-based approach...${NC}"
+        echo ""
+    fi
+    
+    # Legacy Conan-based approach (deprecated)
+    echo -e "${YELLOW}⚠ Using legacy Conan-based bootstrap (deprecated)${NC}"
+    echo -e "${YELLOW}  This approach will be removed in a future version.${NC}"
+    echo ""
+    
     # Create directories
     mkdir -p "$BUILDENV_DIR"
     mkdir -p "$CACHE_DIR"
@@ -487,17 +558,15 @@ main() {
     local platform=$(detect_platform)
     echo -e "${BLUE}Detected platform: ${platform}${NC}"
     
-    # Try sparetools/Conan approach first
+    # Try sparetools/Conan approach
     local zero_copy_success=false
     
-    if [ "$use_conan" = true ]; then
-        if ensure_bootstrap_conan; then
-            setup_conan_remotes
-            
-            if install_cpython_conan && create_zero_copy_python; then
-                zero_copy_success=true
-                echo -e "${GREEN}  ✓ Zero-copy Python environment ready${NC}"
-            fi
+    if ensure_bootstrap_conan; then
+        setup_conan_remotes
+        
+        if install_cpython_conan && create_zero_copy_python; then
+            zero_copy_success=true
+            echo -e "${GREEN}  ✓ Zero-copy Python environment ready${NC}"
         fi
     fi
     
@@ -525,7 +594,7 @@ main() {
     echo ""
     
     if [ "$zero_copy_success" = true ]; then
-        echo -e "${CYAN}Environment type: Zero-copy (sparetools-cpython)${NC}"
+        echo -e "${CYAN}Environment type: Zero-copy (legacy Conan-based)${NC}"
     else
         echo -e "${CYAN}Environment type: Standard venv (system Python)${NC}"
     fi
