@@ -4,32 +4,18 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
-    id 'jacoco'
-    id 'com.github.ben-manes.versions'
-    id 'org.jlleitschuh.gradle.ktlint'
-    id 'io.gitlab.arturbosch.detekt'
 }
 
 android {
     namespace 'cz.aiservis.app'
     compileSdk 34
 
-    // CI-driven versioning
-    def githubRunNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
-    def githubSha = (System.getenv("GITHUB_SHA") ?: "dev").take(7)
-    def githubRefType = System.getenv("GITHUB_REF_TYPE") ?: "branch"
-    def githubRefName = System.getenv("GITHUB_REF_NAME") ?: "local"
-    def isTagBuild = githubRefType == 'tag' && githubRefName?.startsWith('v')
-    def computedVersionName = isTagBuild ? githubRefName.replaceFirst('v','') : "0.0.0-ci.${githubRunNumber}+${githubSha}"
-
     defaultConfig {
         applicationId "cz.aiservis.app"
         minSdk 24
         targetSdk 34
-        
-        // Dynamic versioning based on Git
-        versionCode getVersionCode()
-        versionName getVersionName()
+        versionCode (System.getenv("VERSION_CODE")?.toInteger()) ?: 1
+        versionName System.getenv("VERSION_NAME") ?: "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -37,8 +23,6 @@ android {
         }
 
         buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
-        buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
-        buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
     }
 
     signingConfigs {
@@ -90,7 +74,6 @@ android {
     }
     testOptions {
         unitTests.includeAndroidResources = true
-        unitTests.returnDefaultValues = true
     }
     packaging {
         resources {
@@ -211,8 +194,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
     testImplementation 'androidx.room:room-testing:2.6.1'
-    testImplementation 'io.mockk:mockk:1.13.8'
-    testImplementation 'app.cash.turbine:turbine:1.0.0'
     
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -291,61 +272,3 @@ def getGitBranch() {
     }
 }
 
-// Test coverage configuration
-jacoco {
-    toolVersion = "0.8.8"
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*']
-}
-
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-    
-    def fileFilter = [
-        '**/R.class',
-        '**/R$*.class',
-        '**/BuildConfig.*',
-        '**/Manifest*.*',
-        '**/*Test*.*',
-        'android/**/*.*',
-        '**/di/**',
-        '**/hilt/**'
-    ]
-    
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-    
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: buildDir, includes: [
-        'jacoco/testDebugUnitTest.exec',
-        'outputs/code-coverage/connected/*coverage.ec'
-    ]))
-}
-
-// ktlint configuration
-ktlint {
-    version = "1.0.1"
-    debug = true
-    verbose = true
-    android = true
-    outputToConsole = true
-    outputColorName = "RED"
-    ignoreFailures = true  // Allow builds to continue with lint issues
-    enableExperimentalRules = false
-}
-
-// detekt configuration
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config.setFrom("$projectDir/detekt.yml")
-    baseline = file("$projectDir/baseline.xml")
-    ignoreFailures = true  // Allow builds to continue with detekt issues
-}
