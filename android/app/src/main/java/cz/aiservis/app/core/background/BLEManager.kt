@@ -87,6 +87,9 @@ interface BLEManager {
     
     /** Check if connected to a device */
     fun isConnected(): Boolean
+    
+    /** Cleanup resources and cancel all operations */
+    suspend fun cleanup()
 }
 
 @Singleton
@@ -422,9 +425,11 @@ class BLEManagerImpl @Inject constructor(
         
         try {
             val commandWithCR = "$command\r"
-            tx.value = commandWithCR.toByteArray(Charsets.UTF_8)
+            val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
+            tx.value = bytes
             
             withContext(Dispatchers.Main) {
+                @Suppress("DEPRECATION")
                 gatt.writeCharacteristic(tx)
             }
             
