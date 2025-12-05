@@ -7,6 +7,10 @@
 # - Arduino Uno connected via USB
 # - Required libraries: FastLED, ArduinoJson
 #
+# Usage:
+#   ./upload.sh                 # Auto-detect Arduino port
+#   ./upload.sh /dev/ttyUSB1    # Specify port manually
+#
 
 set -e
 
@@ -14,6 +18,7 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,18 +60,93 @@ arduino-cli lib install "FastLED"
 arduino-cli lib install "ArduinoJson"
 
 echo -e "${YELLOW}Step 3: Detecting Arduino board...${NC}"
-PORT=$(arduino-cli board list | grep -i "arduino\|uno\|usb" | head -1 | awk '{print $1}')
 
-if [ -z "$PORT" ]; then
-    echo -e "${RED}Error: No Arduino board detected${NC}"
-    echo ""
-    echo "Please:"
-    echo "  1. Connect Arduino Uno via USB"
-    echo "  2. Check connection: arduino-cli board list"
-    exit 1
+# Allow port override via command line argument
+if [ ! -z "$1" ]; then
+    PORT="$1"
+    echo -e "${BLUE}Using specified port: $PORT${NC}"
+    
+    # Verify specified port exists
+    if [ ! -e "$PORT" ]; then
+        echo -e "${RED}Error: Specified port $PORT does not exist${NC}"
+        echo ""
+        echo "Available ports:"
+        arduino-cli board list
+        exit 1
+    fi
+else
+    # Auto-detect Arduino port
+    PORTS=$(arduino-cli board list | grep -E "/dev/tty(USB|ACM)" | awk '{print $1}')
+    
+    if [ -z "$PORTS" ]; then
+        echo -e "${RED}Error: No Arduino board detected${NC}"
+        echo ""
+        echo "Please:"
+        echo "  1. Connect Arduino Uno via USB"
+        echo "  2. Check connection: arduino-cli board list"
+        echo "  3. Check permissions: sudo chmod 666 /dev/ttyUSB*"
+        exit 1
+    fi
+    
+    PORT_COUNT=$(echo "$PORTS" | wc -l)
+    
+    if [ "$PORT_COUNT" -eq 1 ]; then
+        # Only one port found - use it
+        PORT="$PORTS"
+        echo -e "${GREEN}Found single device on port: $PORT${NC}"
+    else
+        # Multiple ports found - need to identify the Arduino
+        echo -e "${BLUE}Multiple serial devices detected:${NC}"
+        echo "$PORTS"
+        echo ""
+        echo -e "${YELLOW}Testing ports to identify Arduino...${NC}"
+        
+        PORT=""
+        for P in $PORTS; do
+            echo -n "Testing $P ... "
+            
+            # Kill any existing processes using this port
+            sudo fuser -k "$P" 2>/dev/null || true
+            sleep 0.2
+            
+            # Test if device is quiet (Arduino) or noisy (ESP8266/etc)
+            timeout 0.5s cat "$P" 2>/dev/null > /tmp/port_test_$$ &
+            sleep 0.6
+            BYTES=$(wc -c < /tmp/port_test_$$ 2>/dev/null || echo 0)
+            rm -f /tmp/port_test_$$
+            
+            # Arduino Uno should be relatively quiet when idle
+            # ESP8266 devices constantly spam boot messages
+            if [ "$BYTES" -lt 50 ]; then
+                PORT="$P"
+                echo -e "${GREEN}quiet ($BYTES bytes) - likely Arduino ✓${NC}"
+                break
+            else
+                echo -e "${YELLOW}noisy ($BYTES bytes) - likely ESP8266/other${NC}"
+            fi
+        done
+        
+        # Fallback to last port if auto-detection failed
+        if [ -z "$PORT" ]; then
+            PORT=$(echo "$PORTS" | tail -1)
+            echo ""
+            echo -e "${YELLOW}Warning: Could not auto-detect Arduino${NC}"
+            echo -e "${YELLOW}Using fallback port: $PORT${NC}"
+            echo ""
+            echo "If upload fails, specify port manually:"
+            echo "  $0 /dev/ttyUSB0"
+            echo "  $0 /dev/ttyUSB1"
+            echo ""
+        fi
+    fi
 fi
 
-echo -e "${GREEN}Found Arduino on port: $PORT${NC}"
+echo -e "${GREEN}Using Arduino on port: $PORT${NC}"
+
+# Kill any process that might be using the port
+echo -e "${YELLOW}Ensuring port is available...${NC}"
+sudo fuser -k "$PORT" 2>/dev/null || true
+sleep 0.5
 
 echo -e "${YELLOW}Step 4: Compiling sketch...${NC}"
 arduino-cli compile --fqbn "$FQBN" "$SCRIPT_DIR"
@@ -87,8 +167,13 @@ if [ $? -ne 0 ]; then
     echo "Troubleshooting:"
     echo "  1. Check USB connection"
     echo "  2. Verify correct port: arduino-cli board list"
-    echo "  3. Try pressing reset button on Arduino"
-    echo "  4. Check permissions: sudo chmod 666 $PORT"
+    echo "  3. Try manual port: $0 /dev/ttyUSB0 or $0 /dev/ttyUSB1"
+    echo "  4. Press reset button on Arduino before uploading"
+    echo "  5. Check permissions: sudo chmod 666 $PORT"
+    echo ""
+    echo "If multiple USB serial devices are connected:"
+    echo "  - $PORT might not be the Arduino"
+    echo "  - Try specifying the other port manually"
     exit 1
 fi
 
@@ -96,6 +181,12 @@ echo ""
 echo -e "${GREEN}✓ Upload successful!${NC}"
 echo ""
 echo "Next steps:"
-echo "  1. Open serial monitor: arduino-cli monitor -p $PORT -c baudrate=115200"
-echo "  2. Test connection: python modules/hardware-bridge/test_arduino_led.py $PORT"
+echo -e "${BLUE}  1. Test serial monitor:${NC}"
+echo "     arduino-cli monitor -p $PORT -c baudrate=115200"
+echo ""
+echo -e "${BLUE}  2. Test LED controller:${NC}"
+echo "     python modules/hardware-bridge/test_arduino_led.py $PORT"
+echo ""
+echo -e "${BLUE}  3. Run verify script:${NC}"
+echo "     ./verify_upload.sh $PORT"
 echo ""
