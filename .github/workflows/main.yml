@@ -461,7 +461,7 @@ jobs:
 
       - name: Start test environment
         run: |
-          docker-compose -f docker-compose.dev.yml up -d --wait
+          docker compose -f docker-compose.dev.yml up -d --wait || docker-compose -f docker-compose.dev.yml up -d --wait
           sleep 30
 
       - name: Run integration tests
