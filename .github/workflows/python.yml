@@ -41,9 +41,11 @@ jobs:
           python -m pip install --upgrade pip
           # Install PyYAML first with a version that has wheels to avoid build issues
           pip install "PyYAML>=6.0"
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest flake8 mypy jsonschema
+          # Create constraint file to prevent pip from trying to build older PyYAML versions
+          echo "PyYAML>=6.0" > /tmp/constraints.txt
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt --constraint /tmp/constraints.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt --constraint /tmp/constraints.txt; fi
+          pip install pytest flake8 mypy jsonschema --constraint /tmp/constraints.txt
 
       - name: Lint (flake8)
         run: flake8 .

@@ -56,5 +56,5 @@ mypy==1.7.1
 # JSON processing (security fix)
 orjson==3.9.15
 
-# YAML processing (fix for CI build issues)
-PyYAML>=6.0
+# YAML processing (fix for CI build issues - pin to version with wheels)
+PyYAML==6.0.1
