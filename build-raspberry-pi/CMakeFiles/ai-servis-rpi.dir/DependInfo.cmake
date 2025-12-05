@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/mia/ai-servis/platforms/cpp/core/main_raspberry_pi.cpp" "CMakeFiles/ai-servis-rpi.dir/main_raspberry_pi.cpp.o" "gcc" "CMakeFiles/ai-servis-rpi.dir/main_raspberry_pi.cpp.o.d"
-  "" "ai-servis-rpi" "gcc" "CMakeFiles/ai-servis-rpi.dir/link.d"
+  "/home/mia/ai-servis/platforms/cpp/core/main_raspberry_pi.cpp" "CMakeFiles/mia-rpi.dir/main_raspberry_pi.cpp.o" "gcc" "CMakeFiles/mia-rpi.dir/main_raspberry_pi.cpp.o.d"
+  "" "mia-rpi" "gcc" "CMakeFiles/mia-rpi.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

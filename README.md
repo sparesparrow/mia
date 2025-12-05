@@ -1,4 +1,4 @@
-# AI-SERVIS: Modulární Car AI Server → Universal AI Assistant Ecosystem
+# MIA: Modulární Car AI Server → Universal AI Assistant Ecosystem
 
 **🚗→🏠 From automotive-only to everywhere you are**
 
@@ -6,7 +6,7 @@ Kompletní řešení pro autoservisy kombinující ANPR, OBD diagnostiku, hlasov
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/u/aiservices)
-[![Platform](https://img.shields.io/badge/Platform-AMD64%20|%20ARM64%20|%20Mobile-blue)](https://github.com/sparesparrow/ai-servis)
+[![Platform](https://img.shields.io/badge/Platform-AMD64%20|%20ARM64%20|%20Mobile-blue)](https://github.com/sparesparrow/mia)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
 [![Conan](https://img.shields.io/badge/dependency%20management-conan-blue)](https://conan.io)
 
@@ -14,7 +14,7 @@ Kompletní řešení pro autoservisy kombinující ANPR, OBD diagnostiku, hlasov
 
 > *"Jeden AI asistent, který vás zná všude - od vašeho auta po kuchyni, od telefonu po desktop - přitom vaše data zůstávají soukromá a pod vaší kontrolou."*
 
-**AI-SERVIS Universal** představuje evoluci našeho automotive AI asistenta do komplexního, modulárního ekosystému, který bezproblémově funguje napříč vozidly, domovy a všemi výpočetními platformami.
+**MIA Universal** představuje evoluci našeho automotive AI asistenta do komplexního, modulárního ekosystému, který bezproblémově funguje napříč vozidly, domovy a všemi výpočetními platformami.
 
 ## 🌩️ **AWS Deployment Preview**
 
@@ -32,7 +32,7 @@ graph TB
         UI5[Voice-Only Interface]
     end
 
-    subgraph "🧠 AI-SERVIS Universal Core"
+    subgraph "🧠 MIA Universal Core"
         CORE[Core Orchestrator<br/>MCP Host]
         AUTH[Authentication & Context]
         AUDIO[Audio Management Hub]
@@ -232,8 +232,8 @@ The fastest way to set up the development environment:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # 2. Run the initialization script (sets up everything)
 ./tools/init.sh
@@ -242,7 +242,7 @@ cd ai-servis
 source tools/env.sh
 
 # 4. Build all C++ components
-ai-servis-build
+mia-build
 ```
 
 This approach uses **sparetools-cpython** from Cloudsmith to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
@@ -251,8 +251,8 @@ This approach uses **sparetools-cpython** from Cloudsmith to create a zero-copy 
 
 ```bash
 # Klonování repozitáře
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # Spuštění development environmentu
 docker-compose -f containers/docker-compose.dev.yml up -d
@@ -272,8 +272,8 @@ This approach uses Cloudsmith packages for a portable Python/Conan environment:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # 2. Install system dependencies (requires sudo)
 ./tools/install-deps-rpi.sh
@@ -316,9 +316,9 @@ For active development, activate the build environment:
 source tools/env.sh
 
 # Now you have conan, cmake, etc. on PATH
-ai-servis-info   # Show environment info
-ai-servis-build  # Build all components
-ai-servis-clean  # Clean build directories
+mia-info   # Show environment info
+mia-build  # Build all components
+mia-clean  # Clean build directories
 ```
 
 **📖 For detailed Raspberry Pi deployment instructions, see [README-RASPBERRY-PI.md](platforms/cpp/core/README-RASPBERRY-PI.md)**
@@ -338,7 +338,7 @@ cd build-raspberry-pi
 sudo ./hardware-server &
 
 # Test main application
-sudo ./ai-servis-rpi
+sudo ./mia-rpi
 
 # Test Python integration
 cd modules/hardware-bridge
@@ -354,10 +354,10 @@ python test_integration.py
 
 ```bash
 # Instalace pro domácí použití
-curl -sSL https://install.ai-servis.cz | bash -s -- --variant=home
+curl -sSL https://install.mia.cz | bash -s -- --variant=home
 
 # Nebo manuální docker-compose
-wget https://raw.githubusercontent.com/sparesparrow/ai-servis/main/containers/docker-compose.home.yml
+wget https://raw.githubusercontent.com/sparesparrow/mia/main/containers/docker-compose.home.yml
 docker-compose -f docker-compose.home.yml up -d
 
 # Test voice control
@@ -366,8 +366,8 @@ echo "AI, play jazz music in kitchen" | nc localhost 8080
 
 ### 📱 **Mobile App Installation**
 
-- **Android**: [Download from GitHub Releases](https://github.com/sparesparrow/ai-servis/releases/latest)
-- **iOS**: [TestFlight Beta](https://testflight.apple.com/join/ai-servis) (Coming Soon)
+- **Android**: [Download from GitHub Releases](https://github.com/sparesparrow/mia/releases/latest)
+- **iOS**: [TestFlight Beta](https://testflight.apple.com/join/mia) (Coming Soon)
 
 ### 🚗 **Automotive Installation**
 
@@ -474,7 +474,7 @@ pytest tests/system/ -v --platform=pi-sim
 
 ```mermaid
 gantt
-    title AI-SERVIS Universal Development Timeline
+    title MIA Universal Development Timeline
     dateFormat  YYYY-MM-DD
     section Phase 0: Foundation
     Repository Setup           :done, repo, 2025-08-30, 2d
@@ -539,8 +539,8 @@ gantt
 ### **Development Setup**
 ```bash
 # Development environment
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 cp .env.example .env
 docker-compose -f containers/docker-compose.dev.yml up -d
 
@@ -565,8 +565,8 @@ pre-commit install
 ## 📞 **Kontakt & Support**
 
 ### **🌍 Community**
-- **Discord**: [AI-SERVIS Community](https://discord.gg/ai-servis)
-- **GitHub Discussions**: [Project Discussions](https://github.com/sparesparrow/ai-servis/discussions)
+- **Discord**: [MIA Community](https://discord.gg/mia)
+- **GitHub Discussions**: [Project Discussions](https://github.com/sparesparrow/mia/discussions)
 - **Reddit**: [r/AI_SERVIS](https://reddit.com/r/AI_SERVIS)
 
 ### **🏢 Business**
@@ -576,7 +576,7 @@ pre-commit install
 - **Adresa**: Brno-sever, Česká republika
 
 ### **🔧 Technical Support**
-- **Issues**: [GitHub Issues](https://github.com/sparesparrow/ai-servis/issues)
+- **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)
 - **Security**: [security@ai-servis.cz](mailto:security@ai-servis.cz)
 - **Documentation**: [docs.ai-servis.cz](https://docs.ai-servis.cz)
 
@@ -604,7 +604,7 @@ Tento projekt je licencován pod MIT licencí - viz [LICENSE](LICENSE) soubor pr
 
 ---
 
-**AI-SERVIS Universal** - *Jeden AI asistent pro všechny vaše prostředí* 🚗🏠📱💻
+**MIA Universal** - *Jeden AI asistent pro všechny vaše prostředí* 🚗🏠📱💻
 
 [![Made with ❤️ in Brno](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20in-Brno%2C%20CZ-red)](https://brno.cz)
 [![Czech AI Innovation](https://img.shields.io/badge/Czech-AI%20Innovation-blue)](https://ai-servis.cz)

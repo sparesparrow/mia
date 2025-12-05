@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚗 AI-SERVIS Universal Automotive Performance Testing Suite
+🚗 MIA Universal Automotive Performance Testing Suite
 
 Comprehensive performance testing for automotive AI voice control systems
 Focuses on real-time constraints, edge deployment optimization, and voice processing latency
@@ -159,7 +159,7 @@ class AutomotivePerformanceTester:
             duration=iterations * 0.5  # Approximate duration
         )
         
-        wake_words = ["Hey AI-SERVIS", "AI-SERVIS", "Computer"]
+        wake_words = ["Hey MIA", "MIA", "Computer"]
         false_positives = ["Hey Google", "Alexa", "Siri", "Background noise"]
         
         detected_count = 0
@@ -337,7 +337,7 @@ class AutomotivePerformanceTester:
                 start_time = time.time()
                 
                 container = self.docker_client.containers.run(
-                    f"ghcr.io/sparesparrow/ai-servis-universal/{service.replace('ai-servis-', '')}:latest",
+                    f"ghcr.io/sparesparrow/mia-universal/{service.replace('ai-servis-', '')}:latest",
                     name=service,
                     detach=True,
                     environment={"AUTOMOTIVE_MODE": "true", "EDGE_OPTIMIZATION": "true"}
@@ -436,7 +436,7 @@ class AutomotivePerformanceTester:
         <!DOCTYPE html>
         <html>
         <head>
-            <title>AI-SERVIS Automotive Performance Report</title>
+            <title>MIA Automotive Performance Report</title>
             <style>
                 body {{ font-family: Arial, sans-serif; margin: 40px; }}
                 .header {{ background: #2c3e50; color: white; padding: 20px; text-align: center; }}
@@ -449,7 +449,7 @@ class AutomotivePerformanceTester:
         </head>
         <body>
             <div class="header">
-                <h1>🚗 AI-SERVIS Universal</h1>
+                <h1>🚗 MIA Universal</h1>
                 <h2>Automotive Performance Test Report</h2>
                 <p>Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}</p>
             </div>
@@ -586,7 +586,7 @@ class AutomotivePerformanceTester:
     def _create_performance_charts(self):
         """Create performance visualization charts"""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('AI-SERVIS Automotive Performance Metrics', fontsize=16)
+        fig.suptitle('MIA Automotive Performance Metrics', fontsize=16)
         
         # Voice processing latency chart
         voice_metrics = [m for m in self.results if m.test_type == "voice_latency"]
@@ -638,7 +638,7 @@ class AutomotivePerformanceTester:
 
     async def run_full_test_suite(self) -> Dict[str, Any]:
         """Run complete automotive performance test suite"""
-        logger.info("🚗 Starting AI-SERVIS Automotive Performance Test Suite")
+        logger.info("🚗 Starting MIA Automotive Performance Test Suite")
         
         test_start_time = time.time()
         
@@ -695,7 +695,7 @@ async def main():
     """Main entry point for automotive performance testing"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="AI-SERVIS Automotive Performance Testing")
+    parser = argparse.ArgumentParser(description="MIA Automotive Performance Testing")
     parser.add_argument("--base-url", default="http://localhost:8080", help="Base URL for API testing")
     parser.add_argument("--output", default="automotive-performance-report.html", help="Output report file")
     parser.add_argument("--json-output", help="JSON output file for CI/CD integration")

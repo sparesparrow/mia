@@ -280,7 +280,7 @@ cz.aiservis.app/
 │   ├── components/     # Reusable UI components
 │   └── screens/        # Screen composables + ViewModels
 ├── utils/              # Utility classes
-├── AIServisApplication.kt
+├── MIAApplication.kt
 └── MainActivity.kt
 ```
 

@@ -1,10 +1,10 @@
 read tinymcp: Unlocking the Physical World for LLMs with MCP and Microcontrollers - The Golioth Developer Blog
 https://blog.golioth.io/tinymcp-unlocking-the-physical-world-for-llms-with-mcp-and-microcontrollers/
-our goal is to have mcp sdk for developing core c++ application (raspberypi) and embedded c++(esp32) for https://github.com/sparesparrow/ai-servis
+our goal is to have mcp sdk for developing core c++ application (raspberypi) and embedded c++(esp32) for https://github.com/sparesparrow/mia
 
 Díky za odkaz na článek o tinymcp z Golioth blogu [1]. Přečetl jsem si ho podrobně – je to zajímavý projekt, který umožňuje LLMs ovládat embedded zařízení přes MCP protokol, s využitím Golioth cloudu a firmware SDK pro RPC volání. Zaměřuje se na proxy architekturu, kde MCP server překládá JSON-RPC požadavky na Golioth RPC, což umožňuje interakci s hardwarem jako LED na mikrokontrolerech bez velkých změn ve firmware. Je to experimentální, s varováním před riziky delegování fyzické kontroly AI, a podporuje Zephyr RTOS pro embedded aplikace.
 
-Tento přístup se skvěle hodí k vašemu cíli pro https://github.com/sparesparrow/ai-servis: vytvořit MCP SDK v C++ pro "core" aplikace na Raspberry Pi (RPi) a embedded variantu pro ESP32. Na základě vašich předchozích projektů s MCP, C++ modularitou a embedded systémy [1] navrhuji architekturu, která staví na TinyMCP jako základu, ale rozšiřuje ho o hardware-specifické integrace. Zaměřme se na modularitu, aby SDK bylo snadno rozšiřitelné pro ai-servis (např. pro AI služby na edge zařízeních).
+Tento přístup se skvěle hodí k vašemu cíli pro https://github.com/sparesparrow/mia: vytvořit MCP SDK v C++ pro "core" aplikace na Raspberry Pi (RPi) a embedded variantu pro ESP32. Na základě vašich předchozích projektů s MCP, C++ modularitou a embedded systémy [1] navrhuji architekturu, která staví na TinyMCP jako základu, ale rozšiřuje ho o hardware-specifické integrace. Zaměřme se na modularitu, aby SDK bylo snadno rozšiřitelné pro ai-servis (např. pro AI služby na edge zařízeních).
 
 ### Navržená Architektura MCP SDK
 Cílem je vytvořit jednotný C++ SDK, který:

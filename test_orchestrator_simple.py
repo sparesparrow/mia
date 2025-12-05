@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simple test script for AI-SERVIS Core Orchestrator (without external dependencies)
+Simple test script for MIA Core Orchestrator (without external dependencies)
 Demonstrates the core NLP and context functionality
 """
 
@@ -424,7 +424,7 @@ async def test_edge_cases():
 
 async def run_simple_tests():
     """Run all simple test suites"""
-    print("🚀 Starting AI-SERVIS Simple Core Orchestrator Tests")
+    print("🚀 Starting MIA Simple Core Orchestrator Tests")
     print("=" * 60)
     
     test_suites = [

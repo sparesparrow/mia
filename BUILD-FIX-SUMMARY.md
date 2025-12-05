@@ -3,7 +3,7 @@
 ## Issues Fixed
 
 ### 1. Invalid Docker Tag Format ✅
-**Problem**: Tag `ghcr.io/sparesparrow/ai-servis/core-orchestrator:-430629a` was invalid (colon followed by dash)
+**Problem**: Tag `ghcr.io/sparesparrow/mia/core-orchestrator:-430629a` was invalid (colon followed by dash)
 
 **Root Cause**: The metadata action was creating tags with `type=sha,prefix={{branch}}-` which resulted in invalid format when branch was empty or for PRs.
 

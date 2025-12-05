@@ -4,7 +4,7 @@
 set -e
 
 BRANCH="${1:-feature/raspberry-pi-development}"
-REPO="sparesparrow/ai-servis"
+REPO="sparesparrow/mia"
 MAIN_BRANCH="main"
 LOOP_INTERVAL=300  # 5 minutes in seconds
 

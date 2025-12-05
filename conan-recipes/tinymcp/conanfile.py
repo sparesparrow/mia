@@ -11,7 +11,7 @@ class TinyMCPConan(ConanFile):
     name = "tinymcp"
     version = "0.2.0"
     license = "MIT"
-    author = "AI-SERVIS Team"
+    author = "MIA Team"
     url = "https://github.com/sparesparrow/tinymcp"
     homepage = "https://github.com/sparesparrow/tinymcp"
     description = "A minimalistic, high-performance C++ SDK for implementing MCP servers and clients"

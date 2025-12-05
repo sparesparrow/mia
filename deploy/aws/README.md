@@ -1,6 +1,6 @@
-# AI-SERVIS AWS Deployment Guide
+# MIA AWS Deployment Guide
 
-This directory contains the AWS deployment infrastructure for AI-SERVIS multi-site web deployment.
+This directory contains the AWS deployment infrastructure for MIA multi-site web deployment.
 
 ## Overview
 
@@ -43,16 +43,16 @@ chmod +x deploy.sh
 ```bash
 # Create CloudFormation stack
 aws cloudformation create-stack \
-  --stack-name ai-servis-web-infrastructure \
+  --stack-name mia-web-infrastructure \
   --template-body file://cloudformation.yml \
-  --parameters ParameterKey=ProjectName,ParameterValue=ai-servis-web \
+  --parameters ParameterKey=ProjectName,ParameterValue=mia-web \
   --capabilities CAPABILITY_IAM
 
 # Wait for completion
-aws cloudformation wait stack-create-complete --stack-name ai-servis-web-infrastructure
+aws cloudformation wait stack-create-complete --stack-name mia-web-infrastructure
 
 # Get outputs
-aws cloudformation describe-stacks --stack-name ai-servis-web-infrastructure --query 'Stacks[0].Outputs'
+aws cloudformation describe-stacks --stack-name mia-web-infrastructure --query 'Stacks[0].Outputs'
 ```
 
 ### Manual Deployment Steps
@@ -61,12 +61,12 @@ If you prefer to deploy manually:
 
 1. **Create S3 buckets:**
    ```bash
-   aws s3 mb s3://ai-servis-web-business
-   aws s3 mb s3://ai-servis-web-family
-   aws s3 mb s3://ai-servis-web-musicians
-   aws s3 mb s3://ai-servis-web-journalists
-   aws s3 mb s3://ai-servis-web-team
-   aws s3 mb s3://ai-servis-web-main
+   aws s3 mb s3://mia-web-business
+   aws s3 mb s3://mia-web-family
+   aws s3 mb s3://mia-web-musicians
+   aws s3 mb s3://mia-web-journalists
+   aws s3 mb s3://mia-web-team
+   aws s3 mb s3://mia-web-main
    ```
 
 2. **Configure buckets:**
@@ -81,11 +81,11 @@ If you prefer to deploy manually:
 
 4. **Upload website files:**
    ```bash
-   aws s3 sync web/customers/business/ s3://ai-servis-web-business/
-   aws s3 sync web/customers/family/ s3://ai-servis-web-family/
-   aws s3 sync web/customers/musicians/ s3://ai-servis-web-musicians/
-   aws s3 sync web/customers/journalists/ s3://ai-servis-web-journalists/
-   aws s3 sync web/team/ s3://ai-servis-web-team/
+   aws s3 sync web/customers/business/ s3://mia-web-business/
+   aws s3 sync web/customers/family/ s3://mia-web-family/
+   aws s3 sync web/customers/musicians/ s3://mia-web-musicians/
+   aws s3 sync web/customers/journalists/ s3://mia-web-journalists/
+   aws s3 sync web/team/ s3://mia-web-team/
    ```
 
 ## Architecture
@@ -188,13 +188,13 @@ deploy/aws/
 
 ```bash
 # Check CloudFormation events
-aws cloudformation describe-stack-events --stack-name ai-servis-web-infrastructure
+aws cloudformation describe-stack-events --stack-name mia-web-infrastructure
 
 # Check CloudFront distribution status
 aws cloudfront get-distribution --id DISTRIBUTION_ID
 
 # View S3 bucket contents
-aws s3 ls s3://ai-servis-web-business --recursive
+aws s3 ls s3://mia-web-business --recursive
 ```
 
 ### Cleanup
@@ -203,7 +203,7 @@ To remove everything:
 
 ```bash
 # Delete CloudFormation stack
-aws cloudformation delete-stack --stack-name ai-servis-web-infrastructure
+aws cloudformation delete-stack --stack-name mia-web-infrastructure
 
 # Or delete manually
 ./deploy.sh clean
@@ -258,7 +258,7 @@ LambdaFunctionAssociations:
 Add Web Application Firewall:
 ```bash
 aws wafv2 create-web-acl \
-  --name "AI-SERVIS-WAF" \
+  --name "MIA-WAF" \
   --scope CLOUDFRONT \
   --default-action Allow={}
 ```

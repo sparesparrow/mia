@@ -2,7 +2,7 @@
 
 ## Overview
 
-The AI-SERVIS system implements a hybrid messaging architecture that combines the **Message Queue Processor (MQP)** for in-process operations with **MQTT** for cross-process communication. This approach provides optimal performance for local operations while enabling distributed communication.
+The MIA system implements a hybrid messaging architecture that combines the **Message Queue Processor (MQP)** for in-process operations with **MQTT** for cross-process communication. This approach provides optimal performance for local operations while enabling distributed communication.
 
 ## Architecture Flow
 

@@ -28,7 +28,7 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
       
       The CXX compiler identification is GNU, found in:
-        /home/mia/ai-servis/build-hardware-server/CMakeFiles/3.31.6/CompilerIdCXX/a.out
+        /home/mia/mia/build-hardware-server/CMakeFiles/3.31.6/CompilerIdCXX/a.out
       
   -
     kind: "try_compile-v1"
@@ -39,8 +39,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf"
-      binary: "/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf"
+      source: "/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf"
+      binary: "/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -50,7 +50,7 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf'
+        Change Dir: '/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf'
         
         Run Build Command(s): /usr/bin/ninja -v cmTC_570f3
         [1/2] /usr/bin/c++   -v -o CMakeFiles/cmTC_570f3.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp
@@ -151,7 +151,7 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf']
+        ignore line: [Change Dir: '/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-CYLmIf']
         ignore line: []
         ignore line: [Run Build Command(s): /usr/bin/ninja -v cmTC_570f3]
         ignore line: [[1/2] /usr/bin/c++   -v -o CMakeFiles/cmTC_570f3.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp]
@@ -294,8 +294,8 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv"
-      binary: "/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv"
+      source: "/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv"
+      binary: "/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -304,10 +304,10 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv'
+        Change Dir: '/home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv'
         
         Run Build Command(s): /usr/bin/ninja -v cmTC_7332c
-        [1/2] /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++20 -o CMakeFiles/cmTC_7332c.dir/src.cxx.o -c /home/mia/ai-servis/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv/src.cxx
+        [1/2] /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=gnu++20 -o CMakeFiles/cmTC_7332c.dir/src.cxx.o -c /home/mia/mia/build-hardware-server/CMakeFiles/CMakeScratch/TryCompile-H1DjPv/src.cxx
         [2/2] : && /usr/bin/c++   CMakeFiles/cmTC_7332c.dir/src.cxx.o -o cmTC_7332c   && :
         
       exitCode: 0

@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains consolidated CI/CD workflows for the AI-SERVIS Universal project.
+This directory contains consolidated CI/CD workflows for the MIA Universal project.
 
 ## Workflow Overview
 

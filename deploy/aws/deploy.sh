@@ -6,7 +6,7 @@ set -e
 
 # Configuration
 AWS_REGION="${AWS_REGION:-us-east-1}"
-PROJECT_NAME="ai-servis-web"
+PROJECT_NAME="mia-web"
 
 # Customer segments
 SEGMENTS=("business" "family" "musicians" "journalists" "team")

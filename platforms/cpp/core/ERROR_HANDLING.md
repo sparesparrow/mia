@@ -2,7 +2,7 @@
 
 ## Error Handling Strategy
 
-The AI-SERVIS system uses a comprehensive error handling approach:
+The MIA system uses a comprehensive error handling approach:
 
 ### 1. Return Value Pattern
 Most functions return `bool` to indicate success/failure:

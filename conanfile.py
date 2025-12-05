@@ -3,8 +3,8 @@ from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
 from conan.tools.layout import basic_layout
 
 
-class AiServisConan(ConanFile):
-    name = "ai-servis"
+class MIAConan(ConanFile):
+    name = "mia"
     version = "1.0"
     description = "AI Service with MCP and Hardware Control"
     settings = "os", "compiler", "build_type", "arch"

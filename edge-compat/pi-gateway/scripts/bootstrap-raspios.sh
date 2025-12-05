@@ -4,8 +4,8 @@ set -euo pipefail
 # AI-SERVIS Raspberry Pi bootstrap script
 # Turns a clean Raspberry Pi OS into the AI-SERVIS car computer
 
-REPO_URL_DEFAULT="https://github.com/sparesparrow/ai-servis.git"
-REPO_URL="${AI_SERVIS_REPO_URL:-$REPO_URL_DEFAULT}"
+REPO_URL_DEFAULT="https://github.com/sparesparrow/mia.git"
+REPO_URL="${MIA_REPO_URL:-$REPO_URL_DEFAULT}"
 SECURE_COMPOSE="${SECURE:-0}"
 
 # Determine target user (prefer the invoking non-root user)

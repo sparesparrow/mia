@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI-SERVIS Universal: Cross-Platform Audio Engine
+MIA Universal: Cross-Platform Audio Engine
 Provides unified interface for PipeWire (Linux), WASAPI (Windows), and Core Audio (macOS)
 """
 

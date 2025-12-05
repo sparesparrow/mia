@@ -1,17 +1,17 @@
-# 🏗️ AI-SERVIS Universal: Architecture Diagrams
+# 🏗️ MIA Universal: Architecture Diagrams
 
-This document contains comprehensive system architecture diagrams for the AI-SERVIS Universal ecosystem, showing the relationships between components, data flows, and interaction patterns.
+This document contains comprehensive system architecture diagrams for the MIA Universal ecosystem, showing the relationships between components, data flows, and interaction patterns.
 
 ## 🎯 **System Overview**
 
 ### **High-Level Architecture**
 ```mermaid
 C4Context
-    title AI-SERVIS Universal - System Context Diagram
+    title MIA Universal - System Context Diagram
     
     Person(user, "User", "Person using AI assistant across multiple devices and environments")
     
-    System_Boundary(aiServis, "AI-SERVIS Universal") {
+    System_Boundary(aiServis, "MIA Universal") {
         System(core, "Core Orchestrator", "MCP Host managing all AI modules and user interactions")
         System(modules, "MCP Server Modules", "Specialized AI services for different domains")
         System(transport, "Transport Layer", "Communication infrastructure (MQTT, HTTP, BLE)")
@@ -105,7 +105,7 @@ graph TB
         Office[Home Office<br/>Desktop + Automation]
     end
     
-    subgraph "🧠 AI-SERVIS Core"
+    subgraph "🧠 MIA Core"
         CoreHome[Core Orchestrator<br/>Home Instance]
         AudioHome[Audio Assistant]
         HomeAuto[Home Automation]
@@ -585,4 +585,4 @@ journey
       Switch to relaxation playlist: 5: AI Audio Assistant
 ```
 
-These diagrams provide a comprehensive view of the AI-SERVIS Universal architecture, from high-level system context to detailed component interactions and user journeys. They serve as both documentation and implementation guides for the development team.
+These diagrams provide a comprehensive view of the MIA Universal architecture, from high-level system context to detailed component interactions and user journeys. They serve as both documentation and implementation guides for the development team.

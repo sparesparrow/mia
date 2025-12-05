@@ -33,14 +33,14 @@
 	<uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
 
 	<application
-		android:name=".AIServisApplication"
+		android:name=".MIAApplication"
 		android:label="@string/app_name"
 		android:icon="@drawable/ic_car"
 		android:roundIcon="@drawable/ic_car"
 		android:allowBackup="true"
 		android:supportsRtl="true">
 
-		<!-- Disable Sentry auto-init since we initialize manually in AIServisApplication -->
+		<!-- Disable Sentry auto-init since we initialize manually in MIAApplication -->
 		<meta-data android:name="io.sentry.auto-init" android:value="false" />
 
 		<activity

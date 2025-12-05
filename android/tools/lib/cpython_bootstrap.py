@@ -403,7 +403,7 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="CPython Bootstrap for AI-SERVIS Android Tools"
+        description="CPython Bootstrap for MIA Android Tools"
     )
     parser.add_argument(
         "--version",

@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Model Context Protocol (MCP) Framework
+MIA Universal: Model Context Protocol (MCP) Framework
 Core library for implementing MCP servers and clients
 """
 

@@ -70,6 +70,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/webgrab-linux-host.dir/DependInfo.cmake"
   "CMakeFiles/webgrab.dir/DependInfo.cmake"
   "CMakeFiles/hardware-server.dir/DependInfo.cmake"
-  "CMakeFiles/ai-servis-rpi.dir/DependInfo.cmake"
+  "CMakeFiles/mia-rpi.dir/DependInfo.cmake"
   "CMakeFiles/tests.dir/DependInfo.cmake"
   )

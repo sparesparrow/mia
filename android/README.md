@@ -1,4 +1,4 @@
-# AI-SERVIS Android Application
+# MIA Android Application
 
 A comprehensive Android application for vehicle telematics, ANPR (Automatic Number Plate Recognition), DVR recording, and OBD-II communication.
 
@@ -114,7 +114,7 @@ The application follows a clean architecture pattern with the following layers:
 
 ```bash
 git clone https://github.com/your-org/ai-servis.git
-cd ai-servis/android
+cd mia/android
 ```
 
 Open the `android` folder in Android Studio.
@@ -382,4 +382,4 @@ refactor: Refactor code without changing behavior
 
 ## 📄 License
 
-Copyright © 2024 AI-SERVIS. All rights reserved.
+Copyright © 2024 MIA. All rights reserved.

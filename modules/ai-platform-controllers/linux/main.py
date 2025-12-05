@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Linux Platform Controller MCP Server
+MIA Universal: Linux Platform Controller MCP Server
 Handles system operations on Linux platforms
 """
 

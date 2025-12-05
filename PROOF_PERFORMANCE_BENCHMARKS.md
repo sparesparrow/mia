@@ -9,7 +9,7 @@
 
 ## 🎯 Executive Summary
 
-This document provides concrete proof that the AI-SERVIS Universal Core Orchestrator **exceeds performance targets by 100-250x**.
+This document provides concrete proof that the MIA Universal Core Orchestrator **exceeds performance targets by 100-250x**.
 
 ### Performance Claims vs. Reality
 
@@ -33,7 +33,7 @@ $ python3 test_orchestrator_simple.py
 ### Full Test Output (Unedited)
 
 ```
-🚀 Starting AI-SERVIS Simple Core Orchestrator Tests
+🚀 Starting MIA Simple Core Orchestrator Tests
 ============================================================
 
 ==================== NLP Engine ====================
@@ -269,7 +269,7 @@ Accuracy: 91.7%
 
 | System | Commands/sec | Notes |
 |--------|--------------|-------|
-| **AI-SERVIS** | **25,823** | ✅ Our system |
+| **MIA** | **25,823** | ✅ Our system |
 | Typical NLP API | 50-200 | Cloud-based services |
 | Google Dialogflow | ~100 | Industry standard |
 | Amazon Lex | ~150 | AWS service |
@@ -374,8 +374,8 @@ To verify these results yourself:
 
 ```bash
 # Clone repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # Run performance tests
 python3 test_orchestrator_simple.py
@@ -391,7 +391,7 @@ python3 test_orchestrator_simple.py
 Performance Comparison (Commands/Second)
 ═══════════════════════════════════════════════════════════
 
-AI-SERVIS:     ████████████████████████████████ 25,823
+MIA:     ████████████████████████████████ 25,823
 Google:        █                                ~100
 Amazon Lex:    █                                ~150
 Cloud APIs:    █                                ~50-200
@@ -404,7 +404,7 @@ Legend: Each █ = 800 cmd/s
 Latency Comparison (Milliseconds)
 ═════════════════════════════════════════════════════════
 
-AI-SERVIS:     █ 0.04ms
+MIA:     █ 0.04ms
 Target:        ████████████████████████████████████████ <100ms
 Industry Avg:  ███████████ ~30ms
 
@@ -433,7 +433,7 @@ Lower is better ↓
 
 ### Industry Position
 
-**AI-SERVIS Core Orchestrator ranks in the top 0.1% of NLP systems for raw processing speed.**
+**MIA Core Orchestrator ranks in the top 0.1% of NLP systems for raw processing speed.**
 
 ---
 

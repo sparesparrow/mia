@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Service Discovery MCP Server
+MIA Universal: Service Discovery MCP Server
 Handles automatic service registration and health checking
 """
 

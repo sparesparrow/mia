@@ -58,8 +58,8 @@ This document summarizes the implementation of tasks from `android/TODO.md`, foc
 - **File**: `android/app/build.gradle`
 
 #### 2.2 Create Application Class with Hilt ✅
-- **Status**: Already implemented (as `AIServisApplication`)
-- **File**: `android/app/src/main/java/cz/aiservis/app/AIServisApplication.kt`
+- **Status**: Already implemented (as `MIAApplication`)
+- **File**: `android/app/src/main/java/cz/aiservis/app/MIAApplication.kt`
 - **Enhancement**: Added `onTerminate()` method for lifecycle management
 
 #### 2.3 Setup MVVM Architecture Structure ✅
@@ -153,7 +153,7 @@ Added `neverForLocation` flag to `BLUETOOTH_SCAN` permission:
 ```
 
 ### 3. Added Application Lifecycle Management (Task 1.1)
-**File**: `android/app/src/main/java/cz/aiservis/app/AIServisApplication.kt`
+**File**: `android/app/src/main/java/cz/aiservis/app/MIAApplication.kt`
 
 Added `onTerminate()` method for proper cleanup lifecycle management.
 
@@ -175,7 +175,7 @@ Added `onTerminate()` method for proper cleanup lifecycle management.
 
 1. `android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt` - Enhanced sendCommand
 2. `android/app/src/main/AndroidManifest.xml` - Fixed permission flags
-3. `android/app/src/main/java/cz/aiservis/app/AIServisApplication.kt` - Added lifecycle management
+3. `android/app/src/main/java/cz/aiservis/app/MIAApplication.kt` - Added lifecycle management
 
 ## Verification Checklist
 

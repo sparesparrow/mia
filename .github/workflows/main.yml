@@ -290,7 +290,7 @@ jobs:
         with:
           name: cpp-${{ matrix.target }}-binaries
           path: |
-            build-${{ matrix.target }}/ai-servis-rpi
+            build-${{ matrix.target }}/mia-rpi
             build-${{ matrix.target }}/hardware-server
             build-${{ matrix.target }}/tests
           if-no-files-found: warn
