@@ -20,12 +20,12 @@ import zmq
 
 # Try to import ELM327 emulator
 try:
-    from elm import elm327
+    from elm import Elm
     from elm.obd_message import ObdMessage
     ELM327_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     ELM327_AVAILABLE = False
-    logging.warning("ELM327-emulator not available. OBD simulation disabled.")
+    logging.warning(f"ELM327-emulator not available: {e}. OBD simulation disabled.")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -88,7 +88,7 @@ class MIAOBDWorker:
     - Run ELM327 emulator with dynamic PID responses
     """
     
-    def __init__(self, 
+    def __init__(self,
                  broker_url: str = "tcp://localhost:5555",
                  telemetry_url: str = "tcp://localhost:5556"):
         self.broker_url = broker_url
@@ -97,11 +97,15 @@ class MIAOBDWorker:
         self.broker_socket: Optional[zmq.Socket] = None
         self.telemetry_socket: Optional[zmq.Socket] = None
         self.running = False
-        
+
         self.car_state = DynamicCarState()
         self.elm_emulator = None
         self.elm_thread: Optional[threading.Thread] = None
-        
+
+        # Telemetry publishing
+        self.last_telemetry_publish = 0
+        self.telemetry_interval = 0.1  # 10Hz
+
         if not ELM327_AVAILABLE:
             logger.error("ELM327-emulator not installed. Install with: pip install ELM327-emulator")
     
@@ -138,9 +142,13 @@ class MIAOBDWorker:
         broker_thread = threading.Thread(target=self._broker_message_loop, daemon=True)
         broker_thread.start()
         
+        # Start telemetry publishing thread
+        telemetry_pub_thread = threading.Thread(target=self._telemetry_publish_loop, daemon=True)
+        telemetry_pub_thread.start()
+
         # Start ELM327 emulator in main thread
         self._start_elm_emulator()
-        
+
         return True
     
     def stop(self):
@@ -262,6 +270,36 @@ class MIAOBDWorker:
             "request_id": request_id
         }
         self.broker_socket.send_json(response)
+
+    def _telemetry_publish_loop(self):
+        """Publish OBD telemetry data periodically"""
+        if not self.telemetry_socket:
+            return
+
+        while self.running:
+            try:
+                current_time = time.time()
+                if current_time - self.last_telemetry_publish >= self.telemetry_interval:
+                    # Publish OBD telemetry
+                    telemetry_data = {
+                        "rpm": self.car_state.get_rpm(),
+                        "speed": self.car_state.get_speed(),
+                        "coolant_temp": self.car_state.get_coolant_temp(),
+                        "load": 0,  # Not implemented yet
+                        "timestamp": datetime.now().isoformat()
+                    }
+
+                    topic = "obd/telemetry"
+                    message = json.dumps(telemetry_data).encode('utf-8')
+                    self.telemetry_socket.send_multipart([topic.encode('utf-8'), message])
+
+                    self.last_telemetry_publish = current_time
+
+                time.sleep(0.01)  # Small sleep to prevent CPU hogging
+
+            except Exception as e:
+                logger.error(f"Error in telemetry publish loop: {e}")
+                time.sleep(0.1)
     
     def _send_error(self, request_id: Optional[str], error: str):
         """Send error response"""

@@ -11,9 +11,13 @@ from typing import Dict, Optional
 from datetime import datetime
 
 # Try to import GPIO libraries
+GPIO_AVAILABLE = False
+USE_GPIOZERO = False
+
 try:
     import RPi.GPIO as GPIO
     GPIO_AVAILABLE = True
+    USE_GPIOZERO = False
 except ImportError:
     try:
         import gpiozero
@@ -257,10 +261,11 @@ class GPIOWorker:
                 "direction": state.get("direction", "unknown"),
                 "value": state.get("value", None)
             })
-        
+
         response = {
             "type": "GPIO_STATUS_RESPONSE",
             "pins": pins,
+            "status": "running" if GPIO_AVAILABLE else "error",
             "timestamp": datetime.now().isoformat(),
             "request_id": request_id,
         }

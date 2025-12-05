@@ -118,6 +118,47 @@ MIA is a distributed control system designed for Raspberry Pi 4B as the primary 
 - [ ] Error handling and user notifications
 - [ ] Responsive design for tablets and phones
 
+### 4.4 AI Service LED Monitor Integration
+- [ ] Create LED Monitor control screen in Android app
+  - Real-time LED status visualization
+  - Service health dashboard (API, GPIO, Serial, OBD, MQTT, Camera)
+  - AI state indicators (listening, speaking, thinking, recording, error)
+  - OBD data visualization (RPM, speed, temperature, load)
+- [ ] Implement LED control interface
+  - Mode switching (Drive, Parked, Night, Service)
+  - Manual AI state control
+  - Emergency override button
+  - Brightness adjustment slider
+- [ ] Add LED status monitoring
+  - Live service health status
+  - Real-time OBD data display
+  - Animation preview/control
+  - System heartbeat indicator
+- [ ] Create LED configuration screen
+  - Custom animation settings
+  - Priority level adjustments
+  - Zone allocation preferences
+  - Theme/color customization
+- [ ] Integrate with FastAPI endpoints
+  - POST /led/ai_state - Set AI state
+  - POST /led/service_status - Update service status
+  - POST /led/obd_data - Send OBD data
+  - POST /led/mode - Change system mode
+  - POST /led/emergency - Emergency override
+  - GET /led/status - Get current LED status
+- [ ] WebSocket integration for real-time updates
+  - Subscribe to LED state changes
+  - Receive service health updates
+  - OBD data streaming
+  - Animation state notifications
+
+**Implementation Notes:**
+- Use existing `AIServiceLEDController` Python class as reference
+- Follow JSON command protocol defined in Arduino sketch
+- Integrate with ZeroMQ broker via FastAPI bridge
+- Support both manual control and automatic monitoring modes
+- Provide visual feedback matching physical LED strip behavior
+
 ---
 
 ## Phase 5: Optimization & Polish (Weeks 9-10)

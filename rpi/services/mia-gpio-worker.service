@@ -1,17 +1,19 @@
 [Unit]
 Description=MIA GPIO Worker
-After=network.target zmq-broker.service
-Wants=zmq-broker.service
+After=network.target mia-broker.service
+Requires=mia-broker.service
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/opt/ai-servis/rpi
-ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/gpio_worker.py
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/ai-servis/rpi/hardware
+ExecStart=/usr/bin/python3 gpio_worker.py
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
+Environment=PYTHONPATH=/home/mia/ai-servis/rpi
 
 [Install]
 WantedBy=multi-user.target
