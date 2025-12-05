@@ -8,7 +8,7 @@ class PlateHasherTest {
 	@Test
 	fun normalize_replacesAmbiguousChars() {
 		val n = PlateHasher.normalize(" ab0 b o ")
-		assertEquals("AB08 0".replace(" ", ""), n)
+		assertEquals("A8080", n)  // a→A, b→B→8, 0→0, b→B→8, o→O→0
 	}
 
 	@Test

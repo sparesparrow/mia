@@ -1,0 +1,11 @@
+# Kernun Proxy MCP Client Dependencies
+
+# Async HTTP client
+aiohttp>=3.9.0
+
+# FastAPI integration (optional)
+fastapi>=0.109.0
+pydantic>=2.5.0
+
+# Logging
+structlog>=24.1.0
