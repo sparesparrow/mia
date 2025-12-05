@@ -506,13 +506,13 @@ jobs:
         sleep 30
         
         # Test GPIO simulation
-        docker exec ai-servis-gpio-sim python -c "
+        docker exec mia-gpio-sim python -c "
         import gpiozero
         print('GPIO simulation test successful')
         " || echo "GPIO simulation test failed"
         
         # Test MQTT communication
-        docker exec ai-servis-mqtt-pi-sim mosquitto_pub -h localhost -t test/topic -m "test message" || echo "MQTT test failed"
+        docker exec mia-mqtt-pi-sim mosquitto_pub -h localhost -t test/topic -m "test message" || echo "MQTT test failed"
         
         echo "Raspberry Pi simulation test completed"
 

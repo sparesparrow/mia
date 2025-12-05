@@ -257,7 +257,7 @@ class BleDevicesViewModelTest {
 ## Package Structure
 
 ```
-cz.aiservis.app/
+cz.mia.app/
 ├── core/
 │   ├── background/     # Background services, BLE, MQTT
 │   ├── camera/         # Camera/ANPR processing

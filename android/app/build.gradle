@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace 'cz.aiservis.app'
+    namespace 'cz.mia.app'
     compileSdk 34
 
     // CI-driven versioning
@@ -23,7 +23,7 @@ android {
     def computedVersionName = isTagBuild ? githubRefName.replaceFirst('v','') : "0.0.0-ci.${githubRunNumber}+${githubSha}"
 
     defaultConfig {
-        applicationId "cz.aiservis.app"
+        applicationId "cz.mia.app"
         minSdk 24
         targetSdk 34
         
