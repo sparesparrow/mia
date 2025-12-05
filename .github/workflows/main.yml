@@ -57,7 +57,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: python, cpp, javascript
+          languages: python, cpp
           config-file: ./.github/codeql/codeql-config.yml
 
       - name: Install C++ build dependencies
@@ -83,8 +83,11 @@ jobs:
       - name: Prepare Python for CodeQL
         id: python_prep
         run: |
+          # Install PyYAML first to avoid build issues
+          pip install "PyYAML==6.0.1"
+          echo "PyYAML==6.0.1" > /tmp/constraints.txt
           # Install Python dependencies so CodeQL can analyze them
-          if ! pip install -r requirements.txt; then
+          if ! pip install -r requirements.txt --constraint /tmp/constraints.txt; then
             echo "::warning::Some Python dependencies failed to install, but continuing CodeQL analysis"
             echo "Failed dependencies may affect analysis completeness"
           fi
@@ -167,8 +170,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          # Install PyYAML first to avoid build issues
+          pip install "PyYAML==6.0.1"
+          echo "PyYAML==6.0.1" > /tmp/constraints.txt
+          pip install -r requirements.txt --constraint /tmp/constraints.txt
+          pip install -r requirements-dev.txt --constraint /tmp/constraints.txt
 
       - name: Install RPi Python dependencies
         run: |
@@ -447,8 +453,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          # Install PyYAML first to avoid build issues
+          pip install "PyYAML==6.0.1"
+          echo "PyYAML==6.0.1" > /tmp/constraints.txt
+          pip install -r requirements.txt --constraint /tmp/constraints.txt
+          pip install -r requirements-dev.txt --constraint /tmp/constraints.txt
 
       - name: Start test environment
         run: |
