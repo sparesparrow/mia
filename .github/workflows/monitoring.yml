@@ -1,0 +1,654 @@
+name: Monitoring & Observability Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Health checks every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+        - development
+
+env:
+  PYTHON_VERSION: '3.11'
+  PROMETHEUS_VERSION: '2.45.0'
+  GRAFANA_VERSION: '10.0.0'
+
+jobs:
+  # =============================================================================
+  # INFRASTRUCTURE HEALTH CHECK
+  # =============================================================================
+  health-check:
+    name: Infrastructure Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install monitoring tools
+      run: |
+        pip install requests psutil docker-compose
+        sudo apt-get update
+        sudo apt-get install -y curl jq
+    
+    - name: Start monitoring stack
+      run: |
+        docker-compose -f docker-compose.monitoring.yml up -d
+        sleep 30  # Wait for services to start
+    
+    - name: Check Prometheus health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9090/-/healthy)
+        if [ "$response" != "200" ]; then
+          echo "❌ Prometheus health check failed"
+          exit 1
+        fi
+        echo "✅ Prometheus is healthy"
+    
+    - name: Check Grafana health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health)
+        if [ "$response" != "200" ]; then
+          echo "❌ Grafana health check failed"
+          exit 1
+        fi
+        echo "✅ Grafana is healthy"
+    
+    - name: Check AlertManager health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9093/-/healthy)
+        if [ "$response" != "200" ]; then
+          echo "❌ AlertManager health check failed"
+          exit 1
+        fi
+        echo "✅ AlertManager is healthy"
+    
+    - name: Check Jaeger health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:16686/api/services)
+        if [ "$response" != "200" ]; then
+          echo "❌ Jaeger health check failed"
+          exit 1
+        fi
+        echo "✅ Jaeger is healthy"
+
+  # =============================================================================
+  # METRICS COLLECTION & ANALYSIS
+  # =============================================================================
+  metrics-analysis:
+    name: Metrics Collection & Analysis
+    runs-on: ubuntu-latest
+    needs: health-check
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install analysis tools
+      run: |
+        pip install prometheus-client requests pandas numpy matplotlib seaborn
+    
+    - name: Start services for metrics collection
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60  # Wait for services to stabilize
+    
+    - name: Collect system metrics
+      run: |
+        python << 'EOF'
+        import psutil
+        import json
+        import time
+        from datetime import datetime
+        
+        # Collect system metrics
+        metrics = {
+            "timestamp": datetime.now().isoformat(),
+            "system": {
+                "cpu_percent": psutil.cpu_percent(interval=1),
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk_percent": psutil.disk_usage('/').percent,
+                "load_average": psutil.getloadavg()
+            },
+            "processes": []
+        }
+        
+        # Collect process metrics
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+            try:
+                metrics["processes"].append(proc.info)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        
+        # Save metrics
+        with open("system-metrics.json", "w") as f:
+            json.dump(metrics, f, indent=2)
+        
+        print("System metrics collected successfully")
+        EOF
+    
+    - name: Collect application metrics
+      run: |
+        python << 'EOF'
+        import requests
+        import json
+        import time
+        from datetime import datetime
+        
+        # Collect metrics from Prometheus
+        try:
+            response = requests.get("http://localhost:9090/api/v1/query", 
+                                  params={"query": "up"})
+            prometheus_metrics = response.json()
+            
+            # Collect metrics from application endpoints
+            app_metrics = {}
+            endpoints = [
+                "http://localhost:8080/health",
+                "http://localhost:8081/health", 
+                "http://localhost:8082/health",
+                "http://localhost:5555/health"
+            ]
+            
+            for endpoint in endpoints:
+                try:
+                    response = requests.get(endpoint, timeout=5)
+                    app_metrics[endpoint] = {
+                        "status_code": response.status_code,
+                        "response_time": response.elapsed.total_seconds(),
+                        "healthy": response.status_code == 200
+                    }
+                except Exception as e:
+                    app_metrics[endpoint] = {
+                        "error": str(e),
+                        "healthy": False
+                    }
+            
+            # Combine metrics
+            combined_metrics = {
+                "timestamp": datetime.now().isoformat(),
+                "prometheus": prometheus_metrics,
+                "applications": app_metrics
+            }
+            
+            with open("application-metrics.json", "w") as f:
+                json.dump(combined_metrics, f, indent=2)
+            
+            print("Application metrics collected successfully")
+            
+        except Exception as e:
+            print(f"Error collecting metrics: {e}")
+            exit(1)
+        EOF
+    
+    - name: Generate metrics report
+      run: |
+        python << 'EOF'
+        import json
+        import matplotlib.pyplot as plt
+        import pandas as pd
+        from datetime import datetime
+        
+        # Load metrics
+        with open("system-metrics.json") as f:
+            system_metrics = json.load(f)
+        
+        with open("application-metrics.json") as f:
+            app_metrics = json.load(f)
+        
+        # Generate system metrics chart
+        fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+        fig.suptitle('System Metrics Dashboard', fontsize=16)
+        
+        # CPU usage
+        axes[0, 0].bar(['CPU'], [system_metrics['system']['cpu_percent']])
+        axes[0, 0].set_title('CPU Usage (%)')
+        axes[0, 0].set_ylim(0, 100)
+        
+        # Memory usage
+        axes[0, 1].bar(['Memory'], [system_metrics['system']['memory_percent']])
+        axes[0, 1].set_title('Memory Usage (%)')
+        axes[0, 1].set_ylim(0, 100)
+        
+        # Disk usage
+        axes[1, 0].bar(['Disk'], [system_metrics['system']['disk_percent']])
+        axes[1, 0].set_title('Disk Usage (%)')
+        axes[1, 0].set_ylim(0, 100)
+        
+        # Load average
+        load_avg = system_metrics['system']['load_average']
+        axes[1, 1].bar(['1min', '5min', '15min'], load_avg)
+        axes[1, 1].set_title('Load Average')
+        
+        plt.tight_layout()
+        plt.savefig('system-metrics.png', dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        # Generate application health report
+        healthy_services = sum(1 for app in app_metrics['applications'].values() 
+                              if app.get('healthy', False))
+        total_services = len(app_metrics['applications'])
+        
+        health_report = {
+            "timestamp": datetime.now().isoformat(),
+            "summary": {
+                "total_services": total_services,
+                "healthy_services": healthy_services,
+                "health_percentage": (healthy_services / total_services) * 100
+            },
+            "services": app_metrics['applications']
+        }
+        
+        with open("health-report.json", "w") as f:
+            json.dump(health_report, f, indent=2)
+        
+        print(f"Health report generated: {healthy_services}/{total_services} services healthy")
+        EOF
+    
+    - name: Upload metrics artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: monitoring-metrics
+        path: |
+          system-metrics.json
+          application-metrics.json
+          health-report.json
+          system-metrics.png
+
+  # =============================================================================
+  # LOG ANALYSIS
+  # =============================================================================
+  log-analysis:
+    name: Log Analysis & Alerting
+    runs-on: ubuntu-latest
+    needs: health-check
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install log analysis tools
+      run: |
+        pip install loguru pandas numpy
+    
+    - name: Start services and collect logs
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 30
+        
+        # Collect logs from all services
+        docker-compose -f docker-compose.dev.yml logs --no-color > application-logs.txt
+        
+        # Collect system logs
+        journalctl --since "1 hour ago" --no-pager > system-logs.txt
+    
+    - name: Analyze logs for errors and patterns
+      run: |
+        python << 'EOF'
+        import re
+        import json
+        from collections import Counter
+        from datetime import datetime
+        
+        # Analyze application logs
+        with open("application-logs.txt", "r") as f:
+            app_logs = f.read()
+        
+        # Count error patterns
+        error_patterns = [
+            r'ERROR',
+            r'FATAL',
+            r'CRITICAL',
+            r'Exception',
+            r'Traceback',
+            r'Failed',
+            r'Timeout',
+            r'Connection refused'
+        ]
+        
+        error_counts = {}
+        for pattern in error_patterns:
+            matches = re.findall(pattern, app_logs, re.IGNORECASE)
+            error_counts[pattern] = len(matches)
+        
+        # Analyze system logs
+        with open("system-logs.txt", "r") as f:
+            sys_logs = f.read()
+        
+        # Count system errors
+        sys_error_patterns = [
+            r'kernel:',
+            r'error:',
+            r'failed:',
+            r'critical:'
+        ]
+        
+        sys_error_counts = {}
+        for pattern in sys_error_patterns:
+            matches = re.findall(pattern, sys_logs, re.IGNORECASE)
+            sys_error_counts[pattern] = len(matches)
+        
+        # Generate log analysis report
+        log_report = {
+            "timestamp": datetime.now().isoformat(),
+            "application_logs": {
+                "total_lines": len(app_logs.split('\n')),
+                "error_counts": error_counts,
+                "total_errors": sum(error_counts.values())
+            },
+            "system_logs": {
+                "total_lines": len(sys_logs.split('\n')),
+                "error_counts": sys_error_counts,
+                "total_errors": sum(sys_error_counts.values())
+            },
+            "recommendations": []
+        }
+        
+        # Generate recommendations
+        if log_report["application_logs"]["total_errors"] > 10:
+            log_report["recommendations"].append("High number of application errors detected")
+        
+        if log_report["system_logs"]["total_errors"] > 5:
+            log_report["recommendations"].append("System errors detected - check hardware")
+        
+        if "Connection refused" in error_counts and error_counts["Connection refused"] > 0:
+            log_report["recommendations"].append("Network connectivity issues detected")
+        
+        # Save report
+        with open("log-analysis-report.json", "w") as f:
+            json.dump(log_report, f, indent=2)
+        
+        print("Log analysis completed")
+        print(f"Application errors: {log_report['application_logs']['total_errors']}")
+        print(f"System errors: {log_report['system_logs']['total_errors']}")
+        EOF
+    
+    - name: Upload log analysis
+      uses: actions/upload-artifact@v3
+      with:
+        name: log-analysis
+        path: |
+          log-analysis-report.json
+          application-logs.txt
+          system-logs.txt
+
+  # =============================================================================
+  # PERFORMANCE MONITORING
+  # =============================================================================
+  performance-monitoring:
+    name: Performance Monitoring
+    runs-on: ubuntu-latest
+    needs: [metrics-analysis, log-analysis]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install performance tools
+      run: |
+        pip install locust psutil requests
+    
+    - name: Start services for performance testing
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run performance tests
+      run: |
+        python << 'EOF'
+        import time
+        import requests
+        import statistics
+        from datetime import datetime
+        
+        # Performance test endpoints
+        endpoints = [
+            "http://localhost:8080/health",
+            "http://localhost:8081/health",
+            "http://localhost:8082/health",
+            "http://localhost:5555/health"
+        ]
+        
+        performance_results = {}
+        
+        for endpoint in endpoints:
+            response_times = []
+            success_count = 0
+            error_count = 0
+            
+            # Run 100 requests per endpoint
+            for i in range(100):
+                try:
+                    start_time = time.time()
+                    response = requests.get(endpoint, timeout=10)
+                    end_time = time.time()
+                    
+                    response_time = end_time - start_time
+                    response_times.append(response_time)
+                    
+                    if response.status_code == 200:
+                        success_count += 1
+                    else:
+                        error_count += 1
+                        
+                except Exception as e:
+                    error_count += 1
+                    print(f"Error testing {endpoint}: {e}")
+                
+                time.sleep(0.1)  # Small delay between requests
+            
+            # Calculate statistics
+            if response_times:
+                performance_results[endpoint] = {
+                    "total_requests": 100,
+                    "successful_requests": success_count,
+                    "failed_requests": error_count,
+                    "success_rate": (success_count / 100) * 100,
+                    "avg_response_time": statistics.mean(response_times),
+                    "min_response_time": min(response_times),
+                    "max_response_time": max(response_times),
+                    "p95_response_time": sorted(response_times)[int(0.95 * len(response_times))],
+                    "p99_response_time": sorted(response_times)[int(0.99 * len(response_times))]
+                }
+            else:
+                performance_results[endpoint] = {
+                    "error": "No successful requests"
+                }
+        
+        # Generate performance report
+        perf_report = {
+            "timestamp": datetime.now().isoformat(),
+            "test_duration": "100 requests per endpoint",
+            "results": performance_results,
+            "summary": {
+                "total_endpoints": len(endpoints),
+                "successful_endpoints": sum(1 for r in performance_results.values() 
+                                          if "error" not in r),
+                "avg_success_rate": statistics.mean([r.get("success_rate", 0) 
+                                                   for r in performance_results.values() 
+                                                   if "error" not in r])
+            }
+        }
+        
+        with open("performance-report.json", "w") as f:
+            json.dump(perf_report, f, indent=2)
+        
+        print("Performance monitoring completed")
+        for endpoint, result in performance_results.items():
+            if "error" not in result:
+                print(f"{endpoint}: {result['success_rate']:.1f}% success, "
+                      f"{result['avg_response_time']:.3f}s avg response time")
+        EOF
+    
+    - name: Upload performance report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-monitoring
+        path: performance-report.json
+
+  # =============================================================================
+  # ALERTING & NOTIFICATIONS
+  # =============================================================================
+  alerting:
+    name: Alerting & Notifications
+    runs-on: ubuntu-latest
+    needs: [metrics-analysis, log-analysis, performance-monitoring]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./monitoring-data
+    
+    - name: Process alerts and notifications
+      run: |
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+        
+        # Load all monitoring data
+        health_report = {}
+        log_report = {}
+        perf_report = {}
+        
+        if os.path.exists("monitoring-data/health-report.json"):
+            with open("monitoring-data/health-report.json") as f:
+                health_report = json.load(f)
+        
+        if os.path.exists("monitoring-data/log-analysis-report.json"):
+            with open("monitoring-data/log-analysis-report.json") as f:
+                log_report = json.load(f)
+        
+        if os.path.exists("monitoring-data/performance-report.json"):
+            with open("monitoring-data/performance-report.json") as f:
+                perf_report = json.load(f)
+        
+        # Generate alert summary
+        alerts = []
+        
+        # Health alerts
+        if health_report and health_report.get("summary", {}).get("health_percentage", 100) < 100:
+            alerts.append({
+                "level": "warning",
+                "type": "health",
+                "message": f"Only {health_report['summary']['health_percentage']:.1f}% of services are healthy"
+            })
+        
+        # Log alerts
+        if log_report:
+            app_errors = log_report.get("application_logs", {}).get("total_errors", 0)
+            sys_errors = log_report.get("system_logs", {}).get("total_errors", 0)
+            
+            if app_errors > 10:
+                alerts.append({
+                    "level": "error",
+                    "type": "application_logs",
+                    "message": f"High number of application errors: {app_errors}"
+                })
+            
+            if sys_errors > 5:
+                alerts.append({
+                    "level": "critical",
+                    "type": "system_logs", 
+                    "message": f"System errors detected: {sys_errors}"
+                })
+        
+        # Performance alerts
+        if perf_report and perf_report.get("summary", {}).get("avg_success_rate", 100) < 95:
+            alerts.append({
+                "level": "warning",
+                "type": "performance",
+                "message": f"Low success rate: {perf_report['summary']['avg_success_rate']:.1f}%"
+            })
+        
+        # Generate final alert report
+        alert_report = {
+            "timestamp": datetime.now().isoformat(),
+            "repository": os.environ.get("GITHUB_REPOSITORY", "unknown"),
+            "environment": os.environ.get("INPUT_ENVIRONMENT", "unknown"),
+            "total_alerts": len(alerts),
+            "critical_alerts": len([a for a in alerts if a["level"] == "critical"]),
+            "error_alerts": len([a for a in alerts if a["level"] == "error"]),
+            "warning_alerts": len([a for a in alerts if a["level"] == "warning"]),
+            "alerts": alerts,
+            "status": "healthy" if len(alerts) == 0 else "issues_detected"
+        }
+        
+        with open("alert-report.json", "w") as f:
+            json.dump(alert_report, f, indent=2)
+        
+        print(f"Alert processing completed: {len(alerts)} alerts generated")
+        for alert in alerts:
+            print(f"  {alert['level'].upper()}: {alert['message']}")
+        EOF
+    
+    - name: Send notifications
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#monitoring'
+        webhook_url: ${{ secrets.MONITORING_SLACK_WEBHOOK }}
+        custom_payload: |
+          {
+            "text": "📊 AI-SERVIS Monitoring Report",
+            "attachments": [{
+              "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
+              "fields": [{
+                "title": "Repository",
+                "value": "${{ github.repository }}",
+                "short": true
+              }, {
+                "title": "Environment", 
+                "value": "${{ inputs.environment || 'staging' }}",
+                "short": true
+              }, {
+                "title": "Status",
+                "value": "${{ job.status }}",
+                "short": true
+              }]
+            }]
+          }
+    
+    - name: Upload alert report
+      uses: actions/upload-artifact@v3
+      with:
+        name: alert-report
+        path: alert-report.json

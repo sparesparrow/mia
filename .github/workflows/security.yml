@@ -1,0 +1,377 @@
+name: Security & Compliance Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Daily security scans at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  # =============================================================================
+  # DEPENDENCY VULNERABILITY SCANNING
+  # =============================================================================
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        pip install safety bandit semgrep
+        npm install -g audit-ci
+    
+    - name: Python dependency scan with Safety
+      run: |
+        safety check --json --output safety-report.json || true
+        safety check --short-report
+    
+    - name: Python security scan with Bandit
+      run: |
+        bandit -r . -f json -o bandit-report.json || true
+        bandit -r . -ll
+    
+    - name: Node.js dependency audit
+      run: |
+        if [ -f "package.json" ]; then
+          npm audit --audit-level=moderate --json > npm-audit.json || true
+          npm audit --audit-level=moderate
+        fi
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          safety-report.json
+          bandit-report.json
+          npm-audit.json
+
+  # =============================================================================
+  # CONTAINER SECURITY SCANNING
+  # =============================================================================
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    needs: dependency-scan
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker images for scanning
+      run: |
+        # Build base images for scanning
+        docker build -t ai-servis-core:scan -f modules/core-orchestrator/Dockerfile .
+        docker build -t ai-servis-audio:scan -f modules/ai-audio-assistant/Dockerfile .
+        docker build -t ai-servis-hardware:scan -f platforms/cpp/Dockerfile .
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'ai-servis-core:scan'
+        format: 'sarif'
+        output: 'trivy-core-results.sarif'
+    
+    - name: Run Trivy on audio module
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'ai-servis-audio:scan'
+        format: 'sarif'
+        output: 'trivy-audio-results.sarif'
+    
+    - name: Run Trivy on hardware module
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'ai-servis-hardware:scan'
+        format: 'sarif'
+        output: 'trivy-hardware-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: |
+          trivy-core-results.sarif
+          trivy-audio-results.sarif
+          trivy-hardware-results.sarif
+
+  # =============================================================================
+  # STATIC CODE ANALYSIS
+  # =============================================================================
+  static-analysis:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Semgrep
+      run: |
+        pip install semgrep
+        npm install -g @semgrep/semgrep
+    
+    - name: Run Semgrep security analysis
+      run: |
+        semgrep --config=auto --json --output=semgrep-results.json .
+        semgrep --config=auto --severity=ERROR .
+    
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        languages: python, cpp, javascript
+
+  # =============================================================================
+  # SECRETS DETECTION
+  # =============================================================================
+  secrets-scan:
+    name: Secrets Detection
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Run TruffleHog OSS
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  # =============================================================================
+  # COMPLIANCE CHECKING
+  # =============================================================================
+  compliance-check:
+    name: Compliance & Policy Check
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, container-scan, static-analysis]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install compliance tools
+      run: |
+        pip install checkov
+        npm install -g @checkmarx/gitlab-ast-cli
+    
+    - name: Run Checkov for infrastructure security
+      run: |
+        checkov -d . --framework dockerfile --output json --output-file-path checkov-results.json
+        checkov -d . --framework dockerfile
+    
+    - name: Check for security policy compliance
+      run: |
+        # Check for required security files
+        if [ ! -f "SECURITY.md" ]; then
+          echo "❌ SECURITY.md file is missing"
+          exit 1
+        fi
+        
+        if [ ! -f ".github/SECURITY_POLICY.md" ]; then
+          echo "❌ Security policy is missing"
+          exit 1
+        fi
+        
+        # Check for security headers in web components
+        if [ -d "web" ]; then
+          echo "Checking web security headers..."
+          # Add web security checks here
+        fi
+        
+        echo "✅ Security policy compliance check passed"
+
+  # =============================================================================
+  # SECURITY REPORTING
+  # =============================================================================
+  security-report:
+    name: Generate Security Report
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, container-scan, static-analysis, secrets-scan, compliance-check]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./security-reports
+    
+    - name: Generate comprehensive security report
+      run: |
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+        
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "repository": os.environ.get("GITHUB_REPOSITORY", "unknown"),
+            "commit": os.environ.get("GITHUB_SHA", "unknown"),
+            "branch": os.environ.get("GITHUB_REF_NAME", "unknown"),
+            "security_checks": {}
+        }
+        
+        # Process safety report
+        if os.path.exists("security-reports/safety-report.json"):
+            with open("security-reports/safety-report.json") as f:
+                safety_data = json.load(f)
+                report["security_checks"]["python_dependencies"] = {
+                    "status": "passed" if not safety_data else "failed",
+                    "vulnerabilities": len(safety_data) if safety_data else 0
+                }
+        
+        # Process bandit report
+        if os.path.exists("security-reports/bandit-report.json"):
+            with open("security-reports/bandit-report.json") as f:
+                bandit_data = json.load(f)
+                report["security_checks"]["python_security"] = {
+                    "status": "passed" if bandit_data["results"] == [] else "failed",
+                    "issues": len(bandit_data["results"])
+                }
+        
+        # Process npm audit
+        if os.path.exists("security-reports/npm-audit.json"):
+            with open("security-reports/npm-audit.json") as f:
+                npm_data = json.load(f)
+                report["security_checks"]["node_dependencies"] = {
+                    "status": "passed" if npm_data["vulnerabilities"] == 0 else "failed",
+                    "vulnerabilities": npm_data["vulnerabilities"]
+                }
+        
+        # Save report
+        with open("security-report.json", "w") as f:
+            json.dump(report, f, indent=2)
+        
+        print("Security report generated successfully")
+        EOF
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-report
+        path: security-report.json
+    
+    - name: Comment on PR with security summary
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('security-report.json', 'utf8'));
+          
+          let comment = '## 🔒 Security Scan Results\n\n';
+          comment += `**Repository:** ${report.repository}\n`;
+          comment += `**Commit:** ${report.commit.substring(0, 7)}\n`;
+          comment += `**Branch:** ${report.branch}\n\n`;
+          
+          comment += '### Security Checks:\n';
+          for check, result in Object.entries(report.security_checks) {
+            const status = result.status === 'passed' ? '✅' : '❌';
+            comment += `- ${status} **${check}**: ${result.status}\n`;
+            if (result.vulnerabilities) {
+              comment += `  - Vulnerabilities: ${result.vulnerabilities}\n`;
+            }
+            if (result.issues) {
+              comment += `  - Issues: ${result.issues}\n`;
+            }
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  # =============================================================================
+  # SECURITY NOTIFICATIONS
+  # =============================================================================
+  security-notify:
+    name: Security Notifications
+    runs-on: ubuntu-latest
+    needs: [security-report]
+    if: always() && (needs.security-report.result == 'failure' || needs.security-report.result == 'success')
+    
+    steps:
+    - name: Notify security team
+      if: needs.security-report.result == 'failure'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#security-alerts'
+        webhook_url: ${{ secrets.SECURITY_SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        custom_payload: |
+          {
+            "text": "🚨 Security scan failed for AI-SERVIS Universal",
+            "attachments": [{
+              "color": "danger",
+              "fields": [{
+                "title": "Repository",
+                "value": "${{ github.repository }}",
+                "short": true
+              }, {
+                "title": "Branch",
+                "value": "${{ github.ref_name }}",
+                "short": true
+              }, {
+                "title": "Commit",
+                "value": "${{ github.sha }}",
+                "short": true
+              }]
+            }]
+          }

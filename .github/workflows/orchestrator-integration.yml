@@ -1,0 +1,626 @@
+name: Build Orchestrator Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - components
+        - deployment
+        - testing
+
+env:
+  PYTHON_VERSION: '3.11'
+  CONAN_VERSION: '2.0'
+
+jobs:
+  # =============================================================================
+  # ORCHESTRATOR SETUP & VALIDATION
+  # =============================================================================
+  orchestrator-setup:
+    name: Orchestrator Setup & Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install Conan
+      run: |
+        pip install conan==${{ env.CONAN_VERSION }}
+        conan profile detect --force
+    
+    - name: Install orchestrator dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        pip install pyyaml
+    
+    - name: Validate orchestrator configuration
+      run: |
+        python << 'EOF'
+        import yaml
+        import json
+        from pathlib import Path
+        
+        # Validate orchestrator configuration
+        config_file = Path("orchestrator-config.yaml")
+        if not config_file.exists():
+            print("❌ orchestrator-config.yaml not found")
+            exit(1)
+        
+        with open(config_file) as f:
+            config = yaml.safe_load(f)
+        
+        # Validate required sections
+        required_sections = ["metadata", "build_settings", "components", "deployment"]
+        for section in required_sections:
+            if section not in config:
+                print(f"❌ Missing required section: {section}")
+                exit(1)
+        
+        # Validate components
+        components = config.get("components", [])
+        if not components:
+            print("❌ No components defined")
+            exit(1)
+        
+        print(f"✅ Configuration validation passed")
+        print(f"📦 Components: {len(components)}")
+        
+        # List components
+        for component in components:
+            print(f"  - {component['name']}: {component.get('path', 'N/A')}")
+        
+        # Save validation report
+        validation_report = {
+            "config_valid": True,
+            "components_count": len(components),
+            "components": [comp["name"] for comp in components],
+            "build_settings": config.get("build_settings", {}),
+            "deployment_strategies": list(config.get("deployment", {}).get("strategies", {}).keys())
+        }
+        
+        with open("orchestrator-validation.json", "w") as f:
+            json.dump(validation_report, f, indent=2)
+        
+        print("📋 Validation report saved")
+        EOF
+    
+    - name: Test build orchestrator script
+      run: |
+        python build_orchestrator.py orchestrator-config.yaml --help
+    
+    - name: Upload validation results
+      uses: actions/upload-artifact@v3
+      with:
+        name: orchestrator-validation
+        path: orchestrator-validation.json
+
+  # =============================================================================
+  # COMPONENT BUILD ORCHESTRATION
+  # =============================================================================
+  orchestrated-build:
+    name: Orchestrated Component Build
+    runs-on: ubuntu-latest
+    needs: orchestrator-setup
+    if: ${{ inputs.build_type == 'full' || inputs.build_type == 'components' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install build tools
+      run: |
+        pip install conan==${{ env.CONAN_VERSION }}
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        conan profile detect --force
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Run orchestrated build
+      run: |
+        python build_orchestrator.py orchestrator-config.yaml --parallel --report build-report.txt
+    
+    - name: Upload build report
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-report
+        path: build-report.txt
+    
+    - name: Test built components
+      run: |
+        python << 'EOF'
+        import subprocess
+        import json
+        from pathlib import Path
+        
+        # Test built components
+        test_results = {
+            "components_tested": [],
+            "test_results": {}
+        }
+        
+        # Test core orchestrator
+        try:
+            result = subprocess.run(
+                ["python", "modules/core-orchestrator/enhanced_orchestrator.py", "--test"],
+                capture_output=True, text=True, timeout=30
+            )
+            test_results["test_results"]["core_orchestrator"] = {
+                "success": result.returncode == 0,
+                "output": result.stdout,
+                "error": result.stderr
+            }
+            test_results["components_tested"].append("core_orchestrator")
+        except Exception as e:
+            test_results["test_results"]["core_orchestrator"] = {
+                "success": False,
+                "error": str(e)
+            }
+        
+        # Test hardware bridge
+        try:
+            result = subprocess.run(
+                ["python", "modules/hardware-bridge/hardware_controller.py", "--test"],
+                capture_output=True, text=True, timeout=30
+            )
+            test_results["test_results"]["hardware_bridge"] = {
+                "success": result.returncode == 0,
+                "output": result.stdout,
+                "error": result.stderr
+            }
+            test_results["components_tested"].append("hardware_bridge")
+        except Exception as e:
+            test_results["test_results"]["hardware_bridge"] = {
+                "success": False,
+                "error": str(e)
+            }
+        
+        # Save test results
+        with open("component-test-results.json", "w") as f:
+            json.dump(test_results, f, indent=2)
+        
+        print("Component testing completed")
+        for component, result in test_results["test_results"].items():
+            status = "✅" if result["success"] else "❌"
+            print(f"{status} {component}")
+        EOF
+    
+    - name: Upload component test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: component-test-results
+        path: component-test-results.json
+
+  # =============================================================================
+  # DEPLOYMENT ORCHESTRATION
+  # =============================================================================
+  orchestrated-deployment:
+    name: Orchestrated Deployment
+    runs-on: ubuntu-latest
+    needs: [orchestrator-setup, orchestrated-build]
+    if: ${{ inputs.build_type == 'full' || inputs.build_type == 'deployment' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install deployment tools
+      run: |
+        pip install -r requirements.txt
+        pip install ansible docker-compose
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Run orchestrated deployment
+      run: |
+        python build_orchestrator.py orchestrator-config.yaml --deploy --report deployment-report.txt
+    
+    - name: Upload deployment report
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-report
+        path: deployment-report.txt
+    
+    - name: Verify deployment
+      run: |
+        python << 'EOF'
+        import requests
+        import json
+        import time
+        from datetime import datetime
+        
+        # Verify deployment
+        verification_results = {
+            "timestamp": datetime.now().isoformat(),
+            "services_verified": [],
+            "verification_results": {}
+        }
+        
+        # Test service endpoints
+        endpoints = [
+            {"name": "core_orchestrator", "url": "http://localhost:8080/health"},
+            {"name": "ai_audio_assistant", "url": "http://localhost:8081/health"},
+            {"name": "hardware_bridge", "url": "http://localhost:5555/health"},
+            {"name": "ai_security", "url": "http://localhost:8082/health"}
+        ]
+        
+        for endpoint in endpoints:
+            try:
+                response = requests.get(endpoint["url"], timeout=10)
+                verification_results["verification_results"][endpoint["name"]] = {
+                    "success": response.status_code == 200,
+                    "status_code": response.status_code,
+                    "response_time": response.elapsed.total_seconds()
+                }
+                verification_results["services_verified"].append(endpoint["name"])
+            except Exception as e:
+                verification_results["verification_results"][endpoint["name"]] = {
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        # Save verification results
+        with open("deployment-verification.json", "w") as f:
+            json.dump(verification_results, f, indent=2)
+        
+        print("Deployment verification completed")
+        for service, result in verification_results["verification_results"].items():
+            status = "✅" if result["success"] else "❌"
+            print(f"{status} {service}")
+        EOF
+    
+    - name: Upload deployment verification
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-verification
+        path: deployment-verification.json
+
+  # =============================================================================
+  # INTEGRATION TESTING
+  # =============================================================================
+  integration-testing:
+    name: Integration Testing
+    runs-on: ubuntu-latest
+    needs: [orchestrator-setup, orchestrated-build, orchestrated-deployment]
+    if: ${{ inputs.build_type == 'full' || inputs.build_type == 'testing' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install testing tools
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        pip install pytest pytest-asyncio
+    
+    - name: Start services for integration testing
+      run: |
+        docker-compose -f docker-compose.dev.yml up -d
+        sleep 60
+    
+    - name: Run integration tests
+      run: |
+        python << 'EOF'
+        import asyncio
+        import json
+        import requests
+        from datetime import datetime
+        
+        # Integration test scenarios
+        integration_tests = {
+            "timestamp": datetime.now().isoformat(),
+            "test_scenarios": [],
+            "results": {}
+        }
+        
+        # Test scenario 1: Voice command processing
+        async def test_voice_command():
+            try:
+                response = requests.post(
+                    "http://localhost:8080/api/command",
+                    json={
+                        "text": "Play jazz music",
+                        "user_id": "test_user",
+                        "interface_type": "voice"
+                    },
+                    timeout=10
+                )
+                return {
+                    "scenario": "voice_command_processing",
+                    "success": response.status_code == 200,
+                    "response_time": response.elapsed.total_seconds(),
+                    "response_data": response.json() if response.status_code == 200 else None
+                }
+            except Exception as e:
+                return {
+                    "scenario": "voice_command_processing",
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        # Test scenario 2: Hardware control
+        async def test_hardware_control():
+            try:
+                response = requests.post(
+                    "http://localhost:5555/api/gpio",
+                    json={
+                        "pin": 18,
+                        "action": "write",
+                        "value": True
+                    },
+                    timeout=10
+                )
+                return {
+                    "scenario": "hardware_control",
+                    "success": response.status_code == 200,
+                    "response_time": response.elapsed.total_seconds(),
+                    "response_data": response.json() if response.status_code == 200 else None
+                }
+            except Exception as e:
+                return {
+                    "scenario": "hardware_control",
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        # Test scenario 3: Audio processing
+        async def test_audio_processing():
+            try:
+                response = requests.get("http://localhost:8081/health", timeout=10)
+                return {
+                    "scenario": "audio_processing",
+                    "success": response.status_code == 200,
+                    "response_time": response.elapsed.total_seconds()
+                }
+            except Exception as e:
+                return {
+                    "scenario": "audio_processing",
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        # Run integration tests
+        async def run_tests():
+            tests = [
+                test_voice_command(),
+                test_hardware_control(),
+                test_audio_processing()
+            ]
+            
+            results = await asyncio.gather(*tests, return_exceptions=True)
+            
+            for result in results:
+                if isinstance(result, Exception):
+                    integration_tests["results"]["error"] = str(result)
+                else:
+                    integration_tests["results"][result["scenario"]] = result
+                    integration_tests["test_scenarios"].append(result["scenario"])
+        
+        # Execute tests
+        asyncio.run(run_tests())
+        
+        # Save results
+        with open("integration-test-results.json", "w") as f:
+            json.dump(integration_tests, f, indent=2)
+        
+        print("Integration testing completed")
+        for scenario, result in integration_tests["results"].items():
+            if scenario != "error":
+                status = "✅" if result["success"] else "❌"
+                print(f"{status} {scenario}")
+        EOF
+    
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: integration-test-results
+        path: integration-test-results.json
+
+  # =============================================================================
+  # ORCHESTRATOR REPORT GENERATION
+  # =============================================================================
+  orchestrator-report:
+    name: Generate Orchestrator Report
+    runs-on: ubuntu-latest
+    needs: [orchestrator-setup, orchestrated-build, orchestrated-deployment, integration-testing]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./orchestrator-results
+    
+    - name: Generate comprehensive orchestrator report
+      run: |
+        python << 'EOF'
+        import json
+        import os
+        from datetime import datetime
+        
+        # Load all orchestrator results
+        results = {}
+        
+        # Load validation results
+        if os.path.exists("orchestrator-results/orchestrator-validation.json"):
+            with open("orchestrator-results/orchestrator-validation.json") as f:
+                results["validation"] = json.load(f)
+        
+        # Load build results
+        if os.path.exists("orchestrator-results/component-test-results.json"):
+            with open("orchestrator-results/component-test-results.json") as f:
+                results["build"] = json.load(f)
+        
+        # Load deployment results
+        if os.path.exists("orchestrator-results/deployment-verification.json"):
+            with open("orchestrator-results/deployment-verification.json") as f:
+                results["deployment"] = json.load(f)
+        
+        # Load integration test results
+        if os.path.exists("orchestrator-results/integration-test-results.json"):
+            with open("orchestrator-results/integration-test-results.json") as f:
+                results["integration"] = json.load(f)
+        
+        # Generate comprehensive report
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "repository": os.environ.get("GITHUB_REPOSITORY", "unknown"),
+            "commit": os.environ.get("GITHUB_SHA", "unknown"),
+            "branch": os.environ.get("GITHUB_REF_NAME", "unknown"),
+            "build_type": os.environ.get("INPUT_BUILD_TYPE", "full"),
+            "orchestrator_status": "success" if all(
+                key in results for key in ["validation", "build", "deployment", "integration"]
+            ) else "partial",
+            "summary": {
+                "validation_passed": results.get("validation", {}).get("config_valid", False),
+                "components_built": len(results.get("build", {}).get("components_tested", [])),
+                "services_deployed": len(results.get("deployment", {}).get("services_verified", [])),
+                "integration_tests_passed": sum(
+                    1 for test in results.get("integration", {}).get("results", {}).values()
+                    if isinstance(test, dict) and test.get("success", False)
+                )
+            },
+            "detailed_results": results,
+            "recommendations": []
+        }
+        
+        # Generate recommendations
+        if not report["summary"]["validation_passed"]:
+            report["recommendations"].append("Fix orchestrator configuration issues")
+        
+        if report["summary"]["components_built"] == 0:
+            report["recommendations"].append("No components were successfully built")
+        
+        if report["summary"]["services_deployed"] == 0:
+            report["recommendations"].append("No services were successfully deployed")
+        
+        if report["summary"]["integration_tests_passed"] == 0:
+            report["recommendations"].append("Integration tests failed - investigate service communication")
+        
+        # Save report
+        with open("orchestrator-report.json", "w") as f:
+            json.dump(report, f, indent=2)
+        
+        print("Orchestrator report generated")
+        print(f"Status: {report['orchestrator_status']}")
+        print(f"Components built: {report['summary']['components_built']}")
+        print(f"Services deployed: {report['summary']['services_deployed']}")
+        print(f"Integration tests passed: {report['summary']['integration_tests_passed']}")
+        print(f"Recommendations: {len(report['recommendations'])}")
+        EOF
+    
+    - name: Upload orchestrator report
+      uses: actions/upload-artifact@v3
+      with:
+        name: orchestrator-report
+        path: orchestrator-report.json
+    
+    - name: Comment on PR with orchestrator results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('orchestrator-report.json', 'utf8'));
+          
+          let comment = '## 🎯 Build Orchestrator Results\n\n';
+          comment += `**Repository:** ${report.repository}\n`;
+          comment += `**Commit:** ${report.commit.substring(0, 7)}\n`;
+          comment += `**Branch:** ${report.branch}\n`;
+          comment += `**Build Type:** ${report.build_type}\n\n`;
+          
+          comment += '### Orchestrator Summary:\n';
+          comment += `- **Status:** ${report.orchestrator_status === 'success' ? '✅ SUCCESS' : '⚠️ PARTIAL'}\n`;
+          comment += `- **Validation:** ${report.summary.validation_passed ? '✅ PASSED' : '❌ FAILED'}\n`;
+          comment += `- **Components Built:** ${report.summary.components_built}\n`;
+          comment += `- **Services Deployed:** ${report.summary.services_deployed}\n`;
+          comment += `- **Integration Tests Passed:** ${report.summary.integration_tests_passed}\n\n`;
+          
+          if (report.recommendations.length > 0) {
+            comment += '### Recommendations:\n';
+            for (const rec of report.recommendations) {
+              comment += `- ${rec}\n`;
+            }
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  # =============================================================================
+  # ORCHESTRATOR NOTIFICATION
+  # =============================================================================
+  orchestrator-notify:
+    name: Notify Orchestrator Results
+    runs-on: ubuntu-latest
+    needs: [orchestrator-report]
+    if: always()
+    
+    steps:
+    - name: Notify orchestrator results
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#orchestrator'
+        webhook_url: ${{ secrets.ORCHESTRATOR_SLACK_WEBHOOK }}
+        custom_payload: |
+          {
+            "text": "🎯 Build Orchestrator Complete",
+            "attachments": [{
+              "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
+              "fields": [{
+                "title": "Repository",
+                "value": "${{ github.repository }}",
+                "short": true
+              }, {
+                "title": "Build Type",
+                "value": "${{ inputs.build_type }}",
+                "short": true
+              }, {
+                "title": "Status",
+                "value": "${{ job.status }}",
+                "short": true
+              }]
+            }]
+          }
