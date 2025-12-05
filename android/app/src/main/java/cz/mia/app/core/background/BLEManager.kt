@@ -454,7 +454,7 @@ class BLEManagerImpl @Inject constructor(
                     return@withContext null
                 }
             }
-            
+
             // Wait for response with timeout
             return@withContext withTimeoutOrNull(COMMAND_TIMEOUT_MS) {
                 responseChannel.receive()
