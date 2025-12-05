@@ -27,12 +27,22 @@
 // Create LED array
 CRGB leds[NUM_LEDS];
 
+// Animation state structure
+struct AnimationState {
+  String type;
+  int speed;
+  int step;
+  unsigned long last_update;
+  bool fade_direction;
+  int fade_value;
+  uint8_t hue;
+  int chase_pos;
+};
+
 // Current state
 int brightness = 128;      // 0-255
 CRGB current_color = CRGB::White;
-String current_animation = "none";
-unsigned long last_update = 0;
-int animation_step = 0;
+AnimationState animation;
 
 // JSON buffer size
 const size_t JSON_BUFFER_SIZE = 512;
@@ -43,6 +53,16 @@ void setup() {
   while (!Serial) {
     delay(10); // Wait for serial port to connect
   }
+  
+  // Initialize animation state
+  animation.type = "none";
+  animation.speed = 0;
+  animation.step = 0;
+  animation.last_update = 0;
+  animation.fade_direction = true;
+  animation.fade_value = 0;
+  animation.hue = 0;
+  animation.chase_pos = 0;
   
   // Initialize FastLED
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
@@ -120,7 +140,7 @@ void handleSetColor(JsonDocument& doc) {
   int b = doc["b"] | 255;
   
   current_color = CRGB(r, g, b);
-  current_animation = "none";
+  animation.type = "none";
   
   // Set all LEDs to the same color
   fill_solid(leds, NUM_LEDS, current_color);
@@ -159,18 +179,13 @@ void handleSetLed(JsonDocument& doc) {
 
 void handleAnimation(JsonDocument& doc) {
   String anim = doc["animation"] | "none";
-  current_animation = anim;
-  animation_step = 0;
+  int speed = doc["speed"] | 500;
   
-  if (anim == "blink") {
-    int speed = doc["speed"] | 500;
-    // Store speed in animation_step temporarily
-    animation_step = speed;
-  }
-  else if (anim == "fade") {
-    int speed = doc["speed"] | 50;
-    animation_step = speed;
-  }
+  animation.type = anim;
+  animation.speed = speed;
+  animation.step = 0;
+  animation.fade_value = 0;
+  animation.fade_direction = true;
   
   sendStatus("animation_set", "Animation set to: " + anim);
 }
@@ -178,7 +193,7 @@ void handleAnimation(JsonDocument& doc) {
 void handleClear() {
   FastLED.clear();
   FastLED.show();
-  current_animation = "none";
+  animation.type = "none";
   sendStatus("cleared", "All LEDs cleared");
 }
 
@@ -189,7 +204,7 @@ void handleStatus() {
   response["current_color"]["r"] = current_color.r;
   response["current_color"]["g"] = current_color.g;
   response["current_color"]["b"] = current_color.b;
-  response["animation"] = current_animation;
+  response["animation"] = animation.type;
   response["num_leds"] = NUM_LEDS;
   
   serializeJson(response, Serial);
@@ -198,8 +213,10 @@ void handleStatus() {
 
 void handleRainbow(JsonDocument& doc) {
   int speed = doc["speed"] | 10;
-  current_animation = "rainbow";
-  animation_step = speed;
+  animation.type = "rainbow";
+  animation.speed = speed;
+  animation.step = 0;
+  animation.hue = 0;
   sendStatus("rainbow_started", "Rainbow animation started");
 }
 
@@ -210,17 +227,18 @@ void handleChase(JsonDocument& doc) {
   int speed = doc["speed"] | 100;
   
   current_color = CRGB(r, g, b);
-  current_animation = "chase";
-  animation_step = speed;
+  animation.type = "chase";
+  animation.speed = speed;
+  animation.step = 0;
+  animation.chase_pos = 0;
   sendStatus("chase_started", "Chase animation started");
 }
 
 void updateAnimation() {
   unsigned long current_time = millis();
   
-  if (current_animation == "blink") {
-    int speed = animation_step;
-    if (current_time - last_update >= speed) {
+  if (animation.type == "blink") {
+    if (current_time - animation.last_update >= (unsigned long)animation.speed) {
       static bool state = false;
       state = !state;
       if (state) {
@@ -229,59 +247,51 @@ void updateAnimation() {
         FastLED.clear();
       }
       FastLED.show();
-      last_update = current_time;
+      animation.last_update = current_time;
     }
   }
-  else if (current_animation == "fade") {
-    int speed = animation_step;
-    if (current_time - last_update >= speed) {
-      static int fade_value = 0;
-      static bool fade_direction = true;
-      
-      if (fade_direction) {
-        fade_value += 5;
-        if (fade_value >= 255) {
-          fade_value = 255;
-          fade_direction = false;
+  else if (animation.type == "fade") {
+    if (current_time - animation.last_update >= (unsigned long)animation.speed) {
+      if (animation.fade_direction) {
+        animation.fade_value += 5;
+        if (animation.fade_value >= 255) {
+          animation.fade_value = 255;
+          animation.fade_direction = false;
         }
       } else {
-        fade_value -= 5;
-        if (fade_value <= 0) {
-          fade_value = 0;
-          fade_direction = true;
+        animation.fade_value -= 5;
+        if (animation.fade_value <= 0) {
+          animation.fade_value = 0;
+          animation.fade_direction = true;
         }
       }
       
       CRGB fade_color = current_color;
-      fade_color.fadeToBlackBy(255 - fade_value);
+      fade_color.fadeToBlackBy(255 - animation.fade_value);
       fill_solid(leds, NUM_LEDS, fade_color);
       FastLED.show();
-      last_update = current_time;
+      animation.last_update = current_time;
     }
   }
-  else if (current_animation == "rainbow") {
-    int speed = animation_step;
-    if (current_time - last_update >= speed) {
-      static uint8_t hue = 0;
+  else if (animation.type == "rainbow") {
+    if (current_time - animation.last_update >= (unsigned long)animation.speed) {
       for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CHSV((hue + i * 10) % 255, 255, 255);
+        leds[i] = CHSV((animation.hue + i * 10) % 255, 255, 255);
       }
       FastLED.show();
-      hue++;
-      last_update = current_time;
+      animation.hue++;
+      animation.last_update = current_time;
     }
   }
-  else if (current_animation == "chase") {
-    int speed = animation_step;
-    if (current_time - last_update >= speed) {
-      static int pos = 0;
+  else if (animation.type == "chase") {
+    if (current_time - animation.last_update >= (unsigned long)animation.speed) {
       FastLED.clear();
-      leds[pos] = current_color;
-      leds[(pos + 1) % NUM_LEDS] = current_color;
-      leds[(pos + 2) % NUM_LEDS] = current_color;
+      leds[animation.chase_pos] = current_color;
+      leds[(animation.chase_pos + 1) % NUM_LEDS] = current_color;
+      leds[(animation.chase_pos + 2) % NUM_LEDS] = current_color;
       FastLED.show();
-      pos = (pos + 1) % NUM_LEDS;
-      last_update = current_time;
+      animation.chase_pos = (animation.chase_pos + 1) % NUM_LEDS;
+      animation.last_update = current_time;
     }
   }
 }
