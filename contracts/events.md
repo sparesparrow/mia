@@ -1,7 +1,7 @@
-# AI-SERVIS Events Specification v1.0
+# MIA Events Specification v1.0
 
 ## Overview
-Canonical events for AI-SERVIS system communication between Android app, ESP32 modules, and optional Pi gateway.
+Canonical events for MIA system communication between Android app, ESP32 modules, and optional Pi gateway.
 
 ## Event Format
 All events use JSON format with the following structure:

@@ -2,7 +2,7 @@
 Arduino LED Strip Controller
 
 Python module for controlling Arduino Uno LED strip via Serial communication.
-Integrates with the AI-SERVIS hardware bridge for MQTT/MCP communication.
+Integrates with the MIA hardware bridge for MQTT/MCP communication.
 
 Hardware:
 - Arduino Uno connected via USB (ttyUSB0)

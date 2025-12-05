@@ -1,11 +1,11 @@
-# AI-SERVIS Universal - Quick Start Guide
+# MIA Universal - Quick Start Guide
 
 **Get up and running in 10 minutes!**
 
 ## 🎯 What You'll Learn
 
 In this guide, you'll:
-1. Install AI-SERVIS Universal
+1. Install MIA Universal
 2. Run your first test
 3. Start the core orchestrator
 4. Send your first voice command
@@ -48,8 +48,8 @@ docker --version
 
 ```bash
 # Clone the repository
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 ```
 
 ### Step 2: Choose Your Installation Method
@@ -389,8 +389,8 @@ python3 script_name.py
 
 - **Documentation**: [`docs/`](../)
 - **Troubleshooting Guide**: [`docs/troubleshooting.md`](../troubleshooting.md)
-- **GitHub Issues**: [Create an issue](https://github.com/sparesparrow/ai-servis/issues)
-- **Discord**: [AI-SERVIS Community](https://discord.gg/ai-servis)
+- **GitHub Issues**: [Create an issue](https://github.com/sparesparrow/mia/issues)
+- **Discord**: [MIA Community](https://discord.gg/mia)
 
 ---
 
@@ -474,7 +474,7 @@ mypy .
 ## 🎉 Congratulations!
 
 You've successfully:
-- ✅ Installed AI-SERVIS Universal
+- ✅ Installed MIA Universal
 - ✅ Ran your first tests
 - ✅ Tested voice commands
 - ✅ Explored the architecture
@@ -505,7 +505,7 @@ Choose your path:
 - **API Docs**: [docs/api/](../api/)
 - **Modules**: [docs/modules/](../modules/)
 - **Troubleshooting**: [docs/troubleshooting.md](../troubleshooting.md)
-- **GitHub**: [github.com/sparesparrow/ai-servis](https://github.com/sparesparrow/ai-servis)
+- **GitHub**: [github.com/sparesparrow/mia](https://github.com/sparesparrow/mia)
 
 ---
 

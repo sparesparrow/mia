@@ -1,6 +1,6 @@
-# 🔍 **Competitive Landscape Analysis: Similar Projects to AI-SERVIS**
+# 🔍 **Competitive Landscape Analysis: Similar Projects to MIA**
 
-Based on comprehensive research across the automotive AI, embedded systems, and voice technology markets, here's a detailed analysis of projects and companies in the AI-SERVIS competitive space:
+Based on comprehensive research across the automotive AI, embedded systems, and voice technology markets, here's a detailed analysis of projects and companies in the MIA competitive space:
 
 ## 🏢 **Major Commercial Players**
 
@@ -11,7 +11,7 @@ Based on comprehensive research across the automotive AI, embedded systems, and 
 - **Features**: Remote diagnostics, chat/voice interfaces, OEM partnerships
 - **Market**: Insurance sector, roadside assistance digitization
 - **Differentiators**: B2B focus, insurance partnerships (Real Garant)
-- **Weakness vs AI-SERVIS**: No ANPR, limited consumer market
+- **Weakness vs MIA**: No ANPR, limited consumer market
 
 **2. UVeye** - **$191M Series D (2025)**[3]
 - **Product**: "MRI for vehicles" - AI-powered vehicle inspection
@@ -105,34 +105,34 @@ Based on comprehensive research across the automotive AI, embedded systems, and 
 4. **Insurance Partnerships**: Key revenue driver for diagnostic solutions
 5. **Edge AI Adoption**: Shift from cloud to on-device processing
 
-### **Competitive Gaps AI-SERVIS Can Exploit**
+### **Competitive Gaps MIA Can Exploit**
 
 **🎯 Unique Positioning Opportunities:**
 
 **1. Consumer Aftermarket Focus**
 - Most competitors target OEMs or enterprise fleets
 - **Gap**: Individual car owners underserved
-- **AI-SERVIS advantage**: BYOD phone-first approach, accessible pricing
+- **MIA advantage**: BYOD phone-first approach, accessible pricing
 
 **2. Integrated Multi-Modal Solution**
 - Competitors specialize: voice OR diagnostics OR ANPR
 - **Gap**: No single solution combines all three
-- **AI-SERVIS advantage**: Unified platform with voice + OBD + ANPR
+- **MIA advantage**: Unified platform with voice + OBD + ANPR
 
 **3. Privacy-First Edge Processing**
 - Most solutions cloud-dependent (SoundHound, Cerence)
 - **Gap**: Privacy concerns, connectivity requirements
-- **AI-SERVIS advantage**: Edge AI with MCP architecture
+- **MIA advantage**: Edge AI with MCP architecture
 
 **4. Open Source Foundation**
 - Commercial solutions are closed platforms
 - **Gap**: Limited customization, vendor lock-in
-- **AI-SERVIS advantage**: Extensible platform, developer ecosystem
+- **MIA advantage**: Extensible platform, developer ecosystem
 
 **5. Czech/EU Market Entry**
 - Major players focus on US/Asia markets
 - **Gap**: Local language support, GDPR compliance by design
-- **AI-SERVIS advantage**: EU-first approach, Czech language native
+- **MIA advantage**: EU-first approach, Czech language native
 
 ## 🚀 **Strategic Recommendations**
 
@@ -154,7 +154,7 @@ Based on comprehensive research across the automotive AI, embedded systems, and 
 - **Open source moat**: Community contributions vs internal R&D only
 - **Strategic partnerships**: Insurance, automotive services, government (smart cities)
 
-**AI-SERVIS has a clear opportunity to capture the underserved consumer aftermarket segment while established players focus on OEM and enterprise markets. The combination of voice AI + OBD diagnostics + ANPR in a privacy-first, phone-based solution represents a unique market position not currently addressed by any major competitor.**
+**MIA has a clear opportunity to capture the underserved consumer aftermarket segment while established players focus on OEM and enterprise markets. The combination of voice AI + OBD diagnostics + ANPR in a privacy-first, phone-based solution represents a unique market position not currently addressed by any major competitor.**
 
 [1](https://www.eenewseurope.com/en/startup-secures-funding-for-ai-virtual-car-technician/)
 [2](https://www.vestbee.com/insights/articles/dc-connected-secures-2-1-m)

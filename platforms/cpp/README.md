@@ -1,6 +1,6 @@
 # C++ Platform Components
 
-This directory contains the C++ components for the AI-SERVIS system, providing hardware control and message processing capabilities.
+This directory contains the C++ components for the MIA system, providing hardware control and message processing capabilities.
 
 ## Architecture
 

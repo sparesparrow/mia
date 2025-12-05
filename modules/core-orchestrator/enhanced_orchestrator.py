@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Enhanced Core Orchestrator
+MIA Universal: Enhanced Core Orchestrator
 Advanced MCP host with improved NLP, context management, and UI abstraction
 """
 
@@ -1078,7 +1078,7 @@ class EnhancedCoreOrchestrator(MCPServer):
 
 async def main():
     """Main entry point for enhanced orchestrator"""
-    logger.info("Starting AI-SERVIS Enhanced Core Orchestrator")
+    logger.info("Starting MIA Enhanced Core Orchestrator")
     
     # Create orchestrator
     orchestrator = EnhancedCoreOrchestrator()

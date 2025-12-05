@@ -4,7 +4,7 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_UNAME"
@@ -20,8 +20,8 @@ events:
     names:
       - "uname"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -31,16 +31,16 @@ events:
       - "/usr/local/games/"
       - "/usr/games/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/uname"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/uname"
+      - "/home/mia/mia/bin/uname"
+      - "/home/mia/mia/.buildenv/venv/bin/uname"
       - "/usr/local/sbin/uname"
       - "/usr/local/bin/uname"
       - "/usr/sbin/uname"
     found: "/usr/bin/uname"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -52,14 +52,14 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
       - "CMakeLists.txt:2 (project)"
     message: |
       The system is: Linux - 6.12.47+rpt-rpi-v8 - aarch64
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_MAKE_PROGRAM"
@@ -77,8 +77,8 @@ events:
       - "make"
       - "smake"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -88,16 +88,16 @@ events:
       - "/usr/local/games/"
       - "/usr/games/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/gmake"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gmake"
+      - "/home/mia/mia/bin/gmake"
+      - "/home/mia/mia/.buildenv/venv/bin/gmake"
       - "/usr/local/sbin/gmake"
       - "/usr/local/bin/gmake"
       - "/usr/sbin/gmake"
     found: "/usr/bin/gmake"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -109,8 +109,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:67 (_cmake_find_compiler_path)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:67 (_cmake_find_compiler_path)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_C_COMPILER_WITH_PATH"
@@ -126,8 +126,8 @@ events:
     names:
       - "gcc"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -137,16 +137,16 @@ events:
       - "/usr/local/games/"
       - "/usr/games/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/gcc"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gcc"
+      - "/home/mia/mia/bin/gcc"
+      - "/home/mia/mia/.buildenv/venv/bin/gcc"
       - "/usr/local/sbin/gcc"
       - "/usr/local/bin/gcc"
       - "/usr/sbin/gcc"
     found: "/usr/bin/gcc"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -158,11 +158,11 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
       - "CMakeLists.txt:2 (project)"
     mode: "file"
     variable: "src_in"
@@ -178,12 +178,12 @@ events:
     names:
       - "CMakeCCompilerId.c.in"
     candidate_directories:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/"
-    found: "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerId.c.in"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/"
+    found: "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerId.c.in"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -195,9 +195,9 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
@@ -212,13 +212,13 @@ events:
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
       
       The C compiler identification is GNU, found in:
-        /home/mia/ai-servis/build-raspberry-pi/CMakeFiles/4.2.0/CompilerIdC/a.out
+        /home/mia/mia/build-raspberry-pi/CMakeFiles/4.2.0/CompilerIdC/a.out
       
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_AR"
@@ -235,8 +235,8 @@ events:
       - "ar"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -247,8 +247,8 @@ events:
     found: "/usr/bin/ar"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -260,8 +260,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_RANLIB"
@@ -278,8 +278,8 @@ events:
       - "ranlib"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -290,8 +290,8 @@ events:
     found: "/usr/bin/ranlib"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -303,8 +303,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_STRIP"
@@ -321,8 +321,8 @@ events:
       - "strip"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -333,8 +333,8 @@ events:
     found: "/usr/bin/strip"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -346,8 +346,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_LINKER"
@@ -364,8 +364,8 @@ events:
       - "ld"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -376,8 +376,8 @@ events:
     found: "/usr/bin/ld"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -389,8 +389,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_NM"
@@ -407,8 +407,8 @@ events:
       - "nm"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -419,8 +419,8 @@ events:
     found: "/usr/bin/nm"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -432,8 +432,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_OBJDUMP"
@@ -450,8 +450,8 @@ events:
       - "objdump"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -462,8 +462,8 @@ events:
     found: "/usr/bin/objdump"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -475,8 +475,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_OBJCOPY"
@@ -493,8 +493,8 @@ events:
       - "objcopy"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -505,8 +505,8 @@ events:
     found: "/usr/bin/objcopy"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -518,8 +518,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_READELF"
@@ -536,8 +536,8 @@ events:
       - "readelf"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -548,8 +548,8 @@ events:
     found: "/usr/bin/readelf"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -561,8 +561,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_DLLTOOL"
@@ -579,8 +579,8 @@ events:
       - "dlltool"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -590,8 +590,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/dlltool"
-      - "/home/mia/ai-servis/bin/dlltool"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/dlltool"
+      - "/home/mia/mia/bin/dlltool"
+      - "/home/mia/mia/.buildenv/venv/bin/dlltool"
       - "/usr/local/sbin/dlltool"
       - "/usr/local/bin/dlltool"
       - "/usr/sbin/dlltool"
@@ -602,8 +602,8 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -615,8 +615,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_ADDR2LINE"
@@ -633,8 +633,8 @@ events:
       - "addr2line"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -645,8 +645,8 @@ events:
     found: "/usr/bin/addr2line"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -658,8 +658,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_TAPI"
@@ -676,8 +676,8 @@ events:
       - "tapi"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -687,8 +687,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/tapi"
-      - "/home/mia/ai-servis/bin/tapi"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/tapi"
+      - "/home/mia/mia/bin/tapi"
+      - "/home/mia/mia/.buildenv/venv/bin/tapi"
       - "/usr/local/sbin/tapi"
       - "/usr/local/bin/tapi"
       - "/usr/sbin/tapi"
@@ -699,8 +699,8 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -712,8 +712,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_C_COMPILER_AR"
@@ -733,8 +733,8 @@ events:
       - "gcc-ar"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -744,8 +744,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/gcc-ar-14.2"
-      - "/home/mia/ai-servis/bin/gcc-ar-14.2"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gcc-ar-14.2"
+      - "/home/mia/mia/bin/gcc-ar-14.2"
+      - "/home/mia/mia/.buildenv/venv/bin/gcc-ar-14.2"
       - "/usr/local/sbin/gcc-ar-14.2"
       - "/usr/local/bin/gcc-ar-14.2"
       - "/usr/sbin/gcc-ar-14.2"
@@ -756,8 +756,8 @@ events:
     found: "/usr/bin/gcc-ar-14"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -769,8 +769,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCCompiler.cmake:201 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_C_COMPILER_RANLIB"
@@ -790,8 +790,8 @@ events:
       - "gcc-ranlib"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -801,8 +801,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/gcc-ranlib-14.2"
-      - "/home/mia/ai-servis/bin/gcc-ranlib-14.2"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gcc-ranlib-14.2"
+      - "/home/mia/mia/bin/gcc-ranlib-14.2"
+      - "/home/mia/mia/.buildenv/venv/bin/gcc-ranlib-14.2"
       - "/usr/local/sbin/gcc-ranlib-14.2"
       - "/usr/local/bin/gcc-ranlib-14.2"
       - "/usr/sbin/gcc-ranlib-14.2"
@@ -813,8 +813,8 @@ events:
     found: "/usr/bin/gcc-ranlib-14"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -826,8 +826,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:71 (_cmake_find_compiler_path)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:71 (_cmake_find_compiler_path)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_WITH_PATH"
@@ -843,8 +843,8 @@ events:
     names:
       - "g++"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -854,16 +854,16 @@ events:
       - "/usr/local/games/"
       - "/usr/games/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/g++"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/g++"
+      - "/home/mia/mia/bin/g++"
+      - "/home/mia/mia/.buildenv/venv/bin/g++"
       - "/usr/local/sbin/g++"
       - "/usr/local/bin/g++"
       - "/usr/sbin/g++"
     found: "/usr/bin/g++"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -875,11 +875,11 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
       - "CMakeLists.txt:2 (project)"
     mode: "file"
     variable: "src_in"
@@ -895,12 +895,12 @@ events:
     names:
       - "CMakeCXXCompilerId.cpp.in"
     candidate_directories:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/"
-    found: "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/"
+    found: "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -912,9 +912,9 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
@@ -929,13 +929,13 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
       
       The CXX compiler identification is GNU, found in:
-        /home/mia/ai-servis/build-raspberry-pi/CMakeFiles/4.2.0/CompilerIdCXX/a.out
+        /home/mia/mia/build-raspberry-pi/CMakeFiles/4.2.0/CompilerIdCXX/a.out
       
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_AR"
@@ -955,8 +955,8 @@ events:
       - "gcc-ar"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -966,8 +966,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/gcc-ar-14.2"
-      - "/home/mia/ai-servis/bin/gcc-ar-14.2"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gcc-ar-14.2"
+      - "/home/mia/mia/bin/gcc-ar-14.2"
+      - "/home/mia/mia/.buildenv/venv/bin/gcc-ar-14.2"
       - "/usr/local/sbin/gcc-ar-14.2"
       - "/usr/local/bin/gcc-ar-14.2"
       - "/usr/sbin/gcc-ar-14.2"
@@ -978,8 +978,8 @@ events:
     found: "/usr/bin/gcc-ar-14"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -991,8 +991,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
       - "CMakeLists.txt:2 (project)"
     mode: "program"
     variable: "CMAKE_CXX_COMPILER_RANLIB"
@@ -1012,8 +1012,8 @@ events:
       - "gcc-ranlib"
     candidate_directories:
       - "/usr/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -1023,8 +1023,8 @@ events:
       - "/usr/games/"
     searched_directories:
       - "/usr/bin/gcc-ranlib-14.2"
-      - "/home/mia/ai-servis/bin/gcc-ranlib-14.2"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/gcc-ranlib-14.2"
+      - "/home/mia/mia/bin/gcc-ranlib-14.2"
+      - "/home/mia/mia/.buildenv/venv/bin/gcc-ranlib-14.2"
       - "/usr/local/sbin/gcc-ranlib-14.2"
       - "/usr/local/bin/gcc-ranlib-14.2"
       - "/usr/sbin/gcc-ranlib-14.2"
@@ -1035,8 +1035,8 @@ events:
     found: "/usr/bin/gcc-ranlib-14"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1048,14 +1048,14 @@ events:
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX"
-      binary: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX"
+      source: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX"
+      binary: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -1064,13 +1064,13 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
+        Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
         
-        Run Build Command(s): /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a976/fast
+        Run Build Command(s): /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a976/fast
         /usr/bin/gmake  -f CMakeFiles/cmTC_2a976.dir/build.make CMakeFiles/cmTC_2a976.dir/build
-        gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
+        gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
         Building C object CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o
-        /usr/bin/gcc   -v -o CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o -c /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c
+        /usr/bin/gcc   -v -o CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o -c /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/usr/bin/gcc
         OFFLOAD_TARGET_NAMES=nvptx-none
@@ -1081,7 +1081,7 @@ events:
         Supported LTO compression algorithms: zlib zstd
         gcc version 14.2.0 (Debian 14.2.0-19) 
         COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_2a976.dir/'
-         /usr/libexec/gcc/aarch64-linux-gnu/14/cc1 -quiet -v -imultiarch aarch64-linux-gnu /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_2a976.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/ccfGbERu.s
+         /usr/libexec/gcc/aarch64-linux-gnu/14/cc1 -quiet -v -imultiarch aarch64-linux-gnu /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_2a976.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/ccfGbERu.s
         GNU C17 (Debian 14.2.0-19) version 14.2.0 (aarch64-linux-gnu)
         	compiled by GNU C version 14.2.0, GMP version 6.3.0, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.27-GMP
         
@@ -1106,7 +1106,7 @@ events:
         LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/14/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../:/lib/:/usr/lib/
         COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.'
         Linking C executable cmTC_2a976
-        /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a976.dir/link.txt --verbose=1
+        /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a976.dir/link.txt --verbose=1
         Using built-in specs.
         COLLECT_GCC=/usr/bin/gcc
         COLLECT_LTO_WRAPPER=/usr/libexec/gcc/aarch64-linux-gnu/14/lto-wrapper
@@ -1126,14 +1126,14 @@ events:
         GNU ld (GNU Binutils for Debian) 2.44
         COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_2a976' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_2a976.'
         /usr/bin/gcc  -v -Wl,-v CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o -o cmTC_2a976
-        gmake[1]: Leaving directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
+        gmake[1]: Leaving directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX'
         
       exitCode: 0
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Parsed C implicit include dir info: rv=done
@@ -1154,20 +1154,20 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX']
+        ignore line: [Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX']
         ignore line: []
-        ignore line: [Run Build Command(s): /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a976/fast]
+        ignore line: [Run Build Command(s): /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2a976/fast]
         ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_2a976.dir/build.make CMakeFiles/cmTC_2a976.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX']
+        ignore line: [gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-WJlUDX']
         ignore line: [Building C object CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/bin/gcc   -v -o CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o -c /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c]
+        ignore line: [/usr/bin/gcc   -v -o CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o -c /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/gcc]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none]
@@ -1178,7 +1178,7 @@ events:
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 14.2.0 (Debian 14.2.0-19) ]
         ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_2a976.dir/']
-        ignore line: [ /usr/libexec/gcc/aarch64-linux-gnu/14/cc1 -quiet -v -imultiarch aarch64-linux-gnu /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_2a976.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/ccfGbERu.s]
+        ignore line: [ /usr/libexec/gcc/aarch64-linux-gnu/14/cc1 -quiet -v -imultiarch aarch64-linux-gnu /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_2a976.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/ccfGbERu.s]
         ignore line: [GNU C17 (Debian 14.2.0-19) version 14.2.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 14.2.0  GMP version 6.3.0  MPFR version 4.2.1  MPC version 1.3.1  isl version isl-0.27-GMP]
         ignore line: []
@@ -1203,7 +1203,7 @@ events:
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/14/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../:/lib/:/usr/lib/]
         ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_2a976.dir/CMakeCCompilerABI.c.']
         ignore line: [Linking C executable cmTC_2a976]
-        ignore line: [/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a976.dir/link.txt --verbose=1]
+        ignore line: [/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a976.dir/link.txt --verbose=1]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/gcc]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/aarch64-linux-gnu/14/lto-wrapper]
@@ -1290,9 +1290,9 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Running the C compiler's linker: "/usr/bin/ld" "-v"
@@ -1300,14 +1300,14 @@ events:
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1"
-      binary: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1"
+      source: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1"
+      binary: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -1317,13 +1317,13 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
+        Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
         
-        Run Build Command(s): /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_361c7/fast
+        Run Build Command(s): /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_361c7/fast
         /usr/bin/gmake  -f CMakeFiles/cmTC_361c7.dir/build.make CMakeFiles/cmTC_361c7.dir/build
-        gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
+        gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
         Building CXX object CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o
-        /usr/bin/g++   -v -o CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o -c /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp
+        /usr/bin/g++   -v -o CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o -c /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp
         Using built-in specs.
         COLLECT_GCC=/usr/bin/g++
         OFFLOAD_TARGET_NAMES=nvptx-none
@@ -1334,7 +1334,7 @@ events:
         Supported LTO compression algorithms: zlib zstd
         gcc version 14.2.0 (Debian 14.2.0-19) 
         COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_361c7.dir/'
-         /usr/libexec/gcc/aarch64-linux-gnu/14/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -D_GNU_SOURCE /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_361c7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/cc3JOi2I.s
+         /usr/libexec/gcc/aarch64-linux-gnu/14/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -D_GNU_SOURCE /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_361c7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/cc3JOi2I.s
         GNU C++17 (Debian 14.2.0-19) version 14.2.0 (aarch64-linux-gnu)
         	compiled by GNU C version 14.2.0, GMP version 6.3.0, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.27-GMP
         
@@ -1363,7 +1363,7 @@ events:
         LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/14/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../:/lib/:/usr/lib/
         COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.'
         Linking CXX executable cmTC_361c7
-        /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_361c7.dir/link.txt --verbose=1
+        /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_361c7.dir/link.txt --verbose=1
         Using built-in specs.
         COLLECT_GCC=/usr/bin/g++
         COLLECT_LTO_WRAPPER=/usr/libexec/gcc/aarch64-linux-gnu/14/lto-wrapper
@@ -1383,14 +1383,14 @@ events:
         GNU ld (GNU Binutils for Debian) 2.44
         COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_361c7' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_361c7.'
         /usr/bin/g++  -v -Wl,-v CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_361c7
-        gmake[1]: Leaving directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
+        gmake[1]: Leaving directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1'
         
       exitCode: 0
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Parsed CXX implicit include dir info: rv=done
@@ -1417,20 +1417,20 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1']
+        ignore line: [Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1']
         ignore line: []
-        ignore line: [Run Build Command(s): /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_361c7/fast]
+        ignore line: [Run Build Command(s): /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_361c7/fast]
         ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_361c7.dir/build.make CMakeFiles/cmTC_361c7.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1']
+        ignore line: [gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-C7umV1']
         ignore line: [Building CXX object CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o]
-        ignore line: [/usr/bin/g++   -v -o CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o -c /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [/usr/bin/g++   -v -o CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o -c /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/g++]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none]
@@ -1441,7 +1441,7 @@ events:
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 14.2.0 (Debian 14.2.0-19) ]
         ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_361c7.dir/']
-        ignore line: [ /usr/libexec/gcc/aarch64-linux-gnu/14/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -D_GNU_SOURCE /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_361c7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/cc3JOi2I.s]
+        ignore line: [ /usr/libexec/gcc/aarch64-linux-gnu/14/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -D_GNU_SOURCE /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_361c7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -o /tmp/cc3JOi2I.s]
         ignore line: [GNU C++17 (Debian 14.2.0-19) version 14.2.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 14.2.0  GMP version 6.3.0  MPFR version 4.2.1  MPC version 1.3.1  isl version isl-0.27-GMP]
         ignore line: []
@@ -1470,7 +1470,7 @@ events:
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/14/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/14/../../../:/lib/:/usr/lib/]
         ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_361c7.dir/CMakeCXXCompilerABI.cpp.']
         ignore line: [Linking CXX executable cmTC_361c7]
-        ignore line: [/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_361c7.dir/link.txt --verbose=1]
+        ignore line: [/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_361c7.dir/link.txt --verbose=1]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/g++]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/aarch64-linux-gnu/14/lto-wrapper]
@@ -1553,9 +1553,9 @@ events:
   -
     kind: "message-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
       - "CMakeLists.txt:2 (project)"
     message: |
       Running the CXX compiler's linker: "/usr/bin/ld" "-v"
@@ -1563,7 +1563,7 @@ events:
   -
     kind: "find_package-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:174 (find_package)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:174 (find_package)"
       - "CMakeLists.txt:7 (find_package)"
     name: "CURL"
     configs:
@@ -1597,27 +1597,27 @@ events:
         CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
     candidates:
       -
-        path: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/pkgRedirects/CURLConfig.cmake"
+        path: "/home/mia/mia/build-raspberry-pi/CMakeFiles/pkgRedirects/CURLConfig.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/pkgRedirects/curl-config.cmake"
+        path: "/home/mia/mia/build-raspberry-pi/CMakeFiles/pkgRedirects/curl-config.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/CURLConfig.cmake"
+        path: "/home/mia/mia/CURLConfig.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/curl-config.cmake"
+        path: "/home/mia/mia/curl-config.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/.buildenv/venv/CURLConfig.cmake"
+        path: "/home/mia/mia/.buildenv/venv/CURLConfig.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/.buildenv/venv/curl-config.cmake"
+        path: "/home/mia/mia/.buildenv/venv/curl-config.cmake"
         mode: "config"
         reason: "no_exist"
       -
@@ -1661,11 +1661,11 @@ events:
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/CURLConfig.cmake"
+        path: "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/CURLConfig.cmake"
         mode: "config"
         reason: "no_exist"
       -
-        path: "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/curl-config.cmake"
+        path: "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/curl-config.cmake"
         mode: "config"
         reason: "no_exist"
       -
@@ -1679,8 +1679,8 @@ events:
     found: null
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1694,7 +1694,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -1702,8 +1702,8 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:517 (find_program)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:189 (find_package)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:517 (find_program)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:189 (find_package)"
       - "CMakeLists.txt:7 (find_package)"
     mode: "program"
     variable: "PKG_CONFIG_EXECUTABLE"
@@ -1720,8 +1720,8 @@ events:
       - "pkg-config"
       - "pkgconf"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -1738,9 +1738,9 @@ events:
       - "/usr/"
       - "/bin/"
       - "/sbin/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/sbin/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/sbin/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/bin/"
       - "/usr/X11R6/sbin/"
       - "/usr/X11R6/"
@@ -1751,10 +1751,10 @@ events:
       - "/opt/sbin/"
       - "/opt/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/pkg-config"
-      - "/home/mia/ai-servis/bin/pkgconf"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/pkg-config"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/pkgconf"
+      - "/home/mia/mia/bin/pkg-config"
+      - "/home/mia/mia/bin/pkgconf"
+      - "/home/mia/mia/.buildenv/venv/bin/pkg-config"
+      - "/home/mia/mia/.buildenv/venv/bin/pkgconf"
       - "/usr/local/sbin/pkg-config"
       - "/usr/local/sbin/pkgconf"
       - "/usr/local/bin/pkg-config"
@@ -1764,8 +1764,8 @@ events:
     found: "/usr/bin/pkg-config"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1779,7 +1779,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -1787,11 +1787,11 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:761 (find_library)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:191 (pkg_check_modules)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:191 (pkg_check_modules)"
       - "CMakeLists.txt:7 (find_package)"
     mode: "library"
     variable: "pkgcfg_lib_PC_CURL_curl"
@@ -1811,8 +1811,8 @@ events:
     found: "/usr/lib/aarch64-linux-gnu/libcurl.so"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1826,7 +1826,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -1836,7 +1836,7 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:201 (find_path)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:201 (find_path)"
       - "CMakeLists.txt:7 (find_package)"
     mode: "path"
     variable: "CURL_INCLUDE_DIR"
@@ -1856,8 +1856,8 @@ events:
       - "/usr/include/"
       - "/usr/include/p11-kit-1/"
       - "/usr/include/mit-krb5/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -1874,9 +1874,9 @@ events:
       - "/usr/"
       - "/include/aarch64-linux-gnu/"
       - "/include/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/include/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/include/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/include/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/include/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/include/aarch64-linux-gnu/"
       - "/usr/X11R6/include/"
       - "/usr/X11R6/"
@@ -1890,8 +1890,8 @@ events:
     found: "/usr/include/aarch64-linux-gnu/"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1905,7 +1905,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -1915,7 +1915,7 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:208 (find_library)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:208 (find_library)"
       - "CMakeLists.txt:7 (find_package)"
     mode: "library"
     variable: "CURL_LIBRARY_RELEASE"
@@ -1937,8 +1937,8 @@ events:
       - "libcurl_a"
     candidate_directories:
       - "/usr/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -1955,9 +1955,9 @@ events:
       - "/usr/"
       - "/lib/aarch64-linux-gnu/"
       - "/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/"
       - "/usr/X11R6/"
@@ -1971,8 +1971,8 @@ events:
     found: "/usr/lib/aarch64-linux-gnu/libcurl.so"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -1986,7 +1986,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -1996,7 +1996,7 @@ events:
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:223 (find_library)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindCURL.cmake:223 (find_library)"
       - "CMakeLists.txt:7 (find_package)"
     mode: "library"
     variable: "CURL_LIBRARY_DEBUG"
@@ -2014,8 +2014,8 @@ events:
       - "libcurl-d"
     candidate_directories:
       - "/usr/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -2032,9 +2032,9 @@ events:
       - "/usr/"
       - "/lib/aarch64-linux-gnu/"
       - "/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/"
       - "/usr/X11R6/"
@@ -2048,10 +2048,10 @@ events:
     searched_directories:
       - "/usr/lib/aarch64-linux-gnu/"
       - "/usr/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
@@ -2084,12 +2084,12 @@ events:
       - "/lib/aarch64-linux-gnu/"
       - "/lib/"
       - "/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/"
@@ -2113,8 +2113,8 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -2128,7 +2128,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -2138,16 +2138,16 @@ events:
   -
     kind: "try_compile-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindThreads.cmake:226 (_threads_check_libc)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/CheckCSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindThreads.cmake:160 (check_c_source_compiles)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindThreads.cmake:226 (_threads_check_libc)"
       - "CMakeLists.txt:8 (find_package)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i"
-      binary: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i"
+      source: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i"
+      binary: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -2156,26 +2156,26 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
+        Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
         
-        Run Build Command(s): /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_979c3/fast
+        Run Build Command(s): /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_979c3/fast
         /usr/bin/gmake  -f CMakeFiles/cmTC_979c3.dir/build.make CMakeFiles/cmTC_979c3.dir/build
-        gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
+        gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
         Building C object CMakeFiles/cmTC_979c3.dir/src.c.o
-        /usr/bin/gcc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_979c3.dir/src.c.o -c /home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i/src.c
+        /usr/bin/gcc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_979c3.dir/src.c.o -c /home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i/src.c
         Linking C executable cmTC_979c3
-        /home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_979c3.dir/link.txt --verbose=1
+        /home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_979c3.dir/link.txt --verbose=1
         /usr/bin/gcc CMakeFiles/cmTC_979c3.dir/src.c.o -o cmTC_979c3
-        gmake[1]: Leaving directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
+        gmake[1]: Leaving directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-zRXV1i'
         
       exitCode: 0
   -
     kind: "find-v1"
     backtrace:
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:761 (find_library)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:761 (find_library)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:811 (_pkg_find_libs)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1149 (_pkg_recalculate)"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/share/cmake-4.2/Modules/FindPkgConfig.cmake:1166 (_pkg_check_modules_internal)"
       - "CMakeLists.txt:12 (pkg_check_modules)"
     mode: "library"
     variable: "pkgcfg_lib_JSONCPP_jsoncpp"
@@ -2195,8 +2195,8 @@ events:
     found: "/usr/lib/aarch64-linux-gnu/libjsoncpp.so"
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -2210,7 +2210,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -2235,8 +2235,8 @@ events:
     names:
       - "flatbuffers"
     candidate_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -2253,9 +2253,9 @@ events:
       - "/usr/"
       - "/lib/aarch64-linux-gnu/"
       - "/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/"
       - "/usr/X11R6/"
@@ -2267,8 +2267,8 @@ events:
       - "/opt/"
       - "/usr/lib/X11/"
     searched_directories:
-      - "/home/mia/ai-servis/bin/"
-      - "/home/mia/ai-servis/.buildenv/venv/bin/"
+      - "/home/mia/mia/bin/"
+      - "/home/mia/mia/.buildenv/venv/bin/"
       - "/usr/local/sbin/"
       - "/usr/local/bin/"
       - "/usr/sbin/"
@@ -2285,9 +2285,9 @@ events:
       - "/usr/"
       - "/lib/aarch64-linux-gnu/"
       - "/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
-      - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/aarch64-linux-gnu/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/lib/"
+      - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data/"
       - "/usr/X11R6/lib/aarch64-linux-gnu/"
       - "/usr/X11R6/lib/"
       - "/usr/X11R6/"
@@ -2301,8 +2301,8 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/mia/ai-servis/bin"
-        - "/home/mia/ai-servis/.buildenv/venv/bin"
+        - "/home/mia/mia/bin"
+        - "/home/mia/mia/.buildenv/venv/bin"
         - "/usr/local/sbin"
         - "/usr/local/bin"
         - "/usr/sbin"
@@ -2316,7 +2316,7 @@ events:
         - "/usr/local"
         - "/usr"
         - "/"
-        - "/home/mia/ai-servis/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
+        - "/home/mia/mia/.buildenv/venv/lib/python3.13/site-packages/cmake/data"
         - "/usr/local"
         - "/usr/X11R6"
         - "/usr/pkg"
@@ -2354,7 +2354,7 @@ events:
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
       
       The C compiler identification is GNU, found in:
-        /home/mia/ai-servis/build-raspberry-pi/CMakeFiles/3.31.6/CompilerIdC/a.out
+        /home/mia/mia/build-raspberry-pi/CMakeFiles/3.31.6/CompilerIdC/a.out
       
   -
     kind: "message-v1"
@@ -2376,7 +2376,7 @@ events:
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
       
       The CXX compiler identification is GNU, found in:
-        /home/mia/ai-servis/build-raspberry-pi/CMakeFiles/3.31.6/CompilerIdCXX/a.out
+        /home/mia/mia/build-raspberry-pi/CMakeFiles/3.31.6/CompilerIdCXX/a.out
       
   -
     kind: "try_compile-v1"
@@ -2387,8 +2387,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6"
-      binary: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6"
+      source: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6"
+      binary: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6"
     cmakeVariables:
       CMAKE_C_FLAGS: ""
       CMAKE_C_FLAGS_DEBUG: "-g"
@@ -2397,11 +2397,11 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
+        Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
         
         Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e9809/fast
         /usr/bin/gmake  -f CMakeFiles/cmTC_e9809.dir/build.make CMakeFiles/cmTC_e9809.dir/build
-        gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
+        gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
         Building C object CMakeFiles/cmTC_e9809.dir/CMakeCCompilerABI.c.o
         /usr/bin/gcc   -v -o CMakeFiles/cmTC_e9809.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.31/Modules/CMakeCCompilerABI.c
         Using built-in specs.
@@ -2459,7 +2459,7 @@ events:
         GNU ld (GNU Binutils for Debian) 2.44
         COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_e9809' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_e9809.'
         /usr/bin/gcc  -v -Wl,-v CMakeFiles/cmTC_e9809.dir/CMakeCCompilerABI.c.o -o cmTC_e9809
-        gmake[1]: Leaving directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
+        gmake[1]: Leaving directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6'
         
       exitCode: 0
   -
@@ -2494,11 +2494,11 @@ events:
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6']
+        ignore line: [Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6']
         ignore line: []
         ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e9809/fast]
         ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_e9809.dir/build.make CMakeFiles/cmTC_e9809.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6']
+        ignore line: [gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-m6C7W6']
         ignore line: [Building C object CMakeFiles/cmTC_e9809.dir/CMakeCCompilerABI.c.o]
         ignore line: [/usr/bin/gcc   -v -o CMakeFiles/cmTC_e9809.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake-3.31/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
@@ -2639,8 +2639,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg"
-      binary: "/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg"
+      source: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg"
+      binary: "/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -2650,11 +2650,11 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
+        Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
         
         Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_99a6b/fast
         /usr/bin/gmake  -f CMakeFiles/cmTC_99a6b.dir/build.make CMakeFiles/cmTC_99a6b.dir/build
-        gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
+        gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
         Building CXX object CMakeFiles/cmTC_99a6b.dir/CMakeCXXCompilerABI.cpp.o
         /usr/bin/g++   -v -o CMakeFiles/cmTC_99a6b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp
         Using built-in specs.
@@ -2716,7 +2716,7 @@ events:
         GNU ld (GNU Binutils for Debian) 2.44
         COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_99a6b' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_99a6b.'
         /usr/bin/g++  -v -Wl,-v CMakeFiles/cmTC_99a6b.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_99a6b
-        gmake[1]: Leaving directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
+        gmake[1]: Leaving directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg'
         
       exitCode: 0
   -
@@ -2757,11 +2757,11 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg']
+        ignore line: [Change Dir: '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg']
         ignore line: []
         ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_99a6b/fast]
         ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_99a6b.dir/build.make CMakeFiles/cmTC_99a6b.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/mia/ai-servis/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg']
+        ignore line: [gmake[1]: Entering directory '/home/mia/mia/build-raspberry-pi/CMakeFiles/CMakeScratch/TryCompile-Nlsuwg']
         ignore line: [Building CXX object CMakeFiles/cmTC_99a6b.dir/CMakeCXXCompilerABI.cpp.o]
         ignore line: [/usr/bin/g++   -v -o CMakeFiles/cmTC_99a6b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]

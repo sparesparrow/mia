@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for AI-SERVIS Enhanced Core Orchestrator
+Test script for MIA Enhanced Core Orchestrator
 Demonstrates the core functionality and features
 """
 
@@ -295,7 +295,7 @@ async def test_session_management():
 
 async def run_all_tests():
     """Run all test suites"""
-    print("🚀 Starting AI-SERVIS Enhanced Core Orchestrator Tests")
+    print("🚀 Starting MIA Enhanced Core Orchestrator Tests")
     print("=" * 60)
     
     test_suites = [

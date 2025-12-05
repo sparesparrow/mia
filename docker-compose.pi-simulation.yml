@@ -6,7 +6,7 @@ services:
     build:
       context: ./containers/pi-simulation
       dockerfile: Dockerfile
-    container_name: ai-servis-pi-sim
+    container_name: mia-pi-sim
     restart: unless-stopped
     environment:
       - PI_SIMULATION=true
@@ -36,14 +36,14 @@ services:
       - mqtt-broker
       - gpio-simulator
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # GPIO Hardware Simulator
   gpio-simulator:
     build:
       context: ./containers/gpio-simulator
       dockerfile: Dockerfile
-    container_name: ai-servis-gpio-sim
+    container_name: mia-gpio-sim
     restart: unless-stopped
     environment:
       - SIMULATION_MODE=raspberry-pi-4
@@ -58,14 +58,14 @@ services:
       - ./volumes/gpio-sim-state:/app/state
       - ./containers/gpio-simulator/pin-configs:/app/configs
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # ESP32 Device Simulators
   esp32-obd-sim:
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
-    container_name: ai-servis-esp32-obd-sim
+    container_name: mia-esp32-obd-sim
     restart: unless-stopped
     environment:
       - ESP32_VARIANT=obd
@@ -78,13 +78,13 @@ services:
     depends_on:
       - mqtt-broker
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   esp32-io-sim:
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
-    container_name: ai-servis-esp32-io-sim
+    container_name: mia-esp32-io-sim
     restart: unless-stopped
     environment:
       - ESP32_VARIANT=io
@@ -97,13 +97,13 @@ services:
     depends_on:
       - mqtt-broker
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   esp32-cam-sim:
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
-    container_name: ai-servis-esp32-cam-sim
+    container_name: mia-esp32-cam-sim
     restart: unless-stopped
     environment:
       - ESP32_VARIANT=cam
@@ -119,14 +119,14 @@ services:
     depends_on:
       - mqtt-broker
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # Vehicle Data Generator
   vehicle-data-generator:
     build:
       context: ./containers/vehicle-simulator
       dockerfile: Dockerfile
-    container_name: ai-servis-vehicle-sim
+    container_name: mia-vehicle-sim
     restart: unless-stopped
     environment:
       - VEHICLE_PROFILE=sedan
@@ -140,14 +140,14 @@ services:
     depends_on:
       - mqtt-broker
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # Hardware Performance Monitor
   hardware-monitor:
     build:
       context: ./containers/hardware-monitor
       dockerfile: Dockerfile
-    container_name: ai-servis-hw-monitor
+    container_name: mia-hw-monitor
     restart: unless-stopped
     environment:
       - MONITORING_INTERVAL=5
@@ -164,12 +164,12 @@ services:
     depends_on:
       - mqtt-broker
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # MQTT Broker (shared)
   mqtt-broker:
     image: eclipse-mosquitto:2.0
-    container_name: ai-servis-mqtt-pi-sim
+    container_name: mia-mqtt-pi-sim
     restart: unless-stopped
     ports:
       - "1884:1883"  # Different port to avoid conflicts
@@ -179,14 +179,14 @@ services:
       - ./volumes/mqtt-pi-data:/mosquitto/data
       - ./volumes/mqtt-pi-logs:/mosquitto/log
     networks:
-      - ai-servis-pi-network
+      - mia-pi-network
 
   # Simulation Control Panel
   simulation-control:
     build:
       context: ./containers/simulation-control
       dockerfile: Dockerfile
-    container_name: ai-servis-sim-control
+    container_name: mia-sim-control
     restart: unless-stopped
     environment:
       - MQTT_BROKER=mqtt-broker:1883
@@ -199,26 +199,26 @@ services:
       - mqtt-broker
       - redis
     networks:
-      - ai-servis-pi-network
-      - ai-servis-dev-network  # Connect to main network for Redis
+      - mia-pi-network
+      - mia-dev-network  # Connect to main network for Redis
 
   # Redis for simulation state
   redis:
     image: redis:7-alpine
-    container_name: ai-servis-redis-sim
+    container_name: mia-redis-sim
     restart: unless-stopped
     ports:
       - "6380:6379"  # Different port to avoid conflicts
     volumes:
       - ./volumes/redis-sim-data:/data
     networks:
-      - ai-servis-pi-network
-      - ai-servis-dev-network
+      - mia-pi-network
+      - mia-dev-network
 
 networks:
-  ai-servis-pi-network:
+  mia-pi-network:
     driver: bridge
-  ai-servis-dev-network:
+  mia-dev-network:
     external: true
 
 volumes:

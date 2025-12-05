@@ -6,8 +6,8 @@ Wants=zmq-broker.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/ai-servis/rpi
-ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py
+WorkingDirectory=/opt/mia/rpi
+ExecStart=/usr/bin/python3 /opt/mia/rpi/hardware/serial_bridge.py
 Restart=always
 RestartSec=10
 StandardOutput=journal

@@ -1,16 +1,16 @@
-# 📋 AI-SERVIS Universal: Master TODO List
+# 📋 MIA Universal: Master TODO List
 
 **Version**: 1.0  
 **Created**: August 30, 2025  
 **Status**: Planning Phase  
 **Completion**: 0/142 tasks (0%)
 
-This document serves as the central source of truth for all implementation tasks in the AI-SERVIS Universal project. Each task includes clear acceptance criteria, dependencies, and estimated effort.
+This document serves as the central source of truth for all implementation tasks in the MIA Universal project. Each task includes clear acceptance criteria, dependencies, and estimated effort.
 
 ---
 
 ## 🎯 **Project Overview**
-Transform AI-SERVIS from automotive-only to universal cross-platform AI assistant ecosystem using modular MCP architecture and containerization.
+Transform MIA from automotive-only to universal cross-platform AI assistant ecosystem using modular MCP architecture and containerization.
 
 **Key Objectives:**
 - ✅ Extend audio assistant to home/desktop environments
@@ -48,7 +48,7 @@ Transform AI-SERVIS from automotive-only to universal cross-platform AI assistan
 #### **TASK-001: Repository Structure Setup**
 - [ ] Create monorepo directory structure
   ```
-  ai-servis-universal/
+  mia-universal/
   ├── modules/
   │   ├── core-orchestrator/
   │   ├── ai-audio-assistant/
@@ -102,7 +102,7 @@ Transform AI-SERVIS from automotive-only to universal cross-platform AI assistan
 - [ ] Create documentation structure
 - [ ] Configure automated deployment to GitHub Pages
 - [ ] Add search functionality
-- **Acceptance Criteria**: Documentation site accessible at `https://sparesparrow.github.io/ai-servis-universal/`
+- **Acceptance Criteria**: Documentation site accessible at `https://sparesparrow.github.io/mia-universal/`
 - **Estimated Effort**: 3 hours
 - **Dependencies**: TASK-001
 

@@ -60,7 +60,7 @@ setup_conan_remotes() {
 }
 
 # Create AI-SERVIS specific zero-copy environment
-create_ai_servis_env() {
+create_mia_env() {
     echo -e "${CYAN}Creating AI-SERVIS build environment...${NC}"
     
     # Run the create-zero-copy-env.sh script
@@ -74,7 +74,7 @@ create_ai_servis_env() {
 }
 
 # Install AI-SERVIS specific Conan dependencies
-install_ai_servis_deps() {
+install_mia_deps() {
     echo -e "${CYAN}Installing AI-SERVIS Conan dependencies...${NC}"
     
     # Activate environment if available
@@ -118,8 +118,8 @@ generate_activation_script() {
 # =============================================================================
 
 _BUILDENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export AI_SERVIS_ROOT="$(cd "$_BUILDENV_DIR/.." && pwd)"
-export AI_SERVIS_BUILDENV="$_BUILDENV_DIR"
+export MIA_ROOT="$(cd "$_BUILDENV_DIR/.." && pwd)"
+export MIA_BUILDENV="$_BUILDENV_DIR"
 
 # Activate sparetools environment if available
 SPARETOOLS_ACTIVATE="${HOME}/.openssl-devenv/activate.sh"
@@ -128,49 +128,49 @@ if [ -f "$SPARETOOLS_ACTIVATE" ]; then
 fi
 
 # Fallback to local venv if sparetools not available
-if [ -d "$AI_SERVIS_BUILDENV/venv" ]; then
-    source "$AI_SERVIS_BUILDENV/venv/bin/activate"
+if [ -d "$MIA_BUILDENV/venv" ]; then
+    source "$MIA_BUILDENV/venv/bin/activate"
 fi
 
 # Set Conan home
-export CONAN_HOME="$AI_SERVIS_BUILDENV/conan"
+export CONAN_HOME="$MIA_BUILDENV/conan"
 
 # Add project bin to PATH
-export PATH="$AI_SERVIS_ROOT/bin:$PATH"
+export PATH="$MIA_ROOT/bin:$PATH"
 
 # Set build cache directory
-export CCACHE_DIR="$AI_SERVIS_BUILDENV/ccache"
+export CCACHE_DIR="$MIA_BUILDENV/ccache"
 
 # Helper functions
-ai-servis-build() {
-    "$AI_SERVIS_ROOT/tools/build.sh" "$@"
+mia-build() {
+    "$MIA_ROOT/tools/build.sh" "$@"
 }
 
-ai-servis-clean() {
+mia-clean() {
     echo "Cleaning build directories..."
-    rm -rf "$AI_SERVIS_ROOT/build-"* 2>/dev/null
-    rm -rf "$AI_SERVIS_ROOT/platforms/cpp/build" 2>/dev/null
+    rm -rf "$MIA_ROOT/build-"* 2>/dev/null
+    rm -rf "$MIA_ROOT/platforms/cpp/build" 2>/dev/null
     echo "Clean complete."
 }
 
-ai-servis-info() {
+mia-info() {
     echo "AI-SERVIS Build Environment"
-    echo "  Project Root: $AI_SERVIS_ROOT"
-    echo "  Build Env:    $AI_SERVIS_BUILDENV"
+    echo "  Project Root: $MIA_ROOT"
+    echo "  Build Env:    $MIA_BUILDENV"
     echo "  Python:       $(which python3 2>/dev/null || which python 2>/dev/null || echo 'not found')"
     echo "  Conan:        $(which conan 2>/dev/null || echo 'not found')"
     echo "  Conan Home:   $CONAN_HOME"
     echo ""
     echo "Available commands:"
-    echo "  ai-servis-build [target]  - Build components"
-    echo "  ai-servis-clean           - Clean build directories"
-    echo "  ai-servis-info            - Show this info"
+    echo "  mia-build [target]  - Build components"
+    echo "  mia-clean           - Clean build directories"
+    echo "  mia-info            - Show this info"
 }
 
-export -f ai-servis-build ai-servis-clean ai-servis-info
+export -f mia-build mia-clean mia-info
 
 echo "AI-SERVIS build environment activated."
-echo "Run 'ai-servis-info' for help."
+echo "Run 'mia-info' for help."
 ENVSCRIPT
 
     chmod +x "$BUILDENV_DIR/activate.sh"
@@ -262,7 +262,7 @@ main() {
             pip install --upgrade pip conan
         fi
         
-        install_ai_servis_deps
+        install_mia_deps
         echo -e "${GREEN}Update complete!${NC}"
         exit 0
     fi
@@ -277,12 +277,12 @@ main() {
         python3 "$PROJECT_ROOT/complete-bootstrap.py" || {
             echo -e "${YELLOW}Bootstrap script failed, falling back to legacy approach...${NC}"
             setup_conan_remotes
-            create_ai_servis_env
+            create_mia_env
         }
     else
         echo -e "${YELLOW}complete-bootstrap.py not found, using legacy approach...${NC}"
         setup_conan_remotes
-        create_ai_servis_env
+        create_mia_env
     fi
     
     # Generate activation script if it doesn't exist
@@ -290,7 +290,7 @@ main() {
         generate_activation_script
     fi
     
-    install_ai_servis_deps
+    install_mia_deps
     
     echo ""
     echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"

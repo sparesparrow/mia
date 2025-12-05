@@ -1,8 +1,7 @@
 {
-  "name": "ai-servis-web",
+  "name": "mia-web",
   "version": "1.0.0",
-  "description": "AI-SERVIS Web Pages Generator",
-  "main": "scripts/generatePages.js",
+  "description": "MIA Web Pages Generator",
   "scripts": {
     "build": "node scripts/generatePages.js",
     "clean": "rm -rf dist/",
@@ -13,11 +12,11 @@
   },
   "devDependencies": {},
   "keywords": [
-    "ai-servis",
+    "mia",
     "web",
     "templating",
     "i18n"
   ],
-  "author": "AI-SERVIS Team",
+  "author": "MIA Team",
   "license": "MIT"
 }

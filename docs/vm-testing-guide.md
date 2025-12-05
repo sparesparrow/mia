@@ -38,7 +38,7 @@ chmod +x vm-test-setup.sh
 
 # Or if you have the repository
 git clone https://github.com/ai-servis/ai-servis.git
-cd ai-servis
+cd mia
 ./scripts/vm-test-setup.sh
 ```
 

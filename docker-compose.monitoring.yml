@@ -171,7 +171,7 @@ services:
     restart: unless-stopped
     environment:
       - MQTT_BROKER=mqtt-broker:1883
-      - MQTT_TOPICS=ai-servis/+/+,esp32/+/+,hardware/+/+
+      - MQTT_TOPICS=mia/+/+,esp32/+/+,hardware/+/+
       - PROMETHEUS_PORT=9234
     ports:
       - "9234:9234"

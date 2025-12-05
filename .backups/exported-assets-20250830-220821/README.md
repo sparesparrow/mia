@@ -1,4 +1,4 @@
-# AI-SERVIS: Modulární Car AI Server
+# MIA: Modulární Car AI Server
 
 Kompletní řešení pro autoservisy kombinující ANPR, OBD diagnostiku, hlasového AI asistenta a fleet management v jednom modulárním systému.
 
@@ -27,8 +27,8 @@ ai-servis/
 
 ```bash
 # Klonování repozitáře
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # Android aplikace
 cd android
@@ -157,5 +157,5 @@ Tento projekt je licencován pod MIT licencí - viz [LICENSE](LICENSE) soubor pr
 
 ---
 
-**AI-SERVIS** - První modulární AI Car Server v ČR 🚗✨
+**MIA** - První modulární AI Car Server v ČR 🚗✨
 

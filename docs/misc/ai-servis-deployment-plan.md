@@ -1,8 +1,8 @@
-# AI-SERVIS: Kompletní Deployment Plán & Dokumentace
+# MIA: Kompletní Deployment Plán & Dokumentace
 
 ## 🚗 Přehled Projektu
 
-**AI-SERVIS** je inovativní autoservis specializující se na AI technologie pro automobily. Naším cílem je poskytovat modulární, cenově dostupné řešení založené na edge AI zpracování.
+**MIA** je inovativní autoservis specializující se na AI technologie pro automobily. Naším cílem je poskytovat modulární, cenově dostupné řešení založené na edge AI zpracování.
 
 ### 🎯 Klíčové Výhody
 - **Edge AI zpracování** - bez závislosti na cloudu
@@ -168,7 +168,7 @@ services:
 
 ## 📞 Kontaktní Informace
 
-**AI-SERVIS s.r.o.**
+**MIA s.r.o.**
 - 📍 Brno-sever, Jihomoravský kraj  
 - 📞 +420 777 888 999
 - 📧 info@ai-servis.cz
@@ -178,4 +178,4 @@ services:
 
 *Dokumentace vytvořena: Srpen 2025*  
 *Verze: 1.0*  
-*Autor: AI-SERVIS Development Team*
+*Autor: MIA Development Team*

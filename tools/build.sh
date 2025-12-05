@@ -130,7 +130,7 @@ echo ""
 
 # List built binaries
 echo -e "${CYAN}Built binaries:${NC}"
-for binary in webgrab-client webgrab-server hardware-server ai-servis-rpi; do
+for binary in webgrab-client webgrab-server hardware-server mia-rpi; do
     if [ -f "$binary" ]; then
         echo -e "  ${GREEN}✓${NC} $binary"
     fi

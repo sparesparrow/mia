@@ -1,8 +1,8 @@
 site_name: AI-SERVIS Documentation
 site_description: Modular Car AI Server — Android-first with ESP32 and optional Pi gateway
-repo_url: https://github.com/sparesparrow/ai-servis-universal
-repo_name: sparesparrow/ai-servis-universal
-site_url: https://sparesparrow.github.io/ai-servis-universal/
+repo_url: https://github.com/sparesparrow/mia-universal
+repo_name: sparesparrow/mia-universal
+site_url: https://sparesparrow.github.io/mia-universal/
 theme:
   name: material
   language: en
@@ -53,12 +53,12 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/sparesparrow/ai-servis
+      link: https://github.com/sparesparrow/mia
 
 # --- Auto-appended by apply-exported-assets.sh ---
 # If nav is managed manually, ensure these entries are present:
 # - Universal:
-#   - Proposal: docs/ai-servis-universal-proposal.md
+#   - Proposal: docs/mia-universal-proposal.md
 #   - Implementation Ready: docs/implementation-ready-summary.md
 #   - Architecture Diagrams: docs/architecture/diagrams.md
 #   - Master TODO: docs/TODO-master-list.md

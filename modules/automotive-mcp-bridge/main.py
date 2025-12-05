@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚗 AI-SERVIS Universal: Automotive MCP Bridge
+🚗 MIA Universal: Automotive MCP Bridge
 
 Enhanced MCP (Model Context Protocol) integration specifically designed for
 automotive AI voice control systems with real-time vehicle data processing,

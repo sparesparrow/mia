@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🔒 AI-SERVIS Universal: Automotive Security Scanner
+🔒 MIA Universal: Automotive Security Scanner
 
 Comprehensive security monitoring and vulnerability assessment specifically
 designed for automotive AI systems with ISO 26262 compliance and
@@ -812,7 +812,7 @@ async def main():
     """Main entry point for automotive security scanner"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="AI-SERVIS Automotive Security Scanner")
+    parser = argparse.ArgumentParser(description="MIA Automotive Security Scanner")
     parser.add_argument("--scan-type", choices=["container", "source", "network", "all"], default="all")
     parser.add_argument("--target", help="Target to scan (image name, source path, or host)")
     parser.add_argument("--output", default="automotive_security_report.json", help="Output report file")
@@ -863,7 +863,7 @@ async def main():
         report = await scanner.generate_security_report(Path(args.output))
         
         # Print summary
-        print(f"\n🔒 AI-SERVIS Automotive Security Scan Complete")
+        print(f"\n🔒 MIA Automotive Security Scan Complete")
         print(f"📊 Overall Compliance Score: {report['executive_summary']['overall_compliance_score']:.1f}%")
         print(f"🚗 Automotive Safety Score: {report['executive_summary']['overall_safety_score']:.1f}%")
         print(f"⚠️  Critical Vulnerabilities: {report['executive_summary']['critical_vulnerabilities']}")

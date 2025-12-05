@@ -7,7 +7,7 @@ echo "=================================="
 IMAGE_NAME=ai-servis-android-build:latest
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 ANDROID_DIR="$PROJECT_ROOT"
-SDK_VOL=ai_servis_android_sdk
+SDK_VOL=mia_android_sdk
 
 # Check if APK exists
 if [ ! -f "$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk" ]; then

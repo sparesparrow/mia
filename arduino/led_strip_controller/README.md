@@ -275,4 +275,4 @@ Edit `led_strip_controller.ino`:
 
 ## License
 
-Part of the AI-SERVIS Universal project. See main LICENSE file.
+Part of the MIA Universal project. See main LICENSE file.

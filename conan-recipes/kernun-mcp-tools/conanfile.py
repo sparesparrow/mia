@@ -11,9 +11,9 @@ class KernunMCPToolsConan(ConanFile):
     name = "kernun-mcp-tools"
     version = "0.1.0"
     license = "Proprietary"
-    author = "AI-SERVIS Team"
-    url = "https://github.com/sparesparrow/ai-servis"
-    homepage = "https://github.com/sparesparrow/ai-servis"
+    author = "MIA Team"
+    url = "https://github.com/sparesparrow/mia"
+    homepage = "https://github.com/sparesparrow/mia"
     description = "MCP integration for Kernun proxy network security analysis tools"
     topics = ("mcp", "proxy", "network-security", "traffic-analysis", "tls")
     

@@ -70,7 +70,7 @@ echo "Building..."
 make -j$(nproc)
 
 # Create installation directory
-INSTALL_DIR="/opt/ai-servis"
+INSTALL_DIR="/opt/mia"
 RPI_DIR="$INSTALL_DIR/rpi"
 echo ""
 echo "Installing to $INSTALL_DIR..."
@@ -80,7 +80,7 @@ sudo mkdir -p "$INSTALL_DIR/logs"
 sudo mkdir -p "$RPI_DIR"
 
 # Copy binaries
-sudo cp ai-servis-rpi "$INSTALL_DIR/bin/" 2>/dev/null || true
+sudo cp mia-rpi "$INSTALL_DIR/bin/" 2>/dev/null || true
 sudo cp hardware-server "$INSTALL_DIR/bin/" 2>/dev/null || true
 sudo chmod +x "$INSTALL_DIR/bin/"* 2>/dev/null || true
 
@@ -146,7 +146,7 @@ if [ -f "rpi/services/mia-obd-worker.service" ]; then
 fi
 
 # Legacy C++ service (if binary exists)
-if [ -f "$INSTALL_DIR/bin/ai-servis-rpi" ]; then
+if [ -f "$INSTALL_DIR/bin/mia-rpi" ]; then
     sudo tee /etc/systemd/system/ai-servis.service > /dev/null <<EOF
 [Unit]
 Description=AI-SERVIS Universal Raspberry Pi Service (C++)
@@ -156,7 +156,7 @@ After=network.target mosquitto.service
 Type=simple
 User=root
 WorkingDirectory=$INSTALL_DIR
-ExecStart=$INSTALL_DIR/bin/ai-servis-rpi
+ExecStart=$INSTALL_DIR/bin/mia-rpi
 Restart=always
 RestartSec=10
 StandardOutput=journal

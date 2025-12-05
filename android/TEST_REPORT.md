@@ -4,7 +4,7 @@
 - **File**: `app/build/outputs/apk/debug/app-debug.apk`
 - **Size**: 123MB
 - **Version**: 1.0.0-debug
-- **Application ID**: `cz.aiservis.app.debug`
+- **Application ID**: `cz.mia.app.debug`
 - **Build Date**: $(date)
 
 ## ✅ Validation Results

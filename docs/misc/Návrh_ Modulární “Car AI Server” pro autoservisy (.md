@@ -223,13 +223,13 @@ Chceš, abych připravil konkrétní docker‑compose skeleton pro bzeed‑mobil
 
 ---
 
-# AI-SERVIS: Kompletní Řešení Autoservisu s AI Technologiemi
+# MIA: Kompletní Řešení Autoservisu s AI Technologiemi
 
 Vytvořil jsem kompletní business řešení pro autoservis "AI-servis" specializující se na AI technologie pro automobily. Projekt zahrnuje webové stránky, technickou architekturu, cenovou strategii a automatizované nasazení.
 
-![AI-SERVIS Business Overview - Cenové balíčky a tržní pozice](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/6a81092a497c18982ed95ded0f062213/aaf53e25-41f1-4c14-8de3-c92d260a8a87/029ad1c7.png)
+![MIA Business Overview - Cenové balíčky a tržní pozice](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/6a81092a497c18982ed95ded0f062213/aaf53e25-41f1-4c14-8de3-c92d260a8a87/029ad1c7.png)
 
-AI-SERVIS Business Overview - Cenové balíčky a tržní pozice
+MIA Business Overview - Cenové balíčky a tržní pozice
 
 ## 🌐 Webová Prezentace
 
@@ -261,9 +261,9 @@ Vytvořena je profesionální webová stránka s moderním tmavým designem obsa
 
 ## 🏗️ Technická Architektura
 
-![AI-SERVIS technická architektura systému](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/13e805a6-5deb-4197-b239-f36b0705ef8b.png)
+![MIA technická architektura systému](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/13e805a6-5deb-4197-b239-f36b0705ef8b.png)
 
-AI-SERVIS technická architektura systému
+MIA technická architektura systému
 
 ### Modulární AI Car Server
 - **Raspberry Pi 5** (8GB) jako centrální hub[^2_3][^2_4]
@@ -546,7 +546,7 @@ Příklad JSON‑LD (vložit do <head>):
 {
   "@context":"https://schema.org",
   "@type":"LocalBusiness",
-  "name":"AI-SERVIS",
+  "name":"MIA",
   "image":"https://.../hero.jpg",
   "address":{"@type":"PostalAddress","addressLocality":"Brno-sever","addressCountry":"CZ"},
   "telephone":"+420777888999",
@@ -640,9 +640,9 @@ Chceš, abych rovnou připravil aktualizovanou verzi webu s výše uvedenými ú
 
 # vem v potaz použití OBD 2, je to jednostranná diagnostika, a umožňuje do raspberry posílat informace jako se posílají do kontrolních ledek nad volantem, atd. aby tě to třeba upozornilo nahlas na docházející palivo, zhasnuta světla při jízdě atd. půjdou tím i napájet 5V kontrollery nebo samotné to raspberry.
 
-Perfektní pozorování! OBD-2 integrace dramaticky rozšíří možnosti AI-SERVIS systému. Vidím na fotkách Raspberry Pi a PD modul - to je přesně ten směr. Pojďme rozšířit řešení o plnou OBD-2 diagnostiku a napájení.
+Perfektní pozorování! OBD-2 integrace dramaticky rozšíří možnosti MIA systému. Vidím na fotkách Raspberry Pi a PD modul - to je přesně ten směr. Pojďme rozšířit řešení o plnou OBD-2 diagnostiku a napájení.
 
-# 🚗 OBD-2 Rozšíření AI-SERVIS
+# 🚗 OBD-2 Rozšíření MIA
 
 ## Technická Integrace
 
@@ -894,7 +894,7 @@ Návratnost: 3.3 měsíce
 - Integrated experience vs. separate apps
 - Local processing vs. cloud dependency
 
-**Toto OBD-2 rozšíření transformuje AI-SERVIS z "bezpečnostního" systému na "complete vehicle intelligence platform" - výrazně zvyšuje value proposition a competitive advantage.**
+**Toto OBD-2 rozšíření transformuje MIA z "bezpečnostního" systému na "complete vehicle intelligence platform" - výrazně zvyšuje value proposition a competitive advantage.**
 
 Chceš, abym připravil aktualizovanou verzi webu s OBD-2 funkcionalitou a novými cenami?
 <span style="display:none">[^4_1][^4_2]</span>
@@ -908,21 +908,21 @@ Chceš, abym připravil aktualizovanou verzi webu s OBD-2 funkcionalitou a nový
 
 ---
 
-# 🎨 Kompletní Sada Vizuálních Materiálů AI-SERVIS
+# 🎨 Kompletní Sada Vizuálních Materiálů MIA
 
-Vytvořil jsem komprehensivní sadu technických diagramů a business infografik pro AI-SERVIS projekt:
+Vytvořil jsem komprehensivní sadu technických diagramů a business infografik pro MIA projekt:
 
 ## 🏗️ Technické Architektury
 
-![AI-SERVIS systémová architektura s OBD-2 integrací](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/0e5e048f-b03c-48d0-b9b1-fe6f809f0b1b.png)
+![MIA systémová architektura s OBD-2 integrací](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/0e5e048f-b03c-48d0-b9b1-fe6f809f0b1b.png)
 
-AI-SERVIS systémová architektura s OBD-2 integrací
+MIA systémová architektura s OBD-2 integrací
 
 **Systémová architektura** - ukazuje integraci všech komponent: Raspberry Pi 5, OBD-2, ANPR kamera, ESP32 moduly, Android telefon s jasným datovým tokem.
 
-![Hardware zapojení a konektory AI-SERVIS](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/58732464-aebd-4684-b53a-302bd5772766.png)
+![Hardware zapojení a konektory MIA](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/58732464-aebd-4684-b53a-302bd5772766.png)
 
-Hardware zapojení a konektory AI-SERVIS
+Hardware zapojení a konektory MIA
 
 **Hardware zapojení** - detailní schéma konektorů a pin assignments pro všechny komponenty včetně napájení a komunikačních rozhraní.
 
@@ -934,47 +934,47 @@ OBD-2 integrace - detailní schéma komunikace
 
 ## 📊 Data Flow \& Procesy
 
-![AI-SERVIS Data Flow - tok dat a zpracování](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/5bad4246-400d-4f6a-a045-c8411385b1e8/f522d812.png)
+![MIA Data Flow - tok dat a zpracování](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/5bad4246-400d-4f6a-a045-c8411385b1e8/f522d812.png)
 
-AI-SERVIS Data Flow - tok dat a zpracování
+MIA Data Flow - tok dat a zpracování
 
 **Data flow diagram** - tok dat od sensorů přes Docker kontejnery k uživatelským rozhraním s AI rozhodovacími body.
 
-![Proces instalace AI-SERVIS v automobilu](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/b86608ff-b3a4-41be-9841-f1098ea46a30.png)
+![Proces instalace MIA v automobilu](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/b86608ff-b3a4-41be-9841-f1098ea46a30.png)
 
-Proces instalace AI-SERVIS v automobilu
+Proces instalace MIA v automobilu
 
 **Instalační proces** - step-by-step vizualizace instalace v automobilu s technickými kroky a workflow.
 
-![AI-SERVIS Android aplikace - UI mockupy](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c06c16eb-3708-48fd-8b60-188343e23837.png)
+![MIA Android aplikace - UI mockupy](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c06c16eb-3708-48fd-8b60-188343e23837.png)
 
-AI-SERVIS Android aplikace - UI mockupy
+MIA Android aplikace - UI mockupy
 
 **UI mockupy** - Android aplikace s dashboardem, diagnostikou, ANPR alerts a hlasovým AI rozhraním.
 
 ## 💼 Business Analýzy
 
-![Srovnání AI-SERVIS vs tradiční ANPR systémy](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/7c118d8a-2c36-4bbe-9a35-695d29add628/3123f21e.png)
+![Srovnání MIA vs tradiční ANPR systémy](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/7c118d8a-2c36-4bbe-9a35-695d29add628/3123f21e.png)
 
-Srovnání AI-SERVIS vs tradiční ANPR systémy
+Srovnání MIA vs tradiční ANPR systémy
 
-**Konkurenční srovnání** - infografika porovnávající AI-SERVIS vs tradiční ANPR systémy (ceny, funkce, TCO).
+**Konkurenční srovnání** - infografika porovnávající MIA vs tradiční ANPR systémy (ceny, funkce, TCO).
 
-![AI-SERVIS implementační timeline - 28 týdnů od návrhu po škálování](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/70d45df7-5076-4194-84eb-57a8f62077fd/86c95515.png)
+![MIA implementační timeline - 28 týdnů od návrhu po škálování](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/70d45df7-5076-4194-84eb-57a8f62077fd/86c95515.png)
 
-AI-SERVIS implementační timeline - 28 týdnů od návrhu po škálování
+MIA implementační timeline - 28 týdnů od návrhu po škálování
 
 **Implementační timeline** - 28-týdenní plán vývoje s team allocation, budgetem a milníky.
 
-![AI-SERVIS Customer Journey - cesta zákazníka od povědomí po loajalitu](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/499b791a-195d-47e2-82a9-42095f07d95e/b3664510.png)
+![MIA Customer Journey - cesta zákazníka od povědomí po loajalitu](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/499b791a-195d-47e2-82a9-42095f07d95e/b3664510.png)
 
-AI-SERVIS Customer Journey - cesta zákazníka od povědomí po loajalitu
+MIA Customer Journey - cesta zákazníka od povědomí po loajalitu
 
 **Customer journey** - mapa zákaznické cesty od povědomí po loajalitu s touchpoints a příležitostmi.
 
-![AI-SERVIS ROI \& Business Case - 3-letý finanční výhled](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/1fa98230-d5bc-4794-a6e1-afd0336fdf3c/9b3ca958.png)
+![MIA ROI \& Business Case - 3-letý finanční výhled](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/fc1d8262eb7b27341e101ea0655bb22a/1fa98230-d5bc-4794-a6e1-afd0336fdf3c/9b3ca958.png)
 
-AI-SERVIS ROI \& Business Case - 3-letý finanční výhled
+MIA ROI \& Business Case - 3-letý finanční výhled
 
 **ROI analýza** - 3-letý finanční výhled s break-even analýzou a tržní příležitostí.
 
@@ -1458,15 +1458,15 @@ Tell me your preferred license (e.g., Apache‑2.0/MIT) and repo hosting (GitHub
 
 ---
 
-# 🎯 Kompletní Vizuální Obsah pro AI-SERVIS - 4 Cílové Skupiny
+# 🎯 Kompletní Vizuální Obsah pro MIA - 4 Cílové Skupiny
 
 Vytvořil jsem specializované vizuální materiály pro každou cílovou skupinu s jasným zaměřením na jejich specifické potřeby:
 
 ## 1️⃣ MARKETING - Potenciální zákazníci
 
-![AI-SERVIS Marketing - Hodnota pro zákazníky](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/3e69024b-6a60-4589-bbc7-ce656d4d3f3a/882ca700.png)
+![MIA Marketing - Hodnota pro zákazníky](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/3e69024b-6a60-4589-bbc7-ce656d4d3f3a/882ca700.png)
 
-AI-SERVIS Marketing - Hodnota pro zákazníky
+MIA Marketing - Hodnota pro zákazníky
 
 **Value Proposition Infografika** - zdůrazňuje klíčové výhody:
 
@@ -1475,13 +1475,13 @@ AI-SERVIS Marketing - Hodnota pro zákazníky
 - **Edge AI privacy** - data zůstávají v autě
 - **Phone-first design** - využití vlastního telefonu
 
-![AI-SERVIS marketing - rodinná bezpečnost](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/05f5ed2d-d775-40be-81b7-cd7fec991cfa.png)
+![MIA marketing - rodinná bezpečnost](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/05f5ed2d-d775-40be-81b7-cd7fec991cfa.png)
 
-AI-SERVIS marketing - rodinná bezpečnost
+MIA marketing - rodinná bezpečnost
 
 **Lifestyle Marketing Visual** - emočně zapojuje zákazníky:
 
-- Šťastná rodina v autě s AI-SERVIS systémem
+- Šťastná rodina v autě s MIA systémem
 - Zdůrazňuje pocit bezpečí a technologické pokroky
 - Ukázka uživatelského rozhraní přímo v kontextu
 
@@ -1531,9 +1531,9 @@ Instalační checklist pro automobilové techniky
 
 ## 3️⃣ SOFTWARE ENGINEERS - Architektura \& Komponenty
 
-![AI-SERVIS Software Architecture - komponenty a komunikace](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/2f0e6285-9dd7-4f2a-a902-34f1e87833a3/35a5eb7c.png)
+![MIA Software Architecture - komponenty a komunikace](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/2f0e6285-9dd7-4f2a-a902-34f1e87833a3/35a5eb7c.png)
 
-AI-SERVIS Software Architecture - komponenty a komunikace
+MIA Software Architecture - komponenty a komunikace
 
 **Software Architecture** - kompletní technický overview:
 
@@ -1542,9 +1542,9 @@ AI-SERVIS Software Architecture - komponenty a komunikace
 - **Protokoly:** BLE GATT, WiFi Direct, MQTT topics schema
 - **Security:** Ed25519, TLS 1.3, Android Keystore integration
 
-![AI-SERVIS development environment - Android Studio](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/60c5d78d-fa16-4cf7-a7b0-805e0844dc48.png)
+![MIA development environment - Android Studio](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/60c5d78d-fa16-4cf7-a7b0-805e0844dc48.png)
 
-AI-SERVIS development environment - Android Studio
+MIA development environment - Android Studio
 
 **Development Environment** - praktický development setup:
 
@@ -1570,9 +1570,9 @@ esp32/
 
 ## 4️⃣ CUSTOMER SUPPORT - FAQ \& Troubleshooting
 
-![AI-SERVIS Customer Support - FAQ a troubleshooting guide](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/52cb1fbf-3e2c-4faa-b2af-7b766c25a672/141ae4c2.png)
+![MIA Customer Support - FAQ a troubleshooting guide](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/9a464215bddf8518619ebdb7a25557b6/52cb1fbf-3e2c-4faa-b2af-7b766c25a672/141ae4c2.png)
 
-AI-SERVIS Customer Support - FAQ a troubleshooting guide
+MIA Customer Support - FAQ a troubleshooting guide
 
 **Support Guide Dashboard** - komprehensivní support system:
 
@@ -1581,9 +1581,9 @@ AI-SERVIS Customer Support - FAQ a troubleshooting guide
 - **Escalation Matrix:** L1 Chatbot (85%), L2 Agent (95%), L3 Technical (99%)
 - **Response Times:** Chat 5min, Technical 2h, On-site 24h
 
-![AI-SERVIS customer support dashboard](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/f20a8c18-d093-4f4f-afd6-f2ded9e1024d.png)
+![MIA customer support dashboard](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/f20a8c18-d093-4f4f-afd6-f2ded9e1024d.png)
 
-AI-SERVIS customer support dashboard
+MIA customer support dashboard
 
 **Support Dashboard Interface** - praktické řešení:
 
@@ -1633,7 +1633,7 @@ AI-SERVIS customer support dashboard
 
 - 🌐 **Multi-channel usage** - web, print, presentations, training materials
 - 📱 **Mobile-first** - responsive design pro všechna zařízení
-- 🎨 **Brand consistency** - unified AI-SERVIS visual identity
+- 🎨 **Brand consistency** - unified MIA visual identity
 - 🔄 **Easy updates** - modular components pro rychlé změny
 
 **Tyto vizuální materiály pokrývají kompletní customer lifecycle od awareness po ongoing support, s jasným zaměřením na specific needs každé audience.**
@@ -1646,7 +1646,7 @@ AI-SERVIS customer support dashboard
 
 ---
 
-# 🚀 Kompletní AI-SERVIS Webová Aplikace
+# 🚀 Kompletní MIA Webová Aplikace
 
 Vytvořil jsem plně funkční, production-ready webovou aplikace s všemi pokročilými funkcemi a interaktivními elementy.
 
@@ -1697,7 +1697,7 @@ Pro Edition: 89.000 - 143.000 Kč
 
 ### 🎨 Modern UX/UI Features
 
-- **Dark automotive theme** s AI-SERVIS brandingem
+- **Dark automotive theme** s MIA brandingem
 - **Smooth animations** a micro-interactions
 - **Progressive loading** s skeleton screens
 - **Mobile-first responsive** design
@@ -1796,7 +1796,7 @@ Pro Edition: 89.000 - 143.000 Kč
 
 ### 🌈 Consistent Visual Identity
 
-- AI-SERVIS tmavý automotive theme
+- MIA tmavý automotive theme
 - Gradient akcenty pro premium feel
 - Professional typography hierarchy
 - Consistent icon library usage
@@ -1829,7 +1829,7 @@ Pro Edition: 89.000 - 143.000 Kč
 
 **Aplikace je plně funkční a připravená pro okamžité nasazení do produkce. Všechny interaktivní elementy fungují, pricing je dynamický, a uživatelský zážitek je optimalizován pro konverze napříč všemi cílovými segmenty.**
 
-**Tato webová aplikace transformuje AI-SERVIS z konceptu na profesionální, market-ready řešení s jasnou competitive advantage a compelling value proposition.**
+**Tato webová aplikace transformuje MIA z konceptu na profesionální, market-ready řešení s jasnou competitive advantage a compelling value proposition.**
 <span style="display:none">[^9_1][^9_2][^9_3][^9_4]</span>
 
 <div style="text-align: center">⁂</div>
@@ -1845,13 +1845,13 @@ Pro Edition: 89.000 - 143.000 Kč
 
 ---
 
-# 📚 AI-SERVIS Storyboard: Konkrétní Lidé, Konkrétní Scénáře
+# 📚 MIA Storyboard: Konkrétní Lidé, Konkrétní Scénáře
 
-Níže máte portfolio obrazových a infografických materiálů, které oživují technologii AI-SERVIS prostřednictvím osmi reálných use-case příběhů.
+Níže máte portfolio obrazových a infografických materiálů, které oživují technologii MIA prostřednictvím osmi reálných use-case příběhů.
 
-![AI-SERVIS Real-World Use Cases - konkrétní lidé, konkrétní problémy](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/e1d2423db07b2096364d5aa0585b7397/ee9d084f-939d-436f-abd9-6f3346d7cbda/69e6978b.png)
+![MIA Real-World Use Cases - konkrétní lidé, konkrétní problémy](https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/e1d2423db07b2096364d5aa0585b7397/ee9d084f-939d-436f-abd9-6f3346d7cbda/69e6978b.png)
 
-AI-SERVIS Real-World Use Cases - konkrétní lidé, konkrétní problémy
+MIA Real-World Use Cases - konkrétní lidé, konkrétní problémy
 
 ## 1. Tereza – Ochrana před stalkerem
 
@@ -2086,13 +2086,13 @@ Chceš, abych ti připravil konkrétní schéma zapojení podle přesných desek
 
 ---
 
-# 🔧 Kompletní Schéma Zapojení AI-SERVIS do CAN Sběrnice
+# 🔧 Kompletní Schéma Zapojení MIA do CAN Sběrnice
 
 Vytvořil jsem **kompletní technickou dokumentaci** pro připojení tvých modulů k automobilové CAN sběrnici s pokročilými audio funkcemi a úložištěm.
 
-![Kompletní schéma zapojení AI-SERVIS systému](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/7d214b4b-e2bc-41b7-bdc8-b9db0c09b5d2.png)
+![Kompletní schéma zapojení MIA systému](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/7d214b4b-e2bc-41b7-bdc8-b9db0c09b5d2.png)
 
-Kompletní schéma zapojení AI-SERVIS systému
+Kompletní schéma zapojení MIA systému
 
 ## 🎯 Hlavní Komponenty Systému
 
@@ -2451,7 +2451,7 @@ If you confirm which transceiver module you have on hand (SN65HVD230/TJA1050 etc
 
 # 🔬 Comprehensive Research: Embedded AI LLM Agents, ESP32, CAN Bus, ElevenLabs \& MCP
 
-Based on extensive research across 2025's latest developments, here's a comprehensive overview of cutting-edge technologies for AI-SERVIS implementation.
+Based on extensive research across 2025's latest developments, here's a comprehensive overview of cutting-edge technologies for MIA implementation.
 
 ## 🤖 Embedded AI LLM Agents on ESP32
 
@@ -2609,7 +2609,7 @@ mcp_tool_t vehicle_tools[] = {
 
 mcp_server_t *server = mcp_server_init(
     "ai_servis_vehicle",
-    "AI-SERVIS Vehicle MCP Server",
+    "MIA Vehicle MCP Server",
     "mqtts://broker.ai-servis.cz",
     "esp32_vehicle_001",
     username, password, cert
@@ -2622,7 +2622,7 @@ mcp_server_run(server);
 
 ### **MCP Architecture Benefits**
 
-**For AI-SERVIS:**
+**For MIA:**
 
 - **Standardized tool discovery** - AI agents automatically find available vehicle functions
 - **Secure tool execution** - OAuth 2.0 + policy-based access control
@@ -2637,14 +2637,14 @@ mcp_server_run(server);
 - **Zero-trust architecture** compatible
 
 
-## 🎯 AI-SERVIS Integration Architecture
+## 🎯 MIA Integration Architecture
 
 ### **Complete System Design**
 
 **ESP32 Hub (Vehicle Edge):**
 
 ```cpp
-// AI-SERVIS ESP32 Architecture
+// MIA ESP32 Architecture
 class AIServISHub {
     TwaiController can_bus;
     ElevenLabsTTS voice_synthesis;  
@@ -2722,7 +2722,7 @@ async def vehicle_assistant():
 - **Federated learning** for privacy-preserving vehicle AI training
 
 
-### **AI-SERVIS Competitive Advantages**
+### **MIA Competitive Advantages**
 
 1. **First-mover advantage** in MCP over MQTT for vehicles
 2. **Edge-first architecture** reducing cloud dependencies
@@ -2730,7 +2730,7 @@ async def vehicle_assistant():
 4. **Voice-native interaction** via ElevenLabs integration
 5. **Open-source foundation** enabling rapid ecosystem development
 
-**This research reveals AI-SERVIS is positioned at the intersection of four major technology trends: embedded AI democratization, voice interface maturation, automotive protocol standardization, and AI agent interoperability - creating a unique market opportunity in 2025.**
+**This research reveals MIA is positioned at the intersection of four major technology trends: embedded AI democratization, voice interface maturation, automotive protocol standardization, and AI agent interoperability - creating a unique market opportunity in 2025.**
 <span style="display:none">[^15_100][^15_101][^15_102][^15_103][^15_104][^15_105][^15_106][^15_107][^15_108][^15_109][^15_11][^15_110][^15_111][^15_112][^15_113][^15_114][^15_115][^15_116][^15_117][^15_118][^15_119][^15_12][^15_120][^15_121][^15_122][^15_123][^15_124][^15_125][^15_126][^15_127][^15_128][^15_129][^15_13][^15_130][^15_14][^15_15][^15_16][^15_17][^15_18][^15_19][^15_20][^15_21][^15_22][^15_23][^15_24][^15_25][^15_26][^15_27][^15_28][^15_29][^15_30][^15_31][^15_32][^15_33][^15_34][^15_35][^15_36][^15_37][^15_38][^15_39][^15_40][^15_41][^15_42][^15_43][^15_44][^15_45][^15_46][^15_47][^15_48][^15_49][^15_50][^15_51][^15_52][^15_53][^15_54][^15_55][^15_56][^15_57][^15_58][^15_59][^15_60][^15_61][^15_62][^15_63][^15_64][^15_65][^15_66][^15_67][^15_68][^15_69][^15_70][^15_71][^15_72][^15_73][^15_74][^15_75][^15_76][^15_77][^15_78][^15_79][^15_80][^15_81][^15_82][^15_83][^15_84][^15_85][^15_86][^15_87][^15_88][^15_89][^15_90][^15_91][^15_92][^15_93][^15_94][^15_95][^15_96][^15_97][^15_98][^15_99]</span>
 
 <div style="text-align: center">⁂</div>

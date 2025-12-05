@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AI-SERVIS Universal: Comprehensive Integration Test
+MIA Universal: Comprehensive Integration Test
 Tests the complete AI Audio Assistant system with all components working together
 """
 
@@ -621,7 +621,7 @@ async def test_error_scenarios():
 
 async def main():
     """Main test function"""
-    logger.info("🎵 AI-SERVIS Universal Audio Assistant - Comprehensive Integration Test 🎵")
+    logger.info("🎵 MIA Universal Audio Assistant - Comprehensive Integration Test 🎵")
     logger.info("=" * 80)
     
     # Test integrated system

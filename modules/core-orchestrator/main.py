@@ -1,5 +1,5 @@
 """
-AI-SERVIS Universal: Core Orchestrator
+MIA Universal: Core Orchestrator
 Main MCP host that coordinates all AI modules
 """
 
@@ -437,7 +437,7 @@ class CoreOrchestrator(MCPServer):
 
 async def main():
     """Main entry point"""
-    logger.info("Starting AI-SERVIS Core Orchestrator")
+    logger.info("Starting MIA Core Orchestrator")
     
     # Create orchestrator
     orchestrator = CoreOrchestrator()

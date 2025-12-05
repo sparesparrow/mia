@@ -1,7 +1,7 @@
 site_name: AI-SERVIS Documentation
 site_description: Modular Car AI Server — Android-first with ESP32 and optional Pi gateway
-repo_url: https://github.com/sparesparrow/ai-servis
-repo_name: sparesparrow/ai-servis
+repo_url: https://github.com/sparesparrow/mia
+repo_name: sparesparrow/mia
 theme:
   name: mkdocs
 nav:

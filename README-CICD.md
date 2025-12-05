@@ -13,7 +13,7 @@
 ```bash
 # Clone the repository
 git clone https://github.com/ai-servis/ai-servis.git
-cd ai-servis
+cd mia
 
 # Start development environment
 ./scripts/dev-environment.sh up dev
@@ -356,7 +356,7 @@ graph LR
 ```bash
 # Clone repository
 git clone https://github.com/ai-servis/ai-servis.git
-cd ai-servis
+cd mia
 
 # Start development environment
 ./scripts/dev-environment.sh up dev

@@ -1,5 +1,5 @@
 """
-Security Module for AI-SERVIS
+Security Module for MIA
 
 Provides integration with Kernun proxy MCP server for:
 - Network traffic analysis
