@@ -245,7 +245,7 @@ source tools/env.sh
 mia-build
 ```
 
-This approach uses **sparetools-cpython** from Cloudsmith to create a zero-copy development environment with symlinks to the Conan cache, avoiding PEP 668 issues on modern systems.
+This approach uses **CPython tool tarballs** from Cloudsmith or GitHub Packages to create a zero-copy development environment, avoiding PEP 668 issues on modern systems. You can easily switch between repositories using environment variables (see [Repository Switching Guide](docs/REPOSITORY_SWITCHING.md)).
 
 ### 🐳 **Docker Development Environment**
 

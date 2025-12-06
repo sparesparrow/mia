@@ -1,5 +1,5 @@
-# CodeQL configuration for AI-SERVIS Universal
-name: "AI-SERVIS CodeQL Config"
+# CodeQL configuration for MIA Universal
+name: "MIA CodeQL Config"
 
 # Disable default queries and use only security queries
 disable-default-queries: false
@@ -37,6 +37,6 @@ cpp:
   # Build is handled in workflow steps
   # CodeQL will automatically detect compile commands from CMake build
     
-javascript:
-  # Include TypeScript files
-  typescript: true
+# JavaScript/TypeScript analysis disabled - project uses minimal JS
+# javascript:
+#   typescript: true

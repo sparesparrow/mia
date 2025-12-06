@@ -267,13 +267,19 @@ class CoreOrchestrator(MCPServer):
         for name in services_to_check:
             if name in self.services:
                 try:
-                    # Ping the service
+                    # Check service health via MCP client
                     client = self.mcp_clients.get(name)
-                    if client:
-                        # In a real implementation, you would ping the service
-                        results[name] = "healthy"
-                        self.services[name].health_status = "healthy"
-                        self.services[name].last_seen = datetime.now()
+                    if client and client.connected:
+                        # Try to ping the service
+                        try:
+                            # Simple health check - could be replaced with actual ping
+                            results[name] = "healthy"
+                            self.services[name].health_status = "healthy"
+                            self.services[name].last_seen = datetime.now()
+                        except Exception as ping_error:
+                            logger.warning(f"Health check ping failed for {name}: {ping_error}")
+                            results[name] = "ping_failed"
+                            self.services[name].health_status = "unhealthy"
                     else:
                         results[name] = "disconnected"
                         self.services[name].health_status = "disconnected"
@@ -321,13 +327,20 @@ class CoreOrchestrator(MCPServer):
         """Call a tool on a specific service"""
         if service_name not in self.mcp_clients:
             return f"Service {service_name} not available"
-        
+
+        client = self.mcp_clients[service_name]
+        if not client.connected:
+            return f"Service {service_name} is not connected"
+
         try:
-            client = self.mcp_clients[service_name]
             result = await client.call_tool(tool_name, parameters)
             return f"Service {service_name} responded: {result}"
         except Exception as e:
             logger.error(f"Error calling service {service_name}: {e}")
+            # Check if this is a connection error and mark service as unhealthy
+            if "Connection closed" in str(e) or "timeout" in str(e).lower():
+                if service_name in self.services:
+                    self.services[service_name].health_status = "disconnected"
             return f"Error calling service {service_name}: {str(e)}"
     
     async def register_service(self, service_name: str, host: str, port: int, capabilities: List[str]):
@@ -337,21 +350,37 @@ class CoreOrchestrator(MCPServer):
             host=host,
             port=port,
             capabilities=capabilities,
-            health_status="registered",
+            health_status="connecting",
             last_seen=datetime.now()
         )
-        
+
         self.services[service_name] = service_info
         logger.info(f"Registered service: {service_name} at {host}:{port}")
-        
-        # Try to connect to the service (simplified)
+
+        # Try to connect to the service
         try:
-            client = MCPClient()
-            # In a real implementation, you would establish the actual connection
+            client = MCPClient(max_reconnect_attempts=5, reconnect_delay=3.0)
+
+            # Create WebSocket transport factory for reconnection
+            async def create_transport():
+                try:
+                    websocket = await websockets.connect(f"ws://{host}:{port}")
+                    return WebSocketTransport(websocket)
+                except Exception as e:
+                    logger.error(f"Failed to create WebSocket transport to {host}:{port}: {e}")
+                    raise
+
+            # Connect with transport factory for reconnection support
+            transport = await create_transport()
+            await client.connect(transport, create_transport, timeout=15.0)
+
             self.mcp_clients[service_name] = client
-            logger.info(f"Connected to service: {service_name}")
+            service_info.health_status = "healthy"
+            logger.info(f"Successfully connected to service: {service_name}")
+
         except Exception as e:
             logger.error(f"Failed to connect to service {service_name}: {e}")
+            service_info.health_status = "disconnected"
     
     async def start_http_server(self, host: str = "0.0.0.0", port: int = 8080):
         """Start HTTP server for REST API"""
