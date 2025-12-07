@@ -20,6 +20,14 @@ import websockets
 from datetime import datetime, timedelta
 import numpy as np
 
+# Import Citroën C4 Bridge for PSA-specific integration
+try:
+    from citroen_c4_bridge import CitroenC4Bridge
+    CITROEN_BRIDGE_AVAILABLE = True
+except ImportError:
+    CITROEN_BRIDGE_AVAILABLE = False
+    logging.warning("Citroën C4 Bridge not available - limited functionality")
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -86,40 +94,66 @@ class AutomotiveMCPBridge:
         self.mcp_servers: Dict[str, Any] = {}
         self.safety_monitor = AutomotiveSafetyMonitor()
         self.performance_monitor = AutomotivePerformanceMonitor()
-        
+
         # Automotive-specific configuration
         self.voice_timeout_ms = config.get("voice_timeout_ms", 500)
         self.safety_confirmation_required = config.get("safety_confirmation_required", True)
         self.edge_optimization_enabled = config.get("edge_optimization_enabled", True)
-        
+
         # Voice processing pipeline
         self.voice_processor = AutomotiveVoiceProcessor(config)
-        
+
+        # Citroën C4 Bridge integration (PSA-specific)
+        self.citroen_bridge = None
+        if CITROEN_BRIDGE_AVAILABLE and config.get("enable_citroen_integration", True):
+            try:
+                citroen_config = config.get("citroen_config", {
+                    "model_year": 2012,
+                    "engine_type": "HDi",
+                    "transmission_type": "manual",
+                    "equipment_level": "VTi"
+                })
+                self.citroen_bridge = CitroenC4Bridge(citroen_config)
+                logger.info("Citroën C4 Bridge instantiated successfully")
+            except Exception as e:
+                logger.warning(f"Failed to instantiate Citroën C4 Bridge: {e}")
+                self.citroen_bridge = None
+
         # Real-time metrics
         self.metrics = {
             "commands_processed": 0,
             "avg_response_time_ms": 0.0,
             "safety_violations": 0,
             "voice_recognition_accuracy": 0.95,
-            "system_uptime_hours": 0.0
+            "system_uptime_hours": 0.0,
+            "citroen_bridge_active": CITROEN_BRIDGE_AVAILABLE and self.citroen_bridge is not None
         }
 
     async def initialize(self):
         """Initialize the automotive MCP bridge"""
         logger.info("🚗 Initializing Automotive MCP Bridge")
-        
+
         # Initialize voice processor
         await self.voice_processor.initialize()
-        
+
+        # Initialize Citroën C4 Bridge if available
+        if self.citroen_bridge:
+            logger.info("🔧 Initializing Citroën C4 Bridge integration")
+            citroen_success = await self.citroen_bridge.initialize()
+            if citroen_success:
+                logger.info("✅ Citroën C4 Bridge initialized successfully")
+            else:
+                logger.warning("❌ Citroën C4 Bridge initialization failed - using generic mode")
+
         # Start vehicle data monitoring
         asyncio.create_task(self._monitor_vehicle_data())
-        
+
         # Start performance monitoring
         asyncio.create_task(self._monitor_performance())
-        
+
         # Initialize MCP servers
         await self._initialize_mcp_servers()
-        
+
         logger.info("✅ Automotive MCP Bridge initialized successfully")
 
     async def _initialize_mcp_servers(self):
@@ -255,39 +289,59 @@ class AutomotiveMCPBridge:
             "volume": "media",
             "lock_doors": "vehicle_control",
             "climate": "vehicle_control",
-            "start_engine": "vehicle_control"
-        }
-        
-        server_name = server_routing.get(command.intent, "navigation")
-        server = self.mcp_servers.get(server_name)
-        
-        if not server:
-            raise Exception(f"MCP server not available: {server_name}")
-        
-        # Prepare MCP request with automotive context
-        mcp_request = {
-            "method": "execute_tool",
-            "params": {
-                "tool": command.intent,
-                "arguments": command.entities,
-                "automotive_context": {
-                    "vehicle_state": self.vehicle_state.__dict__,
-                    "safety_level": command.safety_level.value,
-                    "max_response_time_ms": command.max_response_time_ms
-                }
-            }
+            "start_engine": "vehicle_control",
+            # Citroën-specific commands
+            "check_dpf": "vehicle_control",
+            "dpf_status": "vehicle_control",
+            "regenerate_dpf": "vehicle_control",
+            "check_additive": "vehicle_control",
+            "diagnostics": "vehicle_control",
+            "engine_temp": "vehicle_control",
+            "battery_status": "vehicle_control"
         }
         
         # Execute with timeout based on safety level
         timeout = self._get_timeout_for_safety_level(command.safety_level)
-        
+
         try:
-            # Simulate MCP server execution
-            # In real implementation, this would use actual MCP protocol
-            result = await self._simulate_mcp_execution(server, mcp_request, timeout)
-            
+            # Handle Citroën-specific commands directly (skip MCP server check)
+            if self.citroen_bridge and command.intent in [
+                "check_dpf", "dpf_status", "regenerate_dpf",
+                "check_additive", "diagnostics", "engine_temp", "battery_status"
+            ]:
+                # Apply safety-critical timeout to Citroën commands
+                result = await asyncio.wait_for(
+                    self._execute_citroen_command(command),
+                    timeout=timeout
+                )
+            else:
+                # Route to MCP server for other commands
+                server_name = server_routing.get(command.intent, "navigation")
+                server = self.mcp_servers.get(server_name)
+
+                if not server:
+                    raise Exception(f"MCP server not available: {server_name}")
+
+                # Prepare MCP request with automotive context
+                mcp_request = {
+                    "method": "execute_tool",
+                    "params": {
+                        "tool": command.intent,
+                        "arguments": command.entities,
+                        "automotive_context": {
+                            "vehicle_state": self.vehicle_state.__dict__,
+                            "safety_level": command.safety_level.value,
+                            "max_response_time_ms": command.max_response_time_ms
+                        }
+                    }
+                }
+
+                # Simulate MCP server execution
+                # In real implementation, this would use actual MCP protocol
+                result = await self._simulate_mcp_execution(server, mcp_request, timeout)
+
             return result
-            
+
         except asyncio.TimeoutError:
             raise Exception(f"Command timeout after {timeout}ms")
 
@@ -334,15 +388,89 @@ class AutomotiveMCPBridge:
         
         return mock_responses.get(tool, {"status": "executed", "tool": tool})
 
+    async def _execute_citroen_command(self, command: AutomotiveCommand) -> Dict[str, Any]:
+        """Execute Citroën-specific commands through the C4 bridge"""
+        if not self.citroen_bridge:
+            raise Exception("Citroën C4 Bridge not available")
+
+        intent = command.intent
+        entities = command.entities
+
+        try:
+            if intent in ["check_dpf", "dpf_status"]:
+                status = await self.citroen_bridge.get_vehicle_status()
+                dpf_data = status.get("telemetry", {})
+                return {
+                    "status": "success",
+                    "dpf_soot_mass_g": dpf_data.get("dpf_soot_mass_g"),
+                    "dpf_status": dpf_data.get("dpf_status"),
+                    "eolys_level_l": dpf_data.get("eolys_additive_level_l"),
+                    "differential_pressure_kpa": dpf_data.get("differential_pressure_kpa"),
+                    "filter_efficiency_percent": dpf_data.get("particulate_filter_efficiency_percent")
+                }
+
+            elif intent == "regenerate_dpf":
+                result = await self.citroen_bridge.perform_dpf_regeneration()
+                return result
+
+            elif intent == "check_additive":
+                status = await self.citroen_bridge.get_vehicle_status()
+                telemetry = status.get("telemetry", {})
+                return {
+                    "status": "success",
+                    "additive_level_l": telemetry.get("eolys_additive_level_l"),
+                    "consumption_l_1000km": telemetry.get("eolys_consumption_l_1000km")
+                }
+
+            elif intent == "diagnostics":
+                report = await self.citroen_bridge.get_diagnostics_report()
+                return {
+                    "status": "success",
+                    "report": report
+                }
+
+            elif intent == "engine_temp":
+                status = await self.citroen_bridge.get_vehicle_status()
+                telemetry = status.get("telemetry", {})
+                return {
+                    "status": "success",
+                    "coolant_temp_c": telemetry.get("coolant_temp_c"),
+                    "engine_rpm": telemetry.get("engine_rpm")
+                }
+
+            elif intent == "battery_status":
+                status = await self.citroen_bridge.get_vehicle_status()
+                telemetry = status.get("telemetry", {})
+                return {
+                    "status": "success",
+                    "battery_voltage": telemetry.get("battery_voltage")
+                }
+
+            else:
+                raise Exception(f"Unknown Citroën command: {intent}")
+
+        except Exception as e:
+            logger.error(f"Citroën command execution failed: {e}")
+            return {
+                "status": "error",
+                "error": str(e)
+            }
+
     async def _monitor_vehicle_data(self):
         """Monitor real-time vehicle data"""
         while True:
             try:
-                # Simulate OBD data collection
-                # In real implementation, this would connect to ESP32 OBD module
-                await self._update_vehicle_state()
+                # Use Citroën C4 Bridge if available (PSA-specific data)
+                if self.citroen_bridge:
+                    # Bridge handles its own telemetry monitoring
+                    # We just need to sync the generic vehicle state
+                    await self._sync_from_citroen_bridge()
+                else:
+                    # Fallback to generic simulation
+                    await self._update_vehicle_state()
+
                 await asyncio.sleep(1.0)  # Update every second
-                
+
             except Exception as e:
                 logger.error(f"Vehicle data monitoring error: {e}")
                 await asyncio.sleep(5.0)
@@ -370,12 +498,50 @@ class AutomotiveMCPBridge:
         
         self.vehicle_state.last_update = datetime.now()
 
+    async def _sync_from_citroen_bridge(self):
+        """Sync generic vehicle state from Citroën C4 Bridge"""
+        if not self.citroen_bridge:
+            return
+
+        try:
+            # Get status from Citroën bridge
+            citroen_status = await self.citroen_bridge.get_vehicle_status()
+            telemetry = citroen_status.get("telemetry", {})
+
+            # Update generic vehicle state (provide defaults to avoid None assignments)
+            self.vehicle_state.speed_kmh = telemetry.get("speed_kmh") or 0.0
+            self.vehicle_state.engine_rpm = telemetry.get("engine_rpm") or 0.0
+            self.vehicle_state.coolant_temp_celsius = telemetry.get("coolant_temp_c") or 90.0
+            self.vehicle_state.fuel_level_percent = telemetry.get("fuel_level_percent") or 100.0
+            self.vehicle_state.battery_voltage = telemetry.get("battery_voltage") or 12.0
+
+            # Determine context based on Citroën-specific state
+            current_state = citroen_status.get("current_state", "eco_mode")
+            if telemetry.get("speed_kmh", 0) > 5:
+                self.vehicle_state.context = AutomotiveContext.DRIVING
+            elif current_state == "dpf_regeneration":
+                self.vehicle_state.context = AutomotiveContext.MAINTENANCE
+            elif current_state in ["engine_warning", "battery_low"]:
+                self.vehicle_state.context = AutomotiveContext.EMERGENCY
+            else:
+                self.vehicle_state.context = AutomotiveContext.PARKED
+
+            self.vehicle_state.last_update = datetime.now()
+
+        except Exception as e:
+            logger.error(f"Citroën bridge sync error: {e}")
+            # Fallback to generic update
+            await self._update_vehicle_state()
+
     async def _update_vehicle_context(self):
         """Update vehicle context for command processing"""
         # This method would update context from various sensors
         # For now, just ensure state is recent
         if (datetime.now() - self.vehicle_state.last_update).seconds > 5:
-            await self._update_vehicle_state()
+            if self.citroen_bridge:
+                await self._sync_from_citroen_bridge()
+            else:
+                await self._update_vehicle_state()
 
     async def _monitor_performance(self):
         """Monitor automotive MCP bridge performance"""
@@ -407,7 +573,7 @@ class AutomotiveMCPBridge:
 
     async def get_system_status(self) -> Dict[str, Any]:
         """Get comprehensive system status for automotive deployment"""
-        return {
+        base_status = {
             "bridge_status": "active",
             "vehicle_state": self.vehicle_state.__dict__,
             "mcp_servers": {name: server.get("connected", False) for name, server in self.mcp_servers.items()},
@@ -421,6 +587,31 @@ class AutomotiveMCPBridge:
                 "uptime_stable": self.metrics["system_uptime_hours"] > 1
             }
         }
+
+        # Add Citroën C4 specific status if available
+        if self.citroen_bridge:
+            try:
+                citroen_status = await self.citroen_bridge.get_vehicle_status()
+                base_status["citroen_c4"] = {
+                    "bridge_active": True,
+                    "vehicle_info": citroen_status.get("vehicle_info"),
+                    "current_state": citroen_status.get("current_state"),
+                    "health_status": citroen_status.get("health_status"),
+                    "telemetry": citroen_status.get("telemetry")
+                }
+            except Exception as e:
+                logger.error(f"Citroën status error: {e}")
+                base_status["citroen_c4"] = {
+                    "bridge_active": False,
+                    "error": str(e)
+                }
+        else:
+            base_status["citroen_c4"] = {
+                "bridge_active": False,
+                "reason": "Citroën C4 Bridge not available"
+            }
+
+        return base_status
 
 
 class AutomotiveSafetyMonitor:
@@ -539,12 +730,19 @@ class AutomotivePerformanceMonitor:
 
 async def main():
     """Main entry point for automotive MCP bridge"""
-    
+
     config = {
         "voice_timeout_ms": 500,
         "safety_confirmation_required": True,
         "edge_optimization_enabled": True,
-        "log_level": "INFO"
+        "log_level": "INFO",
+        "enable_citroen_integration": True,
+        "citroen_config": {
+            "model_year": 2012,
+            "engine_type": "HDi",
+            "transmission_type": "manual",
+            "equipment_level": "VTi"
+        }
     }
     
     bridge = AutomotiveMCPBridge(config)
@@ -581,8 +779,14 @@ async def main():
     site = web_runner.TCPSite(runner, '0.0.0.0', 8084)
     await site.start()
     
+    # Log integration status
+    if CITROEN_BRIDGE_AVAILABLE:
+        logger.info("✅ Citroën C4 Bridge integration enabled")
+    else:
+        logger.warning("⚠️  Citroën C4 Bridge not available - limited functionality")
+
     logger.info("🚗 Automotive MCP Bridge started on port 8084")
-    
+
     # Keep running
     try:
         while True:

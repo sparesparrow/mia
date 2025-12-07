@@ -1,0 +1,5 @@
+pyserial==3.5
+python-obd==0.7.2
+pyzmq==25.1.0
+flatbuffers==23.5.26
+asyncio-mqtt==0.13.0
