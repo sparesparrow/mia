@@ -400,7 +400,7 @@ class BLEManagerImpl @Inject constructor(
         withContext(Dispatchers.Main) {
             try {
                 bluetoothGatt?.disconnect()
-                cleanup()
+                cleanupInternal()
                 _connectionState.value = BleConnectionState.Disconnected
             } catch (e: Exception) {
                 Log.e(TAG, "Disconnect failed", e)
@@ -409,7 +409,7 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
-    private fun cleanup() {
+    private fun cleanupInternal() {
         bluetoothGatt?.close()
         bluetoothGatt = null
         txCharacteristic = null
