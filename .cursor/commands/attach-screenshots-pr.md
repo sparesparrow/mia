@@ -1,0 +1,1 @@
+create a screenshot from all the web pages how they look and attach them to the pull request with gh commands

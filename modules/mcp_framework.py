@@ -185,23 +185,47 @@ class MCPTransport(ABC):
 
 
 class WebSocketTransport(MCPTransport):
-    """WebSocket transport for MCP"""
+    """WebSocket transport for MCP with connection management"""
 
     def __init__(self, websocket):
         self.websocket = websocket
+        self.closed = False
 
     async def send(self, message: MCPMessage) -> None:
         """Send message via WebSocket"""
-        await self.websocket.send(message.to_json())
+        if self.closed:
+            raise MCPError(-32000, "Connection closed")
+        try:
+            await self.websocket.send(message.to_json())
+        except websockets.exceptions.ConnectionClosed:
+            self.closed = True
+            raise MCPError(-32000, "Connection closed during send")
+        except Exception as e:
+            logger.error(f"WebSocket send error: {e}")
+            raise MCPError(-32603, f"WebSocket send error: {str(e)}")
 
     async def receive(self) -> MCPMessage:
         """Receive message via WebSocket"""
-        data = await self.websocket.recv()
-        return MCPMessage.from_json(data)
+        if self.closed:
+            raise MCPError(-32000, "Connection closed")
+        try:
+            data = await self.websocket.recv()
+            return MCPMessage.from_json(data)
+        except websockets.exceptions.ConnectionClosed:
+            self.closed = True
+            raise MCPError(-32000, "Connection closed during receive")
+        except Exception as e:
+            logger.error(f"WebSocket receive error: {e}")
+            raise MCPError(-32603, f"WebSocket receive error: {str(e)}")
 
     async def close(self) -> None:
         """Close WebSocket connection"""
-        await self.websocket.close()
+        if not self.closed:
+            self.closed = True
+            try:
+                await self.websocket.close()
+            except Exception as e:
+                logger.error(f"Error closing WebSocket: {e}")
 
 
 class HTTPTransport(MCPTransport):
@@ -467,34 +491,125 @@ class MCPServer:
                     response = await self.handle_message(message)
                     if response:
                         await transport.send(response)
+                except MCPError as e:
+                    if e.code == -32000:  # Connection closed
+                        logger.info("Connection closed by client")
+                        break
+                    else:
+                        logger.error(f"MCP Error in serve loop: {e}")
+                        # Try to send error response if possible
+                        try:
+                            error_response = MCPMessage(
+                                id=getattr(message, 'id', None),
+                                error=e.to_dict()
+                            )
+                            await transport.send(error_response)
+                        except Exception:
+                            break  # Can't send error, connection likely closed
                 except websockets.exceptions.ConnectionClosed:
-                    logger.info("Connection closed")
+                    logger.info("WebSocket connection closed")
                     break
                 except Exception as e:
-                    logger.error(f"Error in serve loop: {e}")
+                    logger.error(f"Unexpected error in serve loop: {e}")
                     break
         finally:
-            await transport.close()
+            self.running = False
+            try:
+                await transport.close()
+            except Exception as e:
+                logger.error(f"Error closing transport: {e}")
             logger.info(f"MCP Server '{self.name}' stopped")
 
 
 class MCPClient:
-    """MCP Client implementation"""
+    """MCP Client implementation with persistent connection and response handling"""
 
-    def __init__(self):
+    def __init__(self, max_reconnect_attempts: int = 3, reconnect_delay: float = 5.0):
         self.transport: Optional[MCPTransport] = None
         self.request_id = 0
         self.pending_requests: Dict[Union[str, int], asyncio.Future] = {}
+        self.connected = False
+        self.receive_task: Optional[asyncio.Task] = None
+        self.heartbeat_task: Optional[asyncio.Task] = None
+        self.reconnect_task: Optional[asyncio.Task] = None
+        self.max_reconnect_attempts = max_reconnect_attempts
+        self.reconnect_delay = reconnect_delay
+        self.reconnect_attempts = 0
+        self.client_info = {
+            "name": "ai-servis-client",
+            "version": "1.0.0"
+        }
+        self.transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None
 
     def _next_id(self) -> int:
         """Generate next request ID"""
         self.request_id += 1
         return self.request_id
 
-    async def connect(self, transport: MCPTransport) -> None:
-        """Connect to MCP server"""
-        self.transport = transport
-        await self.initialize()
+    async def connect(self, transport: MCPTransport, transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None, timeout: float = 30.0) -> None:
+        """Connect to MCP server with persistent connection"""
+        self.transport_factory = transport_factory or (lambda: transport)
+
+        await self._establish_connection(timeout)
+        self.reconnect_attempts = 0  # Reset on successful connection
+
+        # Start background tasks
+        self.receive_task = asyncio.create_task(self._receive_loop())
+        self.heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+        self.reconnect_task = asyncio.create_task(self._reconnect_loop())
+
+        logger.info("MCP Client connected successfully")
+
+    async def _establish_connection(self, timeout: float = 30.0) -> None:
+        """Establish connection to the server"""
+        if self.transport_factory is None:
+            raise MCPError(-32603, "No transport factory available")
+
+        try:
+            self.transport = await self.transport_factory()
+            self.connected = True
+
+            # Initialize the connection
+            await self.initialize()
+
+        except Exception as e:
+            self.connected = False
+            logger.error(f"Failed to establish connection: {e}")
+            raise
+
+    async def _reconnect_loop(self) -> None:
+        """Background task to handle reconnection attempts"""
+        while True:
+            await asyncio.sleep(1)  # Check connection status periodically
+
+            if not self.connected and self.transport_factory and self.reconnect_attempts < self.max_reconnect_attempts:
+                logger.info(f"Attempting reconnection (attempt {self.reconnect_attempts + 1}/{self.max_reconnect_attempts})")
+
+                try:
+                    await asyncio.sleep(self.reconnect_delay)
+                    await self._establish_connection()
+
+                    # Restart background tasks
+                    if self.receive_task and not self.receive_task.done():
+                        self.receive_task.cancel()
+                    if self.heartbeat_task and not self.heartbeat_task.done():
+                        self.heartbeat_task.cancel()
+
+                    self.receive_task = asyncio.create_task(self._receive_loop())
+                    self.heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+
+                    self.reconnect_attempts = 0  # Reset on success
+                    logger.info("Reconnection successful")
+
+                except Exception as e:
+                    self.reconnect_attempts += 1
+                    logger.error(f"Reconnection attempt {self.reconnect_attempts} failed: {e}")
+
+                    if self.reconnect_attempts >= self.max_reconnect_attempts:
+                        logger.error("Max reconnection attempts reached, giving up")
+                        break
+            elif self.connected:
+                self.reconnect_attempts = 0  # Reset when connected
 
     async def initialize(self) -> Dict[str, Any]:
         """Initialize connection with server"""
@@ -511,14 +626,11 @@ class MCPClient:
                     "resources": {},
                     "prompts": {}
                 },
-                "clientInfo": {
-                    "name": "ai-servis-client",
-                    "version": "1.0.0"
-                }
+                "clientInfo": self.client_info
             }
         )
 
-        response = await self._send_request(request)
+        response = await self._send_request(request, timeout=10.0)
         return response.result
 
     async def list_tools(self) -> List[Dict[str, Any]]:
@@ -543,36 +655,177 @@ class MCPClient:
         response = await self._send_request(request)
         return response.result
 
-    async def _send_request(self, request: MCPMessage) -> MCPMessage:
-        """Send request and wait for response"""
-        if not self.transport:
+    async def _send_request(self, request: MCPMessage, timeout: float = 30.0) -> MCPMessage:
+        """Send request and wait for response with timeout"""
+        if not self.transport or not self.connected:
             raise MCPError(-32603, "Not connected to transport")
 
         future = asyncio.Future()
         self.pending_requests[request.id] = future
 
-        await self.transport.send(request)
-        response = await future
+        try:
+            await self.transport.send(request)
 
-        if response.error:
-            raise MCPError(
-                response.error.get("code", -32603),
-                response.error.get("message", "Unknown error"),
-                response.error.get("data")
-            )
+            # Wait for response with timeout
+            response = await asyncio.wait_for(future, timeout=timeout)
 
-        return response
+            if response.error:
+                raise MCPError(
+                    response.error.get("code", -32603),
+                    response.error.get("message", "Unknown error"),
+                    response.error.get("data")
+                )
 
-    async def _handle_response(self, message: MCPMessage) -> None:
-        """Handle response message"""
-        if message.id in self.pending_requests:
-            future = self.pending_requests.pop(message.id)
-            future.set_result(message)
+            return response
+
+        except asyncio.TimeoutError:
+            # Clean up the pending request
+            if request.id in self.pending_requests:
+                del self.pending_requests[request.id]
+            raise MCPError(-32000, f"Request timeout after {timeout} seconds")
+        except Exception as e:
+            # Clean up the pending request
+            if request.id in self.pending_requests:
+                del self.pending_requests[request.id]
+            raise
+
+    async def _receive_loop(self) -> None:
+        """Background task to receive and handle incoming messages"""
+        logger.info("Starting MCP client receive loop")
+        consecutive_errors = 0
+        max_consecutive_errors = 5
+
+        while self.connected and self.transport:
+            try:
+                message = await self.transport.receive()
+                await self._handle_message(message)
+                consecutive_errors = 0  # Reset error counter on success
+            except MCPError as e:
+                if e.code == -32000:  # Connection closed
+                    logger.warning("Connection closed during receive")
+                    self.connected = False
+                    break
+                else:
+                    consecutive_errors += 1
+                    logger.error(f"MCP Error in receive loop: {e}")
+            except websockets.exceptions.ConnectionClosed as e:
+                logger.warning(f"WebSocket connection closed: {e}")
+                self.connected = False
+                break
+            except Exception as e:
+                consecutive_errors += 1
+                logger.error(f"Error in receive loop: {e}")
+
+                if consecutive_errors >= max_consecutive_errors:
+                    logger.error(f"Too many consecutive errors ({consecutive_errors}), disconnecting")
+                    self.connected = False
+                    break
+
+                if not self.connected:
+                    break
+                await asyncio.sleep(1)  # Brief pause before retrying
+
+        logger.info("MCP client receive loop stopped")
+
+    async def _heartbeat_loop(self) -> None:
+        """Background task to send periodic ping messages"""
+        logger.info("Starting MCP client heartbeat loop")
+        while self.connected and self.transport:
+            try:
+                await asyncio.sleep(30)  # Ping every 30 seconds
+                if self.connected and self.transport:
+                    ping_request = MCPMessage(
+                        id=self._next_id(),
+                        method=MessageType.PING
+                    )
+                    # Send ping and wait for pong response
+                    try:
+                        pong_future = asyncio.Future()
+                        self.pending_requests[ping_request.id] = pong_future
+
+                        await asyncio.wait_for(
+                            self.transport.send(ping_request),
+                            timeout=5.0
+                        )
+
+                        # Wait for pong response
+                        await asyncio.wait_for(pong_future, timeout=10.0)
+                        logger.debug("Heartbeat ping-pong successful")
+
+                    except asyncio.TimeoutError:
+                        logger.warning("Heartbeat ping timeout - connection may be unstable")
+                        # Don't immediately disconnect, just log the issue
+                    except Exception as e:
+                        logger.error(f"Heartbeat ping failed: {e}")
+                        self.connected = False
+                        break
+            except Exception as e:
+                logger.error(f"Error in heartbeat loop: {e}")
+                if not self.connected:
+                    break
+
+        logger.info("MCP client heartbeat loop stopped")
+
+    async def _handle_message(self, message: MCPMessage) -> None:
+        """Handle incoming message"""
+        try:
+            # Check if this is a response to a pending request
+            if message.id in self.pending_requests:
+                future = self.pending_requests.pop(message.id)
+                future.set_result(message)
+                return
+
+            # Handle server-initiated messages (notifications, etc.)
+            if message.method:
+                if message.method == MessageType.NOTIFICATION:
+                    logger.debug(f"Received notification: {message.params}")
+                elif message.method == MessageType.LOG:
+                    logger.info(f"Server log: {message.params}")
+                else:
+                    logger.warning(f"Unhandled server message: {message.method}")
+            else:
+                logger.warning(f"Received message without method or matching request ID: {message}")
+
+        except Exception as e:
+            logger.error(f"Error handling message: {e}")
 
     async def close(self) -> None:
-        """Close client connection"""
+        """Close client connection and cleanup tasks"""
+        logger.info("Closing MCP client connection")
+        self.connected = False
+
+        # Cancel background tasks
+        tasks_to_cancel = [
+            (self.receive_task, "receive_task"),
+            (self.heartbeat_task, "heartbeat_task"),
+            (self.reconnect_task, "reconnect_task")
+        ]
+
+        for task, name in tasks_to_cancel:
+            if task and not task.done():
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+                except Exception as e:
+                    logger.error(f"Error cancelling {name}: {e}")
+
+        # Cancel any pending requests
+        for future in self.pending_requests.values():
+            if not future.done():
+                future.cancel()
+
+        self.pending_requests.clear()
+
+        # Close transport
         if self.transport:
-            await self.transport.close()
+            try:
+                await self.transport.close()
+            except Exception as e:
+                logger.error(f"Error closing transport: {e}")
+
+        logger.info("MCP client connection closed")
 
 
 # Utility functions

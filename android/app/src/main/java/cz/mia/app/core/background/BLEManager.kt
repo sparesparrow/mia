@@ -155,7 +155,7 @@ class BLEManagerImpl @Inject constructor(
                     Log.d(TAG, "Disconnected from GATT server")
                     _connectionState.value = BleConnectionState.Disconnected
                     connectionDeferred?.complete(false)
-                    scope.launch { cleanup() }
+                    cleanupInternal()
                 }
             }
         }
@@ -400,7 +400,7 @@ class BLEManagerImpl @Inject constructor(
         withContext(Dispatchers.Main) {
             try {
                 bluetoothGatt?.disconnect()
-                cleanup()
+                cleanupInternal()
                 _connectionState.value = BleConnectionState.Disconnected
             } catch (e: Exception) {
                 Log.e(TAG, "Disconnect failed", e)
@@ -409,13 +409,17 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
+    private fun cleanupInternal() {
+        bluetoothGatt?.close()
+        bluetoothGatt = null
+        txCharacteristic = null
+        rxCharacteristic = null
+        responseBuffer.clear()
+    }
+
     override suspend fun cleanup() {
         withContext(Dispatchers.Main) {
-            bluetoothGatt?.close()
-            bluetoothGatt = null
-            txCharacteristic = null
-            rxCharacteristic = null
-            responseBuffer.clear()
+            cleanupInternal()
         }
     }
     
@@ -432,30 +436,16 @@ class BLEManagerImpl @Inject constructor(
         try {
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
-
-            val writeSuccess = withContext(Dispatchers.Main) {
-                try {
-                    // Use proper API versioning for Android 13+
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
-                        if (result != 0) { // BluetoothStatusCodes.SUCCESS = 0
-                            Log.e(TAG, "Failed to initiate write for command: $command, status: $result")
-                            return@withContext false
-                        }
-                    } else {
-                        @Suppress("DEPRECATION")
-                        tx.value = bytes
-                        @Suppress("DEPRECATION")
-                        val success = gatt.writeCharacteristic(tx)
-                        if (!success) {
-                            Log.e(TAG, "Failed to initiate write for command: $command")
-                            return@withContext false
-                        }
-                    }
-                    true
-                } catch (e: Exception) {
-                    Log.e(TAG, "Exception during write for command: $command", e)
-                    false
+            
+            val writeInitiated = withContext(Dispatchers.Main) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                    result == 0 // BluetoothStatusCodes.SUCCESS = 0
+                } else {
+                    @Suppress("DEPRECATION")
+                    tx.value = bytes
+                    @Suppress("DEPRECATION")
+                    gatt.writeCharacteristic(tx)
                 }
             }
 
