@@ -449,11 +449,10 @@ class BLEManagerImpl @Inject constructor(
                 }
             }
 
-            if (!writeInitiated) {
-                Log.e(TAG, "Failed to initiate write for command: $command")
+            if (!writeSuccess) {
                 return@withContext null
             }
-            
+
             // Wait for response with timeout
             return@withContext withTimeoutOrNull(COMMAND_TIMEOUT_MS) {
                 responseChannel.receive()
