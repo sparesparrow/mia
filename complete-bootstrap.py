@@ -68,10 +68,18 @@ GITHUB_CONAN_REMOTE = os.getenv(
     f"https://maven.pkg.github.com/{GITHUB_OWNER}/conan"
 )
 
+
 def get_platform_str():
-    """Determines Cloudsmith platform string (linux-x86_64, macos-arm64, etc.)"""
+    """Determines Cloudsmith platform string."""
     machine = platform.machine()
     system = sys.platform
+
+    # Detect Android (Linux kernel with Android-specific markers)
+    if (system == "linux" and
+            ("android" in sys.version.lower() or
+             "ANDROID_ROOT" in os.environ)):
+        return "android-arm64"  # Android typically runs on ARM64
+
     if system == "win32":
         return "windows-x86_64"
     elif system == "darwin":
@@ -479,6 +487,7 @@ def main():
     print("  # Use Cloudsmith (default):")
     print("  export ARTIFACT_REPO=cloudsmith")
     print()
+
 
 if __name__ == "__main__":
     main()
