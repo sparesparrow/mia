@@ -15,6 +15,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.os.Build
 import android.os.ParcelUuid
 import android.util.Log
 import cz.mia.app.core.networking.Backoff
@@ -408,12 +409,14 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
-    private fun cleanup() {
-        bluetoothGatt?.close()
-        bluetoothGatt = null
-        txCharacteristic = null
-        rxCharacteristic = null
-        responseBuffer.clear()
+    override suspend fun cleanup() {
+        withContext(Dispatchers.Main) {
+            bluetoothGatt?.close()
+            bluetoothGatt = null
+            txCharacteristic = null
+            rxCharacteristic = null
+            responseBuffer.clear()
+        }
     }
     
     @SuppressLint("MissingPermission")
