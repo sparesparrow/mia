@@ -15,6 +15,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
+import android.os.Build
 import android.os.ParcelUuid
 import android.util.Log
 import cz.mia.app.core.networking.Backoff
@@ -154,7 +155,7 @@ class BLEManagerImpl @Inject constructor(
                     Log.d(TAG, "Disconnected from GATT server")
                     _connectionState.value = BleConnectionState.Disconnected
                     connectionDeferred?.complete(false)
-                    cleanup()
+                    scope.launch { cleanup() }
                 }
             }
         }
@@ -408,12 +409,14 @@ class BLEManagerImpl @Inject constructor(
     }
     
     @SuppressLint("MissingPermission")
-    private fun cleanup() {
-        bluetoothGatt?.close()
-        bluetoothGatt = null
-        txCharacteristic = null
-        rxCharacteristic = null
-        responseBuffer.clear()
+    override suspend fun cleanup() {
+        withContext(Dispatchers.Main) {
+            bluetoothGatt?.close()
+            bluetoothGatt = null
+            txCharacteristic = null
+            rxCharacteristic = null
+            responseBuffer.clear()
+        }
     }
     
     @SuppressLint("MissingPermission")
@@ -429,34 +432,37 @@ class BLEManagerImpl @Inject constructor(
         try {
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
-            tx.value = bytes
-            
-<<<<<<< HEAD:android/app/src/main/java/cz/aiservis/app/core/background/BLEManager.kt
-            withContext(Dispatchers.Main) {
-                @Suppress("DEPRECATION")
-                gatt.writeCharacteristic(tx)
-=======
-            val writeInitiated = withContext(Dispatchers.Main) {
-                // Use proper API versioning for Android 13+
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
-                    // On Android 13+, returns BluetoothStatusCodes constant
-                    // BluetoothStatusCodes.SUCCESS = 0
-                    result == 0
-                } else {
-                    @Suppress("DEPRECATION")
-                    tx.value = bytes
-                    @Suppress("DEPRECATION")
-                    gatt.writeCharacteristic(tx)
+
+            val writeSuccess = withContext(Dispatchers.Main) {
+                try {
+                    // Use proper API versioning for Android 13+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+                        if (result != 0) { // BluetoothStatusCodes.SUCCESS = 0
+                            Log.e(TAG, "Failed to initiate write for command: $command, status: $result")
+                            return@withContext false
+                        }
+                    } else {
+                        @Suppress("DEPRECATION")
+                        tx.value = bytes
+                        @Suppress("DEPRECATION")
+                        val success = gatt.writeCharacteristic(tx)
+                        if (!success) {
+                            Log.e(TAG, "Failed to initiate write for command: $command")
+                            return@withContext false
+                        }
+                    }
+                    true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Exception during write for command: $command", e)
+                    false
                 }
             }
 
-            if (!writeInitiated) {
-                Log.e(TAG, "Failed to initiate write for command: $command")
+            if (!writeSuccess) {
                 return@withContext null
->>>>>>> bea45ba (Rename repository and product from ai-servis to mia):android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
             }
-            
+
             // Wait for response with timeout
             return@withContext withTimeoutOrNull(COMMAND_TIMEOUT_MS) {
                 responseChannel.receive()

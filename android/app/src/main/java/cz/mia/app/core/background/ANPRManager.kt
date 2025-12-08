@@ -341,7 +341,7 @@ class ANPRManagerImpl @Inject constructor(
         }
         
         private fun calculateConfidence(line: Text.Line, normalized: String): Float {
-            var baseConfidence = line.confidence
+            var baseConfidence = line.confidence ?: 0.5f
             
             // Apply region heuristics
             scope.launch {

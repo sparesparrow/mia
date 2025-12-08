@@ -61,7 +61,7 @@ class TelemetryWebSocket(
         extraBufferCapacity = 8
     )
     val stateFlow: SharedFlow<WebSocketState> = _stateFlow.asSharedFlow()
-    
+
     init {
         // Initialize state lazily to avoid issues during DI construction
         try {
@@ -71,7 +71,7 @@ class TelemetryWebSocket(
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing state", e)
         }
-    }
+      }
     
     /**
      * Connect to the WebSocket server.
