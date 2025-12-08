@@ -6,8 +6,8 @@
 [versions]
 # Build Tools
 agp = "8.2.2"
-kotlin = "1.9.24"
-ksp = "1.9.24-1.0.20"
+kotlin = "1.9.22"
+ksp = "1.9.22-1.0.20"
 gradle = "8.4"
 
 # Compose

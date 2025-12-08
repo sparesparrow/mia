@@ -449,7 +449,7 @@ class BLEManagerImpl @Inject constructor(
                 }
             }
 
-            if (!writeSuccess) {
+            if (!writeInitiated) {
                 return@withContext null
             }
 
