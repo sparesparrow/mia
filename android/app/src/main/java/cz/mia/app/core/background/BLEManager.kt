@@ -155,7 +155,7 @@ class BLEManagerImpl @Inject constructor(
                     Log.d(TAG, "Disconnected from GATT server")
                     _connectionState.value = BleConnectionState.Disconnected
                     connectionDeferred?.complete(false)
-                    cleanup()
+                    cleanupInternal()
                 }
             }
         }
@@ -415,6 +415,12 @@ class BLEManagerImpl @Inject constructor(
         txCharacteristic = null
         rxCharacteristic = null
         responseBuffer.clear()
+    }
+
+    override suspend fun cleanup() {
+        withContext(Dispatchers.Main) {
+            cleanupInternal()
+        }
     }
     
     @SuppressLint("MissingPermission")

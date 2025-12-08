@@ -23,8 +23,6 @@ android {
         }
 
         buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
-        buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000"'
-        buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
     }
 
     signingConfigs {
@@ -52,11 +50,17 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            // Production URLs - should be configured via environment variables or properties
+            buildConfigField 'String', 'API_BASE_URL', '"https://api.mia-app.com"'
+            buildConfigField 'String', 'WS_BASE_URL', '"wss://ws.mia-app.com"'
         }
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
             testCoverageEnabled true
+            // Debug URLs - local development server
+            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000"'
+            buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
         }
     }
 
