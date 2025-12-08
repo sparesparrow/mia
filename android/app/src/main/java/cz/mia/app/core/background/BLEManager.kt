@@ -155,7 +155,7 @@ class BLEManagerImpl @Inject constructor(
                     Log.d(TAG, "Disconnected from GATT server")
                     _connectionState.value = BleConnectionState.Disconnected
                     connectionDeferred?.complete(false)
-                    cleanup()
+                    scope.launch { cleanup() }
                 }
             }
         }
@@ -433,14 +433,14 @@ class BLEManagerImpl @Inject constructor(
             val commandWithCR = "$command\r"
             val bytes = commandWithCR.toByteArray(Charsets.UTF_8)
 
-            withContext(Dispatchers.Main) {
+            val writeSuccess = withContext(Dispatchers.Main) {
                 try {
                     // Use proper API versioning for Android 13+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         val result = gatt.writeCharacteristic(tx, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
                         if (result != 0) { // BluetoothStatusCodes.SUCCESS = 0
                             Log.e(TAG, "Failed to initiate write for command: $command, status: $result")
-                            return@withContext null
+                            return@withContext false
                         }
                     } else {
                         @Suppress("DEPRECATION")
@@ -449,13 +449,18 @@ class BLEManagerImpl @Inject constructor(
                         val success = gatt.writeCharacteristic(tx)
                         if (!success) {
                             Log.e(TAG, "Failed to initiate write for command: $command")
-                            return@withContext null
+                            return@withContext false
                         }
                     }
+                    true
                 } catch (e: Exception) {
                     Log.e(TAG, "Exception during write for command: $command", e)
-                    return@withContext null
+                    false
                 }
+            }
+
+            if (!writeSuccess) {
+                return@withContext null
             }
 
             // Wait for response with timeout
