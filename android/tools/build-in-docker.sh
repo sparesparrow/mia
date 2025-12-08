@@ -54,6 +54,7 @@ echo "Task: $BUILD_TASK"
 echo "Directory: $ANDROID_DIR"
 echo ""
 
+
 # Build image (use android/ as build context)
 cd "$ANDROID_DIR"
 docker build -t "$IMAGE_NAME" .

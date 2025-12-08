@@ -151,9 +151,14 @@ class MainActivity : ComponentActivity() {
 			Spacer(Modifier.height(16.dp))
 			
 			DashboardGauges(latest)
-			
+
 			Spacer(Modifier.height(16.dp))
-			
+
+			// Citroën C4 specific controls
+			CitroenControls(latest)
+
+			Spacer(Modifier.height(16.dp))
+
 			// Service control buttons
 			Row(modifier = Modifier.fillMaxWidth()) {
 				Button(
@@ -198,7 +203,28 @@ class MainActivity : ComponentActivity() {
 		if (latest == null) {
 			Text("No telemetry yet")
 		} else {
-			Text("Fuel: ${latest.fuelLevel}%  RPM: ${latest.engineRpm}  Speed: ${latest.vehicleSpeed} km/h  Coolant: ${latest.coolantTemp}°C")
+			Column {
+				Text("Fuel: ${latest.fuelLevel}%  RPM: ${latest.engineRpm}  Speed: ${latest.vehicleSpeed} km/h  Coolant: ${latest.coolantTemp}°C")
+
+				// Citroën C4 specific telemetry
+				if (latest.dpfSootMass != null || latest.adBlueLevel != null || latest.dpfStatus != null) {
+					Spacer(Modifier.height(8.dp))
+					Text("Citroën C4 Diagnostics:", style = MaterialTheme.typography.titleSmall)
+
+					if (latest.dpfSootMass != null) {
+						Text("DPF Soot: ${String.format("%.1f", latest.dpfSootMass)}g")
+					}
+					if (latest.adBlueLevel != null) {
+						Text("AdBlue Level: ${latest.adBlueLevel}%")
+					}
+					if (latest.dpfStatus != null) {
+						Text("DPF Status: ${latest.dpfStatus}")
+					}
+					if (latest.particulateFilterEfficiency != null) {
+						Text("Filter Efficiency: ${latest.particulateFilterEfficiency}%")
+					}
+				}
+			}
 		}
 	}
 
@@ -285,6 +311,107 @@ private fun PolicyAdvisory(message: String?, mode: String, battery: Int) {
 	}
 }
 
+
+@Composable
+private fun CitroenControls(latest: TelemetryEntity?) {
+	val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+
+	Column(modifier = Modifier.fillMaxWidth()) {
+		Text("Citroën C4 Controls", style = MaterialTheme.typography.titleMedium)
+
+		Spacer(Modifier.height(8.dp))
+
+		// DPF Controls
+		if (latest?.dpfSootMass != null) {
+			Text("DPF Management", style = MaterialTheme.typography.titleSmall)
+			Spacer(Modifier.height(4.dp))
+
+			Row(modifier = Modifier.fillMaxWidth()) {
+				OutlinedButton(
+					onClick = {
+						// TODO: Implement DPF status check via MCP bridge
+						// This would send command to automotive-mcp-bridge
+					},
+					modifier = Modifier.weight(1f)
+				) {
+					Icon(Icons.Default.Info, contentDescription = null)
+					Spacer(Modifier.width(8.dp))
+					Text("Check DPF")
+				}
+
+				Spacer(Modifier.width(8.dp))
+
+				Button(
+					onClick = {
+						// TODO: Implement DPF regeneration via MCP bridge
+						// This would send regeneration command to citroen-c4-bridge
+					},
+					modifier = Modifier.weight(1f),
+					enabled = latest?.dpfStatus == "ok" || latest?.dpfStatus == "warning",
+					colors = ButtonDefaults.buttonColors(
+						containerColor = Color(0xFF4CAF50) // Green for regeneration
+					)
+				) {
+					Icon(Icons.Default.Refresh, contentDescription = null)
+					Spacer(Modifier.width(8.dp))
+					Text("Regenerate")
+				}
+			}
+
+			Spacer(Modifier.height(8.dp))
+		}
+
+		// AdBlue Controls
+		if (latest?.adBlueLevel != null) {
+			Text("AdBlue System", style = MaterialTheme.typography.titleSmall)
+			Spacer(Modifier.height(4.dp))
+
+			OutlinedButton(
+				onClick = {
+					// TODO: Implement AdBlue status check via MCP bridge
+				},
+				modifier = Modifier.fillMaxWidth()
+			) {
+				Icon(Icons.Default.LocalGasStation, contentDescription = null)
+				Spacer(Modifier.width(8.dp))
+				Text("Check AdBlue Level (${latest.adBlueLevel}%)")
+			}
+
+			Spacer(Modifier.height(8.dp))
+		}
+
+		// Diagnostics
+		Text("Diagnostics", style = MaterialTheme.typography.titleSmall)
+		Spacer(Modifier.height(4.dp))
+
+		Row(modifier = Modifier.fillMaxWidth()) {
+			OutlinedButton(
+				onClick = {
+					// TODO: Implement full diagnostics via MCP bridge
+					// This would run comprehensive vehicle health check
+				},
+				modifier = Modifier.weight(1f)
+			) {
+				Icon(Icons.Default.Build, contentDescription = null)
+				Spacer(Modifier.width(8.dp))
+				Text("Run Diag")
+			}
+
+			Spacer(Modifier.width(8.dp))
+
+			OutlinedButton(
+				onClick = {
+					// TODO: Implement DTC code reading via MCP bridge
+				},
+				modifier = Modifier.weight(1f)
+			) {
+				Icon(Icons.Default.Warning, contentDescription = null)
+				Spacer(Modifier.width(8.dp))
+				Text("Check DTC")
+			}
+		}
+	}
+}
 
 @Composable
 private fun RowToggle(options: List<String>, selected: String, onSelected: (String) -> Unit) {

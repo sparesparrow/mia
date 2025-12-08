@@ -36,11 +36,6 @@ android {
         ignoreWarnings true
     }
 
-    lintOptions {
-        abortOnError false
-        ignoreWarnings true
-    }
-
     signingConfigs {
         release {
             def props = new Properties()
