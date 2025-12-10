@@ -42,9 +42,11 @@ class MIAConan(ConanFile):
         if self.options.with_mcp:
             # MCP integration may need additional deps
             pass
+
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
+        self.tool_requires("sparetools-obd-sim/2.0.0")  # OBD simulator for testing
 
     def layout(self):
         basic_layout(self)

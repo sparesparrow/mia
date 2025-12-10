@@ -287,8 +287,27 @@ pip install -r requirements.txt
 python -m modules.core-orchestrator
 ```
 
+## API Authentication Setup
+
+The MIA API service requires authentication for production use. Create the environment file:
+
+```bash
+# Create environment directory
+sudo mkdir -p /etc/mia
+
+# Generate API key (run as non-root user)
+python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee /etc/mia/environment
+
+# Set proper permissions
+sudo chmod 600 /etc/mia/environment
+sudo chown root:root /etc/mia/environment
+```
+
+The API service will automatically load this key. For development, you can disable authentication by adding `MIA_AUTH_DISABLED=1` to the environment file.
+
 ## See Also
 
 - [Main README](../README.md)
 - [C++ Platform Documentation](../platforms/cpp/README.md)
+- [API Reference](../api/mia-api-reference.md)
 - [Architecture Overview](architecture-overview.md)

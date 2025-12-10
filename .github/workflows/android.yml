@@ -25,7 +25,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -46,10 +46,10 @@ jobs:
         run: |
           cd android
           ./gradlew --no-daemon assembleDebug
-          VERSION_CODE=${{ github.run_number }} VERSION_NAME=${{ github.ref_name }} ./gradlew --no-daemon clean bundleRelease assembleRelease
+          ./gradlew --no-daemon clean bundleRelease assembleRelease
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ai-servis-app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -79,7 +79,7 @@ EOF
 
       - name: Upload release artifacts (main branch)
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ai-servis-app-release
           path: |
@@ -91,7 +91,7 @@ EOF
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-          packageName: cz.aiservis.app
+          packageName: cz.mia.app
           releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
           track: internal
 

@@ -8,6 +8,7 @@ Type=simple
 User=root
 WorkingDirectory=/opt/mia/rpi
 Environment="PATH=/usr/bin:/usr/local/bin"
+EnvironmentFile=-/etc/mia/environment
 ExecStart=/usr/bin/python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 Restart=always
 RestartSec=10

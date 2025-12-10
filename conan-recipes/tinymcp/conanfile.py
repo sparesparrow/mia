@@ -71,9 +71,12 @@ class TinyMCPConan(ConanFile):
             self.requires("gtest/1.14.0")
     
     def source(self):
-        # Copy local TinyMCP implementation
-        src_path = "/workspace/external/tinymcp"
-        copy(self, "*", src=src_path, dst=self.source_folder, keep_path=True)
+        # TinyMCP sources should be available in the recipe folder
+        # Copy any local sources if they exist
+        if os.path.exists(os.path.join(self.recipe_folder, "src")):
+            copy(self, "*", src=os.path.join(self.recipe_folder, "src"), dst=os.path.join(self.source_folder, "src"))
+        if os.path.exists(os.path.join(self.recipe_folder, "include")):
+            copy(self, "*", src=os.path.join(self.recipe_folder, "include"), dst=os.path.join(self.source_folder, "include"))
     
     def _apply_patches(self):
         """Apply any necessary patches to TinyMCP source"""
