@@ -42,6 +42,7 @@ class MIAConan(ConanFile):
         if self.options.with_mcp:
             # MCP integration may need additional deps
             pass
+
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler

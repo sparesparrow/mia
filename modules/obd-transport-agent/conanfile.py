@@ -29,23 +29,19 @@ class OBDTransportAgent(ConanFile):
     def configure(self):
         if self.settings.os == "Android":
             # Android-specific configurations
-            self.options["pyserial"].shared = False
-            self.options["flatbuffers"].shared = False
+            # Note: Options for dependencies are set in requirements() method
+            pass
 
     def requirements(self):
-        # Python dependencies (runtime only for Android edge deployment)
-        self.requires("pyserial/3.5")
+        # Core dependencies
         self.requires("flatbuffers/23.5.26")
-
-        # ZeroMQ for telemetry streaming
         self.requires("zeromq/4.3.5")
 
-        # Core MIA dependencies
-        self.requires("mia-core/1.2.0")
-
-        # Android-specific dependencies
+        # Android-specific configurations
         if self.settings.os == "Android":
-            self.requires("android-ndk/r26b")
+            # Ensure static linking for Android
+            self.options["flatbuffers"].shared = False
+            self.options["zeromq"].shared = False
 
     def build_requirements(self):
         self.tool_requires("cmake/3.27.0")
