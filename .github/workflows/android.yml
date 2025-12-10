@@ -46,7 +46,12 @@ jobs:
         run: |
           cd android
           ./gradlew --no-daemon assembleDebug
-          VERSION_CODE=${{ github.run_number }} VERSION_NAME=${{ github.ref_name }} ./gradlew --no-daemon clean bundleRelease assembleRelease
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            VERSION_NAME="main"
+          else
+            VERSION_NAME="dev-${{ github.run_number }}"
+          fi
+          VERSION_CODE=${{ github.run_number }} VERSION_NAME=$VERSION_NAME ./gradlew --no-daemon clean bundleRelease assembleRelease
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v3
