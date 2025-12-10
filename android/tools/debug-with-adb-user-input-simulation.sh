@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ANDROID_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
-PACKAGE_NAME="cz.aiservis.app.debug"
+PACKAGE_NAME="cz.mia.app.debug"
 MAIN_ACTIVITY=".MainActivity"
 OUTPUT_DIR="$ANDROID_DIR/debug-output"
 DELAY_MS=1000

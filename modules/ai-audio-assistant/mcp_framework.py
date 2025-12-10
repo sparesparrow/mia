@@ -533,6 +533,7 @@ class MCPClient:
             raise MCPError(-32603, "No transport factory available")
 
         try:
+<<<<<<< HEAD
             transport_candidate = self.transport_factory()
             if asyncio.iscoroutine(transport_candidate):
                 self.transport = await transport_candidate
@@ -541,6 +542,9 @@ class MCPClient:
 
             if self.transport is None:
                 raise MCPError(-32603, "Transport factory returned None")
+=======
+            self.transport = await self.transport_factory()
+>>>>>>> origin/fix/mcp-errors-and-cloudsmith-bootstrap
             self.connected = True
 
             # Initialize the connection

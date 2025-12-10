@@ -14,7 +14,7 @@ Supports both Cloudsmith and GitHub Packages (easily switchable via env vars).
 This script uses only stdlib (urllib, tarfile, subprocess) - no external deps.
 """
 
-import sys
+import sys 
 import os
 import platform
 import urllib.request
@@ -68,10 +68,18 @@ GITHUB_CONAN_REMOTE = os.getenv(
     f"https://maven.pkg.github.com/{GITHUB_OWNER}/conan"
 )
 
+
 def get_platform_str():
-    """Determines Cloudsmith platform string (linux-x86_64, macos-arm64, etc.)"""
+    """Determines Cloudsmith platform string."""
     machine = platform.machine()
     system = sys.platform
+
+    # Detect Android (Linux kernel with Android-specific markers)
+    if (system == "linux" and
+            ("android" in sys.version.lower() or
+             "ANDROID_ROOT" in os.environ)):
+        return "android-arm64"  # Android typically runs on ARM64
+
     if system == "win32":
         return "windows-x86_64"
     elif system == "darwin":
@@ -90,14 +98,14 @@ def get_platform_str():
 def get_cpython_url(plat: str) -> str:
     """Get CPython tool download URL based on configured repository"""
     filename = f"cpython-tool-{CPY_VERSION}-{plat}.tar.gz"
-    
+
     if ARTIFACT_REPO == "github":
         # GitHub Packages/Releases pattern
         url = f"{GITHUB_CPY_BASE}/{filename}"
     else:
         # Cloudsmith pattern (default)
         url = f"{CLOUDSMITH_CPY_BASE}/{CPY_VERSION}/{filename}"
-    
+
     return url
 
 def get_conan_remote() -> str:
@@ -198,7 +206,6 @@ def setup_python_environment(extract_dir: Path) -> dict:
     """Set up PYTHONHOME and PATH for bundled CPython"""
     env = os.environ.copy()
     env["PYTHONHOME"] = str(extract_dir)
-    
     if sys.platform == "win32":
         py_bin = extract_dir / "python.exe"
         env["PATH"] = str(extract_dir) + ";" + env.get("PATH", "")
@@ -253,24 +260,24 @@ def install_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
 def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
     """Configure Conan remotes and profiles"""
     print(f"  Configuring Conan remotes and profiles...")
-    
+
     venv_dir = work_dir / ".buildenv" / "venv"
     conan_bin = venv_dir / "bin" / "conan" if sys.platform != "win32" else venv_dir / "Scripts" / "conan.exe"
-    
+
     if not conan_bin.exists():
         print(f"  ✗ Conan binary not found at {conan_bin}")
         return False
-    
+
     # Set Conan home
     conan_home = work_dir / ".buildenv" / "conan"
     conan_home.mkdir(parents=True, exist_ok=True)
     env["CONAN_HOME"] = str(conan_home)
-    
+
     # Get Conan remote URL based on configured repository
     conan_remote_url = get_conan_remote()
     repo_name = "GitHub Packages" if ARTIFACT_REPO == "github" else "Cloudsmith"
     remote_name = "sparesparrow-github" if ARTIFACT_REPO == "github" else "sparesparrow-conan"
-    
+
     try:
         # Detect default profile
         subprocess.check_call(
@@ -279,7 +286,7 @@ def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        
+
         # Add remote (Cloudsmith or GitHub Packages)
         subprocess.check_call(
             [str(conan_bin), "remote", "add", remote_name, conan_remote_url, "--force"],
@@ -287,7 +294,7 @@ def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        
+
         # For GitHub Packages, configure authentication if token is provided
         if ARTIFACT_REPO == "github":
             github_token = os.getenv("GITHUB_TOKEN")
@@ -302,7 +309,7 @@ def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
                     stderr=subprocess.DEVNULL
                 )
                 print(f"    Configured GitHub Packages authentication")
-        
+
         # Copy project profiles if available
         profiles_dir = work_dir / "profiles"
         if profiles_dir.exists():
@@ -312,10 +319,10 @@ def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
                 if profile_file.is_file():
                     shutil.copy2(profile_file, conan_profiles_dir / profile_file.name)
                     print(f"    Installed profile: {profile_file.name}")
-        
+
         print(f"  ✓ Conan configured (home: {conan_home}, remote: {repo_name})")
         return True
-        
+
     except subprocess.CalledProcessError as e:
         print(f"  ✗ Failed to configure Conan: {e}")
         if ARTIFACT_REPO == "github":
@@ -479,6 +486,7 @@ def main():
     print("  # Use Cloudsmith (default):")
     print("  export ARTIFACT_REPO=cloudsmith")
     print()
+
 
 if __name__ == "__main__":
     main()

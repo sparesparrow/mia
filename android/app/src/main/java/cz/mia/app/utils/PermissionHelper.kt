@@ -40,7 +40,7 @@ object PermissionHelper {
             Log.e(TAG, "Error getting permissions", e)
             emptyArray()
         }
-    }
+      }
 
     /**
      * Get all Bluetooth-related permissions that may be needed.
@@ -75,7 +75,7 @@ object PermissionHelper {
             Log.e(TAG, "Error checking permissions", e)
             true // Return true to allow initialization to proceed
         }
-    }
+      }
 
     /**
      * Get list of missing Bluetooth permissions.
@@ -89,7 +89,7 @@ object PermissionHelper {
             Log.e(TAG, "Error getting missing permissions", e)
             emptyList()
         }
-    }
+      }
 
     /**
      * Check if a specific permission is granted.

@@ -284,12 +284,12 @@ main() {
         setup_conan_remotes
         create_mia_env
     fi
-    
+
     # Generate activation script if it doesn't exist
     if [ ! -f "$BUILDENV_DIR/activate.sh" ]; then
         generate_activation_script
     fi
-    
+
     install_mia_deps
     
     echo ""
