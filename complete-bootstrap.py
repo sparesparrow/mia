@@ -6,8 +6,9 @@ Canonical bootstrap following CPython-tool pattern:
 1. Detect platform (linux-x86_64, macos-arm64, windows-x86_64, etc.)
 2. Download cpython-tool-3.12.7-{platform}.tar.gz from configured repository
 3. Extract into self-contained tool prefix and export PYTHONHOME/PATH
-4. Use bundled interpreter to install/configure Conan 2.21.0
-5. Set Conan remotes to configured repository for C++/system packages
+4. Use bundled interpreter to install shared development tooling
+5. Use bundled interpreter to install/configure Conan 2.21.0
+6. Set Conan remotes to configured repository for C++/system packages
 
 Supports both Cloudsmith and GitHub Packages (easily switchable via env vars).
 
@@ -214,6 +215,40 @@ def setup_python_environment(extract_dir: Path) -> dict:
         env["PATH"] = str(extract_dir / "bin") + ":" + env.get("PATH", "")
     
     return env, py_bin
+
+def install_dev_tools(py_bin: Path, env: dict, work_dir: Path) -> bool:
+    """Install shared development tools using the bundled CPython"""
+    print("  Installing shared development tools using bundled CPython...")
+
+    # Version of sparetools-shared-dev-tools to install
+    dev_tools_version = os.getenv("SPARETOOLS_DEV_TOOLS_VERSION", "1.0.0")
+
+    # Configure pip index URL for Cloudsmith Python repo if configured
+    pip_args = [str(py_bin), "-m", "pip", "install", "--upgrade", f"sparetools-shared-dev-tools=={dev_tools_version}"]
+
+    # Add index URL if configured (for Cloudsmith Python repo)
+    index_url = os.getenv("PIP_INDEX_URL")
+    if index_url:
+        pip_args.extend(["--index-url", index_url])
+        repo_name = "custom index"
+    else:
+        repo_name = "PyPI"
+
+    print(f"    Installing sparetools-shared-dev-tools {dev_tools_version} from {repo_name}...")
+
+    try:
+        subprocess.check_call(
+            pip_args,
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        print(f"  ✓ Shared development tools installed")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"  ✗ Failed to install development tools: {e}")
+        print("    Continuing without development tools...")
+        return False
 
 def install_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
     """Install Conan 2.21.0 using the bundled CPython"""
@@ -425,30 +460,36 @@ def main():
         print(f"  ✗ Python validation failed: {e}")
         sys.exit(1)
     print()
-    
+
+    # 4.5. Install shared development tools using bundled Python
+    print("Step 4: Installing shared development tools...")
+    install_dev_tools(py_bin, env, work_dir)
+    print()
+
     # 5. Install Conan using bundled Python
-    print("Step 4: Installing Conan 2.21.0...")
+    print("Step 5: Installing Conan 2.21.0...")
     if not install_conan(py_bin, env, work_dir):
         print("  ⚠ Conan installation failed, continuing without it...")
     print()
     
     # 6. Configure Conan
-    print("Step 5: Configuring Conan...")
+    print("Step 6: Configuring Conan...")
     configure_conan(py_bin, env, work_dir)
     print()
-    
+
     # 7. Create activation script
-    print("Step 6: Creating activation script...")
+    print("Step 7: Creating activation script...")
     create_activation_script(work_dir, py_bin, env)
     print()
-    
+
     # 8. Generate validation report
-    print("Step 7: Generating validation report...")
+    print("Step 8: Generating validation report...")
     validation_report = {
         "status": "success",
         "platform": plat,
         "cpython_version": CPY_VERSION,
         "conan_version": CONAN_VERSION,
+        "dev_tools_version": os.getenv("SPARETOOLS_DEV_TOOLS_VERSION", "1.0.0"),
         "python_binary": str(py_bin),
         "extract_dir": str(extract_dir),
         "buildenv_dir": str(work_dir / ".buildenv"),

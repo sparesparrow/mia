@@ -512,6 +512,7 @@ gantt
 - [x] ANPR license plate recognition
 - [x] Basic voice control
 - [x] Edge processing framework
+- [x] Citroën OBD-II telemetry agent ([docs/automotive/citroen-integration.md](./docs/automotive/citroen-integration.md))
 
 ### **✅ Recently Completed (C++ Platform Integration)**
 - [x] **Hybrid MQP + MQTT Architecture**: Unified messaging system
