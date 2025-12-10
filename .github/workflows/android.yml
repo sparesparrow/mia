@@ -25,7 +25,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -54,7 +54,7 @@ jobs:
           VERSION_CODE=${{ github.run_number }} VERSION_NAME=$VERSION_NAME ./gradlew --no-daemon clean bundleRelease assembleRelease
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ai-servis-app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -84,7 +84,7 @@ EOF
 
       - name: Upload release artifacts (main branch)
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ai-servis-app-release
           path: |
