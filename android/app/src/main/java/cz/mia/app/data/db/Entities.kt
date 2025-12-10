@@ -11,7 +11,14 @@ data class TelemetryEntity(
 	val engineRpm: Int,
 	val vehicleSpeed: Int,
 	val coolantTemp: Int,
-	val engineLoad: Int
+	val engineLoad: Int,
+	// Citroën C4 specific fields
+	val dpfSootMass: Float? = null,
+	val adBlueLevel: Int? = null,
+	val dpfStatus: String? = null,
+	val particulateFilterEfficiency: Float? = null,
+	val differentialPressure: Float? = null,
+	val eolysAdditiveLevel: Float? = null
 )
 
 @Entity(tableName = "alerts")

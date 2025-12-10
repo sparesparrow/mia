@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "cz.mia.app"
-        minSdk 24
+        minSdk 22
         targetSdk 34
         versionCode (System.getenv("VERSION_CODE")?.toInteger()) ?: 1
         versionName System.getenv("VERSION_NAME") ?: "1.0.0"
