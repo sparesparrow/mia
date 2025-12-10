@@ -1,0 +1,19 @@
+[Unit]
+Description=MIA GPIO Worker
+After=network.target mia-broker.service
+Requires=mia-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/ai-servis/rpi/hardware
+ExecStart=/usr/bin/python3 gpio_worker.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+
+[Install]
+WantedBy=multi-user.target

@@ -31,22 +31,22 @@ class CitroenC4Bridge(ConanFile):
     def configure(self):
         if self.settings.os == "Android":
             # Android-specific configurations
-            self.options["zeromq"].shared = False
+            # Note: Options for dependencies are set in requirements() method
+            pass
 
     def requirements(self):
         # Core dependencies
         self.requires("zeromq/4.3.5")
         self.requires("flatbuffers/23.5.26")
 
-        # OBD transport agent
-        self.requires("obd-transport-agent/1.0.0")
+        # OBD transport agent (local reference)
+        # self.requires("obd-transport-agent/1.0.0")
 
-        # MIA core
-        self.requires("mia-core/1.2.0")
-
-        # Android NDK for native compilation
+        # Android-specific configurations
         if self.settings.os == "Android":
-            self.requires("android-ndk/r26b")
+            # Ensure static linking for Android
+            self.options["zeromq"].shared = False
+            self.options["flatbuffers"].shared = False
 
     def build_requirements(self):
         self.tool_requires("cmake/3.27.0")

@@ -1,0 +1,25 @@
+[Unit]
+Description=MIA Simple BLE Advertiser
+Documentation=https://github.com/sparesparrow/ai-servis/docs/automotive/bluetooth-integration.md
+After=bluetooth.service
+Requires=bluetooth.service
+
+[Service]
+Type=simple
+User=root
+Group=bluetooth
+WorkingDirectory=/home/mia/ai-servis
+ExecStart=/usr/bin/python3 /home/mia/ai-servis/rpi/services/simple_ble_advertiser.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mia-ble-advertiser
+MemoryMax=64M
+NoNewPrivileges=true
+
+# Bluetooth permissions
+SupplementaryGroups=bluetooth
+
+[Install]
+WantedBy=multi-user.target

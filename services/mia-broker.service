@@ -1,0 +1,18 @@
+[Unit]
+Description=MIA ZeroMQ Message Broker
+After=network.target
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/ai-servis/rpi/core/messaging
+ExecStart=/usr/bin/python3 broker.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+
+[Install]
+WantedBy=multi-user.target
