@@ -4,9 +4,11 @@ This document describes the automated dependency management, testing, and deploy
 
 ## Overview
 
+The OBD Simulator is now available as a canonical Conan package (`sparetools-obd-sim/2.0.0`) from the sparesparrow-conan remote. This package provides all necessary components for OBD simulation and replaces manual setup procedures.
+
 The OBD Simulator has been integrated into the MIA automated build, test, and deployment pipeline using:
 
-- **Conan** for dependency management
+- **Conan** for dependency management (via sparetools-obd-sim package)
 - **pytest** for unit and integration testing
 - **GitHub Actions** for CI/CD automation
 - **Systemd** for production deployment
@@ -32,16 +34,37 @@ The OBD Simulator has been integrated into the MIA automated build, test, and de
 
 ### Conan Integration
 
-The OBD simulator components are packaged using Conan:
+The OBD simulator is available as a pre-built Conan package:
 
 ```bash
-# Build Conan package
+# Install sparetools-obd-sim package (recommended)
+conan install sparetools-obd-sim/2.0.0@ --build=missing
+
+# Or build from source (legacy)
 cd rpi
 conan create . --build=missing
-
-# Install package
-conan install rpi/conanfile.py --build=missing
 ```
+
+### SpareTools OBD-Sim Package
+
+The canonical way to install OBD simulation capabilities is through the sparetools-obd-sim package:
+
+```bash
+# Add sparesparrow remote (if not already added)
+conan remote add sparesparrow-conan https://sparesparrow.jfrog.io/artifactory/api/conan/sparesparrow-conan
+
+# Install OBD simulator
+conan install sparetools-obd-sim/2.0.0@ --build=missing
+
+# Use bootstrap script from package
+python -m sparetools_obd bootstrap
+```
+
+The package includes:
+- Pre-configured serial bridge and OBD worker services
+- Bootstrap scripts for automated setup
+- All required Python dependencies
+- Systemd service files
 
 ### Python Dependencies
 
@@ -150,6 +173,20 @@ The deployment script (`scripts/deploy-raspberry-pi.sh`) has been updated to inc
 
 ### Manual Deployment
 
+#### Using SpareTools Package (Recommended)
+
+```bash
+# Install sparetools-obd-sim package
+conan install sparetools-obd-sim/2.0.0@ --build=missing
+
+# Run bootstrap script from package
+python -m sparetools_obd bootstrap
+
+# Services will be automatically configured and started
+```
+
+#### Legacy Manual Deployment
+
 ```bash
 # Run deployment script
 sudo ./scripts/deploy-raspberry-pi.sh
@@ -169,8 +206,9 @@ sudo journalctl -u mia-obd-worker -f
 ### Pre-Deployment
 
 - [ ] All tests pass in CI/CD pipeline
-- [ ] Conan package builds successfully
-- [ ] Python dependencies install correctly
+- [ ] sparetools-obd-sim/2.0.0 package installs successfully
+- [ ] Conan package builds successfully (legacy)
+- [ ] Python dependencies install correctly via sparetools package
 - [ ] Service files reference correct paths
 - [ ] ZeroMQ ports are available (5555, 5556)
 
@@ -193,6 +231,10 @@ sudo journalctl -u mia-obd-worker -f
 **Issue**: Conan build fails
 - **Solution**: Verify `rpi/conanfile.py` syntax
 - **Check**: Conan cache is properly configured
+
+**Issue**: sparetools-obd-sim package installation fails
+- **Solution**: Ensure sparesparrow-conan remote is added: `conan remote add sparesparrow-conan https://sparesparrow.jfrog.io/artifactory/api/conan/sparesparrow-conan`
+- **Check**: Conan version compatibility (requires Conan 2.0+)
 
 ### Deployment Issues
 
