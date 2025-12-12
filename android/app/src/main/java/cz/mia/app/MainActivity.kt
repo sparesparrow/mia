@@ -329,14 +329,10 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 			Text("DPF Management", style = MaterialTheme.typography.titleSmall)
 			Spacer(Modifier.height(4.dp))
 
-<<<<<<< HEAD
-			Row(modifier = Modifier.fillMaxWidth()) {
-=======
 			Row(
 				modifier = Modifier.fillMaxWidth(),
 				horizontalArrangement = Arrangement.spacedBy(8.dp)
 			) {
->>>>>>> 5376269 (rebase)
 				OutlinedButton(
 					onClick = {
 						// TODO: Implement DPF status check via MCP bridge
@@ -349,11 +345,6 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 					Text("Check DPF")
 				}
 
-<<<<<<< HEAD
-				Spacer(Modifier.width(8.dp))
-
-=======
->>>>>>> 5376269 (rebase)
 				Button(
 					onClick = {
 						// TODO: Implement DPF regeneration via MCP bridge
@@ -397,14 +388,10 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 		Text("Diagnostics", style = MaterialTheme.typography.titleSmall)
 		Spacer(Modifier.height(4.dp))
 
-<<<<<<< HEAD
-		Row(modifier = Modifier.fillMaxWidth()) {
-=======
 		Row(
 			modifier = Modifier.fillMaxWidth(),
 			horizontalArrangement = Arrangement.spacedBy(8.dp)
 		) {
->>>>>>> 5376269 (rebase)
 			OutlinedButton(
 				onClick = {
 					// TODO: Implement full diagnostics via MCP bridge
@@ -417,11 +404,6 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 				Text("Run Diag")
 			}
 
-<<<<<<< HEAD
-			Spacer(Modifier.width(8.dp))
-
-=======
->>>>>>> 5376269 (rebase)
 			OutlinedButton(
 				onClick = {
 					// TODO: Implement DTC code reading via MCP bridge
@@ -438,12 +420,6 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 
 @Composable
 private fun RowToggle(options: List<String>, selected: String, onSelected: (String) -> Unit) {
-<<<<<<< HEAD
-	Row {
-		options.forEach { opt ->
-			Button(onClick = { onSelected(opt) }, enabled = opt != selected) { Text(opt) }
-			Spacer(Modifier.height(0.dp))
-=======
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
@@ -451,10 +427,9 @@ private fun RowToggle(options: List<String>, selected: String, onSelected: (Stri
 			Button(
 				onClick = { onSelected(opt) },
 				enabled = opt != selected
-			) { 
-				Text(opt) 
+			) {
+				Text(opt)
 			}
->>>>>>> 5376269 (rebase)
 		}
 	}
 }
