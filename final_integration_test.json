@@ -1,0 +1,126 @@
+{
+  "summary": {
+    "total": 12,
+    "passed": 4,
+    "failed": 0,
+    "warnings": 3,
+    "errors": 0
+  },
+  "results": [
+    {
+      "test": "Network Connectivity",
+      "status": "PASS",
+      "message": "Raspberry Pi is reachable",
+      "timestamp": "2025-12-12 05:49:28",
+      "details": {}
+    },
+    {
+      "test": "API Connectivity",
+      "status": "PASS",
+      "message": "API is responding",
+      "timestamp": "2025-12-12 05:49:29",
+      "details": {
+        "status": "error",
+        "services": []
+      }
+    },
+    {
+      "test": "ZeroMQ Broker",
+      "status": "PASS",
+      "message": "ZeroMQ broker is accessible on port 5555",
+      "timestamp": "2025-12-12 05:49:29",
+      "details": {}
+    },
+    {
+      "test": "ZeroMQ PUB Socket",
+      "status": "PASS",
+      "message": "ZeroMQ PUB socket is accessible on port 5556",
+      "timestamp": "2025-12-12 05:49:29",
+      "details": {}
+    },
+    {
+      "test": "Bluetooth Services",
+      "status": "WARN",
+      "message": "No Bluetooth devices found in registry",
+      "timestamp": "2025-12-12 05:49:29",
+      "details": {}
+    },
+    {
+      "test": "OBD Services",
+      "status": "INFO",
+      "message": "No OBD telemetry data currently available",
+      "timestamp": "2025-12-12 05:49:29",
+      "details": {}
+    },
+    {
+      "test": "BLE Discovery",
+      "status": "INFO",
+      "message": "BLE scan completed but no devices found",
+      "timestamp": "2025-12-12 05:49:34",
+      "details": {
+        "response": {
+          "success": false,
+          "error": "Command timeout - no response from device",
+          "timestamp": "2025-12-12T05:49:34.359180"
+        }
+      }
+    },
+    {
+      "test": "ZeroMQ Subscriber",
+      "status": "INFO",
+      "message": "No telemetry messages received (this is normal if no devices connected)",
+      "timestamp": "2025-12-12 05:49:39",
+      "details": {}
+    },
+    {
+      "test": "Bluetooth Services",
+      "status": "WARN",
+      "message": "No Bluetooth devices found in registry",
+      "timestamp": "2025-12-12 05:49:39",
+      "details": {}
+    },
+    {
+      "test": "OBD Services",
+      "status": "INFO",
+      "message": "No OBD telemetry data currently available",
+      "timestamp": "2025-12-12 05:49:39",
+      "details": {}
+    },
+    {
+      "test": "BLE Discovery",
+      "status": "INFO",
+      "message": "BLE scan completed but no devices found",
+      "timestamp": "2025-12-12 05:49:44",
+      "details": {
+        "response": {
+          "success": false,
+          "error": "Command timeout - no response from device",
+          "timestamp": "2025-12-12T05:49:44.522295"
+        }
+      }
+    },
+    {
+      "test": "Android App Integration",
+      "status": "WARN",
+      "message": "Partial integration success (2/3)",
+      "timestamp": "2025-12-12 05:49:44",
+      "details": {
+        "results": [
+          [
+            "BLE Manager Available",
+            false
+          ],
+          [
+            "OBD Data Available",
+            true
+          ],
+          [
+            "Device Discovery",
+            true
+          ]
+        ]
+      }
+    }
+  ],
+  "timestamp": "2025-12-12 05:49:44"
+}

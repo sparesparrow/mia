@@ -7,27 +7,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import zmq
-<<<<<<< HEAD
-=======
 import zmq.asyncio
->>>>>>> 5376269 (rebase)
 import json
 import asyncio
 import logging
 from datetime import datetime
 import psutil
 import os
-<<<<<<< HEAD
-=======
 import sys
->>>>>>> 5376269 (rebase)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-<<<<<<< HEAD
-=======
 # Add project root to path for Mia package import
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -55,8 +47,6 @@ except ImportError:
     CitroenTelemetry = None
     DpfStatus = None
     logger.warning("Could not import Mia.Vehicle FlatBuffers bindings. Telemetry decoding disabled.")
-
->>>>>>> 5376269 (rebase)
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
 
 # CORS middleware
@@ -73,10 +63,6 @@ zmq_context = zmq.Context()
 zmq_socket = zmq_context.socket(zmq.DEALER)
 zmq_socket.connect("tcp://localhost:5555")  # Connect to ZeroMQ router
 
-<<<<<<< HEAD
-# Device registry (in-memory for now)
-device_registry: Dict[str, Dict[str, Any]] = {}
-=======
 # Device registry - use proper registry if available, otherwise simple dict
 if REGISTRY_AVAILABLE:
     device_registry = DeviceRegistry(
@@ -86,10 +72,9 @@ if REGISTRY_AVAILABLE:
     )
 else:
     device_registry = None
-    
+
 # Legacy simple dict for backward compatibility
 device_registry_simple: Dict[str, Dict[str, Any]] = {}
->>>>>>> 5376269 (rebase)
 telemetry_cache: Dict[str, Dict[str, Any]] = {}
 
 # WebSocket connections
@@ -114,8 +99,6 @@ class TelemetryFilter(BaseModel):
     sensors: Optional[List[str]] = None
 
 
-<<<<<<< HEAD
-=======
 async def consume_telemetry():
     """
     Background task to consume vehicle telemetry from ZMQ PUB socket.
@@ -124,21 +107,21 @@ async def consume_telemetry():
     ctx = zmq.asyncio.Context()
     sub = ctx.socket(zmq.SUB)
     port = int(os.environ.get('ZMQ_PUB_PORT', 5557))
-    
+
     try:
         sub.connect(f"tcp://localhost:{port}")
         sub.setsockopt(zmq.SUBSCRIBE, b"")
         logger.info(f"Connected to vehicle telemetry subscriber on tcp://localhost:{port}")
-        
+
         while True:
             try:
                 # Receive raw FlatBuffers data
                 msg = await sub.recv()
-                
+
                 if CitroenTelemetry:
                     # Decode FlatBuffers message
                     telemetry = CitroenTelemetry.CitroenTelemetry.GetRootAs(msg, 0)
-                    
+
                     data = {
                         "rpm": round(telemetry.Rpm(), 1),
                         "speed_kmh": round(telemetry.SpeedKmh(), 1),
@@ -150,52 +133,43 @@ async def consume_telemetry():
                         "dpf_status": telemetry.DpfRegenerationStatus(),
                         "timestamp": datetime.now().isoformat()
                     }
-                    
+
                     # Update global cache
                     telemetry_cache["vehicle"] = data
-                    
+
                 else:
                     # Wait a bit if we can't decode to avoid tight loop if something is spamming
                     await asyncio.sleep(1)
-                    
+
             except Exception as e:
                 logger.error(f"Error processing telemetry message: {e}")
                 await asyncio.sleep(1)
-                
+
     except Exception as e:
         logger.error(f"Failed to start telemetry consumer: {e}")
-
-
->>>>>>> 5376269 (rebase)
 @app.on_event("startup")
 async def startup_event():
     """Initialize ZeroMQ connection on startup"""
     logger.info("FastAPI server starting up...")
     logger.info("Connected to ZeroMQ router at tcp://localhost:5555")
-<<<<<<< HEAD
-=======
-    
+
     # Start device registry
     if REGISTRY_AVAILABLE and device_registry:
         device_registry.start()
         logger.info("Device registry started")
-    
+
     # Start telemetry consumer background task
     asyncio.create_task(consume_telemetry())
->>>>>>> 5376269 (rebase)
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-<<<<<<< HEAD
-=======
     # Stop device registry
     if REGISTRY_AVAILABLE and device_registry:
         device_registry.stop()
         logger.info("Device registry stopped")
-    
->>>>>>> 5376269 (rebase)
+
     zmq_socket.close()
     zmq_context.term()
     logger.info("FastAPI server shutting down...")
@@ -204,17 +178,11 @@ async def shutdown_event():
 @app.get("/")
 async def root():
     """Root endpoint"""
-<<<<<<< HEAD
-    return {
-        "service": "MIA Raspberry Pi API",
-        "version": "1.0.0",
-        "status": "running"
-=======
     auth_status = "disabled"
     if AUTH_AVAILABLE:
         auth = get_api_key_auth()
         auth_status = "enabled" if auth.enabled else "disabled"
-    
+
     return {
         "service": "MIA Raspberry Pi API",
         "version": "1.0.0",
@@ -240,7 +208,6 @@ async def auth_status():
         "enabled": auth.enabled,
         "keys_configured": len(auth.list_keys()),
         "message": "Authentication enabled" if auth.enabled else "Authentication disabled (set MIA_API_KEY env var)"
->>>>>>> 5376269 (rebase)
     }
 
 
@@ -250,11 +217,6 @@ async def list_devices():
     GET /devices - List all connected devices
     Phase 3.1: REST API Development
     """
-<<<<<<< HEAD
-    return {
-        "devices": list(device_registry.values()),
-        "count": len(device_registry),
-=======
     if REGISTRY_AVAILABLE and device_registry:
         devices = device_registry.get_all()
         return {
@@ -290,7 +252,7 @@ async def get_registry_status():
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     return device_registry.get_status_summary()
 
 
@@ -302,7 +264,7 @@ async def get_registry_devices(
 ):
     """
     GET /registry/devices - List devices with optional filters
-    
+
     Query parameters:
     - device_type: Filter by device type (gpio, obd, serial, etc.)
     - capability: Filter by capability
@@ -310,7 +272,7 @@ async def get_registry_devices(
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     if healthy_only:
         devices = device_registry.get_healthy()
     elif device_type:
@@ -323,7 +285,7 @@ async def get_registry_devices(
         devices = device_registry.get_by_capability(capability)
     else:
         devices = device_registry.get_all()
-    
+
     return {
         "devices": [d.to_dict() for d in devices],
         "count": len(devices),
@@ -343,11 +305,11 @@ async def get_registry_device(device_id: str):
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     device = device_registry.get(device_id)
     if not device:
         raise HTTPException(status_code=404, detail=f"Device not found: {device_id}")
-    
+
     return {
         "device": device.to_dict(),
         "timestamp": datetime.now().isoformat()
@@ -358,18 +320,18 @@ async def get_registry_device(device_id: str):
 async def register_device(registration: DeviceRegistration):
     """
     POST /registry/devices - Register a new device
-    
+
     This endpoint is primarily for testing or manual device registration.
     In production, devices typically self-register via ZMQ.
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     try:
         dtype = DeviceType(registration.device_type)
     except ValueError:
         raise HTTPException(status_code=400, detail=f"Invalid device type: {registration.device_type}")
-    
+
     profile = DeviceProfile(
         device_id=registration.device_id,
         device_type=dtype,
@@ -377,9 +339,9 @@ async def register_device(registration: DeviceRegistration):
         capabilities=registration.capabilities or [],
         metadata=registration.metadata or {}
     )
-    
+
     device_registry.register(profile)
-    
+
     return {
         "success": True,
         "device": profile.to_dict(),
@@ -394,10 +356,10 @@ async def unregister_device(device_id: str):
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     if not device_registry.unregister(device_id):
         raise HTTPException(status_code=404, detail=f"Device not found: {device_id}")
-    
+
     return {
         "success": True,
         "device_id": device_id,
@@ -412,14 +374,13 @@ async def device_heartbeat(device_id: str):
     """
     if not REGISTRY_AVAILABLE or not device_registry:
         raise HTTPException(status_code=503, detail="Device registry not available")
-    
+
     if not device_registry.heartbeat(device_id):
         raise HTTPException(status_code=404, detail=f"Device not found: {device_id}")
-    
+
     return {
         "success": True,
         "device_id": device_id,
->>>>>>> 5376269 (rebase)
         "timestamp": datetime.now().isoformat()
     }
 

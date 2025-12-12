@@ -94,8 +94,13 @@ class APIKeyAuth:
     
     @staticmethod
     def _hash_key(key: str) -> str:
-        """Hash an API key for secure storage"""
-        return hashlib.sha256(key.encode()).hexdigest()
+        """Hash an API key for secure storage using scrypt"""
+        # Use scrypt for secure key derivation (N=16384, r=8, p=1)
+        # This provides good security against brute force attacks
+        salt = b'mia_api_key_salt_v1'  # Fixed salt for deterministic hashing
+        key_bytes = key.encode()
+        derived_key = hashlib.scrypt(key_bytes, salt=salt, n=16384, r=8, p=1, dklen=32)
+        return derived_key.hex()
     
     def verify(self, key: str) -> Optional[APIKeyInfo]:
         """
