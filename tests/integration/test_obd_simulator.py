@@ -2,6 +2,7 @@
 Integration tests for OBD Simulator components
 Tests serial bridge, OBD worker, and ZeroMQ integration
 """
+<<<<<<< HEAD
 import pytest
 import json
 import time
@@ -12,6 +13,19 @@ from unittest.mock import Mock, patch, MagicMock
 # Import OBD components
 import sys
 import os
+=======
+import json
+import os
+import sys
+import threading
+import time
+
+import pytest
+import zmq
+from unittest.mock import patch
+
+# Import OBD components
+>>>>>>> 5376269 (rebase)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../rpi'))
 
 from hardware.serial_bridge import SerialBridge
@@ -121,8 +135,13 @@ class TestOBDWorker:
         assert not worker.start()  # Should fail without ELM327
     
     @patch('services.obd_worker.ELM327_AVAILABLE', True)
+<<<<<<< HEAD
     @patch('services.obd_worker.elm327')
     def test_obd_worker_initialization(self, mock_elm327):
+=======
+    @patch('services.obd_worker.Elm')
+    def test_obd_worker_initialization(self, mock_elm):
+>>>>>>> 5376269 (rebase)
         """Test OBD worker initialization"""
         worker = MIAOBDWorker()
         assert worker.car_state is not None

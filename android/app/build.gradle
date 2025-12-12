@@ -23,11 +23,15 @@ android {
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5376269 (rebase)
         // Build config fields
         buildConfigField "String", "BUILD_TIME", "\"${getBuildTime()}\""
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
         buildConfigField "String", "GIT_BRANCH", "\"${getGitBranch()}\""
         buildConfigField "String", "VERSION_NAME", "\"${getVersionName()}\""
+<<<<<<< HEAD
         buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
         buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
     }
@@ -37,9 +41,16 @@ android {
         ignoreWarnings true
 =======
         buildConfigField 'String', 'VERSION_NAME', '"' + versionName + '"'
+=======
+>>>>>>> 5376269 (rebase)
         buildConfigField 'String', 'API_BASE_URL', '"http://192.168.1.100:8000/"'
         buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.1.100:8000"'
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements)
+    }
+
+    lintOptions {
+        abortOnError false
+        ignoreWarnings true
     }
 
     signingConfigs {
@@ -217,8 +228,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
     testImplementation 'androidx.room:room-testing:2.6.1'
-    testImplementation 'io.mockk:mockk:1.13.8'
-    testImplementation 'app.cash.turbine:turbine:1.0.0'
     
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

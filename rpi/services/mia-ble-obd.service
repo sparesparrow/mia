@@ -1,0 +1,26 @@
+[Unit]
+Description=MIA BLE OBD-II Service
+Documentation=https://github.com/sparesparrow/ai-servis/docs/automotive/bluetooth-integration.md
+After=network.target bluetooth.service mia-broker.service
+Wants=mia-broker.service bluetooth.service
+
+[Service]
+Type=simple
+User=mia
+Group=bluetooth
+WorkingDirectory=/home/mia/ai-servis
+Environment=PYTHONPATH=/home/mia/ai-servis
+ExecStart=/home/mia/ble_env/bin/python3 /home/mia/ai-servis/rpi/services/ble_obd_service.py --simulate
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mia-ble-obd
+MemoryMax=128M
+NoNewPrivileges=true
+
+# Bluetooth permissions
+SupplementaryGroups=bluetooth
+
+[Install]
+WantedBy=multi-user.target

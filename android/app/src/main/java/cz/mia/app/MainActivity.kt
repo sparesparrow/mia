@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -161,7 +162,10 @@ class MainActivity : ComponentActivity() {
 			Spacer(Modifier.height(16.dp))
 
 			// Service control buttons
-			Row(modifier = Modifier.fillMaxWidth()) {
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				horizontalArrangement = Arrangement.spacedBy(8.dp)
+			) {
 				Button(
 					onClick = { 
 						startDrivingService()
@@ -174,11 +178,9 @@ class MainActivity : ComponentActivity() {
 					)
 				) { 
 					Icon(Icons.Default.PlayArrow, contentDescription = null)
-					Spacer(Modifier.height(4.dp))
+					Spacer(Modifier.width(4.dp))
 					Text("Start Service") 
 				}
-				
-				Spacer(Modifier.height(8.dp))
 				
 				OutlinedButton(
 					onClick = { 
@@ -192,7 +194,7 @@ class MainActivity : ComponentActivity() {
 					)
 				) {
 					Icon(Icons.Default.Stop, contentDescription = null)
-					Spacer(Modifier.height(4.dp))
+					Spacer(Modifier.width(4.dp))
 					Text("Stop Service") 
 				}
 			}
@@ -327,7 +329,14 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 			Text("DPF Management", style = MaterialTheme.typography.titleSmall)
 			Spacer(Modifier.height(4.dp))
 
+<<<<<<< HEAD
 			Row(modifier = Modifier.fillMaxWidth()) {
+=======
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				horizontalArrangement = Arrangement.spacedBy(8.dp)
+			) {
+>>>>>>> 5376269 (rebase)
 				OutlinedButton(
 					onClick = {
 						// TODO: Implement DPF status check via MCP bridge
@@ -340,8 +349,11 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 					Text("Check DPF")
 				}
 
+<<<<<<< HEAD
 				Spacer(Modifier.width(8.dp))
 
+=======
+>>>>>>> 5376269 (rebase)
 				Button(
 					onClick = {
 						// TODO: Implement DPF regeneration via MCP bridge
@@ -385,7 +397,14 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 		Text("Diagnostics", style = MaterialTheme.typography.titleSmall)
 		Spacer(Modifier.height(4.dp))
 
+<<<<<<< HEAD
 		Row(modifier = Modifier.fillMaxWidth()) {
+=======
+		Row(
+			modifier = Modifier.fillMaxWidth(),
+			horizontalArrangement = Arrangement.spacedBy(8.dp)
+		) {
+>>>>>>> 5376269 (rebase)
 			OutlinedButton(
 				onClick = {
 					// TODO: Implement full diagnostics via MCP bridge
@@ -398,8 +417,11 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 				Text("Run Diag")
 			}
 
+<<<<<<< HEAD
 			Spacer(Modifier.width(8.dp))
 
+=======
+>>>>>>> 5376269 (rebase)
 			OutlinedButton(
 				onClick = {
 					// TODO: Implement DTC code reading via MCP bridge
@@ -416,10 +438,23 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 
 @Composable
 private fun RowToggle(options: List<String>, selected: String, onSelected: (String) -> Unit) {
+<<<<<<< HEAD
 	Row {
 		options.forEach { opt ->
 			Button(onClick = { onSelected(opt) }, enabled = opt != selected) { Text(opt) }
 			Spacer(Modifier.height(0.dp))
+=======
+	Row(
+		horizontalArrangement = Arrangement.spacedBy(8.dp)
+	) {
+		options.forEach { opt ->
+			Button(
+				onClick = { onSelected(opt) },
+				enabled = opt != selected
+			) { 
+				Text(opt) 
+			}
+>>>>>>> 5376269 (rebase)
 		}
 	}
 }

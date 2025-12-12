@@ -33,9 +33,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothConnected
+import androidx.compose.material.icons.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -296,7 +296,7 @@ private fun ConnectionStatusCard(
                 Icon(
                     imageVector = when (connectionState) {
                         is BleConnectionState.Connected -> Icons.Default.BluetoothConnected
-                        is BleConnectionState.Scanning -> Icons.AutoMirrored.Filled.BluetoothSearching
+                        is BleConnectionState.Scanning -> Icons.Default.BluetoothSearching
                         else -> Icons.Default.Bluetooth
                     },
                     contentDescription = null,
@@ -405,7 +405,7 @@ private fun ScanControlsCard(
                     onClick = onStartScan,
                     enabled = !isConnecting && !isConnected
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.BluetoothSearching, contentDescription = null)
+                    Icon(Icons.Default.BluetoothSearching, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text("Scan")
                 }
@@ -444,7 +444,7 @@ private fun DeviceListCard(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.BluetoothSearching,
+                            imageVector = Icons.Default.BluetoothSearching,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(32.dp)
@@ -483,8 +483,11 @@ private fun DeviceListItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(enabled = !isConnecting) { onSelect() },
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable(
+                enabled = !isConnecting,
+                onClick = onSelect
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )

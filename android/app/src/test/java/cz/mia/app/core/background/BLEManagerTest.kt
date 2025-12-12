@@ -3,28 +3,40 @@ package cz.mia.app.core.background
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
 import cz.mia.app.utils.PermissionHelper
 =======
 import cz.aiservis.app.utils.PermissionHelper
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+import cz.mia.app.utils.PermissionHelper
+>>>>>>> 5376269 (rebase)
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
 import kotlinx.coroutines.Dispatchers
 =======
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+import kotlinx.coroutines.Dispatchers
+>>>>>>> 5376269 (rebase)
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
 import kotlinx.coroutines.test.setMain
 =======
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+import kotlinx.coroutines.test.setMain
+>>>>>>> 5376269 (rebase)
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -42,6 +54,7 @@ class BLEManagerTest {
     private lateinit var mockContext: Context
     private lateinit var mockBluetoothManager: BluetoothManager
     private lateinit var mockBluetoothAdapter: BluetoothAdapter
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
     private val testDispatcher = StandardTestDispatcher()
 
@@ -57,17 +70,26 @@ class BLEManagerTest {
         every { mockBluetoothManager.adapter } returns mockBluetoothAdapter
 
 =======
+=======
+    private val testDispatcher = StandardTestDispatcher()
+>>>>>>> 5376269 (rebase)
 
     @Before
     fun setup() {
+        Dispatchers.setMain(testDispatcher)
+
         mockContext = mockk(relaxed = true)
         mockBluetoothManager = mockk(relaxed = true)
         mockBluetoothAdapter = mockk(relaxed = true)
-        
+
         every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns mockBluetoothManager
         every { mockBluetoothManager.adapter } returns mockBluetoothAdapter
+<<<<<<< HEAD
         
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+
+>>>>>>> 5376269 (rebase)
         // Mock PermissionHelper
         mockkObject(PermissionHelper)
         every { PermissionHelper.hasBluetoothPermissions(any()) } returns true
@@ -76,6 +98,7 @@ class BLEManagerTest {
 
     @After
     fun tearDown() {
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
         Dispatchers.resetMain()
         unmockkObject(PermissionHelper)
@@ -83,6 +106,11 @@ class BLEManagerTest {
 =======
         unmockkObject(PermissionHelper)
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+        Dispatchers.resetMain()
+        unmockkObject(PermissionHelper)
+    }
+>>>>>>> 5376269 (rebase)
     }
 
     @Test
@@ -255,6 +283,7 @@ class BLEManagerTest {
     }
 
     @Test
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
     fun `initialize sets state to error when bluetooth not supported`() = runTest(testDispatcher) {
         every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
@@ -265,18 +294,27 @@ class BLEManagerTest {
 
 =======
     fun `initialize sets state to error when bluetooth not supported`() = runTest {
+=======
+    fun `initialize sets state to error when bluetooth not supported`() = runTest(testDispatcher) {
+>>>>>>> 5376269 (rebase)
         every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
-        
+
         val bleManager = BLEManagerImpl(mockContext)
         bleManager.initialize()
+<<<<<<< HEAD
         
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+        testDispatcher.scheduler.advanceUntilIdle()
+
+>>>>>>> 5376269 (rebase)
         val state = bleManager.connectionState.value
         assertTrue(state is BleConnectionState.Error)
         assertEquals("Bluetooth not supported", (state as BleConnectionState.Error).message)
     }
 
     @Test
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
     fun `initialize sets state to error when bluetooth disabled`() = runTest(testDispatcher) {
         every { mockBluetoothAdapter.isEnabled } returns false
@@ -287,18 +325,27 @@ class BLEManagerTest {
 
 =======
     fun `initialize sets state to error when bluetooth disabled`() = runTest {
+=======
+    fun `initialize sets state to error when bluetooth disabled`() = runTest(testDispatcher) {
+>>>>>>> 5376269 (rebase)
         every { mockBluetoothAdapter.isEnabled } returns false
-        
+
         val bleManager = BLEManagerImpl(mockContext)
         bleManager.initialize()
+<<<<<<< HEAD
         
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+        testDispatcher.scheduler.advanceUntilIdle()
+
+>>>>>>> 5376269 (rebase)
         val state = bleManager.connectionState.value
         assertTrue(state is BleConnectionState.Error)
         assertEquals("Bluetooth is disabled", (state as BleConnectionState.Error).message)
     }
 
     @Test
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
     fun `initialize sets state to error when permissions missing`() = runTest(testDispatcher) {
         every { PermissionHelper.hasBluetoothPermissions(any()) } returns false
@@ -312,15 +359,23 @@ class BLEManagerTest {
 
 =======
     fun `initialize sets state to error when permissions missing`() = runTest {
+=======
+    fun `initialize sets state to error when permissions missing`() = runTest(testDispatcher) {
+>>>>>>> 5376269 (rebase)
         every { PermissionHelper.hasBluetoothPermissions(any()) } returns false
         every { PermissionHelper.getMissingBluetoothPermissions(any()) } returns listOf("BLUETOOTH_SCAN", "BLUETOOTH_CONNECT")
-        
+
         every { mockBluetoothAdapter.isEnabled } returns true
-        
+
         val bleManager = BLEManagerImpl(mockContext)
         bleManager.initialize()
+<<<<<<< HEAD
         
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+        testDispatcher.scheduler.advanceUntilIdle()
+
+>>>>>>> 5376269 (rebase)
         val state = bleManager.connectionState.value
         assertTrue(state is BleConnectionState.Error)
         assertTrue((state as BleConnectionState.Error).message.contains("Missing permissions"))
@@ -340,8 +395,12 @@ class BLEManagerTest {
         assertNotNull(bleManager.connectionState)
         assertNotNull(bleManager.discoveredDevices)
     }
+<<<<<<< HEAD
 <<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
 >>>>>>> a424be7 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
 =======
 >>>>>>> 1cea9c1 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+=======
+>>>>>>> a424be7 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+>>>>>>> 5376269 (rebase)
 }

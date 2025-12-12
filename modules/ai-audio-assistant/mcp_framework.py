@@ -496,13 +496,18 @@ class MCPClient:
             "name": "ai-servis-client",
             "version": "1.0.0"
         }
+<<<<<<< HEAD
         self.transport_factory: Optional[Callable[[], Union[MCPTransport, Awaitable[MCPTransport]]]] = None
+=======
+        self.transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None
+>>>>>>> 5376269 (rebase)
 
     def _next_id(self) -> int:
         """Generate next request ID"""
         self.request_id += 1
         return self.request_id
 
+<<<<<<< HEAD
     async def connect(
         self,
         transport: MCPTransport,
@@ -516,6 +521,11 @@ class MCPClient:
             async def _default_factory() -> MCPTransport:
                 return transport
             self.transport_factory = _default_factory
+=======
+    async def connect(self, transport: MCPTransport, transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None, timeout: float = 30.0) -> None:
+        """Connect to MCP server with persistent connection"""
+        self.transport_factory = transport_factory or (lambda: transport)
+>>>>>>> 5376269 (rebase)
 
         await self._establish_connection(timeout)
         self.reconnect_attempts = 0  # Reset on successful connection
@@ -534,6 +544,7 @@ class MCPClient:
 
         try:
 <<<<<<< HEAD
+<<<<<<< HEAD
             transport_candidate = self.transport_factory()
             if asyncio.iscoroutine(transport_candidate):
                 self.transport = await transport_candidate
@@ -545,6 +556,9 @@ class MCPClient:
 =======
             self.transport = await self.transport_factory()
 >>>>>>> origin/fix/mcp-errors-and-cloudsmith-bootstrap
+=======
+            self.transport = await self.transport_factory()
+>>>>>>> 5376269 (rebase)
             self.connected = True
 
             # Initialize the connection
