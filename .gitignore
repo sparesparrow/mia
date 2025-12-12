@@ -143,4 +143,9 @@ conanrunenv*.sh
 deactivate_conan*.sh
 .mia/
 test-env/
+<<<<<<< HEAD
 >>>>>>> 5376269 (rebase)
+=======
+
+/android-device-workspace/downloads/
+>>>>>>> b6de41b (Stop tracking generated downloads directory)
