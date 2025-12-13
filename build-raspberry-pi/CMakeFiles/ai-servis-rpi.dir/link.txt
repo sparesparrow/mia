@@ -1,1 +1,0 @@
-/usr/bin/g++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/ai-servis-rpi.dir/link.d "CMakeFiles/ai-servis-rpi.dir/main_raspberry_pi.cpp.o" -o ai-servis-rpi  libwebgrab_lib.a -ljsoncpp /usr/lib/aarch64-linux-gnu/libflatbuffers.so -ljsoncpp /usr/lib/aarch64-linux-gnu/libcurl.so

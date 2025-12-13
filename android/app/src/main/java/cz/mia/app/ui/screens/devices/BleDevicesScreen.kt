@@ -369,7 +369,11 @@ private fun DeviceItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = !isConnecting) { onClick() },
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable(
+                enabled = !isConnecting,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isConnected) {

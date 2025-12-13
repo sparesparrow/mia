@@ -1,0 +1,29 @@
+[Unit]
+Description=MIA Citroën OBD-II Telemetry Bridge
+Documentation=https://github.com/sparesparrow/ai-servis/docs/automotive/citroen-integration.md
+After=network.target mia-broker.service
+Wants=mia-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=dialout
+WorkingDirectory=/home/mia/ai-servis
+Environment=ELM_SERIAL_PORT=/dev/ttyUSB0
+Environment=ELM_BAUD_RATE=38400
+Environment=ZMQ_PUB_PORT=5557
+Environment=PYTHONPATH=/home/mia/ai-servis
+ExecStart=/usr/bin/python3 /home/mia/ai-servis/agents/citroen_bridge.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mia-citroen-bridge
+MemoryMax=256M
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

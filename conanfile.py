@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
+from conan.tools.env import VirtualRunEnv
 from conan.tools.layout import basic_layout
 
 
@@ -35,7 +36,7 @@ class MIAConan(ConanFile):
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
-            self.requires("libgpiod/2.0.2")      # GPIO control for Raspberry Pi
+            self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
         # MCP-specific dependencies
@@ -58,6 +59,10 @@ class MIAConan(ConanFile):
 
         deps = CMakeDeps(self)
         deps.generate()
+
+        # Generate runtime environment for running applications
+        ve = VirtualRunEnv(self)
+        ve.generate()
 
     def build(self):
         # Generate FlatBuffers headers before building
@@ -119,6 +124,22 @@ class MIAConan(ConanFile):
             self.output.error(f"stdout: {e.stdout}")
             self.output.error(f"stderr: {e.stderr}")
             raise
+
+        # Generate Python bindings for Vehicle schema
+        vehicle_schema = os.path.join(self.source_folder, "protos", "vehicle.fbs")
+        if os.path.exists(vehicle_schema):
+            cmd_py = [
+                flatc_path,
+                "--python",
+                "-o", self.source_folder,
+                vehicle_schema
+            ]
+            try:
+                self.output.info(f"Generating Python FlatBuffers: {' '.join(cmd_py)}")
+                subprocess.run(cmd_py, check=True, capture_output=True, text=True)
+                self.output.info("Python FlatBuffers generated successfully.")
+            except subprocess.CalledProcessError as e:
+                self.output.error(f"Failed to generate Python FlatBuffers: {e}")
 
     def package(self):
         # Package the executables and libraries

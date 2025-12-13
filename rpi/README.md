@@ -49,6 +49,29 @@ This directory contains the Python-based implementation of MIA for Raspberry Pi,
 - Runs ELM327 emulator with dynamic PID responses based on real-time hardware input
 - Maps MCU potentiometer values to engine parameters (RPM, speed, coolant temp)
 
+### Citroën OBD-II Bridge
+
+The Citroën bridge connects to PSA vehicles via ELM327 OBD-II adapter.
+
+#### Quick Start
+```bash
+# Deploy service
+sudo cp rpi/services/mia-citroen-bridge.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable mia-citroen-bridge
+
+# Test with mock mode
+ELM_MOCK=1 python3 agents/citroen_bridge.py
+
+# Start real service
+sudo systemctl start mia-citroen-bridge
+```
+
+#### Supported PIDs
+- Standard: RPM, Speed, Coolant Temp
+- PSA-specific: DPF Soot, Oil Temp, Eolys Level
+
+See [docs/automotive/citroen-integration.md](../docs/automotive/citroen-integration.md) for full documentation.
 ## Installation
 
 ### Dependencies
