@@ -6,9 +6,8 @@ Canonical bootstrap following CPython-tool pattern:
 1. Detect platform (linux-x86_64, macos-arm64, windows-x86_64, etc.)
 2. Download cpython-tool-3.12.7-{platform}.tar.gz from configured repository
 3. Extract into self-contained tool prefix and export PYTHONHOME/PATH
-4. Use bundled interpreter to install shared development tooling
-5. Use bundled interpreter to install/configure Conan 2.21.0
-6. Set Conan remotes to configured repository for C++/system packages
+4. Use bundled interpreter to install/configure Conan 2.21.0
+5. Set Conan remotes to configured repository for C++/system packages
 
 Supports both Cloudsmith and GitHub Packages (easily switchable via env vars).
 
@@ -215,6 +214,8 @@ def setup_python_environment(extract_dir: Path) -> dict:
         env["PATH"] = str(extract_dir / "bin") + ":" + env.get("PATH", "")
     
     return env, py_bin
+<<<<<<< HEAD
+<<<<<<< HEAD
 
 def install_dev_tools(py_bin: Path, env: dict, work_dir: Path) -> bool:
     """Install shared development tools using the bundled CPython"""
@@ -239,10 +240,40 @@ def install_dev_tools(py_bin: Path, env: dict, work_dir: Path) -> bool:
     try:
         subprocess.check_call(
             pip_args,
+=======
+
+def install_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
+    """Install Conan 2.21.0 using the bundled CPython"""
+    print(f"  Installing Conan {CONAN_VERSION} using bundled CPython...")
+    
+    venv_dir = work_dir / ".buildenv" / "venv"
+    venv_python = venv_dir / "bin" / "python3" if sys.platform != "win32" else venv_dir / "Scripts" / "python.exe"
+    
+    # Create venv if it doesn't exist
+    if not venv_python.exists():
+        print(f"    Creating virtual environment...")
+        try:
+            subprocess.check_call(
+                [str(py_bin), "-m", "venv", str(venv_dir)],
+                env=env,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        except subprocess.CalledProcessError as e:
+            print(f"  ✗ Failed to create venv: {e}")
+            return False
+    
+    # Install Conan in venv
+    print(f"    Installing Conan {CONAN_VERSION}...")
+    try:
+        subprocess.check_call(
+            [str(venv_python), "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"],
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
             env=env,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
+<<<<<<< HEAD
         print(f"  ✓ Shared development tools installed")
         return True
     except subprocess.CalledProcessError as e:
@@ -292,6 +323,65 @@ def install_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
         print(f"  ✗ Failed to install Conan: {e}")
         return False
 
+=======
+        subprocess.check_call(
+            [str(venv_python), "-m", "pip", "install", f"conan=={CONAN_VERSION}"],
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        print(f"  ✓ Conan {CONAN_VERSION} installed")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"  ✗ Failed to install Conan: {e}")
+        return False
+
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
+=======
+
+def install_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
+    """Install Conan 2.21.0 using the bundled CPython"""
+    print(f"  Installing Conan {CONAN_VERSION} using bundled CPython...")
+    
+    venv_dir = work_dir / ".buildenv" / "venv"
+    venv_python = venv_dir / "bin" / "python3" if sys.platform != "win32" else venv_dir / "Scripts" / "python.exe"
+    
+    # Create venv if it doesn't exist
+    if not venv_python.exists():
+        print(f"    Creating virtual environment...")
+        try:
+            subprocess.check_call(
+                [str(py_bin), "-m", "venv", str(venv_dir)],
+                env=env,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        except subprocess.CalledProcessError as e:
+            print(f"  ✗ Failed to create venv: {e}")
+            return False
+    
+    # Install Conan in venv
+    print(f"    Installing Conan {CONAN_VERSION}...")
+    try:
+        subprocess.check_call(
+            [str(venv_python), "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"],
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        subprocess.check_call(
+            [str(venv_python), "-m", "pip", "install", f"conan=={CONAN_VERSION}"],
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        print(f"  ✓ Conan {CONAN_VERSION} installed")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"  ✗ Failed to install Conan: {e}")
+        return False
+
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
 def configure_conan(py_bin: Path, env: dict, work_dir: Path) -> bool:
     """Configure Conan remotes and profiles"""
     print(f"  Configuring Conan remotes and profiles...")
@@ -460,6 +550,8 @@ def main():
         print(f"  ✗ Python validation failed: {e}")
         sys.exit(1)
     print()
+<<<<<<< HEAD
+<<<<<<< HEAD
 
     # 4.5. Install shared development tools using bundled Python
     print("Step 4: Installing shared development tools...")
@@ -468,11 +560,23 @@ def main():
 
     # 5. Install Conan using bundled Python
     print("Step 5: Installing Conan 2.21.0...")
+=======
+    
+    # 5. Install Conan using bundled Python
+    print("Step 4: Installing Conan 2.21.0...")
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
+=======
+    
+    # 5. Install Conan using bundled Python
+    print("Step 4: Installing Conan 2.21.0...")
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
     if not install_conan(py_bin, env, work_dir):
         print("  ⚠ Conan installation failed, continuing without it...")
     print()
     
     # 6. Configure Conan
+<<<<<<< HEAD
+<<<<<<< HEAD
     print("Step 6: Configuring Conan...")
     configure_conan(py_bin, env, work_dir)
     print()
@@ -484,12 +588,36 @@ def main():
 
     # 8. Generate validation report
     print("Step 8: Generating validation report...")
+=======
+=======
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
+    print("Step 5: Configuring Conan...")
+    configure_conan(py_bin, env, work_dir)
+    print()
+    
+    # 7. Create activation script
+    print("Step 6: Creating activation script...")
+    create_activation_script(work_dir, py_bin, env)
+    print()
+    
+    # 8. Generate validation report
+    print("Step 7: Generating validation report...")
+<<<<<<< HEAD
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
+=======
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
     validation_report = {
         "status": "success",
         "platform": plat,
         "cpython_version": CPY_VERSION,
         "conan_version": CONAN_VERSION,
+<<<<<<< HEAD
+<<<<<<< HEAD
         "dev_tools_version": os.getenv("SPARETOOLS_DEV_TOOLS_VERSION", "1.0.0"),
+=======
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
+=======
+>>>>>>> cb8e6ef (Fix MCP connection errors and implement Cloudsmith/GitHub Packages bootstrap (#42))
         "python_binary": str(py_bin),
         "extract_dir": str(extract_dir),
         "buildenv_dir": str(work_dir / ".buildenv"),

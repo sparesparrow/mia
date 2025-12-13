@@ -1,611 +1,444 @@
-# MIA: Modulární Car AI Server → Universal AI Assistant Ecosystem
+# MIA Raspberry Pi Implementation
 
-**🚗→🏠 From automotive-only to everywhere you are**
+This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in TODO.md.
 
-Kompletní řešení pro autoservisy kombinující ANPR, OBD diagnostiku, hlasového AI asistenta a fleet management v jednom modulárním systému, nyní rozšířené o domácí a cross-platform podporu.
+## Architecture
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/u/aiservices)
-[![Platform](https://img.shields.io/badge/Platform-AMD64%20|%20ARM64%20|%20Mobile-blue)](https://github.com/sparesparrow/mia)
-[![MCP](https://img.shields.io/badge/MCP-Compatible-green)](https://modelcontextprotocol.io)
-[![Conan](https://img.shields.io/badge/dependency%20management-conan-blue)](https://conan.io)
+- **ZeroMQ Broker** (`core/messaging/broker.py`): Message routing using ROUTER-DEALER pattern
+- **FastAPI Server** (`api/main.py`): REST API and WebSocket endpoints
+- **GPIO Worker** (`hardware/gpio_worker.py`): Hardware control via GPIO pins
+- **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
+- **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
 
-## 🎯 **Vize Projektu**
+## Components
 
-> *"Jeden AI asistent, který vás zná všude - od vašeho auta po kuchyni, od telefonu po desktop - přitom vaše data zůstávají soukromá a pod vaší kontrolou."*
+### ZeroMQ Broker
+- Listens on port 5555
+- Routes messages between FastAPI server and workers
+- Handles worker registration and message distribution
 
-**MIA Universal** představuje evoluci našeho automotive AI asistenta do komplexního, modulárního ekosystému, který bezproblémově funguje napříč vozidly, domovy a všemi výpočetními platformami.
+### FastAPI Server
+- REST API on port 8000
+- Endpoints:
+  - `GET /devices` - List connected devices
+  - `POST /command` - Send device commands
+  - `GET /telemetry` - Get sensor readings
+  - `GET /status` - System health
+  - `POST /gpio/configure` - Configure GPIO pin
+  - `POST /gpio/set` - Set GPIO pin value
+  - `GET /gpio/{pin}` - Get GPIO pin value
+  - `WS /ws` - WebSocket for real-time telemetry
 
-## 🌩️ **AWS Deployment Preview**
+### GPIO Worker
+- Connects to ZeroMQ broker
+- Controls Raspberry Pi GPIO pins
+- Supports digital input/output
+- Falls back to simulation mode if GPIO libraries unavailable
 
-Volitelná AWS pipeline nyní žije ve větvi `feature/aws-deployment`. Najdete v ní workflow `.github/workflows/deploy-variants.yml`, skript `scripts/check_and_update_certificates.py` a podpůrné soubory `aws-setup-commands.sh` a `bucket-policy.json`. Pokud budete chtít web nasadit na S3/CloudFront místo GitHub Pages, přepněte se do této větve a postupujte podle popsaných kroků.
+### Serial Bridge
+- Reads JSON telemetry from ESP32/Arduino via USB Serial
+- Publishes telemetry to ZeroMQ PUB socket (port 5556) on topic `mcu/telemetry`
+- Auto-detects serial ports (`/dev/ttyUSB0`, `/dev/ttyACM0`, etc.)
+- Handles reconnection logic for robust operation
+- Falls back to mock data generation when hardware unavailable
 
-## 🏗️ **Architektura Systému**
+### OBD Worker (ELM327 Simulator)
+- Implements Digital Twin architecture for OBD-II simulation
+- Subscribes to hardware telemetry via PUB/SUB (port 5556)
+- Registers with ZeroMQ broker (port 5555) for command/control
+- Runs ELM327 emulator with dynamic PID responses based on real-time hardware input
+- Maps MCU potentiometer values to engine parameters (RPM, speed, coolant temp)
 
-```mermaid
-graph TB
-    subgraph "🎤 User Interfaces"
-        UI1[Car Dashboard]
-        UI2[Home Kitchen Display]
-        UI3[Mobile App]
-        UI4[Desktop App]
-        UI5[Voice-Only Interface]
-    end
+### Citroën OBD-II Bridge
 
-    subgraph "🧠 MIA Universal Core"
-        CORE[Core Orchestrator<br/>MCP Host]
-        AUTH[Authentication & Context]
-        AUDIO[Audio Management Hub]
-        DISC[Service Discovery]
-    end
+The Citroën bridge connects to PSA vehicles via ELM327 OBD-II adapter.
 
-    subgraph "🔧 MCP Server Modules"
-        MOD1[🎵 AI Audio Assistant]
-        MOD2[🗺️ AI Maps & Navigation]
-        MOD3[💬 AI Calls & Messages]
-        MOD4[🤖 AI Android Controller]
-        MOD5[📱 AI iOS Controller]
-        MOD6[🐧 AI Linux Controller]
-        MOD7[🪟 AI Windows Controller]
-        MOD8[🍎 AI macOS Controller]
-        MOD9[⚡ AI RTOS Controller]
-        MOD10[🏠 AI Home Automation]
-        MOD11[🔒 AI Security & ANPR]
-    end
+#### Quick Start
+```bash
+# Deploy service
+sudo cp rpi/services/mia-citroen-bridge.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable mia-citroen-bridge
 
-    subgraph "🌐 Transport Layer"
-        MQTT[MQTT Broker<br/>Cross-Process]
-        MQP[MQP<br/>In-Process]
-        HTTP[HTTP/REST APIs]
-        BLE[Bluetooth LE]
-        WIFI[Wi-Fi Direct]
-    end
+# Test with mock mode
+ELM_MOCK=1 python3 agents/citroen_bridge.py
 
-    subgraph "⚙️ C++ Platform Components"
-        CPP1[Hardware Server<br/>GPIO Control]
-        CPP2[MCP Server<br/>C++ Tools]
-        CPP3[WebGrab Core<br/>Download Engine]
-    end
-
-    subgraph "💻 Hardware Platforms"
-        HW1[AMD64 Desktop]
-        HW2[ARM64 Raspberry Pi]
-        HW3[ESP32 Microcontroller]
-        HW4[Mobile Devices]
-    end
-
-    UI1 --> CORE
-    UI2 --> CORE
-    UI3 --> CORE
-    UI4 --> CORE
-    UI5 --> CORE
-
-    CORE --> AUTH
-    CORE --> AUDIO
-    CORE --> DISC
-
-    CORE <--> MOD1
-    CORE <--> MOD2
-    CORE <--> MOD3
-    CORE <--> MOD4
-    CORE <--> MOD5
-    CORE <--> MOD6
-    CORE <--> MOD7
-    CORE <--> MOD8
-    CORE <--> MOD9
-    CORE <--> MOD10
-    CORE <--> MOD11
-
-    CORE --> MQTT
-    MQTT --> CPP1
-    MQTT --> CPP2
-    CPP1 --> MQP
-    CPP2 --> MQP
-    MQP --> CPP3
-
-    MOD1 <--> MQTT
-    MOD2 <--> HTTP
-    MOD3 <--> MQTT
-    MOD4 <--> BLE
-    MOD5 <--> WIFI
-
-    MQTT --> HW1
-    HTTP --> HW2
-    BLE --> HW3
-    WIFI --> HW4
-    CPP1 --> HW2
-
-    classDef moduleClass fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    classDef coreClass fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef transportClass fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef cppClass fill:#ffebee,stroke:#d32f2f,stroke-width:2px
-    classDef hardwareClass fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-
-    class MOD1,MOD2,MOD3,MOD4,MOD5,MOD6,MOD7,MOD8,MOD9,MOD10,MOD11 moduleClass
-    class CORE,AUTH,AUDIO,DISC coreClass
-    class MQTT,MQP,HTTP,BLE,WIFI transportClass
-    class CPP1,CPP2,CPP3 cppClass
-    class HW1,HW2,HW3,HW4 hardwareClass
+# Start real service
+sudo systemctl start mia-citroen-bridge
 ```
 
-## 📚 **Dokumentace Modulů**
+#### Supported PIDs
+- Standard: RPM, Speed, Coolant Temp
+- PSA-specific: DPF Soot, Oil Temp, Eolys Level
 
-### 🎵 **Core Audio Assistant**
-**Univerzální hlasová interakce a správa audio**
-- 📖 [Dokumentace](./docs/modules/ai-audio-assistant.md)
-- 🔧 [MCP API Reference](./docs/api/audio-assistant.md)
-- 🎯 **Hlavní funkce**: Voice control, multi-zone audio, cross-platform output switching
-- 🏠 **Home Use Case**: Kitchen voice control, bluetooth switching while cooking
-- 🚗 **Car Use Case**: Hands-free entertainment and navigation prompts
+See [docs/automotive/citroen-integration.md](../docs/automotive/citroen-integration.md) for full documentation.
 
-### 🗺️ **Maps & Navigation**
-**Inteligentní navigace a lokalizace**
-- 📖 [Dokumentace](./docs/modules/ai-maps-navigation.md)
-- 🔧 [MCP API Reference](./docs/api/maps-navigation.md)
-- 🎯 **Hlavní funkce**: Real-time directions, POI search, traffic updates
-- 🏠 **Home Use Case**: "Where's the nearest grocery store?"
-- 🚗 **Car Use Case**: Turn-by-turn navigation with voice prompts
+## Installation
 
-### 💬 **Communications Hub**  
-**Univerzální komunikace napříč platformami**
-- 📖 [Dokumentace](./docs/modules/ai-communications.md)
-- 🔧 [MCP API Reference](./docs/api/communications.md)
-- 🎯 **Hlavní funkce**: WhatsApp, Signal, Telegram, Twitter/X, Instagram, Facebook
-- 🏠 **Home Use Case**: "Send message to family that dinner is ready"
-- 🚗 **Car Use Case**: Hands-free messaging while driving
-
-### 🤖 **Platform Controllers**
-**Cross-platform systémové ovládání**
-
-#### 🐧 Linux Controller
-- 📖 [Dokumentace](./docs/modules/ai-linux-controller.md)
-- 🎯 **Funkce**: Process management, file operations, service control
-
-#### 🪟 Windows Controller  
-- 📖 [Dokumentace](./docs/modules/ai-windows-controller.md)
-- 🎯 **Funkce**: PowerShell integration, application management, registry access
-
-#### 🍎 macOS Controller
-- 📖 [Dokumentace](./docs/modules/ai-macos-controller.md) 
-- 🎯 **Funkce**: AppleScript integration, system preferences, Finder operations
-
-#### 📱 Mobile Controllers (Android/iOS)
-- 📖 [Android Documentation](./docs/modules/ai-android-controller.md)
-- 📖 [iOS Documentation](./docs/modules/ai-ios-controller.md)
-- 🎯 **Funkce**: App management, notifications, device integration
-
-#### ⚡ RTOS Controller
-- 📖 [Dokumentace](./docs/modules/ai-rtos-controller.md)
-- 🎯 **Funkce**: Real-time task management, embedded systems control
-
-### 🏠 **Home Automation**
-**Smart home integrace**
-- 📖 [Dokumentace](./docs/modules/ai-home-automation.md)
-- 🔧 [MCP API Reference](./docs/api/home-automation.md)
-- 🎯 **Hlavní funkce**: Matter/Thread, Zigbee, lighting, climate control
-- 🏠 **Home Use Case**: "Good night routine" - lights off, thermostat down, security armed
-
-### 🔒 **Security & ANPR**
-**Bezpečnost a rozpoznávání SPZ**
-- 📖 [Dokumentace](./docs/modules/ai-security-anpr.md)
-- 🔧 [MCP API Reference](./docs/api/security-anpr.md)
-- 🎯 **Hlavní funkce**: Camera monitoring, license plate recognition, access control
-- 🏠 **Home Use Case**: Visitor recognition and automated door unlock
-- 🚗 **Car Use Case**: Stalker detection and security alerts
-
-### ⚙️ **C++ Platform Components**
-**Hardware control and message processing layer**
-- 📖 [Platform Documentation](./platforms/cpp/README.md)
-- 📖 [Raspberry Pi Deployment Guide](./platforms/cpp/core/README-RASPBERRY-PI.md)
-- 🔧 [Hybrid Messaging Guide](./docs/architecture/hybrid-messaging.md)
-- 🎯 **Hlavní komponenty**: Hardware Server, MCP Server, WebGrab Core
-- 🏠 **Home Use Case**: Raspberry Pi GPIO control and local AI processing
-- 🚗 **Car Use Case**: ESP32 integration and real-time vehicle control
-- 🚀 **CI/CD**: Automated builds via [GitHub Actions](.github/workflows/main.yml) (includes Raspberry Pi builds)
-
-#### 🔧 **Hardware Server**
-**GPIO control and hardware interfacing**
-- TCP interface for direct hardware access (port 8081)
-- MQTT integration for Python orchestrator communication
-- Raspberry Pi GPIO control via libgpiod
-- Real-time hardware monitoring and control
-
-#### 📡 **MCP Server**
-**C++ tool execution and hardware tasks**
-- Model Context Protocol implementation in C++
-- GPIO task execution (configure, set, get pins)
-- Download job management with FlatBuffers
-- MQTT transport for cross-process communication
-
-#### ⚡ **WebGrab Core**
-**Download engine and file management**
-- Asynchronous file downloading with libcurl
-- Thread-safe job queue processing
-- FlatBuffers serialization for all messages
-- Cross-platform compatibility (Linux, Windows, macOS)
-
-## 🚀 **Rychlý Start**
-
-### ⚡ **Zero-Copy Bootstrap (Recommended)**
-
-The fastest way to set up the development environment:
+### Dependencies
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/sparesparrow/mia.git
-cd mia
-
-# 2. Run the initialization script (sets up everything)
-./tools/init.sh
-
-# 3. Activate the environment
-source tools/env.sh
-
-# 4. Build all C++ components
-mia-build
+sudo apt-get update
+sudo apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    libzmq3-dev
 ```
 
-This approach uses **CPython tool tarballs** from Cloudsmith or GitHub Packages to create a zero-copy development environment, avoiding PEP 668 issues on modern systems. You can easily switch between repositories using environment variables (see [Repository Switching Guide](docs/REPOSITORY_SWITCHING.md)).
-
-### 🐳 **Docker Development Environment**
+### Python Packages
 
 ```bash
-# Klonování repozitáře
-git clone https://github.com/sparesparrow/mia.git
-cd mia
-
-# Spuštění development environmentu
-docker-compose -f containers/docker-compose.dev.yml up -d
-
-# Ověření, že všechny služby běží
-docker-compose ps
-
-# Přístup k logs
-docker-compose logs -f ai-audio-assistant
+pip3 install -r requirements.txt
 ```
 
-### 🔨 **Building C++ Platform Components**
+## Deployment
 
-#### Self-Contained Build (Recommended for Raspberry Pi)
-
-This approach uses Cloudsmith packages for a portable Python/Conan environment:
+Use the main deployment script:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/sparesparrow/mia.git
-cd mia
-
-# 2. Install system dependencies (requires sudo)
-./tools/install-deps-rpi.sh
-
-# 3. Bootstrap the build environment (downloads from Cloudsmith)
-./tools/bootstrap.sh
-
-# 4. Build all C++ components
-./tools/build.sh
-
-# Components built:
-# - hardware-server: GPIO control (port 8081)
-# - mcp-server: MCP tools for hardware tasks
-# - webgrab-client/server: Download management
-```
-
-**📖 For detailed Raspberry Pi setup, see [RASPBERRY_PI_SETUP.md](docs/RASPBERRY_PI_SETUP.md)**
-
-#### Quick Build for Raspberry Pi (System Python)
-
-If you prefer using system packages without the bundled environment:
-
-```bash
-# Install dependencies
-sudo apt install cmake ninja-build g++ \
-    libgpiod-dev libmosquitto-dev libcurl4-openssl-dev
-
-# Quick build and deploy
-./scripts/build-raspberry-pi.sh
 sudo ./scripts/deploy-raspberry-pi.sh
-sudo systemctl start ai-servis
 ```
 
-#### Interactive Development
+This will:
+1. Install all dependencies
+2. Build C++ components
+3. Install Python services
+4. Create systemd services
+5. Enable services to start on boot
 
-For active development, activate the build environment:
+## Manual Setup
+
+### 1. Install Python dependencies
 
 ```bash
-# Activate environment (after bootstrap)
-source tools/env.sh
-
-# Now you have conan, cmake, etc. on PATH
-mia-info   # Show environment info
-mia-build  # Build all components
-mia-clean  # Clean build directories
+pip3 install -r rpi/requirements.txt
 ```
 
-**📖 For detailed Raspberry Pi deployment instructions, see [README-RASPBERRY-PI.md](platforms/cpp/core/README-RASPBERRY-PI.md)**
-
-### 🔧 **Testing C++ Components**
+### 2. Copy files to installation directory
 
 ```bash
-# Run test suite
-cd build-raspberry-pi
-./tests
-
-# Or use the test script
-./scripts/test-raspberry-pi.sh
-
-# Test hardware server (requires GPIO hardware on Raspberry Pi)
-cd build-raspberry-pi
-sudo ./hardware-server &
-
-# Test main application
-sudo ./mia-rpi
-
-# Test Python integration
-cd modules/hardware-bridge
-python test_integration.py
+sudo mkdir -p /opt/ai-servis/rpi
+sudo cp -r rpi/* /opt/ai-servis/rpi/
 ```
 
-**📖 For detailed testing and deployment, see:**
-- [Raspberry Pi Deployment Guide](platforms/cpp/core/README-RASPBERRY-PI.md)
-- [Quick Start Guide](QUICK-START-RASPBERRY-PI.md)
-- [Deployment Checklist](DEPLOYMENT-CHECKLIST.md)
-
-### 🏠 **Home Installation (AMD64)**
+### 3. Install systemd services
 
 ```bash
-# Instalace pro domácí použití
-curl -sSL https://install.mia.cz | bash -s -- --variant=home
-
-# Nebo manuální docker-compose
-wget https://raw.githubusercontent.com/sparesparrow/mia/main/containers/docker-compose.home.yml
-docker-compose -f docker-compose.home.yml up -d
-
-# Test voice control
-echo "AI, play jazz music in kitchen" | nc localhost 8080
+sudo cp rpi/services/*.service /etc/systemd/system/
+sudo systemctl daemon-reload
 ```
 
-### 📱 **Mobile App Installation**
+### 4. Enable and start services
 
-- **Android**: [Download from GitHub Releases](https://github.com/sparesparrow/mia/releases/latest)
-- **iOS**: [TestFlight Beta](https://testflight.apple.com/join/mia) (Coming Soon)
+```bash
+# Core services
+sudo systemctl enable zmq-broker mia-api mia-gpio-worker
+sudo systemctl start zmq-broker mia-api mia-gpio-worker
 
-### 🚗 **Automotive Installation**
-
-Viz původní automotive dokumentace:
-- [Phone Edition Install](./docs/install/phone.md) - 22k-38k Kč
-- [Hybrid Edition Install](./docs/install/hybrid.md) - 48k-89k Kč  
-- [Pro Edition Install](./docs/install/pro.md) - 89k-143k Kč
-
-## 🔧 **MCP Architecture Deep Dive**
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Core as Core Orchestrator<br/>(MCP Host)
-    participant Audio as AI Audio Assistant<br/>(MCP Server)
-    participant Platform as Platform Controller<br/>(MCP Server)
-    
-    User->>Core: "Play music and close social media apps"
-    
-    Core->>Core: Parse natural language<br/>Extract intents
-    
-    par Music Playback
-        Core->>Audio: MCP Tool Call<br/>play_music(query="jazz")
-        Audio-->>Audio: Connect to Spotify API
-        Audio-->>Audio: Start playback
-        Audio->>Core: Result: Now playing "Kind of Blue"
-    and App Management
-        Core->>Platform: MCP Tool Call<br/>close_apps(["facebook", "twitter"])
-        Platform-->>Platform: Execute system commands
-        Platform->>Core: Result: 2 apps closed
-    end
-    
-    Core->>User: "Playing jazz music and closed social media apps"
+# OBD Simulator services (optional)
+sudo systemctl enable mia-serial-bridge mia-obd-worker
+sudo systemctl start mia-serial-bridge mia-obd-worker
 ```
 
-### **MCP Tools Příklad - Audio Assistant**
+## Service Management
+
+### Start services
+
+```bash
+sudo systemctl start zmq-broker
+sudo systemctl start mia-api
+sudo systemctl start mia-gpio-worker
+sudo systemctl start mia-serial-bridge
+sudo systemctl start mia-obd-worker
+```
+
+### Stop services
+
+```bash
+sudo systemctl stop zmq-broker
+sudo systemctl stop mia-api
+sudo systemctl stop mia-gpio-worker
+sudo systemctl stop mia-obd-worker
+sudo systemctl stop mia-serial-bridge
+```
+
+### Check status
+
+```bash
+sudo systemctl status zmq-broker
+sudo systemctl status mia-api
+sudo systemctl status mia-gpio-worker
+sudo systemctl status mia-serial-bridge
+sudo systemctl status mia-obd-worker
+```
+
+### View logs
+
+```bash
+sudo journalctl -u zmq-broker -f
+sudo journalctl -u mia-api -f
+sudo journalctl -u mia-gpio-worker -f
+sudo journalctl -u mia-serial-bridge -f
+sudo journalctl -u mia-obd-worker -f
+```
+
+## Testing
+
+### Test API endpoints
+
+```bash
+# Health check
+curl http://localhost:8000/status
+
+# List devices
+curl http://localhost:8000/devices
+
+# Configure GPIO pin 18 as output
+curl -X POST http://localhost:8000/gpio/configure \
+  -H "Content-Type: application/json" \
+  -d '{"pin": 18, "direction": "output"}'
+
+# Set GPIO pin 18 to HIGH
+curl -X POST http://localhost:8000/gpio/set \
+  -H "Content-Type: application/json" \
+  -d '{"pin": 18, "value": true}'
+
+# Get GPIO pin 18 value
+curl http://localhost:8000/gpio/18
+```
+
+### Test OBD Simulator
+
+The OBD simulator creates a "Digital Twin" where physical controls (ESP32/Arduino potentiometers) drive OBD-II PID values in real-time.
+
+#### Hardware Setup
+
+1. **Flash ESP32/Arduino** with the following firmware:
+
+```cpp
+void setup() { 
+  Serial.begin(115200); 
+}
+
+void loop() {
+  int pot1 = analogRead(A0); // RPM Input (0-1023)
+  int pot2 = analogRead(A1); // Speed Input (0-1023)
+  
+  // Send JSON formatted line
+  Serial.print("{\"pot1\":");
+  Serial.print(pot1);
+  Serial.print(", \"pot2\":");
+  Serial.print(pot2);
+  Serial.println("}");
+  
+  delay(100); // 10Hz update rate
+}
+```
+
+2. **Connect ESP32/Arduino** to Raspberry Pi via USB
+
+3. **Start services** (serial bridge will auto-detect the device):
+
+```bash
+sudo systemctl start zmq-broker
+sudo systemctl start mia-serial-bridge
+sudo systemctl start mia-obd-worker
+```
+
+#### Verify Telemetry Flow
+
+Check that serial bridge is receiving data:
+
+```bash
+sudo journalctl -u mia-serial-bridge -f
+```
+
+You should see log entries showing telemetry being published.
+
+#### Connect OBD Scanner
+
+The ELM327 emulator creates a virtual serial port (PTY). Check logs to find the PTY path:
+
+```bash
+sudo journalctl -u mia-obd-worker | grep -i pty
+```
+
+Connect your OBD diagnostic tool to this PTY. As you turn the potentiometers on the ESP32, the RPM and speed values in the OBD responses will update in real-time.
+
+#### Manual Testing
+
+Test serial bridge directly:
+
+```bash
+python3 rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+```
+
+Test OBD worker directly:
+
+```bash
+python3 rpi/services/obd_worker.py
+```
+
+### Test WebSocket
 
 ```python
-# MCP Tool Definition
-{
-  "name": "play_music",
-  "description": "Play music by artist, album, track, or genre",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "query": {"type": "string", "description": "Search query"},
-      "source": {"type": "string", "enum": ["spotify", "apple", "local"]},
-      "zone": {"type": "string", "description": "Audio zone (optional)"}
-    }
-  }
-}
+import asyncio
+import websockets
+import json
 
-# MCP Tool Call Result
-{
-  "content": [
-    {
-      "type": "text", 
-      "text": "Now playing: Miles Davis - Kind of Blue in Kitchen zone"
-    }
-  ],
-  "isError": false
-}
+async def test_websocket():
+    uri = "ws://localhost:8000/ws"
+    async with websockets.connect(uri) as websocket:
+        while True:
+            message = await websocket.recv()
+            data = json.loads(message)
+            print(f"Received: {data}")
+
+asyncio.run(test_websocket())
 ```
 
-## 📊 **Varianty Nasazení**
+## API Documentation
 
-| Varianta | Hardware | Software | Cena | Use Cases |
-|----------|----------|----------|------|-----------|
-| **🏠 Home Desktop** | AMD64/ARM64 | All modules | Zdarma | Smart home, productivity |
-| **📱 Mobile Only** | Phone/Tablet | Mobile apps | Zdarma | Personal assistant |
-| **🚗 Car Phone** | ESP32 + Phone | Android + firmware | 22k-38k Kč | Basic automotive AI |
-| **🚗 Car Hybrid** | ESP32 + Pi + Phone | Full stack | 48k-89k Kč | Advanced automotive |
-| **🏢 Enterprise** | Dedicated servers | All + enterprise features | Custom | Business automation |
+Once the FastAPI server is running, visit:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-## 🧪 **Testing & Development**
+## Implementation Status
 
-### **Modular Testing**
+### Phase 1: Foundation ✅
+- [x] Project structure
+- [x] ZeroMQ messaging broker (ROUTER-DEALER)
+- [x] Message handlers
+
+### Phase 2: Hardware Integration ✅
+- [x] GPIO control worker
+- [x] Hardware abstraction layer
+
+### Phase 3: FastAPI & Remote Control ✅
+- [x] REST API endpoints
+- [x] WebSocket server
+- [x] Request validation (Pydantic)
+
+### Phase 6: Deployment ✅
+- [x] Systemd services
+- [x] Auto-start on boot
+- [x] Deployment script
+
+### Phase 7: OBD Simulator (Digital Twin) ✅
+- [x] Serial bridge for ESP32/Arduino communication
+- [x] OBD worker with ELM327 emulator integration
+- [x] Dynamic PID responses based on hardware telemetry
+- [x] ZeroMQ PUB/SUB telemetry distribution
+- [x] Hardware-in-the-loop simulation architecture
+
+## Next Steps
+
+- [ ] Complete ELM327-emulator library integration (PTY creation)
+- [ ] Add FlatBuffers schema support
+- [ ] Add sensor drivers (I2C/SPI)
+- [ ] Implement device registry
+- [ ] Add authentication/authorization
+- [ ] Add comprehensive logging
+- [ ] Performance optimization
+- [ ] OBD-II PID response validation
+
+## Troubleshooting
+
+### Services won't start
+
+Check logs:
 ```bash
-# Test jednotlivého modulu
-cd modules/ai-audio-assistant
-pytest tests/ -v
-
-# Integration test between modules  
-pytest tests/integration/test_audio_platform_integration.py
-
-# Full system test with Pi simulation
-docker-compose -f containers/docker-compose.pi-sim.yml up -d
-pytest tests/system/ -v --platform=pi-sim
+sudo journalctl -u zmq-broker -n 50
+sudo journalctl -u mia-api -n 50
+sudo journalctl -u mia-gpio-worker -n 50
 ```
 
-### **Performance Benchmarking**
+### GPIO not working
+
+1. Check permissions:
 ```bash
-# Voice command latency test
-./scripts/benchmark-voice-latency.sh
-
-# Cross-platform compatibility test
-./scripts/test-all-platforms.sh
-
-# Load testing
-./scripts/load-test.sh --concurrent=10 --duration=300s
+ls -l /dev/gpiochip*
 ```
 
-## 📈 **Implementační Roadmap**
-
-```mermaid
-gantt
-    title MIA Universal Development Timeline
-    dateFormat  YYYY-MM-DD
-    section Phase 0: Foundation
-    Repository Setup           :done, repo, 2025-08-30, 2d
-    Docker Environment        :done, docker, after repo, 3d
-    CI/CD Pipeline           :active, cicd, after docker, 2d
-    MCP Framework            :mcp, after cicd, 5d
-    
-    section Phase 1: Core Architecture  
-    Core Orchestrator        :core, after mcp, 8d
-    Audio Assistant          :audio, after core, 10d
-    Platform Controllers     :platform, after audio, 12d
-    
-    section Phase 2: Multi-Platform
-    Windows/macOS Support    :windows, after platform, 8d
-    Mobile Integration       :mobile, after windows, 10d
-    Container Optimization   :containers, after mobile, 5d
-    
-    section Phase 3: Advanced Features
-    Home Automation          :home, after containers, 8d
-    Security/ANPR           :security, after home, 6d
-    Maps/Navigation         :maps, after security, 6d
-    
-    section Phase 4: Testing & Polish
-    Integration Testing      :testing, after maps, 8d
-    Documentation           :docs, after testing, 6d
-    Performance Optimization :perf, after docs, 5d
-    Production Release      :milestone, release, after perf, 1d
-```
-
-## 📋 **Project Status**
-
-### **✅ Completed (Automotive Foundation)**
-- [x] ESP32 OBD-2 integration
-- [x] Android aplikace (MVP)
-- [x] ANPR license plate recognition
-- [x] Basic voice control
-- [x] Edge processing framework
-- [x] Citroën OBD-II telemetry agent ([docs/automotive/citroen-integration.md](./docs/automotive/citroen-integration.md))
-
-### **✅ Recently Completed (C++ Platform Integration)**
-- [x] **Hybrid MQP + MQTT Architecture**: Unified messaging system
-- [x] **C++ Platform Components**: Hardware server, MCP server, WebGrab core
-- [x] **Conan Dependency Management**: Automatic FlatBuffers generation
-- [x] **Python Bridge Modules**: MCP client and hardware controller
-- [x] **Cross-Platform CI/CD**: Multi-architecture C++ builds
-- [x] **Repository Structure**: Organized platforms/ and modules/
-
-### **🚧 In Progress (Universal Extension)**
-- [ ] **[TASK-001](./TODO-master-list.md#task-001-repository-structure-setup)**: Repository structure setup
-- [ ] **[TASK-006](./TODO-master-list.md#task-006-mcp-framework-library)**: MCP framework development
-- [ ] **[TASK-012](./TODO-master-list.md#task-012-audio-assistant-mcp-server)**: Audio assistant MCP server
-
-### **📅 Planned (Next Milestones)**
-- [ ] **M1 (Week 4)**: Core architecture functional
-- [ ] **M2 (Week 8)**: Audio assistant working on desktop
-- [ ] **M3 (Week 12)**: Multi-platform support complete
-- [ ] **M4 (Week 16)**: Advanced features implemented
-
-**📊 Overall Progress**: ~15/142 tasks completed (~11%) | [View Full TODO List](./TODO-master-list.md)
-
-## 🤝 **Přispívání**
-
-### **Development Setup**
+2. Ensure running as root or user in gpio group:
 ```bash
-# Development environment
-git clone https://github.com/sparesparrow/mia.git
-cd mia
-cp .env.example .env
-docker-compose -f containers/docker-compose.dev.yml up -d
-
-# Pre-commit hooks
-pre-commit install
+sudo usermod -a -G gpio $USER
 ```
 
-### **Contributing Guidelines**
-1. 🍴 Fork repozitáře
-2. 🔀 Vytvořte feature branch (`git checkout -b feature/amazing-feature`)
-3. ✅ Přidejte testy pro novou funkcionalitu
-4. 📝 Aktualizujte dokumentaci
-5. 🔍 Spusťte code review checklist
-6. 📤 Vytvořte Pull Request
+3. Check if GPIO libraries are installed:
+```bash
+python3 -c "import RPi.GPIO; print('RPi.GPIO available')"
+python3 -c "import gpiozero; print('gpiozero available')"
+```
 
-### **Code Standards**
-- **Python**: Black formatter, type hints, docstrings
-- **JavaScript/TypeScript**: Prettier, ESLint, JSDoc
-- **Docker**: Multi-stage builds, security scanning
-- **Documentation**: Markdown, Mermaid diagrams
+### Port already in use
 
-## 📞 **Kontakt & Support**
+```bash
+sudo netstat -tulpn | grep -E "5555|8000"
+```
 
-### **🌍 Community**
-- **Discord**: [MIA Community](https://discord.gg/mia)
-- **GitHub Discussions**: [Project Discussions](https://github.com/sparesparrow/mia/discussions)
-- **Reddit**: [r/AI_SERVIS](https://reddit.com/r/AI_SERVIS)
+### ZeroMQ connection errors
 
-### **🏢 Business**
-- **Web**: [https://ai-servis.cz](https://ai-servis.cz)
-- **Email**: [info@ai-servis.cz](mailto:info@ai-servis.cz)
-- **Telefon**: +420 777 888 999
-- **Adresa**: Brno-sever, Česká republika
+Ensure broker is running before starting other services:
+```bash
+sudo systemctl start zmq-broker
+sleep 2
+sudo systemctl start mia-api mia-gpio-worker
+```
 
-### **🔧 Technical Support**
-- **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)
-- **Security**: [security@ai-servis.cz](mailto:security@ai-servis.cz)
-- **Documentation**: [docs.ai-servis.cz](https://docs.ai-servis.cz)
+### Serial bridge not detecting device
 
-## 🏆 **Achievements & Recognition**
+1. Check if device is connected:
+```bash
+ls -l /dev/ttyUSB* /dev/ttyACM*
+```
 
-- 🥇 **První modulární AI Car Server v ČR**
-- 🔒 **Privacy-First Architecture** - žádná závislost na cloudu
-- 🌍 **Open Source Foundation** - MIT license
-- 🤖 **MCP-Compatible** - industry standard compliance
-- 🚀 **Cross-Platform** - jeden systém, všude použitelný
+2. Check permissions:
+```bash
+sudo usermod -a -G dialout $USER
+# Log out and back in, or use newgrp dialout
+```
 
----
+3. Specify port manually:
+```bash
+sudo systemctl edit mia-serial-bridge
+# Add:
+# [Service]
+# ExecStart=
+# ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+```
 
-## 📄 **Licence**
+4. Test serial connection manually:
+```bash
+python3 -c "import serial; s=serial.Serial('/dev/ttyUSB0', 115200); print(s.readline())"
+```
 
-Tento projekt je licencován pod MIT licencí - viz [LICENSE](LICENSE) soubor pro detaily.
+### OBD worker not receiving telemetry
 
-## 🙏 **Poděkování**
+1. Verify serial bridge is publishing:
+```bash
+sudo journalctl -u mia-serial-bridge | grep "Published telemetry"
+```
 
-- **Anthropic** za Model Context Protocol standard
-- **ElevenLabs** za high-quality TTS/STT APIs  
-- **ESP32 Community** za embedded AI frameworks
-- **Docker** za containerization platform
-- **Open Source Contributors** za různé použité knihovny
+2. Check ZeroMQ PUB socket is bound:
+```bash
+sudo netstat -tulpn | grep 5556
+```
 
----
+3. Verify OBD worker is subscribed:
+```bash
+sudo journalctl -u mia-obd-worker | grep "Subscribed to telemetry"
+```
 
-**MIA Universal** - *Jeden AI asistent pro všechny vaše prostředí* 🚗🏠📱💻
-
-[![Made with ❤️ in Brno](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20in-Brno%2C%20CZ-red)](https://brno.cz)
-[![Czech AI Innovation](https://img.shields.io/badge/Czech-AI%20Innovation-blue)](https://ai-servis.cz)
+4. Test ZMQ subscription manually:
+```python
+import zmq
+ctx = zmq.Context()
+sub = ctx.socket(zmq.SUB)
+sub.connect("tcp://localhost:5556")
+sub.subscribe("mcu/telemetry")
+while True:
+    topic, msg = sub.recv_multipart()
+    print(f"Topic: {topic}, Message: {msg}")
+```

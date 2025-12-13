@@ -483,8 +483,11 @@ private fun DeviceListItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(enabled = !isConnecting) { onSelect() },
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .clickable(
+                enabled = !isConnecting,
+                onClick = onSelect
+            ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )

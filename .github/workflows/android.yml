@@ -64,12 +64,10 @@ jobs:
           mkdir -p android/keystore
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/keystore/release.keystore
           # Write keystore.properties into the Android project root
-          cat > android/keystore.properties <<'EOF'
-storeFile=android/keystore/release.keystore
-storePassword=${STORE_PASSWORD}
-keyAlias=${KEY_ALIAS}
-keyPassword=${KEY_PASSWORD}
-EOF
+          echo "storeFile=android/keystore/release.keystore" > android/keystore.properties
+          echo "storePassword=$STORE_PASSWORD" >> android/keystore.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/keystore.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/keystore.properties
 
       - name: Build signed release (main branch)
         if: github.ref == 'refs/heads/main'

@@ -539,26 +539,16 @@ class MCPClient:
             "name": "ai-servis-client",
             "version": "1.0.0"
         }
-        self.transport_factory: Optional[Callable[[], Union[MCPTransport, Awaitable[MCPTransport]]]] = None
+        self.transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None
 
     def _next_id(self) -> int:
         """Generate next request ID"""
         self.request_id += 1
         return self.request_id
 
-    async def connect(
-        self,
-        transport: MCPTransport,
-        transport_factory: Optional[Callable[[], Union[MCPTransport, Awaitable[MCPTransport]]]] = None,
-        timeout: float = 30.0,
-    ) -> None:
+    async def connect(self, transport: MCPTransport, transport_factory: Optional[Callable[[], Awaitable[MCPTransport]]] = None, timeout: float = 30.0) -> None:
         """Connect to MCP server with persistent connection"""
-        if transport_factory:
-            self.transport_factory = transport_factory
-        else:
-            async def _default_factory() -> MCPTransport:
-                return transport
-            self.transport_factory = _default_factory
+        self.transport_factory = transport_factory or (lambda: transport)
 
         await self._establish_connection(timeout)
         self.reconnect_attempts = 0  # Reset on successful connection
@@ -576,18 +566,7 @@ class MCPClient:
             raise MCPError(-32603, "No transport factory available")
 
         try:
-<<<<<<< HEAD
-            transport_candidate = self.transport_factory()
-            if asyncio.iscoroutine(transport_candidate):
-                self.transport = await transport_candidate
-            else:
-                self.transport = transport_candidate
-
-            if self.transport is None:
-                raise MCPError(-32603, "Transport factory returned None")
-=======
             self.transport = await self.transport_factory()
->>>>>>> origin/fix/mcp-errors-and-cloudsmith-bootstrap
             self.connected = True
 
             # Initialize the connection

@@ -50,7 +50,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -156,14 +156,14 @@ jobs:
     name: 🐍 Python Tests
     runs-on: ubuntu-latest
     needs: [security]
-    if: ${{ !inputs.skip_tests }}
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_tests }}
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -308,7 +308,7 @@ jobs:
     name: 📱 Android Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[android]') || github.event_name == 'workflow_dispatch'
+    if: ${{ contains(github.event.head_commit.message, '[android]') || github.event_name == 'workflow_dispatch' }}
     
     steps:
       - name: Checkout code
@@ -347,11 +347,11 @@ jobs:
     name: 🔌 ESP32 Build
     runs-on: ubuntu-latest
     needs: [security]
-    if: contains(github.event.head_commit.message, '[esp32]') || github.event_name == 'workflow_dispatch'
+    if: ${{ contains(github.event.head_commit.message, '[esp32]') || github.event_name == 'workflow_dispatch' }}
     strategy:
       matrix:
         target: [esp32, esp32s3]
-        variant: [obd, io, cam]
+        variant: [obd]
 
     steps:
       - name: Checkout code
@@ -365,15 +365,15 @@ jobs:
 
       - name: Build firmware
         run: |
-          cd esp32/firmware-${{ matrix.variant }}
+          cd esp32/firmware-obd
           idf.py set-target ${{ matrix.target }}
           idf.py build
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: esp32-${{ matrix.target }}-${{ matrix.variant }}
-          path: esp32/firmware-${{ matrix.variant }}/build/
+          name: esp32-${{ matrix.target }}-obd
+          path: esp32/firmware-obd/build/
 
   # ================================
   # DOCKER BUILDS
@@ -390,6 +390,7 @@ jobs:
           - ai-audio-assistant
           - hardware-bridge
           - ai-security
+          - automotive-mcp-bridge
     
     steps:
       - name: Checkout code
@@ -440,7 +441,7 @@ jobs:
     name: 🧪 Integration Tests
     runs-on: ubuntu-latest
     needs: [python-tests, cpp-builds, docker-builds]
-    if: ${{ !inputs.skip_tests }}
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_tests }}
     
     steps:
       - name: Checkout code
@@ -480,7 +481,7 @@ jobs:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
     needs: [integration-tests, docker-builds]
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && !inputs.build_only
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && ${{ github.event_name != 'workflow_dispatch' || !inputs.build_only }}
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
     
     steps:
