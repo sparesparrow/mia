@@ -9,14 +9,7 @@ import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-<<<<<<< HEAD
-<<<<<<< HEAD:android/app/src/main/java/cz/mia/app/core/background/ANPRManager.kt
 import androidx.camera.core.Preview
-=======
->>>>>>> 8a837d2 (fix(android): resolve deprecated APIs and logic errors causing test failures):android/app/src/main/java/cz/aiservis/app/core/background/ANPRManager.kt
-=======
-import androidx.camera.core.Preview
->>>>>>> 5376269 (rebase)
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
