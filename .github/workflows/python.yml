@@ -29,11 +29,7 @@ jobs:
           python-version: '3.11'
 
       - name: Cache pip
-<<<<<<< HEAD
-        uses: actions/cache@v3
-=======
         uses: actions/cache@v4
->>>>>>> 5376269 (rebase)
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
@@ -50,11 +46,7 @@ jobs:
           pip install pytest flake8 mypy jsonschema
 
       - name: Lint (flake8)
-<<<<<<< HEAD
-        run: flake8 .
-=======
         run: flake8 . --exclude="Mia/Vehicle/*.py,web/monitor-gonzo.py"
->>>>>>> 5376269 (rebase)
 
       - name: Type check (mypy)
         run: mypy --ignore-missing-imports .
