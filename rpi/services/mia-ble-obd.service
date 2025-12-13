@@ -1,0 +1,24 @@
+[Unit]
+Description=MIA BLE OBD Service - BLE GATT Server for OBD-II Communication
+After=network.target bluetooth.service mia-broker.service
+Requires=bluetooth.service
+Wants=mia-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/opt/ai-servis/rpi/services
+ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/services/ble_obd_service.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/ai-servis/rpi
+
+# Capabilities for Bluetooth
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target
