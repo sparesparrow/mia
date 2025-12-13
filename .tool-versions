@@ -1,8 +1,5 @@
-# AI-SERVIS Build Tool Versions
+# AI-SERVIS Build Tool Versions (Sparetools Integration)
 # Managed by tools/bootstrap.sh
-# This file documents the pinned versions used by the build environment
-
-python 3.11.9
+python 3.12.7
 conan 2.3.2
-cmake 3.29.3
-ninja 1.11.1
+# Using sparetools-cpython from Conan: https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/

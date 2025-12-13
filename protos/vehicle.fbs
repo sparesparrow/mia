@@ -1,0 +1,19 @@
+namespace Mia.Vehicle;
+
+enum DpfStatus : byte { Normal = 0, Regenerating = 1, Warning = 2 }
+
+table CitroenTelemetry {
+  rpm: float;
+  speed_kmh: float;
+  coolant_temp_c: float;
+  // New PSA Specifics
+  dpf_soot_load_percent: float;
+  dpf_soot_mass_g: float;
+  dpf_regeneration_status: DpfStatus;
+  eolys_additive_level_percent: float;
+  eolys_additive_level_l: float;
+  battery_voltage: float;
+  oil_temperature_c: float;
+}
+
+root_type CitroenTelemetry;

@@ -45,6 +45,17 @@ class BLEManagerTest {
         every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns mockBluetoothManager
         every { mockBluetoothManager.adapter } returns mockBluetoothAdapter
 
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+
+        mockContext = mockk(relaxed = true)
+        mockBluetoothManager = mockk(relaxed = true)
+        mockBluetoothAdapter = mockk(relaxed = true)
+
+        every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns mockBluetoothManager
+        every { mockBluetoothManager.adapter } returns mockBluetoothAdapter
+
         // Mock PermissionHelper
         mockkObject(PermissionHelper)
         every { PermissionHelper.hasBluetoothPermissions(any()) } returns true
@@ -55,7 +66,6 @@ class BLEManagerTest {
     fun tearDown() {
         Dispatchers.resetMain()
         unmockkObject(PermissionHelper)
-    }
     }
 
     @Test
@@ -234,6 +244,12 @@ class BLEManagerTest {
         val bleManager = BLEManagerImpl(mockContext)
         bleManager.initialize()
         testDispatcher.scheduler.advanceUntilIdle()
+        every { mockContext.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
+
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
+        testDispatcher.scheduler.advanceUntilIdle()
 
         val state = bleManager.connectionState.value
         assertTrue(state is BleConnectionState.Error)
@@ -248,12 +264,22 @@ class BLEManagerTest {
         bleManager.initialize()
         testDispatcher.scheduler.advanceUntilIdle()
 
+    fun `initialize sets state to error when bluetooth disabled`() = runTest {
+    fun `initialize sets state to error when bluetooth disabled`() = runTest(testDispatcher) {
+        every { mockBluetoothAdapter.isEnabled } returns false
+
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
+        testDispatcher.scheduler.advanceUntilIdle()
+
         val state = bleManager.connectionState.value
         assertTrue(state is BleConnectionState.Error)
         assertEquals("Bluetooth is disabled", (state as BleConnectionState.Error).message)
     }
 
     @Test
+<<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
     fun `initialize sets state to error when permissions missing`() = runTest(testDispatcher) {
         every { PermissionHelper.hasBluetoothPermissions(any()) } returns false
         every { PermissionHelper.getMissingBluetoothPermissions(any()) } returns listOf("BLUETOOTH_SCAN", "BLUETOOTH_CONNECT")
@@ -262,6 +288,18 @@ class BLEManagerTest {
 
         val bleManager = BLEManagerImpl(mockContext)
         bleManager.initialize()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+    fun `initialize sets state to error when permissions missing`() = runTest {
+    fun `initialize sets state to error when permissions missing`() = runTest(testDispatcher) {
+        every { PermissionHelper.hasBluetoothPermissions(any()) } returns false
+        every { PermissionHelper.getMissingBluetoothPermissions(any()) } returns listOf("BLUETOOTH_SCAN", "BLUETOOTH_CONNECT")
+
+        every { mockBluetoothAdapter.isEnabled } returns true
+
+        val bleManager = BLEManagerImpl(mockContext)
+        bleManager.initialize()
+        
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = bleManager.connectionState.value
@@ -283,5 +321,5 @@ class BLEManagerTest {
         assertNotNull(bleManager.connectionState)
         assertNotNull(bleManager.discoveredDevices)
     }
->>>>>>> a424be7 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
+<<<<<<< HEAD:android/app/src/test/java/cz/mia/app/core/background/BLEManagerTest.kt
 }
