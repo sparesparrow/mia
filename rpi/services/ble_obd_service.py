@@ -16,11 +16,15 @@ import json
 import logging
 import asyncio
 import signal
-from typing import Optional, Dict
+from typing import Optional, Dict, TYPE_CHECKING
 from datetime import datetime
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+if TYPE_CHECKING:
+    from bleak import BleakServer, BleakGATTCharacteristic, BleakGATTDescriptor
+    from bleak.backends.characteristic import BleakGATTCharacteristicProperties
 
 try:
     from bleak import BleakServer, BleakGATTCharacteristic, BleakGATTDescriptor
@@ -28,6 +32,11 @@ try:
     BLEAK_AVAILABLE = True
 except ImportError:
     BLEAK_AVAILABLE = False
+    # Create dummy types for type hints when bleak is not available
+    BleakServer = None
+    BleakGATTCharacteristic = None
+    BleakGATTDescriptor = None
+    BleakGATTCharacteristicProperties = None
     logging.warning("Bleak library not available. Install with: pip3 install bleak")
 
 import zmq
