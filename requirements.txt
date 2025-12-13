@@ -17,6 +17,7 @@ alembic==1.13.1
 python-dotenv==1.0.0
 PyJWT==2.8.0
 cryptography>=43.0.1
+argon2-cffi==25.1.0
 # HTTP client and utilities
 tenacity==8.2.3
 httpx==0.26.0
@@ -51,3 +52,10 @@ mypy==1.7.1
 orjson==3.9.15
 # YAML processing (fix for CI build issues - pin to version with wheels)
 PyYAML==6.0.1
+# RPi-specific dependencies
+pyzmq>=25.1.0
+flatbuffers>=23.5.26
+pyserial>=3.5
+ELM327-emulator>=1.1.1
+RPi.GPIO>=0.7.1; platform_machine == "armv7l" or platform_machine == "aarch64"
+gpiozero>=1.6.2; platform_machine == "armv7l" or platform_machine == "aarch64"

@@ -180,6 +180,7 @@ class TestAPIKeyInfo(unittest.TestCase):
         info = APIKeyInfo(
             key_id="test",
             name="Test",
+            hashed_key="dummy_hash",
             created_at=datetime.now()
         )
         self.assertIn("read", info.scopes)
@@ -191,6 +192,7 @@ class TestAPIKeyInfo(unittest.TestCase):
         info = APIKeyInfo(
             key_id="test",
             name="Test",
+            hashed_key="dummy_hash",
             created_at=datetime.now()
         )
         self.assertTrue(info.enabled)
