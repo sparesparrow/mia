@@ -1,0 +1,20 @@
+[Unit]
+Description=MIA OBD Worker - ELM327 Simulator Service
+After=network.target mia-broker.service mia-serial-bridge.service
+Requires=mia-broker.service
+Wants=mia-serial-bridge.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/ai-servis/rpi/services
+ExecStart=/usr/bin/python3 obd_worker.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+
+[Install]
+WantedBy=multi-user.target
