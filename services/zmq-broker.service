@@ -1,0 +1,17 @@
+[Unit]
+Description=MIA ZeroMQ Message Broker
+After=network.target
+Before=mia-api.service mia-gpio-worker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/rpi
+ExecStart=/usr/bin/python3 /opt/mia/rpi/core/messaging/broker.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
