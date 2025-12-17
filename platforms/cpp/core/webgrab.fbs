@@ -88,7 +88,12 @@ union Request {
   GPIOConfigureRequest,
   GPIOSetRequest,
   GPIOGetRequest,
-  GPIOStatusRequest
+  GPIOStatusRequest,
+  SystemStatusRequest,
+  DeviceDiscoveryRequest,
+  TelemetryRequest,
+  CommandAckRequest,
+  HealthCheckRequest
 }
 
 union Response {
@@ -98,12 +103,103 @@ union Response {
   GPIOConfigureResponse,
   GPIOSetResponse,
   GPIOGetResponse,
-  GPIOStatusResponse
+  GPIOStatusResponse,
+  SystemStatusResponse,
+  DeviceDiscoveryResponse,
+  TelemetryResponse,
+  CommandAckResponse,
+  HealthCheckResponse
 }
 
 table Message {
   request:Request;
   response:Response;
+}
+
+// System Status Messages
+table SystemStatusRequest {
+}
+
+table SystemStatusResponse {
+  uptime_seconds:uint64;
+  memory_used_mb:uint32;
+  memory_total_mb:uint32;
+  cpu_usage_percent:float;
+  active_devices:uint32;
+  timestamp:uint64;
+}
+
+// Device Management Messages
+table DeviceDiscoveryRequest {
+  device_type:string;  // optional filter
+}
+
+table DeviceInfo {
+  device_id:string;
+  device_type:string;
+  capabilities:[string];
+  status:string;  // "online", "offline", "error"
+  last_seen:uint64;
+  metadata:[DeviceMetadata];
+}
+
+table DeviceMetadata {
+  key:string;
+  value:string;
+}
+
+table DeviceDiscoveryResponse {
+  devices:[DeviceInfo];
+}
+
+// Telemetry Messages
+table TelemetryRequest {
+  device_id:string;  // optional specific device
+  sensor_type:string;  // optional filter
+}
+
+table SensorReading {
+  sensor_id:string;
+  sensor_type:string;
+  value:float;
+  unit:string;
+  timestamp:uint64;
+  metadata:[DeviceMetadata];
+}
+
+table TelemetryResponse {
+  device_id:string;
+  readings:[SensorReading];
+}
+
+// Command Acknowledgment
+table CommandAckRequest {
+  command_id:string;
+}
+
+table CommandAckResponse {
+  command_id:string;
+  success:bool;
+  message:string;
+  timestamp:uint64;
+}
+
+// Service Health Messages
+table HealthCheckRequest {
+  service_name:string;
+}
+
+table ServiceHealth {
+  service_name:string;
+  status:string;  // "healthy", "degraded", "unhealthy"
+  uptime_seconds:uint64;
+  last_check:uint64;
+  error_message:string;
+}
+
+table HealthCheckResponse {
+  services:[ServiceHealth];
+  overall_status:string;
 }
 
 // MQTT-specific envelope for cross-process communication
@@ -124,3 +220,15 @@ root_type DownloadAbortRequest;
 root_type ShutdownRequest;
 root_type ErrorResponse;
 root_type Message;
+
+// Additional root types for new messages
+root_type SystemStatusRequest;
+root_type SystemStatusResponse;
+root_type DeviceDiscoveryRequest;
+root_type DeviceDiscoveryResponse;
+root_type TelemetryRequest;
+root_type TelemetryResponse;
+root_type CommandAckRequest;
+root_type CommandAckResponse;
+root_type HealthCheckRequest;
+root_type HealthCheckResponse;
