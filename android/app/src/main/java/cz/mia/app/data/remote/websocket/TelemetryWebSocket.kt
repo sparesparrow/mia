@@ -4,6 +4,8 @@ import android.util.Log
 import com.google.gson.Gson
 import cz.mia.app.data.remote.dto.TelemetryReading
 import cz.mia.app.data.remote.dto.WebSocketSubscription
+import cz.mia.app.data.remote.dto.WebSocketMessage
+import cz.mia.app.data.remote.dto.LEDState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -55,7 +57,13 @@ class TelemetryWebSocket(
         extraBufferCapacity = 64
     )
     val telemetryFlow: SharedFlow<TelemetryReading> = _telemetryFlow.asSharedFlow()
-    
+
+    private val _ledStateFlow = MutableSharedFlow<LEDState>(
+        replay = 0,
+        extraBufferCapacity = 16
+    )
+    val ledStateFlow: SharedFlow<LEDState> = _ledStateFlow.asSharedFlow()
+
     private val _stateFlow = MutableSharedFlow<WebSocketState>(
         replay = 1,
         extraBufferCapacity = 8
@@ -154,12 +162,67 @@ class TelemetryWebSocket(
             override fun onMessage(message: String?) {
                 message?.let { msg ->
                     try {
-                        val reading = gson.fromJson(msg, TelemetryReading::class.java)
+                        // Try to parse as new WebSocketMessage format first
+                        val wsMessage = gson.fromJson(msg, WebSocketMessage::class.java)
+
                         scope.launch {
-                            _telemetryFlow.emit(reading)
+                            // Emit telemetry if present
+                            wsMessage.telemetry?.let { telemetry ->
+                                // Convert telemetry map to individual TelemetryReading objects
+                                telemetry.forEach { (deviceId, deviceData) ->
+                                    if (deviceData is Map<*, *>) {
+                                        val dataMap = deviceData as Map<String, Any>
+                                        // Extract common telemetry fields
+                                        val rpm = (dataMap["rpm"] as? Number)?.toDouble()
+                                        val speed = (dataMap["speed_kmh"] as? Number)?.toDouble()
+                                        val temp = (dataMap["coolant_temp_c"] as? Number)?.toDouble()
+
+                                        rpm?.let {
+                                            _telemetryFlow.emit(TelemetryReading(
+                                                deviceId = deviceId,
+                                                timestamp = wsMessage.timestamp,
+                                                sensor = "rpm",
+                                                value = it,
+                                                unit = "rpm"
+                                            ))
+                                        }
+                                        speed?.let {
+                                            _telemetryFlow.emit(TelemetryReading(
+                                                deviceId = deviceId,
+                                                timestamp = wsMessage.timestamp,
+                                                sensor = "speed",
+                                                value = it,
+                                                unit = "km/h"
+                                            ))
+                                        }
+                                        temp?.let {
+                                            _telemetryFlow.emit(TelemetryReading(
+                                                deviceId = deviceId,
+                                                timestamp = wsMessage.timestamp,
+                                                sensor = "temperature",
+                                                value = it,
+                                                unit = "°C"
+                                            ))
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Emit LED state if present
+                            wsMessage.ledState?.let { ledState ->
+                                _ledStateFlow.emit(ledState)
+                            }
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to parse telemetry message: $msg", e)
+                        // Fallback to old TelemetryReading format for backward compatibility
+                        try {
+                            val reading = gson.fromJson(msg, TelemetryReading::class.java)
+                            scope.launch {
+                                _telemetryFlow.emit(reading)
+                            }
+                        } catch (fallbackException: Exception) {
+                            Log.e(TAG, "Failed to parse WebSocket message: $msg", e)
+                        }
                     }
                 }
             }

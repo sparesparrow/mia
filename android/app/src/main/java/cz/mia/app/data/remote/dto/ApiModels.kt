@@ -201,10 +201,53 @@ data class PairDeviceResponse(
 data class WebSocketSubscription(
     @SerializedName("action")
     val action: String,  // "subscribe" or "unsubscribe"
-    
+
     @SerializedName("device_id")
     val deviceId: String? = null,
-    
+
     @SerializedName("channels")
     val channels: List<String>? = null
+)
+
+/**
+ * LED state information for WebSocket updates.
+ */
+data class LEDState(
+    @SerializedName("mode")
+    val mode: String,
+
+    @SerializedName("ai_state")
+    val aiState: String,
+
+    @SerializedName("brightness")
+    val brightness: Float,
+
+    @SerializedName("service_status")
+    val serviceStatus: String,
+
+    @SerializedName("emergency")
+    val emergency: Boolean = false,
+
+    @SerializedName("obd_data")
+    val obdData: Map<String, Any>? = null,
+
+    @SerializedName("timestamp")
+    val timestamp: String
+)
+
+/**
+ * General WebSocket message wrapper for different data types.
+ */
+data class WebSocketMessage(
+    @SerializedName("type")
+    val type: String? = null,  // For backward compatibility
+
+    @SerializedName("timestamp")
+    val timestamp: String,
+
+    @SerializedName("telemetry")
+    val telemetry: Map<String, Any>? = null,
+
+    @SerializedName("led_state")
+    val ledState: LEDState? = null
 )

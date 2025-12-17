@@ -117,6 +117,16 @@ telemetry_cache: Dict[str, Dict[str, Any]] = {}
 # WebSocket connections
 active_connections: List[WebSocket] = []
 
+# LED state cache for WebSocket broadcasting
+led_state_cache: Dict[str, Any] = {
+    "mode": "Drive",
+    "ai_state": "idle",
+    "brightness": 1.0,
+    "service_status": "api:healthy,gpio:healthy,obd:unknown",
+    "emergency": False,
+    "timestamp": None
+}
+
 
 # Pydantic models
 class DeviceCommand(BaseModel):
@@ -573,13 +583,19 @@ async def websocket_endpoint(websocket: WebSocket):
             # Send telemetry updates every 100ms (10Hz)
             await asyncio.sleep(0.1)
             
-            # Broadcast latest telemetry to all connected clients
+            # Broadcast latest telemetry and LED state to all connected clients
+            message_data = {
+                "timestamp": datetime.now().isoformat()
+            }
+
             if telemetry_cache:
-                await websocket.send_json({
-                    "type": "telemetry",
-                    "data": telemetry_cache,
-                    "timestamp": datetime.now().isoformat()
-                })
+                message_data["telemetry"] = telemetry_cache
+
+            if led_state_cache["timestamp"]:  # Only send if LED state has been updated
+                message_data["led_state"] = led_state_cache
+
+            if message_data:
+                await websocket.send_json(message_data)
     except WebSocketDisconnect:
         active_connections.remove(websocket)
         logger.info(f"WebSocket client disconnected. Remaining connections: {len(active_connections)}")
@@ -802,6 +818,14 @@ async def set_led_ai_state(ai_state: str, mode: str = "Drive", brightness: float
             }
             zmq_socket.send_json(message)
 
+        # Update WebSocket cache
+        led_state_cache.update({
+            "mode": mode,
+            "ai_state": ai_state,
+            "brightness": brightness,
+            "timestamp": datetime.now().isoformat()
+        })
+
         return {"success": True, "message": f"LED AI state set to {ai_state}"}
     except Exception as e:
         logger.error(f"LED AI state error: {e}")
@@ -844,6 +868,10 @@ async def update_led_service_status(services: Dict[str, str]):
                 "timestamp": datetime.now().isoformat()
             }
             zmq_socket.send_json(message)
+
+        # Update WebSocket cache
+        led_state_cache["service_status"] = service_status_str
+        led_state_cache["timestamp"] = datetime.now().isoformat()
 
         return {"success": True, "message": "Service status updated"}
     except Exception as e:
@@ -892,6 +920,10 @@ async def send_led_obd_data(obd_data: Dict[str, Any]):
             }
             zmq_socket.send_json(message)
 
+        # Update WebSocket cache with OBD data
+        led_state_cache["obd_data"] = obd_data
+        led_state_cache["timestamp"] = datetime.now().isoformat()
+
         return {"success": True, "message": "OBD data sent to LED display"}
     except Exception as e:
         logger.error(f"LED OBD data error: {e}")
@@ -935,9 +967,66 @@ async def set_led_mode(mode: str, brightness: float = 1.0):
             }
             zmq_socket.send_json(message)
 
+        # Update WebSocket cache
+        led_state_cache.update({
+            "mode": mode,
+            "brightness": brightness,
+            "timestamp": datetime.now().isoformat()
+        })
+
         return {"success": True, "message": f"LED mode set to {mode}"}
     except Exception as e:
         logger.error(f"LED mode error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/led/emergency")
+async def set_led_emergency(emergency: bool = True, brightness: float = 1.0):
+    """
+    POST /led/emergency - Emergency override for LED display
+
+    Forces emergency mode regardless of current state. Used for critical alerts.
+    """
+    try:
+        if LEDState and LEDMode:
+            # Use FlatBuffers message
+            import flatbuffers
+            builder = flatbuffers.Builder(512)
+
+            mode_enum = LEDMode.LEDMode_Emergency if emergency else LEDMode.LEDMode_Drive
+            service_status = builder.CreateString("emergency:active" if emergency else "emergency:cleared")
+
+            LEDState.LEDStateStart(builder)
+            LEDState.LEDStateAddMode(builder, mode_enum)
+            LEDState.LEDStateAddAiState(builder, AIState.AIState_Error if emergency else AIState.AIState_Idle)
+            LEDState.LEDStateAddBrightness(builder, brightness)
+            LEDState.LEDStateAddServiceStatus(builder, service_status)
+            LEDState.LEDStateAddTimestamp(builder, int(datetime.now().timestamp() * 1000000))
+            fb_message = LEDState.LEDStateEnd(builder)
+            builder.Finish(fb_message)
+
+            zmq_socket.send(b"LED_EMERGENCY", zmq.SNDMORE)
+            zmq_socket.send(builder.Output())
+        else:
+            # Fallback to JSON
+            message = {
+                "type": "LED_EMERGENCY",
+                "emergency": emergency,
+                "brightness": brightness,
+                "timestamp": datetime.now().isoformat()
+            }
+            zmq_socket.send_json(message)
+
+        # Update WebSocket cache
+        led_state_cache.update({
+            "emergency": emergency,
+            "brightness": brightness,
+            "timestamp": datetime.now().isoformat()
+        })
+
+        return {"success": True, "message": f"Emergency mode {'activated' if emergency else 'deactivated'}"}
+    except Exception as e:
+        logger.error(f"LED emergency error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
