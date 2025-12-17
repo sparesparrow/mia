@@ -128,6 +128,34 @@ class DeviceProfile:
 
 # Predefined device profiles for common hardware
 DEVICE_PROFILES = {
+    "gpio_output_pin": DeviceProfile(
+        device_id="gpio_output_default",
+        device_type=DeviceType.GPIO,
+        name="GPIO Output Pin",
+        capabilities=["write", "read", "toggle"],
+        metadata={"direction": "output", "active_high": True}
+    ),
+    "gpio_input_pin": DeviceProfile(
+        device_id="gpio_input_default",
+        device_type=DeviceType.GPIO,
+        name="GPIO Input Pin",
+        capabilities=["read"],
+        metadata={"direction": "input", "pull_up": False}
+    ),
+    "temperature_sensor": DeviceProfile(
+        device_id="temp_sensor_default",
+        device_type=DeviceType.SENSOR,
+        name="Temperature Sensor",
+        capabilities=["read_temperature", "get_status"],
+        metadata={"sensor_type": "temperature", "units": "celsius"}
+    ),
+    "humidity_sensor": DeviceProfile(
+        device_id="humidity_sensor_default",
+        device_type=DeviceType.SENSOR,
+        name="Humidity Sensor",
+        capabilities=["read_humidity", "get_status"],
+        metadata={"sensor_type": "humidity", "units": "percent"}
+    ),
     "led_strip_ws2812": DeviceProfile(
         device_id="led_strip_default",
         device_type=DeviceType.LED_STRIP,
