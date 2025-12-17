@@ -8,6 +8,7 @@
 
 #include "IRequestReader.h"
 #include "IResponseWriter.h"
+#include "FlatBuffersRequestReader.h"
 #include "MQTTReader.h"
 #include "MQTTWriter.h"
 
@@ -39,7 +40,7 @@ public:
     bool flush() override;
 
     // Legacy method for backward compatibility
-    std::unique_ptr<class IJob> processMessage(std::unique_ptr<IRequestReader> reader, IResponseWriter* writer);
+    std::unique_ptr<class IJob> processMessage(std::unique_ptr<FlatBuffersRequestReader> reader, IResponseWriter* writer);
 
     // MQTT integration methods
     void enableMQTT(bool enable = true);
@@ -53,8 +54,8 @@ private:
 
     // MQTT integration
     bool mqtt_enabled_;
-    std::unique_ptr<MQTTReader> mqtt_reader_;
-    std::unique_ptr<MQTTWriter> mqtt_writer_;
+    std::unique_ptr<WebGrab::MQTTReader> mqtt_reader_;
+    std::unique_ptr<WebGrab::MQTTWriter> mqtt_writer_;
     std::thread mqtt_processor_thread_;
     std::atomic<bool> running_;
 

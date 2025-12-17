@@ -15,8 +15,8 @@ void DownloadJob::execute() {
     std::vector<std::string> headers;
     CURLcode res = curl_client_->getFile(url_.c_str(), output_path_.c_str(), headers, true);
     if (res == CURLE_OK) {
-        response_writer_->writeStatusResponse(session_id_, "Completed");
+        response_writer_->write(StatusResponse{session_id_, "Completed"});
     } else {
-        response_writer_->writeStatusResponse(session_id_, "Failed");
+        response_writer_->write(StatusResponse{session_id_, "Failed"});
     }
 }

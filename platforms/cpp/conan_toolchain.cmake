@@ -17,6 +17,9 @@ endif()
 ########## 'generic_system' block #############
 # Definition of system, platform and toolset
 
+if(NOT DEFINED CMAKE_SYSTEM_PROCESSOR) # It might have been defined by a user toolchain
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+endif()
 
 
 
@@ -25,40 +28,10 @@ endif()
 
 
 
-########## 'arch_flags' block #############
-# Define C++ flags, C flags and linker flags from 'settings.arch'
-message(STATUS "Conan toolchain: Defining architecture flag: -m64")
-string(APPEND CONAN_CXX_FLAGS " -m64")
-string(APPEND CONAN_C_FLAGS " -m64")
-string(APPEND CONAN_SHARED_LINKER_FLAGS " -m64")
-string(APPEND CONAN_EXE_LINKER_FLAGS " -m64")
-
-
 ########## 'libcxx' block #############
 # Definition of libcxx from 'compiler.libcxx' setting, defining the
 # right CXX_FLAGS for that libcxx
 
-
-
-########## 'cppstd' block #############
-# Define the C++ and C standards from 'compiler.cppstd' and 'compiler.cstd'
-
-function(conan_modify_std_watch variable access value current_list_file stack)
-    set(conan_watched_std_variable "17")
-    if (${variable} STREQUAL "CMAKE_C_STANDARD")
-        set(conan_watched_std_variable "")
-    endif()
-    if ("${access}" STREQUAL "MODIFIED_ACCESS" AND NOT "${value}" STREQUAL "${conan_watched_std_variable}")
-        message(STATUS "Warning: Standard ${variable} value defined in conan_toolchain.cmake to ${conan_watched_std_variable} has been modified to ${value} by ${current_list_file}")
-    endif()
-    unset(conan_watched_std_variable)
-endfunction()
-
-message(STATUS "Conan toolchain: C++ Standard 17 with extensions OFF")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-variable_watch(CMAKE_CXX_STANDARD conan_modify_std_watch)
 
 
 ########## 'extra_flags' block #############
@@ -132,19 +105,19 @@ else()
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
 # Definition of CMAKE_MODULE_PATH
-list(PREPEND CMAKE_MODULE_PATH "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/lib/cmake")
+list(PREPEND CMAKE_MODULE_PATH "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib/cmake")
 # the generators folder (where conan generates files, like this toolchain)
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # Definition of CMAKE_PREFIX_PATH, CMAKE_XXXXX_PATH
 # The explicitly defined "builddirs" of "host" context dependencies must be in PREFIX_PATH
-list(PREPEND CMAKE_PREFIX_PATH "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/lib/cmake")
+list(PREPEND CMAKE_PREFIX_PATH "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib/cmake")
 # The Conan local "generators" folder, where this toolchain is saved.
 list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR} )
-list(PREPEND CMAKE_PROGRAM_PATH "/home/ubuntu/.conan2/p/b/flatb9a122b150c0cb/p/bin")
-list(PREPEND CMAKE_LIBRARY_PATH "/home/ubuntu/.conan2/p/b/jsonc6f8f3d1a5dd2d/p/lib" "/home/ubuntu/.conan2/p/b/flatbbd55e223686f0/p/lib" "/home/ubuntu/.conan2/p/b/libcud63c3b5e25480/p/lib" "/home/ubuntu/.conan2/p/b/libgp34638b5196cb2/p/lib" "lib" "/home/ubuntu/.conan2/p/b/mosqua45e5f744dc2e/p/lib" "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/lib" "/home/ubuntu/.conan2/p/b/zlibc2378a5ab91c0/p/lib")
-list(PREPEND CMAKE_INCLUDE_PATH "/home/ubuntu/.conan2/p/b/jsonc6f8f3d1a5dd2d/p/include" "/home/ubuntu/.conan2/p/b/flatbbd55e223686f0/p/include" "/home/ubuntu/.conan2/p/b/libcud63c3b5e25480/p/include" "/home/ubuntu/.conan2/p/b/libgp34638b5196cb2/p/include" "include" "/home/ubuntu/.conan2/p/b/mosqua45e5f744dc2e/p/include" "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/include" "/home/ubuntu/.conan2/p/b/zlibc2378a5ab91c0/p/include")
-set(CONAN_RUNTIME_LIB_DIRS "/home/ubuntu/.conan2/p/b/jsonc6f8f3d1a5dd2d/p/lib" "/home/ubuntu/.conan2/p/b/flatbbd55e223686f0/p/lib" "/home/ubuntu/.conan2/p/b/libcud63c3b5e25480/p/lib" "/home/ubuntu/.conan2/p/b/libgp34638b5196cb2/p/lib" "lib" "/home/ubuntu/.conan2/p/b/mosqua45e5f744dc2e/p/lib" "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/lib" "/home/ubuntu/.conan2/p/b/zlibc2378a5ab91c0/p/lib" )
+list(PREPEND CMAKE_PROGRAM_PATH "/home/mia/.conan2/p/b/flatba89bb86646dac/p/bin")
+list(PREPEND CMAKE_LIBRARY_PATH "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/lib" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/lib" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/lib" "lib" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/lib" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/lib")
+list(PREPEND CMAKE_INCLUDE_PATH "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/include" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/include" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/include" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/include" "include" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/include" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/include" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/include")
+set(CONAN_RUNTIME_LIB_DIRS "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/lib" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/lib" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/lib" "lib" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/lib" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/lib" )
 
 endif()
 

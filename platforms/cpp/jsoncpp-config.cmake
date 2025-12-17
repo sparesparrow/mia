@@ -32,6 +32,9 @@ set(jsoncpp_LIBRARIES ${jsoncpp_LIBRARIES_RELEASE} )
 set(jsoncpp_DEFINITIONS ${jsoncpp_DEFINITIONS_RELEASE} )
 
 
+# Definition of extra CMake variables from cmake_extra_variables
+
+
 # Only the last installed configuration BUILD_MODULES are included to avoid the collision
 foreach(_BUILD_MODULE ${jsoncpp_BUILD_MODULES_PATHS_RELEASE} )
     message(${jsoncpp_MESSAGE_MODE} "Conan: Including build module from '${_BUILD_MODULE}'")

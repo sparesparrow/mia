@@ -19,12 +19,12 @@
                 "CMAKE_BUILD_TYPE": "Release"
             },
             "environment": {
-                "PATH": "/home/ubuntu/.conan2/p/b/flatb9a122b150c0cb/p/bin:$penv{PATH}",
-                "LD_LIBRARY_PATH": "/home/ubuntu/.conan2/p/b/flatb9a122b150c0cb/p/lib:$penv{LD_LIBRARY_PATH}",
-                "DYLD_LIBRARY_PATH": "/home/ubuntu/.conan2/p/b/flatb9a122b150c0cb/p/lib:$penv{DYLD_LIBRARY_PATH}"
+                "PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib:$penv{LD_LIBRARY_PATH}",
+                "DYLD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib:$penv{DYLD_LIBRARY_PATH}"
             },
             "toolchainFile": "conan_toolchain.cmake",
-            "binaryDir": "/workspace/platforms/cpp"
+            "binaryDir": "/home/mia/ai-servis/platforms/cpp"
         }
     ],
     "buildPresets": [
@@ -39,7 +39,7 @@
             "name": "conan-release",
             "configurePreset": "conan-release",
             "environment": {
-                "OPENSSL_MODULES": "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p/lib/ossl-modules"
+                "OPENSSL_MODULES": "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib/ossl-modules"
             }
         }
     ]

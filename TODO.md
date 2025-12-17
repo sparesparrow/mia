@@ -433,6 +433,39 @@ Shared CPython bootstrap module for Android development tools.
 
 ---
 
+## C++ Compilation Issues (CRITICAL - Dec 2025)
+
+### Conan Toolchain ARM64 Compatibility
+**Issue**: C++ compilation fails on ARM64 (Raspberry Pi) due to incorrect architecture flags
+- **Error**: `c++: error: unrecognized command-line option '-m64'`
+- **Root Cause**: Conan toolchain configured for x86_64 but executed on ARM64 platform
+- **Impact**: C++ components cannot be built for Raspberry Pi deployment
+- **Affected Files**: `platforms/cpp/conan_toolchain.cmake`, CMake configuration
+- **Status**: Blocking C++ builds on ARM64 platforms
+
+### Immediate Fixes Required
+- [ ] Update Conan profiles to use correct ARM64 architecture flags
+- [ ] Fix `conan_toolchain.cmake` to remove x86_64-specific flags on ARM64
+- [ ] Fix Conan CMakeDeps library discovery issue (jsoncpp library not found despite existing)
+- [x] Fix C++ code compilation errors:
+  - [x] Add missing `<memory>` includes for `std::unique_ptr`
+  - [x] Fix namespace issues with MQTTReader/MQTTWriter classes
+  - [x] Implement missing interface methods (`getType()`, `getDownloadUrl()`, `getSessionId()`, etc.)
+  - [x] Fix FlatBuffersRequestReader constructor signature
+  - [x] Implement IJob interface properly
+- [ ] Fix GPIO library API compatibility issues (libgpiod version mismatch)
+- [ ] Test C++ compilation on Raspberry Pi (ARM64)
+- [ ] Update CI/CD workflows to handle ARM64 builds correctly
+- [ ] Document ARM64-specific build requirements
+
+### Long-term Solutions
+- [ ] Implement platform detection in Conan configuration
+- [ ] Create separate ARM64 and x86_64 build profiles
+- [ ] Add cross-compilation support for development environments
+- [ ] Update documentation with platform-specific build instructions
+
+---
+
 ## Change Log
 - **v1.0** (2025-01-XX): Initial architecture document. Replaced old ROS2/MCP-heavy design with Lean ZeroMQ+FlatBuffers+FastAPI approach. Approved by user after extensive feedback on RPi-only deployment simplicity.
 

@@ -11,7 +11,7 @@ endif()
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(jsoncpp_PACKAGE_FOLDER_RELEASE "/home/ubuntu/.conan2/p/b/jsonc6f8f3d1a5dd2d/p")
+set(jsoncpp_PACKAGE_FOLDER_RELEASE "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p")
 set(jsoncpp_BUILD_MODULES_PATHS_RELEASE )
 
 

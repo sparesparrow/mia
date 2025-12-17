@@ -25,7 +25,7 @@ foreach(_DEPENDENCY ${libgpiod_FIND_DEPENDENCY_NAMES} )
     endif()
 endforeach()
 
-set(libgpiod_VERSION_STRING "1.6.3")
+set(libgpiod_VERSION_STRING "2.0.1")
 set(libgpiod_INCLUDE_DIRS ${libgpiod_INCLUDE_DIRS_RELEASE} )
 set(libgpiod_INCLUDE_DIR ${libgpiod_INCLUDE_DIRS_RELEASE} )
 set(libgpiod_LIBRARIES ${libgpiod_LIBRARIES_RELEASE} )

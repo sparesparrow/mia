@@ -9,11 +9,11 @@ if(DEFINED openssl_FIND_DEPENDENCY_NAMES)
 else()
   set(openssl_FIND_DEPENDENCY_NAMES ZLIB)
 endif()
-set(ZLIB_FIND_MODE "NO_MODULE")
+set(ZLIB_FIND_MODE "MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(openssl_PACKAGE_FOLDER_RELEASE "/home/ubuntu/.conan2/p/b/opens0e33b45f7ebec/p")
+set(openssl_PACKAGE_FOLDER_RELEASE "/home/mia/.conan2/p/b/opens25ee7b8691e42/p")
 set(openssl_BUILD_MODULES_PATHS_RELEASE "${openssl_PACKAGE_FOLDER_RELEASE}/lib/cmake/conan-official-openssl-variables.cmake")
 
 

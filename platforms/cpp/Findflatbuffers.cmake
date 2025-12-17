@@ -32,6 +32,9 @@ set(flatbuffers_LIBRARIES ${flatbuffers_LIBRARIES_RELEASE} )
 set(flatbuffers_DEFINITIONS ${flatbuffers_DEFINITIONS_RELEASE} )
 
 
+# Definition of extra CMake variables from cmake_extra_variables
+
+
 # Only the last installed configuration BUILD_MODULES are included to avoid the collision
 foreach(_BUILD_MODULE ${flatbuffers_BUILD_MODULES_PATHS_RELEASE} )
     message(${flatbuffers_MESSAGE_MODE} "Conan: Including build module from '${_BUILD_MODULE}'")

@@ -32,6 +32,9 @@ set(OpenSSL_LIBRARIES ${openssl_LIBRARIES_RELEASE} )
 set(OpenSSL_DEFINITIONS ${openssl_DEFINITIONS_RELEASE} )
 
 
+# Definition of extra CMake variables from cmake_extra_variables
+
+
 # Only the last installed configuration BUILD_MODULES are included to avoid the collision
 foreach(_BUILD_MODULE ${openssl_BUILD_MODULES_PATHS_RELEASE} )
     message(${OpenSSL_MESSAGE_MODE} "Conan: Including build module from '${_BUILD_MODULE}'")

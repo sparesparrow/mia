@@ -85,6 +85,8 @@ node_modules/
 # Build artifacts
 dist/
 build/
+build-release/
+build-Debug/
 
 # Temporary files
 tmp/
@@ -132,6 +134,7 @@ build-Release/
 
 # External projects/repositories
 kernun/
+sparetools/
 
 # Conan build artifacts and environment scripts
 conanbuild*.sh
@@ -139,6 +142,13 @@ conanrun*.sh
 conanbuildenv*.sh
 conanrunenv*.sh
 deactivate_conan*.sh
+**/conan/*.cmake
+**/conan/*.sh
+**/conan/*.json
+**/conan/CMakePresets.json
+**/conan/*-data.cmake
+**/conan/*-config*.cmake
+**/conan/module-*.cmake
 .mia/
 test-env/
 

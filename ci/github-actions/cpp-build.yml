@@ -20,8 +20,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - { runner: ubuntu-latest, arch: x86_64, profile: linux-release, conan_arch: x86_64 }
-          - { runner: ubuntu-20.04, arch: arm64, profile: linux-arm64, conan_arch: armv8 }
+          - { runner: ubuntu-latest, arch: x86_64, host_profile: linux-x86_64, build_profile: linux-x86_64, conan_arch: x86_64 }
+          - { runner: ubuntu-20.04, arch: arm64, host_profile: linux-arm64, build_profile: linux-arm64, conan_arch: armv8 }
+          - { runner: ubuntu-latest, arch: arm64-cross, host_profile: linux-arm64, build_profile: linux-x86_64, conan_arch: armv8 }
 
     steps:
       - name: Checkout code
@@ -32,6 +33,38 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Validate ARM64 Architecture Detection
+        if: matrix.arch == 'arm64'
+        run: |
+          # Ensure we're running under native ARM64 runtime
+          python -c "import platform; assert platform.machine() in ['aarch64', 'arm64']"
+
+          # Force profile detection
+          conan profile detect --force
+
+          # Validate host profile shows armv8
+          conan profile show profiles/${{ matrix.host_profile }} | grep -q "arch=armv8" || exit 1
+
+          # Validate build profile shows correct arch
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            conan profile show profiles/${{ matrix.build_profile }} | grep -q "arch=armv8" || exit 1
+          else
+            conan profile show profiles/${{ matrix.build_profile }} | grep -q "arch=x86_64" || exit 1
+          fi
+
+      - name: Ensure Native ARM64 Python Runtime
+        if: matrix.arch == 'arm64'
+        run: |
+          # Verify we're using ARM64 Python (not x86_64 emulation)
+          python -c "
+          import sys, platform
+          machine = platform.machine()
+          if machine not in ['aarch64', 'arm64']:
+              print(f'ERROR: Running on {machine}, expected aarch64/arm64')
+              sys.exit(1)
+          print(f'✓ Running on native {machine} architecture')
+          "
+
       - name: Install Conan
         run: |
           pip install conan
@@ -41,14 +74,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.conan
-          key: ${{ runner.os }}-conan-${{ matrix.arch }}-${{ hashFiles('conanfile.py', 'profiles/${{ matrix.profile }}') }}
+          key: ${{ runner.os }}-conan-${{ matrix.arch }}-${{ hashFiles('conanfile.py', format('profiles/{0}', matrix.host_profile), format('profiles/{0}', matrix.build_profile)) }}
           restore-keys: |
             ${{ runner.os }}-conan-${{ matrix.arch }}-
 
       - name: Install dependencies with Conan
         run: |
           cd platforms/cpp
-          conan install ../.. --profile ../../profiles/${{ matrix.profile }} --build missing
+          conan install ../.. -pr:h=../../profiles/${{ matrix.host_profile }} -pr:b=../../profiles/${{ matrix.build_profile }} --build=missing
 
       - name: Configure CMake
         run: |
@@ -82,3 +115,16 @@ jobs:
           # Test that binaries exist and are executable
           ls -la hardware-server mcp-server
           file hardware-server mcp-server
+
+          # Architecture validation: ensure ARM64 binaries are actually ARM64
+          if [ "${{ matrix.conan_arch }}" = "armv8" ]; then
+            if ! file hardware-server | grep -q "ARM aarch64"; then
+              echo "ERROR: hardware-server is not ARM64 binary"
+              exit 1
+            fi
+            if ! file mcp-server | grep -q "ARM aarch64"; then
+              echo "ERROR: mcp-server is not ARM64 binary"
+              exit 1
+            fi
+            echo "✓ ARM64 binaries validated"
+          fi
