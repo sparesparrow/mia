@@ -96,12 +96,11 @@ bool HardwareControlServer::InitializeGPIO() {
 
 void HardwareControlServer::CleanupGPIO() {
     std::lock_guard<std::mutex> lock(gpioMutex);
-    
-    // Release all line requests
+
+    // Release all lines
     for (auto& [pin, info] : activeLines) {
-        if (info.request) {
-            gpiod_line_request_release(info.request);
-            info.request = nullptr;
+        if (info.line) {
+            gpiod_line_release(info.line);
         }
     }
     activeLines.clear();
@@ -281,74 +280,36 @@ bool HardwareControlServer::ConfigureGPIOPin(int pin, const std::string& directi
     std::lock_guard<std::mutex> lock(gpioMutex);
 
     try {
-        // Release existing line request if it exists
+        // Release existing line if it exists
         auto it = activeLines.find(pin);
         if (it != activeLines.end()) {
-            if (it->second.request) {
-                gpiod_line_request_release(it->second.request);
-            }
             activeLines.erase(it);
         }
 
-        // Create line settings
-        struct gpiod_line_settings* settings = gpiod_line_settings_new();
-        if (!settings) {
-            std::cerr << "Failed to create line settings" << std::endl;
+        // Get the line
+        struct gpiod_line* line = gpiod_chip_get_line(chip, pin);
+        if (!line) {
+            std::cerr << "Failed to get GPIO line " << pin << std::endl;
             return false;
         }
 
-        // Set direction
+        // Request the line based on direction
         bool is_output = (direction == "output");
+        int ret;
         if (is_output) {
-            gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_OUTPUT);
-            gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_INACTIVE);
+            ret = gpiod_line_request_output(line, "hardware-control-server", 0);
         } else {
-            gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
+            ret = gpiod_line_request_input(line, "hardware-control-server");
         }
-
-        // Create line config
-        struct gpiod_line_config* line_config = gpiod_line_config_new();
-        if (!line_config) {
-            gpiod_line_settings_free(settings);
-            std::cerr << "Failed to create line config" << std::endl;
-            return false;
-        }
-
-        // Add the line offset to config
-        unsigned int offset = static_cast<unsigned int>(pin);
-        int ret = gpiod_line_config_add_line_settings(line_config, &offset, 1, settings);
-        gpiod_line_settings_free(settings);
 
         if (ret < 0) {
-            gpiod_line_config_free(line_config);
-            std::cerr << "Failed to add line settings to config" << std::endl;
-            return false;
-        }
-
-        // Create request config with consumer name
-        struct gpiod_request_config* req_config = gpiod_request_config_new();
-        if (!req_config) {
-            gpiod_line_config_free(line_config);
-            std::cerr << "Failed to create request config" << std::endl;
-            return false;
-        }
-        gpiod_request_config_set_consumer(req_config, "hardware-control-server");
-
-        // Request the line
-        struct gpiod_line_request* request = gpiod_chip_request_lines(chip, req_config, line_config);
-        
-        gpiod_request_config_free(req_config);
-        gpiod_line_config_free(line_config);
-
-        if (!request) {
-            std::cerr << "Failed to request GPIO line " << pin << std::endl;
+            std::cerr << "Failed to request GPIO line " << pin << " as " << direction << std::endl;
             return false;
         }
 
         // Store the configured line
         GPIOLineInfo info;
-        info.request = request;
-        info.offset = offset;
+        info.line = line;
         info.is_output = is_output;
         activeLines[pin] = info;
 
@@ -365,7 +326,7 @@ bool HardwareControlServer::SetGPIOPin(int pin, bool value) {
     std::lock_guard<std::mutex> lock(gpioMutex);
 
     auto it = activeLines.find(pin);
-    if (it == activeLines.end() || !it->second.request) {
+    if (it == activeLines.end() || !it->second.line) {
         std::cerr << "GPIO pin " << pin << " not configured" << std::endl;
         return false;
     }
@@ -375,9 +336,8 @@ bool HardwareControlServer::SetGPIOPin(int pin, bool value) {
         return false;
     }
 
-    enum gpiod_line_value val = value ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE;
-    int ret = gpiod_line_request_set_value(it->second.request, it->second.offset, val);
-    
+    int ret = gpiod_line_set_value(it->second.line, value ? 1 : 0);
+
     if (ret < 0) {
         std::cerr << "Failed to set GPIO pin " << pin << std::endl;
         return false;
@@ -390,19 +350,19 @@ bool HardwareControlServer::GetGPIOPin(int pin, bool& value) {
     std::lock_guard<std::mutex> lock(gpioMutex);
 
     auto it = activeLines.find(pin);
-    if (it == activeLines.end() || !it->second.request) {
+    if (it == activeLines.end() || !it->second.line) {
         std::cerr << "GPIO pin " << pin << " not configured" << std::endl;
         return false;
     }
 
-    enum gpiod_line_value val = gpiod_line_request_get_value(it->second.request, it->second.offset);
-    
-    if (val == GPIOD_LINE_VALUE_ERROR) {
+    int val = gpiod_line_get_value(it->second.line);
+
+    if (val < 0) {
         std::cerr << "Failed to get GPIO pin " << pin << std::endl;
         return false;
     }
 
-    value = (val == GPIOD_LINE_VALUE_ACTIVE);
+    value = (val == 1);
     return true;
 }
 
@@ -494,15 +454,11 @@ void HardwareControlServer::HandleMQTTMessage(const std::string& topic, const st
             Json::Value pinInfo;
             pinInfo["pin"] = pin;
             pinInfo["is_output"] = info.is_output;
-            
-            bool value;
-            // Temporarily unlock for GetGPIOPin (it will lock again)
-            // Actually, since we're in HandleMQTTMessage which already holds mqttMutex,
-            // and GetGPIOPin holds gpioMutex, this is safe
-            if (info.request) {
-                enum gpiod_line_value val = gpiod_line_request_get_value(info.request, info.offset);
-                if (val != GPIOD_LINE_VALUE_ERROR) {
-                    pinInfo["value"] = (val == GPIOD_LINE_VALUE_ACTIVE) ? 1 : 0;
+
+            if (info.line) {
+                int val = gpiod_line_get_value(info.line);
+                if (val >= 0) {
+                    pinInfo["value"] = val;
                 }
             }
             pins.append(pinInfo);

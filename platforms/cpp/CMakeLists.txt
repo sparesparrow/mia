@@ -14,7 +14,7 @@ find_package(ZLIB REQUIRED)
 find_package(Threads REQUIRED)
 
 # Hardware-specific packages (only if hardware support is enabled)
-option(WITH_HARDWARE "Enable hardware support" OFF)
+option(WITH_HARDWARE "Enable hardware support" ON)
 if(WITH_HARDWARE)
     find_package(libgpiod REQUIRED)
     find_package(mosquitto REQUIRED)
@@ -52,6 +52,9 @@ add_library(webgrab_core STATIC
     core/TcpListener.cpp
     core/CurlClientWrapper.cpp
 )
+
+# Enable position-independent code for shared library compatibility
+set_target_properties(webgrab_core PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 if(TARGET gen_flatbuffers_headers)
     add_dependencies(webgrab_core gen_flatbuffers_headers)

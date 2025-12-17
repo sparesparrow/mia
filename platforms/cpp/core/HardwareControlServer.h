@@ -20,11 +20,10 @@ namespace WebGrab {
  * @brief GPIO Line Info for tracking configured pins
  */
 struct GPIOLineInfo {
-    struct gpiod_line_request* request;
-    unsigned int offset;
+    struct gpiod_line* line;
     bool is_output;
-    
-    GPIOLineInfo() : request(nullptr), offset(0), is_output(false) {}
+
+    GPIOLineInfo() : line(nullptr), is_output(false) {}
 };
 
 /**

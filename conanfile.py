@@ -20,7 +20,7 @@ class MIAConan(ConanFile):
     default_options = {
         "shared": False,
         "fPIC": True,
-        "with_hardware": False,  # Disabled due to libgpiod ARM64 binary availability
+        "with_hardware": True,   # Testing libgpiod compatibility
         "with_mcp": True
     }
 
@@ -38,7 +38,7 @@ class MIAConan(ConanFile):
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
-            self.requires("libgpiod/1.6.4")      # GPIO control for Raspberry Pi
+            self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
         # MCP-specific dependencies
