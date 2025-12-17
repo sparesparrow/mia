@@ -1,3 +1,70 @@
+#!/bin/bash
+# Unified Deployment Script for BLE OBD Service
+# This script can be sent to RPi via scp and executed remotely
+# Usage: scp scripts/deploy-ble-obd-service.sh mia@mia.local:/tmp/ && ssh mia@mia.local 'sudo bash /tmp/deploy-ble-obd-service.sh'
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then 
+    log_error "Please run as root (use sudo)"
+    exit 1
+fi
+
+log_info "Starting BLE OBD Service deployment..."
+
+# Configuration
+PROJECT_DIR="/opt/ai-servis"
+SERVICES_DIR="$PROJECT_DIR/rpi/services"
+SERVICE_USER="mia"
+SERVICE_GROUP="mia"
+
+# Create directories
+log_info "Creating directories..."
+mkdir -p "$SERVICES_DIR"
+mkdir -p /var/log/ai-servis
+chown -R "$SERVICE_USER:$SERVICE_GROUP" "$PROJECT_DIR"
+chown -R "$SERVICE_USER:$SERVICE_GROUP" /var/log/ai-servis
+
+# Install dependencies if needed
+log_info "Checking dependencies..."
+if ! python3 -c "import dbus" 2>/dev/null; then
+    log_info "Installing python3-dbus..."
+    apt-get update
+    apt-get install -y python3-dbus python3-gi || log_warning "Could not install python3-dbus"
+fi
+
+if ! python3 -c "import zmq" 2>/dev/null; then
+    log_info "Installing pyzmq..."
+    pip3 install pyzmq || log_warning "Could not install pyzmq"
+fi
+
+# Extract and deploy BLE OBD service file
+log_info "Deploying BLE OBD service Python script..."
+cat > "$SERVICES_DIR/ble_obd_service.py" << 'ENDOFFILE'
 #!/usr/bin/env python3
 """
 BLE OBD Service - Raspberry Pi BLE Peripheral for OBD-II Communication
@@ -37,18 +104,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Service UUIDs - Android app scans for SPP_UUID
-SPP_SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB"  # Serial Port Profile (what Android app expects)
-NUS_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"  # Nordic UART Service (backup)
-# Use SPP UUID as primary since Android app scans for it
-SERVICE_UUID = SPP_SERVICE_UUID
-# Characteristic UUIDs - Android app doesn't check specific UUIDs, only properties
-# Using NUS characteristic UUIDs (standard BLE UART characteristics)
-TX_CHAR_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"  # Write/Command
-RX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"  # Notify/Response
-# Aliases for compatibility checks
-NUS_TX_CHAR_UUID = TX_CHAR_UUID
-NUS_RX_CHAR_UUID = RX_CHAR_UUID
+# Nordic UART Service UUIDs (compatible with Android BLEManager)
+NUS_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+NUS_TX_CHAR_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"  # Write/Command
+NUS_RX_CHAR_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"  # Notify/Response
 
 # Device name advertised
 DEVICE_NAME = "MIA OBD-II Adapter"
@@ -57,7 +116,7 @@ DEVICE_NAME = "MIA OBD-II Adapter"
 class GATTApplication(dbus.service.Object):
     """
     GATT Application that implements ObjectManager interface
-    Following BlueZ canonical pattern from example-gatt-server
+    This is required by BlueZ to discover all GATT objects
     """
 
     APPLICATION_PATH = "/org/bluez/mia/obd"
@@ -66,30 +125,28 @@ class GATTApplication(dbus.service.Object):
         self.path = self.APPLICATION_PATH
         self.bus = bus
         self.services = []
-        # Create object directly on bus - BlueZ example pattern
-        # The unique connection name will be used automatically
         dbus.service.Object.__init__(self, bus, self.path)
 
     @dbus.service.method("org.freedesktop.DBus.ObjectManager", out_signature="a{oa{sa{sv}}}")
     def GetManagedObjects(self):
-        """Return all managed GATT objects - BlueZ calls this to discover services/characteristics"""
-        response = {}
-        logger.info(f"GetManagedObjects called by BlueZ (we have {len(self.services)} services)")
+        """Return all managed GATT objects"""
+        objects = {}
         
+        # Add all services
         for service in self.services:
             service_path = service.get_path()
-            service_props = service.get_properties()
-            response[service_path] = service_props
-            logger.info(f"  Added service: {service_path} with UUID: {service.uuid}")
+            objects[service_path] = {
+                "org.bluez.GattService1": service.get_properties()
+            }
             
-            for chrc in service.characteristics:
-                chrc_path = chrc.get_path()
-                chrc_props = chrc.get_properties()
-                response[chrc_path] = chrc_props
-                logger.info(f"    Added characteristic: {chrc_path} with UUID: {chrc.uuid}")
+            # Add all characteristics for each service
+            for char in service.characteristics:
+                char_path = char.get_path()
+                objects[char_path] = {
+                    "org.bluez.GattCharacteristic1": char.get_properties()
+                }
         
-        logger.info(f"GetManagedObjects returning {len(response)} objects total")
-        return response
+        return objects
 
     def add_service(self, service):
         """Add a GATT service to this application"""
@@ -106,14 +163,13 @@ class NUSService(dbus.service.Object):
 
     PATH_BASE = "/org/bluez/mia/obd/service"
 
-    def __init__(self, bus, index, ob_service, service_uuid):
+    def __init__(self, bus, index, ob_service):
         self.path = self.PATH_BASE + str(index)
         self.bus = bus
-        self.uuid = service_uuid
+        self.uuid = NUS_SERVICE_UUID
         self.primary = True
         self.characteristics = []
         self.ob_service = ob_service  # Reference to parent BLEOBDService
-        # Create object directly on bus (BlueZ example pattern)
         dbus.service.Object.__init__(self, bus, self.path)
 
     @dbus.service.method("org.bluez.GattService1", out_signature="as")
@@ -127,27 +183,12 @@ class NUSService(dbus.service.Object):
     @dbus.service.method("org.bluez.GattService1", out_signature="s")
     def GetUUID(self):
         return self.uuid
-    
-    @dbus.service.method("org.freedesktop.DBus.Properties",
-                         in_signature='s',
-                         out_signature='a{sv}')
-    def GetAll(self, interface):
-        """Get all properties for an interface"""
-        if interface != "org.bluez.GattService1":
-            raise dbus.exceptions.DBusException(
-                "org.freedesktop.DBus.Error.InvalidArgs",
-                "Unknown interface: " + interface
-            )
-        return self.get_properties()["org.bluez.GattService1"]
 
     def get_properties(self):
-        """Return properties in BlueZ format: interface name as key"""
         return {
-            "org.bluez.GattService1": {
-                "UUID": self.uuid,
-                "Primary": self.primary,
-                "Characteristics": dbus.Array(self.GetCharacteristics(), signature='o')
-            }
+            "UUID": self.uuid,
+            "Primary": self.primary,
+            "Characteristics": dbus.Array(self.GetCharacteristics(), signature='o')
         }
 
     def get_path(self):
@@ -171,12 +212,7 @@ class NUSCharacteristic(dbus.service.Object):
         self.descriptors = []
         self.notifying = False
         self.value = dbus.Array([], signature='y')
-        # Create object directly on bus (BlueZ example pattern)
         dbus.service.Object.__init__(self, bus, self.path)
-    
-    def matches_uuid(self, uuid_to_check):
-        """Check if this characteristic matches a UUID"""
-        return self.uuid.upper() == uuid_to_check.upper()
 
     @dbus.service.method("org.bluez.GattCharacteristic1", out_signature="as")
     def GetDescriptors(self):
@@ -186,21 +222,9 @@ class NUSCharacteristic(dbus.service.Object):
     def GetUUID(self):
         return self.uuid
 
-    @dbus.service.method("org.bluez.GattCharacteristic1", out_signature="o")
+    @dbus.service.method("org.bluez.GattCharacteristic1", out_signature="s")
     def GetService(self):
         return self.service.get_path()
-    
-    @dbus.service.method("org.freedesktop.DBus.Properties",
-                         in_signature='s',
-                         out_signature='a{sv}')
-    def GetAll(self, interface):
-        """Get all properties for an interface"""
-        if interface != "org.bluez.GattCharacteristic1":
-            raise dbus.exceptions.DBusException(
-                "org.freedesktop.DBus.Error.InvalidArgs",
-                "Unknown interface: " + interface
-            )
-        return self.get_properties()["org.bluez.GattCharacteristic1"]
 
     @dbus.service.method("org.bluez.GattCharacteristic1", in_signature="a{sv}", out_signature="ay")
     def ReadValue(self, options):
@@ -210,42 +234,36 @@ class NUSCharacteristic(dbus.service.Object):
     @dbus.service.method("org.bluez.GattCharacteristic1", in_signature="aya{sv}", out_signature="")
     def WriteValue(self, value, options):
         logger.debug(f"WriteValue called on {self.uuid} with: {bytes(value).decode('utf-8', errors='ignore')}")
-        # Accept writes on TX characteristic (either SPP or NUS UUID)
-        if self.matches_uuid(TX_CHAR_UUID) or self.matches_uuid(NUS_TX_CHAR_UUID):
+        if self.uuid == NUS_TX_CHAR_UUID:
             self.service.ob_service._on_command_received(bytes(value))
 
     @dbus.service.method("org.bluez.GattCharacteristic1", in_signature="", out_signature="")
     def StartNotify(self):
-        # Accept notifications on RX characteristic (either SPP or NUS UUID)
-        if self.matches_uuid(RX_CHAR_UUID) or self.matches_uuid(NUS_RX_CHAR_UUID):
+        if self.uuid == NUS_RX_CHAR_UUID:
             logger.debug("StartNotify called on RX characteristic")
             self.notifying = True
 
     @dbus.service.method("org.bluez.GattCharacteristic1", in_signature="", out_signature="")
     def StopNotify(self):
-        # Accept stop notifications on RX characteristic (either SPP or NUS UUID)
-        if self.matches_uuid(RX_CHAR_UUID) or self.matches_uuid(NUS_RX_CHAR_UUID):
+        if self.uuid == NUS_RX_CHAR_UUID:
             logger.debug("StopNotify called on RX characteristic")
             self.notifying = False
 
-    @dbus.service.signal("org.freedesktop.DBus.Properties",
-                         signature='sa{sv}as')
-    def PropertiesChanged(self, interface, changed, invalidated):
-        """Signal emitted when properties change"""
+    @dbus.service.signal("org.bluez.GattCharacteristic1", signature="a{sv}")
+    def PropertiesChanged(self, changed_properties):
         pass
 
     def get_path(self):
         return dbus.ObjectPath(self.path)
 
     def get_properties(self):
-        """Return properties in BlueZ format: interface name as key"""
         return {
-            "org.bluez.GattCharacteristic1": {
-                "Service": self.service.get_path(),
-                "UUID": self.uuid,
-                "Flags": self.flags,
-                "Descriptors": dbus.Array(self.GetDescriptors(), signature='o')
-            }
+            "UUID": self.uuid,
+            "Service": self.service.get_path(),
+            "Value": self.value,
+            "Notifying": self.notifying,
+            "Flags": self.flags,
+            "Descriptors": dbus.Array(self.GetDescriptors(), signature='o')
         }
 
 
@@ -317,26 +335,22 @@ class BLEOBDService:
                 logger.error(f"GATT Manager not available: {e}")
                 return False
 
-            # Setup GATT service and characteristics FIRST
-            # (Objects must exist before main loop starts for proper registration)
+            # Setup GATT service and characteristics
             self._setup_gatt_service()
 
-            # Start main loop (needed for D-Bus service objects to expose interfaces)
+            # Register GATT application
+            self._register_gatt_application()
+
+            # Start main loop
             self.mainloop = GLib.MainLoop()
             self.running = True
-            
-            # Run main loop in background thread
+
+            logger.info(f"BLE GATT server started, advertising as '{self.device_name}'")
+
+            # Run main loop in background
             import threading
             loop_thread = threading.Thread(target=self.mainloop.run, daemon=True)
             loop_thread.start()
-            
-            # Wait a moment for main loop to start and objects to be registered
-            time.sleep(1.0)
-
-            # Register GATT application (after objects exist and main loop is running)
-            self._register_gatt_application()
-
-            logger.info(f"BLE GATT server started, advertising as '{self.device_name}'")
 
             # Start response handler in a separate thread
             response_thread = threading.Thread(target=self._response_handler_thread, daemon=True)
@@ -373,27 +387,25 @@ class BLEOBDService:
             # Create GATT application
             self.gatt_app = GATTApplication(self.bus)
 
-            # Create SPP service (what Android app expects)
-            self.nus_service = NUSService(self.bus, 0, self, SERVICE_UUID)
+            # Create NUS service
+            self.nus_service = NUSService(self.bus, 0, self)
             self.gatt_app.add_service(self.nus_service)
 
-            # Create TX characteristic (write) - using SPP UUID
+            # Create TX characteristic (write)
             self.tx_char = NUSCharacteristic(
-                self.bus, 0, TX_CHAR_UUID,
+                self.bus, 0, NUS_TX_CHAR_UUID,
                 ["write", "write-without-response"], self.nus_service
             )
             self.nus_service.add_characteristic(self.tx_char)
 
-            # Create RX characteristic (notify, read) - using SPP UUID
+            # Create RX characteristic (notify, read)
             self.rx_char = NUSCharacteristic(
-                self.bus, 1, RX_CHAR_UUID,
+                self.bus, 1, NUS_RX_CHAR_UUID,
                 ["notify", "read"], self.nus_service
             )
             self.nus_service.add_characteristic(self.rx_char)
 
-            logger.info(f"GATT service configured with UUID: {SERVICE_UUID}")
-            logger.info(f"TX characteristic: {TX_CHAR_UUID}")
-            logger.info(f"RX characteristic: {RX_CHAR_UUID}")
+            logger.info("GATT service and characteristics configured")
 
         except Exception as e:
             logger.error(f"Error setting up GATT service: {e}")
@@ -496,13 +508,10 @@ class BLEOBDService:
             if self.mainloop:
                 def emit_notification():
                     try:
-                        # Use BlueZ canonical PropertiesChanged signature: interface, changed, invalidated
                         self.rx_char.PropertiesChanged(
-                            "org.bluez.GattCharacteristic1",
                             dbus.Dictionary({
                                 "Value": self.rx_char.value
-                            }, signature='sv'),
-                            dbus.Array([], signature='s')
+                            }, signature='sv')
                         )
                     except Exception as e:
                         logger.error(f"Error emitting PropertiesChanged: {e}")
@@ -590,3 +599,66 @@ def main():
 
 if __name__ == "__main__":
     main()
+ENDOFFILE
+
+chmod +x "$SERVICES_DIR/ble_obd_service.py"
+chown "$SERVICE_USER:$SERVICE_GROUP" "$SERVICES_DIR/ble_obd_service.py"
+
+# Deploy systemd service file
+log_info "Deploying systemd service file..."
+cat > /etc/systemd/system/mia-ble-obd.service << 'ENDOFFILE'
+[Unit]
+Description=MIA BLE OBD Service - BLE GATT Server for OBD-II Communication
+After=network.target bluetooth.service mia-broker.service
+Requires=bluetooth.service
+Wants=mia-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/opt/ai-servis/rpi/services
+ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/services/ble_obd_service.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/ai-servis/rpi
+
+# Capabilities for Bluetooth
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target
+ENDOFFILE
+
+# Reload systemd
+log_info "Reloading systemd daemon..."
+systemctl daemon-reload
+
+# Restart service
+log_info "Restarting mia-ble-obd service..."
+systemctl restart mia-ble-obd || log_warning "Could not restart service (may not be enabled yet)"
+
+# Enable service
+log_info "Enabling mia-ble-obd service..."
+systemctl enable mia-ble-obd || log_warning "Could not enable service"
+
+# Wait a moment for service to start
+sleep 2
+
+# Check service status
+log_info "Checking service status..."
+if systemctl is-active --quiet mia-ble-obd; then
+    log_success "mia-ble-obd service is running"
+    systemctl status mia-ble-obd --no-pager -l | head -20
+else
+    log_error "mia-ble-obd service is not running"
+    log_info "Recent logs:"
+    journalctl -u mia-ble-obd --no-pager -n 20 || true
+    exit 1
+fi
+
+log_success "BLE OBD Service deployment completed!"
+log_info "To view logs: sudo journalctl -u mia-ble-obd -f"
