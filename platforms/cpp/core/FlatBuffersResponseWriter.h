@@ -25,6 +25,9 @@ public:
     // IWriter
     bool write(const void* buffer, size_t size) override;
 
+    // Connection status
+    bool isConnected() const;
+
 private:
     bool sendResponse();
 };

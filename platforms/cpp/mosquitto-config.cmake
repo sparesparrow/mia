@@ -32,6 +32,9 @@ set(mosquitto_LIBRARIES ${mosquitto_LIBRARIES_RELEASE} )
 set(mosquitto_DEFINITIONS ${mosquitto_DEFINITIONS_RELEASE} )
 
 
+# Definition of extra CMake variables from cmake_extra_variables
+
+
 # Only the last installed configuration BUILD_MODULES are included to avoid the collision
 foreach(_BUILD_MODULE ${mosquitto_BUILD_MODULES_PATHS_RELEASE} )
     message(${mosquitto_MESSAGE_MODE} "Conan: Including build module from '${_BUILD_MODULE}'")

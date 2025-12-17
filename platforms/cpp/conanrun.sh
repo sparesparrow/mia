@@ -1,1 +1,1 @@
-. "/workspace/platforms/cpp/conanrunenv-release-x86_64.sh"
+. "/home/mia/ai-servis/platforms/cpp/conanrunenv-release-armv8.sh"

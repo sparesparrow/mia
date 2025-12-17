@@ -2,6 +2,8 @@ from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
 from conan.tools.env import VirtualRunEnv
 from conan.tools.layout import basic_layout
+from conan.tools.files import copy
+import os
 
 
 class MIAConan(ConanFile):
@@ -49,6 +51,11 @@ class MIAConan(ConanFile):
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
         self.tool_requires("sparetools-obd-sim/2.0.0")  # OBD simulator for testing
 
+    def export_sources(self):
+        # Export source files needed for building
+        copy(self, "platforms/**", src=self.recipe_folder, dst=self.export_sources_folder)
+        copy(self, "protos/**", src=self.recipe_folder, dst=self.export_sources_folder)
+
     def layout(self):
         basic_layout(self)
 
@@ -69,7 +76,8 @@ class MIAConan(ConanFile):
         self._generate_flatbuffers()
 
         cmake = CMake(self)
-        cmake.configure()
+        # Change to platforms/cpp directory where CMakeLists.txt is located
+        cmake.configure(build_script_folder=os.path.join(self.source_folder, "platforms", "cpp"))
         cmake.build()
 
     def _generate_flatbuffers(self):

@@ -1,5 +1,6 @@
 #include "HardwareControlServer.h"
 
+#include <gpiod.h>
 #include <cstring>
 #include <iostream>
 #include <sstream>

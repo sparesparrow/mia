@@ -5,6 +5,12 @@
 FlatBuffersRequestReader::FlatBuffersRequestReader()
     : current_type_(RequestType::Unknown) {}
 
+FlatBuffersRequestReader::FlatBuffersRequestReader(const uint8_t* buffer, size_t size)
+    : buffer_(buffer, buffer + size), current_type_(RequestType::Unknown) {
+    // Parse the buffer immediately to set current_type_
+    receiveMessage();
+}
+
 bool FlatBuffersRequestReader::next(RequestEnvelope& out) {
     if (!receiveMessage()) return false;
 

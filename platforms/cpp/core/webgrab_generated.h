@@ -8,9 +8,9 @@
 
 // Ensure the included flatbuffers.h is the same version as when this file was
 // generated, otherwise it may not be compatible.
-static_assert(FLATBUFFERS_VERSION_MAJOR == 2 &&
-              FLATBUFFERS_VERSION_MINOR == 0 &&
-              FLATBUFFERS_VERSION_REVISION == 8,
+static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
+              FLATBUFFERS_VERSION_MINOR == 5 &&
+              FLATBUFFERS_VERSION_REVISION == 26,
              "Non-compatible flatbuffers version included");
 
 namespace webgrab {
@@ -118,7 +118,7 @@ inline const char * const *EnumNamesRequest() {
 }
 
 inline const char *EnumNameRequest(Request e) {
-  if (flatbuffers::IsOutRange(e, Request_NONE, Request_GPIOStatusRequest)) return "";
+  if (::flatbuffers::IsOutRange(e, Request_NONE, Request_GPIOStatusRequest)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesRequest()[index];
 }
@@ -159,8 +159,8 @@ template<> struct RequestTraits<webgrab::GPIOStatusRequest> {
   static const Request enum_value = Request_GPIOStatusRequest;
 };
 
-bool VerifyRequest(flatbuffers::Verifier &verifier, const void *obj, Request type);
-bool VerifyRequestVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
+bool VerifyRequest(::flatbuffers::Verifier &verifier, const void *obj, Request type);
+bool VerifyRequestVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
 
 enum Response : uint8_t {
   Response_NONE = 0,
@@ -205,7 +205,7 @@ inline const char * const *EnumNamesResponse() {
 }
 
 inline const char *EnumNameResponse(Response e) {
-  if (flatbuffers::IsOutRange(e, Response_NONE, Response_GPIOStatusResponse)) return "";
+  if (::flatbuffers::IsOutRange(e, Response_NONE, Response_GPIOStatusResponse)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesResponse()[index];
 }
@@ -242,21 +242,21 @@ template<> struct ResponseTraits<webgrab::GPIOStatusResponse> {
   static const Response enum_value = Response_GPIOStatusResponse;
 };
 
-bool VerifyResponse(flatbuffers::Verifier &verifier, const void *obj, Response type);
-bool VerifyResponseVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
+bool VerifyResponse(::flatbuffers::Verifier &verifier, const void *obj, Response type);
+bool VerifyResponseVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
 
-struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DownloadRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_URL = 4
   };
-  const flatbuffers::String *url() const {
-    return GetPointer<const flatbuffers::String *>(VT_URL);
+  const ::flatbuffers::String *url() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_URL);
   }
-  flatbuffers::String *mutable_url() {
-    return GetPointer<flatbuffers::String *>(VT_URL);
+  ::flatbuffers::String *mutable_url() {
+    return GetPointer<::flatbuffers::String *>(VT_URL);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_URL) &&
            verifier.VerifyString(url()) &&
@@ -266,32 +266,32 @@ struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct DownloadRequestBuilder {
   typedef DownloadRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_url(flatbuffers::Offset<flatbuffers::String> url) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_url(::flatbuffers::Offset<::flatbuffers::String> url) {
     fbb_.AddOffset(DownloadRequest::VT_URL, url);
   }
-  explicit DownloadRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<DownloadRequest> Finish() {
+  ::flatbuffers::Offset<DownloadRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<DownloadRequest>(end);
+    auto o = ::flatbuffers::Offset<DownloadRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<DownloadRequest> CreateDownloadRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> url = 0) {
+inline ::flatbuffers::Offset<DownloadRequest> CreateDownloadRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> url = 0) {
   DownloadRequestBuilder builder_(_fbb);
   builder_.add_url(url);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *url = nullptr) {
   auto url__ = url ? _fbb.CreateString(url) : 0;
   return webgrab::CreateDownloadRequest(
@@ -299,7 +299,7 @@ inline flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
       url__);
 }
 
-struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DownloadResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSIONID = 4
@@ -310,7 +310,7 @@ struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_sessionId(uint32_t _sessionId = 0) {
     return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSIONID, 4) &&
            verifier.EndTable();
@@ -319,31 +319,31 @@ struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct DownloadResponseBuilder {
   typedef DownloadResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_sessionId(uint32_t sessionId) {
     fbb_.AddElement<uint32_t>(DownloadResponse::VT_SESSIONID, sessionId, 0);
   }
-  explicit DownloadResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<DownloadResponse> Finish() {
+  ::flatbuffers::Offset<DownloadResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<DownloadResponse>(end);
+    auto o = ::flatbuffers::Offset<DownloadResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<DownloadResponse> CreateDownloadResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<DownloadResponse> CreateDownloadResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t sessionId = 0) {
   DownloadResponseBuilder builder_(_fbb);
   builder_.add_sessionId(sessionId);
   return builder_.Finish();
 }
 
-struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DownloadStatusRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSIONID = 4
@@ -354,7 +354,7 @@ struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
   bool mutate_sessionId(uint32_t _sessionId = 0) {
     return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSIONID, 4) &&
            verifier.EndTable();
@@ -363,42 +363,42 @@ struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
 
 struct DownloadStatusRequestBuilder {
   typedef DownloadStatusRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_sessionId(uint32_t sessionId) {
     fbb_.AddElement<uint32_t>(DownloadStatusRequest::VT_SESSIONID, sessionId, 0);
   }
-  explicit DownloadStatusRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadStatusRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<DownloadStatusRequest> Finish() {
+  ::flatbuffers::Offset<DownloadStatusRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<DownloadStatusRequest>(end);
+    auto o = ::flatbuffers::Offset<DownloadStatusRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<DownloadStatusRequest> CreateDownloadStatusRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<DownloadStatusRequest> CreateDownloadStatusRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t sessionId = 0) {
   DownloadStatusRequestBuilder builder_(_fbb);
   builder_.add_sessionId(sessionId);
   return builder_.Finish();
 }
 
-struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DownloadStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_STATUS = 4
   };
-  const flatbuffers::String *status() const {
-    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  const ::flatbuffers::String *status() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
   }
-  flatbuffers::String *mutable_status() {
-    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  ::flatbuffers::String *mutable_status() {
+    return GetPointer<::flatbuffers::String *>(VT_STATUS);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_STATUS) &&
            verifier.VerifyString(status()) &&
@@ -408,32 +408,32 @@ struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tab
 
 struct DownloadStatusResponseBuilder {
   typedef DownloadStatusResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
     fbb_.AddOffset(DownloadStatusResponse::VT_STATUS, status);
   }
-  explicit DownloadStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<DownloadStatusResponse> Finish() {
+  ::flatbuffers::Offset<DownloadStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<DownloadStatusResponse>(end);
+    auto o = ::flatbuffers::Offset<DownloadStatusResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> status = 0) {
+inline ::flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> status = 0) {
   DownloadStatusResponseBuilder builder_(_fbb);
   builder_.add_status(status);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponseDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponseDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *status = nullptr) {
   auto status__ = status ? _fbb.CreateString(status) : 0;
   return webgrab::CreateDownloadStatusResponse(
@@ -441,7 +441,7 @@ inline flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponseD
       status__);
 }
 
-struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef DownloadAbortRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSIONID = 4
@@ -452,7 +452,7 @@ struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table
   bool mutate_sessionId(uint32_t _sessionId = 0) {
     return SetField<uint32_t>(VT_SESSIONID, _sessionId, 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSIONID, 4) &&
            verifier.EndTable();
@@ -461,33 +461,33 @@ struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table
 
 struct DownloadAbortRequestBuilder {
   typedef DownloadAbortRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_sessionId(uint32_t sessionId) {
     fbb_.AddElement<uint32_t>(DownloadAbortRequest::VT_SESSIONID, sessionId, 0);
   }
-  explicit DownloadAbortRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadAbortRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<DownloadAbortRequest> Finish() {
+  ::flatbuffers::Offset<DownloadAbortRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<DownloadAbortRequest>(end);
+    auto o = ::flatbuffers::Offset<DownloadAbortRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<DownloadAbortRequest> CreateDownloadAbortRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<DownloadAbortRequest> CreateDownloadAbortRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t sessionId = 0) {
   DownloadAbortRequestBuilder builder_(_fbb);
   builder_.add_sessionId(sessionId);
   return builder_.Finish();
 }
 
-struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ShutdownRequestBuilder Builder;
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
   }
@@ -495,26 +495,26 @@ struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct ShutdownRequestBuilder {
   typedef ShutdownRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  explicit ShutdownRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  explicit ShutdownRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<ShutdownRequest> Finish() {
+  ::flatbuffers::Offset<ShutdownRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<ShutdownRequest>(end);
+    auto o = ::flatbuffers::Offset<ShutdownRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<ShutdownRequest> CreateShutdownRequest(
-    flatbuffers::FlatBufferBuilder &_fbb) {
+inline ::flatbuffers::Offset<ShutdownRequest> CreateShutdownRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
   ShutdownRequestBuilder builder_(_fbb);
   return builder_.Finish();
 }
 
-struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOConfigureRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -526,13 +526,13 @@ struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table
   bool mutate_pin(int32_t _pin = 0) {
     return SetField<int32_t>(VT_PIN, _pin, 0);
   }
-  const flatbuffers::String *direction() const {
-    return GetPointer<const flatbuffers::String *>(VT_DIRECTION);
+  const ::flatbuffers::String *direction() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
   }
-  flatbuffers::String *mutable_direction() {
-    return GetPointer<flatbuffers::String *>(VT_DIRECTION);
+  ::flatbuffers::String *mutable_direction() {
+    return GetPointer<::flatbuffers::String *>(VT_DIRECTION);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyOffset(verifier, VT_DIRECTION) &&
@@ -543,37 +543,37 @@ struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table
 
 struct GPIOConfigureRequestBuilder {
   typedef GPIOConfigureRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOConfigureRequest::VT_PIN, pin, 0);
   }
-  void add_direction(flatbuffers::Offset<flatbuffers::String> direction) {
+  void add_direction(::flatbuffers::Offset<::flatbuffers::String> direction) {
     fbb_.AddOffset(GPIOConfigureRequest::VT_DIRECTION, direction);
   }
-  explicit GPIOConfigureRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOConfigureRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOConfigureRequest> Finish() {
+  ::flatbuffers::Offset<GPIOConfigureRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOConfigureRequest>(end);
+    auto o = ::flatbuffers::Offset<GPIOConfigureRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
-    flatbuffers::Offset<flatbuffers::String> direction = 0) {
+    ::flatbuffers::Offset<::flatbuffers::String> direction = 0) {
   GPIOConfigureRequestBuilder builder_(_fbb);
   builder_.add_direction(direction);
   builder_.add_pin(pin);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     const char *direction = nullptr) {
   auto direction__ = direction ? _fbb.CreateString(direction) : 0;
@@ -583,7 +583,7 @@ inline flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDirec
       direction__);
 }
 
-struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOSetRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -601,7 +601,7 @@ struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_value(bool _value = 0) {
     return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_VALUE, 1) &&
@@ -611,27 +611,27 @@ struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOSetRequestBuilder {
   typedef GPIOSetRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOSetRequest::VT_PIN, pin, 0);
   }
   void add_value(bool value) {
     fbb_.AddElement<uint8_t>(GPIOSetRequest::VT_VALUE, static_cast<uint8_t>(value), 0);
   }
-  explicit GPIOSetRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOSetRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOSetRequest> Finish() {
+  ::flatbuffers::Offset<GPIOSetRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOSetRequest>(end);
+    auto o = ::flatbuffers::Offset<GPIOSetRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool value = false) {
   GPIOSetRequestBuilder builder_(_fbb);
@@ -640,7 +640,7 @@ inline flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
   return builder_.Finish();
 }
 
-struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOGetRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4
@@ -651,7 +651,7 @@ struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_pin(int32_t _pin = 0) {
     return SetField<int32_t>(VT_PIN, _pin, 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            verifier.EndTable();
@@ -660,33 +660,33 @@ struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOGetRequestBuilder {
   typedef GPIOGetRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOGetRequest::VT_PIN, pin, 0);
   }
-  explicit GPIOGetRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOGetRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOGetRequest> Finish() {
+  ::flatbuffers::Offset<GPIOGetRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOGetRequest>(end);
+    auto o = ::flatbuffers::Offset<GPIOGetRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOGetRequest> CreateGPIOGetRequest(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOGetRequest> CreateGPIOGetRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0) {
   GPIOGetRequestBuilder builder_(_fbb);
   builder_.add_pin(pin);
   return builder_.Finish();
 }
 
-struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOStatusRequestBuilder Builder;
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
   }
@@ -694,26 +694,26 @@ struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOStatusRequestBuilder {
   typedef GPIOStatusRequest Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  explicit GPIOStatusRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  explicit GPIOStatusRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOStatusRequest> Finish() {
+  ::flatbuffers::Offset<GPIOStatusRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOStatusRequest>(end);
+    auto o = ::flatbuffers::Offset<GPIOStatusRequest>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOStatusRequest> CreateGPIOStatusRequest(
-    flatbuffers::FlatBufferBuilder &_fbb) {
+inline ::flatbuffers::Offset<GPIOStatusRequest> CreateGPIOStatusRequest(
+    ::flatbuffers::FlatBufferBuilder &_fbb) {
   GPIOStatusRequestBuilder builder_(_fbb);
   return builder_.Finish();
 }
 
-struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOConfigureResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -731,7 +731,7 @@ struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
   bool mutate_success(bool _success = 0) {
     return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS, 1) &&
@@ -741,27 +741,27 @@ struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
 
 struct GPIOConfigureResponseBuilder {
   typedef GPIOConfigureResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOConfigureResponse::VT_PIN, pin, 0);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOConfigureResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOConfigureResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOConfigureResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOConfigureResponse> Finish() {
+  ::flatbuffers::Offset<GPIOConfigureResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOConfigureResponse>(end);
+    auto o = ::flatbuffers::Offset<GPIOConfigureResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool success = false) {
   GPIOConfigureResponseBuilder builder_(_fbb);
@@ -770,7 +770,7 @@ inline flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
   return builder_.Finish();
 }
 
-struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOSetResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -788,7 +788,7 @@ struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_success(bool _success = 0) {
     return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS, 1) &&
@@ -798,27 +798,27 @@ struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOSetResponseBuilder {
   typedef GPIOSetResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOSetResponse::VT_PIN, pin, 0);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOSetResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOSetResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOSetResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOSetResponse> Finish() {
+  ::flatbuffers::Offset<GPIOSetResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOSetResponse>(end);
+    auto o = ::flatbuffers::Offset<GPIOSetResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool success = false) {
   GPIOSetResponseBuilder builder_(_fbb);
@@ -827,7 +827,7 @@ inline flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
   return builder_.Finish();
 }
 
-struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOGetResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -852,7 +852,7 @@ struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_success(bool _success = 0) {
     return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_VALUE, 1) &&
@@ -863,8 +863,8 @@ struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOGetResponseBuilder {
   typedef GPIOGetResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOGetResponse::VT_PIN, pin, 0);
   }
@@ -874,19 +874,19 @@ struct GPIOGetResponseBuilder {
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOGetResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOGetResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOGetResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOGetResponse> Finish() {
+  ::flatbuffers::Offset<GPIOGetResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOGetResponse>(end);
+    auto o = ::flatbuffers::Offset<GPIOGetResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool value = false,
     bool success = false) {
@@ -897,18 +897,18 @@ inline flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
   return builder_.Finish();
 }
 
-struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PINS = 4
   };
-  const flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>> *pins() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
+  const ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *pins() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
   }
-  flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>> *mutable_pins() {
-    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
+  ::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *mutable_pins() {
+    return GetPointer<::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *>(VT_PINS);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PINS) &&
            verifier.VerifyVector(pins()) &&
@@ -919,40 +919,40 @@ struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOStatusResponseBuilder {
   typedef GPIOStatusResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_pins(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>>> pins) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_pins(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>>> pins) {
     fbb_.AddOffset(GPIOStatusResponse::VT_PINS, pins);
   }
-  explicit GPIOStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOStatusResponse> Finish() {
+  ::flatbuffers::Offset<GPIOStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOStatusResponse>(end);
+    auto o = ::flatbuffers::Offset<GPIOStatusResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<webgrab::GPIOPinStatus>>> pins = 0) {
+inline ::flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>>> pins = 0) {
   GPIOStatusResponseBuilder builder_(_fbb);
   builder_.add_pins(pins);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponseDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<webgrab::GPIOPinStatus>> *pins = nullptr) {
-  auto pins__ = pins ? _fbb.CreateVector<flatbuffers::Offset<webgrab::GPIOPinStatus>>(*pins) : 0;
+inline ::flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponseDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<::flatbuffers::Offset<webgrab::GPIOPinStatus>> *pins = nullptr) {
+  auto pins__ = pins ? _fbb.CreateVector<::flatbuffers::Offset<webgrab::GPIOPinStatus>>(*pins) : 0;
   return webgrab::CreateGPIOStatusResponse(
       _fbb,
       pins__);
 }
 
-struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef GPIOPinStatusBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -965,11 +965,11 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_pin(int32_t _pin = 0) {
     return SetField<int32_t>(VT_PIN, _pin, 0);
   }
-  const flatbuffers::String *direction() const {
-    return GetPointer<const flatbuffers::String *>(VT_DIRECTION);
+  const ::flatbuffers::String *direction() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
   }
-  flatbuffers::String *mutable_direction() {
-    return GetPointer<flatbuffers::String *>(VT_DIRECTION);
+  ::flatbuffers::String *mutable_direction() {
+    return GetPointer<::flatbuffers::String *>(VT_DIRECTION);
   }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
@@ -977,7 +977,7 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_value(bool _value = 0) {
     return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyOffset(verifier, VT_DIRECTION) &&
@@ -989,32 +989,32 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct GPIOPinStatusBuilder {
   typedef GPIOPinStatus Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOPinStatus::VT_PIN, pin, 0);
   }
-  void add_direction(flatbuffers::Offset<flatbuffers::String> direction) {
+  void add_direction(::flatbuffers::Offset<::flatbuffers::String> direction) {
     fbb_.AddOffset(GPIOPinStatus::VT_DIRECTION, direction);
   }
   void add_value(bool value) {
     fbb_.AddElement<uint8_t>(GPIOPinStatus::VT_VALUE, static_cast<uint8_t>(value), 0);
   }
-  explicit GPIOPinStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOPinStatusBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<GPIOPinStatus> Finish() {
+  ::flatbuffers::Offset<GPIOPinStatus> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<GPIOPinStatus>(end);
+    auto o = ::flatbuffers::Offset<GPIOPinStatus>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
-    flatbuffers::Offset<flatbuffers::String> direction = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> direction = 0,
     bool value = false) {
   GPIOPinStatusBuilder builder_(_fbb);
   builder_.add_direction(direction);
@@ -1023,8 +1023,8 @@ inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     const char *direction = nullptr,
     bool value = false) {
@@ -1036,7 +1036,7 @@ inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
       value);
 }
 
-struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MQTTMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TOPIC = 4,
@@ -1044,17 +1044,17 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_QOS = 8,
     VT_RETAIN = 10
   };
-  const flatbuffers::String *topic() const {
-    return GetPointer<const flatbuffers::String *>(VT_TOPIC);
+  const ::flatbuffers::String *topic() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_TOPIC);
   }
-  flatbuffers::String *mutable_topic() {
-    return GetPointer<flatbuffers::String *>(VT_TOPIC);
+  ::flatbuffers::String *mutable_topic() {
+    return GetPointer<::flatbuffers::String *>(VT_TOPIC);
   }
-  const flatbuffers::String *payload() const {
-    return GetPointer<const flatbuffers::String *>(VT_PAYLOAD);
+  const ::flatbuffers::String *payload() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
   }
-  flatbuffers::String *mutable_payload() {
-    return GetPointer<flatbuffers::String *>(VT_PAYLOAD);
+  ::flatbuffers::String *mutable_payload() {
+    return GetPointer<::flatbuffers::String *>(VT_PAYLOAD);
   }
   int32_t qos() const {
     return GetField<int32_t>(VT_QOS, 0);
@@ -1068,7 +1068,7 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_retain(bool _retain = 0) {
     return SetField<uint8_t>(VT_RETAIN, static_cast<uint8_t>(_retain), 0);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_TOPIC) &&
            verifier.VerifyString(topic()) &&
@@ -1082,12 +1082,12 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct MQTTMessageBuilder {
   typedef MQTTMessage Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_topic(flatbuffers::Offset<flatbuffers::String> topic) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_topic(::flatbuffers::Offset<::flatbuffers::String> topic) {
     fbb_.AddOffset(MQTTMessage::VT_TOPIC, topic);
   }
-  void add_payload(flatbuffers::Offset<flatbuffers::String> payload) {
+  void add_payload(::flatbuffers::Offset<::flatbuffers::String> payload) {
     fbb_.AddOffset(MQTTMessage::VT_PAYLOAD, payload);
   }
   void add_qos(int32_t qos) {
@@ -1096,21 +1096,21 @@ struct MQTTMessageBuilder {
   void add_retain(bool retain) {
     fbb_.AddElement<uint8_t>(MQTTMessage::VT_RETAIN, static_cast<uint8_t>(retain), 0);
   }
-  explicit MQTTMessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MQTTMessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<MQTTMessage> Finish() {
+  ::flatbuffers::Offset<MQTTMessage> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<MQTTMessage>(end);
+    auto o = ::flatbuffers::Offset<MQTTMessage>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> topic = 0,
-    flatbuffers::Offset<flatbuffers::String> payload = 0,
+inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> topic = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> payload = 0,
     int32_t qos = 0,
     bool retain = false) {
   MQTTMessageBuilder builder_(_fbb);
@@ -1121,8 +1121,8 @@ inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *topic = nullptr,
     const char *payload = nullptr,
     int32_t qos = 0,
@@ -1137,18 +1137,18 @@ inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
       retain);
 }
 
-struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ErrorResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ERROR = 4
   };
-  const flatbuffers::String *error() const {
-    return GetPointer<const flatbuffers::String *>(VT_ERROR);
+  const ::flatbuffers::String *error() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_ERROR);
   }
-  flatbuffers::String *mutable_error() {
-    return GetPointer<flatbuffers::String *>(VT_ERROR);
+  ::flatbuffers::String *mutable_error() {
+    return GetPointer<::flatbuffers::String *>(VT_ERROR);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ERROR) &&
            verifier.VerifyString(error()) &&
@@ -1158,32 +1158,32 @@ struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct ErrorResponseBuilder {
   typedef ErrorResponse Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_error(flatbuffers::Offset<flatbuffers::String> error) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_error(::flatbuffers::Offset<::flatbuffers::String> error) {
     fbb_.AddOffset(ErrorResponse::VT_ERROR, error);
   }
-  explicit ErrorResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ErrorResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<ErrorResponse> Finish() {
+  ::flatbuffers::Offset<ErrorResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<ErrorResponse>(end);
+    auto o = ::flatbuffers::Offset<ErrorResponse>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<ErrorResponse> CreateErrorResponse(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> error = 0) {
+inline ::flatbuffers::Offset<ErrorResponse> CreateErrorResponse(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> error = 0) {
   ErrorResponseBuilder builder_(_fbb);
   builder_.add_error(error);
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *error = nullptr) {
   auto error__ = error ? _fbb.CreateString(error) : 0;
   return webgrab::CreateErrorResponse(
@@ -1191,7 +1191,7 @@ inline flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
       error__);
 }
 
-struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_REQUEST_TYPE = 4,
@@ -1264,7 +1264,7 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   void *mutable_response() {
     return GetPointer<void *>(VT_RESPONSE);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_REQUEST_TYPE, 1) &&
            VerifyOffset(verifier, VT_REQUEST) &&
@@ -1338,37 +1338,37 @@ template<> inline const webgrab::GPIOStatusResponse *Message::response_as<webgra
 
 struct MessageBuilder {
   typedef Message Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
   void add_request_type(webgrab::Request request_type) {
     fbb_.AddElement<uint8_t>(Message::VT_REQUEST_TYPE, static_cast<uint8_t>(request_type), 0);
   }
-  void add_request(flatbuffers::Offset<void> request) {
+  void add_request(::flatbuffers::Offset<void> request) {
     fbb_.AddOffset(Message::VT_REQUEST, request);
   }
   void add_response_type(webgrab::Response response_type) {
     fbb_.AddElement<uint8_t>(Message::VT_RESPONSE_TYPE, static_cast<uint8_t>(response_type), 0);
   }
-  void add_response(flatbuffers::Offset<void> response) {
+  void add_response(::flatbuffers::Offset<void> response) {
     fbb_.AddOffset(Message::VT_RESPONSE, response);
   }
-  explicit MessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<Message> Finish() {
+  ::flatbuffers::Offset<Message> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<Message>(end);
+    auto o = ::flatbuffers::Offset<Message>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<Message> CreateMessage(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<Message> CreateMessage(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     webgrab::Request request_type = webgrab::Request_NONE,
-    flatbuffers::Offset<void> request = 0,
+    ::flatbuffers::Offset<void> request = 0,
     webgrab::Response response_type = webgrab::Response_NONE,
-    flatbuffers::Offset<void> response = 0) {
+    ::flatbuffers::Offset<void> response = 0) {
   MessageBuilder builder_(_fbb);
   builder_.add_response(response);
   builder_.add_request(request);
@@ -1377,7 +1377,7 @@ inline flatbuffers::Offset<Message> CreateMessage(
   return builder_.Finish();
 }
 
-struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MQTTEnvelopeBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MESSAGE_ID = 4,
@@ -1386,11 +1386,11 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_TARGET = 10,
     VT_PAYLOAD = 12
   };
-  const flatbuffers::String *message_id() const {
-    return GetPointer<const flatbuffers::String *>(VT_MESSAGE_ID);
+  const ::flatbuffers::String *message_id() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE_ID);
   }
-  flatbuffers::String *mutable_message_id() {
-    return GetPointer<flatbuffers::String *>(VT_MESSAGE_ID);
+  ::flatbuffers::String *mutable_message_id() {
+    return GetPointer<::flatbuffers::String *>(VT_MESSAGE_ID);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
@@ -1398,17 +1398,17 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_timestamp(uint64_t _timestamp = 0) {
     return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
   }
-  const flatbuffers::String *source() const {
-    return GetPointer<const flatbuffers::String *>(VT_SOURCE);
+  const ::flatbuffers::String *source() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_SOURCE);
   }
-  flatbuffers::String *mutable_source() {
-    return GetPointer<flatbuffers::String *>(VT_SOURCE);
+  ::flatbuffers::String *mutable_source() {
+    return GetPointer<::flatbuffers::String *>(VT_SOURCE);
   }
-  const flatbuffers::String *target() const {
-    return GetPointer<const flatbuffers::String *>(VT_TARGET);
+  const ::flatbuffers::String *target() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_TARGET);
   }
-  flatbuffers::String *mutable_target() {
-    return GetPointer<flatbuffers::String *>(VT_TARGET);
+  ::flatbuffers::String *mutable_target() {
+    return GetPointer<::flatbuffers::String *>(VT_TARGET);
   }
   const webgrab::Message *payload() const {
     return GetPointer<const webgrab::Message *>(VT_PAYLOAD);
@@ -1416,7 +1416,7 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   webgrab::Message *mutable_payload() {
     return GetPointer<webgrab::Message *>(VT_PAYLOAD);
   }
-  bool Verify(flatbuffers::Verifier &verifier) const {
+  bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MESSAGE_ID) &&
            verifier.VerifyString(message_id()) &&
@@ -1433,41 +1433,41 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 
 struct MQTTEnvelopeBuilder {
   typedef MQTTEnvelope Table;
-  flatbuffers::FlatBufferBuilder &fbb_;
-  flatbuffers::uoffset_t start_;
-  void add_message_id(flatbuffers::Offset<flatbuffers::String> message_id) {
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_message_id(::flatbuffers::Offset<::flatbuffers::String> message_id) {
     fbb_.AddOffset(MQTTEnvelope::VT_MESSAGE_ID, message_id);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(MQTTEnvelope::VT_TIMESTAMP, timestamp, 0);
   }
-  void add_source(flatbuffers::Offset<flatbuffers::String> source) {
+  void add_source(::flatbuffers::Offset<::flatbuffers::String> source) {
     fbb_.AddOffset(MQTTEnvelope::VT_SOURCE, source);
   }
-  void add_target(flatbuffers::Offset<flatbuffers::String> target) {
+  void add_target(::flatbuffers::Offset<::flatbuffers::String> target) {
     fbb_.AddOffset(MQTTEnvelope::VT_TARGET, target);
   }
-  void add_payload(flatbuffers::Offset<webgrab::Message> payload) {
+  void add_payload(::flatbuffers::Offset<webgrab::Message> payload) {
     fbb_.AddOffset(MQTTEnvelope::VT_PAYLOAD, payload);
   }
-  explicit MQTTEnvelopeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MQTTEnvelopeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  flatbuffers::Offset<MQTTEnvelope> Finish() {
+  ::flatbuffers::Offset<MQTTEnvelope> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = flatbuffers::Offset<MQTTEnvelope>(end);
+    auto o = ::flatbuffers::Offset<MQTTEnvelope>(end);
     return o;
   }
 };
 
-inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::String> message_id = 0,
+inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> message_id = 0,
     uint64_t timestamp = 0,
-    flatbuffers::Offset<flatbuffers::String> source = 0,
-    flatbuffers::Offset<flatbuffers::String> target = 0,
-    flatbuffers::Offset<webgrab::Message> payload = 0) {
+    ::flatbuffers::Offset<::flatbuffers::String> source = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> target = 0,
+    ::flatbuffers::Offset<webgrab::Message> payload = 0) {
   MQTTEnvelopeBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
   builder_.add_payload(payload);
@@ -1477,13 +1477,13 @@ inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
   return builder_.Finish();
 }
 
-inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
+inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
     const char *message_id = nullptr,
     uint64_t timestamp = 0,
     const char *source = nullptr,
     const char *target = nullptr,
-    flatbuffers::Offset<webgrab::Message> payload = 0) {
+    ::flatbuffers::Offset<webgrab::Message> payload = 0) {
   auto message_id__ = message_id ? _fbb.CreateString(message_id) : 0;
   auto source__ = source ? _fbb.CreateString(source) : 0;
   auto target__ = target ? _fbb.CreateString(target) : 0;
@@ -1496,7 +1496,7 @@ inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
       payload);
 }
 
-inline bool VerifyRequest(flatbuffers::Verifier &verifier, const void *obj, Request type) {
+inline bool VerifyRequest(::flatbuffers::Verifier &verifier, const void *obj, Request type) {
   switch (type) {
     case Request_NONE: {
       return true;
@@ -1537,10 +1537,10 @@ inline bool VerifyRequest(flatbuffers::Verifier &verifier, const void *obj, Requ
   }
 }
 
-inline bool VerifyRequestVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types) {
+inline bool VerifyRequestVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
   if (!values || !types) return !values && !types;
   if (values->size() != types->size()) return false;
-  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+  for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
     if (!VerifyRequest(
         verifier,  values->Get(i), types->GetEnum<Request>(i))) {
       return false;
@@ -1549,7 +1549,7 @@ inline bool VerifyRequestVector(flatbuffers::Verifier &verifier, const flatbuffe
   return true;
 }
 
-inline bool VerifyResponse(flatbuffers::Verifier &verifier, const void *obj, Response type) {
+inline bool VerifyResponse(::flatbuffers::Verifier &verifier, const void *obj, Response type) {
   switch (type) {
     case Response_NONE: {
       return true;
@@ -1586,10 +1586,10 @@ inline bool VerifyResponse(flatbuffers::Verifier &verifier, const void *obj, Res
   }
 }
 
-inline bool VerifyResponseVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types) {
+inline bool VerifyResponseVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
   if (!values || !types) return !values && !types;
   if (values->size() != types->size()) return false;
-  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+  for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
     if (!VerifyResponse(
         verifier,  values->Get(i), types->GetEnum<Response>(i))) {
       return false;
@@ -1599,40 +1599,40 @@ inline bool VerifyResponseVector(flatbuffers::Verifier &verifier, const flatbuff
 }
 
 inline const webgrab::Message *GetMessage(const void *buf) {
-  return flatbuffers::GetRoot<webgrab::Message>(buf);
+  return ::flatbuffers::GetRoot<webgrab::Message>(buf);
 }
 
 inline const webgrab::Message *GetSizePrefixedMessage(const void *buf) {
-  return flatbuffers::GetSizePrefixedRoot<webgrab::Message>(buf);
+  return ::flatbuffers::GetSizePrefixedRoot<webgrab::Message>(buf);
 }
 
 inline Message *GetMutableMessage(void *buf) {
-  return flatbuffers::GetMutableRoot<Message>(buf);
+  return ::flatbuffers::GetMutableRoot<Message>(buf);
 }
 
 inline webgrab::Message *GetMutableSizePrefixedMessage(void *buf) {
-  return flatbuffers::GetMutableSizePrefixedRoot<webgrab::Message>(buf);
+  return ::flatbuffers::GetMutableSizePrefixedRoot<webgrab::Message>(buf);
 }
 
 inline bool VerifyMessageBuffer(
-    flatbuffers::Verifier &verifier) {
+    ::flatbuffers::Verifier &verifier) {
   return verifier.VerifyBuffer<webgrab::Message>(nullptr);
 }
 
 inline bool VerifySizePrefixedMessageBuffer(
-    flatbuffers::Verifier &verifier) {
+    ::flatbuffers::Verifier &verifier) {
   return verifier.VerifySizePrefixedBuffer<webgrab::Message>(nullptr);
 }
 
 inline void FinishMessageBuffer(
-    flatbuffers::FlatBufferBuilder &fbb,
-    flatbuffers::Offset<webgrab::Message> root) {
+    ::flatbuffers::FlatBufferBuilder &fbb,
+    ::flatbuffers::Offset<webgrab::Message> root) {
   fbb.Finish(root);
 }
 
 inline void FinishSizePrefixedMessageBuffer(
-    flatbuffers::FlatBufferBuilder &fbb,
-    flatbuffers::Offset<webgrab::Message> root) {
+    ::flatbuffers::FlatBufferBuilder &fbb,
+    ::flatbuffers::Offset<webgrab::Message> root) {
   fbb.FinishSizePrefixed(root);
 }
 

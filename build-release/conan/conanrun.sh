@@ -1,1 +1,1 @@
-. "/home/sparrow/projects/ai-servis/build-release/conan/conanrunenv-release-x86_64.sh"
+. "/home/mia/ai-servis/build-release/conan/conanrunenv-release-armv8.sh"

@@ -446,6 +446,14 @@ Shared CPython bootstrap module for Android development tools.
 ### Immediate Fixes Required
 - [ ] Update Conan profiles to use correct ARM64 architecture flags
 - [ ] Fix `conan_toolchain.cmake` to remove x86_64-specific flags on ARM64
+- [ ] Fix Conan CMakeDeps library discovery issue (jsoncpp library not found despite existing)
+- [x] Fix C++ code compilation errors:
+  - [x] Add missing `<memory>` includes for `std::unique_ptr`
+  - [x] Fix namespace issues with MQTTReader/MQTTWriter classes
+  - [x] Implement missing interface methods (`getType()`, `getDownloadUrl()`, `getSessionId()`, etc.)
+  - [x] Fix FlatBuffersRequestReader constructor signature
+  - [x] Implement IJob interface properly
+- [ ] Fix GPIO library API compatibility issues (libgpiod version mismatch)
 - [ ] Test C++ compilation on Raspberry Pi (ARM64)
 - [ ] Update CI/CD workflows to handle ARM64 builds correctly
 - [ ] Document ARM64-specific build requirements

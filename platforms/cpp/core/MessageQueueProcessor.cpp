@@ -1,20 +1,23 @@
 #include "MessageQueueProcessor.h"
-#include "IRequestReader.h"
+#include "FlatBuffersRequestReader.h"
 #include "IResponseWriter.h"
+#include "IJob.h"
 #include "DownloadJob.h"
 #include <filesystem>
 
-MessageQueueProcessor::MessageQueueProcessor(const std::string& workingDir)
-    : workingDir_(workingDir), next_session_id_(1) {}
+MessageQueueProcessor::MessageQueueProcessor(const std::string& workingDir,
+                                           const std::string& mqtt_host,
+                                           int mqtt_port)
+    : workingDir_(workingDir), next_session_id_(1), mqtt_enabled_(false) {}
 
 MessageQueueProcessor::~MessageQueueProcessor() = default;
 
-std::unique_ptr<IJob> MessageQueueProcessor::processMessage(std::unique_ptr<IRequestReader> reader, IResponseWriter* writer) {
+std::unique_ptr<IJob> MessageQueueProcessor::processMessage(std::unique_ptr<FlatBuffersRequestReader> reader, IResponseWriter* writer) {
     switch (reader->getType()) {
     case RequestType::Download: {
         std::string url = reader->getDownloadUrl();
         enqueueJob(url, writer);
-        writer->writeDownloadResponse(next_session_id_ - 1);
+        writer->write(DownloadResponse{next_session_id_ - 1});
         return nullptr; // Job already enqueued
     }
     case RequestType::Status: {
@@ -22,7 +25,7 @@ std::unique_ptr<IJob> MessageQueueProcessor::processMessage(std::unique_ptr<IReq
         std::lock_guard<std::mutex> lock(jobs_mutex_);
         auto it = jobs_.find(id);
         std::string status_str = it != jobs_.end() ? statusToString(it->second.status) : "Not found";
-        writer->writeStatusResponse(id, status_str);
+        writer->write(StatusResponse{id, status_str});
         return nullptr;
     }
     // Add others

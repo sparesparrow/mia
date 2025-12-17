@@ -14,7 +14,7 @@ set(ZLIB_FIND_MODE "MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(libcurl_PACKAGE_FOLDER_RELEASE "/home/ubuntu/.conan2/p/b/libcud63c3b5e25480/p")
+set(libcurl_PACKAGE_FOLDER_RELEASE "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p")
 set(libcurl_BUILD_MODULES_PATHS_RELEASE )
 
 

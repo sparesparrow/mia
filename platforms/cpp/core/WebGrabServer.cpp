@@ -5,6 +5,7 @@
 #include "TcpSocket.h"
 #include "FlatBuffersRequestReader.h"
 #include "FlatBuffersResponseWriter.h"
+#include "IJob.h"
 #include <iostream>
 
 WebGrabServer::WebGrabServer(uint16_t port, const std::string& workingDir)
@@ -43,7 +44,8 @@ void WebGrabServer::acceptLoop() {
 }
 
 void WebGrabServer::handleClient(std::unique_ptr<TcpSocket> client_socket) {
-    auto writer = std::make_unique<FlatBuffersResponseWriter>(std::move(client_socket));
+    auto socket_shared = std::shared_ptr<TcpSocket>(std::move(client_socket));
+    auto writer = std::make_unique<FlatBuffersResponseWriter>(socket_shared);
 
     while (writer->isConnected()) {
         std::vector<uint8_t> buffer;

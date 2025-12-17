@@ -11,6 +11,7 @@ private:
 
 public:
     explicit FlatBuffersRequestReader();
+    explicit FlatBuffersRequestReader(const uint8_t* buffer, size_t size);
     ~FlatBuffersRequestReader() override = default;
 
     // IRequestReader

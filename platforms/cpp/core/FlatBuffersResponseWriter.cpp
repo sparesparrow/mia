@@ -50,6 +50,10 @@ bool FlatBuffersResponseWriter::write(const void* buffer, size_t size) {
     return client_socket_ && client_socket_->send(buffer, size);
 }
 
+bool FlatBuffersResponseWriter::isConnected() const {
+    return client_socket_ && client_socket_->isConnected();
+}
+
 bool FlatBuffersResponseWriter::sendResponse() {
     if (!client_socket_ || !client_socket_->isConnected()) return false;
 
