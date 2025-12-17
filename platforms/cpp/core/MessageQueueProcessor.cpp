@@ -55,3 +55,38 @@ std::string MessageQueueProcessor::statusToString(JobStatus status) {
     default: return "Unknown";
     }
 }
+
+// IRequestReader interface implementation
+bool MessageQueueProcessor::next(RequestEnvelope& out) {
+    // This class doesn't actively read requests - it processes them when given
+    return false;
+}
+
+bool MessageQueueProcessor::good() const {
+    return true; // Always good
+}
+
+void MessageQueueProcessor::close() {
+    // Nothing to close
+}
+
+// IResponseWriter interface implementation
+bool MessageQueueProcessor::write(const DownloadResponse& resp) {
+    // This class doesn't write responses - it delegates to other writers
+    return true;
+}
+
+bool MessageQueueProcessor::write(const StatusResponse& resp) {
+    // This class doesn't write responses - it delegates to other writers
+    return true;
+}
+
+bool MessageQueueProcessor::write(const ErrorResponse& resp) {
+    // This class doesn't write responses - it delegates to other writers
+    return true;
+}
+
+bool MessageQueueProcessor::flush() {
+    // Nothing to flush
+    return true;
+}
