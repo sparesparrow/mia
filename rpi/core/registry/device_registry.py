@@ -1,6 +1,7 @@
 """
 Device Registry
 Central registry for tracking and managing hardware devices.
+Enhanced with hardware-specific profiles and integration with hardware abstraction layer.
 """
 import json
 import logging
@@ -8,9 +9,9 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Callable
+from typing import Dict, List, Optional, Callable, Any
 
-from .device_profile import DeviceProfile, DeviceType, DeviceStatus
+from .device_profile import DeviceProfile, DeviceType, DeviceStatus, DEVICE_PROFILES
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +195,235 @@ class DeviceRegistry:
         """Get all healthy (online and recently seen) devices"""
         with self._lock:
             return [d for d in self._devices.values() if d.is_healthy(self._device_timeout)]
+
+    # Hardware-specific methods
+    def register_hardware_device(self, device_type: DeviceType, device_id: str = None,
+                                name: str = None, profile_key: str = None, **metadata) -> Optional[DeviceProfile]:
+        """
+        Register a hardware device using predefined profiles.
+
+        Args:
+            device_type: Type of hardware device
+            device_id: Optional custom device ID
+            name: Optional custom device name
+            profile_key: Optional specific profile key to use
+            **metadata: Additional device-specific metadata
+
+        Returns:
+            Registered device profile or None if failed
+        """
+        # Use specific profile if provided, otherwise find by device type
+        if profile_key:
+            template = DEVICE_PROFILES.get(profile_key)
+            if not template:
+                logger.warning(f"Profile key not found: {profile_key}")
+                return None
+        else:
+            # Find matching predefined profile by device type
+            template = None
+            for key, profile in DEVICE_PROFILES.items():
+                if profile.device_type == device_type:
+                    template = profile
+                    break
+
+            if not template:
+                logger.warning(f"No predefined profile found for device type: {device_type}")
+                return None
+
+        # Generate device ID if not provided
+        if not device_id:
+            device_id = f"{device_type.value}_{len(self._devices) + 1}"
+
+        # Create new profile
+        profile = DeviceProfile(
+            device_id=device_id,
+            device_type=device_type,
+            name=name or template.name,
+            capabilities=template.capabilities.copy(),
+            metadata={**template.metadata, **metadata}
+        )
+
+        # Register the device
+        if self.register(profile):
+            logger.info(f"Registered hardware device: {device_id} ({device_type.value})")
+            return profile
+
+        return None
+
+    def register_gpio_pin(self, pin: int, mode: str, name: str = None) -> Optional[DeviceProfile]:
+        """
+        Register a GPIO pin as a device.
+
+        Args:
+            pin: GPIO pin number
+            mode: Pin mode ("input" or "output")
+            name: Optional custom name
+
+        Returns:
+            Registered GPIO device profile
+        """
+        device_id = f"gpio_pin_{pin}"
+        device_name = name or f"GPIO Pin {pin}"
+
+        return self.register_hardware_device(
+            device_type=DeviceType.GPIO,
+            device_id=device_id,
+            name=device_name,
+            pin=pin,
+            mode=mode,
+            capabilities=["read", "write"] if mode == "output" else ["read"]
+        )
+
+    def register_sensor(self, sensor_type: str, sensor_id: str, location: str = None,
+                       **metadata) -> Optional[DeviceProfile]:
+        """
+        Register a sensor device.
+
+        Args:
+            sensor_type: Type of sensor (temperature, humidity, etc.)
+            sensor_id: Unique sensor identifier
+            location: Physical location of sensor
+            **metadata: Additional sensor metadata
+
+        Returns:
+            Registered sensor device profile
+        """
+        device_name = f"{sensor_type.title()} Sensor"
+        if location:
+            device_name += f" ({location})"
+
+        full_metadata = {
+            "sensor_type": sensor_type,
+            "location": location,
+            **metadata
+        }
+
+        return self.register_hardware_device(
+            device_type=DeviceType.SENSOR,
+            device_id=sensor_id,
+            name=device_name,
+            capabilities=["read_value", "get_status"],
+            **full_metadata
+        )
+
+    def register_arduino_device(self, port: str, board_type: str = "Unknown",
+                               firmware_version: str = None) -> Optional[DeviceProfile]:
+        """
+        Register an Arduino device.
+
+        Args:
+            port: Serial port path
+            board_type: Arduino board type
+            firmware_version: Optional firmware version
+
+        Returns:
+            Registered Arduino device profile
+        """
+        device_id = f"arduino_{port.replace('/', '_').replace('dev_', '')}"
+
+        return self.register_hardware_device(
+            device_type=DeviceType.SERIAL,
+            device_id=device_id,
+            name=f"Arduino ({board_type})",
+            port=port,
+            board_type=board_type,
+            firmware_version=firmware_version,
+            capabilities=["send_command", "receive_data", "get_telemetry"]
+        )
+
+    def get_hardware_summary(self) -> Dict[str, Any]:
+        """
+        Get summary of registered hardware devices.
+
+        Returns:
+            Dictionary with hardware statistics
+        """
+        with self._lock:
+            devices = list(self._devices.values())
+
+            hardware_stats = {
+                "total_devices": len(devices),
+                "by_type": {},
+                "by_status": {},
+                "gpio_pins": [],
+                "sensors": [],
+                "arduinos": [],
+                "healthy_devices": sum(1 for d in devices if d.is_healthy(self._device_timeout))
+            }
+
+            for device in devices:
+                # Count by type
+                type_name = device.device_type.value
+                hardware_stats["by_type"][type_name] = hardware_stats["by_type"].get(type_name, 0) + 1
+
+                # Count by status
+                status_name = device.status.value
+                hardware_stats["by_status"][status_name] = hardware_stats["by_status"].get(status_name, 0) + 1
+
+                # Collect specific hardware info
+                if device.device_type == DeviceType.GPIO:
+                    hardware_stats["gpio_pins"].append({
+                        "id": device.device_id,
+                        "pin": device.metadata.get("pin"),
+                        "mode": device.metadata.get("mode"),
+                        "status": device.status.value
+                    })
+                elif device.device_type == DeviceType.SENSOR:
+                    hardware_stats["sensors"].append({
+                        "id": device.device_id,
+                        "type": device.metadata.get("sensor_type"),
+                        "location": device.metadata.get("location"),
+                        "status": device.status.value
+                    })
+                elif device.device_type == DeviceType.SERIAL:
+                    hardware_stats["arduinos"].append({
+                        "id": device.device_id,
+                        "port": device.metadata.get("port"),
+                        "board_type": device.metadata.get("board_type"),
+                        "status": device.status.value
+                    })
+
+            return hardware_stats
+
+    def update_hardware_health(self, device_id: str, is_healthy: bool,
+                              error_message: str = None) -> bool:
+        """
+        Update hardware device health status.
+
+        Args:
+            device_id: Device identifier
+            is_healthy: Whether device is healthy
+            error_message: Optional error message if unhealthy
+
+        Returns:
+            True if device was found and updated
+        """
+        with self._lock:
+            if device_id in self._devices:
+                device = self._devices[device_id]
+                if is_healthy:
+                    device.set_online()
+                else:
+                    device.set_error(error_message or "Health check failed")
+                return True
+            return False
+
+    def get_hardware_capabilities(self, device_type: DeviceType = None) -> Dict[str, List[str]]:
+        """
+        Get capabilities for devices by type.
+
+        Args:
+            device_type: Optional filter by device type
+
+        Returns:
+            Dictionary mapping device IDs to capability lists
+        """
+        with self._lock:
+            capabilities = {}
+            for device_id, device in self._devices.items():
+                if device_type is None or device.device_type == device_type:
+                    capabilities[device_id] = device.capabilities.copy()
+            return capabilities
     
     def get_status_summary(self) -> Dict:
         """Get summary of registry status"""

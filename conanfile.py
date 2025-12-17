@@ -20,7 +20,7 @@ class MIAConan(ConanFile):
     default_options = {
         "shared": False,
         "fPIC": True,
-        "with_hardware": True,
+        "with_hardware": True,   # Testing libgpiod compatibility
         "with_mcp": True
     }
 

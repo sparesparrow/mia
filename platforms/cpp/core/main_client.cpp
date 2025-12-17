@@ -31,14 +31,20 @@ int main(int argc, char* argv[]) {
         if (cmd == "download") {
             std::string url;
             iss >> url;
-            if (!client.executeDownload(url)) {
+            uint32_t sessionId;
+            if (!client.executeDownload(url, sessionId)) {
                 std::cerr << "Failed to send download request" << std::endl;
+            } else {
+                std::cout << "Download started with session ID: " << sessionId << std::endl;
             }
         } else if (cmd == "status") {
             uint32_t id;
             iss >> id;
-            if (!client.executeStatus(id)) {
+            std::string status;
+            if (!client.executeStatus(id, status)) {
                 std::cerr << "Failed to send status request" << std::endl;
+            } else {
+                std::cout << "Status for session " << id << ": " << status << std::endl;
             }
         } else if (cmd == "abort") {
             uint32_t id;
