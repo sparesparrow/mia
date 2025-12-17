@@ -15,5 +15,6 @@ openssl/*:shared=False
 
 [conf]
 tools.cmake.cmaketoolchain:generator=Ninja
+tools.cmake.cmaketoolchain:system_processor=aarch64
 tools.system.package_manager:mode=install
 tools.system.package_manager:sudo=True

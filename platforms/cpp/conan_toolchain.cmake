@@ -17,6 +17,9 @@ endif()
 ########## 'generic_system' block #############
 # Definition of system, platform and toolset
 
+if(NOT DEFINED CMAKE_SYSTEM_PROCESSOR) # It might have been defined by a user toolchain
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+endif()
 
 
 
@@ -111,7 +114,7 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 list(PREPEND CMAKE_PREFIX_PATH "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib/cmake")
 # The Conan local "generators" folder, where this toolchain is saved.
 list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR} )
-list(PREPEND CMAKE_PROGRAM_PATH "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/bin")
+list(PREPEND CMAKE_PROGRAM_PATH "/home/mia/.conan2/p/b/flatba89bb86646dac/p/bin")
 list(PREPEND CMAKE_LIBRARY_PATH "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/lib" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/lib" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/lib" "lib" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/lib" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/lib")
 list(PREPEND CMAKE_INCLUDE_PATH "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/include" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/include" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/include" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/include" "include" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/include" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/include" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/include")
 set(CONAN_RUNTIME_LIB_DIRS "/home/mia/.conan2/p/b/jsonc9d47ec8a0da15/p/lib" "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib" "/home/mia/.conan2/p/b/libcu8f5b9a0bbb3be/p/lib" "/home/mia/.conan2/p/b/libgp2e8ee9713a263/p/lib" "lib" "/home/mia/.conan2/p/b/mosqud4ca376be1f00/p/lib" "/home/mia/.conan2/p/b/opens25ee7b8691e42/p/lib" "/home/mia/.conan2/p/b/zlib12dadf1bb199e/p/lib" )

@@ -19,9 +19,9 @@
                 "CMAKE_BUILD_TYPE": "Release"
             },
             "environment": {
-                "PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/bin:$penv{PATH}",
-                "LD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib:$penv{LD_LIBRARY_PATH}",
-                "DYLD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib:$penv{DYLD_LIBRARY_PATH}"
+                "PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib:$penv{LD_LIBRARY_PATH}",
+                "DYLD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib:$penv{DYLD_LIBRARY_PATH}"
             },
             "toolchainFile": "conan_toolchain.cmake",
             "binaryDir": "/home/mia/ai-servis/platforms/cpp"
