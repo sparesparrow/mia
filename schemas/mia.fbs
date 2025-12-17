@@ -1,0 +1,137 @@
+namespace Mia;
+
+// ============================================================================
+// GPIO Control Messages
+// ============================================================================
+
+enum GPIODirection: byte { Input = 0, Output = 1, PWM = 2 }
+
+table GPIOCommand {
+  pin: int;
+  direction: GPIODirection;
+  value: bool;
+  timestamp: uint64;
+}
+
+table GPIOResponse {
+  pin: int;
+  success: bool;
+  value: bool;
+  error_message: string;
+  timestamp: uint64;
+}
+
+// ============================================================================
+// Sensor Telemetry Messages
+// ============================================================================
+
+enum SensorType: byte { Temperature = 0, Humidity = 1, Distance = 2, Pressure = 3, Light = 4, Motion = 5 }
+
+table SensorTelemetry {
+  sensor_id: string;
+  sensor_type: SensorType;
+  value: float;
+  unit: string;
+  timestamp: uint64;
+  metadata: [ubyte];  // For additional sensor-specific data
+}
+
+// ============================================================================
+// System Status Messages
+// ============================================================================
+
+table SystemStatus {
+  uptime_seconds: uint64;
+  memory_percent: float;
+  cpu_percent: float;
+  device_count: int;
+  timestamp: uint64;
+}
+
+// ============================================================================
+// Command Acknowledgment Messages
+// ============================================================================
+
+enum CommandStatus: byte { Success = 0, Failure = 1, Timeout = 2, Invalid = 3 }
+
+table CommandAck {
+  command_id: string;
+  status: CommandStatus;
+  error_message: string;
+  response_data: [ubyte];  // Optional response payload
+  timestamp: uint64;
+}
+
+// ============================================================================
+// Device Management Messages
+// ============================================================================
+
+enum DeviceType: byte { GPIO = 0, Sensor = 1, Actuator = 2, Display = 3, Network = 4 }
+
+table DeviceInfo {
+  device_id: string;
+  device_type: DeviceType;
+  name: string;
+  capabilities: [string];
+  status: string;
+  last_seen: uint64;
+  metadata: [ubyte];
+}
+
+// ============================================================================
+// LED Control Messages (for Phase 4.4)
+// ============================================================================
+
+enum LEDMode: byte { Drive = 0, Parked = 1, Night = 2, Service = 3, Emergency = 4 }
+
+enum AIState: byte { Listening = 0, Speaking = 1, Thinking = 2, Recording = 3, Error = 4, Idle = 5 }
+
+table LEDState {
+  mode: LEDMode;
+  ai_state: AIState;
+  brightness: float;  // 0.0 to 1.0
+  service_status: [string];  // List of service names and their status
+  obd_data: [ubyte];  // OBD telemetry data
+  timestamp: uint64;
+}
+
+// ============================================================================
+// Vehicle Telemetry (existing, expanded)
+// ============================================================================
+
+enum DpfStatus : byte { Normal = 0, Regenerating = 1, Warning = 2, Critical = 3 }
+
+table VehicleTelemetry {
+  // Engine data
+  rpm: float;
+  speed_kmh: float;
+  coolant_temp_c: float;
+  oil_temperature_c: float;
+  battery_voltage: float;
+
+  // DPF data
+  dpf_soot_load_percent: float;
+  dpf_soot_mass_g: float;
+  dpf_regeneration_status: DpfStatus;
+  eolys_additive_level_percent: float;
+  eolys_additive_level_l: float;
+
+  // Additional sensors
+  intake_air_temp_c: float;
+  fuel_level_percent: float;
+  engine_load_percent: float;
+
+  timestamp: uint64;
+}
+
+// ============================================================================
+// Root Types for Different Message Categories
+// ============================================================================
+
+root_type GPIOCommand;
+root_type SensorTelemetry;
+root_type SystemStatus;
+root_type CommandAck;
+root_type DeviceInfo;
+root_type LEDState;
+root_type VehicleTelemetry;

@@ -1,0 +1,19 @@
+[Unit]
+Description=MIA LED Monitor Service - AI Service Status Monitor
+After=network.target mia-broker.service
+Requires=mia-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/ai-servis/rpi/services
+ExecStart=/usr/bin/python3 led_monitor_service.py --broker-url tcp://localhost:5555 --telemetry-url tcp://localhost:5556 --led-port /dev/ttyUSB0
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+
+[Install]
+WantedBy=multi-user.target
