@@ -31,8 +31,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Service UUID for OBD-II adapter
-OBD_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+# Service UUIDs for OBD-II adapter
+# SPP UUID for compatibility with Android app scanning
+SPP_SERVICE_UUID = "00001101-0000-1000-8000-00805F9B34FB"
+# Nordic UART Service UUID (also supported)
+NUS_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+# Use SPP UUID for advertising to match Android app expectations
+OBD_SERVICE_UUID = SPP_SERVICE_UUID
 DEVICE_NAME = "MIA OBD-II Adapter"
 
 
@@ -128,9 +133,10 @@ class BLEAdvertiser:
             ad_path = "/org/bluez/mia/obd_advertisement"
             
             # Advertisement properties
+            # Include both SPP and NUS UUIDs for compatibility
             ad_properties = {
                 "Type": "peripheral",
-                "ServiceUUIDs": dbus.Array([OBD_SERVICE_UUID], signature='s'),
+                "ServiceUUIDs": dbus.Array([SPP_SERVICE_UUID, NUS_SERVICE_UUID], signature='s'),
                 "LocalName": self.device_name,
                 "IncludeTxPower": dbus.Boolean(True)
             }
