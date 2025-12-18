@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ANDROID_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
-PACKAGE_NAME="cz.mia.app.debug"
+PACKAGE_NAME="cz.mia.app"
 MAIN_ACTIVITY=".MainActivity"
 OUTPUT_DIR="$ANDROID_DIR/debug-output"
 DELAY_MS=1000
@@ -166,7 +166,16 @@ install_apk() {
     exit 1
   fi
   log "Installing APK: $APK_PATH"
-  adb -s "$DEVICE_SERIAL" install -r "$APK_PATH" >/dev/null
+  # Debug instrumentation
+  echo "{\"timestamp\":$(date +%s),\"location\":\"install_apk\",\"message\":\"Starting APK install\",\"data\":{\"apk_path\":\"$APK_PATH\",\"device\":\"$DEVICE_SERIAL\"},\"sessionId\":\"debug-session\",\"runId\":\"install_debug\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+  if adb -s "$DEVICE_SERIAL" install -r "$APK_PATH"; then
+    log "APK installed successfully"
+    echo "{\"timestamp\":$(date +%s),\"location\":\"install_apk\",\"message\":\"APK install successful\",\"data\":{\"apk_path\":\"$APK_PATH\"},\"sessionId\":\"debug-session\",\"runId\":\"install_debug\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+  else
+    err "APK installation failed"
+    echo "{\"timestamp\":$(date +%s),\"location\":\"install_apk\",\"message\":\"APK install failed\",\"data\":{\"apk_path\":\"$APK_PATH\",\"exit_code\":$?},\"sessionId\":\"debug-session\",\"runId\":\"install_debug\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+    exit 1
+  fi
 }
 
 launch_app() {
