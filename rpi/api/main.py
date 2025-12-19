@@ -47,6 +47,20 @@ except ImportError:
     CitroenTelemetry = None
     DpfStatus = None
     logger.warning("Could not import Mia.Vehicle FlatBuffers bindings. Telemetry decoding disabled.")
+
+# SpareTools integration (optional - for GitHub API, filesystem utilities, etc.)
+try:
+    from sparetools.scm.github import GitHubClient, GitHubAPIError
+    from sparetools.fs import symlink_with_check, create_zero_copy_environment
+    from sparetools.proc import execute_command
+    SPARETOOLS_AVAILABLE = True
+    logger.info("SpareTools utilities available")
+except ImportError:
+    GitHubClient = None
+    GitHubAPIError = None
+    SPARETOOLS_AVAILABLE = False
+    logger.warning("SpareTools utilities not available - install via: conan install sparetools-base/2.0.3")
+
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
 
 # CORS middleware
@@ -582,7 +596,7 @@ async def get_status():
                 "percent": cpu_percent,
                 "count": psutil.cpu_count()
             },
-            "devices_connected": len(device_registry),
+            "devices_connected": len(device_registry.get_all()) if REGISTRY_AVAILABLE and device_registry else len(device_registry_simple),
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:

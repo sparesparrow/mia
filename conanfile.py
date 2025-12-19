@@ -24,6 +24,9 @@ class MIAConan(ConanFile):
         "with_mcp": True
     }
 
+    # Use SpareTools foundation utilities
+    python_requires = "sparetools-base/2.0.3"
+
     def configure(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
@@ -48,13 +51,18 @@ class MIAConan(ConanFile):
             # MCP integration may need additional deps
             pass
 
+        # SpareTools runtime dependencies
+        # Note: These require Cloudsmith remote to be configured
+        # self.requires("sparetools-mia/2.0.3")           # MIA IoT components
+        # self.requires("sparetools-obd-sim/2.0.3")       # OBD-II simulation (if needed)
+
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
 
-        # Custom tools - these may need to be published to Cloudsmith or replaced
-        # TODO: Publish these packages to Cloudsmith sparetools remote or replace with alternatives
-        # self.tool_requires("sparetools-obd-sim/2.0.0")  # OBD simulator for testing
+        # SpareTools build-time dependencies
+        # Note: These require Cloudsmith remote to be configured via setup-sparetools.sh
+        # self.tool_requires("sparetools-obd-sim/2.0.3")  # OBD simulator for testing
         # self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
 
     def export_sources(self):

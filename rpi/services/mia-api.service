@@ -5,12 +5,13 @@ Wants=zmq-broker.service
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/opt/mia/rpi
-Environment="PATH=/opt/mia/rpi/bin:/usr/bin:/usr/local/bin"
-Environment="PYTHONHOME=/opt/mia/rpi"
-EnvironmentFile=-/etc/mia/environment
-ExecStart=/opt/mia/rpi/bin/python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/projects/mia/rpi/api
+Environment="PATH=/home/mia/.ai-servis/bin:/usr/bin:/usr/local/bin"
+Environment="PYTHONHOME=/home/mia/.ai-servis"
+Environment="PYTHONPATH=/home/mia/projects/mia/rpi:/home/mia/.ai-servis/lib/python3.13/site-packages"
+ExecStart=/home/mia/.ai-servis/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
 Restart=always
 RestartSec=10
 StandardOutput=journal
