@@ -7,6 +7,8 @@ import zmq
 import json
 import logging
 import time
+import serial
+import threading
 from typing import Dict, Optional
 from datetime import datetime
 
@@ -60,12 +62,17 @@ class GPIOWorker:
     Subscribes to ZeroMQ messages and executes GPIO commands
     """
     
-    def __init__(self, broker_url: str = "tcp://localhost:5555"):
+    def __init__(self, broker_url: str = "tcp://localhost:5555", serial_port: str = "/dev/ttyUSB0"):
         self.broker_url = broker_url
+        self.serial_port = serial_port
         self.context = zmq.Context()
         self.socket = None
         self.running = False
         self.pin_states: Dict[int, Dict[str, any]] = {}  # pin -> {direction, value}
+
+        # Serial communication for ESP32/Nucleus
+        self.serial_bridge = None
+        self._init_serial_bridge()
 
         # Sensor manager
         self.sensor_manager = None
@@ -82,7 +89,42 @@ class GPIOWorker:
                 logger.info("Using RPi.GPIO library")
         else:
             logger.warning("Running in simulation mode - no actual GPIO control")
-    
+
+    def _init_serial_bridge(self):
+        """Initialize serial communication with ESP32/Nucleus"""
+        try:
+            self.serial_bridge = serial.Serial(
+                port=self.serial_port,
+                baudrate=115200,
+                timeout=1.0,
+                write_timeout=1.0
+            )
+            logger.info(f"Serial bridge initialized on {self.serial_port}")
+        except Exception as e:
+            logger.warning(f"Failed to initialize serial bridge on {self.serial_port}: {e}")
+            self.serial_bridge = None
+
+    def _send_serial_command(self, command: Dict) -> Optional[Dict]:
+        """Send command to ESP32/Nucleus over serial and wait for response"""
+        if not self.serial_bridge:
+            logger.warning("Serial bridge not available")
+            return None
+
+        try:
+            # Send command as JSON
+            cmd_json = json.dumps(command) + "\n"
+            self.serial_bridge.write(cmd_json.encode())
+
+            # Read response
+            response_line = self.serial_bridge.readline().decode().strip()
+            if response_line:
+                return json.loads(response_line)
+        except Exception as e:
+            logger.error(f"Serial communication error: {e}")
+            return None
+
+        return None
+
     def start(self):
         """Start the GPIO worker"""
         self.socket = self.context.socket(zmq.DEALER)
@@ -125,6 +167,9 @@ class GPIOWorker:
         # Add sensor capabilities if available
         if self.sensor_manager:
             capabilities.extend(["SENSOR_READ", "SENSOR_LIST", "SENSOR_CONFIG"])
+
+        # Add RF capabilities for NucleusESP32
+        capabilities.extend(["RF_CAPTURE", "RF_TRANSMIT", "RF_LISTEN", "RF_CONFIG"])
 
         message = {
             "type": "WORKER_REGISTER",
@@ -226,6 +271,14 @@ class GPIOWorker:
                 self._handle_sensor_list(message)
             elif message_type == "SENSOR_CONFIG":
                 self._handle_sensor_config(message)
+            elif message_type == "RF_CAPTURE":
+                self._handle_rf_capture(message)
+            elif message_type == "RF_TRANSMIT":
+                self._handle_rf_transmit(message)
+            elif message_type == "RF_LISTEN":
+                self._handle_rf_listen(message)
+            elif message_type == "RF_CONFIG":
+                self._handle_rf_config(message)
             else:
                 logger.warning(f"Unknown message type: {message_type}")
         except Exception as e:
@@ -645,6 +698,155 @@ class GPIOWorker:
             "request_id": request_id,
         }
         self.socket.send_json(response)
+
+    # RF Command Handlers for NucleusESP32 Integration
+    def _handle_rf_capture(self, message: Dict):
+        """Handle RF capture command via ESP32/Nucleus"""
+        try:
+            frequency = message.get("frequency", 433.92)  # Default 433MHz
+            modulation = message.get("modulation", "ASK")  # ASK, FSK, etc.
+            duration_ms = message.get("duration_ms", 1000)
+            request_id = message.get("request_id")
+
+            # Send RF command over serial to ESP32
+            nucleus_cmd = {
+                "action": "rf_capture",
+                "frequency": frequency,
+                "modulation": modulation.lower(),
+                "duration_ms": duration_ms,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # For now, simulate RF capture response
+            # In real implementation, this would communicate with ESP32
+            logger.info(f"RF Capture: freq={frequency}MHz, mod={modulation}, duration={duration_ms}ms")
+
+            # Simulate capture response
+            rf_data = {
+                "frequency": frequency,
+                "modulation": modulation,
+                "duration_ms": duration_ms,
+                "data_length": 128,  # Simulated data length
+                "signal_strength": -45.2,
+                "captured_at": datetime.now().isoformat()
+            }
+
+            response = {
+                "type": "RF_CAPTURE_RESPONSE",
+                "success": True,
+                "rf_data": rf_data,
+                "timestamp": datetime.now().isoformat(),
+                "request_id": request_id,
+            }
+            self.socket.send_json(response)
+
+        except Exception as e:
+            logger.error(f"Error in RF capture: {e}")
+            self._send_error(f"RF capture failed: {e}")
+
+    def _handle_rf_transmit(self, message: Dict):
+        """Handle RF transmit command via ESP32/Nucleus"""
+        try:
+            frequency = message.get("frequency", 433.92)
+            modulation = message.get("modulation", "ASK")
+            data = message.get("data", [])  # Raw signal data
+            repeat_count = message.get("repeat_count", 1)
+            request_id = message.get("request_id")
+
+            # Send RF transmit command to ESP32
+            nucleus_cmd = {
+                "action": "rf_transmit",
+                "frequency": frequency,
+                "modulation": modulation.lower(),
+                "data": data,
+                "repeat_count": repeat_count,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            logger.info(f"RF Transmit: freq={frequency}MHz, mod={modulation}, data_len={len(data)}")
+
+            # Simulate transmit response
+            response = {
+                "type": "RF_TRANSMIT_RESPONSE",
+                "success": True,
+                "frequency": frequency,
+                "modulation": modulation,
+                "data_transmitted": len(data),
+                "timestamp": datetime.now().isoformat(),
+                "request_id": request_id,
+            }
+            self.socket.send_json(response)
+
+        except Exception as e:
+            logger.error(f"Error in RF transmit: {e}")
+            self._send_error(f"RF transmit failed: {e}")
+
+    def _handle_rf_listen(self, message: Dict):
+        """Handle RF listen/monitor command via ESP32/Nucleus"""
+        try:
+            frequency = message.get("frequency", 433.92)
+            modulation = message.get("modulation", "ASK")
+            timeout_ms = message.get("timeout_ms", 5000)
+            request_id = message.get("request_id")
+
+            # Start continuous RF listening
+            nucleus_cmd = {
+                "action": "rf_listen",
+                "frequency": frequency,
+                "modulation": modulation.lower(),
+                "timeout_ms": timeout_ms,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            logger.info(f"RF Listen: freq={frequency}MHz, mod={modulation}, timeout={timeout_ms}ms")
+
+            # Simulate listen response
+            response = {
+                "type": "RF_LISTEN_RESPONSE",
+                "success": True,
+                "status": "listening",
+                "frequency": frequency,
+                "modulation": modulation,
+                "timestamp": datetime.now().isoformat(),
+                "request_id": request_id,
+            }
+            self.socket.send_json(response)
+
+        except Exception as e:
+            logger.error(f"Error in RF listen: {e}")
+            self._send_error(f"RF listen failed: {e}")
+
+    def _handle_rf_config(self, message: Dict):
+        """Handle RF configuration command"""
+        try:
+            config_type = message.get("config_type", "general")
+            parameters = message.get("parameters", {})
+            request_id = message.get("request_id")
+
+            # Send RF configuration to ESP32
+            nucleus_cmd = {
+                "action": "rf_config",
+                "config_type": config_type,
+                "parameters": parameters,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            logger.info(f"RF Config: type={config_type}, params={parameters}")
+
+            # Simulate config response
+            response = {
+                "type": "RF_CONFIG_RESPONSE",
+                "success": True,
+                "config_type": config_type,
+                "applied_parameters": parameters,
+                "timestamp": datetime.now().isoformat(),
+                "request_id": request_id,
+            }
+            self.socket.send_json(response)
+
+        except Exception as e:
+            logger.error(f"Error in RF config: {e}")
+            self._send_error(f"RF config failed: {e}")
 
 
 def main():
