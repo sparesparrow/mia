@@ -7,9 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(CURL REQUIRED)
 find_package(Threads REQUIRED)
 
-# Find JSON library
+# FSM implemented without external dependencies
+
+# Find JSON library using pkg-config (since Conan jsoncpp has library declaration issues)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP jsoncpp)
+pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+
+# Find ALSA for audio I/O
+pkg_check_modules(ALSA alsa)
 
 # Find Mosquitto MQTT library (pkg-config name is libmosquitto on Debian)
 pkg_check_modules(MOSQUITTO libmosquitto)
@@ -39,6 +44,11 @@ add_library(webgrab_lib
     CoreOrchestrator.cpp
     UIAdapter.cpp
     ContextManager.cpp
+    # Voice Control Components
+    voice_control_fsm.cpp
+    audio_device.cpp
+    stt_worker.cpp
+    tts_worker.cpp
 )
 
 target_link_libraries(webgrab_lib
@@ -46,8 +56,10 @@ target_link_libraries(webgrab_lib
     CURL::libcurl
     Threads::Threads
     ${JSONCPP_LIBRARIES}
+    ${ALSA_LIBRARIES}
 )
 
+# Use pkg-config variables for jsoncpp includes
 target_include_directories(webgrab_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
 
 add_executable(webgrab-client main_client.cpp)

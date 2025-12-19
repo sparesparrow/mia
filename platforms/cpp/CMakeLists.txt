@@ -6,12 +6,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find Conan-generated packages
-find_package(jsoncpp REQUIRED)
 find_package(flatbuffers REQUIRED)
 find_package(CURL REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Threads REQUIRED)
+# FSM implemented without Boost dependency
+
+# Find jsoncpp via pkg-config (needed for some executables)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+
+# Find system libraries
+if(UNIX AND NOT APPLE)
+    find_package(ALSA REQUIRED)
+endif()
 
 # Hardware-specific packages (only if hardware support is enabled)
 option(WITH_HARDWARE "Enable hardware support" ON)
@@ -51,6 +60,10 @@ add_library(webgrab_core STATIC
     core/JobWorker.cpp
     core/TcpListener.cpp
     core/CurlClientWrapper.cpp
+    core/audio_device.cpp
+    core/stt_worker.cpp
+    core/tts_worker.cpp
+    core/voice_control_fsm.cpp
 )
 
 # Enable position-independent code for shared library compatibility
@@ -65,13 +78,17 @@ target_include_directories(webgrab_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/core
 )
 
-# Link core library
+# Link core library (jsoncpp handled in core library via pkg-config)
 target_link_libraries(webgrab_core
-    JsonCpp::JsonCpp
     flatbuffers::flatbuffers
     CURL::libcurl
     Threads::Threads
 )
+
+# Link ALSA on Linux systems
+if(UNIX AND NOT APPLE)
+    target_link_libraries(webgrab_core ALSA::ALSA)
+endif()
 
 if(WITH_HARDWARE)
     target_link_libraries(webgrab_core mosquitto::mosquitto)
@@ -89,7 +106,20 @@ if(WITH_HARDWARE)
         libgpiod::libgpiod
         mosquitto::mosquitto
     )
+    # Add jsoncpp includes for hardware-server
+    target_include_directories(hardware-server PRIVATE ${JSONCPP_INCLUDE_DIRS})
 endif()
+
+# Voice Control Server
+add_executable(voice-server
+    core/main_voice_server.cpp
+    core/stt_worker.cpp
+    core/tts_worker.cpp
+)
+
+target_link_libraries(voice-server
+    webgrab_core
+)
 
 # MCP Server with FlatBuffers generation - Temporarily disabled due to missing Entity/Server.h
 # TODO: Fix missing Entity/Server.h dependency
