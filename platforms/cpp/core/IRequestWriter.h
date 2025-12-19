@@ -5,8 +5,8 @@
 
 // Forward declarations or simple structs
 struct DownloadRequest { std::string url; };
-struct DownloadStatusRequest { uint32_t sessionId; };
-struct DownloadAbortRequest { uint32_t sessionId; };
+struct DownloadStatusRequest { uint32_t session_id; };
+struct DownloadAbortRequest { uint32_t session_id; };
 struct ShutdownRequest {};
 
 class IRequestWriter {

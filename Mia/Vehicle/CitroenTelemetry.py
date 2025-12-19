@@ -94,39 +94,74 @@ class CitroenTelemetry(object):
             return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
         return 0.0
 
-def CitroenTelemetryStart(builder): builder.StartObject(10)
+def CitroenTelemetryStart(builder):
+    builder.StartObject(10)
+
 def Start(builder):
-    return CitroenTelemetryStart(builder)
-def CitroenTelemetryAddRpm(builder, rpm): builder.PrependFloat32Slot(0, rpm, 0.0)
+    CitroenTelemetryStart(builder)
+
+def CitroenTelemetryAddRpm(builder, rpm):
+    builder.PrependFloat32Slot(0, rpm, 0.0)
+
 def AddRpm(builder, rpm):
-    return CitroenTelemetryAddRpm(builder, rpm)
-def CitroenTelemetryAddSpeedKmh(builder, speedKmh): builder.PrependFloat32Slot(1, speedKmh, 0.0)
+    CitroenTelemetryAddRpm(builder, rpm)
+
+def CitroenTelemetryAddSpeedKmh(builder, speedKmh):
+    builder.PrependFloat32Slot(1, speedKmh, 0.0)
+
 def AddSpeedKmh(builder, speedKmh):
-    return CitroenTelemetryAddSpeedKmh(builder, speedKmh)
-def CitroenTelemetryAddCoolantTempC(builder, coolantTempC): builder.PrependFloat32Slot(2, coolantTempC, 0.0)
+    CitroenTelemetryAddSpeedKmh(builder, speedKmh)
+
+def CitroenTelemetryAddCoolantTempC(builder, coolantTempC):
+    builder.PrependFloat32Slot(2, coolantTempC, 0.0)
+
 def AddCoolantTempC(builder, coolantTempC):
-    return CitroenTelemetryAddCoolantTempC(builder, coolantTempC)
-def CitroenTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent): builder.PrependFloat32Slot(3, dpfSootLoadPercent, 0.0)
+    CitroenTelemetryAddCoolantTempC(builder, coolantTempC)
+
+def CitroenTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent):
+    builder.PrependFloat32Slot(3, dpfSootLoadPercent, 0.0)
+
 def AddDpfSootLoadPercent(builder, dpfSootLoadPercent):
-    return CitroenTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent)
-def CitroenTelemetryAddDpfSootMassG(builder, dpfSootMassG): builder.PrependFloat32Slot(4, dpfSootMassG, 0.0)
+    CitroenTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent)
+
+def CitroenTelemetryAddDpfSootMassG(builder, dpfSootMassG):
+    builder.PrependFloat32Slot(4, dpfSootMassG, 0.0)
+
 def AddDpfSootMassG(builder, dpfSootMassG):
-    return CitroenTelemetryAddDpfSootMassG(builder, dpfSootMassG)
-def CitroenTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus): builder.PrependInt8Slot(5, dpfRegenerationStatus, 0)
+    CitroenTelemetryAddDpfSootMassG(builder, dpfSootMassG)
+
+def CitroenTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus):
+    builder.PrependInt8Slot(5, dpfRegenerationStatus, 0)
+
 def AddDpfRegenerationStatus(builder, dpfRegenerationStatus):
-    return CitroenTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus)
-def CitroenTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent): builder.PrependFloat32Slot(6, eolysAdditiveLevelPercent, 0.0)
+    CitroenTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus)
+
+def CitroenTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent):
+    builder.PrependFloat32Slot(6, eolysAdditiveLevelPercent, 0.0)
+
 def AddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent):
-    return CitroenTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent)
-def CitroenTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL): builder.PrependFloat32Slot(7, eolysAdditiveLevelL, 0.0)
+    CitroenTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent)
+
+def CitroenTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL):
+    builder.PrependFloat32Slot(7, eolysAdditiveLevelL, 0.0)
+
 def AddEolysAdditiveLevelL(builder, eolysAdditiveLevelL):
-    return CitroenTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL)
-def CitroenTelemetryAddBatteryVoltage(builder, batteryVoltage): builder.PrependFloat32Slot(8, batteryVoltage, 0.0)
+    CitroenTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL)
+
+def CitroenTelemetryAddBatteryVoltage(builder, batteryVoltage):
+    builder.PrependFloat32Slot(8, batteryVoltage, 0.0)
+
 def AddBatteryVoltage(builder, batteryVoltage):
-    return CitroenTelemetryAddBatteryVoltage(builder, batteryVoltage)
-def CitroenTelemetryAddOilTemperatureC(builder, oilTemperatureC): builder.PrependFloat32Slot(9, oilTemperatureC, 0.0)
+    CitroenTelemetryAddBatteryVoltage(builder, batteryVoltage)
+
+def CitroenTelemetryAddOilTemperatureC(builder, oilTemperatureC):
+    builder.PrependFloat32Slot(9, oilTemperatureC, 0.0)
+
 def AddOilTemperatureC(builder, oilTemperatureC):
-    return CitroenTelemetryAddOilTemperatureC(builder, oilTemperatureC)
-def CitroenTelemetryEnd(builder): return builder.EndObject()
+    CitroenTelemetryAddOilTemperatureC(builder, oilTemperatureC)
+
+def CitroenTelemetryEnd(builder):
+    return builder.EndObject()
+
 def End(builder):
     return CitroenTelemetryEnd(builder)

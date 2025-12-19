@@ -21,9 +21,11 @@ namespace WebGrab {
  */
 struct GPIOLineInfo {
     struct gpiod_line* line;
+    struct gpiod_line_request* request;
+    unsigned int offset;
     bool is_output;
 
-    GPIOLineInfo() : line(nullptr), is_output(false) {}
+    GPIOLineInfo() : line(nullptr), request(nullptr), offset(0), is_output(false) {}
 };
 
 /**

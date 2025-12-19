@@ -1,15 +1,42 @@
-namespace webgrab;
+/*
+ * MIA Protocol Schema - FlatBuffers Message Protocol
+ *
+ * This schema defines the complete message protocol for the MIA (AI Service with MCP and Hardware Control) system.
+ * It supports multiple transport mechanisms (TCP, MQTT, WebSockets) and provides a unified interface
+ * for voice control, AI interactions, hardware management, and system monitoring.
+ *
+ * Key Features:
+ * - Strongly typed messages with efficient binary serialization
+ * - Union types for polymorphic message handling
+ * - Extensible design for future enhancements
+ * - Multi-transport support (MQTT, TCP, etc.)
+ * - Session management for conversational AI
+ * - Hardware abstraction layer
+ *
+ * Transport Layers:
+ * - MQTT: For pub/sub communication between services
+ * - TCP: For direct client-server communication
+ * - WebSockets: For web-based interfaces
+ * - FlatBuffers: For efficient serialization/deserialization
+ *
+ * Message Flow:
+ * 1. Client sends Request (via any transport)
+ * 2. Server processes and sends Response
+ * 3. Optional: Async events via MQTT subscriptions
+ */
+
+namespace Mia.Protocol;
 
 table DownloadRequest {
   url:string;
 }
 
 table DownloadResponse {
-  sessionId:uint32;
+  session_id:uint32;
 }
 
 table DownloadStatusRequest {
-  sessionId:uint32;
+  session_id:uint32;
 }
 
 table DownloadStatusResponse {
@@ -17,7 +44,7 @@ table DownloadStatusResponse {
 }
 
 table DownloadAbortRequest {
-  sessionId:uint32;
+  session_id:uint32;
 }
 
 table ShutdownRequest {
@@ -67,6 +94,230 @@ table GPIOPinStatus {
   value:bool;
 }
 
+// Voice Control Messages
+table VoiceCommandRequest {
+  command:string;         // Voice command text
+  confidence:float;       // Recognition confidence (0.0-1.0)
+  language:string;        // Language code (e.g., "en-US")
+  session_id:string;      // Voice session identifier
+}
+
+table VoiceCommandResponse {
+  response_text:string;   // Text response to speak
+  actions:[VoiceAction];  // Actions to execute
+  session_id:string;      // Voice session identifier
+  status:string;          // "success", "error", "processing"
+}
+
+table VoiceAction {
+  action_type:string;     // "gpio_set", "device_control", "system_command"
+  target:string;          // Target device/service
+  parameters:[KeyValue];  // Action parameters
+}
+
+table KeyValue {
+  key:string;
+  value:string;
+}
+
+// Wake Word Detection
+table WakeWordDetected {
+  wake_word:string;       // Detected wake word
+  confidence:float;       // Detection confidence
+  timestamp:uint64;       // Detection timestamp
+}
+
+// Audio Processing Messages
+table AudioProcessRequest {
+  audio_data:[ubyte];     // Raw audio data
+  format:string;          // Audio format ("wav", "mp3", etc.)
+  sample_rate:uint32;     // Sample rate in Hz
+  channels:uint8;         // Number of channels
+  session_id:string;      // Processing session ID
+}
+
+table AudioProcessResponse {
+  transcription:string;   // Transcribed text
+  confidence:float;       // Transcription confidence
+  language:string;        // Detected language
+  session_id:string;      // Processing session ID
+  status:string;          // "success", "error"
+}
+
+// AI Agent Communication
+table AIAgentRequest {
+  agent_id:string;        // Target AI agent identifier
+  query:string;           // User query or command
+  context:string;         // Conversation context
+  parameters:[KeyValue];  // Additional parameters
+  session_id:string;      // Conversation session ID
+}
+
+table AIAgentResponse {
+  agent_id:string;        // Responding agent identifier
+  response:string;        // AI response text
+  actions:[AIAgentAction]; // Actions to execute
+  confidence:float;       // Response confidence
+  session_id:string;      // Conversation session ID
+  status:string;          // "success", "error", "processing"
+}
+
+table AIAgentAction {
+  action_type:string;     // "execute_command", "set_gpio", "send_message"
+  priority:int8;          // Action priority (0-255, higher = more urgent)
+  parameters:[KeyValue];  // Action parameters
+  timeout_ms:uint32;      // Action timeout in milliseconds
+}
+
+// MCP (Model Context Protocol) Messages
+table MCPToolCall {
+  tool_name:string;       // Tool/function name
+  arguments:string;       // JSON-encoded arguments
+  call_id:string;         // Unique call identifier
+}
+
+table MCPToolResult {
+  call_id:string;         // Matching call identifier
+  result:string;          // JSON-encoded result
+  error:string;           // Error message (empty if success)
+  success:bool;           // Operation success flag
+}
+
+table MCPMessage {
+  message_type:string;    // "tool_call", "tool_result", "notification"
+  content:string;         // Message content (JSON)
+  session_id:string;      // MCP session identifier
+  timestamp:uint64;       // Message timestamp
+}
+
+// Hardware Control Extensions
+table HardwareConfig {
+  device_type:string;     // "gpio", "i2c", "spi", "uart", "pwm", "adc"
+  device_id:string;       // Unique device identifier
+  config:[KeyValue];      // Device-specific configuration
+  auto_start:bool = true; // Whether to start device automatically
+}
+
+table HardwareEvent {
+  device_id:string;       // Source device identifier
+  event_type:string;      // "interrupt", "status_change", "error", "data_ready"
+  event_data:[KeyValue];  // Event-specific data
+  timestamp:uint64;       // Event timestamp
+  sequence_id:uint32;     // Sequence number for ordered events
+}
+
+// Streaming Audio Support
+table AudioStreamStart {
+  session_id:string;      // Stream session identifier
+  format:string;          // Audio format
+  sample_rate:uint32;     // Sample rate in Hz
+  channels:uint8;         // Number of channels
+  compression:string;     // Compression type (optional)
+}
+
+table AudioStreamData {
+  session_id:string;      // Stream session identifier
+  sequence_number:uint32; // Packet sequence number
+  audio_data:[ubyte];     // Audio data chunk
+  timestamp:uint64;       // Data timestamp
+  end_of_stream:bool;     // True for last packet
+}
+
+table AudioStreamStop {
+  session_id:string;      // Stream session identifier
+  reason:string;          // Stop reason ("completed", "error", "timeout")
+}
+
+// Video Streaming Support
+table VideoStreamConfig {
+  session_id:string;      // Stream session identifier
+  width:uint32;           // Video width in pixels
+  height:uint32;          // Video height in pixels
+  frame_rate:uint32;      // Target frame rate (fps)
+  codec:string;           // Video codec ("h264", "mjpeg", "vp8")
+  bitrate_kbps:uint32;    // Target bitrate in kbps
+  keyframe_interval:uint32; // Keyframe interval in frames
+}
+
+table VideoStreamStart {
+  session_id:string;      // Stream session identifier
+  config:VideoStreamConfig; // Video configuration
+  camera_id:string;       // Camera device identifier
+}
+
+table VideoStreamData {
+  session_id:string;      // Stream session identifier
+  sequence_number:uint32; // Packet sequence number
+  frame_number:uint32;    // Frame number in stream
+  video_data:[ubyte];     // Encoded video frame data
+  timestamp:uint64;       // Frame capture timestamp
+  keyframe:bool;          // Whether this is a keyframe
+  end_of_stream:bool;     // True for last packet
+}
+
+table VideoStreamStop {
+  session_id:string;      // Stream session identifier
+  reason:string;          // Stop reason ("completed", "error", "timeout", "camera_disconnected")
+}
+
+table VideoStreamStatus {
+  session_id:string;      // Stream session identifier
+  status:string;          // "active", "paused", "error"
+  frames_sent:uint32;     // Total frames sent
+  bytes_sent:uint64;      // Total bytes sent
+  avg_fps:float;          // Average frames per second
+  error_message:string;   // Error message if status is "error"
+}
+
+// Advanced AI Features
+table AIContextUpdate {
+  session_id:string;      // Conversation session
+  context_type:string;    // "user_profile", "environment", "device_state"
+  context_data:string;    // JSON context data
+  timestamp:uint64;       // Update timestamp
+}
+
+table AIMemoryQuery {
+  session_id:string;      // Session identifier
+  query_type:string;      // "recall", "search", "summarize"
+  query:string;           // Search/query string
+  limit:uint32 = 10;      // Maximum results
+}
+
+table AIMemoryResult {
+  session_id:string;      // Session identifier
+  results:[MemoryItem];   // Retrieved memories
+  total_count:uint32;     // Total available results
+}
+
+table MemoryItem {
+  id:string;              // Memory item identifier
+  content:string;         // Memory content
+  timestamp:uint64;       // When memory was created
+  relevance_score:float;  // Search relevance (0.0-1.0)
+  metadata:[KeyValue];    // Additional metadata
+}
+
+// Service Discovery and Coordination
+table ServiceAnnouncement {
+  service_id:string;      // Unique service identifier
+  service_type:string;    // "voice-control", "hardware-server", "ai-agent"
+  capabilities:[string];  // Service capabilities
+  endpoint:string;        // Connection endpoint
+  status:string;          // "online", "busy", "offline"
+  last_heartbeat:uint64;  // Last heartbeat timestamp
+}
+
+table ServiceQuery {
+  service_type:string;    // Type filter (optional)
+  capability:string;      // Capability filter (optional)
+}
+
+table ServiceList {
+  services:[ServiceAnnouncement]; // Available services
+  query_timestamp:uint64; // When query was processed
+}
+
 // MQTT Transport Envelope
 table MQTTMessage {
   topic:string;
@@ -81,6 +332,7 @@ table ErrorResponse {
 
 // Enhanced unions for MQTT + legacy support
 union Request {
+  // Legacy requests
   DownloadRequest,
   DownloadStatusRequest,
   DownloadAbortRequest,
@@ -93,10 +345,58 @@ union Request {
   DeviceDiscoveryRequest,
   TelemetryRequest,
   CommandAckRequest,
-  HealthCheckRequest
+  HealthCheckRequest,
+
+  // Voice control requests
+  VoiceCommandRequest,
+  AudioProcessRequest,
+  AudioStreamStart,
+  VideoStreamStart,
+  VideoStreamConfig,
+
+  // AI agent requests
+  AIAgentRequest,
+  AIContextUpdate,
+  AIMemoryQuery,
+
+  // MCP requests
+  MCPToolCall,
+
+  // Hardware extension requests
+  HardwareConfig,
+
+  // Service coordination requests
+  ServiceQuery,
+
+  // Security requests
+  AuthenticationRequest,
+  AuthorizationRequest,
+
+  // Plugin system requests
+  PluginLoadRequest,
+  PluginUnloadRequest,
+
+  // Configuration requests
+  ConfigurationUpdate,
+
+  // Event system requests
+  EventSubscription,
+
+  // Workflow requests
+  WorkflowStartRequest,
+  WorkflowControlRequest,
+
+  // AI/ML requests
+  ModelLoadRequest,
+  InferenceRequest,
+
+  // Coordination requests
+  LockRequest,
+  UnlockRequest
 }
 
 union Response {
+  // Legacy responses
   DownloadResponse,
   DownloadStatusResponse,
   ErrorResponse,
@@ -108,7 +408,54 @@ union Response {
   DeviceDiscoveryResponse,
   TelemetryResponse,
   CommandAckResponse,
-  HealthCheckResponse
+  HealthCheckResponse,
+
+  // Voice control responses
+  VoiceCommandResponse,
+  AudioProcessResponse,
+  AudioStreamStop,
+  VideoStreamStop,
+  VideoStreamStatus,
+
+  // AI agent responses
+  AIAgentResponse,
+  AIMemoryResult,
+
+  // MCP responses
+  MCPToolResult,
+
+  // Hardware extension responses
+  HardwareEvent,
+
+  // Service coordination responses
+  ServiceList,
+
+  // Security responses
+  AuthenticationResponse,
+  AuthorizationResponse,
+
+  // Plugin system responses
+  PluginLoadResponse,
+
+  // Configuration responses
+  ConfigurationSnapshot,
+
+  // Monitoring responses
+  MetricReport,
+  HealthReport,
+
+  // Event system responses
+  EventAcknowledgment,
+
+  // Workflow responses
+  WorkflowStatusResponse,
+
+  // AI/ML responses
+  ModelLoadResponse,
+  InferenceResponse,
+
+  // Coordination responses
+  LockResponse
 }
 
 table Message {
@@ -232,3 +579,274 @@ root_type CommandAckRequest;
 root_type CommandAckResponse;
 root_type HealthCheckRequest;
 root_type HealthCheckResponse;
+
+// Voice control root types
+root_type VoiceCommandRequest;
+root_type VoiceCommandResponse;
+root_type WakeWordDetected;
+root_type AudioProcessRequest;
+root_type AudioProcessResponse;
+root_type AudioStreamStart;
+root_type AudioStreamData;
+root_type AudioStreamStop;
+
+// Video streaming root types
+root_type VideoStreamConfig;
+root_type VideoStreamStart;
+root_type VideoStreamData;
+root_type VideoStreamStop;
+root_type VideoStreamStatus;
+
+// AI agent root types
+root_type AIAgentRequest;
+root_type AIAgentResponse;
+root_type AIContextUpdate;
+root_type AIMemoryQuery;
+root_type AIMemoryResult;
+
+// MCP root types
+root_type MCPToolCall;
+root_type MCPToolResult;
+root_type MCPMessage;
+
+// Hardware extension root types
+root_type HardwareConfig;
+root_type HardwareEvent;
+
+// Service coordination root types
+root_type ServiceAnnouncement;
+root_type ServiceQuery;
+root_type ServiceList;
+
+// Security and Authentication
+table AuthenticationRequest {
+  username:string;
+  password:string;  // For basic auth, or token for token-based auth
+  method:string;    // "basic", "token", "oauth2", "certificate"
+  client_id:string; // For OAuth2/device flows
+}
+
+table AuthenticationResponse {
+  success:bool;
+  token:string;     // Access token for successful auth
+  expires_at:uint64; // Token expiration timestamp
+  user_id:string;
+  permissions:[string]; // Granted permissions
+  error_message:string;
+}
+
+table AuthorizationRequest {
+  token:string;
+  resource:string;    // Resource being accessed
+  action:string;      // Action being performed ("read", "write", "execute")
+  context:[KeyValue]; // Additional context
+}
+
+table AuthorizationResponse {
+  allowed:bool;
+  reason:string;      // Reason for denial if not allowed
+}
+
+// Plugin and Extension System
+table PluginLoadRequest {
+  plugin_id:string;
+  plugin_version:string;
+  config:[KeyValue];  // Plugin-specific configuration
+}
+
+table PluginLoadResponse {
+  plugin_id:string;
+  success:bool;
+  error_message:string;
+  capabilities:[string]; // Plugin capabilities
+}
+
+table PluginUnloadRequest {
+  plugin_id:string;
+}
+
+table PluginMessage {
+  plugin_id:string;
+  message_type:string; // "event", "command", "response"
+  payload:string;      // JSON payload for plugin-specific data
+}
+
+// Advanced Configuration Management
+table ConfigurationUpdate {
+  component:string;    // Component to configure
+  section:string;      // Configuration section
+  key:string;          // Configuration key
+  value:string;        // New value
+  value_type:string;   // "string", "int", "float", "bool", "json"
+}
+
+table ConfigurationSnapshot {
+  component:string;
+  configuration:string; // JSON representation of full config
+  timestamp:uint64;
+}
+
+// Real-time Telemetry and Metrics
+table MetricReport {
+  metric_name:string;
+  metric_type:string;   // "counter", "gauge", "histogram", "summary"
+  value:float;
+  labels:[KeyValue];   // Metric labels/tags
+  timestamp:uint64;
+}
+
+table HealthReport {
+  component:string;
+  health_status:string; // "healthy", "degraded", "unhealthy", "unknown"
+  checks:[HealthCheck]; // Individual health checks
+  timestamp:uint64;
+}
+
+table HealthCheck {
+  check_name:string;
+  status:string;        // "pass", "fail", "warn"
+  output:string;        // Check output/details
+  duration_ms:uint32;   // Check duration
+}
+
+// Event-Driven Architecture
+table EventSubscription {
+  event_type:string;    // Event type to subscribe to
+  filter:string;        // Optional filter expression (JSON)
+  subscription_id:string; // Unique subscription identifier
+}
+
+table EventPublication {
+  event_type:string;
+  event_id:string;      // Unique event identifier
+  payload:string;       // Event payload (JSON)
+  source:string;        // Event source component
+  timestamp:uint64;
+  correlation_id:string; // For request-response correlation
+}
+
+table EventAcknowledgment {
+  event_id:string;
+  subscription_id:string;
+  success:bool;
+  error_message:string;
+}
+
+// Workflow and Orchestration
+table WorkflowStartRequest {
+  workflow_id:string;
+  workflow_name:string;
+  parameters:[KeyValue];
+  priority:int8 = 0;    // 0=normal, higher numbers = higher priority
+}
+
+table WorkflowStatusResponse {
+  workflow_id:string;
+  status:string;        // "running", "completed", "failed", "cancelled"
+  progress_percent:float;
+  current_step:string;
+  steps_completed:uint32;
+  total_steps:uint32;
+  result:string;        // JSON result for completed workflows
+  error_message:string;
+}
+
+table WorkflowControlRequest {
+  workflow_id:string;
+  action:string;        // "pause", "resume", "cancel", "restart"
+}
+
+// Advanced AI Features
+table ModelLoadRequest {
+  model_id:string;
+  model_type:string;    // "llm", "embedding", "vision", "audio"
+  model_path:string;
+  config:[KeyValue];    // Model-specific configuration
+}
+
+table ModelLoadResponse {
+  model_id:string;
+  success:bool;
+  error_message:string;
+  model_info:string;    // JSON model information
+}
+
+table InferenceRequest {
+  model_id:string;
+  input_data:string;    // JSON input data
+  parameters:[KeyValue]; // Inference parameters
+  async:bool = false;  // Whether to process asynchronously
+}
+
+table InferenceResponse {
+  request_id:string;
+  model_id:string;
+  output_data:string;   // JSON output data
+  confidence_scores:[KeyValue]; // Confidence scores for classifications
+  processing_time_ms:uint32;
+  error_message:string;
+}
+
+// Distributed Coordination
+table LockRequest {
+  lock_key:string;
+  lock_type:string;     // "exclusive", "shared"
+  timeout_ms:uint32;    // Lock timeout
+  owner_id:string;      // Lock owner identifier
+}
+
+table LockResponse {
+  lock_key:string;
+  acquired:bool;
+  lock_token:string;    // Token for lock operations
+  expires_at:uint64;
+}
+
+table UnlockRequest {
+  lock_key:string;
+  lock_token:string;
+}
+
+// Enhanced MQTT envelope
+root_type MQTTEnvelope;
+
+// Security root types
+root_type AuthenticationRequest;
+root_type AuthenticationResponse;
+root_type AuthorizationRequest;
+root_type AuthorizationResponse;
+
+// Plugin system root types
+root_type PluginLoadRequest;
+root_type PluginLoadResponse;
+root_type PluginUnloadRequest;
+root_type PluginMessage;
+
+// Configuration root types
+root_type ConfigurationUpdate;
+root_type ConfigurationSnapshot;
+
+// Monitoring root types
+root_type MetricReport;
+root_type HealthReport;
+
+// Event system root types
+root_type EventSubscription;
+root_type EventPublication;
+root_type EventAcknowledgment;
+
+// Workflow root types
+root_type WorkflowStartRequest;
+root_type WorkflowStatusResponse;
+root_type WorkflowControlRequest;
+
+// AI/ML root types
+root_type ModelLoadRequest;
+root_type ModelLoadResponse;
+root_type InferenceRequest;
+root_type InferenceResponse;
+
+// Coordination root types
+root_type LockRequest;
+root_type LockResponse;
+root_type UnlockRequest;

@@ -226,7 +226,7 @@ void CommandProcessingJob::execute() {
         
         // Send success response
         StatusResponse response;
-        response.sessionId = sessionId;
+        response.session_id = sessionId;
         response.message = result;
         responseWriter->write(response);
         
@@ -235,7 +235,7 @@ void CommandProcessingJob::execute() {
         
         // Send error response
         ErrorResponse response;
-        response.sessionId = sessionId;
+        response.session_id = sessionId;
         response.error = "Command processing failed: " + std::string(e.what());
         responseWriter->write(response);
     }
@@ -577,7 +577,7 @@ void CoreOrchestrator::processClientRequest(std::unique_ptr<IRequestReader> read
             
             // Create and execute command processing job
             auto job = std::make_unique<CommandProcessingJob>(
-                command, context, envelope.sessionId, writer, this);
+                command, context, envelope.session_id, writer, this);
             
             job->execute();
         }

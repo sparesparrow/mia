@@ -293,9 +293,10 @@ bool HardwareControlServer::ConfigureGPIOPin(int pin, const std::string& directi
             return false;
         }
 
-        // Request the line based on direction
+        // Request the line based on direction using libgpiod 2.x API
         bool is_output = (direction == "output");
         int ret;
+
         if (is_output) {
             ret = gpiod_line_request_output(line, "hardware-control-server", 0);
         } else {
@@ -307,9 +308,11 @@ bool HardwareControlServer::ConfigureGPIOPin(int pin, const std::string& directi
             return false;
         }
 
-        // Store the configured line
+        // Store the configured line and offset
         GPIOLineInfo info;
         info.line = line;
+        info.request = nullptr;  // Not using separate requests in this API
+        info.offset = pin;  // Use the pin number as offset
         info.is_output = is_output;
         activeLines[pin] = info;
 

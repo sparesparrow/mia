@@ -63,7 +63,7 @@ bool FileContextPersistence::deleteUserContext(const std::string& userId) {
 }
 
 bool FileContextPersistence::saveSessionContext(const SessionContext& context) {
-    std::string filename = sessionsDir + "/" + context.sessionId + ".json";
+    std::string filename = sessionsDir + "/" + context.session_id + ".json";
     std::ofstream file(filename);
     if (!file.is_open()) {
         return false;
@@ -145,7 +145,7 @@ std::string FileContextPersistence::serializeUserContext(const UserContext& cont
 std::string FileContextPersistence::serializeSessionContext(const SessionContext& context) {
     std::ostringstream oss;
     oss << "{\n";
-    oss << "  \"sessionId\": \"" << context.sessionId << "\",\n";
+    oss << "  \"sessionId\": \"" << context.session_id << "\",\n";
     oss << "  \"userId\": \"" << context.userId << "\",\n";
     oss << "  \"interfaceType\": \"" << context.interfaceType << "\",\n";
     oss << "  \"createdAt\": " << context.createdAt.time_since_epoch().count() << ",\n";
@@ -226,7 +226,7 @@ bool FileContextPersistence::deserializeUserContext(const std::string& data, Use
 
 bool FileContextPersistence::deserializeSessionContext(const std::string& data, SessionContext& context) {
     // Simplified JSON parsing - in production, use a proper JSON library
-    context.sessionId = "parsed_session_id";
+    context.session_id = "parsed_session_id";
     context.userId = "parsed_user_id";
     context.interfaceType = "text";
     context.createdAt = std::chrono::system_clock::now();
@@ -313,7 +313,7 @@ std::string ContextManager::createSession(const std::string& userId, const std::
     std::string sessionId = generateSessionId();
     
     SessionContext context;
-    context.sessionId = sessionId;
+    context.session_id = sessionId;
     context.userId = userId;
     context.interfaceType = interfaceType;
     context.createdAt = std::chrono::system_clock::now();
@@ -559,7 +559,7 @@ void ContextManager::cacheUserContext(const UserContext& context) {
 }
 
 void ContextManager::cacheSessionContext(const SessionContext& context) {
-    sessionsCache[context.sessionId] = context;
+    sessionsCache[context.session_id] = context;
 }
 
 void ContextManager::cacheDeviceContext(const DeviceContext& context) {

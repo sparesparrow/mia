@@ -1,6 +1,9 @@
 #include "FlatBuffersRequestWriter.h"
 #include "TcpSocket.h"
 #include "webgrab_generated.h"
+
+// Use the Mia::Protocol namespace for convenience
+namespace fb = Mia::Protocol;
 #include <cstring>
 #include <arpa/inet.h>
 
@@ -14,28 +17,28 @@ FlatBuffersRequestWriter::~FlatBuffersRequestWriter() {
 bool FlatBuffersRequestWriter::send(const DownloadRequest& req) {
     builder_.Clear();
     auto url_offset = builder_.CreateString(req.url);
-    auto fb_req = webgrab::CreateDownloadRequest(builder_, url_offset);
+    auto fb_req = fb::CreateDownloadRequest(builder_, url_offset);
     builder_.Finish(fb_req);
     return sendMessage(builder_.GetBufferPointer(), builder_.GetSize());
 }
 
 bool FlatBuffersRequestWriter::send(const DownloadStatusRequest& req) {
     builder_.Clear();
-    auto fb_req = webgrab::CreateDownloadStatusRequest(builder_, req.sessionId);
+    auto fb_req = fb::CreateDownloadStatusRequest(builder_, req.session_id);
     builder_.Finish(fb_req);
     return sendMessage(builder_.GetBufferPointer(), builder_.GetSize());
 }
 
 bool FlatBuffersRequestWriter::send(const DownloadAbortRequest& req) {
     builder_.Clear();
-    auto fb_req = webgrab::CreateDownloadAbortRequest(builder_, req.sessionId);
+    auto fb_req = fb::CreateDownloadAbortRequest(builder_, req.session_id);
     builder_.Finish(fb_req);
     return sendMessage(builder_.GetBufferPointer(), builder_.GetSize());
 }
 
 bool FlatBuffersRequestWriter::send(const ShutdownRequest& req) {
     builder_.Clear();
-    auto fb_req = webgrab::CreateShutdownRequest(builder_);
+    auto fb_req = fb::CreateShutdownRequest(builder_);
     builder_.Finish(fb_req);
     return sendMessage(builder_.GetBufferPointer(), builder_.GetSize());
 }

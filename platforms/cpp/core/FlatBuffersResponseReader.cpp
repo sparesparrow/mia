@@ -1,6 +1,9 @@
 #include "FlatBuffersResponseReader.h"
 #include "TcpSocket.h"
 #include "webgrab_generated.h"
+
+// Use the Mia::Protocol namespace for convenience
+namespace fb = Mia::Protocol;
 #include <cstring>
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -18,37 +21,37 @@ FlatBuffersResponseReader::~FlatBuffersResponseReader() {
 bool FlatBuffersResponseReader::recv(DownloadResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
-    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
-    if (msg && msg->response_type() == webgrab::Response_DownloadResponse) {
+    auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
+    if (msg && msg->response_type() == fb::Response_DownloadResponse) {
         auto resp = msg->response_as_DownloadResponse();
         if (resp) {
-            out.sessionId = resp->sessionId();
+            out.session_id = resp->sessionId();
             return true;
         }
     }
     // Fallback to direct parsing
-    auto resp = flatbuffers::GetRoot<webgrab::DownloadResponse>(buffer_.data());
+    auto resp = flatbuffers::GetRoot<fb::DownloadResponse>(buffer_.data());
     if (!resp) return false;
-    out.sessionId = resp->sessionId();
+    out.session_id = resp->sessionId();
     return true;
 }
 
 bool FlatBuffersResponseReader::recv(StatusResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
-    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
-    if (msg && msg->response_type() == webgrab::Response_DownloadStatusResponse) {
+    auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
+    if (msg && msg->response_type() == fb::Response_DownloadStatusResponse) {
         auto resp = msg->response_as_DownloadStatusResponse();
         if (resp) {
-            out.sessionId = 0;
+            out.session_id = 0;
             out.status = resp->status() ? resp->status()->str() : "";
             return true;
         }
     }
     // Fallback to direct parsing
-    auto resp = flatbuffers::GetRoot<webgrab::DownloadStatusResponse>(buffer_.data());
+    auto resp = flatbuffers::GetRoot<fb::DownloadStatusResponse>(buffer_.data());
     if (!resp) return false;
-    out.sessionId = 0;
+    out.session_id = 0;
     out.status = resp->status() ? resp->status()->str() : "";
     return true;
 }
@@ -56,8 +59,8 @@ bool FlatBuffersResponseReader::recv(StatusResponse& out) {
 bool FlatBuffersResponseReader::recv(ErrorResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
-    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
-    if (msg && msg->response_type() == webgrab::Response_ErrorResponse) {
+    auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
+    if (msg && msg->response_type() == fb::Response_ErrorResponse) {
         auto resp = msg->response_as_ErrorResponse();
         if (resp) {
             out.error = resp->error() ? resp->error()->str() : "";
@@ -65,7 +68,7 @@ bool FlatBuffersResponseReader::recv(ErrorResponse& out) {
         }
     }
     // Fallback to direct parsing
-    auto resp = flatbuffers::GetRoot<webgrab::ErrorResponse>(buffer_.data());
+    auto resp = flatbuffers::GetRoot<fb::ErrorResponse>(buffer_.data());
     if (!resp) return false;
     out.error = resp->error() ? resp->error()->str() : "";
     return true;
@@ -84,9 +87,9 @@ bool FlatBuffersResponseReader::tryRecv(DownloadResponse& out, std::chrono::mill
     
     while (std::chrono::steady_clock::now() - start < timeout) {
         if (receiveMessage()) {
-            auto resp = flatbuffers::GetRoot<webgrab::DownloadResponse>(buffer_.data());
+            auto resp = flatbuffers::GetRoot<fb::DownloadResponse>(buffer_.data());
             if (resp) {
-                out.sessionId = resp->sessionId();
+                out.session_id = resp->sessionId();
                 result = true;
                 break;
             }
@@ -112,9 +115,9 @@ bool FlatBuffersResponseReader::tryRecv(StatusResponse& out, std::chrono::millis
     
     while (std::chrono::steady_clock::now() - start < timeout) {
         if (receiveMessage()) {
-            auto resp = flatbuffers::GetRoot<webgrab::DownloadStatusResponse>(buffer_.data());
+            auto resp = flatbuffers::GetRoot<fb::DownloadStatusResponse>(buffer_.data());
             if (resp) {
-                out.sessionId = 0; // StatusResponse doesn't have sessionId in the struct
+                out.session_id = 0; // StatusResponse doesn't have sessionId in the struct
                 out.status = resp->status() ? resp->status()->str() : "";
                 result = true;
                 break;
@@ -141,7 +144,7 @@ bool FlatBuffersResponseReader::tryRecv(ErrorResponse& out, std::chrono::millise
     
     while (std::chrono::steady_clock::now() - start < timeout) {
         if (receiveMessage()) {
-            auto resp = flatbuffers::GetRoot<webgrab::ErrorResponse>(buffer_.data());
+            auto resp = flatbuffers::GetRoot<fb::ErrorResponse>(buffer_.data());
             if (resp) {
                 out.error = resp->error() ? resp->error()->str() : "";
                 result = true;
