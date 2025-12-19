@@ -23,8 +23,8 @@ import zmq
 # Import LED controller
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from hardware.led_controller import AIServiceLEDController
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'hardware'))
+from led_controller import AIServiceLEDController
 
 logging.basicConfig(
     level=logging.INFO,

@@ -105,6 +105,66 @@ class LEDMonitorViewModel @Inject constructor(
         return statuses
     }
 
+    // LED Control Methods
+
+    fun setLedMode(mode: String) {
+        webSocket?.setLedMode(mode)
+        Log.d(TAG, "Set LED mode: $mode")
+    }
+
+    fun setAiState(aiState: String) {
+        webSocket?.setAiState(aiState)
+        Log.d(TAG, "Set AI state: $aiState")
+    }
+
+    fun setLedBrightness(brightness: Int) {
+        webSocket?.setLedBrightness(brightness)
+        Log.d(TAG, "Set LED brightness: $brightness")
+    }
+
+    fun setLedColor(r: Int, g: Int, b: Int) {
+        webSocket?.setLedColor(r, g, b)
+        Log.d(TAG, "Set LED color: RGB($r, $g, $b)")
+    }
+
+    fun triggerEmergency() {
+        webSocket?.triggerEmergency()
+        Log.d(TAG, "Triggered emergency mode")
+    }
+
+    fun clearEmergency() {
+        webSocket?.clearEmergency()
+        Log.d(TAG, "Cleared emergency mode")
+    }
+
+    fun startAnimation(animation: String, speed: Int = 100) {
+        webSocket?.startAnimation(animation, speed)
+        Log.d(TAG, "Started animation: $animation at speed $speed")
+    }
+
+    fun stopAnimation() {
+        webSocket?.stopAnimation()
+        Log.d(TAG, "Stopped animation")
+    }
+
+    // Convenience methods for common actions
+
+    fun setDriveMode() {
+        setLedMode("drive")
+    }
+
+    fun setParkedMode() {
+        setLedMode("parked")
+    }
+
+    fun setNightMode() {
+        setLedMode("night")
+    }
+
+    fun setServiceMode() {
+        setLedMode("service")
+    }
+
     override fun onCleared() {
         super.onCleared()
         webSocket?.cleanup()

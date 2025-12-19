@@ -7,13 +7,13 @@ Requires=mia-broker.service
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/home/mia/ai-servis/rpi/services
+WorkingDirectory=/home/mia/projects/mia/rpi/services
 ExecStart=/usr/bin/python3 led_monitor_service.py --broker-url tcp://localhost:5555 --telemetry-url tcp://localhost:5556 --led-port /dev/ttyUSB0
 Restart=always
 RestartSec=5
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+Environment=PYTHONPATH=/home/mia/projects/mia/rpi
 
 [Install]
 WantedBy=multi-user.target

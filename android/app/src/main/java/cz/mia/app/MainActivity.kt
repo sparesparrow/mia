@@ -438,7 +438,9 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 	// Initialize WebSocket connection
 	androidx.compose.runtime.LaunchedEffect(Unit) {
 		// TODO: Get base URL from settings/preferences
-		ledVm.initializeWebSocket("ws://10.0.2.2:8000") // Android emulator default
+		// Changed from Android emulator (10.0.2.2) to Raspberry Pi IP
+		// Replace with actual Raspberry Pi IP address on the same network
+		ledVm.initializeWebSocket("ws://192.168.1.100:8000") // Raspberry Pi default
 	}
 
 	val ledState by ledVm.ledState.collectAsState()
@@ -483,13 +485,38 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 		// Control Interface
 		LEDControlInterface(
 			selectedMode = selectedMode,
-			onModeChange = { selectedMode = it },
+			onModeChange = {
+				selectedMode = it
+				// Send mode command to Raspberry Pi
+				when (it.lowercase()) {
+					"drive" -> ledVm.setDriveMode()
+					"parked" -> ledVm.setParkedMode()
+					"night" -> ledVm.setNightMode()
+					"service" -> ledVm.setServiceMode()
+				}
+			},
 			aiState = aiState,
-			onAiStateChange = { aiState = it },
+			onAiStateChange = {
+				aiState = it
+				// Send AI state command to Raspberry Pi
+				ledVm.setAiState(it)
+			},
 			brightness = brightness,
-			onBrightnessChange = { brightness = it },
+			onBrightnessChange = {
+				brightness = it
+				// Send brightness command to Raspberry Pi
+				ledVm.setLedBrightness((it * 255).toInt())
+			},
 			emergencyOverride = emergencyOverride,
-			onEmergencyOverride = { emergencyOverride = it }
+			onEmergencyOverride = {
+				emergencyOverride = it
+				// Send emergency command to Raspberry Pi
+				if (it) {
+					ledVm.triggerEmergency()
+				} else {
+					ledVm.clearEmergency()
+				}
+			}
 		)
 
 		Spacer(Modifier.height(16.dp))

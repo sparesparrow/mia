@@ -77,6 +77,16 @@ else:
 device_registry_simple: Dict[str, Dict[str, Any]] = {}
 telemetry_cache: Dict[str, Dict[str, Any]] = {}
 
+# LED state tracking
+led_state: Dict[str, Any] = {
+    "mode": "off",
+    "brightness": 128,
+    "color": {"r": 255, "g": 255, "b": 255},
+    "animation": "none",
+    "ai_state": "idle",
+    "emergency": False
+}
+
 # WebSocket connections
 active_connections: List[WebSocket] = []
 
@@ -97,6 +107,20 @@ class GPIOCommand(BaseModel):
 class TelemetryFilter(BaseModel):
     devices: Optional[List[str]] = None
     sensors: Optional[List[str]] = None
+
+
+class LEDState(BaseModel):
+    mode: Optional[str] = None
+    brightness: Optional[int] = None
+    color: Optional[Dict[str, int]] = None
+    animation: Optional[str] = None
+    ai_state: Optional[str] = None
+    emergency: Optional[bool] = None
+
+
+class LEDCommand(BaseModel):
+    command: str
+    params: Optional[Dict[str, Any]] = None
 
 
 async def consume_telemetry():
@@ -449,6 +473,87 @@ async def get_telemetry(filter: Optional[TelemetryFilter] = None):
     }
 
 
+@app.get("/led/state")
+async def get_led_state():
+    """
+    GET /led/state - Get current LED state
+    """
+    return {
+        "led_state": led_state,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.put("/led/state")
+async def set_led_state(state: LEDState):
+    """
+    PUT /led/state - Update LED state
+    """
+    global led_state
+
+    # Update only provided fields
+    for field, value in state.dict(exclude_unset=True).items():
+        if value is not None:
+            led_state[field] = value
+
+    # Send command to LED controller via ZeroMQ
+    try:
+        message = {
+            "type": "LED_COMMAND",
+            "command": "set_state",
+            "params": led_state,
+            "timestamp": datetime.now().isoformat()
+        }
+
+        zmq_socket.send_json(message)
+
+        # Update local state immediately for responsiveness
+        return {
+            "success": True,
+            "led_state": led_state,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error updating LED state: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "led_state": led_state,
+            "timestamp": datetime.now().isoformat()
+        }
+
+
+@app.post("/led/command")
+async def send_led_command(command: LEDCommand):
+    """
+    POST /led/command - Send LED control command
+    """
+    try:
+        message = {
+            "type": "LED_COMMAND",
+            "command": command.command,
+            "params": command.params or {},
+            "timestamp": datetime.now().isoformat()
+        }
+
+        zmq_socket.send_json(message)
+
+        return {
+            "success": True,
+            "command": command.command,
+            "params": command.params,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error sending LED command: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "command": command.command,
+            "timestamp": datetime.now().isoformat()
+        }
+
+
 @app.get("/status")
 async def get_status():
     """
@@ -504,11 +609,16 @@ async def websocket_endpoint(websocket: WebSocket):
             # Send telemetry updates every 100ms (10Hz)
             await asyncio.sleep(0.1)
             
-            # Broadcast latest telemetry to all connected clients
+            # Broadcast latest telemetry and LED state to all connected clients
+            data = {}
             if telemetry_cache:
+                data["telemetry"] = telemetry_cache
+            data["led_state"] = led_state
+
+            if data:
                 await websocket.send_json({
                     "type": "telemetry",
-                    "data": telemetry_cache,
+                    "data": data,
                     "timestamp": datetime.now().isoformat()
                 })
     except WebSocketDisconnect:
@@ -518,6 +628,33 @@ async def websocket_endpoint(websocket: WebSocket):
         logger.error(f"WebSocket error: {e}")
         if websocket in active_connections:
             active_connections.remove(websocket)
+
+
+@app.websocket("/ws/telemetry")
+async def telemetry_websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket endpoint for telemetry and LED control - Android app compatible
+    """
+    await websocket.accept()
+    logger.info("Android telemetry WebSocket client connected")
+
+    try:
+        while True:
+            # Send telemetry and LED state updates every 100ms (10Hz)
+            await asyncio.sleep(0.1)
+
+            # Prepare data for Android app
+            data = {
+                "telemetry": telemetry_cache,
+                "led_state": led_state,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            await websocket.send_json(data)
+    except WebSocketDisconnect:
+        logger.info("Android telemetry WebSocket client disconnected")
+    except Exception as e:
+        logger.error(f"Telemetry WebSocket error: {e}")
 
 
 @app.post("/gpio/configure")

@@ -290,7 +290,87 @@ class TelemetryWebSocket(
             }
         }
     }
-    
+
+    /**
+     * Send LED control commands to the server.
+     */
+    fun sendLedCommand(command: String, params: Map<String, Any> = emptyMap()) {
+        if (webSocketClient?.isOpen != true) {
+            Log.w(TAG, "Cannot send LED command - not connected")
+            return
+        }
+
+        try {
+            val ledCommand = mapOf(
+                "type" to "led_command",
+                "command" to command,
+                "params" to params,
+                "timestamp" to System.currentTimeMillis()
+            )
+            val json = gson.toJson(ledCommand)
+            webSocketClient?.send(json)
+            Log.d(TAG, "Sent LED command: $command with params: $params")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send LED command", e)
+        }
+    }
+
+    /**
+     * Set LED mode (off, manual, auto, etc.)
+     */
+    fun setLedMode(mode: String) {
+        sendLedCommand("set_mode", mapOf("mode" to mode))
+    }
+
+    /**
+     * Set AI state for LED animations
+     */
+    fun setAiState(aiState: String) {
+        sendLedCommand("set_ai_state", mapOf("ai_state" to aiState))
+    }
+
+    /**
+     * Set LED brightness
+     */
+    fun setLedBrightness(brightness: Int) {
+        sendLedCommand("set_brightness", mapOf("brightness" to brightness))
+    }
+
+    /**
+     * Set LED color
+     */
+    fun setLedColor(r: Int, g: Int, b: Int) {
+        sendLedCommand("set_color", mapOf("r" to r, "g" to g, "b" to b))
+    }
+
+    /**
+     * Trigger emergency mode
+     */
+    fun triggerEmergency() {
+        sendLedCommand("emergency", mapOf("active" to true))
+    }
+
+    /**
+     * Clear emergency mode
+     */
+    fun clearEmergency() {
+        sendLedCommand("emergency", mapOf("active" to false))
+    }
+
+    /**
+     * Start LED animation
+     */
+    fun startAnimation(animation: String, speed: Int = 100) {
+        sendLedCommand("animation", mapOf("animation" to animation, "speed" to speed))
+    }
+
+    /**
+     * Stop LED animation
+     */
+    fun stopAnimation() {
+        sendLedCommand("clear")
+    }
+
     /**
      * Clean up resources.
      */
