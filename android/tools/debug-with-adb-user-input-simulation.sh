@@ -99,6 +99,7 @@ ensure_output_dirs() {
 
 start_logcat() {
   [[ $DO_LOGS -eq 1 ]] || return
+  echo "{\"timestamp\":$(date +%s),\"location\":\"start_logcat\",\"message\":\"Starting logcat\",\"data\":{\"do_logs\":$DO_LOGS},\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   local log_file="$OUTPUT_DIR/logs/logcat.txt"
   local pid=""
   pid=$(adb -s "$DEVICE_SERIAL" shell pidof -s "$PACKAGE_NAME" 2>/dev/null || true)
@@ -109,6 +110,7 @@ start_logcat() {
     adb -s "$DEVICE_SERIAL" logcat -v time >"$log_file" 2>&1 &
   fi
   LOGCAT_PID=$!
+  echo "{\"timestamp\":$(date +%s),\"location\":\"start_logcat\",\"message\":\"Logcat started\",\"data\":{\"logcat_pid\":$LOGCAT_PID,\"pid\":\"$pid\"},\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
 }
 
 stop_logcat() {
@@ -197,9 +199,14 @@ cleanup() {
 trap cleanup EXIT
 
 scenario_dashboard() {
+  echo "{\"timestamp\":$(date +%s),\"location\":\"scenario_dashboard\",\"message\":\"Starting dashboard scenario\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   log "Scenario: dashboard"
+  echo "{\"timestamp\":$(date +%s),\"location\":\"scenario_dashboard\",\"message\":\"About to call launch_app\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   launch_app
+  echo "{\"timestamp\":$(date +%s),\"location\":\"scenario_dashboard\",\"message\":\"launch_app completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+  echo "{\"timestamp\":$(date +%s),\"location\":\"scenario_dashboard\",\"message\":\"About to call take_screenshot\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   take_screenshot "dashboard_initial"
+  echo "{\"timestamp\":$(date +%s),\"location\":\"scenario_dashboard\",\"message\":\"take_screenshot completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
 }
 
 scenario_ble_scan() {
@@ -305,10 +312,20 @@ parse_args() {
 }
 
 main() {
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"Starting main function\",\"data\":{\"args\":\"$*\"},\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
   parse_args "$@"
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"Args parsed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
   ensure_adb
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"ADB ensured\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
   pick_device
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"Device picked\",\"data\":{\"device\":\"$DEVICE_SERIAL\"},\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
   ensure_output_dirs
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"Output dirs ensured\",\"data\":{\"output_dir\":\"$OUTPUT_DIR\"},\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
   log "Output directory: $OUTPUT_DIR"
 
   if [[ $DO_BUILD -eq 1 ]]; then
@@ -320,11 +337,27 @@ main() {
   adb -s "$DEVICE_SERIAL" wait-for-device
   adb -s "$DEVICE_SERIAL" shell getprop ro.product.model >/dev/null || true
 
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"About to call install_apk\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   install_apk
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"install_apk completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"About to call start_logcat\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   start_logcat
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"start_logcat completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"About to call start_screenrecord\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   start_screenrecord
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"start_screenrecord completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"About to call run_scenario\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   run_scenario
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"run_scenario completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"About to call take_screenshot final\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
   take_screenshot "final"
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"take_screenshot final completed\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
+
+  echo "{\"timestamp\":$(date +%s),\"location\":\"main\",\"message\":\"Script completed successfully\",\"sessionId\":\"debug-session\",\"runId\":\"script_flow\"}" >> /home/sparrow/projects/ai-servis/.cursor/debug.log
 }
 
 main "$@"
