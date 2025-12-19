@@ -224,3 +224,13 @@ echo "  - http://localhost:8000/devices"
 echo "  - http://localhost:8000/status"
 echo "  - ws://localhost:8000/ws (WebSocket telemetry)"
 echo ""
+
+# Ensure bundled CPython is properly configured
+echo "🔧 Setting up bundled CPython environment..."
+if [[ -f "scripts/ensure-bundled-cpython.sh" ]]; then
+    bash scripts/ensure-bundled-cpython.sh "$INSTALL_DIR"
+else
+    echo "⚠️  Bundled CPython setup script not found, skipping..."
+fi
+
+echo ""

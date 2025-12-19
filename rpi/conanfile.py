@@ -10,7 +10,7 @@ import os
 
 class MiaRpiPythonConan(ConanFile):
     name = "mia-rpi-python"
-    version = "1.0"
+    version = "2.0.0"
     description = "MIA Raspberry Pi Python Services - OBD Simulator, Serial Bridge, GPIO Worker"
     settings = "os", "arch", "compiler", "build_type"
     options = {

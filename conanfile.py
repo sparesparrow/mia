@@ -8,7 +8,7 @@ import os
 
 class MIAConan(ConanFile):
     name = "mia"
-    version = "1.0"
+    version = "2.0.0"
     description = "AI Service with MCP and Hardware Control"
     settings = "os", "compiler", "build_type", "arch"
     options = {
@@ -36,6 +36,8 @@ class MIAConan(ConanFile):
         self.requires("openssl/3.0.8")       # SSL/TLS support
         self.requires("zlib/1.2.13")         # Compression support
 
+        # Audio dependencies - FSM implemented without external libraries
+
         # Hardware-specific dependencies
         if self.options.with_hardware:
             self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
@@ -49,7 +51,11 @@ class MIAConan(ConanFile):
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
-        self.tool_requires("sparetools-obd-sim/2.0.0")  # OBD simulator for testing
+
+        # Custom tools - these may need to be published to Cloudsmith or replaced
+        # TODO: Publish these packages to Cloudsmith sparetools remote or replace with alternatives
+        # self.tool_requires("sparetools-obd-sim/2.0.0")  # OBD simulator for testing
+        # self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
 
     def export_sources(self):
         # Export source files needed for building
@@ -84,6 +90,23 @@ class MIAConan(ConanFile):
         """Generate C++ headers from FlatBuffers schema"""
         import os
         from pathlib import Path
+
+        # Find bundled Python executable from sparetools-cpython
+        python_bin = None
+        if hasattr(self, 'deps_cpp_info') and self.deps_cpp_info.has_components:
+            try:
+                cpython_info = self.deps_cpp_info["sparetools-cpython"]
+                python_bin = os.path.join(cpython_info.bin_paths[0], "python3")
+                if not os.path.exists(python_bin):
+                    python_bin = os.path.join(cpython_info.bin_paths[0], "python3.12")
+                if not os.path.exists(python_bin):
+                    python_bin = os.path.join(cpython_info.bin_paths[0], "python")
+            except:
+                pass
+
+        if not python_bin or not os.path.exists(python_bin):
+            self.output.warning("Bundled Python executable not found. FlatBuffers Python generation may fail.")
+            python_bin = "python3"  # Fallback to system Python
 
         # Find flatc executable
         flatc_path = None
@@ -154,17 +177,73 @@ class MIAConan(ConanFile):
         cmake = CMake(self)
         cmake.install()
 
+        # Package bundled CPython executable and libraries if available
+        self._package_cpython()
+
+    def _package_cpython(self):
+        """Package bundled CPython if available"""
+        try:
+            if hasattr(self, 'deps_cpp_info') and "sparetools-cpython" in self.deps_cpp_info:
+                cpython_info = self.deps_cpp_info["sparetools-cpython"]
+                # Copy CPython bin directory (includes python3 executable)
+                copy(self, "*", cpython_info.bin_paths[0], os.path.join(self.package_folder, "bin"))
+                # Copy CPython lib directory (includes standard library)
+                copy(self, "*", cpython_info.lib_paths[0], os.path.join(self.package_folder, "lib"))
+                # Copy include files if they exist
+                if cpython_info.include_paths:
+                    copy(self, "*", cpython_info.include_paths[0], os.path.join(self.package_folder, "include"))
+                self.output.info("Bundled CPython packaged successfully")
+            else:
+                self.output.info("No bundled CPython found - using system Python")
+        except Exception as e:
+            self.output.warning(f"Could not package bundled CPython: {e}")
+            self.output.info("Falling back to system Python")
+
     def package_info(self):
         # Define library information
-        self.cpp_info.libs = ["webgrab_core"]
+        self.cpp_info.libs = []
 
-        if self.options.with_hardware:
+        # Core library (always present if build succeeds)
+        if self._library_exists("webgrab_core"):
+            self.cpp_info.libs.append("webgrab_core")
+
+        if self.options.with_hardware and self._library_exists("hardware-server"):
             self.cpp_info.libs.append("hardware-server")
 
-        if self.options.with_mcp:
+        if self.options.with_mcp and self._library_exists("mcp-server"):
             self.cpp_info.libs.append("mcp-server")
 
         if self.settings.os == "Linux":
             self.cpp_info.system_libs = ["pthread", "dl", "rt"]
         elif self.settings.os == "Windows":
             self.cpp_info.system_libs = ["ws2_32", "crypt32", "advapi32"]
+
+        # Configure Python environment if bundled CPython is available
+        self._configure_python_environment()
+
+    def _library_exists(self, lib_name):
+        """Check if a library file exists in the package"""
+        import os
+        lib_extensions = [".so", ".a", ".lib", ".dll"]
+        for ext in lib_extensions:
+            lib_file = f"lib{lib_name}{ext}"
+            lib_path = os.path.join(self.package_folder, "lib", lib_file)
+            if os.path.exists(lib_path):
+                return True
+        return False
+
+    def _configure_python_environment(self):
+        """Configure Python environment for bundled CPython if available"""
+        try:
+            if hasattr(self, 'deps_cpp_info') and "sparetools-cpython" in self.deps_cpp_info:
+                cpython_info = self.deps_cpp_info["sparetools-cpython"]
+                # Prepend CPython bin directory to PATH to ensure bundled Python is found first
+                self.runenv_info.prepend_path("PATH", cpython_info.bin_paths[0])
+                # Set PYTHONHOME to ensure Python uses the bundled installation
+                if hasattr(cpython_info, 'lib_paths') and cpython_info.lib_paths:
+                    python_home = cpython_info.lib_paths[0]
+                    if python_home.endswith("/lib"):
+                        python_home = python_home[:-4]  # Remove /lib to get root
+                    self.runenv_info.define_path("PYTHONHOME", python_home)
+        except Exception as e:
+            self.output.warning(f"Could not configure Python environment: {e}")

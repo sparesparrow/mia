@@ -1,1 +1,1 @@
-. "/home/mia/ai-servis/build-release/conan/conanbuildenv-release-armv8.sh"
+. "/home/mia/projects/mia/build-release/conan/conanbuildenv-release-armv8.sh"
