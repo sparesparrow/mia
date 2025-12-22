@@ -1,6 +1,22 @@
 # Raspberry Pi Deployment Guide
 
-This guide covers deploying MIA on a Raspberry Pi 4B.
+> **🚀 NEW: Complete Automated Deployment Available!**
+>
+> For the easiest deployment experience, use our new comprehensive deployment system:
+>
+> ```bash
+> # One-command deployment (recommended)
+> curl -fsSL https://raw.githubusercontent.com/sparesparrow/mia/main/setup-mia.sh | sudo bash
+>
+> # Or use the detailed deployment script
+> sudo ./scripts/deploy-complete-system.sh
+> ```
+>
+> See **[COMPLETE_DEPLOYMENT_GUIDE.md](COMPLETE_DEPLOYMENT_GUIDE.md)** for full documentation.
+>
+> ---
+
+This guide covers deploying MIA on a Raspberry Pi 4B using the legacy manual method.
 
 ## Prerequisites
 
@@ -340,7 +356,7 @@ python3 -c "import RPi.GPIO as GPIO; print('GPIO OK')"
 sudo tar -czvf mia-backup.tar.gz \
     /etc/mia/ \
     /var/lib/mia/ \
-    /home/mia/ai-servis/config/
+    /opt/mia/config/
 ```
 
 ### Restore
@@ -355,7 +371,7 @@ sudo systemctl restart mia-*
 ### Update MIA
 
 ```bash
-cd /home/mia/ai-servis
+cd /opt/mia
 git pull origin main
 pip3 install --break-system-packages -r rpi/requirements.txt
 sudo systemctl restart mia-*

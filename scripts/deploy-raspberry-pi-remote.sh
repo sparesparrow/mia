@@ -10,7 +10,7 @@ set -e
 RPI_USER="${RPI_USER:-mia}"
 RPI_HOST="${RPI_HOST:-192.168.200.139}"
 RPI_PORT="${RPI_PORT:-22}"
-RPI_PATH="${RPI_PATH:-/home/mia/ai-servis}"
+RPI_PATH="${RPI_PATH:-/opt/mia}"
 SSH_KEY="${SSH_KEY:-}"
 
 # Colors for output

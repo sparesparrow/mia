@@ -8,8 +8,17 @@ import logging
 from typing import Optional, Dict, List
 from datetime import datetime
 from dataclasses import dataclass, field
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
+try:
+    from argon2 import PasswordHasher
+    from argon2.exceptions import VerifyMismatchError
+    ARGON2_AVAILABLE = True
+except ImportError:
+    ARGON2_AVAILABLE = False
+    # Dummy classes for when argon2 is not available
+    class PasswordHasher:
+        def hash(self, password): return password
+        def verify(self, hashed, password): return False
+    class VerifyMismatchError(Exception): pass
 
 logger = logging.getLogger(__name__)
 

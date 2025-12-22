@@ -8,13 +8,13 @@ Wants=mia-serial-bridge.service
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/home/mia/ai-servis/rpi/services
+WorkingDirectory=/opt/mia/rpi/services
 ExecStart=/usr/bin/python3 obd_worker.py
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+Environment=PYTHONPATH=/opt/mia/rpi
 
 [Install]
 WantedBy=multi-user.target

@@ -8,12 +8,12 @@ Wants=mia-broker.service
 Type=simple
 User=mia
 Group=dialout
-WorkingDirectory=/home/mia/ai-servis
+WorkingDirectory=/opt/mia
 Environment=ELM_SERIAL_PORT=/dev/ttyUSB0
 Environment=ELM_BAUD_RATE=38400
 Environment=ZMQ_PUB_PORT=5557
-Environment=PYTHONPATH=/home/mia/ai-servis
-ExecStart=/usr/bin/python3 /home/mia/ai-servis/agents/citroen_bridge.py
+Environment=PYTHONPATH=/opt/mia
+ExecStart=/usr/bin/python3 /opt/mia/agents/citroen_bridge.py
 Restart=always
 RestartSec=5
 StandardOutput=journal

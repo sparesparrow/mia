@@ -7,13 +7,13 @@ Requires=mia-broker.service
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/home/mia/ai-servis/rpi/hardware
+WorkingDirectory=/opt/mia/rpi/hardware
 ExecStart=/opt/mia/rpi/bin/python3 gpio_worker.py
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+Environment=PYTHONPATH=/opt/mia/rpi
 Environment=PYTHONHOME=/opt/mia/rpi
 Environment=PATH=/opt/mia/rpi/bin:/usr/bin:/usr/local/bin
 

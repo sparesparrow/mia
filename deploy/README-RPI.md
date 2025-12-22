@@ -67,21 +67,21 @@ The deployment script will:
 ### Test Arduino Connection
 ```bash
 ssh mia@192.168.200.139
-cd /home/mia/ai-servis
+cd /opt/mia
 python3 modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0
 ```
 
 ### Start MQTT Bridge
 ```bash
 ssh mia@192.168.200.139
-cd /home/mia/ai-servis
+cd /opt/mia
 python3 -m modules.hardware_bridge.arduino_led_controller /dev/ttyUSB0 localhost
 ```
 
 ### Start MCP Server
 ```bash
 ssh mia@192.168.200.139
-cd /home/mia/ai-servis
+cd /opt/mia
 python3 -m modules.hardware_bridge.arduino_led_mcp /dev/ttyUSB0 8084
 ```
 
@@ -118,7 +118,7 @@ sudo usermod -a -G dialout mia
 python3 -c "import sys; print('\n'.join(sys.path))"
 
 # Install dependencies manually
-cd /home/mia/ai-servis
+cd /opt/mia
 python3 -m pip install --user -r modules/hardware-bridge/requirements.txt
 ```
 
@@ -146,5 +146,5 @@ Edit `scripts/deploy-raspberry-pi-remote.sh` and comment out sections you don't 
 | `RPI_USER` | `mia` | SSH username |
 | `RPI_HOST` | `192.168.200.139` | Raspberry Pi IP address |
 | `RPI_PORT` | `22` | SSH port |
-| `RPI_PATH` | `/home/mia/ai-servis` | Deployment path on Raspberry Pi |
+| `RPI_PATH` | `/opt/mia` | Deployment path on Raspberry Pi |
 | `SSH_KEY` | `` | Path to SSH private key (optional) |

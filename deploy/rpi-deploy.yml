@@ -7,7 +7,7 @@ deployment:
     host: "192.168.200.139"
     user: "mia"
     port: 22
-    path: "/home/mia/ai-servis"
+    path: "/opt/mia"
   
   ssh:
     key_path: ""  # Optional: path to SSH private key
@@ -50,9 +50,9 @@ deployment:
     - name: "arduino-led-mqtt"
       type: "python-script"
       command: "python3 -m modules.hardware_bridge.arduino_led_controller /dev/ttyUSB0 localhost"
-      working_dir: "/home/mia/ai-servis"
+      working_dir: "/opt/mia"
       
     - name: "arduino-led-mcp"
       type: "python-script"
       command: "python3 -m modules.hardware_bridge.arduino_led_mcp /dev/ttyUSB0 8084"
-      working_dir: "/home/mia/ai-servis"
+      working_dir: "/opt/mia"

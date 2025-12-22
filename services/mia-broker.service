@@ -6,13 +6,13 @@ After=network.target
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/home/mia/ai-servis/rpi/core/messaging
+WorkingDirectory=/opt/mia/rpi/core/messaging
 ExecStart=/usr/bin/python3 broker.py
 Restart=always
 RestartSec=5
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+Environment=PYTHONPATH=/opt/mia/rpi
 
 [Install]
 WantedBy=multi-user.target

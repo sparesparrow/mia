@@ -16,8 +16,15 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from ..hardware import HardwareManager
-from ..core.messaging import MessagingClient
+try:
+    from ..hardware import HardwareManager
+except ImportError as e:
+    HardwareManager = None
+
+try:
+    from ..core.messaging import MessagingClient
+except ImportError as e:
+    MessagingClient = None
 
 logger = logging.getLogger(__name__)
 

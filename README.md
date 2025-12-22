@@ -10,6 +10,29 @@ This directory contains the Python-based implementation of MIA for Raspberry Pi,
 - **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
 - **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
 
+## Workspace Organization
+
+This repository follows a structured workspace organization to separate development and deployment environments:
+
+### Development Structure
+- **Development Repository**: `~/projects/mia/` - Contains the full source code, documentation, and build tools
+- **Configuration**: `config/paths.json` - Defines configurable paths for different environments
+- **Path Management**: `core/paths.py` - Python utility for resolving relative and configurable paths
+
+### Installation Structure
+- **Installed Code**: `/opt/mia/` - Contains deployed/running code (symlinked to development repo during development)
+- **System Services**: `/etc/systemd/system/mia-*.service` - Systemd service definitions
+- **Configuration**: `/etc/mia/` - System-wide configuration files
+- **Data**: `/var/lib/mia/` - Persistent data and logs
+
+### Deployment Workflow
+1. **Development**: Work in `~/projects/mia/` with full access to source and tools
+2. **Testing**: Use relative paths and path configuration for environment-independent code
+3. **Deployment**: Copy or symlink code to `/opt/mia/` for production use
+4. **Services**: Use systemd services that reference `/opt/mia/` as the working directory
+
+This separation ensures clean development workflows while maintaining proper system integration for production deployments.
+
 ## Components
 
 ### ZeroMQ Broker
@@ -118,8 +141,8 @@ pip3 install -r rpi/requirements.txt
 ### 2. Copy files to installation directory
 
 ```bash
-sudo mkdir -p /opt/ai-servis/rpi
-sudo cp -r rpi/* /opt/ai-servis/rpi/
+sudo mkdir -p /opt/mia
+sudo cp -r . /opt/mia/
 ```
 
 ### 3. Install systemd services

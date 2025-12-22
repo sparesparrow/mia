@@ -4,6 +4,7 @@ Provides API key and optional JWT authentication.
 """
 from .api_key import (
     APIKeyAuth,
+    APIKeyInfo,
     get_api_key_auth,
     verify_api_key,
     generate_api_key
@@ -11,15 +12,18 @@ from .api_key import (
 from .dependencies import (
     get_current_user,
     require_auth,
-    optional_auth
+    optional_auth,
+    require_scope
 )
 
 __all__ = [
     'APIKeyAuth',
+    'APIKeyInfo',
     'get_api_key_auth',
     'verify_api_key',
     'generate_api_key',
     'get_current_user',
     'require_auth',
-    'optional_auth'
+    'optional_auth',
+    'require_scope'
 ]

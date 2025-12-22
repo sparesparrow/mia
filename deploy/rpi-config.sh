@@ -7,7 +7,7 @@
 export RPI_USER="mia"
 export RPI_HOST="192.168.200.139"
 export RPI_PORT="22"
-export RPI_PATH="/home/mia/ai-servis"
+export RPI_PATH="/opt/mia"
 export SSH_KEY=""  # Set to path of SSH key if needed, e.g., "~/.ssh/id_rsa"
 
 # Usage:

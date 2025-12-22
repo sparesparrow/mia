@@ -8,9 +8,9 @@ Wants=mia-broker.service bluetooth.service
 Type=simple
 User=mia
 Group=bluetooth
-WorkingDirectory=/home/mia/ai-servis
-Environment=PYTHONPATH=/home/mia/ai-servis
-ExecStart=/usr/bin/python3 /home/mia/ai-servis/rpi/services/ble_obd_service.py --simulate
+WorkingDirectory=/opt/mia
+Environment=PYTHONPATH=/opt/mia
+ExecStart=/usr/bin/python3 /opt/mia/rpi/services/ble_obd_service.py --simulate
 Restart=always
 RestartSec=5
 StandardOutput=journal

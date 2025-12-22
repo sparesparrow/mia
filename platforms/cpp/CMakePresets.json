@@ -24,7 +24,7 @@
                 "DYLD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatba89bb86646dac/p/lib:$penv{DYLD_LIBRARY_PATH}"
             },
             "toolchainFile": "conan_toolchain.cmake",
-            "binaryDir": "/home/mia/ai-servis/platforms/cpp"
+            "binaryDir": "${projectDir}/platforms/cpp"
         }
     ],
     "buildPresets": [

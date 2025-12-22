@@ -18,7 +18,7 @@ The fastest way to deploy everything:
 
 ```bash
 # On Raspberry Pi
-cd ~/ai-servis
+cd /opt/mia
 git pull origin main
 sudo ./scripts/deploy-production-rpi.sh
 ```
@@ -37,7 +37,7 @@ If you prefer manual control:
 #### 1. Update Code
 
 ```bash
-cd ~/ai-servis
+cd /opt/mia
 git checkout main
 git pull origin main
 ```
@@ -358,7 +358,7 @@ sudo systemctl restart mia-*
 
 ```bash
 # Pull latest code
-cd ~/ai-servis
+cd /opt/mia
 git pull origin main
 
 # Run deployment script
@@ -369,7 +369,7 @@ sudo ./scripts/deploy-production-rpi.sh
 
 ```bash
 # Checkout previous version
-cd ~/ai-servis
+cd /opt/mia
 git log --oneline
 git checkout <previous-commit-hash>
 

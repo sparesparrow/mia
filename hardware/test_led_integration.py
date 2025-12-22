@@ -51,27 +51,27 @@ class LEDIntegrationTest:
 
         try:
             # Start broker
-            broker_cmd = [sys.executable, "/home/mia/ai-servis/rpi/core/messaging/broker.py"]
+            broker_cmd = [sys.executable, "../rpi/core/messaging/broker.py"]
             self.broker_process = subprocess.Popen(
                 broker_cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                cwd="/home/mia/ai-servis/rpi/core/messaging"
+                cwd="../rpi/core/messaging"
             )
             time.sleep(2)  # Wait for broker to start
 
             # Start LED monitor service
             monitor_cmd = [
                 sys.executable,
-                "/home/mia/ai-servis/rpi/services/led_monitor_service.py",
+                "../rpi/services/led_monitor_service.py",
                 "--led-port", "mock"
             ]
             self.monitor_process = subprocess.Popen(
                 monitor_cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                cwd="/home/mia/ai-servis/rpi/services",
-                env={**os.environ, "PYTHONPATH": "/home/mia/ai-servis/rpi"}
+                cwd="../rpi/services",
+                env={**os.environ, "PYTHONPATH": "../rpi"}
             )
             time.sleep(3)  # Wait for monitor to start
 
