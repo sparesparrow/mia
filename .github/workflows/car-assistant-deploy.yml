@@ -39,7 +39,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: Install Python dependencies for tests
         run: |
@@ -55,7 +54,7 @@ jobs:
 
       - name: Build & start MCP stack with Docker Compose (development)
         run: |
-          docker compose -f mia/docker-compose.dev.yml up -d --wait || docker-compose -f mia/docker-compose.dev.yml up -d
+          docker compose -f docker-compose.dev.yml up -d --wait || docker-compose -f docker-compose.dev.yml up -d
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || '' }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID || '' }}
@@ -69,7 +68,7 @@ jobs:
       - name: Tear down Docker Compose stack
         if: always()
         run: |
-          docker compose -f mia/docker-compose.dev.yml down || docker-compose -f mia/docker-compose.dev.yml down
+          docker compose -f docker-compose.dev.yml down || docker-compose -f docker-compose.dev.yml down || true
 
   deploy-car-assistant:
     name: 🚀 Deploy Car Assistant to Raspberry Pi
