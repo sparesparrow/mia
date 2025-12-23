@@ -228,9 +228,12 @@ deploy_mia_codebase() {
     run_remote "sudo mkdir -p $DEPLOY_DIR"
     run_remote "sudo chown $TARGET_USER:$TARGET_USER $DEPLOY_DIR"
 
-    # Copy MIA modules
-    run_remote "cp -r mia/modules $DEPLOY_DIR/"
-    run_remote "cp -r mcp-prompts $DEPLOY_DIR/"
+    # Copy MIA modules (exclude .git directories to avoid permission issues)
+    run_remote "rsync -av --exclude='.git' --exclude='__pycache__' --exclude='*.pyc' mia/modules $DEPLOY_DIR/" || \
+      run_remote "cp -r mia/modules $DEPLOY_DIR/ && find $DEPLOY_DIR/modules -name '.git' -type d -exec rm -rf {} + 2>/dev/null || true"
+    run_remote "rsync -av --exclude='.git' --exclude='node_modules' mcp-prompts $DEPLOY_DIR/" || \
+      run_remote "cp -r mcp-prompts $DEPLOY_DIR/ && find $DEPLOY_DIR/mcp-prompts -name '.git' -type d -exec rm -rf {} + 2>/dev/null || true"
+    run_remote "chown -R $TARGET_USER:$TARGET_USER $DEPLOY_DIR/modules $DEPLOY_DIR/mcp-prompts 2>/dev/null || true"
 
     # Copy configuration files
     run_remote "mkdir -p $DEPLOY_DIR/config"
