@@ -52,23 +52,9 @@ jobs:
           # Leverage sparetools packages (best‑effort, non‑blocking)
           conan install sparetools-mia/2.0.0@sparesparrow/stable || echo "sparetools-mia Conan install skipped or failed (non‑blocking)"
 
-      - name: Build & start MCP stack with Docker Compose (development)
-        run: |
-          docker compose -f docker-compose.dev.yml up -d --wait || docker-compose -f docker-compose.dev.yml up -d
-        env:
-          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY || '' }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID || '' }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET || '' }}
-        timeout-minutes: 15
-
       - name: Run Car Assistant MCP integration tests
         run: |
           python test_mia_mcp_integration.py
-
-      - name: Tear down Docker Compose stack
-        if: always()
-        run: |
-          docker compose -f docker-compose.dev.yml down || docker-compose -f docker-compose.dev.yml down || true
 
   deploy-car-assistant:
     name: 🚀 Deploy Car Assistant to Raspberry Pi
