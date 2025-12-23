@@ -186,6 +186,10 @@ install_system_dependencies() {
 install_python_dependencies() {
     echo -e "${BLUE}Installing Python dependencies...${NC}"
 
+    # Create deployment directory first (needed for venv)
+    run_remote "sudo mkdir -p $DEPLOY_DIR"
+    run_remote "sudo chown $TARGET_USER:$TARGET_USER $DEPLOY_DIR"
+
     # Create dedicated venv for MIA using bundled CPython if available (no global site-packages)
     run_remote '
       PY_CMD="python3"
@@ -701,8 +705,8 @@ try:
     setup_logging("INFO")
 
     def configure_xfce_settings(username):
-        """Configure XFCE settings for touchscreen."""
-        print(f"Configuring XFCE settings for user: {username}")
+        """Configure XFCE settings for mobile/touchscreen (Plasma Mobile-like)."""
+        print(f"Configuring XFCE settings for mobile/touchscreen user: {username}")
 
         config_dir = Path(f"/home/{username}/.config/xfce4/xfconf/xfce-perchannel-xml")
         ensure_directory_exists(config_dir)
@@ -797,7 +801,7 @@ try:
         for config_file in [panel_file, session_file, wm_file, desktop_file]:
             execute_command(["sudo", "chown", f"{username}:{username}", str(config_file)])
 
-        print(f"Configured XFCE settings for touchscreen")
+        print(f"Configured XFCE settings for mobile/touchscreen")
         return True
 
     def configure_on_screen_keyboard(username):
@@ -1689,8 +1693,8 @@ try:
     setup_logging("INFO")
 
     def configure_xfce_settings(username):
-        """Configure XFCE settings for touchscreen."""
-        print(f"Configuring XFCE settings for user: {username}")
+        """Configure XFCE settings for mobile/touchscreen (Plasma Mobile-like)."""
+        print(f"Configuring XFCE settings for mobile/touchscreen user: {username}")
 
         config_dir = Path(f"/home/{username}/.config/xfce4/xfconf/xfce-perchannel-xml")
         ensure_directory_exists(config_dir)
@@ -1785,7 +1789,7 @@ try:
         for config_file in [panel_file, session_file, wm_file, desktop_file]:
             execute_command(["sudo", "chown", f"{username}:{username}", str(config_file)])
 
-        print(f"Configured XFCE settings for touchscreen")
+        print(f"Configured XFCE settings for mobile/touchscreen")
         return True
 
     def configure_on_screen_keyboard(username):
