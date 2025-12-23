@@ -223,7 +223,8 @@ install_python_dependencies() {
 deploy_mia_codebase() {
     echo -e "${BLUE}Deploying MIA codebase...${NC}"
 
-    # Create deployment directory
+    # Deployment directory already created in install_python_dependencies()
+    # Just ensure it exists and has correct ownership
     run_remote "sudo mkdir -p $DEPLOY_DIR"
     run_remote "sudo chown $TARGET_USER:$TARGET_USER $DEPLOY_DIR"
 
@@ -248,7 +249,7 @@ configure_mcp() {
     echo -e "${BLUE}Configuring MCP...${NC}"
 
     # Create Cursor MCP configuration
-    run_remote "mkdir -p ~/.cursor"
+    run_remote "mkdir -p \$HOME/.cursor"
 
     cat > /tmp/mcp.json << EOF
 {
@@ -288,8 +289,8 @@ configure_mcp() {
 }
 EOF
 
-    copy_to_target "/tmp/mcp.json" "~/.cursor/mcp.json"
-    run_remote "chmod 644 ~/.cursor/mcp.json"
+    run_remote "cp /tmp/mcp.json \$HOME/.cursor/mcp.json"
+    run_remote "chmod 644 \$HOME/.cursor/mcp.json"
 
     echo -e "${GREEN}✓${NC} MCP configuration complete"
 }
@@ -427,7 +428,7 @@ run_deployment_tests() {
     run_remote "source $DEPLOY_DIR/venv/bin/activate && python -c 'import tinymcp, zmq, flatbuffers, mcp; print(\"✓ Python dependencies OK\")'"
 
     # Test MCP configuration
-    run_remote "test -f ~/.cursor/mcp.json && echo '✓ MCP configuration exists'"
+    run_remote "test -f \$HOME/.cursor/mcp.json && echo '✓ MCP configuration exists'"
 
     # Test systemd services
     run_remote "sudo systemctl list-units --type=service | grep -q mia-car-assistant && echo '✓ Systemd services configured'"
