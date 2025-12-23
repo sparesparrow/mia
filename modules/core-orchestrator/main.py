@@ -411,8 +411,36 @@ class CoreOrchestrator(MCPServer):
             """HTTP handler for listing services"""
             result = await self.handle_list_services()
             return web.json_response(result)
-        
+
+        async def handle_mcp(request: web_request.Request) -> web.Response:
+            """HTTP handler for MCP JSON-RPC"""
+            data = await request.json()
+
+            # Create MCP message from JSON-RPC request
+            message = MCPMessage(
+                method=data.get("method", ""),
+                params=data.get("params", {}),
+                id=data.get("id")
+            )
+
+            # Handle the message
+            response = await self.handle_message(message)
+
+            if response:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": response.id,
+                    "result": response.result
+                })
+            else:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": data.get("id"),
+                    "error": {"code": -32601, "message": "Method not found"}
+                })
+
         # Routes
+        app.router.add_post("/mcp", handle_mcp)
         app.router.add_post("/api/voice", handle_voice_command_http)
         app.router.add_get("/api/health", handle_health_http)
         app.router.add_get("/api/services", handle_services_http)
