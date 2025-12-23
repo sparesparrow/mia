@@ -9,8 +9,10 @@ import asyncio
 import logging
 import os
 from typing import Dict, Any, Optional
-from tinymcp import MCPServer
-from .hardware_tools import HardwareTools
+import sys
+sys.path.append('/home/mia/projects/mia/modules')
+from mcp_framework import MCPServer
+from hardware_tools import HardwareTools
 
 logger = logging.getLogger(__name__)
 

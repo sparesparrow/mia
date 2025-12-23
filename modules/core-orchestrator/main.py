@@ -418,12 +418,14 @@ class CoreOrchestrator(MCPServer):
         app.router.add_get("/api/services", handle_services_http)
         
         # CORS support
-        async def add_cors_headers(request, response):
+        @web.middleware
+        async def add_cors_headers(request, handler):
+            response = await handler(request)
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return response
-        
+
         app.middlewares.append(add_cors_headers)
         
         runner = web.AppRunner(app)
