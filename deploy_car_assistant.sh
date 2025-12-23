@@ -21,7 +21,9 @@ DEPLOY_DIR="${DEPLOY_DIR:-/opt/mia-car-assistant}"
 BACKUP_DIR="${BACKUP_DIR:-/opt/mia-backups}"
 LOG_DIR="${LOG_DIR:-/var/log/mia}"
 MIA_WEB_URL="${MIA_WEB_URL:-http://$(hostname -I | awk '{print $1}'):8080}"
+# Support both GitHub releases and Cloudsmith packages
 MIA_APK_URL="${MIA_APK_URL:-https://github.com/sparesparrow/mia/releases/latest/download/mia-car-assistant.apk}"
+MIA_APK_CLOUDSMITH_URL="${MIA_APK_CLOUDSMITH_URL:-}"
 SPARETOOLS_DEV_TOOLS_VERSION="${SPARETOOLS_DEV_TOOLS_VERSION:-2.0.3}"
 
 # Function to run commands on target system
@@ -536,7 +538,7 @@ exec /usr/bin/startxfce4 &
         print(f"Creating VNC systemd service for user: {username}")
 
         service_content = f"""[Unit]
-Description=VNC Server for {username}
+Description=VNC Server for {username} (Mobile/Touchscreen Optimized)
 After=syslog.target network.target
 
 [Service]
@@ -545,7 +547,8 @@ User={username}
 Group={username}
 WorkingDirectory=/home/{username}
 ExecStartPre=-/usr/bin/vncserver -kill :1
-ExecStart=/usr/bin/vncserver :1 -geometry 1280x720
+# Mobile-optimized: 1280x720 for tablets, depth 24, pixel format optimized for mobile VNC clients
+ExecStart=/usr/bin/vncserver :1 -geometry 1280x720 -depth 24 -pixelformat RGB888 -dpi 96
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
@@ -704,22 +707,64 @@ try:
         config_dir = Path(f"/home/{username}/.config/xfce4/xfconf/xfce-perchannel-xml")
         ensure_directory_exists(config_dir)
 
-        # Panel configuration for touchscreen
+        # Mobile-optimized panel configuration (bottom panel like mobile, larger icons)
         panel_config = """<?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-panel" version="1.0">
   <property name="configver" type="int" value="2"/>
   <property name="panels" type="array">
     <value type="int" value="1"/>
     <property name="panel-1" type="empty">
-      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="position" type="string" value="p=10;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
+      <property name="size" type="uint" value="64"/>
       <property name="position-locked" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="48"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="2"/>
         <value type="int" value="3"/>
+        <value type="int" value="4"/>
       </property>
     </property>
+  </property>
+</channel>
+"""
+
+        # Mobile-optimized window manager settings (touch-friendly)
+        wm_config = """<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Default"/>
+    <property name="title_font" type="string" value="Sans Bold 12"/>
+    <property name="button_layout" type="string" value="CHM|"/>
+    <property name="double_click_action" type="string" value="maximize"/>
+    <property name="double_click_distance" type="int" value="5"/>
+    <property name="double_click_time" type="int" value="250"/>
+    <property name="raise_on_click" type="bool" value="true"/>
+    <property name="raise_with_any_button" type="bool" value="true"/>
+    <property name="click_to_focus" type="bool" value="true"/>
+    <property name="focus_delay" type="int" value="250"/>
+  </property>
+</channel>
+"""
+
+        # Mobile-optimized desktop settings (larger icons, touch-friendly)
+        desktop_config = """<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+    </property>
+  </property>
+  <property name="desktop-icons" type="empty">
+    <property name="icon-size" type="uint" value="64"/>
+    <property name="tooltip-size" type="uint" value="80"/>
+    <property name="single-click" type="bool" value="true"/>
   </property>
 </channel>
 """
@@ -729,21 +774,28 @@ try:
 <channel name="xfce4-session" version="1.0">
   <property name="SessionName" type="string" value="Default"/>
   <property name="IsManaged" type="bool" value="true"/>
+  <property name="SaveOnExit" type="bool" value="true"/>
 </channel>
 """
 
         # Write configuration files
         panel_file = config_dir / "xfce4-panel.xml"
         session_file = config_dir / "xfce4-session.xml"
+        wm_file = config_dir / "xfwm4.xml"
+        desktop_file = config_dir / "xfce4-desktop.xml"
 
         with open(panel_file, 'w') as f:
             f.write(panel_config)
         with open(session_file, 'w') as f:
             f.write(session_config)
+        with open(wm_file, 'w') as f:
+            f.write(wm_config)
+        with open(desktop_file, 'w') as f:
+            f.write(desktop_config)
 
         # Set ownership
-        execute_command(["sudo", "chown", f"{username}:{username}", str(panel_file)])
-        execute_command(["sudo", "chown", f"{username}:{username}", str(session_file)])
+        for config_file in [panel_file, session_file, wm_file, desktop_file]:
+            execute_command(["sudo", "chown", f"{username}:{username}", str(config_file)])
 
         print(f"Configured XFCE settings for touchscreen")
         return True
@@ -1104,15 +1156,46 @@ setup_motd_qr_codes() {
         # Install qrencode for QR code generation
         sudo apt install -y qrencode
 
-        # Generate QR codes
-        echo \"$MIA_WEB_URL\" | qrencode -t ANSIUTF8 -o /tmp/web_qr.txt
-        echo \"$MIA_APK_URL\" | qrencode -t ANSIUTF8 -o /tmp/apk_qr.txt
+        # Create persistent directory for QR codes
+        sudo mkdir -p $DEPLOY_DIR/qr-codes
+        sudo chmod 755 $DEPLOY_DIR/qr-codes
+
+        # Generate QR codes persistently (regenerate on each login if URLs change)
+        WEB_URL=\"$MIA_WEB_URL\"
+        APK_URL=\"$MIA_APK_URL\"
+        CLOUDSMITH_URL=\"$MIA_APK_CLOUDSMITH_URL\"
+
+        echo \"\$WEB_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/web_qr.txt
+        echo \"\$APK_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/apk_qr.txt
+        
+        # Generate Cloudsmith QR code if provided
+        if [ -n \"\$CLOUDSMITH_URL\" ]; then
+            echo \"\$CLOUDSMITH_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/apk_cloudsmith_qr.txt
+        fi
 
         # Create MOTD script
-        cat > /tmp/mia-motd.sh << 'EOF'
+        cat > /tmp/mia-motd.sh << 'MOTDEOF'
 #!/bin/bash
 
 # MIA Car Assistant - Message of the Day
+# Load URLs from environment or defaults
+WEB_URL=\"\${MIA_WEB_URL:-http://\$(hostname -I | awk '{print \$1}'):8080}\"
+APK_URL=\"\${MIA_APK_URL:-https://github.com/sparesparrow/mia/releases/latest/download/mia-car-assistant.apk}\"
+CLOUDSMITH_URL=\"\${MIA_APK_CLOUDSMITH_URL:-}\"
+VNC_IP=\"\$(hostname -I | awk '{print \$1}')\"
+QR_DIR=\"$DEPLOY_DIR/qr-codes\"
+
+# Regenerate QR codes if URLs have changed
+if [ ! -f \"\$QR_DIR/web_qr.txt\" ] || ! grep -q \"\$WEB_URL\" \"\$QR_DIR/web_qr.txt\" 2>/dev/null; then
+    echo \"\$WEB_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/web_qr.txt\" 2>/dev/null || true
+fi
+if [ ! -f \"\$QR_DIR/apk_qr.txt\" ] || ! grep -q \"\$APK_URL\" \"\$QR_DIR/apk_qr.txt\" 2>/dev/null; then
+    echo \"\$APK_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/apk_qr.txt\" 2>/dev/null || true
+fi
+if [ -n \"\$CLOUDSMITH_URL\" ] && ([ ! -f \"\$QR_DIR/apk_cloudsmith_qr.txt\" ] || ! grep -q \"\$CLOUDSMITH_URL\" \"\$QR_DIR/apk_cloudsmith_qr.txt\" 2>/dev/null); then
+    echo \"\$CLOUDSMITH_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/apk_cloudsmith_qr.txt\" 2>/dev/null || true
+fi
+
 echo \"\"
 echo \"╔══════════════════════════════════════════════════════════════════════════════╗\"
 echo \"║                           🚗 MIA Car Assistant 🚗                           ║\"
@@ -1123,22 +1206,31 @@ echo \"║  Web Interface QR Code:                                              
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
 
 # Display web interface QR code
-if [ -f /tmp/web_qr.txt ]; then
-    cat /tmp/web_qr.txt
+if [ -f \"\$QR_DIR/web_qr.txt\" ]; then
+    cat \"\$QR_DIR/web_qr.txt\"
 else
-    echo \"    Web URL: $MIA_WEB_URL\"
+    echo \"    Web URL: \$WEB_URL\"
 fi
 
 echo \"\"
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
-echo \"║  APK Download QR Code:                                                       ║\"
+echo \"║  APK Download QR Code (GitHub):                                              ║\"
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
 
-# Display APK download QR code
-if [ -f /tmp/apk_qr.txt ]; then
-    cat /tmp/apk_qr.txt
+# Display GitHub APK download QR code
+if [ -f \"\$QR_DIR/apk_qr.txt\" ]; then
+    cat \"\$QR_DIR/apk_qr.txt\"
 else
-    echo \"    APK URL: $MIA_APK_URL\"
+    echo \"    APK URL (GitHub): \$APK_URL\"
+fi
+
+# Display Cloudsmith QR code if available
+if [ -n \"\$CLOUDSMITH_URL\" ] && [ -f \"\$QR_DIR/apk_cloudsmith_qr.txt\" ]; then
+    echo \"\"
+    echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
+    echo \"║  APK Download QR Code (Cloudsmith):                                         ║\"
+    echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
+    cat \"\$QR_DIR/apk_cloudsmith_qr.txt\"
 fi
 
 echo \"\"
@@ -1146,26 +1238,37 @@ echo \"╠═══════════════════════�
 echo \"║  Remote Operation Instructions:                                              ║\"
 echo \"║                                                                              ║\"
 echo \"║  1. Scan web QR code above to access web interface                          ║\"
-echo \"║  2. Scan APK QR code to download mobile app                                 ║\"
-echo \"║  3. Connect via VNC: vnc://$(hostname -I | awk '{print $1}'):5901              ║\"
-echo \"║  4. Use touchscreen-friendly interface                                      ║\"
+echo \"║  2. Scan APK QR code to download mobile app (GitHub or Cloudsmith)          ║\"
+echo \"║  3. Connect via VNC: vnc://\$VNC_IP:5901                                      ║\"
+echo \"║  4. Use touchscreen-friendly mobile interface (Plasma Mobile-like)          ║\"
 echo \"║                                                                              ║\"
 echo \"║  Commands:                                                                   ║\"
 echo \"║    • mia-status   - Check MIA service status                                ║\"
 echo \"║    • mia-start    - Start MIA service                                       ║\"
 echo \"║    • mia-stop     - Stop MIA service                                        ║\"
+echo \"║    • mia-restart  - Restart MIA service                                     ║\"
+echo \"║    • mia-logs     - View MIA service logs                                   ║\"
 echo \"║    • vnc-start    - Start VNC server                                        ║\"
 echo \"║    • vnc-stop     - Stop VNC server                                         ║\"
+echo \"║    • vnc-status   - Check VNC server status                                 ║\"
 echo \"║                                                                              ║\"
 echo \"║  Logs: sudo journalctl -u mia-car-assistant -f                             ║\"
+echo \"║  VNC Logs: sudo journalctl -u vncserver@mia -f                              ║\"
 echo \"║                                                                              ║\"
 echo \"╚══════════════════════════════════════════════════════════════════════════════╝\"
 echo \"\"
-EOF
+MOTDEOF
 
         # Install MOTD
         sudo mv /tmp/mia-motd.sh /etc/update-motd.d/99-mia-car-assistant
         sudo chmod +x /etc/update-motd.d/99-mia-car-assistant
+
+        # Set environment variables for MOTD script
+        sudo bash -c \"echo 'export MIA_WEB_URL=\\\"$MIA_WEB_URL\\\"' >> /etc/environment\"
+        sudo bash -c \"echo 'export MIA_APK_URL=\\\"$MIA_APK_URL\\\"' >> /etc/environment\"
+        if [ -n \"$MIA_APK_CLOUDSMITH_URL\" ]; then
+            sudo bash -c \"echo 'export MIA_APK_CLOUDSMITH_URL=\\\"$MIA_APK_CLOUDSMITH_URL\\\"' >> /etc/environment\"
+        fi
 
         # Disable default MOTD
         sudo chmod -x /etc/update-motd.d/10-uname 2>/dev/null || true
@@ -1423,7 +1526,7 @@ exec /usr/bin/startxfce4 &
         print(f"Creating VNC systemd service for user: {username}")
 
         service_content = f"""[Unit]
-Description=VNC Server for {username}
+Description=VNC Server for {username} (Mobile/Touchscreen Optimized)
 After=syslog.target network.target
 
 [Service]
@@ -1432,7 +1535,8 @@ User={username}
 Group={username}
 WorkingDirectory=/home/{username}
 ExecStartPre=-/usr/bin/vncserver -kill :1
-ExecStart=/usr/bin/vncserver :1 -geometry 1280x720
+# Mobile-optimized: 1280x720 for tablets, depth 24, pixel format optimized for mobile VNC clients
+ExecStart=/usr/bin/vncserver :1 -geometry 1280x720 -depth 24 -pixelformat RGB888 -dpi 96
 ExecStop=/usr/bin/vncserver -kill :1
 
 [Install]
@@ -1591,22 +1695,64 @@ try:
         config_dir = Path(f"/home/{username}/.config/xfce4/xfconf/xfce-perchannel-xml")
         ensure_directory_exists(config_dir)
 
-        # Panel configuration for touchscreen
+        # Mobile-optimized panel configuration (bottom panel like mobile, larger icons)
         panel_config = """<?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-panel" version="1.0">
   <property name="configver" type="int" value="2"/>
   <property name="panels" type="array">
     <value type="int" value="1"/>
     <property name="panel-1" type="empty">
-      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="position" type="string" value="p=10;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
+      <property name="size" type="uint" value="64"/>
       <property name="position-locked" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="48"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="2"/>
         <value type="int" value="3"/>
+        <value type="int" value="4"/>
       </property>
     </property>
+  </property>
+</channel>
+"""
+
+        # Mobile-optimized window manager settings (touch-friendly)
+        wm_config = """<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Default"/>
+    <property name="title_font" type="string" value="Sans Bold 12"/>
+    <property name="button_layout" type="string" value="CHM|"/>
+    <property name="double_click_action" type="string" value="maximize"/>
+    <property name="double_click_distance" type="int" value="5"/>
+    <property name="double_click_time" type="int" value="250"/>
+    <property name="raise_on_click" type="bool" value="true"/>
+    <property name="raise_with_any_button" type="bool" value="true"/>
+    <property name="click_to_focus" type="bool" value="true"/>
+    <property name="focus_delay" type="int" value="250"/>
+  </property>
+</channel>
+"""
+
+        # Mobile-optimized desktop settings (larger icons, touch-friendly)
+        desktop_config = """<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+    </property>
+  </property>
+  <property name="desktop-icons" type="empty">
+    <property name="icon-size" type="uint" value="64"/>
+    <property name="tooltip-size" type="uint" value="80"/>
+    <property name="single-click" type="bool" value="true"/>
   </property>
 </channel>
 """
@@ -1616,21 +1762,28 @@ try:
 <channel name="xfce4-session" version="1.0">
   <property name="SessionName" type="string" value="Default"/>
   <property name="IsManaged" type="bool" value="true"/>
+  <property name="SaveOnExit" type="bool" value="true"/>
 </channel>
 """
 
         # Write configuration files
         panel_file = config_dir / "xfce4-panel.xml"
         session_file = config_dir / "xfce4-session.xml"
+        wm_file = config_dir / "xfwm4.xml"
+        desktop_file = config_dir / "xfce4-desktop.xml"
 
         with open(panel_file, 'w') as f:
             f.write(panel_config)
         with open(session_file, 'w') as f:
             f.write(session_config)
+        with open(wm_file, 'w') as f:
+            f.write(wm_config)
+        with open(desktop_file, 'w') as f:
+            f.write(desktop_config)
 
         # Set ownership
-        execute_command(["sudo", "chown", f"{username}:{username}", str(panel_file)])
-        execute_command(["sudo", "chown", f"{username}:{username}", str(session_file)])
+        for config_file in [panel_file, session_file, wm_file, desktop_file]:
+            execute_command(["sudo", "chown", f"{username}:{username}", str(config_file)])
 
         print(f"Configured XFCE settings for touchscreen")
         return True
@@ -1991,15 +2144,46 @@ setup_motd_qr_codes() {
         # Install qrencode for QR code generation
         sudo apt install -y qrencode
 
-        # Generate QR codes
-        echo \"$MIA_WEB_URL\" | qrencode -t ANSIUTF8 -o /tmp/web_qr.txt
-        echo \"$MIA_APK_URL\" | qrencode -t ANSIUTF8 -o /tmp/apk_qr.txt
+        # Create persistent directory for QR codes
+        sudo mkdir -p $DEPLOY_DIR/qr-codes
+        sudo chmod 755 $DEPLOY_DIR/qr-codes
+
+        # Generate QR codes persistently (regenerate on each login if URLs change)
+        WEB_URL=\"$MIA_WEB_URL\"
+        APK_URL=\"$MIA_APK_URL\"
+        CLOUDSMITH_URL=\"$MIA_APK_CLOUDSMITH_URL\"
+
+        echo \"\$WEB_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/web_qr.txt
+        echo \"\$APK_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/apk_qr.txt
+        
+        # Generate Cloudsmith QR code if provided
+        if [ -n \"\$CLOUDSMITH_URL\" ]; then
+            echo \"\$CLOUDSMITH_URL\" | qrencode -t ANSIUTF8 -o $DEPLOY_DIR/qr-codes/apk_cloudsmith_qr.txt
+        fi
 
         # Create MOTD script
-        cat > /tmp/mia-motd.sh << 'EOF'
+        cat > /tmp/mia-motd.sh << 'MOTDEOF'
 #!/bin/bash
 
 # MIA Car Assistant - Message of the Day
+# Load URLs from environment or defaults
+WEB_URL=\"\${MIA_WEB_URL:-http://\$(hostname -I | awk '{print \$1}'):8080}\"
+APK_URL=\"\${MIA_APK_URL:-https://github.com/sparesparrow/mia/releases/latest/download/mia-car-assistant.apk}\"
+CLOUDSMITH_URL=\"\${MIA_APK_CLOUDSMITH_URL:-}\"
+VNC_IP=\"\$(hostname -I | awk '{print \$1}')\"
+QR_DIR=\"$DEPLOY_DIR/qr-codes\"
+
+# Regenerate QR codes if URLs have changed
+if [ ! -f \"\$QR_DIR/web_qr.txt\" ] || ! grep -q \"\$WEB_URL\" \"\$QR_DIR/web_qr.txt\" 2>/dev/null; then
+    echo \"\$WEB_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/web_qr.txt\" 2>/dev/null || true
+fi
+if [ ! -f \"\$QR_DIR/apk_qr.txt\" ] || ! grep -q \"\$APK_URL\" \"\$QR_DIR/apk_qr.txt\" 2>/dev/null; then
+    echo \"\$APK_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/apk_qr.txt\" 2>/dev/null || true
+fi
+if [ -n \"\$CLOUDSMITH_URL\" ] && ([ ! -f \"\$QR_DIR/apk_cloudsmith_qr.txt\" ] || ! grep -q \"\$CLOUDSMITH_URL\" \"\$QR_DIR/apk_cloudsmith_qr.txt\" 2>/dev/null); then
+    echo \"\$CLOUDSMITH_URL\" | qrencode -t ANSIUTF8 -o \"\$QR_DIR/apk_cloudsmith_qr.txt\" 2>/dev/null || true
+fi
+
 echo \"\"
 echo \"╔══════════════════════════════════════════════════════════════════════════════╗\"
 echo \"║                           🚗 MIA Car Assistant 🚗                           ║\"
@@ -2010,22 +2194,31 @@ echo \"║  Web Interface QR Code:                                              
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
 
 # Display web interface QR code
-if [ -f /tmp/web_qr.txt ]; then
-    cat /tmp/web_qr.txt
+if [ -f \"\$QR_DIR/web_qr.txt\" ]; then
+    cat \"\$QR_DIR/web_qr.txt\"
 else
-    echo \"    Web URL: $MIA_WEB_URL\"
+    echo \"    Web URL: \$WEB_URL\"
 fi
 
 echo \"\"
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
-echo \"║  APK Download QR Code:                                                       ║\"
+echo \"║  APK Download QR Code (GitHub):                                              ║\"
 echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
 
-# Display APK download QR code
-if [ -f /tmp/apk_qr.txt ]; then
-    cat /tmp/apk_qr.txt
+# Display GitHub APK download QR code
+if [ -f \"\$QR_DIR/apk_qr.txt\" ]; then
+    cat \"\$QR_DIR/apk_qr.txt\"
 else
-    echo \"    APK URL: $MIA_APK_URL\"
+    echo \"    APK URL (GitHub): \$APK_URL\"
+fi
+
+# Display Cloudsmith QR code if available
+if [ -n \"\$CLOUDSMITH_URL\" ] && [ -f \"\$QR_DIR/apk_cloudsmith_qr.txt\" ]; then
+    echo \"\"
+    echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
+    echo \"║  APK Download QR Code (Cloudsmith):                                         ║\"
+    echo \"╠══════════════════════════════════════════════════════════════════════════════╣\"
+    cat \"\$QR_DIR/apk_cloudsmith_qr.txt\"
 fi
 
 echo \"\"
@@ -2033,26 +2226,37 @@ echo \"╠═══════════════════════�
 echo \"║  Remote Operation Instructions:                                              ║\"
 echo \"║                                                                              ║\"
 echo \"║  1. Scan web QR code above to access web interface                          ║\"
-echo \"║  2. Scan APK QR code to download mobile app                                 ║\"
-echo \"║  3. Connect via VNC: vnc://$(hostname -I | awk '{print $1}'):5901              ║\"
-echo \"║  4. Use touchscreen-friendly interface                                      ║\"
+echo \"║  2. Scan APK QR code to download mobile app (GitHub or Cloudsmith)          ║\"
+echo \"║  3. Connect via VNC: vnc://\$VNC_IP:5901                                      ║\"
+echo \"║  4. Use touchscreen-friendly mobile interface (Plasma Mobile-like)          ║\"
 echo \"║                                                                              ║\"
 echo \"║  Commands:                                                                   ║\"
 echo \"║    • mia-status   - Check MIA service status                                ║\"
 echo \"║    • mia-start    - Start MIA service                                       ║\"
 echo \"║    • mia-stop     - Stop MIA service                                        ║\"
+echo \"║    • mia-restart  - Restart MIA service                                     ║\"
+echo \"║    • mia-logs     - View MIA service logs                                   ║\"
 echo \"║    • vnc-start    - Start VNC server                                        ║\"
 echo \"║    • vnc-stop     - Stop VNC server                                         ║\"
+echo \"║    • vnc-status   - Check VNC server status                                 ║\"
 echo \"║                                                                              ║\"
 echo \"║  Logs: sudo journalctl -u mia-car-assistant -f                             ║\"
+echo \"║  VNC Logs: sudo journalctl -u vncserver@mia -f                              ║\"
 echo \"║                                                                              ║\"
 echo \"╚══════════════════════════════════════════════════════════════════════════════╝\"
 echo \"\"
-EOF
+MOTDEOF
 
         # Install MOTD
         sudo mv /tmp/mia-motd.sh /etc/update-motd.d/99-mia-car-assistant
         sudo chmod +x /etc/update-motd.d/99-mia-car-assistant
+
+        # Set environment variables for MOTD script
+        sudo bash -c \"echo 'export MIA_WEB_URL=\\\"$MIA_WEB_URL\\\"' >> /etc/environment\"
+        sudo bash -c \"echo 'export MIA_APK_URL=\\\"$MIA_APK_URL\\\"' >> /etc/environment\"
+        if [ -n \"$MIA_APK_CLOUDSMITH_URL\" ]; then
+            sudo bash -c \"echo 'export MIA_APK_CLOUDSMITH_URL=\\\"$MIA_APK_CLOUDSMITH_URL\\\"' >> /etc/environment\"
+        fi
 
         # Disable default MOTD
         sudo chmod -x /etc/update-motd.d/10-uname 2>/dev/null || true
