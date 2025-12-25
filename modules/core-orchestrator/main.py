@@ -445,13 +445,25 @@ class CoreOrchestrator(MCPServer):
         app.router.add_get("/api/health", handle_health_http)
         app.router.add_get("/api/services", handle_services_http)
         
-        # CORS support
+        # CORS support - Security: Restrict origins for car assistant system
+        allowed_origins = [
+            "http://localhost:3000",  # React dev server
+            "http://localhost:8000",  # FastAPI
+            "http://localhost:8080",  # Web interface
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:8080",
+        ]
+
         @web.middleware
         async def add_cors_headers(request, handler):
             response = await handler(request)
-            response.headers['Access-Control-Allow-Origin'] = '*'
+            origin = request.headers.get('Origin', '')
+            if origin in allowed_origins:
+                response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-            response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
             return response
 
         app.middlewares.append(add_cors_headers)
