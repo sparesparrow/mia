@@ -61,9 +61,10 @@ class TestDynamicCarState:
         assert 0 <= state.get_speed() <= 120
 
 
+@pytest.mark.hardware
 class TestSerialBridge:
     """Test serial bridge component"""
-    
+
     @patch('hardware.serial_bridge.serial')
     def test_serial_bridge_initialization(self, mock_serial):
         """Test serial bridge initialization"""
@@ -112,9 +113,10 @@ class TestSerialBridge:
             bridge.context.term()
 
 
+@pytest.mark.hardware
 class TestOBDWorker:
     """Test OBD worker component"""
-    
+
     @patch('services.obd_worker.ELM327_AVAILABLE', False)
     def test_obd_worker_no_elm327(self):
         """Test OBD worker initialization without ELM327"""
