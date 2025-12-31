@@ -43,7 +43,7 @@ jobs:
       - name: Install Python dependencies for tests
         run: |
           python -m pip install --upgrade pip
-          pip install tinymcp zmq flatbuffers mcp
+          pip install websockets aiohttp fastapi pydantic uvicorn pytest pytest-asyncio
 
       - name: Install Conan and Sparetools MIA package
         run: |
