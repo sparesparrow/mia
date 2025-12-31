@@ -32,10 +32,21 @@ message(STATUS "Conan toolchain: Setting CMAKE_POSITION_INDEPENDENT_CODE=ON (opt
 set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Position independent code")
 
 
+########## 'arch_flags' block #############
+# Define C++ flags, C flags and linker flags from 'settings.arch'
+message(STATUS "Conan toolchain: Defining architecture flag: -m64")
+string(APPEND CONAN_CXX_FLAGS " -m64")
+string(APPEND CONAN_C_FLAGS " -m64")
+string(APPEND CONAN_SHARED_LINKER_FLAGS " -m64")
+string(APPEND CONAN_EXE_LINKER_FLAGS " -m64")
+
+
 ########## 'libcxx' block #############
 # Definition of libcxx from 'compiler.libcxx' setting, defining the
 # right CXX_FLAGS for that libcxx
 
+message(STATUS "Conan toolchain: Defining libcxx as C++ flags: -stdlib=libstdc++")
+string(APPEND CONAN_CXX_FLAGS " -stdlib=libstdc++")
 
 
 ########## 'cppstd' block #############
@@ -130,19 +141,19 @@ else()
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 
 # Definition of CMAKE_MODULE_PATH
-list(PREPEND CMAKE_MODULE_PATH "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/lib/cmake")
+list(PREPEND CMAKE_MODULE_PATH "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib/cmake")
 # the generators folder (where conan generates files, like this toolchain)
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 
 # Definition of CMAKE_PREFIX_PATH, CMAKE_XXXXX_PATH
 # The explicitly defined "builddirs" of "host" context dependencies must be in PREFIX_PATH
-list(PREPEND CMAKE_PREFIX_PATH "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/lib/cmake")
+list(PREPEND CMAKE_PREFIX_PATH "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib/cmake")
 # The Conan local "generators" folder, where this toolchain is saved.
 list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR} )
-list(PREPEND CMAKE_PROGRAM_PATH "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/bin")
-list(PREPEND CMAKE_LIBRARY_PATH "/home/mia/.conan2/p/b/jsonc4673fc0877213/p/lib" "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib" "/home/mia/.conan2/p/b/libcu0d975bb7c635e/p/lib" "/home/mia/.conan2/p/b/libgp893f4e4a0ed1c/p/lib" "lib" "/home/mia/.conan2/p/b/mosqu0f724d9978240/p/lib" "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/lib" "/home/mia/.conan2/p/b/zlib2b99f44ffed8c/p/lib")
-list(PREPEND CMAKE_INCLUDE_PATH "/home/mia/.conan2/p/b/jsonc4673fc0877213/p/include" "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/include" "/home/mia/.conan2/p/b/libcu0d975bb7c635e/p/include" "/home/mia/.conan2/p/b/libgp893f4e4a0ed1c/p/include" "include" "/home/mia/.conan2/p/b/mosqu0f724d9978240/p/include" "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/include" "/home/mia/.conan2/p/b/zlib2b99f44ffed8c/p/include")
-set(CONAN_RUNTIME_LIB_DIRS "/home/mia/.conan2/p/b/jsonc4673fc0877213/p/lib" "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib" "/home/mia/.conan2/p/b/libcu0d975bb7c635e/p/lib" "/home/mia/.conan2/p/b/libgp893f4e4a0ed1c/p/lib" "lib" "/home/mia/.conan2/p/b/mosqu0f724d9978240/p/lib" "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/lib" "/home/mia/.conan2/p/b/zlib2b99f44ffed8c/p/lib" )
+list(PREPEND CMAKE_PROGRAM_PATH "/home/sparrow/.conan2/p/b/flatbf81590caced44/p/bin" "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/bin")
+list(PREPEND CMAKE_LIBRARY_PATH "/home/sparrow/.conan2/p/b/spare5b7a57b2bdef5/p/lib" "/home/sparrow/.conan2/p/b/spare9c7b9a1667b7a/p/lib" "/home/sparrow/.conan2/p/b/sparecab2724936d27/p/lib" "/home/sparrow/.conan2/p/b/jsonc64f4fd1f211e4/p/lib" "/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib" "/home/sparrow/.conan2/p/b/libcu88e5d78574fa6/p/lib" "/home/sparrow/.conan2/p/b/libgp08e10bc8d275a/p/lib" "lib" "/home/sparrow/.conan2/p/b/mosqu41a5763759fbb/p/lib" "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib" "/home/sparrow/.conan2/p/b/zlib37a548d9d4ce4/p/lib")
+list(PREPEND CMAKE_INCLUDE_PATH "/home/sparrow/.conan2/p/b/spare5b7a57b2bdef5/p/include" "/home/sparrow/.conan2/p/b/spare9c7b9a1667b7a/p/include" "/home/sparrow/.conan2/p/b/sparecab2724936d27/p/include" "/home/sparrow/.conan2/p/b/jsonc64f4fd1f211e4/p/include" "/home/sparrow/.conan2/p/b/flatbf81590caced44/p/include" "/home/sparrow/.conan2/p/b/libcu88e5d78574fa6/p/include" "/home/sparrow/.conan2/p/b/libgp08e10bc8d275a/p/include" "include" "/home/sparrow/.conan2/p/b/mosqu41a5763759fbb/p/include" "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/include" "/home/sparrow/.conan2/p/b/zlib37a548d9d4ce4/p/include")
+set(CONAN_RUNTIME_LIB_DIRS "/home/sparrow/.conan2/p/b/spare5b7a57b2bdef5/p/lib" "/home/sparrow/.conan2/p/b/spare9c7b9a1667b7a/p/lib" "/home/sparrow/.conan2/p/b/sparecab2724936d27/p/lib" "/home/sparrow/.conan2/p/b/jsonc64f4fd1f211e4/p/lib" "/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib" "/home/sparrow/.conan2/p/b/libcu88e5d78574fa6/p/lib" "/home/sparrow/.conan2/p/b/libgp08e10bc8d275a/p/lib" "lib" "/home/sparrow/.conan2/p/b/mosqu41a5763759fbb/p/lib" "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib" "/home/sparrow/.conan2/p/b/zlib37a548d9d4ce4/p/lib" )
 
 endif()
 

@@ -2,17 +2,50 @@
 
 ## Current Structure
 
-### ✅ Active Workflows (2)
+### ✅ Active Workflows (6)
 
 1. **`main.yml`** - Main CI/CD Pipeline
    - Status: ✅ Active
    - Triggers: Push, PR, Schedule, Manual
    - Jobs: 9 (security, python-tests, cpp-builds, android-build, esp32-build, docker-builds, integration-tests, deploy, docs)
+   - Purpose: Comprehensive CI/CD pipeline
 
 2. **`docker-multiplatform.yml`** - Advanced Docker Builds
-   - Status: ⚠️ Optional (can be merged into main.yml)
+   - Status: ✅ Active
    - Triggers: Push, PR, Manual
-   - Purpose: Edge deployment images with ARM/v7 support
+   - Purpose: Multi-platform Docker builds with ARM/v7 support
+
+3. **`esp32.yml`** - ESP32 Firmware Builds
+   - Status: ✅ Active
+   - Triggers: Path-based (esp32/** changes)
+   - Purpose: Automated ESP32 builds on firmware changes
+
+4. **`build-web.yml`** - Web Deployment
+   - Status: ✅ Active
+   - Triggers: Path-based (web/** changes)
+   - Purpose: Web application builds and AWS deployment
+
+5. **`monitoring.yml`** - Observability Pipeline
+   - Status: ✅ Active
+   - Triggers: Push, PR, Schedule (6h), Manual
+   - Purpose: Health checks and monitoring infrastructure
+
+6. **`deploy-docker-compose.yml`** - Docker Compose Deployment
+   - Status: ✅ Active
+   - Triggers: Manual
+   - Purpose: Docker Compose-based deployments
+
+### 🗑️ Removed Redundant Workflows (8)
+
+Removed during consolidation:
+- `python.yml` - Functionality merged into main.yml
+- `cpp.yml` - Functionality merged into main.yml
+- `android.yml` - Functionality merged into main.yml
+- `android-build.yml` - Functionality merged into main.yml
+- `android-ci.yml` - Functionality merged into main.yml
+- `security.yml` - Functionality merged into main.yml
+- `trivy.yml` - Functionality merged into main.yml
+- `codeql.yml` - Functionality merged into main.yml
 
 ## Workflow Performance
 

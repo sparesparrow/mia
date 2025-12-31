@@ -10,6 +10,11 @@ class MIAConan(ConanFile):
     name = "mia"
     version = "2.0.0"
     description = "AI Service with MCP and Hardware Control"
+
+    # Use SpareTools foundation utilities
+    python_requires = "sparetools-base/2.0.3"
+    python_requires_extend = "sparetools-base.SpareToolsSecurityMixin"
+
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "shared": [True, False],
@@ -24,14 +29,15 @@ class MIAConan(ConanFile):
         "with_mcp": True
     }
 
-    # Use SpareTools foundation utilities
-    python_requires = "sparetools-base/2.0.3"
-
     def configure(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def requirements(self):
+        # SpareTools shared protocols and utilities
+        self.requires("sparesparrow-protocols/1.0.0")  # Shared protocol schemas
+        self.requires("sparetools-embedded/1.0.0")     # Embedded utilities
+
         # Core dependencies - always required
         self.requires("jsoncpp/1.9.5")       # JSON handling for all components
         self.requires("flatbuffers/23.5.26") # Serialization for all components
@@ -39,31 +45,17 @@ class MIAConan(ConanFile):
         self.requires("openssl/3.0.8")       # SSL/TLS support
         self.requires("zlib/1.2.13")         # Compression support
 
-        # Audio dependencies - FSM implemented without external libraries
-
         # Hardware-specific dependencies
         if self.options.with_hardware:
             self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
             self.requires("mosquitto/2.0.18")    # MQTT communication
 
-        # MCP-specific dependencies
-        if self.options.with_mcp:
-            # MCP integration may need additional deps
-            pass
-
-        # SpareTools runtime dependencies
-        # Note: These require Cloudsmith remote to be configured
-        # self.requires("sparetools-mia/2.0.3")           # MIA IoT components
-        # self.requires("sparetools-obd-sim/2.0.3")       # OBD-II simulation (if needed)
-
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
 
-        # SpareTools build-time dependencies
-        # Note: These require Cloudsmith remote to be configured via setup-sparetools.sh
-        # self.tool_requires("sparetools-obd-sim/2.0.3")  # OBD simulator for testing
-        # self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
+        # SpareTools bundled Python runtime
+        self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
 
     def export_sources(self):
         # Export source files needed for building
@@ -184,6 +176,10 @@ class MIAConan(ConanFile):
         # Package the executables and libraries
         cmake = CMake(self)
         cmake.install()
+
+        # Apply security gates and generate SBOM
+        self.apply_security_gates()
+        self.generate_sbom()
 
         # Package bundled CPython executable and libraries if available
         self._package_cpython()

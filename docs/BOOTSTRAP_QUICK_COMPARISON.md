@@ -1,138 +1,131 @@
-# Bootstrap Comparison: Quick Reference
+# MIA Universal Bootstrap Quick Reference
 
-## Side-by-Side Comparison
+## Bootstrap Methods at a Glance
 
-| Aspect | Old (Conan-based) | New (Direct Download) | Winner |
-|--------|-------------------|----------------------|--------|
-| **Dependencies** | Requires Conan installed first | Only Python stdlib | ✅ New |
-| **Bootstrap Steps** | 6+ steps | 2 steps | ✅ New |
-| **Speed** | ~2-3 minutes | ~30-60 seconds | ✅ New |
-| **Reliability** | Many failure points | Single failure point | ✅ New |
-| **Predictability** | Cache location varies | Fixed location | ✅ New |
-| **CI/CD** | Complex multi-step | Single command | ✅ New |
-| **Error Messages** | Generic Conan errors | Clear, actionable | ✅ New |
-| **Offline Support** | Requires Conan network | Works offline after download | ✅ New |
-| **Repository Switching** | Complex Conan remotes | Simple env vars | ✅ New |
-| **Debugging** | Hunt through cache | Known paths | ✅ New |
+| Method | Script | Platforms | Dependencies | Internet | Speed | Reliability |
+|--------|--------|-----------|--------------|----------|-------|-------------|
+| **Direct Download** | `complete-bootstrap.py` | All | Python 3.8+ | Required | Medium | High |
+| **Shell Script** | `tools/bootstrap.sh` | Unix-like | System tools | Required | Fast | Medium |
+| **Docker** | `Dockerfile` | All | Docker | Optional | Fast | High |
 
-## The Core Problem Solved
+## Quick Start Commands
 
-### Old Approach: Circular Dependency
-
-```
-┌─────────────────────────────────────────┐
-│  Need Conan to get CPython              │
-│  Need CPython to install Conan properly  │
-│  ⚠️ Circular dependency!                │
-└─────────────────────────────────────────┘
-```
-
-### New Approach: Linear Dependency
-
-```
-┌─────────────────────────────────────────┐
-│  System Python (stdlib only)            │
-│    ↓                                    │
-│  Download CPython tarball               │
-│    ↓                                    │
-│  Extract CPython                        │
-│    ↓                                    │
-│  Use CPython to install Conan           │
-│  ✅ Clean, linear flow                  │
-└─────────────────────────────────────────┘
-```
-
-## Real Numbers
-
-### Bootstrap Time (First Run)
-
-- **Old:** ~2-3 minutes
-  - Install Conan: 30-60s
-  - Configure Conan: 10-20s
-  - Download via Conan: 30-60s
-  - Find in cache: 5-10s
-  - Create symlinks: 5-10s
-
-- **New:** ~30-60 seconds
-  - Download tarball: 20-40s
-  - Extract: 10-20s
-
-**Result:** 2-3x faster
-
-### Failure Rate (Fresh System)
-
-- **Old:** ~15-20% failure rate
-  - Conan install fails (PEP 668): 5%
-  - Profile detection fails: 3%
-  - Cache location issues: 5%
-  - Network/remote issues: 5%
-  - Permission issues: 2%
-
-- **New:** ~2-3% failure rate
-  - Network issues: 2%
-  - Disk space: 1%
-
-**Result:** 5-10x more reliable
-
-### Lines of Code
-
-- **Old bootstrap script:** ~540 lines
-  - Conan detection logic
-  - Profile detection
-  - Cache searching
-  - Symlink creation
-  - Multiple fallback paths
-
-- **New bootstrap script:** ~485 lines
-  - Direct download
-  - Simple extraction
-  - Clear error handling
-
-**Result:** Simpler, more maintainable
-
-## Key Insight
-
-The old approach tried to use Conan as a package manager to bootstrap itself. This created unnecessary complexity:
-
-1. **Conan is a C++ package manager** - Using it to bootstrap Python is overkill
-2. **Conan cache is global** - Creates state outside the project
-3. **Conan resolution is complex** - Unnecessary for a simple tarball download
-
-The new approach recognizes that:
-1. **CPython is just a tarball** - Download it directly
-2. **No package resolution needed** - We know exactly what we want
-3. **Keep it local** - Everything in `.buildenv/`
-
-## When to Use Each
-
-### Use New Approach (Recommended)
-- ✅ Fresh installations
-- ✅ CI/CD pipelines
-- ✅ Docker containers
-- ✅ New developers onboarding
-- ✅ When you want reliability and speed
-
-### Use Old Approach (Legacy)
-- ⚠️ Only if you have existing Conan cache with CPython
-- ⚠️ Only if direct download fails (network restrictions)
-- ⚠️ During transition period
-
-## Migration Path
-
-The new approach is **backward compatible**:
-
+### Direct Download (Recommended)
 ```bash
-# New approach (default)
-./tools/bootstrap.sh
-
-# Old approach (if needed)
-./tools/bootstrap.sh --legacy
+python3 complete-bootstrap.py
 ```
 
-Both create the same end result (bundled CPython in `.buildenv/`), but the new approach gets there faster and more reliably.
+### Shell Script (Fastest)
+```bash
+chmod +x tools/bootstrap.sh
+./tools/bootstrap.sh
+```
 
-## Bottom Line
+### Docker (Most Reliable)
+```bash
+docker build -t mia-universal .
+docker run -it mia-universal
+```
 
-**The new bootstrap is better because it solves the fundamental problem: you shouldn't need a package manager to bootstrap a package manager.**
+## Repository Setup
 
-It's like needing a hammer to get a hammer - the old approach required Conan to get CPython, which you then use to install Conan. The new approach just downloads CPython directly, eliminating the circular dependency and all the complexity that came with it.
+### Cloudsmith (Primary)
+```bash
+export CLOUDSMITH_USERNAME="your_username"
+export CLOUDSMITH_API_KEY="your_api_key"
+./tools/repo-config.sh cloudsmith
+```
+
+### GitHub Packages (Fallback)
+```bash
+export GITHUB_USERNAME="your_username"
+export GITHUB_TOKEN="your_token"
+./tools/repo-config.sh github
+```
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `CLOUDSMITH_USERNAME` | Cloudsmith username | Optional |
+| `CLOUDSMITH_API_KEY` | Cloudsmith API key | Optional |
+| `GITHUB_USERNAME` | GitHub username | Optional |
+| `GITHUB_TOKEN` | GitHub PAT | Optional |
+| `MIA_BOOTSTRAP_CACHE` | Cache directory | Optional |
+
+## Troubleshooting Quick Fixes
+
+### Python Issues
+```bash
+# Install Python 3.8+
+apt-get install python3.8  # Ubuntu/Debian
+brew install python@3.8    # macOS
+```
+
+### Conan Issues
+```bash
+# Clean Conan cache
+conan remove "*" -f
+conan cache clean
+```
+
+### Network Issues
+```bash
+# Test connectivity
+curl -I https://cloudsmith.io
+curl -I https://pypi.org
+```
+
+### Permission Issues
+```bash
+# Fix permissions
+chmod +x tools/*.sh
+sudo chown -R $USER:$USER .
+```
+
+## Success Indicators
+
+✅ **Bootstrap Complete**
+- All dependencies installed
+- Conan remotes configured
+- Python packages available
+- No error messages
+
+✅ **Ready to Run**
+```bash
+conan install . --build=missing
+python3 modules/core-orchestrator/main.py
+```
+
+## Common Error Solutions
+
+| Error | Solution |
+|-------|----------|
+| `python3: command not found` | Install Python 3.8+ |
+| `conan: command not found` | Run bootstrap script |
+| `Connection timeout` | Check internet/proxy |
+| `Authentication failed` | Verify credentials |
+| `Permission denied` | Fix file permissions |
+| `Disk space` | Free up space/clean cache |
+
+## Performance Tips
+
+- **Use shell script** for fastest setup
+- **Pre-download packages** for offline install
+- **Use Docker** for consistent environments
+- **Set up repositories** before bootstrap
+- **Clean cache** regularly
+
+## Next Steps After Bootstrap
+
+1. **Initialize project**: `./tools/init.sh`
+2. **Install dependencies**: `conan install . --build=missing`
+3. **Verify setup**: `python3 -c "import mcp_framework"`
+4. **Start services**: `python3 modules/core-orchestrator/main.py`
+
+## Getting Help
+
+- **Logs**: Check `logs/` directory
+- **Verbose output**: Run with `--help` flag
+- **GitHub Issues**: Search existing issues
+- **Documentation**: See `docs/BOOTSTRAP_COMPARISON.md`

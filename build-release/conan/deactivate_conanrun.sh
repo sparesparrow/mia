@@ -1,1 +1,1 @@
-. "/home/mia/projects/mia/build-release/conan/deactivate_conanrunenv-release-armv8.sh"
+. "/home/sparrow/projects/portfolio/mia/build-release/conan/deactivate_conanrunenv-release-x86_64.sh"

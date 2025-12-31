@@ -12,27 +12,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target: [esp32, esp32s3]
-        variant: [obd, io, cam]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup ESP-IDF
-        uses: espressif/esp-idf-ci-action@v1
-        with:
-          esp-idf-version: v5.0
-          target: ${{ matrix.target }}
-
-      - name: Build firmware
-        run: |
-          cd esp32/firmware-${{ matrix.variant }}
-          idf.py set-target ${{ matrix.target }}
-          idf.py build
+    name: ESP32 Build Matrix
+    uses: sparesparrow/sparetools/.github/workflows/esp32-build-reusable.yml@main
+    with:
+      conan_packages: "sparesparrow-protocols/1.0.0,sparetools-embedded/1.0.0"
+      board: "esp32-s3-devkitc-1"
+      platformio_env: "esp32"
 
       - name: Create firmware package
         run: |

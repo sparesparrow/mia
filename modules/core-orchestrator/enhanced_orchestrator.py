@@ -785,6 +785,29 @@ class EnhancedCoreOrchestrator(MCPServer):
             handler=self.handle_analyze_intent
         )
         self.add_tool(analyze_intent_tool)
+
+        # Telegram-specific tools
+        telegram_message_tool = create_tool(
+            name="process_telegram_message",
+            description="Process incoming Telegram message and route to appropriate services",
+            schema={
+                "type": "object",
+                "properties": {
+                    "chat_id": {"type": "integer", "description": "Telegram chat ID"},
+                    "message_id": {"type": "integer", "description": "Telegram message ID"},
+                    "text": {"type": "string", "description": "Message text content"},
+                    "sender_id": {"type": "integer", "description": "Sender user ID"},
+                    "sender_name": {"type": "string", "description": "Sender display name"},
+                    "has_media": {"type": "boolean", "description": "Whether message contains media"},
+                    "media_type": {"type": "string", "description": "Type of media if present"},
+                    "reply_to_id": {"type": "integer", "description": "ID of message being replied to"},
+                    "thread_id": {"type": "integer", "description": "Thread/conversation ID"}
+                },
+                "required": ["chat_id", "message_id", "text"]
+            },
+            handler=self.handle_telegram_message
+        )
+        self.add_tool(telegram_message_tool)
     
     async def handle_enhanced_voice_command(self, text: str, session_id: Optional[str] = None,
                                           user_id: Optional[str] = None, 
@@ -883,40 +906,189 @@ class EnhancedCoreOrchestrator(MCPServer):
             "alternatives": intent_result.alternatives,
             "original_text": intent_result.original_text
         }
+
+    async def handle_telegram_message(self, chat_id: int, message_id: int, text: str,
+                                    sender_id: Optional[int] = None, sender_name: Optional[str] = None,
+                                    has_media: bool = False, media_type: Optional[str] = None,
+                                    reply_to_id: Optional[int] = None, thread_id: Optional[int] = None) -> Dict[str, Any]:
+        """Handle incoming Telegram message with context preservation."""
+        logger.info(f"Processing Telegram message {message_id} from chat {chat_id}")
+
+        try:
+            # Create or get session based on chat_id with thread awareness
+            base_session_id = f"telegram_chat_{chat_id}"
+            session_id = f"{base_session_id}_thread_{thread_id}" if thread_id else base_session_id
+
+            # Check if session exists and is active
+            session_context = self.context_manager.get_session(session_id)
+            if not session_context:
+                # Create new session for this chat/thread
+                user_id = f"telegram_user_{sender_id}" if sender_id else f"telegram_chat_{chat_id}"
+                session_id = self.context_manager.create_session(user_id, "telegram")
+                session_context = self.context_manager.get_session(session_id)
+
+                # Set chat-specific context
+                session_context.variables.update({
+                    "chat_id": str(chat_id),
+                    "thread_id": str(thread_id) if thread_id else None,
+                    "base_session_id": base_session_id,
+                    "last_message_id": str(message_id),
+                    "interface_type": "telegram",
+                    "sender_name": sender_name or "Unknown User",
+                    "message_count": "0"
+                })
+
+            # Update session with latest message info and increment counter
+            current_count = int(session_context.variables.get("message_count", "0"))
+            self.context_manager.update_session(session_id, **{
+                "last_message_id": str(message_id),
+                "thread_id": str(thread_id) if thread_id else session_context.variables.get("thread_id"),
+                "message_count": str(current_count + 1),
+                "last_activity": datetime.now()
+            })
+
+            # Handle thread context inheritance
+            if thread_id and not session_context.variables.get("thread_id"):
+                # Inherit context from base chat session if this is a new thread
+                base_session = self.context_manager.get_session(base_session_id)
+                if base_session:
+                    # Copy relevant context from base session
+                    inherited_vars = {}
+                    for key in ["command_history", "response_history", "last_intent", "service_state"]:
+                        if hasattr(base_session, key):
+                            value = getattr(base_session, key)
+                            if value:
+                                inherited_vars[key] = value
+
+                    if inherited_vars:
+                        self.context_manager.update_session(session_id, **inherited_vars)
+                        logger.debug(f"Inherited context from base session {base_session_id} to thread {session_id}")
+
+            # Parse the message text for intent
+            intent_result = await self.nlp_processor.parse_command(text, session_context)
+
+            logger.info(f"Telegram message intent: {intent_result.intent} (confidence: {intent_result.confidence:.2f})")
+
+            # Add Telegram-specific context to parameters
+            enhanced_parameters = intent_result.parameters.copy()
+            enhanced_parameters.update({
+                "chat_id": str(chat_id),
+                "message_id": str(message_id),
+                "sender_id": str(sender_id) if sender_id else None,
+                "sender_name": sender_name,
+                "has_media": has_media,
+                "media_type": media_type,
+                "reply_to_id": str(reply_to_id) if reply_to_id else None,
+                "thread_id": str(thread_id) if thread_id else None,
+                "session_message_count": str(current_count + 1)
+            })
+
+            # Route the command
+            response_text = await self._route_enhanced_command(intent_result, session_context, None)
+
+            # Format response for Telegram
+            formatted_response = self._format_telegram_response(response_text, intent_result)
+
+            # Update session history
+            self.context_manager.add_to_history(session_id, text, formatted_response)
+
+            # Update base chat session if this is a thread
+            if thread_id and base_session_id != session_id:
+                base_session = self.context_manager.get_session(base_session_id)
+                if base_session:
+                    # Update last activity in base session
+                    self.context_manager.update_session(base_session_id, last_activity=datetime.now())
+
+            return {
+                "response": formatted_response,
+                "intent": intent_result.intent,
+                "confidence": intent_result.confidence,
+                "session_id": session_id,
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "thread_id": thread_id,
+                "should_reply": True,
+                "reply_to_message_id": message_id  # Reply to the original message
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing Telegram message {message_id}: {e}")
+            return {
+                "response": f"❌ Sorry, I encountered an error processing your message: {str(e)}",
+                "intent": "error",
+                "confidence": 0.0,
+                "session_id": session_id if 'session_id' in locals() else None,
+                "chat_id": chat_id,
+                "message_id": message_id,
+                "thread_id": thread_id,
+                "should_reply": True,
+                "reply_to_message_id": message_id
+            }
+
+    def _format_telegram_response(self, response_text: str, intent_result: IntentResult) -> str:
+        """Format response text for Telegram with appropriate formatting."""
+        if not response_text:
+            return "✅ Command processed successfully."
+
+        # Add confidence indicator for low confidence responses
+        if intent_result.confidence < 0.5:
+            confidence_indicator = f" (confidence: {intent_result.confidence:.1f})"
+            if not response_text.endswith(confidence_indicator):
+                response_text += confidence_indicator
+
+        # Add emoji prefixes based on intent for better UX
+        intent_emojis = {
+            "play_music": "🎵",
+            "control_volume": "🔊",
+            "switch_audio": "🔄",
+            "system_control": "💻",
+            "hardware_control": "⚡",
+            "smart_home": "🏠",
+            "communication": "💬",
+            "navigation": "🗺️",
+            "file_operation": "📁"
+        }
+
+        emoji = intent_emojis.get(intent_result.intent, "🤖")
+        if not response_text.startswith(emoji):
+            response_text = f"{emoji} {response_text}"
+
+        return response_text
     
-    async def _route_enhanced_command(self, intent_result: IntentResult, 
+    async def _route_enhanced_command(self, intent_result: IntentResult,
                                     session_context: Optional[SessionContext],
                                     additional_context: Optional[Dict[str, Any]]) -> str:
         """Route command with enhanced logic"""
         intent = intent_result.intent
         parameters = intent_result.parameters
-        
+
         # Handle follow-up commands
         if intent == "follow_up" and session_context:
             return await self._handle_follow_up(intent_result, session_context)
-        
+
         # Low confidence handling
         if intent_result.confidence < 0.3:
             alternatives = [alt[0] for alt in intent_result.alternatives[:2]]
             return f"I'm not sure what you meant. Did you mean: {', '.join(alternatives)}? (confidence: {intent_result.confidence:.2f})"
-        
+
         # Route to appropriate service
         service_mapping = {
             "play_music": "ai-audio-assistant",
-            "control_volume": "ai-audio-assistant", 
+            "control_volume": "ai-audio-assistant",
             "switch_audio": "ai-audio-assistant",
             "system_control": "ai-platform-linux",
             "file_operation": "webgrab-server",
             "hardware_control": "hardware-bridge",
             "smart_home": "ai-home-automation",
             "communication": "ai-communications",
-            "navigation": "ai-maps-navigation"
+            "navigation": "ai-maps-navigation",
+            "telegram_messaging": "mcp-transport-telegram"
         }
-        
+
         service_name = service_mapping.get(intent)
         if not service_name:
             return f"No service available for intent: {intent}"
-        
+
         # Enhanced service call with retry logic
         result = await self._call_service_enhanced(service_name, intent, parameters, session_context)
         return result
@@ -1093,7 +1265,7 @@ async def main():
             "service_type": "http"
         },
         {
-            "name": "ai-platform-linux", 
+            "name": "ai-platform-linux",
             "host": "localhost",
             "port": 8083,
             "capabilities": ["system", "process", "file", "command", "application"],
@@ -1101,7 +1273,7 @@ async def main():
         },
         {
             "name": "hardware-bridge",
-            "host": "localhost", 
+            "host": "localhost",
             "port": 8084,
             "capabilities": ["gpio", "sensor", "actuator", "pwm", "i2c", "spi"],
             "service_type": "mcp"
@@ -1109,9 +1281,27 @@ async def main():
         {
             "name": "ai-home-automation",
             "host": "localhost",
-            "port": 8085, 
+            "port": 8085,
             "capabilities": ["lights", "temperature", "security", "automation"],
             "service_type": "http"
+        },
+        {
+            "name": "mcp-transport-telegram",
+            "host": "localhost",
+            "port": 8090,  # MCP stdio transport doesn't use ports, but keeping for consistency
+            "capabilities": ["messaging", "media", "contacts", "telegram", "communication"],
+            "service_type": "mcp",
+            "metadata": {
+                "command": ["python", "-m", "mcp_transport_telegram"],
+                "working_directory": "/home/sparrow/projects/ai-mcp-monorepo/packages/mcp-transport-telegram",
+                "env": {
+                    "TELEGRAM_API_ID": os.getenv("TELEGRAM_API_ID", ""),
+                    "TELEGRAM_API_HASH": os.getenv("TELEGRAM_API_HASH", ""),
+                    "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN"),
+                    "TELEGRAM_POLLING_INTERVAL": "30",
+                    "TELEGRAM_MAX_MESSAGE_AGE": "3600"
+                }
+            }
         }
     ]
     

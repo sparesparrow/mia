@@ -19,12 +19,16 @@
                 "CMAKE_BUILD_TYPE": "Release"
             },
             "environment": {
-                "PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/bin:$penv{PATH}",
-                "LD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib:$penv{LD_LIBRARY_PATH}",
-                "DYLD_LIBRARY_PATH": "/home/mia/.conan2/p/b/flatbc6a8af28f2edf/p/lib:$penv{DYLD_LIBRARY_PATH}"
+                "PYTHON_ROOT": "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p",
+                "PATH": "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/bin:/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/bin:/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/bin:/home/sparrow/.conan2/p/b/flatbf81590caced44/p/bin:$penv{PATH}",
+                "LD_LIBRARY_PATH": "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/lib:/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/lib:/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib:$penv{LD_LIBRARY_PATH}",
+                "PYTHONHOME": "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p",
+                "PYTHONPATH": "$penv{PYTHONPATH}:/home/sparrow/.conan2/p/b/sparecab2724936d27/p:/home/sparrow/.conan2/p/b/spare9c7b9a1667b7a/p:/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/lib/python3.12",
+                "DYLD_LIBRARY_PATH": "/home/sparrow/.conan2/p/b/spareb0cd78b74c4e0/p/lib:/home/sparrow/.conan2/p/b/flatbf81590caced44/p/lib:$penv{DYLD_LIBRARY_PATH}",
+                "SPARETOOLS_CLI": "/home/sparrow/.conan2/p/b/sparecab2724936d27/p/cli/main.py"
             },
             "toolchainFile": "conan/conan_toolchain.cmake",
-            "binaryDir": "/home/mia/projects/mia/build-release"
+            "binaryDir": "/home/sparrow/projects/portfolio/mia/build-release"
         }
     ],
     "buildPresets": [
@@ -39,7 +43,7 @@
             "name": "conan-release",
             "configurePreset": "conan-release",
             "environment": {
-                "OPENSSL_MODULES": "/home/mia/.conan2/p/b/opens81e618adf0a9a/p/lib/ossl-modules"
+                "OPENSSL_MODULES": "/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib/ossl-modules"
             }
         }
     ]

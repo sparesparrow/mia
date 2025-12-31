@@ -185,47 +185,134 @@ class MCPTransport(ABC):
 
 
 class WebSocketTransport(MCPTransport):
-    """WebSocket transport for MCP with connection management"""
+    """WebSocket transport for MCP with enhanced connection management and error recovery"""
 
-    def __init__(self, websocket):
+    def __init__(self, websocket, heartbeat_interval: float = 30.0, max_reconnect_attempts: int = 3):
         self.websocket = websocket
         self.closed = False
+        self.heartbeat_interval = heartbeat_interval
+        self.max_reconnect_attempts = max_reconnect_attempts
+        self.reconnect_attempts = 0
+        self.last_activity = asyncio.get_event_loop().time()
+        self._heartbeat_task: Optional[asyncio.Task] = None
+        self._lock = asyncio.Lock()
 
     async def send(self, message: MCPMessage) -> None:
-        """Send message via WebSocket"""
-        if self.closed:
-            raise MCPError(-32000, "Connection closed")
-        try:
-            await self.websocket.send(message.to_json())
-        except websockets.exceptions.ConnectionClosed:
-            self.closed = True
-            raise MCPError(-32000, "Connection closed during send")
-        except Exception as e:
-            logger.error(f"WebSocket send error: {e}")
-            raise MCPError(-32603, f"WebSocket send error: {str(e)}")
+        """Send message via WebSocket with retry logic"""
+        async with self._lock:
+            if self.closed:
+                raise MCPError(-32000, "Connection closed")
+
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    await self.websocket.send(message.to_json())
+                    self.last_activity = asyncio.get_event_loop().time()
+                    return
+                except websockets.exceptions.ConnectionClosed:
+                    self.closed = True
+                    if attempt == max_retries - 1:
+                        raise MCPError(-32000, "Connection closed during send")
+                    logger.warning(f"Connection closed, attempt {attempt + 1}/{max_retries}")
+                    await asyncio.sleep(1)  # Brief pause before potential reconnect
+                except Exception as e:
+                    logger.error(f"WebSocket send error (attempt {attempt + 1}): {e}")
+                    if attempt == max_retries - 1:
+                        raise MCPError(-32603, f"WebSocket send error: {str(e)}")
+                    await asyncio.sleep(0.5)
 
     async def receive(self) -> MCPMessage:
-        """Receive message via WebSocket"""
+        """Receive message via WebSocket with timeout and error handling"""
         if self.closed:
             raise MCPError(-32000, "Connection closed")
+
         try:
-            data = await self.websocket.recv()
-            return MCPMessage.from_json(data)
+            # Set a reasonable timeout for receive operations
+            receive_timeout = 60.0  # 1 minute timeout
+            data = await asyncio.wait_for(
+                self.websocket.recv(),
+                timeout=receive_timeout
+            )
+            message = MCPMessage.from_json(data)
+            self.last_activity = asyncio.get_event_loop().time()
+            return message
+        except asyncio.TimeoutError:
+            logger.warning("WebSocket receive timeout")
+            raise MCPError(-32000, "Receive timeout")
         except websockets.exceptions.ConnectionClosed:
             self.closed = True
             raise MCPError(-32000, "Connection closed during receive")
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON received: {e}")
+            raise MCPError(-32700, f"Invalid JSON: {str(e)}")
         except Exception as e:
             logger.error(f"WebSocket receive error: {e}")
             raise MCPError(-32603, f"WebSocket receive error: {str(e)}")
 
     async def close(self) -> None:
-        """Close WebSocket connection"""
-        if not self.closed:
+        """Close WebSocket connection gracefully"""
+        async with self._lock:
+            if not self.closed:
+                self.closed = True
+                logger.info("Closing WebSocket connection")
+
+                # Cancel heartbeat task
+                if self._heartbeat_task and not self._heartbeat_task.done():
+                    self._heartbeat_task.cancel()
+                    try:
+                        await self._heartbeat_task
+                    except asyncio.CancelledError:
+                        pass
+
+                # Close WebSocket
+                try:
+                    await asyncio.wait_for(
+                        self.websocket.close(),
+                        timeout=5.0
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning("WebSocket close timeout")
+                except Exception as e:
+                    logger.error(f"Error closing WebSocket: {e}")
+
+    async def start_heartbeat(self) -> None:
+        """Start heartbeat monitoring"""
+        if self._heartbeat_task and not self._heartbeat_task.done():
+            return
+
+        self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+        logger.info("Started WebSocket heartbeat monitoring")
+
+    async def _heartbeat_loop(self) -> None:
+        """Background heartbeat loop"""
+        try:
+            while not self.closed:
+                await asyncio.sleep(self.heartbeat_interval)
+
+                if self.closed:
+                    break
+
+                current_time = asyncio.get_event_loop().time()
+                time_since_activity = current_time - self.last_activity
+
+                # Send ping if connection is idle
+                if time_since_activity > self.heartbeat_interval:
+                    try:
+                        pong_waiter = asyncio.Future()
+                        await self.websocket.ping()
+                        # Wait for pong (websockets handles this automatically)
+                        logger.debug("Heartbeat ping sent")
+                    except Exception as e:
+                        logger.warning(f"Heartbeat ping failed: {e}")
+                        self.closed = True
+                        break
+
+        except asyncio.CancelledError:
+            logger.info("Heartbeat loop cancelled")
+            raise
+        except Exception as e:
+            logger.error(f"Heartbeat loop error: {e}")
             self.closed = True
-            try:
-                await self.websocket.close()
-            except Exception as e:
-                logger.error(f"Error closing WebSocket: {e}")
 
 
 class HTTPTransport(MCPTransport):
@@ -479,19 +566,38 @@ class MCPServer:
         )
 
     async def serve(self, transport: MCPTransport) -> None:
-        """Serve MCP requests using the provided transport"""
+        """Serve MCP requests using the provided transport with enhanced error handling"""
         self.transport = transport
         self.running = True
         logger.info(f"MCP Server '{self.name}' started")
 
+        consecutive_errors = 0
+        max_consecutive_errors = 5
+
         try:
             while self.running:
                 try:
-                    message = await transport.receive()
+                    # Receive message with timeout for better responsiveness
+                    message = await asyncio.wait_for(
+                        transport.receive(),
+                        timeout=30.0  # 30 second timeout
+                    )
+
+                    # Handle the message
                     response = await self.handle_message(message)
+
+                    # Send response if any
                     if response:
                         await transport.send(response)
+
+                    # Reset error counter on successful operation
+                    consecutive_errors = 0
+
+                except asyncio.TimeoutError:
+                    # Timeout is normal, just continue
+                    continue
                 except MCPError as e:
+                    consecutive_errors += 1
                     if e.code == -32000:  # Connection closed
                         logger.info("Connection closed by client")
                         break
@@ -505,19 +611,41 @@ class MCPServer:
                             )
                             await transport.send(error_response)
                         except Exception:
-                            break  # Can't send error, connection likely closed
+                            logger.warning("Could not send error response, connection likely closed")
+                            break
                 except websockets.exceptions.ConnectionClosed:
                     logger.info("WebSocket connection closed")
                     break
                 except Exception as e:
+                    consecutive_errors += 1
                     logger.error(f"Unexpected error in serve loop: {e}")
-                    break
+
+                    # If too many consecutive errors, break
+                    if consecutive_errors >= max_consecutive_errors:
+                        logger.error(f"Too many consecutive errors ({consecutive_errors}), stopping server")
+                        break
+
+                    # Brief pause before continuing
+                    await asyncio.sleep(1)
+
+        except Exception as e:
+            logger.error(f"Fatal error in serve loop: {e}")
         finally:
             self.running = False
-            try:
-                await transport.close()
-            except Exception as e:
-                logger.error(f"Error closing transport: {e}")
+            logger.info(f"Stopping MCP Server '{self.name}'")
+
+            # Close transport gracefully
+            if transport:
+                try:
+                    await asyncio.wait_for(
+                        transport.close(),
+                        timeout=5.0
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning("Transport close timeout")
+                except Exception as e:
+                    logger.error(f"Error closing transport: {e}")
+
             logger.info(f"MCP Server '{self.name}' stopped")
 
 
@@ -571,23 +699,61 @@ class MCPClient:
         logger.info("MCP Client connected successfully")
 
     async def _establish_connection(self, timeout: float = 30.0) -> None:
-        """Establish connection to the server"""
+        """Establish connection to the server with enhanced error handling"""
         if self.transport_factory is None:
             raise MCPError(-32603, "No transport factory available")
 
         try:
+            logger.info("Attempting to establish MCP connection...")
+
+            # Create transport with timeout
             transport_candidate = self.transport_factory()
             if asyncio.iscoroutine(transport_candidate):
-                self.transport = await transport_candidate
+                try:
+                    self.transport = await asyncio.wait_for(
+                        transport_candidate,
+                        timeout=timeout
+                    )
+                except asyncio.TimeoutError:
+                    raise MCPError(-32000, f"Transport creation timeout after {timeout}s")
             else:
                 self.transport = transport_candidate
 
             if self.transport is None:
                 raise MCPError(-32603, "Transport factory returned None")
-            self.connected = True
 
-            # Initialize the connection
-            await self.initialize()
+            # For WebSocket transports, start heartbeat monitoring
+            if isinstance(self.transport, WebSocketTransport):
+                await self.transport.start_heartbeat()
+
+            self.connected = True
+            logger.info("Transport established, initializing MCP connection...")
+
+            # Initialize the connection with retry logic
+            await self._initialize_with_retry()
+
+            logger.info("MCP connection established successfully")
+
+    async def _initialize_with_retry(self, max_retries: int = 3) -> None:
+        """Initialize MCP connection with retry logic"""
+        last_error = None
+
+        for attempt in range(max_retries):
+            try:
+                await self.initialize()
+                return
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Initialization attempt {attempt + 1}/{max_retries} failed: {e}")
+
+                if attempt < max_retries - 1:
+                    # Exponential backoff
+                    delay = 2 ** attempt
+                    logger.info(f"Retrying initialization in {delay} seconds...")
+                    await asyncio.sleep(delay)
+                else:
+                    logger.error(f"Initialization failed after {max_retries} attempts")
+                    raise last_error
 
         except Exception as e:
             self.connected = False

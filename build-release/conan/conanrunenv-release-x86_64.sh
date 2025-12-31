@@ -1,4 +1,4 @@
-script_folder="/home/sparrow/projects/ai-servis/build-release/conan"
+script_folder="/home/sparrow/projects/portfolio/mia/build-release/conan"
 echo "echo Restoring environment" > "$script_folder/deactivate_conanrunenv-release-x86_64.sh"
 for v in OPENSSL_MODULES
 do
@@ -13,4 +13,4 @@ do
 done
 
 
-export OPENSSL_MODULES="/home/sparrow/.conan2/p/b/opens32cd66a727f71/p/lib/ossl-modules"
+export OPENSSL_MODULES="/home/sparrow/.conan2/p/b/opens39681d45265e8/p/lib/ossl-modules"
