@@ -13,10 +13,10 @@ import zmq
 from unittest.mock import patch
 
 # Import OBD components
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../rpi'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
-from hardware.serial_bridge import SerialBridge
-from services.obd_worker import MIAOBDWorker, DynamicCarState
+from rpi.hardware.serial_bridge import SerialBridge
+from rpi.services.obd_worker import MIAOBDWorker, DynamicCarState
 
 
 class TestDynamicCarState:

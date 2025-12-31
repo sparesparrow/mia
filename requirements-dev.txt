@@ -1,15 +1,22 @@
-pytest==7.4.3
-pytest-asyncio==0.23.2
-pytest-cov==4.1.0
-black==23.12.1  # Compatible with safety 2.3.5 (packaging<22.0)
-flake8==7.0.0
-mypy==1.8.0
-bandit==1.7.5
-safety==2.3.4
-pre-commit==3.6.0
-# docker-compose removed - use 'docker compose' (Docker plugin) instead
-# The Python docker-compose package conflicts with PyYAML>=6.0
-# Modern Docker includes 'docker compose' as a built-in plugin
-mkdocs==1.5.3
-mkdocs-material==9.5.3
-mkdocs-mermaid2-plugin==1.1.1
+# Development and Testing Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Include all production dependencies
+-r requirements.txt
+
+# Test framework
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# Code quality
+pylint>=3.0.0
+flake8>=7.0.0
+
+# Optional hardware dependencies (may fail to build in CI)
+# Uncomment for local hardware testing:
+# ELM327-emulator>=1.1.1
+
+# Note: Hardware tests are marked with @pytest.mark.hardware
+# Skip in CI with: pytest -m "not hardware"
