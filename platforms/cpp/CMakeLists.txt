@@ -6,27 +6,47 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find Conan-generated packages
-find_package(flatbuffers REQUIRED)
-find_package(CURL REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(Threads REQUIRED)
+find_package(flatbuffers)
+find_package(CURL)
+find_package(OpenSSL)
+find_package(ZLIB)
+find_package(Threads)
+
+# Check for required dependencies
+if(NOT flatbuffers_FOUND OR NOT CURL_FOUND OR NOT OpenSSL_FOUND OR NOT ZLIB_FOUND OR NOT Threads_FOUND)
+    message(WARNING "Some required dependencies not found. This may cause build failures.")
+    message(WARNING "Make sure Conan dependencies are installed: conan install . --build=missing")
+endif()
 # FSM implemented without Boost dependency
 
 # Find jsoncpp via pkg-config (needed for some executables)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+find_package(PkgConfig)
+if(PkgConfig_FOUND)
+    pkg_check_modules(JSONCPP jsoncpp)
+    if(NOT JSONCPP_FOUND)
+        message(WARNING "jsoncpp not found via pkg-config")
+    endif()
+else()
+    message(WARNING "pkg-config not found, jsoncpp support may be limited")
+endif()
 
 # Find system libraries
 if(UNIX AND NOT APPLE)
-    find_package(ALSA REQUIRED)
+    find_package(ALSA)
+    if(NOT ALSA_FOUND)
+        message(WARNING "ALSA not found, audio features will be disabled")
+    endif()
 endif()
 
 # Hardware-specific packages (only if hardware support is enabled)
 option(WITH_HARDWARE "Enable hardware support" ON)
 if(WITH_HARDWARE)
-    find_package(libgpiod REQUIRED)
-    find_package(mosquitto REQUIRED)
+    find_package(libgpiod)
+    find_package(mosquitto)
+    if(NOT libgpiod_FOUND OR NOT mosquitto_FOUND)
+        message(WARNING "Hardware dependencies not found, disabling hardware support")
+        set(WITH_HARDWARE OFF)
+    endif()
 endif()
 
 # FlatBuffers code generation (ensure header matches installed flatbuffers)
@@ -46,28 +66,32 @@ else()
     message(WARNING "FlatBuffers compiler (flatc) not found. Generated headers may be outdated.")
 endif()
 
-# Core library
-add_library(webgrab_core STATIC
-    core/FlatBuffersRequestWriter.cpp
-    core/FlatBuffersResponseReader.cpp
-    core/FlatBuffersRequestReader.cpp
-    core/FlatBuffersResponseWriter.cpp
-    core/TcpSocket.cpp
-    core/WebGrabClient.cpp
-    core/WebGrabServer.cpp
-    core/MessageQueueProcessor.cpp
-    core/DownloadJob.cpp
-    core/JobWorker.cpp
-    core/TcpListener.cpp
-    core/CurlClientWrapper.cpp
-    core/audio_device.cpp
-    core/stt_worker.cpp
-    core/tts_worker.cpp
-    core/voice_control_fsm.cpp
-)
+# Core library - only build if dependencies are available
+if(flatbuffers_FOUND AND CURL_FOUND AND Threads_FOUND)
+    add_library(webgrab_core STATIC
+        core/FlatBuffersRequestWriter.cpp
+        core/FlatBuffersResponseReader.cpp
+        core/FlatBuffersRequestReader.cpp
+        core/FlatBuffersResponseWriter.cpp
+        core/TcpSocket.cpp
+        core/WebGrabClient.cpp
+        core/WebGrabServer.cpp
+        core/MessageQueueProcessor.cpp
+        core/DownloadJob.cpp
+        core/JobWorker.cpp
+        core/TcpListener.cpp
+        core/CurlClientWrapper.cpp
+        core/audio_device.cpp
+        core/stt_worker.cpp
+        core/tts_worker.cpp
+        core/voice_control_fsm.cpp
+    )
 
-# Enable position-independent code for shared library compatibility
-set_target_properties(webgrab_core PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+    # Enable position-independent code for shared library compatibility
+    set_target_properties(webgrab_core PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+else()
+    message(WARNING "Skipping webgrab_core library build due to missing dependencies")
+endif()
 
 if(TARGET gen_flatbuffers_headers)
     add_dependencies(webgrab_core gen_flatbuffers_headers)
@@ -79,19 +103,21 @@ target_include_directories(webgrab_core PUBLIC
 )
 
 # Link core library (jsoncpp handled in core library via pkg-config)
-target_link_libraries(webgrab_core
-    flatbuffers::flatbuffers
-    CURL::libcurl
-    Threads::Threads
-)
+if(TARGET webgrab_core)
+    target_link_libraries(webgrab_core
+        flatbuffers::flatbuffers
+        CURL::libcurl
+        Threads::Threads
+    )
 
-# Link ALSA on Linux systems
-if(UNIX AND NOT APPLE)
-    target_link_libraries(webgrab_core ALSA::ALSA)
-endif()
+    # Link ALSA on Linux systems
+    if(UNIX AND NOT APPLE AND ALSA_FOUND)
+        target_link_libraries(webgrab_core ALSA::ALSA)
+    endif()
 
-if(WITH_HARDWARE)
-    target_link_libraries(webgrab_core mosquitto::mosquitto)
+    if(WITH_HARDWARE AND mosquitto_FOUND)
+        target_link_libraries(webgrab_core mosquitto::mosquitto)
+    endif()
 endif()
 
 # Hardware Control Server
@@ -111,15 +137,17 @@ if(WITH_HARDWARE)
 endif()
 
 # Voice Control Server
-add_executable(voice-server
-    core/main_voice_server.cpp
-    core/stt_worker.cpp
-    core/tts_worker.cpp
-)
+if(TARGET webgrab_core)
+    add_executable(voice-server
+        core/main_voice_server.cpp
+        core/stt_worker.cpp
+        core/tts_worker.cpp
+    )
 
-target_link_libraries(voice-server
-    webgrab_core
-)
+    target_link_libraries(voice-server
+        webgrab_core
+    )
+endif()
 
 # MCP Server with FlatBuffers generation - Temporarily disabled due to missing Entity/Server.h
 # TODO: Fix missing Entity/Server.h dependency
@@ -181,14 +209,16 @@ target_link_libraries(voice-server
 #                ${CMAKE_CURRENT_BINARY_DIR}/messages.config.ini COPYONLY)
 
 # Legacy executables (for compatibility)
-add_executable(webgrab-client core/main_client.cpp)
-target_link_libraries(webgrab-client webgrab_core)
+if(TARGET webgrab_core)
+    add_executable(webgrab-client core/main_client.cpp)
+    target_link_libraries(webgrab-client webgrab_core)
 
-add_executable(webgrab-server core/main_server.cpp)
-target_link_libraries(webgrab-server webgrab_core)
+    add_executable(webgrab-server core/main_server.cpp)
+    target_link_libraries(webgrab-server webgrab_core)
+endif()
 
 # Linux-specific builds
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND TARGET webgrab_core)
     add_executable(webgrab-linux-host core/main_linux.cpp core/HotReloadManager.cpp)
     target_link_libraries(webgrab-linux-host webgrab_core dl)
 
