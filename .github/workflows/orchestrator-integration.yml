@@ -35,7 +35,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -106,7 +106,7 @@ jobs:
         python build_orchestrator.py orchestrator-config.yaml --help
     
     - name: Upload validation results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: orchestrator-validation
         path: orchestrator-validation.json
@@ -125,7 +125,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -144,7 +144,7 @@ jobs:
         python build_orchestrator.py orchestrator-config.yaml --parallel --report build-report.txt
     
     - name: Upload build report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-report
         path: build-report.txt
@@ -209,7 +209,7 @@ jobs:
         EOF
     
     - name: Upload component test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: component-test-results
         path: component-test-results.json
@@ -228,7 +228,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -245,7 +245,7 @@ jobs:
         python build_orchestrator.py orchestrator-config.yaml --deploy --report deployment-report.txt
     
     - name: Upload deployment report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deployment-report
         path: deployment-report.txt
@@ -299,7 +299,7 @@ jobs:
         EOF
     
     - name: Upload deployment verification
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deployment-verification
         path: deployment-verification.json
@@ -318,7 +318,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -446,7 +446,7 @@ jobs:
         EOF
     
     - name: Upload integration test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: integration-test-results
         path: integration-test-results.json
@@ -465,7 +465,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: ./orchestrator-results
     
@@ -548,7 +548,7 @@ jobs:
         EOF
     
     - name: Upload orchestrator report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: orchestrator-report
         path: orchestrator-report.json
