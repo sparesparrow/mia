@@ -734,6 +734,11 @@ class MCPClient:
 
             logger.info("MCP connection established successfully")
 
+        except Exception as e:
+            self.connected = False
+            logger.error(f"Failed to establish connection: {e}")
+            raise
+
     async def _initialize_with_retry(self, max_retries: int = 3) -> None:
         """Initialize MCP connection with retry logic"""
         last_error = None
@@ -754,11 +759,6 @@ class MCPClient:
                 else:
                     logger.error(f"Initialization failed after {max_retries} attempts")
                     raise last_error
-
-        except Exception as e:
-            self.connected = False
-            logger.error(f"Failed to establish connection: {e}")
-            raise
 
     async def _reconnect_loop(self) -> None:
         """Background task to handle reconnection attempts"""

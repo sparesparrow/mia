@@ -1,53 +1,173 @@
-# MIA Raspberry Pi Implementation
+# MIA Universal: Multi-Platform AI Assistant
 
-This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in TODO.md.
+MIA Universal is a comprehensive AI-powered voice-controlled car upgrade system with multi-platform support, Model Context Protocol (MCP) integration, and advanced orchestration capabilities.
 
-## Architecture
+## 🚀 Quick Start
 
-- **ZeroMQ Broker** (`core/messaging/broker.py`): Message routing using ROUTER-DEALER pattern
-- **FastAPI Server** (`api/main.py`): REST API and WebSocket endpoints
-- **GPIO Worker** (`hardware/gpio_worker.py`): Hardware control via GPIO pins
-- **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
-- **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
+### Bootstrap Installation
 
-## Workspace Organization
+Choose your preferred bootstrap method:
 
-This repository follows a structured workspace organization to separate development and deployment environments:
+```bash
+# Option 1: Direct Python bootstrap (recommended)
+python3 complete-bootstrap.py
 
-### Development Structure
-- **Development Repository**: `~/projects/mia/` - Contains the full source code, documentation, and build tools
-- **Configuration**: `config/paths.json` - Defines configurable paths for different environments
-- **Path Management**: `core/paths.py` - Python utility for resolving relative and configurable paths
+# Option 2: Shell-based bootstrap
+./tools/bootstrap.sh
 
-### Installation Structure
-- **Installed Code**: `/opt/mia/` - Contains deployed/running code (symlinked to development repo during development)
-- **System Services**: `/etc/systemd/system/mia-*.service` - Systemd service definitions
-- **Configuration**: `/etc/mia/` - System-wide configuration files
-- **Data**: `/var/lib/mia/` - Persistent data and logs
+# Option 3: Initialize existing environment
+./tools/init.sh
+```
 
-### Deployment Workflow
-1. **Development**: Work in `~/projects/mia/` with full access to source and tools
-2. **Testing**: Use relative paths and path configuration for environment-independent code
-3. **Deployment**: Copy or symlink code to `/opt/mia/` for production use
-4. **Services**: Use systemd services that reference `/opt/mia/` as the working directory
+### Repository Configuration
 
-This separation ensures clean development workflows while maintaining proper system integration for production deployments.
+Configure package repositories:
 
-## Components
+```bash
+# Interactive setup
+./tools/repo-config.sh setup
 
-### ZeroMQ Broker
-- Listens on port 5555
-- Routes messages between FastAPI server and workers
-- Handles worker registration and message distribution
+# Or configure specific repositories
+export CLOUDSMITH_USERNAME="your_username"
+export CLOUDSMITH_API_KEY="your_api_key"
+./tools/repo-config.sh cloudsmith
+```
 
-### FastAPI Server
-- REST API on port 8000
-- Endpoints:
-  - `GET /devices` - List connected devices
-  - `POST /command` - Send device commands
-  - `GET /telemetry` - Get sensor readings
-  - `GET /status` - System health
-  - `POST /gpio/configure` - Configure GPIO pin
+### Start the System
+
+```bash
+# Install dependencies
+conan install . --build=missing -r sparetools
+
+# Start core orchestrator
+python3 modules/core-orchestrator/main.py
+```
+
+## 🏗️ Architecture
+
+MIA Universal implements a distributed microservices architecture with MCP-based communication:
+
+### Core Components
+
+- **MCP Framework** (`modules/mcp_framework.py`): WebSocket-based Model Context Protocol implementation
+- **Core Orchestrator** (`modules/core-orchestrator/`): Central coordination service with NLP processing
+- **Audio Assistant** (`modules/ai-audio-assistant/`): Voice processing and TTS services
+- **Platform Controllers**: Hardware abstraction for different platforms (RPi, ESP32, Android)
+- **Communication Services**: Multi-channel messaging and notifications
+
+## 📦 Package Management
+
+### Conan Integration
+MIA uses Conan for cross-platform C++ dependency management:
+
+```bash
+# Install all dependencies
+conan install . --build=missing -r sparetools
+
+# Build C++ components
+cd platforms/cpp && cmake --build build
+```
+
+### Repository Support
+- **Cloudsmith**: Primary repository for MIA packages
+- **GitHub Packages**: Fallback repository with GitHub integration
+- **Conan Center**: Public C++ libraries
+
+### Bootstrap System
+Three bootstrap methods for different deployment scenarios:
+
+1. **Complete Bootstrap** (`complete-bootstrap.py`): Direct downloads, zero external dependencies
+2. **Shell Bootstrap** (`tools/bootstrap.sh`): System package managers, fast installation
+3. **Docker Bootstrap**: Containerized, reproducible environments
+
+## 🔧 Development Workflow
+
+### Environment Setup
+```bash
+# Bootstrap development environment
+python3 complete-bootstrap.py
+
+# Initialize project
+./tools/init.sh --dev
+
+# Configure repositories
+./tools/repo-config.sh setup
+```
+
+### Running Tests
+```bash
+# Python tests
+python3 -m pytest tests/ -v
+
+# Integration tests
+python3 test_orchestrator.py
+
+# OBD simulator tests
+./scripts/test-obd-simulator.sh
+```
+
+### Building Components
+```bash
+# C++ platforms
+conan install . && conan build .
+
+# Android APK
+cd android && ./gradlew assembleDebug
+
+# ESP32 firmware
+cd esp32 && idf.py build
+```
+
+## 🔌 MCP (Model Context Protocol) Integration
+
+### Enhanced WebSocket Transport
+- **Heartbeat monitoring**: Automatic connection health checks
+- **Retry logic**: Robust reconnection with exponential backoff
+- **Timeout handling**: Configurable timeouts for reliability
+- **Error recovery**: Comprehensive error handling and logging
+
+### Core Orchestrator Features
+- **Natural Language Processing**: Intent recognition and command parsing
+- **Service Discovery**: Automatic MCP service registration and health monitoring
+- **Multi-platform Routing**: Intelligent command routing across different platforms
+- **Real-time Communication**: WebSocket-based real-time updates
+
+### Available Services
+- **ai-audio-assistant**: Voice processing, TTS, audio control
+- **ai-platform-linux**: Linux system control and automation
+- **ai-communications**: Multi-channel messaging (SMS, email, notifications)
+- **ai-home-automation**: Smart home device control
+- **ai-maps-navigation**: GPS navigation and routing
+
+## 📱 Platform Support
+
+### Android Integration
+- **Kotlin/Compose**: Modern Android development
+- **MCP Bridge**: Seamless communication with backend services
+- **Real-time UI**: Live updates from vehicle sensors
+
+### ESP32 Firmware
+- **ESP-IDF**: Official Espressif development framework
+- **BPM Detection**: Real-time audio beat detection
+- **WiFi/Bluetooth**: Wireless communication protocols
+
+### Raspberry Pi Services
+- **Python Services**: Microservices architecture
+- **Hardware Control**: GPIO, I2C, SPI interfaces
+- **OBD-II Integration**: Vehicle diagnostic communication
+
+## 🔒 Security & Compliance
+
+### Built-in Security
+- **CodeQL Analysis**: Automated vulnerability detection
+- **Trivy Scanning**: Container and filesystem security
+- **Bandit**: Python security linting
+- **OWASP Checks**: Web application security
+
+### Compliance Features
+- **GDPR**: Data protection and privacy measures
+- **Automotive Security**: Vehicle-specific security requirements
+- **Audit Logging**: Comprehensive security event logging
   - `POST /gpio/set` - Set GPIO pin value
   - `GET /gpio/{pin}` - Get GPIO pin value
   - `WS /ws` - WebSocket for real-time telemetry
@@ -445,23 +565,66 @@ sudo journalctl -u mia-serial-bridge | grep "Published telemetry"
 ```
 
 2. Check ZeroMQ PUB socket is bound:
-```bash
-sudo netstat -tulpn | grep 5556
-```
+## 🔄 CI/CD Pipeline
 
-3. Verify OBD worker is subscribed:
-```bash
-sudo journalctl -u mia-obd-worker | grep "Subscribed to telemetry"
-```
+### Workflow Architecture
+MIA uses a comprehensive multi-platform CI/CD pipeline:
 
-4. Test ZMQ subscription manually:
-```python
-import zmq
-ctx = zmq.Context()
-sub = ctx.socket(zmq.SUB)
-sub.connect("tcp://localhost:5556")
-sub.subscribe("mcu/telemetry")
-while True:
-    topic, msg = sub.recv_multipart()
-    print(f"Topic: {topic}, Message: {msg}")
-```
+- **Main Pipeline** (`main.yml`): Complete build, test, and deployment
+- **Docker Builds** (`docker-multiplatform.yml`): Multi-architecture container builds
+- **ESP32 Builds** (`esp32.yml`): Firmware compilation and testing
+- **Web Deployment** (`build-web.yml`): Frontend deployment to AWS
+
+### Quality Gates
+- **Security Scanning**: Automated vulnerability detection
+- **Code Quality**: Linting, type checking, and formatting
+- **Integration Tests**: End-to-end system validation
+- **Performance Testing**: Load and stress testing
+
+## 📚 Documentation
+
+### Developer Resources
+- **[Bootstrap Guide](docs/BOOTSTRAP_COMPARISON.md)**: Comprehensive bootstrap documentation
+- **[Repository Switching](docs/REPOSITORY_SWITCHING.md)**: Package repository management
+- **[API Documentation](docs/API.md)**: REST and WebSocket API reference
+- **[Deployment Guide](docs/DEPLOYMENT.md)**: Production deployment instructions
+
+### Architecture Documentation
+- **[MCP Protocol](docs/MCP_PROTOCOL.md)**: Model Context Protocol implementation
+- **[Platform Integration](docs/PLATFORM_INTEGRATION.md)**: Platform-specific guides
+- **[Security](docs/SECURITY.md)**: Security architecture and compliance
+
+## 🤝 Contributing
+
+### Development Setup
+1. Fork the repository
+2. Bootstrap your environment: `python3 complete-bootstrap.py`
+3. Configure repositories: `./tools/repo-config.sh setup`
+4. Install dependencies: `conan install . --build=missing`
+5. Run tests: `python3 -m pytest`
+
+### Code Standards
+- **Python**: Black formatting, isort imports, mypy type checking
+- **C++**: CMake builds, clang-format, cppcheck analysis
+- **Kotlin**: Spotless formatting, Detekt linting
+- **Documentation**: Markdown with Mermaid diagrams
+
+### Commit Guidelines
+- Use conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`
+- Reference issues: `fixes #123`
+- Keep commits focused and atomic
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **ESP32 Community**: Firmware development support
+- **Conan Team**: Cross-platform package management
+- **MCP Contributors**: Model Context Protocol development
+- **Open Source Community**: Libraries and tools that make this possible
+
+---
+
+**Built with ❤️ for the automotive AI revolution**
