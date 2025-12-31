@@ -3,8 +3,6 @@ name: Performance Optimization Pipeline
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   schedule:
     # Performance tests every 12 hours
     - cron: '0 */12 * * *'

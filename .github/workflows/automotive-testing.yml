@@ -3,8 +3,6 @@ name: Automotive AI Testing Pipeline
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
       test_type:

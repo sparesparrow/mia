@@ -3,8 +3,6 @@ name: Monitoring & Observability Pipeline
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   schedule:
     # Health checks every 6 hours
     - cron: '0 */6 * * *'
