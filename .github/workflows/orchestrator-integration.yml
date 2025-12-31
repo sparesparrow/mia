@@ -466,6 +466,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./orchestrator-results
+        merge-multiple: true
     
     - name: Generate comprehensive orchestrator report
       run: |

@@ -533,6 +533,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./monitoring-data
+        merge-multiple: true
     
     - name: Process alerts and notifications
       run: |

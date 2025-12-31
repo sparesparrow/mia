@@ -247,6 +247,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./security-reports
+        merge-multiple: true
     
     - name: Generate comprehensive security report
       run: |

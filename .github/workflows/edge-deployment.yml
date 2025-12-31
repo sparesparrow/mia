@@ -649,6 +649,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: ./verification-results
+        merge-multiple: true
     
     - name: Generate deployment report
       run: |
