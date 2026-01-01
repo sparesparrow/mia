@@ -14,8 +14,8 @@ import websockets
 from datetime import datetime
 
 # Import our MCP framework
-from mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport, 
+from ..shared.mcp_framework import (
+    MCPServer, MCPClient, MCPMessage, MCPTransport,
     WebSocketTransport, Tool, create_tool
 )
 
