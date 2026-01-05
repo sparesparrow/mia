@@ -11,7 +11,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 
-from ..core.messaging import MessagingClient
+from ..core.messaging.client import MessagingClient
 
 logger = logging.getLogger(__name__)
 

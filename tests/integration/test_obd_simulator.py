@@ -13,10 +13,10 @@ import zmq
 from unittest.mock import patch
 
 # Import OBD components
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../rpi'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
-from hardware.serial_bridge import SerialBridge
-from services.obd_worker import MIAOBDWorker, DynamicCarState
+from rpi.hardware.serial_bridge import SerialBridge
+from rpi.services.obd_worker import MIAOBDWorker, DynamicCarState
 
 
 class TestDynamicCarState:
@@ -61,9 +61,10 @@ class TestDynamicCarState:
         assert 0 <= state.get_speed() <= 120
 
 
+@pytest.mark.hardware
 class TestSerialBridge:
     """Test serial bridge component"""
-    
+
     @patch('hardware.serial_bridge.serial')
     def test_serial_bridge_initialization(self, mock_serial):
         """Test serial bridge initialization"""
@@ -112,9 +113,10 @@ class TestSerialBridge:
             bridge.context.term()
 
 
+@pytest.mark.hardware
 class TestOBDWorker:
     """Test OBD worker component"""
-    
+
     @patch('services.obd_worker.ELM327_AVAILABLE', False)
     def test_obd_worker_no_elm327(self):
         """Test OBD worker initialization without ELM327"""

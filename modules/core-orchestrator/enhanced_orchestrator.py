@@ -17,8 +17,8 @@ import websockets
 from pathlib import Path
 
 # Import our MCP framework
-from mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport, 
+from ..shared.mcp_framework import (
+    MCPServer, MCPClient, MCPMessage, MCPTransport,
     WebSocketTransport, HTTPTransport, Tool, create_tool
 )
 

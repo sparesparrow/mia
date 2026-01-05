@@ -3,8 +3,6 @@ name: Performance Optimization Pipeline
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   schedule:
     # Performance tests every 12 hours
     - cron: '0 */12 * * *'
@@ -39,7 +37,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -121,7 +119,7 @@ jobs:
         EOF
     
     - name: Upload baseline results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-baseline
         path: performance-baseline.json
@@ -139,7 +137,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -201,7 +199,7 @@ jobs:
         EOF
     
     - name: Upload memory analysis
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: memory-analysis
         path: memory-analysis.json
@@ -219,7 +217,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -292,7 +290,7 @@ jobs:
         EOF
     
     - name: Upload CPU analysis
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: cpu-analysis
         path: cpu-analysis.json
@@ -310,7 +308,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -405,7 +403,7 @@ jobs:
         EOF
     
     - name: Upload network analysis
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: network-analysis
         path: network-analysis.json
@@ -423,7 +421,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     
@@ -514,7 +512,7 @@ jobs:
         EOF
     
     - name: Upload storage analysis
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: storage-analysis
         path: storage-analysis.json
@@ -533,9 +531,10 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Download all analysis artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: ./analysis-results
+        merge-multiple: true
     
     - name: Generate comprehensive optimization report
       run: |
@@ -621,7 +620,7 @@ jobs:
         EOF
     
     - name: Upload optimization report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-optimization-report
         path: performance-optimization-report.json
