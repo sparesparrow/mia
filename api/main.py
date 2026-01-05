@@ -86,13 +86,27 @@ except ImportError as e:
 
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
 
-# CORS middleware
+# CORS middleware - Security: Restrict origins for car assistant system
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",  # React dev server
+        "http://localhost:8000",  # FastAPI docs
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "http://localhost:8080",  # Web interface
+        "http://127.0.0.1:8080",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+    ],
 )
 
 # ZeroMQ context and socket for messaging
@@ -465,7 +479,7 @@ async def device_heartbeat(device_id: str):
 
 
 @app.post("/command")
-async def send_command(command: DeviceCommand):
+async def send_command(command: DeviceCommand, user: APIKeyInfo = Depends(require_auth)):
     """
     POST /command - Send command to device
     Phase 3.1: REST API Development
@@ -606,7 +620,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 @app.post("/gpio/configure")
-async def configure_gpio(gpio: GPIOCommand):
+async def configure_gpio(gpio: GPIOCommand, user: APIKeyInfo = Depends(require_auth)):
     """Configure GPIO pin"""
     try:
         if GPIOCommand and FLATBUFFERS_AVAILABLE:
@@ -664,7 +678,7 @@ async def configure_gpio(gpio: GPIOCommand):
 
 
 @app.post("/gpio/set")
-async def set_gpio(gpio: GPIOCommand):
+async def set_gpio(gpio: GPIOCommand, user: APIKeyInfo = Depends(require_auth)):
     """Set GPIO pin value using FlatBuffers message"""
     try:
         if GPIOCommand:
@@ -718,7 +732,7 @@ async def set_gpio(gpio: GPIOCommand):
 
 
 @app.get("/gpio/{pin}")
-async def get_gpio(pin: int):
+async def get_gpio(pin: int, user: APIKeyInfo = Depends(require_auth)):
     """Get GPIO pin value using FlatBuffers message"""
     try:
         if GPIOCommand:

@@ -1,0 +1,56 @@
+{
+  "device": {
+    "type": "sdrplay",
+    "model": "RSP1",
+    "frequency_range_mhz": {
+      "min": 169.775,
+      "max": 170.450,
+      "center": 170.0
+    }
+  },
+  "gqrx": {
+    "sample_rate": 2000000,
+    "bandwidth": 200000,
+    "mode": "AM",
+    "gain": "auto",
+    "filter": "Normal"
+  },
+  "sdrpp": {
+    "version": "1.2.1",
+    "sample_rate": 2000000,
+    "bandwidth": 200000,
+    "demodulator": "AM",
+    "gain": "auto",
+    "fft_size": 65536,
+    "waterfall_theme": "classic"
+  },
+  "vhf_settings": {
+    "frequency_range": "169.775-170.450 MHz",
+    "typical_use": "specialized communications, aircraft, marine radio",
+    "recommended_settings": {
+      "sample_rate": "2MS/s",
+      "filter": "50kHz-200kHz",
+      "agc": "Fast or Manual"
+    }
+  },
+  "testing": {
+    "validation_steps": [
+      "Verify device recognition in GQRX or SDR++",
+      "Test SDRPLAY API installation (optional for full support)",
+      "Tune to known local VHF frequencies for signal testing",
+      "Compare GQRX vs SDR++ interface and performance",
+      "Adjust antenna position for optimal reception",
+      "Monitor spectrum display for signal presence"
+    ]
+  },
+  "software_comparison": {
+    "gqrx": {
+      "pros": ["Mature software", "Good GNU Radio integration", "Extensive documentation"],
+      "cons": ["Older interface", "Less modern features"]
+    },
+    "sdrpp": {
+      "pros": ["Modern interface", "Better performance", "Active development", "Cross-platform"],
+      "cons": ["Newer software", "Fewer plugins/modules"]
+    }
+  }
+}

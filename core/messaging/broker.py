@@ -221,7 +221,7 @@ class ZeroMQBroker:
     def start(self) -> bool:
         """Start the broker and background threads."""
         self.router = self.context.socket(zmq.ROUTER)
-        self.router.bind(f"tcp://*:{self.router_port}")
+        self.router.bind(f"tcp://127.0.0.1:{self.router_port}")
         self.running = True
 
         logger.info("Enhanced ZeroMQ broker started on port %s", self.router_port)

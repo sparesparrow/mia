@@ -411,19 +411,61 @@ class CoreOrchestrator(MCPServer):
             """HTTP handler for listing services"""
             result = await self.handle_list_services()
             return web.json_response(result)
-        
+
+        async def handle_mcp(request: web_request.Request) -> web.Response:
+            """HTTP handler for MCP JSON-RPC"""
+            data = await request.json()
+
+            # Create MCP message from JSON-RPC request
+            message = MCPMessage(
+                method=data.get("method", ""),
+                params=data.get("params", {}),
+                id=data.get("id")
+            )
+
+            # Handle the message
+            response = await self.handle_message(message)
+
+            if response:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": response.id,
+                    "result": response.result
+                })
+            else:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": data.get("id"),
+                    "error": {"code": -32601, "message": "Method not found"}
+                })
+
         # Routes
+        app.router.add_post("/mcp", handle_mcp)
         app.router.add_post("/api/voice", handle_voice_command_http)
         app.router.add_get("/api/health", handle_health_http)
         app.router.add_get("/api/services", handle_services_http)
         
-        # CORS support
-        async def add_cors_headers(request, response):
-            response.headers['Access-Control-Allow-Origin'] = '*'
+        # CORS support - Security: Restrict origins for car assistant system
+        allowed_origins = [
+            "http://localhost:3000",  # React dev server
+            "http://localhost:8000",  # FastAPI
+            "http://localhost:8080",  # Web interface
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:8080",
+        ]
+
+        @web.middleware
+        async def add_cors_headers(request, handler):
+            response = await handler(request)
+            origin = request.headers.get('Origin', '')
+            if origin in allowed_origins:
+                response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-            response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
             return response
-        
+
         app.middlewares.append(add_cors_headers)
         
         runner = web.AppRunner(app)
