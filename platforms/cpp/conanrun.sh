@@ -1,1 +1,0 @@
-. "/home/mia/ai-servis/platforms/cpp/conanrunenv-release-armv8.sh"

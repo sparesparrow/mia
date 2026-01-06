@@ -1,5 +1,0 @@
-2.0.0
-
-# MIA (Modular Integration Architecture) Version
-# This version aligns with the SpareTools ecosystem version
-# for consistent dependency management and release cycles

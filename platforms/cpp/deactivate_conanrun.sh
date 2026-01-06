@@ -1,1 +1,0 @@
-. "/home/mia/ai-servis/platforms/cpp/deactivate_conanrunenv-release-armv8.sh"

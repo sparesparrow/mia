@@ -1,4 +1,0 @@
-Deployment Date: Tue Dec  2 03:43:03 AM CET 2025
-Source Host: studio
-Target: mia@192.168.200.139:/opt/mia
-Arduino Port: /dev/ttyUSB0

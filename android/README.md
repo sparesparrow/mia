@@ -1,440 +1,234 @@
-# MIA Android Application
+# MIA Android Companion App
 
-A comprehensive Android application for vehicle telematics, ANPR (Automatic Number Plate Recognition), DVR recording, and OBD-II communication.
+This directory contains the Android companion application for MIA, providing mobile access to vehicle diagnostics, real-time telemetry, and control interfaces.
 
-## 📋 Table of Contents
+## Architecture
 
-- [Architecture Overview](#architecture-overview)
-- [Features](#features)
-- [Requirements](#requirements)
-- [Setup](#setup)
-- [Building](#building)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
-- [Core Components](#core-components)
-- [Contributing](#contributing)
+The Android app serves as the mobile interface for MIA, featuring:
 
-## 🏗️ Architecture Overview
+- **Real-time vehicle telemetry** display
+- **BLE device discovery** and connection
+- **OBD-II diagnostic** data visualization
+- **Voice command** processing and responses
+- **Offline operation** with local data storage
+- **Material Design 3** user interface
 
-The application follows a clean architecture pattern with the following layers:
+## Components
 
-```
-┌─────────────────────────────────────────────────┐
-│                    UI Layer                      │
-│  (Compose, Screens, ViewModels)                 │
-├─────────────────────────────────────────────────┤
-│                  Domain Layer                    │
-│  (Managers, Rules Engine, Repositories)         │
-├─────────────────────────────────────────────────┤
-│                   Data Layer                     │
-│  (Room Database, DataStore, Network)            │
-└─────────────────────────────────────────────────┘
-```
+### App Structure
 
-### Key Technologies
+#### `app/src/main/java/cz/mia/app/`
+Main application code:
 
-- **Kotlin** - Primary language
-- **Jetpack Compose** - Modern declarative UI
-- **Hilt** - Dependency injection
-- **Room** - Local database
-- **CameraX** - Camera operations (ANPR, DVR)
-- **ML Kit** - Text recognition for license plates
-- **Nordic BLE Library** - Bluetooth LE communication
-- **Paho MQTT** - IoT messaging
-- **WorkManager** - Background processing
+- **core/** - Shared utilities and business logic
+  - `background/BLEManager.kt` - Bluetooth Low Energy management
+  - `background/MQTTManager.kt` - MQTT communication
+  - `networking/` - HTTP/WebSocket clients
+  - `rules/RulesEngine.kt` - Business rule processing
 
-## ✨ Features
+- **data/** - Data layer
+  - `remote/` - API communication
+  - `local/` - SQLite database and caching
+  - `repository/` - Data access abstractions
 
-### OBD-II Communication
-- Bluetooth LE connection to ELM327/OBD-II adapters
-- Real-time vehicle telemetry (RPM, speed, fuel, coolant, engine load)
-- DTC (Diagnostic Trouble Code) reading and clearing
-- Adaptive sampling modes (Normal, Reduced, Minimal)
+- **ui/** - User interface (Compose)
+  - `screens/` - Main application screens
+  - `components/` - Reusable UI components
+  - `theme/` - Material Design theming
 
-### ANPR (License Plate Recognition)
-- Real-time camera analysis using CameraX
-- ML Kit text recognition with region-specific heuristics
-- Privacy-preserving plate hashing
-- Confidence-based filtering
-- Support for CZ and EU plate formats
+- **di/** - Dependency injection (Hilt)
 
-### DVR Recording
-- Continuous video recording with rolling buffer
-- Event-triggered clip extraction
-- Automatic offload scheduling
-- Storage management
+### Key Features
 
-### Voice Alerts
-- Text-to-speech notifications
-- Support for Czech and English locales
-- Priority-based queue management
-- Audio focus handling
+#### Bluetooth Low Energy (BLE)
+- OBD-II adapter discovery and connection
+- Real-time vehicle data streaming
+- Connection reliability and reconnection logic
+- Battery-optimized background operation
 
-### System Policy Management
-- Battery-aware operation modes
-- Thermal throttling detection
-- Power save mode integration
-- Advisory messages for users
+#### User Interface
+- Material Design 3 implementation
+- Dark/light theme support
+- Responsive layouts for different screen sizes
+- Accessibility compliance
 
-## 📱 Requirements
+#### Data Management
+- Local caching for offline operation
+- Real-time data synchronization
+- Historical data analysis
+- Export capabilities
 
-- Android 7.0 (API 24) or higher
-- Bluetooth LE support
-- Camera (for ANPR and DVR)
-- Microphone (for DVR audio)
-
-### Permissions Required
-
-```xml
-<!-- Bluetooth -->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-<!-- Camera & Recording -->
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-<!-- Foreground Service -->
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-```
-
-## 🔧 Setup
+## Development
 
 ### Prerequisites
 
-- Android Studio Hedgehog (2023.1.1) or newer
-- JDK 17
-- Android SDK 34
+#### System Requirements
+- **Android Studio** Arctic Fox or later
+- **JDK 17+**
+- **Android SDK** API 33+
+- **Kotlin** 1.9.0+
 
-### Clone and Open
+#### Device Requirements
+- **Android 8.0+** (API 26+)
+- **BLE support** (most modern Android devices)
+- **GPS/location permissions** (for vehicle tracking)
 
+### Setup
+
+1. **Clone and open in Android Studio**
+   ```bash
+   cd android/
+   # Open in Android Studio
+   ```
+
+2. **Install dependencies**
+   ```bash
+   ./gradlew build
+   ```
+
+3. **Configure signing** (for release builds)
+   ```bash
+   cp android/keystore.properties.example android/keystore.properties
+   # Edit keystore.properties with your signing configuration
+   ```
+
+### Building
+
+#### Debug Build
 ```bash
-git clone https://github.com/your-org/ai-servis.git
-cd mia/android
+./gradlew assembleDebug
 ```
 
-Open the `android` folder in Android Studio.
-
-### Configure Signing (Optional)
-
-For release builds, create `keystore.properties` in the android root:
-
-```properties
-storeFile=path/to/keystore.jks
-storePassword=your_store_password
-keyAlias=your_key_alias
-keyPassword=your_key_password
+#### Release Build
+```bash
+./gradlew assembleRelease
 ```
 
-## 🔨 Building
-
-### Using Gradle
-
+#### Testing
 ```bash
-# Debug build
+# Unit tests
+./gradlew testDebugUnitTest
+
+# Instrumented tests
+./gradlew connectedDebugAndroidTest
+```
+
+### Development Workflow
+
+#### Code Style
+- Kotlin coding conventions
+- Detekt for static analysis
+- Ktlint for code formatting
+
+#### Testing Strategy
+- **Unit tests** for business logic and utilities
+- **Integration tests** for BLE and network operations
+- **UI tests** for critical user flows
+- **Manual testing** on physical devices
+
+## Dependencies
+
+### Core Libraries
+```gradle
+dependencies {
+    // Compose BOM
+    implementation platform('androidx.compose:compose-bom:2024.02.00')
+
+    // Networking
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    // BLE
+    implementation 'androidx.core:core-ktx:1.12.0'
+
+    // Dependency injection
+    implementation 'com.google.dagger:hilt-android:2.48'
+
+    // Database
+    implementation 'androidx.room:room-runtime:2.6.1'
+
+    // MQTT
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
+}
+```
+
+### Generated Code
+- **FlatBuffers** generated classes from shared schemas
+- **Room** database entities and DAOs
+- **Hilt** dependency injection components
+
+## Deployment
+
+### Internal Testing
+```bash
+# Build APK for internal testing
 ./gradlew assembleDebug
 
-# Release build
+# Install on connected device
+./gradlew installDebug
+```
+
+### Production Release
+```bash
+# Build signed APK
 ./gradlew assembleRelease
 
-# All checks (build + test + lint)
-./gradlew assembleDebug test lint
+# Generate bundle for Play Store
+./gradlew bundleRelease
 ```
 
-### Using Docker
+### Play Store Configuration
+- **Target SDK**: API 34
+- **Min SDK**: API 26
+- **Permissions**: Location, Bluetooth, Internet
+- **Features**: BLE, GPS (optional)
 
+## Integration
+
+### Raspberry Pi Communication
+- **WebSocket** for real-time data streaming
+- **REST API** for command and control
+- **MQTT** for pub/sub messaging
+- **BLE fallback** for direct device communication
+
+### Data Flow
+1. **BLE Discovery** → Connect to OBD-II adapter
+2. **Data Streaming** → Real-time telemetry to UI
+3. **Command Processing** → Voice/text commands to vehicle
+4. **Offline Storage** → Local caching and sync
+
+## Testing
+
+### Manual Testing Checklist
+- [ ] BLE device discovery and pairing
+- [ ] Real-time telemetry display
+- [ ] Voice command processing
+- [ ] Offline operation and sync
+- [ ] UI responsiveness across screen sizes
+- [ ] Battery optimization in background
+
+### Automated Testing
 ```bash
-# Debug build
-./tools/build-in-docker.sh --task assembleDebug
-
-# Run tests
-./tools/build-in-docker.sh --test
-
-# Run lint
-./tools/build-in-docker.sh --lint
-
-# All tasks
-./tools/build-in-docker.sh --all
-```
-
-### Validate APK
-
-```bash
-./tools/validate-apk.sh
-```
-
-## 🧪 Testing
-
-### Unit Tests
-
-```bash
+# Run all tests
 ./gradlew test
+
+# Run instrumentation tests
+./gradlew connectedCheck
+
+# Generate test coverage
+./gradlew jacocoTestReport
 ```
 
-Unit tests are located in `app/src/test/`:
-- `OBDManagerTest` - OBD protocol parsing
-- `BLEManagerTest` - Bluetooth communication
-- `VoiceManagerTest` - TTS functionality
-- `DVRManagerTest` - Video recording
-- `SystemPolicyManagerTest` - Power management
-- `BackoffTest` - Retry logic
+## Performance Considerations
 
-### Instrumented Tests
+- **Battery optimization** for BLE operations
+- **Memory management** for real-time data streams
+- **Network efficiency** with compression and caching
+- **UI smoothness** with background processing
 
-```bash
-./gradlew connectedAndroidTest
-```
+## Security
 
-Instrumented tests are located in `app/src/androidTest/`:
-- `DatabaseTest` - Room database operations
-- `EventRepositoryTest` - Data persistence
-- `DashboardScreenTest` - UI gauges
-- `SettingsScreenTest` - Settings persistence
-
-### Test Coverage
-
-```bash
-./gradlew createDebugCoverageReport
-```
-
-Reports are generated in `app/build/reports/coverage/`.
-
-## 📁 Project Structure
-
-```
-android/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/cz/aiservis/app/
-│   │   │   │   ├── core/
-│   │   │   │   │   ├── background/     # Service managers
-│   │   │   │   │   │   ├── BLEManager.kt
-│   │   │   │   │   │   ├── OBDManager.kt
-│   │   │   │   │   │   ├── ANPRManager.kt
-│   │   │   │   │   │   ├── DVRManager.kt
-│   │   │   │   │   │   ├── DrivingService.kt
-│   │   │   │   │   │   └── SystemPolicyManager.kt
-│   │   │   │   │   ├── camera/         # Camera processing
-│   │   │   │   │   ├── networking/     # Network utilities
-│   │   │   │   │   ├── rules/          # Alert rules
-│   │   │   │   │   ├── security/       # Privacy hashing
-│   │   │   │   │   ├── storage/        # Preferences
-│   │   │   │   │   └── voice/          # TTS
-│   │   │   │   ├── data/
-│   │   │   │   │   ├── db/             # Room database
-│   │   │   │   │   └── repositories/   # Data access
-│   │   │   │   ├── features/           # ViewModels
-│   │   │   │   └── ui/
-│   │   │   │       ├── components/     # Reusable UI
-│   │   │   │       └── screens/        # Screen composables
-│   │   │   └── res/                    # Resources
-│   │   ├── test/                       # Unit tests
-│   │   └── androidTest/                # Instrumented tests
-│   └── build.gradle                    # App build config
-├── tools/
-│   ├── build-in-docker.sh              # Docker build script
-│   ├── validate-apk.sh                 # APK validation
-│   ├── bootstrap-obd.py                # OBD-II simulator
-│   └── lib/
-│       └── cpython_bootstrap.py        # Bundled CPython module
-├── build.gradle                        # Project build config
-└── Dockerfile                          # Build environment
-```
-
-## 🔩 Core Components
-
-### BLEManager
-
-Handles Bluetooth LE communication with OBD-II adapters:
-
-```kotlin
-interface BLEManager {
-    val connectionState: StateFlow<BleConnectionState>
-    val discoveredDevices: StateFlow<List<BleDeviceInfo>>
-    
-    suspend fun initialize()
-    suspend fun startScanning()
-    suspend fun connectWithRetry(deviceAddress: String): Boolean
-    suspend fun sendCommand(command: String): String?
-    suspend fun disconnect()
-}
-```
-
-### OBDManager
-
-Manages OBD-II protocol and vehicle telemetry:
-
-```kotlin
-interface OBDManager {
-    val obdData: Flow<OBDData>
-    val connectionStatus: StateFlow<OBDConnectionStatus>
-    
-    suspend fun startMonitoring()
-    suspend fun stopMonitoring()
-    fun setSamplingMode(mode: SamplingMode)
-    suspend fun readDTCs(): List<DTCInfo>
-    suspend fun clearDTCs(): Boolean
-}
-```
-
-### ANPRManager
-
-Performs real-time license plate recognition:
-
-```kotlin
-interface ANPRManager {
-    val events: Flow<ANPREvent>
-    val state: StateFlow<ANPRState>
-    
-    suspend fun startDetection()
-    suspend fun stopDetection()
-    fun bindPreview(previewView: PreviewView, lifecycleOwner: LifecycleOwner)
-}
-```
-
-### VoiceManager
-
-Provides text-to-speech alerts:
-
-```kotlin
-interface VoiceManager {
-    val state: StateFlow<VoiceState>
-    
-    suspend fun speak(text: String)
-    suspend fun speakNow(text: String, priority: SpeechPriority = SpeechPriority.CRITICAL)
-    fun stop()
-    fun setLocale(locale: Locale): Boolean
-}
-```
-
-### DVRManager
-
-Controls video recording and clip extraction:
-
-```kotlin
-interface DVRManager {
-    val clipEvents: SharedFlow<ClipEvent>
-    val state: StateFlow<DVRState>
-    
-    fun startRecording()
-    fun stopRecording()
-    fun triggerEventClip(reason: String)
-    suspend fun bindCamera(lifecycleOwner: LifecycleOwner)
-}
-```
-
-## 🎨 UI Components
-
-### Dashboard Gauges
-
-The dashboard displays real-time vehicle data with animated gauges:
-
-- **Speedometer** - Circular gauge with needle indicator
-- **RPM Gauge** - Tachometer with redline zone
-- **Compact Gauges** - Fuel level, coolant temp, engine load
-
-### Camera Preview Screen
-
-Full-screen camera view with:
-
-- ANPR detection overlay
-- Detection statistics
-- DVR recording controls
-- Plate confidence indicators
-
-### OBD Pairing Screen
-
-Bluetooth device scanner with:
-
-- Signal strength indicators
-- Connection status
-- Auto-discovery of OBD adapters
-
-## 🛠️ Development Tools
-
-### OBD-II Simulator
-
-For testing BLE OBD integration without hardware:
-
-```bash
-# Interactive mode
-python3 tools/bootstrap-obd.py
-
-# Demo mode (60 seconds of simulated telemetry)
-python3 tools/bootstrap-obd.py --demo 60
-
-# Use bundled CPython (recommended)
-python3 tools/bootstrap-obd.py --device "Test OBD"
-```
-
-### Bundled CPython
-
-The `tools/lib/cpython_bootstrap.py` module provides bundled CPython 3.12.7 for cross-platform tool development:
-
-```python
-from lib.cpython_bootstrap import CPythonBootstrap
-
-# Ensure Python is available
-with CPythonBootstrap() as python_path:
-    subprocess.run([python_path, "my_script.py"])
-
-# Or use CLI
-python3 tools/lib/cpython_bootstrap.py --info
-python3 tools/lib/cpython_bootstrap.py script.py [args...]
-```
-
-Supported platforms:
-- Linux (x86_64, aarch64)
-- macOS (x86_64, arm64)
-- Windows (x86_64)
-
-### APK Deployment
-
-After building, deploy to a connected Android device:
-
-```bash
-# Via KDE Connect (wireless)
-kdeconnect-cli --list-devices
-kdeconnect-cli --device <ID> --share app/build/outputs/apk/debug/app-debug.apk
-
-# Via ADB (USB)
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -n cz.mia.app/.MainActivity
-```
-
-## 🤝 Contributing
-
-### Code Style
-
-- Follow Kotlin coding conventions
-- Use KDoc for public APIs
-- Write unit tests for new functionality
-- Run lint before committing
-
-### Pull Request Process
-
-1. Create feature branch from `main`
-2. Implement changes with tests
-3. Ensure CI passes
-4. Request review
-
-### Commit Messages
-
-Follow conventional commits:
-
-```
-feat: Add new feature
-fix: Fix bug in component
-docs: Update documentation
-test: Add tests for feature
-refactor: Refactor code without changing behavior
-```
-
-## 📄 License
-
-Copyright © 2024 MIA. All rights reserved.
+- **Permission handling** for BLE and location
+- **Data encryption** for sensitive vehicle data
+- **Secure communication** with Raspberry Pi
+- **Input validation** for all user inputs

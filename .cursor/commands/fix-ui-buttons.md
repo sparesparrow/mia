@@ -1,1 +1,0 @@
-clicking on responsive or interactive elements has bugs. resolve them
