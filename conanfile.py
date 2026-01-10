@@ -7,8 +7,8 @@ import os
 
 
 class MIAConan(ConanFile):
-    name = "mia"
-    version = "2.0.0"
+    name = "sparetools-mia"
+    version = "2.0.1"
     description = "AI Service with MCP and Hardware Control"
     settings = "os", "compiler", "build_type", "arch"
     options = {
@@ -24,7 +24,7 @@ class MIAConan(ConanFile):
         "with_mcp": True
     }
 
-    # Use SpareTools foundation utilities
+    # SpareTools ecosystem integration
     python_requires = "sparetools-base/2.0.3"
 
     def configure(self):
@@ -33,13 +33,13 @@ class MIAConan(ConanFile):
 
     def requirements(self):
         # Core dependencies - always required
-        self.requires("jsoncpp/1.9.5")       # JSON handling for all components
-        self.requires("flatbuffers/23.5.26") # Serialization for all components
-        self.requires("libcurl/8.5.0")       # HTTP client for downloads and APIs
-        self.requires("openssl/3.0.8")       # SSL/TLS support
-        self.requires("zlib/1.2.13")         # Compression support
+        self.requires("jsoncpp/1.9.5")           # JSON handling for all components
+        self.requires("libcurl/8.5.0")           # HTTP client for downloads and APIs
+        self.requires("zlib/1.2.13")             # Compression support
 
-        # Audio dependencies - FSM implemented without external libraries
+        # SpareTools runtime dependencies
+        self.requires("sparetools-flatbuffers/24.3.25")  # FlatBuffers for serialization
+        self.requires("sparetools-mcp-core/1.0.1")       # MCP framework integration
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
@@ -48,22 +48,16 @@ class MIAConan(ConanFile):
 
         # MCP-specific dependencies
         if self.options.with_mcp:
-            # MCP integration may need additional deps
-            pass
-
-        # SpareTools runtime dependencies
-        # Note: These require Cloudsmith remote to be configured
-        # self.requires("sparetools-mia/2.0.3")           # MIA IoT components
-        # self.requires("sparetools-obd-sim/2.0.3")       # OBD-II simulation (if needed)
+            self.requires("sparetools-mcp-orchestrator/2.0.3")  # MCP orchestration
+            self.requires("sparetools-tinymcp/2.0.0")           # Lightweight MCP server
 
     def build_requirements(self):
-        # Tools needed for building
-        self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
-
         # SpareTools build-time dependencies
-        # Note: These require Cloudsmith remote to be configured via setup-sparetools.sh
-        # self.tool_requires("sparetools-obd-sim/2.0.3")  # OBD simulator for testing
-        # self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
+        self.tool_requires("sparetools-cpython/3.12.7")          # Python runtime for build scripts
+        self.tool_requires("sparetools-flatbuffers/24.3.25")     # FlatBuffers compiler
+
+        # Keep system flatbuffers for now (compatibility)
+        self.tool_requires("flatbuffers/23.5.26")
 
     def export_sources(self):
         # Export source files needed for building
