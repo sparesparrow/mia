@@ -28,7 +28,7 @@ conan_package_library_targets("${sparesparrow-protocols_LIBS_RELEASE}"    # libr
                               sparesparrow-protocols_DEPS_TARGET
                               sparesparrow-protocols_LIBRARIES_TARGETS  # out_libraries_targets
                               "_RELEASE"
-                              "sparesparrow-protocols"    # package_name
+                              "sparetools-protocols"    # package_name
                               "${sparesparrow-protocols_NO_SONAME_MODE_RELEASE}")  # soname
 
 # FIXME: What is the result of this for multi-config? All configs adding themselves to path?
@@ -36,7 +36,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 ########## COMPONENTS TARGET PROPERTIES Release ########################################
 
-    ########## COMPONENT sparesparrow-protocols::common #############
+    ########## COMPONENT sparetools-protocols::common #############
 
         set(sparesparrow-protocols_sparesparrow-protocols_common_FRAMEWORKS_FOUND_RELEASE "")
         conan_find_apple_frameworks(sparesparrow-protocols_sparesparrow-protocols_common_FRAMEWORKS_FOUND_RELEASE "${sparesparrow-protocols_sparesparrow-protocols_common_FRAMEWORKS_RELEASE}" "${sparesparrow-protocols_sparesparrow-protocols_common_FRAMEWORK_DIRS_RELEASE}")
@@ -70,7 +70,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 
         ########## TARGET PROPERTIES #####################################
-        set_property(TARGET sparesparrow-protocols::common
+        set_property(TARGET sparetools-protocols::common
                      APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_OBJECTS_RELEASE}>
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_LIBRARIES_TARGETS}>
@@ -79,24 +79,24 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
         if("${sparesparrow-protocols_sparesparrow-protocols_common_LIBS_RELEASE}" STREQUAL "")
             # If the component is not declaring any "cpp_info.components['foo'].libs" the system, frameworks etc are not
             # linked to the imported targets and we need to do it to the global target
-            set_property(TARGET sparesparrow-protocols::common
+            set_property(TARGET sparetools-protocols::common
                          APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                          sparesparrow-protocols_sparesparrow-protocols_common_DEPS_TARGET)
         endif()
 
-        set_property(TARGET sparesparrow-protocols::common APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        set_property(TARGET sparetools-protocols::common APPEND PROPERTY INTERFACE_LINK_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_LINKER_FLAGS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::common APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        set_property(TARGET sparetools-protocols::common APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_INCLUDE_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::common APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
+        set_property(TARGET sparetools-protocols::common APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_LIB_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::common APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        set_property(TARGET sparetools-protocols::common APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_COMPILE_DEFINITIONS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::common APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
+        set_property(TARGET sparetools-protocols::common APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_common_COMPILE_OPTIONS_RELEASE}>)
 
 
-    ########## COMPONENT sparesparrow-protocols::vehicle #############
+    ########## COMPONENT sparetools-protocols::vehicle #############
 
         set(sparesparrow-protocols_sparesparrow-protocols_vehicle_FRAMEWORKS_FOUND_RELEASE "")
         conan_find_apple_frameworks(sparesparrow-protocols_sparesparrow-protocols_vehicle_FRAMEWORKS_FOUND_RELEASE "${sparesparrow-protocols_sparesparrow-protocols_vehicle_FRAMEWORKS_RELEASE}" "${sparesparrow-protocols_sparesparrow-protocols_vehicle_FRAMEWORK_DIRS_RELEASE}")
@@ -130,7 +130,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 
         ########## TARGET PROPERTIES #####################################
-        set_property(TARGET sparesparrow-protocols::vehicle
+        set_property(TARGET sparetools-protocols::vehicle
                      APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_OBJECTS_RELEASE}>
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_LIBRARIES_TARGETS}>
@@ -139,24 +139,24 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
         if("${sparesparrow-protocols_sparesparrow-protocols_vehicle_LIBS_RELEASE}" STREQUAL "")
             # If the component is not declaring any "cpp_info.components['foo'].libs" the system, frameworks etc are not
             # linked to the imported targets and we need to do it to the global target
-            set_property(TARGET sparesparrow-protocols::vehicle
+            set_property(TARGET sparetools-protocols::vehicle
                          APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                          sparesparrow-protocols_sparesparrow-protocols_vehicle_DEPS_TARGET)
         endif()
 
-        set_property(TARGET sparesparrow-protocols::vehicle APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        set_property(TARGET sparetools-protocols::vehicle APPEND PROPERTY INTERFACE_LINK_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_LINKER_FLAGS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::vehicle APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        set_property(TARGET sparetools-protocols::vehicle APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_INCLUDE_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::vehicle APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
+        set_property(TARGET sparetools-protocols::vehicle APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_LIB_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::vehicle APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        set_property(TARGET sparetools-protocols::vehicle APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_COMPILE_DEFINITIONS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::vehicle APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
+        set_property(TARGET sparetools-protocols::vehicle APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_COMPILE_OPTIONS_RELEASE}>)
 
 
-    ########## COMPONENT sparesparrow-protocols::mcp #############
+    ########## COMPONENT sparetools-protocols::mcp #############
 
         set(sparesparrow-protocols_sparesparrow-protocols_mcp_FRAMEWORKS_FOUND_RELEASE "")
         conan_find_apple_frameworks(sparesparrow-protocols_sparesparrow-protocols_mcp_FRAMEWORKS_FOUND_RELEASE "${sparesparrow-protocols_sparesparrow-protocols_mcp_FRAMEWORKS_RELEASE}" "${sparesparrow-protocols_sparesparrow-protocols_mcp_FRAMEWORK_DIRS_RELEASE}")
@@ -190,7 +190,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 
         ########## TARGET PROPERTIES #####################################
-        set_property(TARGET sparesparrow-protocols::mcp
+        set_property(TARGET sparetools-protocols::mcp
                      APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_OBJECTS_RELEASE}>
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_LIBRARIES_TARGETS}>
@@ -199,24 +199,24 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
         if("${sparesparrow-protocols_sparesparrow-protocols_mcp_LIBS_RELEASE}" STREQUAL "")
             # If the component is not declaring any "cpp_info.components['foo'].libs" the system, frameworks etc are not
             # linked to the imported targets and we need to do it to the global target
-            set_property(TARGET sparesparrow-protocols::mcp
+            set_property(TARGET sparetools-protocols::mcp
                          APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                          sparesparrow-protocols_sparesparrow-protocols_mcp_DEPS_TARGET)
         endif()
 
-        set_property(TARGET sparesparrow-protocols::mcp APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        set_property(TARGET sparetools-protocols::mcp APPEND PROPERTY INTERFACE_LINK_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_LINKER_FLAGS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mcp APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        set_property(TARGET sparetools-protocols::mcp APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_INCLUDE_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mcp APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
+        set_property(TARGET sparetools-protocols::mcp APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_LIB_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mcp APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        set_property(TARGET sparetools-protocols::mcp APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_COMPILE_DEFINITIONS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mcp APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
+        set_property(TARGET sparetools-protocols::mcp APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mcp_COMPILE_OPTIONS_RELEASE}>)
 
 
-    ########## COMPONENT sparesparrow-protocols::mia #############
+    ########## COMPONENT sparetools-protocols::mia #############
 
         set(sparesparrow-protocols_sparesparrow-protocols_mia_FRAMEWORKS_FOUND_RELEASE "")
         conan_find_apple_frameworks(sparesparrow-protocols_sparesparrow-protocols_mia_FRAMEWORKS_FOUND_RELEASE "${sparesparrow-protocols_sparesparrow-protocols_mia_FRAMEWORKS_RELEASE}" "${sparesparrow-protocols_sparesparrow-protocols_mia_FRAMEWORK_DIRS_RELEASE}")
@@ -250,7 +250,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 
         ########## TARGET PROPERTIES #####################################
-        set_property(TARGET sparesparrow-protocols::mia
+        set_property(TARGET sparetools-protocols::mia
                      APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_OBJECTS_RELEASE}>
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_LIBRARIES_TARGETS}>
@@ -259,24 +259,24 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
         if("${sparesparrow-protocols_sparesparrow-protocols_mia_LIBS_RELEASE}" STREQUAL "")
             # If the component is not declaring any "cpp_info.components['foo'].libs" the system, frameworks etc are not
             # linked to the imported targets and we need to do it to the global target
-            set_property(TARGET sparesparrow-protocols::mia
+            set_property(TARGET sparetools-protocols::mia
                          APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                          sparesparrow-protocols_sparesparrow-protocols_mia_DEPS_TARGET)
         endif()
 
-        set_property(TARGET sparesparrow-protocols::mia APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        set_property(TARGET sparetools-protocols::mia APPEND PROPERTY INTERFACE_LINK_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_LINKER_FLAGS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mia APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        set_property(TARGET sparetools-protocols::mia APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_INCLUDE_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mia APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
+        set_property(TARGET sparetools-protocols::mia APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_LIB_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mia APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        set_property(TARGET sparetools-protocols::mia APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_COMPILE_DEFINITIONS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::mia APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
+        set_property(TARGET sparetools-protocols::mia APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_mia_COMPILE_OPTIONS_RELEASE}>)
 
 
-    ########## COMPONENT sparesparrow-protocols::bpm #############
+    ########## COMPONENT sparetools-protocols::bpm #############
 
         set(sparesparrow-protocols_sparesparrow-protocols_bpm_FRAMEWORKS_FOUND_RELEASE "")
         conan_find_apple_frameworks(sparesparrow-protocols_sparesparrow-protocols_bpm_FRAMEWORKS_FOUND_RELEASE "${sparesparrow-protocols_sparesparrow-protocols_bpm_FRAMEWORKS_RELEASE}" "${sparesparrow-protocols_sparesparrow-protocols_bpm_FRAMEWORK_DIRS_RELEASE}")
@@ -310,7 +310,7 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
 
 
         ########## TARGET PROPERTIES #####################################
-        set_property(TARGET sparesparrow-protocols::bpm
+        set_property(TARGET sparetools-protocols::bpm
                      APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_OBJECTS_RELEASE}>
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_LIBRARIES_TARGETS}>
@@ -319,29 +319,29 @@ set(CMAKE_MODULE_PATH ${sparesparrow-protocols_BUILD_DIRS_RELEASE} ${CMAKE_MODUL
         if("${sparesparrow-protocols_sparesparrow-protocols_bpm_LIBS_RELEASE}" STREQUAL "")
             # If the component is not declaring any "cpp_info.components['foo'].libs" the system, frameworks etc are not
             # linked to the imported targets and we need to do it to the global target
-            set_property(TARGET sparesparrow-protocols::bpm
+            set_property(TARGET sparetools-protocols::bpm
                          APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                          sparesparrow-protocols_sparesparrow-protocols_bpm_DEPS_TARGET)
         endif()
 
-        set_property(TARGET sparesparrow-protocols::bpm APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        set_property(TARGET sparetools-protocols::bpm APPEND PROPERTY INTERFACE_LINK_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_LINKER_FLAGS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::bpm APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        set_property(TARGET sparetools-protocols::bpm APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_INCLUDE_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::bpm APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
+        set_property(TARGET sparetools-protocols::bpm APPEND PROPERTY INTERFACE_LINK_DIRECTORIES
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_LIB_DIRS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::bpm APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        set_property(TARGET sparetools-protocols::bpm APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_COMPILE_DEFINITIONS_RELEASE}>)
-        set_property(TARGET sparesparrow-protocols::bpm APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
+        set_property(TARGET sparetools-protocols::bpm APPEND PROPERTY INTERFACE_COMPILE_OPTIONS
                      $<$<CONFIG:Release>:${sparesparrow-protocols_sparesparrow-protocols_bpm_COMPILE_OPTIONS_RELEASE}>)
 
 
     ########## AGGREGATED GLOBAL TARGET WITH THE COMPONENTS #####################
-    set_property(TARGET sparesparrow-protocols::sparesparrow-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparesparrow-protocols::common)
-    set_property(TARGET sparesparrow-protocols::sparesparrow-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparesparrow-protocols::vehicle)
-    set_property(TARGET sparesparrow-protocols::sparesparrow-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparesparrow-protocols::mcp)
-    set_property(TARGET sparesparrow-protocols::sparesparrow-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparesparrow-protocols::mia)
-    set_property(TARGET sparesparrow-protocols::sparesparrow-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparesparrow-protocols::bpm)
+    set_property(TARGET sparetools-protocols::sparetools-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparetools-protocols::common)
+    set_property(TARGET sparetools-protocols::sparetools-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparetools-protocols::vehicle)
+    set_property(TARGET sparetools-protocols::sparetools-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparetools-protocols::mcp)
+    set_property(TARGET sparetools-protocols::sparetools-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparetools-protocols::mia)
+    set_property(TARGET sparetools-protocols::sparetools-protocols APPEND PROPERTY INTERFACE_LINK_LIBRARIES sparetools-protocols::bpm)
 
 ########## For the modules (FindXXX)
-set(sparesparrow-protocols_LIBRARIES_RELEASE sparesparrow-protocols::sparesparrow-protocols)
+set(sparesparrow-protocols_LIBRARIES_RELEASE sparetools-protocols::sparetools-protocols)

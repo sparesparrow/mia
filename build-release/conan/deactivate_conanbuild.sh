@@ -1,1 +1,1 @@
-. "/home/sparrow/projects/portfolio/mia/build-release/conan/deactivate_conanbuildenv-release-x86_64.sh"
+. "/home/sparrow/projects/mia/build-release/conan/deactivate_conanbuildenv-release-x86_64.sh"

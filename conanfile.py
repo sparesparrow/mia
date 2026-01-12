@@ -6,56 +6,104 @@ from conan.tools.files import copy
 import os
 
 
+class RuntimeParams:
+    """Runtime configuration parameters following OMS pattern"""
+    build_target_path = ''
+    clean_build = True
+
+
+# Build configurations following OMS pattern
+build_configurations = {
+    'MIA_FULL': {
+        'name': 'MIA_FULL',
+        'platforms': ['rpi', 'android', 'esp32'],
+        'with_hardware': True,
+        'with_mcp': True
+    },
+    'MIA_MINIMAL': {
+        'name': 'MIA_MINIMAL',
+        'platforms': ['rpi'],
+        'with_hardware': False,
+        'with_mcp': True
+    },
+    'MIA_HARDWARE_ONLY': {
+        'name': 'MIA_HARDWARE_ONLY',
+        'platforms': ['esp32', 'arduino'],
+        'with_hardware': True,
+        'with_mcp': False
+    }
+}
+
+
 class MIAConan(ConanFile):
     name = "mia"
     version = "2.0.0"
     description = "AI Service with MCP and Hardware Control"
+    topics = "iot ai mcp hardware raspberry-pi android"
 
     # Use SpareTools foundation utilities
-    python_requires = "sparetools-base/2.0.3"
-    python_requires_extend = "sparetools-base.SpareToolsSecurityMixin"
+    python_requires = "sparesparrow/sparetools-base/2.0.4"
+    python_requires_extend = "sparetools-base.SpareToolsBaseTemplate"
+
+    # Following OMS build policy patterns
+    build_policy = "missing"
 
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
         "with_hardware": [True, False],
-        "with_mcp": [True, False]
+        "with_mcp": [True, False],
+        "target_platform": ["rpi", "android", "esp32", "arduino"]
     }
     default_options = {
         "shared": False,
         "fPIC": True,
         "with_hardware": True,   # Testing libgpiod compatibility
-        "with_mcp": True
+        "with_mcp": True,
+        "target_platform": "rpi"      # Default to Raspberry Pi
     }
 
     def configure(self):
+        """Configure build options"""
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def requirements(self):
-        # SpareTools shared protocols and utilities
-        self.requires("sparesparrow-protocols/1.0.0")  # Shared protocol schemas
+        """Define requirements based on target platform following OMS pattern"""
+        # SpareTools shared protocols and utilities - always required
+        self.requires("sparetools-protocols/1.0.1")  # Shared protocol schemas
         self.requires("sparetools-embedded/1.0.0")     # Embedded utilities
 
         # Core dependencies - always required
         self.requires("jsoncpp/1.9.5")       # JSON handling for all components
         self.requires("flatbuffers/23.5.26") # Serialization for all components
-        self.requires("libcurl/8.5.0")       # HTTP client for downloads and APIs
         self.requires("openssl/3.0.8")       # SSL/TLS support
         self.requires("zlib/1.2.13")         # Compression support
 
-        # Hardware-specific dependencies
-        if self.options.with_hardware:
-            self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
-            self.requires("mosquitto/2.0.18")    # MQTT communication
+        # Platform-specific requirements
+        if self.options.target_platform.value in ['rpi', 'ANY']:
+            self.requires("libcurl/8.5.0")       # HTTP client for downloads and APIs
+            # Hardware-specific dependencies for Raspberry Pi
+            if self.options.with_hardware:
+                self.requires("libgpiod/2.0.1")      # GPIO control for Raspberry Pi
+                self.requires("mosquitto/2.0.18")    # MQTT communication
+
+        if self.options.target_platform.value == 'android':
+            self.requires("libcurl/8.5.0")       # HTTP client for Android
+
+        if self.options.target_platform.value == 'esp32':
+            # ESP32 specific requirements
+            self.requires("sparetools-hal-sunton/1.0.0")  # Hardware abstraction
 
     def build_requirements(self):
         # Tools needed for building
         self.tool_requires("flatbuffers/23.5.26")  # For flatc compiler
 
-        # SpareTools bundled Python runtime
-        self.tool_requires("sparetools-cpython/3.12.7")  # Bundled Python runtime
+        # SpareTools bundled Python runtime, scripts, and shared dev tools
+        self.tool_requires("sparesparrow/sparetools-cpython/3.12.7")  # Bundled Python runtime
+        self.tool_requires("sparesparrow/sparetools-python-scripts/1.1.0")  # Python utility scripts
+        self.tool_requires("sparesparrow/sparetools-shared-dev-tools/2.0.3")  # Shared development tools
 
     def export_sources(self):
         # Export source files needed for building
@@ -64,6 +112,13 @@ class MIAConan(ConanFile):
 
     def layout(self):
         basic_layout(self)
+
+    def source(self):
+        """Restore CPY symlinks following OMS pattern"""
+        from shared_dev_tools.util.execute_command import execute_command
+        # Restore symlinks from central CPY to _Build directory
+        execute_command('./restore-cpy-symlinks.sh',
+                       cwd=self.source_folder, shell=True)
 
     def generate(self):
         # Generate CMake toolchain and dependencies

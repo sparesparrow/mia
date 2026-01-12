@@ -1,5 +1,5 @@
 # Load the debug and release variables
-file(GLOB DATA_FILES "${CMAKE_CURRENT_LIST_DIR}/sparesparrow-protocols-*-data.cmake")
+file(GLOB DATA_FILES "${CMAKE_CURRENT_LIST_DIR}/sparetools-protocols-*-data.cmake")
 
 foreach(f ${DATA_FILES})
     include(${f})
@@ -13,12 +13,12 @@ foreach(_COMPONENT ${sparesparrow-protocols_COMPONENT_NAMES} )
     endif()
 endforeach()
 
-if(NOT TARGET sparesparrow-protocols::sparesparrow-protocols)
-    add_library(sparesparrow-protocols::sparesparrow-protocols INTERFACE IMPORTED)
-    message(${sparesparrow-protocols_MESSAGE_MODE} "Conan: Target declared 'sparesparrow-protocols::sparesparrow-protocols'")
+if(NOT TARGET sparetools-protocols::sparetools-protocols)
+    add_library(sparetools-protocols::sparetools-protocols INTERFACE IMPORTED)
+    message(${sparesparrow-protocols_MESSAGE_MODE} "Conan: Target declared 'sparetools-protocols::sparetools-protocols'")
 endif()
 # Load the debug and release library finders
-file(GLOB CONFIG_FILES "${CMAKE_CURRENT_LIST_DIR}/sparesparrow-protocols-Target-*.cmake")
+file(GLOB CONFIG_FILES "${CMAKE_CURRENT_LIST_DIR}/sparetools-protocols-Target-*.cmake")
 
 foreach(f ${CONFIG_FILES})
     include(${f})

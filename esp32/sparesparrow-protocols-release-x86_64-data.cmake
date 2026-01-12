@@ -1,7 +1,7 @@
 ########### AGGREGATED COMPONENTS AND DEPENDENCIES FOR THE MULTI CONFIG #####################
 #############################################################################################
 
-list(APPEND sparesparrow-protocols_COMPONENT_NAMES sparesparrow-protocols::bpm sparesparrow-protocols::mia sparesparrow-protocols::mcp sparesparrow-protocols::vehicle sparesparrow-protocols::common)
+list(APPEND sparesparrow-protocols_COMPONENT_NAMES sparetools-protocols::bpm sparetools-protocols::mia sparetools-protocols::mcp sparetools-protocols::vehicle sparetools-protocols::common)
 list(REMOVE_DUPLICATES sparesparrow-protocols_COMPONENT_NAMES)
 if(DEFINED sparesparrow-protocols_FIND_DEPENDENCY_NAMES)
   list(APPEND sparesparrow-protocols_FIND_DEPENDENCY_NAMES )
@@ -47,8 +47,8 @@ set(sparesparrow-protocols_LINKER_FLAGS_RELEASE
     "$<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:${sparesparrow-protocols_EXE_LINK_FLAGS_RELEASE}>")
 
 
-set(sparesparrow-protocols_COMPONENTS_RELEASE sparesparrow-protocols::bpm sparesparrow-protocols::mia sparesparrow-protocols::mcp sparesparrow-protocols::vehicle sparesparrow-protocols::common)
-########### COMPONENT sparesparrow-protocols::common VARIABLES ############################################
+set(sparesparrow-protocols_COMPONENTS_RELEASE sparetools-protocols::bpm sparetools-protocols::mia sparetools-protocols::mcp sparetools-protocols::vehicle sparetools-protocols::common)
+########### COMPONENT sparetools-protocols::common VARIABLES ############################################
 
 set(sparesparrow-protocols_sparesparrow-protocols_common_INCLUDE_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/include")
 set(sparesparrow-protocols_sparesparrow-protocols_common_LIB_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/lib")
@@ -79,7 +79,7 @@ set(sparesparrow-protocols_sparesparrow-protocols_common_LINKER_FLAGS_RELEASE
 set(sparesparrow-protocols_sparesparrow-protocols_common_COMPILE_OPTIONS_RELEASE
     "$<$<COMPILE_LANGUAGE:CXX>:${sparesparrow-protocols_sparesparrow-protocols_common_COMPILE_OPTIONS_CXX_RELEASE}>"
     "$<$<COMPILE_LANGUAGE:C>:${sparesparrow-protocols_sparesparrow-protocols_common_COMPILE_OPTIONS_C_RELEASE}>")
-########### COMPONENT sparesparrow-protocols::vehicle VARIABLES ############################################
+########### COMPONENT sparetools-protocols::vehicle VARIABLES ############################################
 
 set(sparesparrow-protocols_sparesparrow-protocols_vehicle_INCLUDE_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/include")
 set(sparesparrow-protocols_sparesparrow-protocols_vehicle_LIB_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/lib")
@@ -110,7 +110,7 @@ set(sparesparrow-protocols_sparesparrow-protocols_vehicle_LINKER_FLAGS_RELEASE
 set(sparesparrow-protocols_sparesparrow-protocols_vehicle_COMPILE_OPTIONS_RELEASE
     "$<$<COMPILE_LANGUAGE:CXX>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_COMPILE_OPTIONS_CXX_RELEASE}>"
     "$<$<COMPILE_LANGUAGE:C>:${sparesparrow-protocols_sparesparrow-protocols_vehicle_COMPILE_OPTIONS_C_RELEASE}>")
-########### COMPONENT sparesparrow-protocols::mcp VARIABLES ############################################
+########### COMPONENT sparetools-protocols::mcp VARIABLES ############################################
 
 set(sparesparrow-protocols_sparesparrow-protocols_mcp_INCLUDE_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/include")
 set(sparesparrow-protocols_sparesparrow-protocols_mcp_LIB_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/lib")
@@ -141,7 +141,7 @@ set(sparesparrow-protocols_sparesparrow-protocols_mcp_LINKER_FLAGS_RELEASE
 set(sparesparrow-protocols_sparesparrow-protocols_mcp_COMPILE_OPTIONS_RELEASE
     "$<$<COMPILE_LANGUAGE:CXX>:${sparesparrow-protocols_sparesparrow-protocols_mcp_COMPILE_OPTIONS_CXX_RELEASE}>"
     "$<$<COMPILE_LANGUAGE:C>:${sparesparrow-protocols_sparesparrow-protocols_mcp_COMPILE_OPTIONS_C_RELEASE}>")
-########### COMPONENT sparesparrow-protocols::mia VARIABLES ############################################
+########### COMPONENT sparetools-protocols::mia VARIABLES ############################################
 
 set(sparesparrow-protocols_sparesparrow-protocols_mia_INCLUDE_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/include")
 set(sparesparrow-protocols_sparesparrow-protocols_mia_LIB_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/lib")
@@ -172,7 +172,7 @@ set(sparesparrow-protocols_sparesparrow-protocols_mia_LINKER_FLAGS_RELEASE
 set(sparesparrow-protocols_sparesparrow-protocols_mia_COMPILE_OPTIONS_RELEASE
     "$<$<COMPILE_LANGUAGE:CXX>:${sparesparrow-protocols_sparesparrow-protocols_mia_COMPILE_OPTIONS_CXX_RELEASE}>"
     "$<$<COMPILE_LANGUAGE:C>:${sparesparrow-protocols_sparesparrow-protocols_mia_COMPILE_OPTIONS_C_RELEASE}>")
-########### COMPONENT sparesparrow-protocols::bpm VARIABLES ############################################
+########### COMPONENT sparetools-protocols::bpm VARIABLES ############################################
 
 set(sparesparrow-protocols_sparesparrow-protocols_bpm_INCLUDE_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/include")
 set(sparesparrow-protocols_sparesparrow-protocols_bpm_LIB_DIRS_RELEASE "${sparesparrow-protocols_PACKAGE_FOLDER_RELEASE}/lib")

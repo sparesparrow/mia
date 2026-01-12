@@ -18,7 +18,7 @@ class MiaRpiPythonConan(ConanFile):
     "sparetools-mcp-prompts/3.13.0",
     "sparetools-mcp-ecosystem/1.0.0",
     "sparetools-bpm-schemas/2.0.0",
-    "sparesparrow-protocols/1.0.0",
+    "sparetools-protocols/1.0.0",
     "sparetools-protocols/1.0.0",
     "sparetools-mcp-core/1.0.0",
     "sparetools-embedded/1.0.0",
