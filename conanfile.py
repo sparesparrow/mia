@@ -24,22 +24,26 @@ class MIAConan(ConanFile):
         "with_mcp": True
     }
 
-    # SpareTools ecosystem integration
-    python_requires = "sparetools-base/2.0.3"
+    # 1. Use SpareTools SDK (python_requires) for recipe infrastructure
+    python_requires = "sparesparrow/sparetools-base/2.0.3"
+    python_requires_extend = "sparetools-base.SpareToolsBaseTemplate"
 
     def configure(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
     def requirements(self):
+        # Run security gates early (from python_requires)
+        self.run_security_gates()
+
         # Core dependencies - always required
         self.requires("jsoncpp/1.9.5")           # JSON handling for all components
         self.requires("libcurl/8.5.0")           # HTTP client for downloads and APIs
         self.requires("zlib/1.2.13")             # Compression support
 
         # SpareTools runtime dependencies
-        self.requires("sparetools-flatbuffers/24.3.25")  # FlatBuffers for serialization
-        self.requires("sparetools-mcp-core/1.0.1")       # MCP framework integration
+        self.requires("sparesparrow/sparetools-flatbuffers/24.3.25")  # FlatBuffers for serialization
+        self.requires("sparesparrow/sparetools-mcp-core/1.0.1")       # MCP framework integration
 
         # Hardware-specific dependencies
         if self.options.with_hardware:
@@ -48,13 +52,14 @@ class MIAConan(ConanFile):
 
         # MCP-specific dependencies
         if self.options.with_mcp:
-            self.requires("sparetools-mcp-orchestrator/2.0.3")  # MCP orchestration
-            self.requires("sparetools-tinymcp/2.0.0")           # Lightweight MCP server
+            self.requires("sparesparrow/sparetools-mcp-orchestrator/2.0.3")  # MCP orchestration
+            self.requires("sparesparrow/sparetools-tinymcp/2.0.0")           # Lightweight MCP server
 
     def build_requirements(self):
-        # SpareTools build-time dependencies
-        self.tool_requires("sparetools-cpython/3.12.7")          # Python runtime for build scripts
-        self.tool_requires("sparetools-flatbuffers/24.3.25")     # FlatBuffers compiler
+        # 2. Build tools - bundled Python + scripts
+        self.tool_requires("sparesparrow/sparetools-cpython/3.12.7")          # Python runtime for build scripts
+        self.tool_requires("sparesparrow/sparetools-python-scripts/1.0.0")   # Python utilities
+        self.tool_requires("sparesparrow/sparetools-flatbuffers/24.3.25")     # FlatBuffers compiler
 
         # Keep system flatbuffers for now (compatibility)
         self.tool_requires("flatbuffers/23.5.26")
@@ -80,6 +85,11 @@ class MIAConan(ConanFile):
         ve.generate()
 
     def build(self):
+        """Build the MIA project"""
+        # Use helper from python_requires to get Python
+        python_exe = self._get_python_exe()
+        self.output.info(f"🔧 Using CPython: {python_exe}")
+
         # Generate FlatBuffers headers before building
         self._generate_flatbuffers()
 
@@ -87,6 +97,8 @@ class MIAConan(ConanFile):
         # Change to platforms/cpp directory where CMakeLists.txt is located
         cmake.configure(build_script_folder=os.path.join(self.source_folder, "platforms", "cpp"))
         cmake.build()
+
+        self.output.info("✅ MIA build complete")
 
     def _generate_flatbuffers(self):
         """Generate C++ headers from FlatBuffers schema"""
