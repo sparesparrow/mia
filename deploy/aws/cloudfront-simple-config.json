@@ -1,0 +1,27 @@
+{
+    "CallerReference": "gonzo-journalists-simple-$(date +%s)",
+    "DefaultRootObject": "index-gonzo.html",
+    "Origins": {
+        "Quantity": 1,
+        "Items": [
+            {
+                "Id": "S3Origin",
+                "DomainName": "ai-servis-web-journalists.s3-website.eu-north-1.amazonaws.com",
+                "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 443,
+                    "OriginProtocolPolicy": "http-only"
+                }
+            }
+        ]
+    },
+    "DefaultCacheBehavior": {
+        "TargetOriginId": "S3Origin",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "Compress": true,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+    },
+    "Comment": "MIA Gonzo Journalists Distribution - Simple",
+    "Enabled": true,
+    "PriceClass": "PriceClass_100"
+}

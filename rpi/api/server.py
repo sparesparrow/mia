@@ -22,7 +22,7 @@ except ImportError as e:
     HardwareManager = None
 
 try:
-    from ..core.messaging import MessagingClient
+    from ..core.messaging.client import MessagingClient
 except ImportError as e:
     MessagingClient = None
 

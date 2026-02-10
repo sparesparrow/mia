@@ -1,0 +1,167 @@
+groups:
+  - name: ai-servis-alerts
+    rules:
+      # Service availability alerts
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 30 seconds."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "High error rate on {{ $labels.job }}"
+          description: "Error rate is {{ $value }} errors per second on {{ $labels.job }}."
+
+      # Resource usage alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}."
+
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }} ({{ $labels.mountpoint }})."
+
+      # Container alerts
+      - alert: ContainerKilled
+        expr: time() - container_last_seen > 60
+        for: 0m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container killed on {{ $labels.instance }}"
+          description: "Container {{ $labels.name }} has been killed on {{ $labels.instance }}."
+
+      - alert: ContainerCpuUsage
+        expr: (sum(rate(container_cpu_usage_seconds_total[3m])) BY (instance, name) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container CPU usage on {{ $labels.instance }}"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value }}% on {{ $labels.instance }}."
+
+      - alert: ContainerMemoryUsage
+        expr: (sum(container_memory_working_set_bytes) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80
+        for: 2m
+        labels:
+          severity: warning
+          component: container
+        annotations:
+          summary: "Container Memory usage on {{ $labels.instance }}"
+          description: "Container {{ $labels.name }} Memory usage is {{ $value }}% on {{ $labels.instance }}."
+
+      # AI-Servis specific alerts
+      - alert: MQTTBrokerDown
+        expr: mqtt_broker_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: mqtt
+        annotations:
+          summary: "MQTT Broker is down"
+          description: "MQTT Broker has been down for more than 30 seconds."
+
+      - alert: ServiceDiscoveryIssues
+        expr: service_discovery_registered_services < 3
+        for: 1m
+        labels:
+          severity: warning
+          service: service-discovery
+        annotations:
+          summary: "Low number of registered services"
+          description: "Only {{ $value }} services are registered in service discovery."
+
+      - alert: MCPServerDisconnected
+        expr: mcp_connected_servers < 2
+        for: 1m
+        labels:
+          severity: warning
+          service: core-orchestrator
+        annotations:
+          summary: "MCP servers disconnected"
+          description: "Only {{ $value }} MCP servers are connected."
+
+      - alert: ESP32DeviceOffline
+        expr: esp32_device_last_seen > 300
+        for: 0m
+        labels:
+          severity: warning
+          component: esp32
+        annotations:
+          summary: "ESP32 device offline"
+          description: "ESP32 device {{ $labels.device_id }} has been offline for {{ $value }} seconds."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 2m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "High response time"
+          description: "95th percentile response time is {{ $value }}s for {{ $labels.job }}."
+
+      - alert: DatabaseConnectionIssues
+        expr: database_connections_active / database_connections_max > 0.8
+        for: 2m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connection usage is {{ $value }} on {{ $labels.instance }}."
+
+      # Security alerts
+      - alert: TooManyFailedLogins
+        expr: rate(failed_login_attempts_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Too many failed login attempts"
+          description: "{{ $value }} failed login attempts per second from {{ $labels.source_ip }}."
+
+      - alert: UnauthorizedAPIAccess
+        expr: rate(http_requests_total{status="401"}[5m]) > 2
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High number of unauthorized API requests"
+          description: "{{ $value }} unauthorized requests per second to {{ $labels.endpoint }}."

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="cs" data-base-path="{{ base_path }}" class="theme-{{ theme }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <base href="{{ base_path }}/" />
+    <title>{{ data.get(variant_key, {}).get('page', {}).get('title', {}).get('cs', 'AI-SERVIS') }}</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    {% set default_lang = 'cs' %}
+    {% set variant_data = data.get(variant_key, {}) %}
+    {% set common_data = data.get('common', {}) %}
+    {% set page = variant_data.get('page', {}) %}
+    <header class="hero">
+      <div class="hero__badges">
+        <span class="badge">{{ theme | upper }}</span>
+        <span class="badge badge--secondary">{{ variant }}</span>
+      </div>
+      <h1
+        data-i18n-path="{{ variant_key }}.page.title"
+      >
+        {{ page.get('title', {}).get(default_lang, page.get('title', {}).get('en', '')) }}
+      </h1>
+      <p
+        data-i18n-path="{{ variant_key }}.page.description"
+      >
+        {{ page.get('description', {}).get(default_lang, page.get('description', {}).get('en', '')) }}
+      </p>
+
+      {% set navigation = variant_data.get('navigation', {}) %}
+      {% if navigation %}
+      <nav class="nav">
+        <ul>
+          {% for key, entry in navigation.items() %}
+          <li>
+            <a
+              href="#{{ key }}"
+              data-i18n-path="{{ variant_key }}.navigation.{{ key }}"
+            >
+              {{ entry.get(default_lang, entry.get('en', key | replace('_', ' ') | title)) }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+      <div class="lang-switcher" role="group" aria-label="Language switch">
+        <button type="button" data-lang-switch="cs" class="lang-switcher__button lang-switcher__button--active">
+          Čeština
+        </button>
+        <button type="button" data-lang-switch="en" class="lang-switcher__button">
+          English
+        </button>
+      </div>
+    </header>
+
+    {% set hero = variant_data.get('hero', {}) %}
+    {% if hero %}
+    <section class="section" id="hero">
+      <div class="section__grid">
+        {% for key, value in hero.items() %}
+        <article class="card">
+          <h3 data-i18n-path="{{ variant_key }}.hero.{{ key }}">
+            {{ value.get(default_lang, value.get('en', key | replace('_', ' ') | title)) }}
+          </h3>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% macro render_dictionary(section_key) %}
+      {% set section = variant_data.get(section_key, {}) %}
+      {% if section %}
+      <section class="section" id="{{ section_key }}">
+        {% set title_entry = section.get('title') %}
+        <h2 class="section__title"
+           {% if title_entry is mapping %}data-i18n-path="{{ variant_key }}.{{ section_key }}.title"{% endif %}>
+          {% if title_entry is mapping %}
+            {{ title_entry.get(default_lang, title_entry.get('en', section_key | title)) }}
+          {% else %}
+            {{ section_key | replace('_', ' ') | title }}
+          {% endif %}
+        </h2>
+        <div class="section__grid">
+          {% for key, value in section.items() if key != 'title' %}
+          <article class="card">
+            <h3 data-i18n-path="{{ variant_key }}.{{ section_key }}.{{ key }}">
+              {{ value.get(default_lang, value.get('en', key | replace('_', ' ') | title)) }}
+            </h3>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    {% endmacro %}
+
+    {{ render_dictionary('features') }}
+    {{ render_dictionary('solutions') }}
+    {{ render_dictionary('pricing') }}
+    {{ render_dictionary('technology') }}
+
+    {% set cta = variant_data.get('cta', {}) %}
+    {% if cta %}
+    <section class="cta" id="cta">
+      <h2 data-i18n-path="{{ variant_key }}.cta.ready_to_transform_your_business_fleet">
+        {{ cta.get('ready_to_transform_your_business_fleet', {}).get(default_lang, cta.get('ready_to_transform_your_business_fleet', {}).get('en', '')) }}
+      </h2>
+      <div class="cta__actions">
+        {% for key, value in cta.items() if key != 'ready_to_transform_your_business_fleet' %}
+        <a
+          class="button"
+          href="#contact"
+          data-i18n-path="{{ variant_key }}.cta.{{ key }}"
+        >
+          {{ value.get(default_lang, value.get('en', key | replace('_', ' ') | title)) }}
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% set footer = variant_data.get('footer', {}) %}
+    {% if footer %}
+    <footer class="footer" id="contact">
+      <div class="footer__columns">
+        {% for key, value in footer.items() %}
+        <div class="footer__column">
+          <span class="footer__label" data-i18n-path="{{ variant_key }}.footer.{{ key }}">
+            {{ value.get(default_lang, value.get('en', key | replace('_', ' ') | title)) }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      <small>&copy; {{ current_year | default(2025) }} AI-SERVIS Universal</small>
+    </footer>
+    {% endif %}
+
+    <script>
+      window.__I18N__ = {{ data | tojson }};
+      window.__VARIANT_KEY__ = "{{ variant_key }}";
+      window.__DEFAULT_LANGUAGE__ = "{{ default_lang }}";
+    </script>
+    <script src="js/i18n-loader.js" defer></script>
+    <script src="js/app.js" defer></script>
+  </body>
+</html>

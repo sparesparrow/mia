@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AI-SERVIS Gonzo Journalists Web Infrastructure'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: ai-servis-web
+    Description: Name of the project
+
+Resources:
+  # S3 Bucket for Gonzo Journalists
+  S3BucketJournalists:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-journalists'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Origin Access Control for CloudFront (modern approach)
+  OriginAccessControlJournalists:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-journalists-oac'
+        Description: !Sub 'OAC for ${ProjectName}-journalists'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # CloudFront Distribution
+  CloudFrontDistributionJournalists:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketJournalists.RegionalDomainName
+            Id: S3OriginJournalists
+            OriginAccessControlId: !Ref OriginAccessControlJournalists
+        Enabled: true
+        DefaultRootObject: index-gonzo.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginJournalists
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad' # CachingEnabled
+        PriceClass: PriceClass_100
+        Comment: !Sub 'AI-SERVIS Gonzo Journalists Distribution'
+
+  # Bucket Policy
+  S3BucketPolicyJournalists:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketJournalists
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketJournalists}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionJournalists}'
+
+Outputs:
+  JournalistsDistributionURL:
+    Description: Gonzo journalists site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionJournalists.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-JournalistsURL'
+
+  JournalistsBucketName:
+    Description: Gonzo journalists S3 bucket name
+    Value: !Ref S3BucketJournalists
+    Export:
+      Name: !Sub '${AWS::StackName}-JournalistsBucket'

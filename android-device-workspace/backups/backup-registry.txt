@@ -1,0 +1,2 @@
+# Backup Registry - Thu Dec 11 08:07:13 PM CET 2025
+# Format: timestamp,type,name,path,size,verified

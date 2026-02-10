@@ -17,9 +17,9 @@ import websockets
 from pathlib import Path
 
 # Import our MCP framework
-from mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport, 
-    WebSocketTransport, HTTPTransport, Tool, create_tool
+from ..shared.mcp_framework import (
+    MCPServer, MCPClient, MCPMessage, MCPTransport,
+    WebSocketTransport, HTTPTransport, Tool, Prompt, create_tool
 )
 
 # Logging setup
@@ -681,6 +681,126 @@ class ContextManager:
             self._save_contexts()
 
 
+@dataclass
+class CommandInteraction:
+    """Record of a voice command interaction"""
+    command_text: str
+    intent: str
+    confidence: float
+    parameters: Dict[str, str]
+    success: bool
+    response: str
+    timestamp: datetime
+    session_id: str
+    execution_time_ms: float
+
+
+class VoiceCommandAnalytics:
+    """Tracks voice command interactions for learning and improvement (Phases 3 & 4)"""
+
+    def __init__(self, data_dir: Optional[str] = None):
+        self.data_dir = Path(data_dir or "/tmp/ai-servis/analytics")
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.interactions: List[CommandInteraction] = []
+        self._load_interactions()
+
+    def record_interaction(self, interaction: CommandInteraction) -> None:
+        """Record a command interaction for analytics"""
+        self.interactions.append(interaction)
+        self._save_interactions()
+
+    def get_success_rate(self, intent: Optional[str] = None) -> float:
+        """Get success rate, optionally filtered by intent"""
+        filtered = [i for i in self.interactions if not intent or i.intent == intent]
+        if not filtered:
+            return 0.0
+        return sum(1 for i in filtered if i.success) / len(filtered)
+
+    def get_low_confidence_commands(self, threshold: float = 0.5) -> List[CommandInteraction]:
+        """Find commands that consistently have low confidence"""
+        return [i for i in self.interactions if i.confidence < threshold]
+
+    def get_failed_patterns(self) -> Dict[str, int]:
+        """Identify intents with high failure rates"""
+        intent_failures: Dict[str, int] = {}
+        for i in self.interactions:
+            if not i.success:
+                intent_failures[i.intent] = intent_failures.get(i.intent, 0) + 1
+        return dict(sorted(intent_failures.items(), key=lambda x: x[1], reverse=True))
+
+    def get_command_frequency(self) -> Dict[str, int]:
+        """Get frequency of each intent type"""
+        freq: Dict[str, int] = {}
+        for i in self.interactions:
+            freq[i.intent] = freq.get(i.intent, 0) + 1
+        return dict(sorted(freq.items(), key=lambda x: x[1], reverse=True))
+
+    def suggest_improvements(self) -> List[Dict[str, Any]]:
+        """Analyze patterns and suggest improvements (Phase 4 Learning Loop)"""
+        suggestions = []
+        failed = self.get_failed_patterns()
+        for intent, count in failed.items():
+            if count >= 3:
+                success_rate = self.get_success_rate(intent)
+                suggestions.append({
+                    "intent": intent,
+                    "failure_count": count,
+                    "success_rate": success_rate,
+                    "suggestion": (
+                        f"Intent '{intent}' has {count} failures "
+                        f"({success_rate:.0%} success). "
+                        f"Consider adding keywords or adjusting patterns."
+                    ),
+                })
+
+        low_conf = self.get_low_confidence_commands()
+        if len(low_conf) > 5:
+            common_words: Dict[str, int] = {}
+            for cmd in low_conf:
+                for word in cmd.command_text.lower().split():
+                    common_words[word] = common_words.get(word, 0) + 1
+            top_ambiguous = sorted(
+                common_words.items(), key=lambda x: x[1], reverse=True
+            )[:5]
+            suggestions.append({
+                "type": "ambiguous_words",
+                "words": [w for w, _ in top_ambiguous],
+                "suggestion": (
+                    "These words frequently appear in low-confidence commands. "
+                    "Consider adding disambiguation rules."
+                ),
+            })
+
+        return suggestions
+
+    def _load_interactions(self) -> None:
+        path = self.data_dir / "interactions.json"
+        if path.exists():
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                self.interactions = [
+                    CommandInteraction(
+                        **{**d, "timestamp": datetime.fromisoformat(d["timestamp"])}
+                    )
+                    for d in data
+                ]
+            except Exception as e:
+                logger.warning(f"Failed to load interactions: {e}")
+
+    def _save_interactions(self) -> None:
+        path = self.data_dir / "interactions.json"
+        try:
+            data = [
+                {**asdict(i), "timestamp": i.timestamp.isoformat()}
+                for i in self.interactions[-1000:]  # Keep last 1000
+            ]
+            with open(path, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.warning(f"Failed to save interactions: {e}")
+
+
 class EnhancedCoreOrchestrator(MCPServer):
     """Enhanced Core Orchestrator with advanced features"""
     
@@ -690,8 +810,10 @@ class EnhancedCoreOrchestrator(MCPServer):
         self.mcp_clients: Dict[str, MCPClient] = {}
         self.nlp_processor = EnhancedNLPProcessor()
         self.context_manager = ContextManager()
+        self.analytics = VoiceCommandAnalytics()
         self.setup_tools()
-        
+        self._register_voice_prompts()
+
         # Background tasks
         self._cleanup_task = None
         self._health_check_task = None
@@ -786,54 +908,109 @@ class EnhancedCoreOrchestrator(MCPServer):
         )
         self.add_tool(analyze_intent_tool)
 
-        # Telegram-specific tools
-        telegram_message_tool = create_tool(
-            name="process_telegram_message",
-            description="Process incoming Telegram message and route to appropriate services",
+        # Voice command analytics (Phase 3 & 4)
+        voice_analytics_tool = create_tool(
+            name="voice_analytics",
+            description="Get voice command analytics, usage patterns, and improvement suggestions",
             schema={
                 "type": "object",
                 "properties": {
-                    "chat_id": {"type": "integer", "description": "Telegram chat ID"},
-                    "message_id": {"type": "integer", "description": "Telegram message ID"},
-                    "text": {"type": "string", "description": "Message text content"},
-                    "sender_id": {"type": "integer", "description": "Sender user ID"},
-                    "sender_name": {"type": "string", "description": "Sender display name"},
-                    "has_media": {"type": "boolean", "description": "Whether message contains media"},
-                    "media_type": {"type": "string", "description": "Type of media if present"},
-                    "reply_to_id": {"type": "integer", "description": "ID of message being replied to"},
-                    "thread_id": {"type": "integer", "description": "Thread/conversation ID"}
+                    "metric": {
+                        "type": "string",
+                        "enum": ["success_rate", "frequency", "failures", "suggestions"],
+                    },
+                    "intent": {
+                        "type": "string",
+                        "description": "Filter by intent",
+                    },
                 },
-                "required": ["chat_id", "message_id", "text"]
             },
-            handler=self.handle_telegram_message
+            handler=self.handle_voice_analytics,
         )
-        self.add_tool(telegram_message_tool)
-    
+        self.add_tool(voice_analytics_tool)
+
+    def _register_voice_prompts(self):
+        """Register voice command prompts for the skill (Phase 1)"""
+        self.add_prompt(Prompt(
+            name="voice-command-design-principles",
+            description="Design guidelines for voice commands based on device type and user context",
+            arguments=[
+                {"name": "deviceType", "description": "Target device (mobile, raspberry-pi)", "required": True},
+                {"name": "userContext", "description": "User type (developer, homeowner)", "required": True},
+                {"name": "focusAreas", "description": "Detected usage patterns", "required": False},
+            ],
+        ))
+        self.add_prompt(Prompt(
+            name="voice-command-clarity-checklist",
+            description="Evaluate clarity and usability of voice commands",
+            arguments=[
+                {"name": "commands", "description": "List of current commands to evaluate", "required": True},
+                {"name": "userFeedback", "description": "Collected user feedback", "required": False},
+            ],
+        ))
+        self.add_prompt(Prompt(
+            name="mia-context-analyzer",
+            description="Analyze current context to interpret ambiguous voice commands",
+            arguments=[
+                {"name": "currentLocation", "description": "Device location", "required": True},
+                {"name": "recentActions", "description": "Recent action history", "required": True},
+                {"name": "deviceState", "description": "Current system state", "required": True},
+                {"name": "timeOfDay", "description": "Current time", "required": True},
+            ],
+        ))
+        self.add_prompt(Prompt(
+            name="voice-response-generator",
+            description="Generate a confident voice response based on interpreted command",
+            arguments=[
+                {"name": "interpretation", "description": "Chosen command interpretation", "required": True},
+                {"name": "confidence", "description": "Confidence score", "required": True},
+                {"name": "context", "description": "Extracted context", "required": True},
+            ],
+        ))
+
+    async def handle_voice_analytics(
+        self, metric: str = "suggestions", intent: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Handle voice analytics requests"""
+        if metric == "success_rate":
+            return {"success_rate": self.analytics.get_success_rate(intent)}
+        elif metric == "frequency":
+            return {"frequency": self.analytics.get_command_frequency()}
+        elif metric == "failures":
+            return {"failed_patterns": self.analytics.get_failed_patterns()}
+        elif metric == "suggestions":
+            return {"suggestions": self.analytics.suggest_improvements()}
+        return {"error": f"Unknown metric: {metric}"}
+
     async def handle_enhanced_voice_command(self, text: str, session_id: Optional[str] = None,
-                                          user_id: Optional[str] = None, 
+                                          user_id: Optional[str] = None,
                                           interface_type: str = "voice",
                                           context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Handle enhanced voice command with context"""
+        """Handle enhanced voice command with context, prompt enhancement, and analytics"""
         logger.info(f"Processing enhanced command: {text}")
-        
+        start_time = time.time()
+
         try:
             # Create session if needed
             if not session_id and user_id:
                 session_id = self.context_manager.create_session(user_id, interface_type)
             elif not session_id:
                 session_id = self.context_manager.create_session("anonymous", interface_type)
-            
+
             # Get session context
             session_context = self.context_manager.get_session(session_id)
-            
-            # Parse command with context
+
+            # Phase 2: Parse command with context (keyword-based NLP)
             intent_result = await self.nlp_processor.parse_command(text, session_context)
-            
+
+            # Phase 2: Enhance with MCP prompts if available
+            intent_result = await self._enhance_with_prompts(text, intent_result, session_context)
+
             logger.info(f"Intent: {intent_result.intent} (confidence: {intent_result.confidence:.2f})")
-            
-            # Route command
+
+            # Phase 3: Route and execute command
             response = await self._route_enhanced_command(intent_result, session_context, context)
-            
+
             # Update context
             if session_context:
                 self.context_manager.update_session(
@@ -842,7 +1019,22 @@ class EnhancedCoreOrchestrator(MCPServer):
                     last_parameters=intent_result.parameters
                 )
                 self.context_manager.add_to_history(session_id, text, response)
-            
+
+            # Phase 3: Record interaction for analytics
+            execution_time_ms = (time.time() - start_time) * 1000
+            is_success = "error" not in str(response).lower()
+            self.analytics.record_interaction(CommandInteraction(
+                command_text=text,
+                intent=intent_result.intent,
+                confidence=intent_result.confidence,
+                parameters=intent_result.parameters,
+                success=is_success,
+                response=str(response),
+                timestamp=datetime.now(),
+                session_id=session_id,
+                execution_time_ms=execution_time_ms,
+            ))
+
             return {
                 "response": response,
                 "intent": intent_result.intent,
@@ -851,7 +1043,7 @@ class EnhancedCoreOrchestrator(MCPServer):
                 "alternatives": intent_result.alternatives,
                 "session_id": session_id
             }
-            
+
         except Exception as e:
             logger.error(f"Error processing enhanced command: {e}")
             return {
@@ -906,155 +1098,63 @@ class EnhancedCoreOrchestrator(MCPServer):
             "alternatives": intent_result.alternatives,
             "original_text": intent_result.original_text
         }
+    
+    async def _enhance_with_prompts(
+        self,
+        text: str,
+        intent_result: IntentResult,
+        session_context: Optional[SessionContext],
+    ) -> IntentResult:
+        """Enhance intent result using MCP prompts (Phase 2).
 
-    async def handle_telegram_message(self, chat_id: int, message_id: int, text: str,
-                                    sender_id: Optional[int] = None, sender_name: Optional[str] = None,
-                                    has_media: bool = False, media_type: Optional[str] = None,
-                                    reply_to_id: Optional[int] = None, thread_id: Optional[int] = None) -> Dict[str, Any]:
-        """Handle incoming Telegram message with context preservation."""
-        logger.info(f"Processing Telegram message {message_id} from chat {chat_id}")
+        Falls back to the original keyword-based result if the
+        mcp-prompts server is unavailable.
+        """
+        prompts_client = self.mcp_clients.get("mcp-prompts")
+        if not prompts_client:
+            return intent_result
 
         try:
-            # Create or get session based on chat_id with thread awareness
-            base_session_id = f"telegram_chat_{chat_id}"
-            session_id = f"{base_session_id}_thread_{thread_id}" if thread_id else base_session_id
-
-            # Check if session exists and is active
-            session_context = self.context_manager.get_session(session_id)
-            if not session_context:
-                # Create new session for this chat/thread
-                user_id = f"telegram_user_{sender_id}" if sender_id else f"telegram_chat_{chat_id}"
-                session_id = self.context_manager.create_session(user_id, "telegram")
-                session_context = self.context_manager.get_session(session_id)
-
-                # Set chat-specific context
-                session_context.variables.update({
-                    "chat_id": str(chat_id),
-                    "thread_id": str(thread_id) if thread_id else None,
-                    "base_session_id": base_session_id,
-                    "last_message_id": str(message_id),
-                    "interface_type": "telegram",
-                    "sender_name": sender_name or "Unknown User",
-                    "message_count": "0"
-                })
-
-            # Update session with latest message info and increment counter
-            current_count = int(session_context.variables.get("message_count", "0"))
-            self.context_manager.update_session(session_id, **{
-                "last_message_id": str(message_id),
-                "thread_id": str(thread_id) if thread_id else session_context.variables.get("thread_id"),
-                "message_count": str(current_count + 1),
-                "last_activity": datetime.now()
-            })
-
-            # Handle thread context inheritance
-            if thread_id and not session_context.variables.get("thread_id"):
-                # Inherit context from base chat session if this is a new thread
-                base_session = self.context_manager.get_session(base_session_id)
-                if base_session:
-                    # Copy relevant context from base session
-                    inherited_vars = {}
-                    for key in ["command_history", "response_history", "last_intent", "service_state"]:
-                        if hasattr(base_session, key):
-                            value = getattr(base_session, key)
-                            if value:
-                                inherited_vars[key] = value
-
-                    if inherited_vars:
-                        self.context_manager.update_session(session_id, **inherited_vars)
-                        logger.debug(f"Inherited context from base session {base_session_id} to thread {session_id}")
-
-            # Parse the message text for intent
-            intent_result = await self.nlp_processor.parse_command(text, session_context)
-
-            logger.info(f"Telegram message intent: {intent_result.intent} (confidence: {intent_result.confidence:.2f})")
-
-            # Add Telegram-specific context to parameters
-            enhanced_parameters = intent_result.parameters.copy()
-            enhanced_parameters.update({
-                "chat_id": str(chat_id),
-                "message_id": str(message_id),
-                "sender_id": str(sender_id) if sender_id else None,
-                "sender_name": sender_name,
-                "has_media": has_media,
-                "media_type": media_type,
-                "reply_to_id": str(reply_to_id) if reply_to_id else None,
-                "thread_id": str(thread_id) if thread_id else None,
-                "session_message_count": str(current_count + 1)
-            })
-
-            # Route the command
-            response_text = await self._route_enhanced_command(intent_result, session_context, None)
-
-            # Format response for Telegram
-            formatted_response = self._format_telegram_response(response_text, intent_result)
-
-            # Update session history
-            self.context_manager.add_to_history(session_id, text, formatted_response)
-
-            # Update base chat session if this is a thread
-            if thread_id and base_session_id != session_id:
-                base_session = self.context_manager.get_session(base_session_id)
-                if base_session:
-                    # Update last activity in base session
-                    self.context_manager.update_session(base_session_id, last_activity=datetime.now())
-
-            return {
-                "response": formatted_response,
-                "intent": intent_result.intent,
-                "confidence": intent_result.confidence,
-                "session_id": session_id,
-                "chat_id": chat_id,
-                "message_id": message_id,
-                "thread_id": thread_id,
-                "should_reply": True,
-                "reply_to_message_id": message_id  # Reply to the original message
+            context_data = {
+                "currentLocation": (
+                    session_context.variables.get("location", "unknown")
+                    if session_context
+                    else "unknown"
+                ),
+                "recentActions": json.dumps(
+                    session_context.command_history[-5:]
+                    if session_context
+                    else []
+                ),
+                "deviceState": json.dumps(
+                    {"services": list(self.services.keys())}
+                ),
+                "timeOfDay": datetime.now().strftime("%H:%M"),
             }
+            context_analysis = await prompts_client.get_prompt(
+                "mia-context-analyzer", context_data
+            )
 
+            if context_analysis and "messages" in context_analysis:
+                analysis_text = (
+                    context_analysis["messages"][0]
+                    .get("content", {})
+                    .get("text", "")
+                )
+                if analysis_text:
+                    intent_result = IntentResult(
+                        intent=intent_result.intent,
+                        confidence=min(intent_result.confidence + 0.1, 1.0),
+                        parameters=intent_result.parameters,
+                        original_text=intent_result.original_text,
+                        context_used=True,
+                        alternatives=intent_result.alternatives,
+                    )
         except Exception as e:
-            logger.error(f"Error processing Telegram message {message_id}: {e}")
-            return {
-                "response": f"❌ Sorry, I encountered an error processing your message: {str(e)}",
-                "intent": "error",
-                "confidence": 0.0,
-                "session_id": session_id if 'session_id' in locals() else None,
-                "chat_id": chat_id,
-                "message_id": message_id,
-                "thread_id": thread_id,
-                "should_reply": True,
-                "reply_to_message_id": message_id
-            }
+            logger.debug(f"MCP prompts enhancement unavailable: {e}")
 
-    def _format_telegram_response(self, response_text: str, intent_result: IntentResult) -> str:
-        """Format response text for Telegram with appropriate formatting."""
-        if not response_text:
-            return "✅ Command processed successfully."
+        return intent_result
 
-        # Add confidence indicator for low confidence responses
-        if intent_result.confidence < 0.5:
-            confidence_indicator = f" (confidence: {intent_result.confidence:.1f})"
-            if not response_text.endswith(confidence_indicator):
-                response_text += confidence_indicator
-
-        # Add emoji prefixes based on intent for better UX
-        intent_emojis = {
-            "play_music": "🎵",
-            "control_volume": "🔊",
-            "switch_audio": "🔄",
-            "system_control": "💻",
-            "hardware_control": "⚡",
-            "smart_home": "🏠",
-            "communication": "💬",
-            "navigation": "🗺️",
-            "file_operation": "📁"
-        }
-
-        emoji = intent_emojis.get(intent_result.intent, "🤖")
-        if not response_text.startswith(emoji):
-            response_text = f"{emoji} {response_text}"
-
-        return response_text
-    
     async def _route_enhanced_command(self, intent_result: IntentResult,
                                     session_context: Optional[SessionContext],
                                     additional_context: Optional[Dict[str, Any]]) -> str:
@@ -1065,30 +1165,29 @@ class EnhancedCoreOrchestrator(MCPServer):
         # Handle follow-up commands
         if intent == "follow_up" and session_context:
             return await self._handle_follow_up(intent_result, session_context)
-
+        
         # Low confidence handling
         if intent_result.confidence < 0.3:
             alternatives = [alt[0] for alt in intent_result.alternatives[:2]]
             return f"I'm not sure what you meant. Did you mean: {', '.join(alternatives)}? (confidence: {intent_result.confidence:.2f})"
-
+        
         # Route to appropriate service
         service_mapping = {
             "play_music": "ai-audio-assistant",
-            "control_volume": "ai-audio-assistant",
+            "control_volume": "ai-audio-assistant", 
             "switch_audio": "ai-audio-assistant",
             "system_control": "ai-platform-linux",
             "file_operation": "webgrab-server",
             "hardware_control": "hardware-bridge",
             "smart_home": "ai-home-automation",
             "communication": "ai-communications",
-            "navigation": "ai-maps-navigation",
-            "telegram_messaging": "mcp-transport-telegram"
+            "navigation": "ai-maps-navigation"
         }
-
+        
         service_name = service_mapping.get(intent)
         if not service_name:
             return f"No service available for intent: {intent}"
-
+        
         # Enhanced service call with retry logic
         result = await self._call_service_enhanced(service_name, intent, parameters, session_context)
         return result
@@ -1265,7 +1364,7 @@ async def main():
             "service_type": "http"
         },
         {
-            "name": "ai-platform-linux",
+            "name": "ai-platform-linux", 
             "host": "localhost",
             "port": 8083,
             "capabilities": ["system", "process", "file", "command", "application"],
@@ -1273,7 +1372,7 @@ async def main():
         },
         {
             "name": "hardware-bridge",
-            "host": "localhost",
+            "host": "localhost", 
             "port": 8084,
             "capabilities": ["gpio", "sensor", "actuator", "pwm", "i2c", "spi"],
             "service_type": "mcp"
@@ -1286,23 +1385,12 @@ async def main():
             "service_type": "http"
         },
         {
-            "name": "mcp-transport-telegram",
+            "name": "mcp-prompts",
             "host": "localhost",
-            "port": 8090,  # MCP stdio transport doesn't use ports, but keeping for consistency
-            "capabilities": ["messaging", "media", "contacts", "telegram", "communication"],
-            "service_type": "mcp",
-            "metadata": {
-                "command": ["python", "-m", "mcp_transport_telegram"],
-                "working_directory": "/home/sparrow/projects/ai-mcp-monorepo/packages/mcp-transport-telegram",
-                "env": {
-                    "TELEGRAM_API_ID": os.getenv("TELEGRAM_API_ID", ""),
-                    "TELEGRAM_API_HASH": os.getenv("TELEGRAM_API_HASH", ""),
-                    "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN"),
-                    "TELEGRAM_POLLING_INTERVAL": "30",
-                    "TELEGRAM_MAX_MESSAGE_AGE": "3600"
-                }
-            }
-        }
+            "port": 8086,
+            "capabilities": ["prompts", "voice-command", "context-analysis"],
+            "service_type": "mcp"
+        },
     ]
     
     for config in services_config:

@@ -1,0 +1,2097 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+
+
+
+        <link rel="canonical" href="https://sparesparrow.github.io/ai-servis-universal/architecture/diagrams/">
+
+
+        <link rel="prev" href="../overview/">
+
+
+        <link rel="next" href="../../install/phone/">
+
+
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+
+
+
+        <title>Diagrams - AI-SERVIS Documentation</title>
+
+
+
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+
+
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+
+
+
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#ai-servis-universal-architecture-diagrams" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              Diagrams
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+
+
+</form>
+
+
+
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+
+
+
+
+  Overview
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../overview/" class="md-tabs__link">
+
+
+
+
+  Architecture
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+
+
+
+
+  Install
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+
+
+
+
+  Wiring & Power
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+
+
+
+
+  API & Contracts
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+
+
+
+
+  Privacy
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+
+
+
+
+  Troubleshooting
+
+      </a>
+    </li>
+
+
+
+    </ul>
+  </div>
+</nav>
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--active">
+
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+
+
+
+
+
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+
+      <a href="./" class="md-nav__link md-nav__link--active">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+      </a>
+
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 System Overview
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 System Overview">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#high-level-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-Level Architecture
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#mcp-communication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 MCP Communication Flow
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔄 MCP Communication Flow">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#request-response-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request-Response Pattern
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#service-discovery-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Discovery &amp; Registration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#home-environment-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏠 Home Environment Integration
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏠 Home Environment Integration">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#smart-home-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smart Home Ecosystem
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#automotive-integration-existing" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚗 Automotive Integration (Existing)
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚗 Automotive Integration (Existing)">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#car-system-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Car System Architecture
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#cross-platform-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      💻 Cross-Platform Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="💻 Cross-Platform Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#platform-controller-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Controller Matrix
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#security-privacy-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Security &amp; Privacy Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔐 Security & Privacy Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#privacy-first-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy-First Data Flow
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#deployment-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Deployment Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 Deployment Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#container-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Container Orchestration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#multi-environment-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Environment Deployment
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#performance-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Performance &amp; Scaling
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 Performance & Scaling">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#performance-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Monitoring Dashboard
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Usage Examples
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 Usage Examples">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#cooking-assistant-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cooking Assistant Flow
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#work-from-home-productivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Work-from-Home Productivity
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 System Overview
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 System Overview">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#high-level-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-Level Architecture
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#mcp-communication-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 MCP Communication Flow
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔄 MCP Communication Flow">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#request-response-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request-Response Pattern
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#service-discovery-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Discovery &amp; Registration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#home-environment-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏠 Home Environment Integration
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏠 Home Environment Integration">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#smart-home-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smart Home Ecosystem
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#automotive-integration-existing" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚗 Automotive Integration (Existing)
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚗 Automotive Integration (Existing)">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#car-system-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Car System Architecture
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#cross-platform-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      💻 Cross-Platform Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="💻 Cross-Platform Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#platform-controller-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Controller Matrix
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#security-privacy-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔐 Security &amp; Privacy Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔐 Security & Privacy Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#privacy-first-data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy-First Data Flow
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#deployment-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Deployment Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 Deployment Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#container-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Container Orchestration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#multi-environment-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Environment Deployment
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#performance-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Performance &amp; Scaling
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 Performance & Scaling">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#performance-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Monitoring Dashboard
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Usage Examples
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 Usage Examples">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#cooking-assistant-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cooking Assistant Flow
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#work-from-home-productivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Work-from-Home Productivity
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis-universal/edit/master/docs/architecture/diagrams.md" title="Edit this page" class="md-content__button md-icon">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+
+
+
+
+<h1 id="ai-servis-universal-architecture-diagrams">🏗️ AI-SERVIS Universal: Architecture Diagrams</h1>
+<p>This document contains comprehensive system architecture diagrams for the AI-SERVIS Universal ecosystem, showing the relationships between components, data flows, and interaction patterns.</p>
+<h2 id="system-overview">🎯 <strong>System Overview</strong></h2>
+<h3 id="high-level-architecture"><strong>High-Level Architecture</strong></h3>
+<div class="highlight"><pre><span></span><code>C4Context
+    title AI-SERVIS Universal - System Context Diagram
+
+    Person(user, &quot;User&quot;, &quot;Person using AI assistant across multiple devices and environments&quot;)
+
+    System_Boundary(aiServis, &quot;AI-SERVIS Universal&quot;) {
+        System(core, &quot;Core Orchestrator&quot;, &quot;MCP Host managing all AI modules and user interactions&quot;)
+        System(modules, &quot;MCP Server Modules&quot;, &quot;Specialized AI services for different domains&quot;)
+        System(transport, &quot;Transport Layer&quot;, &quot;Communication infrastructure (MQTT, HTTP, BLE)&quot;)
+    }
+
+    System_Ext(cloud, &quot;Optional Cloud Services&quot;, &quot;Weather, Maps, Social Media APIs&quot;)
+    System_Ext(devices, &quot;Smart Devices&quot;, &quot;IoT devices, phones, computers, car systems&quot;)
+    System_Ext(services, &quot;External Services&quot;, &quot;Spotify, WhatsApp, etc.&quot;)
+
+    Rel(user, core, &quot;Voice commands, touch, gestures&quot;)
+    Rel(core, modules, &quot;MCP protocol&quot;)
+    Rel(modules, transport, &quot;Various protocols&quot;)
+    Rel(transport, devices, &quot;Control &amp; monitoring&quot;)
+    Rel(modules, services, &quot;APIs&quot;)
+    Rel(modules, cloud, &quot;Optional augmentation&quot;)
+</code></pre></div>
+<h2 id="mcp-communication-flow">🔄 <strong>MCP Communication Flow</strong></h2>
+<h3 id="request-response-pattern"><strong>Request-Response Pattern</strong></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant User
+    participant Core as Core Orchestrator&lt;br/&gt;(MCP Host)
+    participant Discovery as Service Discovery
+    participant AudioMCP as AI Audio Assistant&lt;br/&gt;(MCP Server)
+    participant PlatformMCP as Platform Controller&lt;br/&gt;(MCP Server)
+
+    Note over User,PlatformMCP: User says: &quot;Play relaxing music and dim the lights&quot;
+
+    User-&gt;&gt;Core: Voice input
+    Core-&gt;&gt;Core: Speech-to-Text&lt;br/&gt;(ElevenLabs/Whisper)
+    Core-&gt;&gt;Core: Intent Recognition&lt;br/&gt;Extract: music + lighting
+
+    par Service Discovery
+        Core-&gt;&gt;Discovery: Query available services
+        Discovery--&gt;&gt;Core: Return: audio, platform, home-automation
+    end
+
+    par Multi-Module Coordination
+        Core-&gt;&gt;AudioMCP: MCP Request&lt;br/&gt;{&quot;method&quot;: &quot;play_music&quot;, &quot;params&quot;: {&quot;genre&quot;: &quot;relaxing&quot;, &quot;zone&quot;: &quot;living_room&quot;}}
+        AudioMCP-&gt;&gt;AudioMCP: Connect to Spotify API
+        AudioMCP-&gt;&gt;AudioMCP: Start streaming to zone speakers
+        AudioMCP--&gt;&gt;Core: MCP Response&lt;br/&gt;{&quot;result&quot;: &quot;Now playing: Ambient Sounds playlist&quot;}
+    and
+        Core-&gt;&gt;PlatformMCP: MCP Request&lt;br/&gt;{&quot;method&quot;: &quot;control_lighting&quot;, &quot;params&quot;: {&quot;zone&quot;: &quot;living_room&quot;, &quot;brightness&quot;: 30}}
+        PlatformMCP-&gt;&gt;PlatformMCP: Execute system command
+        PlatformMCP-&gt;&gt;PlatformMCP: Communicate with smart bulbs
+        PlatformMCP--&gt;&gt;Core: MCP Response&lt;br/&gt;{&quot;result&quot;: &quot;Lights dimmed to 30%&quot;}
+    end
+
+    Core-&gt;&gt;Core: Synthesize response
+    Core-&gt;&gt;User: &quot;Playing relaxing music and dimmed the lights in living room&quot;
+</code></pre></div>
+<h3 id="service-discovery-registration"><strong>Service Discovery &amp; Registration</strong></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant ModuleNew as New MCP Module
+    participant Discovery as Service Discovery
+    participant MQTT as MQTT Broker
+    participant Core as Core Orchestrator
+
+    Note over ModuleNew,Core: New module starts up
+
+    ModuleNew-&gt;&gt;ModuleNew: Initialize MCP server
+    ModuleNew-&gt;&gt;Discovery: Register service&lt;br/&gt;{name, capabilities, endpoint, health}
+    Discovery-&gt;&gt;MQTT: Publish service announcement
+
+    MQTT-&gt;&gt;Core: New service available
+    Core-&gt;&gt;Discovery: Query service capabilities
+    Discovery--&gt;&gt;Core: Return full service spec
+
+    Core-&gt;&gt;ModuleNew: Health check ping
+    ModuleNew--&gt;&gt;Core: Health status OK
+
+    Core-&gt;&gt;Core: Add to available services
+
+    Note over ModuleNew,Core: Module now available for user commands
+</code></pre></div>
+<h2 id="home-environment-integration">🏠 <strong>Home Environment Integration</strong></h2>
+<h3 id="smart-home-ecosystem"><strong>Smart Home Ecosystem</strong></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;🏠 Home Environment&quot;
+        Kitchen[Kitchen Hub&lt;br/&gt;Voice + Display]
+        LivingRoom[Living Room&lt;br/&gt;Smart TV + Speakers]
+        Bedroom[Bedroom&lt;br/&gt;Smart Lights + Climate]
+        Office[Home Office&lt;br/&gt;Desktop + Automation]
+    end
+
+    subgraph &quot;🧠 AI-SERVIS Core&quot;
+        CoreHome[Core Orchestrator&lt;br/&gt;Home Instance]
+        AudioHome[Audio Assistant]
+        HomeAuto[Home Automation]
+        Security[Security &amp; ANPR]
+    end
+
+    subgraph &quot;🔌 Smart Devices&quot;
+        Lights[Smart Lights&lt;br/&gt;Philips Hue, LIFX]
+        Climate[Climate Control&lt;br/&gt;Nest, Ecobee]
+        Cameras[Security Cameras&lt;br/&gt;ONVIF, RTSP]
+        Speakers[Multi-Room Audio&lt;br/&gt;Sonos, Chromecast]
+        Appliances[Smart Appliances&lt;br/&gt;Fridge, Oven, Washer]
+    end
+
+    subgraph &quot;🌐 Protocols&quot;
+        Matter[Matter/Thread]
+        Zigbee[Zigbee Hub]
+        WiFi[WiFi Direct]
+        BLE[Bluetooth LE]
+    end
+
+    Kitchen --&gt; CoreHome
+    LivingRoom --&gt; CoreHome
+    Bedroom --&gt; CoreHome
+    Office --&gt; CoreHome
+
+    CoreHome --&gt; AudioHome
+    CoreHome --&gt; HomeAuto
+    CoreHome --&gt; Security
+
+    HomeAuto --&gt; Matter
+    HomeAuto --&gt; Zigbee
+    AudioHome --&gt; WiFi
+    Security --&gt; BLE
+
+    Matter --&gt; Lights
+    Matter --&gt; Climate
+    Zigbee --&gt; Appliances
+    WiFi --&gt; Speakers
+    BLE --&gt; Cameras
+
+    classDef homeEnv fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef aiCore fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef devices fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef protocols fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class Kitchen,LivingRoom,Bedroom,Office homeEnv
+    class CoreHome,AudioHome,HomeAuto,Security aiCore
+    class Lights,Climate,Cameras,Speakers,Appliances devices
+    class Matter,Zigbee,WiFi,BLE protocols
+</code></pre></div>
+<h2 id="automotive-integration-existing">🚗 <strong>Automotive Integration (Existing)</strong></h2>
+<h3 id="car-system-architecture"><strong>Car System Architecture</strong></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;🚗 Vehicle Environment&quot;
+        Dashboard[Car Dashboard&lt;br/&gt;Android App]
+        OBD[OBD-2 Port&lt;br/&gt;Diagnostic Access]
+        Cameras[Vehicle Cameras&lt;br/&gt;ANPR + Security]
+        Audio[Car Audio System&lt;br/&gt;Speakers + Mic]
+    end
+
+    subgraph &quot;💻 Processing Units&quot;
+        ESP32[ESP32 DevKit&lt;br/&gt;CAN Gateway]
+        Android[Android Phone&lt;br/&gt;Main Computing]
+        Pi[Raspberry Pi&lt;br/&gt;Optional Gateway]
+    end
+
+    subgraph &quot;📡 Communication&quot;
+        CAN[CAN Bus&lt;br/&gt;Vehicle Network]
+        BT[Bluetooth LE&lt;br/&gt;Local Comm]
+        WiFi[WiFi Hotspot&lt;br/&gt;Internet Access]
+        Cell[Cellular&lt;br/&gt;4G/5G Data]
+    end
+
+    subgraph &quot;☁️ AI Services&quot;
+        CoreCar[Core Orchestrator&lt;br/&gt;Car Instance]
+        DiagCar[OBD Diagnostics]
+        ANPRCar[License Plate Recognition]
+        NavCar[Navigation &amp; Maps]
+    end
+
+    Dashboard --&gt; Android
+    OBD --&gt; ESP32
+    Cameras --&gt; Pi
+    Audio --&gt; Android
+
+    ESP32 --&gt; CAN
+    Android --&gt; BT
+    Android --&gt; WiFi
+    Pi --&gt; WiFi
+
+    Android --&gt; CoreCar
+    ESP32 --&gt; DiagCar
+    Pi --&gt; ANPRCar
+    Android --&gt; NavCar
+
+    CoreCar --&gt; BT
+    DiagCar --&gt; CAN
+    ANPRCar --&gt; WiFi
+    NavCar --&gt; Cell
+
+    classDef vehicle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef processing fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef communication fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef aiServices fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class Dashboard,OBD,Cameras,Audio vehicle
+    class ESP32,Android,Pi processing
+    class CAN,BT,WiFi,Cell communication
+    class CoreCar,DiagCar,ANPRCar,NavCar aiServices
+</code></pre></div>
+<h2 id="cross-platform-architecture">💻 <strong>Cross-Platform Architecture</strong></h2>
+<h3 id="platform-controller-matrix"><strong>Platform Controller Matrix</strong></h3>
+<div class="highlight"><pre><span></span><code>graph LR
+    subgraph &quot;🧠 Core Orchestrator&quot;
+        Core[MCP Host&lt;br/&gt;Platform Agnostic]
+    end
+
+    subgraph &quot;🐧 Linux&quot;
+        LinuxCtrl[Linux Controller&lt;br/&gt;systemd, apt, bash]
+        LinuxAudio[PipeWire/ALSA&lt;br/&gt;Audio Engine]
+        LinuxApps[Desktop Apps&lt;br/&gt;D-Bus Integration]
+    end
+
+    subgraph &quot;🪟 Windows&quot;
+        WinCtrl[Windows Controller&lt;br/&gt;PowerShell, WMI]
+        WinAudio[WASAPI&lt;br/&gt;Audio Engine]
+        WinApps[Windows Apps&lt;br/&gt;COM Integration]
+    end
+
+    subgraph &quot;🍎 macOS&quot;
+        MacCtrl[macOS Controller&lt;br/&gt;AppleScript, defaults]
+        MacAudio[Core Audio&lt;br/&gt;Audio Engine]
+        MacApps[macOS Apps&lt;br/&gt;NSWorkspace]
+    end
+
+    subgraph &quot;🤖 Android&quot;
+        AndroidCtrl[Android Bridge&lt;br/&gt;ADB, Intents]
+        AndroidAudio[AudioManager&lt;br/&gt;Media Control]
+        AndroidApps[Package Manager&lt;br/&gt;App Control]
+    end
+
+    subgraph &quot;📱 iOS&quot;
+        iOSCtrl[iOS Bridge&lt;br/&gt;Shortcuts, Automation]
+        iOSAudio[AVAudioSession&lt;br/&gt;Limited Control]
+        iOSApps[App Store Connect&lt;br/&gt;Limited Access]
+    end
+
+    Core --&gt; LinuxCtrl
+    Core --&gt; WinCtrl
+    Core --&gt; MacCtrl
+    Core --&gt; AndroidCtrl
+    Core --&gt; iOSCtrl
+
+    LinuxCtrl --&gt; LinuxAudio
+    LinuxCtrl --&gt; LinuxApps
+    WinCtrl --&gt; WinAudio
+    WinCtrl --&gt; WinApps
+    MacCtrl --&gt; MacAudio
+    MacCtrl --&gt; MacApps
+    AndroidCtrl --&gt; AndroidAudio
+    AndroidCtrl --&gt; AndroidApps
+    iOSCtrl --&gt; iOSAudio
+    iOSCtrl --&gt; iOSApps
+
+    classDef core fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#fff
+    classDef linux fill:#ff9800,stroke:#e65100,stroke-width:2px
+    classDef windows fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+    classDef macos fill:#607d8b,stroke:#263238,stroke-width:2px
+    classDef android fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+    classDef ios fill:#9e9e9e,stroke:#212121,stroke-width:2px
+
+    class Core core
+    class LinuxCtrl,LinuxAudio,LinuxApps linux
+    class WinCtrl,WinAudio,WinApps windows
+    class MacCtrl,MacAudio,MacApps macos
+    class AndroidCtrl,AndroidAudio,AndroidApps android
+    class iOSCtrl,iOSAudio,iOSApps ios
+</code></pre></div>
+<h2 id="security-privacy-architecture">🔐 <strong>Security &amp; Privacy Architecture</strong></h2>
+<h3 id="privacy-first-data-flow"><strong>Privacy-First Data Flow</strong></h3>
+<div class="highlight"><pre><span></span><code>flowchart TD
+    subgraph &quot;🎤 Input Layer&quot;
+        Voice[Voice Input]
+        Touch[Touch/Gesture]
+        Sensors[Sensor Data]
+    end
+
+    subgraph &quot;🛡️ Privacy Layer&quot;
+        LocalSTT[Local Speech-to-Text&lt;br/&gt;Whisper/OpenAI]
+        Anonymize[Data Anonymization&lt;br/&gt;Remove PII]
+        Encrypt[Local Encryption&lt;br/&gt;AES-256]
+    end
+
+    subgraph &quot;🧠 Processing Layer&quot;
+        NLP[Local NLP&lt;br/&gt;Intent Recognition]
+        Context[Context Management&lt;br/&gt;No Cloud Storage]
+        Decision[Decision Engine&lt;br/&gt;Local Rules]
+    end
+
+    subgraph &quot;💾 Storage Layer&quot;
+        LocalDB[(Local Database&lt;br/&gt;SQLite/PostgreSQL)]
+        TempCache[(Temporary Cache&lt;br/&gt;Redis)]
+        UserPrefs[(User Preferences&lt;br/&gt;Encrypted)]
+    end
+
+    subgraph &quot;☁️ Optional Cloud&quot;
+        CloudAPIs[External APIs&lt;br/&gt;Weather, Maps]
+        CloudBackup[Encrypted Backup&lt;br/&gt;User Controlled]
+    end
+
+    Voice --&gt; LocalSTT
+    Touch --&gt; Anonymize
+    Sensors --&gt; Encrypt
+
+    LocalSTT --&gt; NLP
+    Anonymize --&gt; Context
+    Encrypt --&gt; Decision
+
+    NLP --&gt; LocalDB
+    Context --&gt; TempCache
+    Decision --&gt; UserPrefs
+
+    Decision -.-&gt; CloudAPIs
+    UserPrefs -.-&gt; CloudBackup
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef privacy fill:#e8f5e8,stroke:#388e3c,stroke-width:3px
+    classDef processing fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef storage fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef cloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,stroke-dasharray: 5 5
+
+    class Voice,Touch,Sensors input
+    class LocalSTT,Anonymize,Encrypt privacy
+    class NLP,Context,Decision processing
+    class LocalDB,TempCache,UserPrefs storage
+    class CloudAPIs,CloudBackup cloud
+</code></pre></div>
+<h2 id="deployment-architecture">🚀 <strong>Deployment Architecture</strong></h2>
+<h3 id="container-orchestration"><strong>Container Orchestration</strong></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;🐳 Docker Compose Stack&quot;
+        subgraph &quot;Core Services&quot;
+            CoreContainer[ai-servis-core&lt;br/&gt;Orchestrator]
+            DiscoveryContainer[ai-servis-discovery&lt;br/&gt;Service Registry]
+            MQTTContainer[eclipse-mosquitto&lt;br/&gt;Message Broker]
+        end
+
+        subgraph &quot;AI Modules&quot;
+            AudioContainer[ai-servis-audio&lt;br/&gt;Audio Assistant]
+            PlatformContainer[ai-servis-platform&lt;br/&gt;Platform Controller]
+            HomeContainer[ai-servis-home&lt;br/&gt;Home Automation]
+            SecurityContainer[ai-servis-security&lt;br/&gt;Security &amp; ANPR]
+        end
+
+        subgraph &quot;Support Services&quot;
+            MonitorContainer[prometheus&lt;br/&gt;Monitoring]
+            LogsContainer[grafana&lt;br/&gt;Visualization]
+            StorageContainer[postgresql&lt;br/&gt;Persistent Storage]
+        end
+    end
+
+    subgraph &quot;🌐 Network Layer&quot;
+        Frontend[Frontend Network&lt;br/&gt;User Interfaces]
+        Backend[Backend Network&lt;br/&gt;Service Communication]
+        External[External Network&lt;br/&gt;Internet Access]
+    end
+
+    subgraph &quot;💾 Persistent Volumes&quot;
+        ConfigVol[Configuration&lt;br/&gt;Volume]
+        DataVol[Data&lt;br/&gt;Volume]
+        LogsVol[Logs&lt;br/&gt;Volume]
+    end
+
+    CoreContainer --&gt; DiscoveryContainer
+    CoreContainer --&gt; MQTTContainer
+    CoreContainer --&gt; AudioContainer
+    CoreContainer --&gt; PlatformContainer
+    CoreContainer --&gt; HomeContainer
+    CoreContainer --&gt; SecurityContainer
+
+    MonitorContainer --&gt; LogsContainer
+    StorageContainer --&gt; DataVol
+
+    Frontend --&gt; CoreContainer
+    Backend --&gt; MQTTContainer
+    External --&gt; CoreContainer
+
+    CoreContainer --&gt; ConfigVol
+    AudioContainer --&gt; DataVol
+    LogsContainer --&gt; LogsVol
+
+    classDef core fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#fff
+    classDef modules fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+    classDef support fill:#ff9800,stroke:#e65100,stroke-width:2px
+    classDef network fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+    classDef storage fill:#607d8b,stroke:#263238,stroke-width:2px
+
+    class CoreContainer,DiscoveryContainer,MQTTContainer core
+    class AudioContainer,PlatformContainer,HomeContainer,SecurityContainer modules
+    class MonitorContainer,LogsContainer,StorageContainer support
+    class Frontend,Backend,External network
+    class ConfigVol,DataVol,LogsVol storage
+</code></pre></div>
+<h3 id="multi-environment-deployment"><strong>Multi-Environment Deployment</strong></h3>
+<div class="highlight"><pre><span></span><code>flowchart LR
+    subgraph &quot;Development&quot;
+        Dev[Local Docker&lt;br/&gt;Hot Reload&lt;br/&gt;Debug Mode]
+    end
+
+    subgraph &quot;Testing&quot;
+        Test[Pi Simulation&lt;br/&gt;Integration Tests&lt;br/&gt;CI/CD Pipeline]
+    end
+
+    subgraph &quot;Production&quot;
+        subgraph &quot;Home Desktop&quot;
+            HomeAMD[AMD64 Desktop&lt;br/&gt;Full Features]
+            HomeARM[ARM64 Pi&lt;br/&gt;Limited Resources]
+        end
+
+        subgraph &quot;Automotive&quot;
+            CarAndroid[Android Phone&lt;br/&gt;Mobile App]
+            CarESP[ESP32&lt;br/&gt;Hardware Bridge]
+            CarPi[Raspberry Pi&lt;br/&gt;Edge Gateway]
+        end
+
+        subgraph &quot;Enterprise&quot;
+            EntServer[Dedicated Server&lt;br/&gt;Multi-Tenant]
+            EntK8s[Kubernetes&lt;br/&gt;Scalable Deployment]
+        end
+    end
+
+    Dev --&gt; Test
+    Test --&gt; HomeAMD
+    Test --&gt; HomeARM
+    Test --&gt; CarAndroid
+    Test --&gt; CarESP
+    Test --&gt; CarPi
+    Test --&gt; EntServer
+    Test --&gt; EntK8s
+
+    classDef dev fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef test fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef prod fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef enterprise fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class Dev dev
+    class Test test
+    class HomeAMD,HomeARM,CarAndroid,CarESP,CarPi prod
+    class EntServer,EntK8s enterprise
+</code></pre></div>
+<h2 id="performance-scaling">📊 <strong>Performance &amp; Scaling</strong></h2>
+<h3 id="performance-monitoring-dashboard"><strong>Performance Monitoring Dashboard</strong></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;📊 Metrics Collection&quot;
+        AppMetrics[Application Metrics&lt;br/&gt;Response Times, Errors]
+        SystemMetrics[System Metrics&lt;br/&gt;CPU, Memory, Network]
+        BusinessMetrics[Business Metrics&lt;br/&gt;Voice Commands, User Actions]
+    end
+
+    subgraph &quot;📈 Monitoring Stack&quot;
+        Prometheus[Prometheus&lt;br/&gt;Time Series DB]
+        Grafana[Grafana&lt;br/&gt;Visualization]
+        AlertManager[Alert Manager&lt;br/&gt;Notifications]
+    end
+
+    subgraph &quot;🔍 Observability&quot;
+        Traces[Distributed Tracing&lt;br/&gt;Jaeger]
+        Logs[Log Aggregation&lt;br/&gt;ELK Stack]
+        APM[Application Performance&lt;br/&gt;Monitoring]
+    end
+
+    subgraph &quot;⚡ Performance Targets&quot;
+        VoiceLatency[Voice Command&lt;br/&gt;&lt; 500ms]
+        ModuleStartup[Module Startup&lt;br/&gt;&lt; 10s]
+        MemoryUsage[Memory Usage&lt;br/&gt;&lt; 2GB total]
+        CPUUsage[CPU Usage&lt;br/&gt;&lt; 20% idle]
+    end
+
+    AppMetrics --&gt; Prometheus
+    SystemMetrics --&gt; Prometheus
+    BusinessMetrics --&gt; Prometheus
+
+    Prometheus --&gt; Grafana
+    Prometheus --&gt; AlertManager
+
+    Grafana --&gt; Traces
+    Grafana --&gt; Logs
+    Grafana --&gt; APM
+
+    APM --&gt; VoiceLatency
+    APM --&gt; ModuleStartup
+    APM --&gt; MemoryUsage
+    APM --&gt; CPUUsage
+
+    classDef metrics fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef monitoring fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef observability fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef performance fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+
+    class AppMetrics,SystemMetrics,BusinessMetrics metrics
+    class Prometheus,Grafana,AlertManager monitoring
+    class Traces,Logs,APM observability
+    class VoiceLatency,ModuleStartup,MemoryUsage,CPUUsage performance
+</code></pre></div>
+<hr />
+<h2 id="usage-examples">🎯 <strong>Usage Examples</strong></h2>
+<h3 id="cooking-assistant-flow"><strong>Cooking Assistant Flow</strong></h3>
+<div class="highlight"><pre><span></span><code>journey
+    title Cooking Assistant User Journey
+    section Preparation
+      Start cooking: 5: User
+      &quot;AI, play cooking music&quot;: 5: User
+      Music starts playing: 5: AI Audio Assistant
+      Switch to bluetooth headphones: 4: User
+      Audio switches seamlessly: 5: AI Audio Assistant
+    section Active Cooking
+      Set 15min pasta timer: 4: User
+      Timer set via system: 5: Platform Controller
+      Check recipe step: 3: User
+      Read recipe aloud: 4: AI Audio Assistant
+    section Interruptions
+      Phone rings: 3: External
+      Lower music volume: 5: AI Audio Assistant
+      Take call on speaker: 4: Communications Module
+      Resume cooking music: 5: AI Audio Assistant
+    section Completion
+      Timer notification: 5: Platform Controller
+      Turn off stove reminder: 4: Security Module
+      Clean-up playlist: 4: AI Audio Assistant
+</code></pre></div>
+<h3 id="work-from-home-productivity"><strong>Work-from-Home Productivity</strong></h3>
+<div class="highlight"><pre><span></span><code>journey
+    title Work-from-Home Productivity Journey
+    section Morning Setup
+      &quot;AI, start work mode&quot;: 5: User
+      Close social media apps: 5: Platform Controller
+      Start focus music: 4: AI Audio Assistant
+      Set status to busy: 4: Communications Module
+    section Meeting Preparation
+      &quot;Join 2 PM meeting&quot;: 4: User
+      Open calendar app: 5: Platform Controller
+      Join Zoom automatically: 5: Platform Controller
+      Mute microphone: 4: AI Audio Assistant
+    section Interruptions
+      Message from team: 3: Communications Module
+      &quot;Tell team I&#39;m in meeting&quot;: 4: User
+      Send auto-response: 5: Communications Module
+      Continue meeting: 5: User
+    section End of Day
+      &quot;AI, end work mode&quot;: 5: User
+      Save work documents: 5: Platform Controller
+      Close work applications: 4: Platform Controller
+      Switch to relaxation playlist: 5: AI Audio Assistant
+</code></pre></div>
+<p>These diagrams provide a comprehensive view of the AI-SERVIS Universal architecture, from high-level system context to detailed component interactions and user journeys. They serve as both documentation and implementation guides for the development team.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </article>
+            </div>
+
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+        <div class="md-social">
+
+
+
+
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+
+
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+
+
+  </body>
+</html>

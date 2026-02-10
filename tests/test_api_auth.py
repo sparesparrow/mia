@@ -5,12 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../rpi'))
 
-try:
-    from api.auth.api_key import APIKeyAuth, generate_api_key, APIKeyInfo
-except ImportError:
-    # Skip tests if imports fail (common in CI environments without full setup)
-    import pytest
-    pytest.skip("API dependencies not available in test environment")
+from api.auth.api_key import APIKeyAuth, generate_api_key, APIKeyInfo
 
 
 class TestAPIKeyGeneration(unittest.TestCase):

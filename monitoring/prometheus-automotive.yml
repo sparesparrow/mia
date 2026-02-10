@@ -1,0 +1,233 @@
+# Prometheus configuration for AI-SERVIS Universal Automotive AI
+# Optimized for vehicle edge deployment and voice control monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'ai-servis-automotive'
+    environment: '${ENVIRONMENT:-dev}'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load alerting rules
+rule_files:
+  - "rules/automotive-alerts.yml"
+  - "rules/voice-processing-alerts.yml"
+  - "rules/security-alerts.yml"
+  - "rules/performance-alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Core AI Services
+  - job_name: 'core-orchestrator'
+    static_configs:
+      - targets: ['core-orchestrator:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'core-orchestrator'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'ai_servis_.*'
+        action: keep
+
+  - job_name: 'ai-audio-assistant'
+    static_configs:
+      - targets: ['ai-audio-assistant:9091']
+    metrics_path: '/metrics'
+    scrape_interval: 5s  # High frequency for voice latency monitoring
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'ai-audio-assistant'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(voice_processing_latency_seconds|audio_quality_score|wake_word_detection_rate).*'
+        action: keep
+
+  - job_name: 'hardware-bridge'
+    static_configs:
+      - targets: ['hardware-bridge:9092']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'hardware-bridge'
+
+  # Platform Controllers
+  - job_name: 'platform-controllers'
+    static_configs:
+      - targets: 
+        - 'platform-controller-linux:9093'
+        - 'platform-controller-windows:9094'
+        - 'platform-controller-macos:9095'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Security and Privacy Module
+  - job_name: 'ai-security'
+    static_configs:
+      - targets: ['ai-security:9096']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(security_scan_duration_seconds|vulnerability_count|privacy_compliance_score).*'
+        action: keep
+
+  # Infrastructure Monitoring
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  # MQTT Broker Monitoring
+  - job_name: 'mqtt-exporter'
+    static_configs:
+      - targets: ['mqtt-exporter:9234']
+    scrape_interval: 15s
+
+  # Database Monitoring
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+
+  # ESP32 Device Monitoring
+  - job_name: 'esp32-devices'
+    static_configs:
+      - targets:
+        - 'esp32-obd:8080'
+        - 'esp32-io:8080'
+        - 'esp32-cam:8080'
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: 'esp32-(.+):.*'
+        target_label: device_type
+        replacement: '${1}'
+
+  # Automotive-Specific Monitoring
+  - job_name: 'vehicle-data'
+    static_configs:
+      - targets: ['vehicle-data-collector:9097']
+    metrics_path: '/metrics'
+    scrape_interval: 5s  # High frequency for real-time vehicle data
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(vehicle_speed_kmh|engine_rpm|fuel_level_percent|battery_voltage|coolant_temp_celsius).*'
+        action: keep
+
+  # Service Discovery (Consul/mDNS)
+  - job_name: 'service-discovery'
+    consul_sd_configs:
+      - server: 'consul:8500'
+        services: ['ai-servis']
+    relabel_configs:
+      - source_labels: [__meta_consul_service]
+        target_label: service
+      - source_labels: [__meta_consul_node]
+        target_label: node
+
+  # Kubernetes monitoring (if deployed on K8s)
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: ['ai-servis', 'ai-servis-staging', 'ai-servis-prod']
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+  # Blackbox monitoring for external endpoints
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://core-orchestrator:8080/health
+        - http://ai-audio-assistant:8081/health
+        - http://ai-security:8082/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Custom automotive metrics from MCP servers
+  - job_name: 'mcp-metrics'
+    static_configs:
+      - targets: ['mcp-metrics-collector:9098']
+    metrics_path: '/automotive-metrics'
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(mcp_request_duration_seconds|mcp_voice_commands_total|mcp_automotive_functions_total).*'
+        action: keep
+
+# Remote write for long-term storage (optional)
+remote_write:
+  - url: "${PROMETHEUS_REMOTE_WRITE_URL}"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'up|ai_servis_.*|vehicle_.*|voice_.*|mcp_.*'
+        action: keep
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 15d
+    retention.size: 10GB
+    wal-compression: true

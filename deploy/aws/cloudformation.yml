@@ -1,0 +1,484 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AI-SERVIS Multi-Site Web Infrastructure'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: ai-servis-web
+    Description: Name of the project
+
+  Segments:
+    Type: CommaDelimitedList
+    Default: business,family,musicians,journalists,team,main
+    Description: List of customer segments to deploy
+
+  PriceClass:
+    Type: String
+    Default: PriceClass_100
+    AllowedValues:
+      - PriceClass_100
+      - PriceClass_200
+      - PriceClass_All
+    Description: CloudFront price class for global distribution
+
+Resources:
+  # S3 Buckets for each segment
+  S3BucketMain:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-main'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  S3BucketBusiness:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-business'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  S3BucketFamily:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-family'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  S3BucketMusicians:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-musicians'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  S3BucketJournalists:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-journalists'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  S3BucketTeam:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-team'
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Origin Access Controls for CloudFront (modern approach)
+  OriginAccessControlMain:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-main-oac'
+        Description: !Sub 'OAC for ${ProjectName}-main'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginAccessControlBusiness:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-business-oac'
+        Description: !Sub 'OAC for ${ProjectName}-business'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginAccessControlFamily:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-family-oac'
+        Description: !Sub 'OAC for ${ProjectName}-family'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginAccessControlMusicians:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-musicians-oac'
+        Description: !Sub 'OAC for ${ProjectName}-musicians'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginAccessControlJournalists:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-journalists-oac'
+        Description: !Sub 'OAC for ${ProjectName}-journalists'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  OriginAccessControlTeam:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${ProjectName}-team-oac'
+        Description: !Sub 'OAC for ${ProjectName}-team'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # CloudFront Distributions
+  CloudFrontDistributionMain:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketMain.RegionalDomainName
+            Id: S3OriginMain
+            OriginAccessControlId: !Ref OriginAccessControlMain
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginMain
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad' # CachingEnabled
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Main Distribution'
+
+  CloudFrontDistributionBusiness:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketBusiness.RegionalDomainName
+            Id: S3OriginBusiness
+            OriginAccessControlId: !Ref OriginAccessControlBusiness
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginBusiness
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Business Distribution'
+
+  CloudFrontDistributionFamily:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketFamily.RegionalDomainName
+            Id: S3OriginFamily
+            OriginAccessControlId: !Ref OriginAccessControlFamily
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginFamily
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Family Distribution'
+
+  CloudFrontDistributionMusicians:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketMusicians.RegionalDomainName
+            Id: S3OriginMusicians
+            OriginAccessControlId: !Ref OriginAccessControlMusicians
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginMusicians
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Musicians Distribution'
+
+  CloudFrontDistributionJournalists:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketJournalists.RegionalDomainName
+            Id: S3OriginJournalists
+            OriginAccessControlId: !Ref OriginAccessControlJournalists
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginJournalists
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Journalists Distribution'
+
+  CloudFrontDistributionTeam:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt S3BucketTeam.RegionalDomainName
+            Id: S3OriginTeam
+            OriginAccessControlId: !Ref OriginAccessControlTeam
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3OriginTeam
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          CachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad'
+        PriceClass: !Ref PriceClass
+        Comment: !Sub 'AI-SERVIS Team Distribution'
+
+  # Bucket Policies
+  S3BucketPolicyMain:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketMain
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketMain}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionMain}'
+
+  S3BucketPolicyBusiness:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketBusiness
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketBusiness}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionBusiness}'
+
+  S3BucketPolicyFamily:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketFamily
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketFamily}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionFamily}'
+
+  S3BucketPolicyMusicians:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketMusicians
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketMusicians}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionMusicians}'
+
+  S3BucketPolicyJournalists:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketJournalists
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketJournalists}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionJournalists}'
+
+  S3BucketPolicyTeam:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketTeam
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${S3BucketTeam}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistributionTeam}'
+
+Outputs:
+  MainDistributionURL:
+    Description: Main site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionMain.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-MainURL'
+
+  BusinessDistributionURL:
+    Description: Business site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionBusiness.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-BusinessURL'
+
+  FamilyDistributionURL:
+    Description: Family site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionFamily.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-FamilyURL'
+
+  MusiciansDistributionURL:
+    Description: Musicians site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionMusicians.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-MusiciansURL'
+
+  JournalistsDistributionURL:
+    Description: Journalists site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionJournalists.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-JournalistsURL'
+
+  TeamDistributionURL:
+    Description: Team site CloudFront URL
+    Value: !Sub 'https://${CloudFrontDistributionTeam.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-TeamURL'
+
+  MainBucketName:
+    Description: Main S3 bucket name
+    Value: !Ref S3BucketMain
+    Export:
+      Name: !Sub '${AWS::StackName}-MainBucket'
+
+  BusinessBucketName:
+    Description: Business S3 bucket name
+    Value: !Ref S3BucketBusiness
+    Export:
+      Name: !Sub '${AWS::StackName}-BusinessBucket'
+
+  FamilyBucketName:
+    Description: Family S3 bucket name
+    Value: !Ref S3BucketFamily
+    Export:
+      Name: !Sub '${AWS::StackName}-FamilyBucket'
+
+  MusiciansBucketName:
+    Description: Musicians S3 bucket name
+    Value: !Ref S3BucketMusicians
+    Export:
+      Name: !Sub '${AWS::StackName}-MusiciansBucket'
+
+  JournalistsBucketName:
+    Description: Journalists S3 bucket name
+    Value: !Ref S3BucketJournalists
+    Export:
+      Name: !Sub '${AWS::StackName}-JournalistsBucket'
+
+  TeamBucketName:
+    Description: Team S3 bucket name
+    Value: !Ref S3BucketTeam
+    Export:
+      Name: !Sub '${AWS::StackName}-TeamBucket'

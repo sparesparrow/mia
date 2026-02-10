@@ -1,0 +1,34 @@
+[Unit]
+Description=MIA MCP Hardware Server
+After=mia-zmq-broker.service network.target
+Requires=mia-zmq-broker.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+Environment=PYTHONPATH=/opt/ai-servis/rpi/lib/python3.12/site-packages:/opt/ai-servis/rpi/src
+Environment=MIA_CONFIG=/opt/ai-servis/rpi/config/mcp.json
+ExecStart=/opt/ai-servis/rpi/bin/mia-mcp-server --transport stdio --config /opt/ai-servis/rpi/config/mcp.json
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mia-mcp-server
+
+# Security settings
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/ai-servis/rpi /var/log/mia
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+
+# Resource limits
+MemoryLimit=256M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

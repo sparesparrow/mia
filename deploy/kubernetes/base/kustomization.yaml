@@ -1,0 +1,153 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: mia-universal-base
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/name: mia-universal
+  app.kubernetes.io/version: v1.0.0
+  app.kubernetes.io/component: automotive-ai
+  app.kubernetes.io/part-of: ai-servis-platform
+  app.kubernetes.io/managed-by: kustomize
+  ai-servis.com/automotive: "true"
+
+# Namespace for all resources
+namespace: ai-servis
+
+# Resources to include
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - core-orchestrator.yaml
+  - ai-audio-assistant.yaml
+  - hardware-bridge.yaml
+  - ai-security.yaml
+  - service-discovery.yaml
+  - monitoring.yaml
+  - ingress.yaml
+  - networkpolicy.yaml
+  - rbac.yaml
+  - pdb.yaml
+  - hpa.yaml
+
+# ConfigMap generator for dynamic configuration
+configMapGenerator:
+  - name: ai-servis-config
+    files:
+      - config/orchestrator-config.yaml
+      - config/audio-config.yaml
+      - config/security-config.yaml
+    options:
+      disableNameSuffixHash: true
+
+  - name: monitoring-config
+    files:
+      - config/prometheus.yml
+      - config/grafana-dashboard.json
+    options:
+      disableNameSuffixHash: true
+
+# Secret generator for sensitive data
+secretGenerator:
+  - name: ai-servis-secrets
+    type: Opaque
+    literals:
+      - mqtt-password=changeme
+      - postgres-password=changeme
+      - redis-password=changeme
+    options:
+      disableNameSuffixHash: true
+
+# Images to use
+images:
+  - name: mia/core-orchestrator
+    newName: ghcr.io/sparesparrow/mia-universal/core-orchestrator
+    newTag: latest
+  - name: mia/ai-audio-assistant
+    newName: ghcr.io/sparesparrow/mia-universal/ai-audio-assistant
+    newTag: latest
+  - name: mia/hardware-bridge
+    newName: ghcr.io/sparesparrow/mia-universal/hardware-bridge
+    newTag: latest
+  - name: mia/ai-security
+    newName: ghcr.io/sparesparrow/mia-universal/ai-security
+    newTag: latest
+  - name: mia/service-discovery
+    newName: ghcr.io/sparesparrow/mia-universal/service-discovery
+    newTag: latest
+
+# Common annotations
+commonAnnotations:
+  ai-servis.com/deployment-timestamp: "2024-01-01T00:00:00Z"
+  ai-servis.com/automotive-optimized: "true"
+  ai-servis.com/edge-compatible: "true"
+
+# Patches for common modifications
+patches:
+  # Add resource limits to all containers
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+  # Add security context to all pods
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/securityContext
+        value:
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 1000
+          seccompProfile:
+            type: RuntimeDefault
+
+  # Add probes to all containers
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/livenessProbe
+        value:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      - op: add
+        path: /spec/template/spec/containers/0/readinessProbe
+        value:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+# Replica count (can be overridden in overlays)
+replicas:
+  - name: core-orchestrator
+    count: 2
+  - name: ai-audio-assistant
+    count: 3
+  - name: hardware-bridge
+    count: 2
+  - name: ai-security
+    count: 2
+  - name: service-discovery
+    count: 2

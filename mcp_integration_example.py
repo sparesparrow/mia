@@ -27,7 +27,7 @@ except ImportError:
     CPP_BRIDGE_AVAILABLE = False
 
 # Import Python MCP framework
-from mcp_framework import (
+from shared.mcp_framework import (
     MCPServer,
     MCPClient,
     Tool,

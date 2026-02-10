@@ -9,26 +9,6 @@ import os
 
 
 class MiaRpiPythonConan(ConanFile):
-
-    tool_requires = [
-    "sparetools-lvgl/8.3.11",
-    "sparetools-hal-sunton/1.0.0",
-    "sparetools-mia/2.0.0",
-    "sparetools-mcp-servers/1.0.0",
-    "sparetools-mcp-prompts/3.13.0",
-    "sparetools-mcp-ecosystem/1.0.0",
-    "sparetools-bpm-schemas/2.0.0",
-    "sparetools-protocols/1.0.0",
-    "sparetools-protocols/1.0.0",
-    "sparetools-mcp-core/1.0.0",
-    "sparetools-embedded/1.0.0",
-    "sparetools-flatbuffers/24.3.25",
-        "sparetools-cpython/3.12.7",
-    ]
-
-    python_requires = [
-        "sparetools-base/2.0.3",
-    ]
     name = "mia-rpi-python"
     version = "2.0.0"
     description = "MIA Raspberry Pi Python Services - OBD Simulator, Serial Bridge, GPIO Worker"

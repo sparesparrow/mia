@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  dev:
+    extends:
+      file: docker-compose.yml
+      service: placeholder

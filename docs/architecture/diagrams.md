@@ -221,6 +221,206 @@ graph TB
     class CoreCar,DiagCar,ANPRCar,NavCar aiServices
 ```
 
+## 🔧 **Code Organization After Cleanup**
+
+### **New Module Structure**
+```mermaid
+graph TB
+    subgraph "modules/"
+        subgraph "Shared Libraries (NEW)"
+            SharedMCP[shared/mcp_framework/<br/>Consolidated MCP code]
+            SharedBridges[shared/bridges/<br/>Base bridge classes]
+            SharedUtils[shared/utils/<br/>Common utilities]
+        end
+
+        subgraph "MCP Server Modules"
+            CoreOrch[core-orchestrator/<br/>MCP Host]
+            ServiceDisc[service-discovery/<br/>Service Registry]
+            AudioAI[ai-audio-assistant/<br/>Voice Control]
+            HWBridge[hardware-bridge/<br/>GPIO Control]
+            AutomotiveBridge[automotive-mcp-bridge/<br/>Vehicle Integration]
+            CitroenBridge[citroen-c4-bridge/<br/>PSA Telemetry]
+        end
+    end
+
+    subgraph "External Tools"
+        MCPPrompts[MCP-Prompts Server<br/>Prompt Management]
+        SpareTools[SpareTools Packages<br/>Pre-built Components]
+    end
+
+    CoreOrch --> SharedMCP
+    ServiceDisc --> SharedMCP
+    AudioAI --> SharedMCP
+    HWBridge --> SharedBridges
+    AutomotiveBridge --> SharedBridges
+    CitroenBridge --> SharedBridges
+
+    SharedBridges --> SharedMCP
+    SharedBridges --> SharedUtils
+
+    CoreOrch -.->|Uses prompts| MCPPrompts
+    AudioAI -.->|Uses prompts| MCPPrompts
+    AutomotiveBridge -.->|Built from| SpareTools
+
+    classDef shared fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#fff
+    classDef modules fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+    classDef external fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+
+    class SharedMCP,SharedBridges,SharedUtils shared
+    class CoreOrch,ServiceDisc,AudioAI,HWBridge,AutomotiveBridge,CitroenBridge modules
+    class MCPPrompts,SpareTools external
+```
+
+### **Documentation Organization**
+```mermaid
+graph TB
+    subgraph "docs/ (Standardized)"
+        Architecture[architecture/<br/>System Design]
+        Automotive[automotive/<br/>Vehicle Integration]
+        Deployment[deployment/<br/>Production Guides]
+        Development[development/<br/>Developer Workflows]
+        API[api/<br/>API Documentation]
+        Archive[archive/<br/>Historical Documents]
+    end
+
+    subgraph "Root Documentation"
+        README[README.md<br/>Project Overview]
+        TODO[TODO.md<br/>Roadmap]
+        IMPL[IMPLEMENTATION.md<br/>Current Status]
+        CLEANUP[CLEANUP_AND_MCP_INTEGRATION_PLAN.md<br/>Cleanup Strategy]
+    end
+
+    subgraph "Removed (Archived)"
+        OldStatus[29+ Status Reports]
+        OldBackups[.backups/ directory]
+        OldExports[exported-assets/]
+    end
+
+    README --> Architecture
+    README --> Deployment
+    TODO --> Development
+    IMPL --> Architecture
+    CLEANUP --> Development
+
+    OldStatus -.->|Moved to| Archive
+    OldBackups -.->|Deleted| Archive
+    OldExports -.->|Deleted| Archive
+
+    classDef active fill:#4caf50,stroke:#1b5e20,stroke-width:2px
+    classDef root fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+    classDef removed fill:#f44336,stroke:#b71c1c,stroke-width:2px,stroke-dasharray: 5 5
+
+    class Architecture,Automotive,Deployment,Development,API active
+    class README,TODO,IMPL,CLEANUP root
+    class OldStatus,OldBackups,OldExports,Archive removed
+```
+
+## 🤖 **MCP-Prompts Developer Integration**
+
+### **Developer Workflow with Prompts**
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant Cursor as Cursor/Claude Desktop
+    participant MCPPrompts as MCP-Prompts Server
+    participant PromptLib as Prompt Library<br/>(prompts/)
+    participant MIA as MIA Codebase
+
+    Note over Dev,MIA: Scenario: Adding new MCP module
+
+    Dev->>Cursor: "Create new battery-monitor module"
+    Cursor->>MCPPrompts: list_prompts(tags=["mcp", "architecture"])
+    MCPPrompts->>PromptLib: Query catalog
+    PromptLib-->>MCPPrompts: Return matching prompts
+    MCPPrompts-->>Cursor: ["mcp-module-template", "mcp-bridge-best-practices"]
+
+    Cursor->>MCPPrompts: get_prompt("mcp-module-template")
+    MCPPrompts->>PromptLib: Load template
+    PromptLib-->>MCPPrompts: Template with variables
+    MCPPrompts-->>Cursor: Return template
+
+    Cursor->>MCPPrompts: apply_template("mcp-module-template", {module_name: "battery-monitor"})
+    MCPPrompts-->>Cursor: Hydrated prompt
+
+    Cursor->>MIA: Generate module structure
+    MIA-->>Cursor: Created files
+    Cursor-->>Dev: "Created battery-monitor module following MIA conventions"
+
+    Note over Dev,MIA: Developer can save refined prompts back
+
+    Dev->>Cursor: "This worked well, save as 'battery-monitor-pattern'"
+    Cursor->>MCPPrompts: add_prompt({name: "battery-monitor-pattern", content: "...", tags: ["iot", "battery"]})
+    MCPPrompts->>PromptLib: Store new prompt
+    PromptLib-->>MCPPrompts: Saved
+    MCPPrompts-->>Cursor: Success
+    Cursor-->>Dev: "Prompt saved for future use"
+```
+
+### **MCP-Prompts Architecture Integration**
+```mermaid
+graph TB
+    subgraph "Developer Tools"
+        Cursor[Cursor IDE]
+        Claude[Claude Desktop]
+        VSCode[VS Code + MCP Extension]
+    end
+
+    subgraph "MCP-Prompts Server (Docker)"
+        MCPServer[MCP Server<br/>stdio mode]
+        HTTPServer[HTTP API<br/>:3000]
+        FileStorage[File Storage<br/>prompts/]
+    end
+
+    subgraph "Prompt Categories"
+        ArchPrompts[Architecture<br/>Module templates]
+        HWPrompts[Hardware<br/>GPIO, sensors]
+        TestPrompts[Testing<br/>Pytest fixtures]
+        AutoPrompts[Automotive<br/>OBD, CAN]
+        AndroidPrompts[Android<br/>Kotlin, Compose]
+    end
+
+    subgraph "MIA Development"
+        Code[Source Code<br/>modules/]
+        Tests[Tests<br/>tests/]
+        Docs[Documentation<br/>docs/]
+        GitRepo[Git Repository]
+    end
+
+    Cursor -->|MCP Protocol| MCPServer
+    Claude -->|MCP Protocol| MCPServer
+    VSCode -->|HTTP REST| HTTPServer
+
+    MCPServer --> FileStorage
+    HTTPServer --> FileStorage
+
+    FileStorage --> ArchPrompts
+    FileStorage --> HWPrompts
+    FileStorage --> TestPrompts
+    FileStorage --> AutoPrompts
+    FileStorage --> AndroidPrompts
+
+    ArchPrompts -.->|Generates| Code
+    TestPrompts -.->|Generates| Tests
+    HWPrompts -.->|Generates| Code
+    AutoPrompts -.->|Generates| Code
+    AndroidPrompts -.->|Generates| Code
+
+    FileStorage -->|Version controlled| GitRepo
+    Code --> GitRepo
+    Tests --> GitRepo
+    Docs --> GitRepo
+
+    classDef tools fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef server fill:#4caf50,stroke:#1b5e20,stroke-width:3px
+    classDef prompts fill:#ff9800,stroke:#e65100,stroke-width:2px
+    classDef codebase fill:#2196f3,stroke:#0d47a1,stroke-width:2px
+
+    class Cursor,Claude,VSCode tools
+    class MCPServer,HTTPServer,FileStorage server
+    class ArchPrompts,HWPrompts,TestPrompts,AutoPrompts,AndroidPrompts prompts
+    class Code,Tests,Docs,GitRepo codebase
+```
+
 ## 💻 **Cross-Platform Architecture**
 
 ### **Platform Controller Matrix**

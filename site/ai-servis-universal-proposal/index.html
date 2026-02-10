@@ -1,0 +1,2202 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+
+
+
+        <link rel="canonical" href="https://sparesparrow.github.io/ai-servis-universal/ai-servis-universal-proposal/">
+
+
+
+
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+
+
+
+        <title>🏠🚗 AI-SERVIS Universal: From Automotive to Multi-Platform AI Assistant Ecosystem - AI-SERVIS Documentation</title>
+
+
+
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+
+
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+
+
+
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#ai-servis-universal-from-automotive-to-multi-platform-ai-assistant-ecosystem" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              🏠🚗 AI-SERVIS Universal: From Automotive to Multi-Platform AI Assistant Ecosystem
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+
+
+</form>
+
+
+
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+
+
+
+
+  Overview
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../architecture/overview/" class="md-tabs__link">
+
+
+
+
+  Architecture
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../install/phone/" class="md-tabs__link">
+
+
+
+
+  Install
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../wiring/" class="md-tabs__link">
+
+
+
+
+  Wiring & Power
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../api/overview/" class="md-tabs__link">
+
+
+
+
+  API & Contracts
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../privacy/dpia-template/" class="md-tabs__link">
+
+
+
+
+  Privacy
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+
+
+
+
+  Troubleshooting
+
+      </a>
+    </li>
+
+
+
+    </ul>
+  </div>
+</nav>
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../architecture/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../architecture/diagrams/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/phone/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/hybrid/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/pro/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/pi-gateway/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/dev-docker/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/installer-checklist/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../wiring/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../api/changelog/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../privacy/dpia-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Executive Summary
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📋 Executive Summary">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#vision-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Vision Statement
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#current-state-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Current State Analysis
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔍 Current State Analysis">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#ai-servis-automotive-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI-SERVIS Automotive Foundation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#gap-analysis-automotive-universal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gap Analysis: Automotive → Universal
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#proposed-architecture-modular-ai-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏗️ Proposed Architecture: Modular AI Ecosystem
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏗️ Proposed Architecture: Modular AI Ecosystem">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Principles
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#system-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Architecture Overview
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#module-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Module Specifications
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Module Specifications">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#1-ai-audio-assistant-core-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. AI Audio Assistant (Core Module)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#2-ai-maps-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. AI Maps &amp; Navigation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#3-ai-calls-messages-universal-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. AI Calls &amp; Messages (Universal Communication)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#4-9-platform-controllers-ai-androidioslinuxwindowsmacosrtos" class="md-nav__link">
+    <span class="md-ellipsis">
+      4-9. Platform Controllers (AI Android/iOS/Linux/Windows/macOS/RTOS)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#10-ai-home-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. AI Home Automation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#11-ai-security-anpr" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. AI Security &amp; ANPR
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#home-environment-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Home Environment Use Cases
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 Home Environment Use Cases">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#cooking-assistant-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cooking Assistant Scenario
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#work-from-home-productivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Work-from-Home Productivity
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#smart-home-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smart Home Integration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#containerization-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐳 Containerization Strategy
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🐳 Containerization Strategy">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#docker-compose-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose Architecture
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#platform-specific-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform-Specific Images
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#raspberry-pi-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raspberry Pi Simulation
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#mcp-integration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔗 MCP Integration Patterns
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔗 MCP Integration Patterns">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#mcp-server-implementation-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Server Implementation Example
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#cross-module-communication-via-mcp-over-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Module Communication via MCP over MQTT
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#testing-integration-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Testing &amp; Integration Strategy
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🧪 Testing & Integration Strategy">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#modular-testing-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modular Testing Approach
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#test-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Scenarios
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#continuous-integration-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuous Integration Pipeline
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#technical-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Technical Specifications
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 Technical Specifications">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Requirements
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="System Requirements">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#minimum-requirements-home-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimum Requirements (Home Desktop)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#recommended-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Requirements
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#performance-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Targets
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#platform-support-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Support Matrix
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#security-privacy-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Security &amp; Privacy Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔒 Security & Privacy Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#privacy-first-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy-First Design
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#security-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Measures
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#business-value-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 Business Value &amp; ROI
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📈 Business Value & ROI">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#market-opportunities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Market Opportunities
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#competitive-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Competitive Advantages
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#revenue-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      Revenue Streams
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#implementation-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Implementation Roadmap
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 Implementation Roadmap">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#phase-1-foundation-months-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Foundation (Months 1-3)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#phase-2-multi-platform-months-4-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Multi-Platform (Months 4-6)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#phase-3-advanced-features-months-7-9" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Advanced Features (Months 7-9)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#phase-4-ecosystem-polish-months-10-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Ecosystem &amp; Polish (Months 10-12)
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Success Metrics
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 Success Metrics">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#technical-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical KPIs
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#user-experience-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Experience KPIs
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#business-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Business KPIs
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#future-vision-extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔮 Future Vision &amp; Extensibility
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔮 Future Vision & Extensibility">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#advanced-ai-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced AI Capabilities
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#extended-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extended Ecosystem
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#technology-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology Evolution
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis-universal/edit/master/docs/ai-servis-universal-proposal.md" title="Edit this page" class="md-content__button md-icon">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+
+
+
+
+<h1 id="ai-servis-universal-from-automotive-to-multi-platform-ai-assistant-ecosystem">🏠🚗 AI-SERVIS Universal: From Automotive to Multi-Platform AI Assistant Ecosystem</h1>
+<h2 id="executive-summary">📋 Executive Summary</h2>
+<p><strong>AI-SERVIS Universal</strong> represents the evolution of our automotive AI assistant into a comprehensive, modular ecosystem that seamlessly operates across vehicles, homes, and all computing platforms. By leveraging the Model Context Protocol (MCP), containerization, and cross-platform architecture, we create a unified AI experience that adapts to any environment while maintaining the privacy-first, edge-computing principles established in the automotive domain.</p>
+<h3 id="vision-statement">🎯 <strong>Vision Statement</strong></h3>
+<p><em>"One AI assistant that knows you everywhere - from your car to your kitchen, from your phone to your desktop - while keeping your data private and under your control."</em></p>
+<h2 id="current-state-analysis">🔍 <strong>Current State Analysis</strong></h2>
+<h3 id="ai-servis-automotive-foundation"><strong>AI-SERVIS Automotive Foundation</strong></h3>
+<p>Our existing automotive platform provides:
+- <strong>Voice Control</strong>: Hands-free interaction via ElevenLabs TTS/STT
+- <strong>OBD-2 Integration</strong>: Real-time vehicle diagnostics
+- <strong>ANPR</strong>: License plate recognition for security
+- <strong>Edge Processing</strong>: Privacy-first local computation
+- <strong>Modular Design</strong>: ESP32 + Android + Raspberry Pi architecture</p>
+<h3 id="gap-analysis-automotive-universal"><strong>Gap Analysis: Automotive → Universal</strong></h3>
+<p><strong>Missing Components:</strong>
+1. <strong>Cross-Platform Runtime</strong>: No AMD64 desktop support
+2. <strong>Home Environment Adapters</strong>: No smart home integration
+3. <strong>Audio Output Management</strong>: Limited to car speakers
+4. <strong>Platform Controllers</strong>: No iOS, Windows, macOS agents
+5. <strong>Service Discovery</strong>: Manual configuration only
+6. <strong>Container Orchestration</strong>: Development-only Docker usage</p>
+<h2 id="proposed-architecture-modular-ai-ecosystem">🏗️ <strong>Proposed Architecture: Modular AI Ecosystem</strong></h2>
+<h3 id="core-principles"><strong>Core Principles</strong></h3>
+<ol>
+<li><strong>MCP-First Design</strong>: Every capability exposed as MCP server</li>
+<li><strong>Platform Agnostic</strong>: Write once, deploy everywhere</li>
+<li><strong>Containerized Services</strong>: Docker-based microservices</li>
+<li><strong>Edge-Cloud Hybrid</strong>: Local processing + selective cloud augmentation</li>
+<li><strong>Privacy by Design</strong>: Data minimization and local storage</li>
+</ol>
+<h3 id="system-architecture-overview"><strong>System Architecture Overview</strong></h3>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;User Interfaces&quot;
+        UI1[Car Dashboard]
+        UI2[Home Kitchen Display]
+        UI3[Mobile App]
+        UI4[Desktop App]
+        UI5[Voice-Only Interface]
+    end
+
+    subgraph &quot;AI-SERVIS Universal Core&quot;
+        CORE[Core Orchestrator&lt;br/&gt;MCP Host]
+        AUTH[Authentication &amp; Context]
+        AUDIO[Audio Management Hub]
+        DISC[Service Discovery]
+    end
+
+    subgraph &quot;MCP Server Modules&quot;
+        MOD1[AI Audio Assistant]
+        MOD2[AI Maps &amp; Navigation]
+        MOD3[AI Calls &amp; Messages]
+        MOD4[AI Android Controller]
+        MOD5[AI iOS Controller]
+        MOD6[AI Linux Controller]
+        MOD7[AI Windows Controller]
+        MOD8[AI macOS Controller]
+        MOD9[AI RTOS Controller]
+        MOD10[AI Home Automation]
+        MOD11[AI Security &amp; ANPR]
+    end
+
+    subgraph &quot;Transport Layer&quot;
+        MQTT[MQTT Broker]
+        HTTP[HTTP/REST APIs]
+        BLE[Bluetooth LE]
+        WIFI[Wi-Fi Direct]
+    end
+
+    subgraph &quot;Hardware Platforms&quot;
+        HW1[AMD64 Desktop]
+        HW2[ARM64 Raspberry Pi]
+        HW3[ESP32 Microcontroller]
+        HW4[Mobile Devices]
+    end
+
+    UI1 --&gt; CORE
+    UI2 --&gt; CORE
+    UI3 --&gt; CORE
+    UI4 --&gt; CORE
+    UI5 --&gt; CORE
+
+    CORE --&gt; AUTH
+    CORE --&gt; AUDIO
+    CORE --&gt; DISC
+
+    CORE &lt;--&gt; MOD1
+    CORE &lt;--&gt; MOD2
+    CORE &lt;--&gt; MOD3
+    CORE &lt;--&gt; MOD4
+    CORE &lt;--&gt; MOD5
+    CORE &lt;--&gt; MOD6
+    CORE &lt;--&gt; MOD7
+    CORE &lt;--&gt; MOD8
+    CORE &lt;--&gt; MOD9
+    CORE &lt;--&gt; MOD10
+    CORE &lt;--&gt; MOD11
+
+    MOD1 &lt;--&gt; MQTT
+    MOD2 &lt;--&gt; HTTP
+    MOD3 &lt;--&gt; MQTT
+    MOD4 &lt;--&gt; BLE
+    MOD5 &lt;--&gt; WIFI
+
+    MQTT --&gt; HW1
+    HTTP --&gt; HW2
+    BLE --&gt; HW3
+    WIFI --&gt; HW4
+</code></pre></div>
+<h3 id="module-specifications"><strong>Module Specifications</strong></h3>
+<h4 id="1-ai-audio-assistant-core-module"><strong>1. AI Audio Assistant (Core Module)</strong></h4>
+<p><strong>Purpose</strong>: Universal voice interaction and audio management
+<strong>MCP Tools</strong>:
+- <code>play_music(artist, album, track, playlist)</code>
+- <code>pause_resume_playback()</code>
+- <code>switch_audio_output(device_type)</code> - headphones, bluetooth, RTSP, speakers
+- <code>set_volume(level, zone?)</code>
+- <code>voice_command(text)</code> - natural language processing
+- <code>tts_speak(text, voice_id?, speed?)</code></p>
+<p><strong>Target Environments</strong>:
+- 🏠 <strong>Home</strong>: Kitchen/cooking voice control, multi-room audio
+- 🚗 <strong>Car</strong>: Existing automotive integration
+- 💻 <strong>Desktop</strong>: System audio control, productivity assistance
+- 📱 <strong>Mobile</strong>: Phone integration, Bluetooth management</p>
+<p><strong>Key Features</strong>:
+- <strong>Zonal Audio</strong>: Different content in different rooms/areas
+- <strong>Cross-Platform Codecs</strong>: Support for all audio formats
+- <strong>Real-time Streaming</strong>: Low-latency voice interaction (&lt;200ms)
+- <strong>Audio Routing</strong>: Intelligent device switching (cooking → bluetooth headphones)</p>
+<h4 id="2-ai-maps-navigation"><strong>2. AI Maps &amp; Navigation</strong></h4>
+<p><strong>MCP Tools</strong>:
+- <code>get_directions(from, to, transport_mode)</code>
+- <code>find_places(query, location, radius)</code>
+- <code>traffic_updates(route_id)</code>
+- <code>save_favorite_location(name, address)</code>
+- <code>estimate_eta(destination)</code></p>
+<h4 id="3-ai-calls-messages-universal-communication"><strong>3. AI Calls &amp; Messages (Universal Communication)</strong></h4>
+<p><strong>MCP Tools</strong>:
+- <code>send_message(platform, contact, message)</code> - WhatsApp, Signal, Telegram, Twitter/X, Instagram, Facebook
+- <code>make_call(contact, platform?)</code>
+- <code>read_messages(platform?, unread_only?)</code>
+- <code>schedule_message(platform, contact, message, datetime)</code>
+- <code>create_group_chat(platform, participants, name)</code></p>
+<p><strong>Platform Integrations</strong>:
+- <strong>WhatsApp Business API</strong>: Automated responses
+- <strong>Signal</strong>: Privacy-focused messaging
+- <strong>Telegram Bot API</strong>: Rich interactions
+- <strong>Social Media APIs</strong>: Twitter/X, Instagram, Facebook
+- <strong>Traditional SMS/Calls</strong>: SIP integration, carrier APIs</p>
+<h4 id="4-9-platform-controllers-ai-androidioslinuxwindowsmacosrtos"><strong>4-9. Platform Controllers (AI Android/iOS/Linux/Windows/macOS/RTOS)</strong></h4>
+<p><strong>Common MCP Tools Pattern</strong>:
+- <code>execute_command(platform_cmd)</code>
+- <code>launch_app(app_name, parameters?)</code>
+- <code>get_system_status()</code> - CPU, memory, storage
+- <code>file_operations(action, path, content?)</code>
+- <code>network_control(interface, action)</code>
+- <code>process_management(action, process_id?)</code></p>
+<p><strong>Platform-Specific Extensions</strong>:
+- <strong>Android</strong>: APK installation, intent handling, notification management
+- <strong>iOS</strong>: Shortcut integration, app permissions, device controls
+- <strong>Linux</strong>: Package management, service control, container operations
+- <strong>Windows</strong>: Registry access, service management, PowerShell execution
+- <strong>macOS</strong>: AppleScript integration, system preferences, app store management
+- <strong>RTOS</strong>: Real-time task management, interrupt handling, resource allocation</p>
+<h4 id="10-ai-home-automation"><strong>10. AI Home Automation</strong></h4>
+<p><strong>MCP Tools</strong>:
+- <code>control_smart_device(device_id, action, parameters)</code>
+- <code>get_device_status(device_id?)</code>
+- <code>create_automation_rule(trigger, condition, action)</code>
+- <code>manage_lighting(zone, brightness?, color?)</code>
+- <code>climate_control(temperature, humidity?, zone?)</code></p>
+<p><strong>Protocol Support</strong>:
+- <strong>Matter/Thread</strong>: Industry standard smart home
+- <strong>Zigbee/Z-Wave</strong>: Legacy device support
+- <strong>Wi-Fi Smart Devices</strong>: Direct API integration
+- <strong>IR/RF Control</strong>: Universal remote capabilities</p>
+<h4 id="11-ai-security-anpr"><strong>11. AI Security &amp; ANPR</strong></h4>
+<p><strong>MCP Tools</strong>:
+- <code>analyze_camera_feed(camera_id, detection_types)</code>
+- <code>recognize_license_plate(image_data)</code>
+- <code>person_detection(image_data, known_faces?)</code>
+- <code>security_alert(alert_type, location, severity)</code>
+- <code>access_control(person_id, location, grant/deny)</code></p>
+<h2 id="home-environment-use-cases">🎯 <strong>Home Environment Use Cases</strong></h2>
+<h3 id="cooking-assistant-scenario"><strong>Cooking Assistant Scenario</strong></h3>
+<div class="highlight"><pre><span></span><code>User: &quot;AI, play jazz music while I cook&quot;
+AI Audio Module → select kitchen speakers → stream jazz playlist
+
+User: &quot;Switch to my Bluetooth headphones&quot;
+AI Audio Module → detect available devices → seamless handover
+
+User: &quot;Set a 15-minute timer for the pasta&quot;
+AI Linux Controller → system timer → voice notification
+
+User: &quot;What&#39;s the weather like for tomorrow&#39;s BBQ?&quot;
+AI Maps Module → weather API → voice response
+</code></pre></div>
+<h3 id="work-from-home-productivity"><strong>Work-from-Home Productivity</strong></h3>
+<div class="highlight"><pre><span></span><code>User: &quot;Focus mode - close social media and play concentration music&quot;
+AI Windows Controller → close specified apps
+AI Audio Module → switch to productivity playlist
+
+User: &quot;Join my 2 PM meeting&quot;
+AI Calls Module → calendar integration → auto-join Teams/Zoom
+
+User: &quot;Send a message to the team that I&#39;m running late&quot;
+AI Messages Module → Slack/Teams → contextual message
+</code></pre></div>
+<h3 id="smart-home-integration"><strong>Smart Home Integration</strong></h3>
+<div class="highlight"><pre><span></span><code>User: &quot;Good night routine&quot;
+AI Home Automation → dim lights → set thermostat → arm security
+AI Audio Module → fade out music → white noise bedroom speakers
+
+User: &quot;Someone&#39;s at the door&quot;
+AI Security Module → ANPR camera → face recognition → notify + unlock if authorized
+</code></pre></div>
+<h2 id="containerization-strategy">🐳 <strong>Containerization Strategy</strong></h2>
+<h3 id="docker-compose-architecture"><strong>Docker Compose Architecture</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># docker-compose.yml structure</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">core-orchestrator</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/core:latest</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP_DISCOVERY_PORT=8080</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AUDIO_ENGINE=pipewire</span>
+
+<span class="w">  </span><span class="nt">ai-audio-assistant</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/audio:latest</span>
+<span class="w">    </span><span class="nt">devices</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/snd:/dev/snd</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP_SERVER_PORT=8081</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ELEVENLABS_API_KEY=${ELEVENLABS_KEY}</span>
+
+<span class="w">  </span><span class="nt">ai-platform-controller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/platform-linux:latest</span>
+<span class="w">    </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP_SERVER_PORT=8082</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TARGET_PLATFORM=linux</span>
+
+<span class="w">  </span><span class="nt">mqtt-broker</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eclipse-mosquitto:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;1883:1883&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9001:9001&quot;</span>
+
+<span class="w">  </span><span class="nt">service-discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/discovery:latest</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MQTT_BROKER=mqtt-broker:1883</span>
+</code></pre></div>
+<h3 id="platform-specific-images"><strong>Platform-Specific Images</strong></h3>
+<ul>
+<li><strong>ai-servis/core</strong>: Universal orchestrator (AMD64, ARM64)</li>
+<li><strong>ai-servis/audio</strong>: Audio processing (with hardware access)</li>
+<li><strong>ai-servis/platform-linux</strong>: Linux system control</li>
+<li><strong>ai-servis/platform-windows</strong>: Windows system integration</li>
+<li><strong>ai-servis/mobile-bridge</strong>: iOS/Android communication bridge</li>
+<li><strong>ai-servis/rtos</strong>: Real-time systems adapter</li>
+</ul>
+<h3 id="raspberry-pi-simulation"><strong>Raspberry Pi Simulation</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># docker-compose.pi-sim.yml</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pi-simulator</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balenalib/raspberry-pi:latest</span>
+<span class="w">    </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linux/arm64</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./ai-servis-modules:/opt/ai-servis</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SIMULATE_HARDWARE=true</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPIO_SIMULATION=true</span>
+</code></pre></div>
+<h2 id="mcp-integration-patterns">🔗 <strong>MCP Integration Patterns</strong></h2>
+<h3 id="mcp-server-implementation-example"><strong>MCP Server Implementation Example</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># ai_audio_assistant/mcp_server.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mcp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCPServer</span><span class="p">,</span> <span class="n">Tool</span><span class="p">,</span> <span class="n">Resource</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioAssistantMCP</span><span class="p">(</span><span class="n">MCPServer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;ai-audio-assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_tools</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Music control</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">Tool</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;play_music&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Play music by artist, album, or track&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;spotify&quot;</span><span class="p">,</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">]}</span>
+            <span class="p">}</span>
+        <span class="p">))</span>
+
+        <span class="c1"># Audio output management</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">Tool</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;switch_audio_output&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Switch audio output to different device&quot;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;speakers&quot;</span><span class="p">,</span> <span class="s2">&quot;headphones&quot;</span><span class="p">,</span> <span class="s2">&quot;bluetooth&quot;</span><span class="p">,</span> <span class="s2">&quot;rtsp&quot;</span><span class="p">]},</span>
+                <span class="s2">&quot;zone&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_play_music</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;spotify&quot;</span><span class="p">):</span>
+        <span class="c1"># Implementation for music playback</span>
+        <span class="n">audio_engine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_audio_engine</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">audio_engine</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;playing&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">current_track</span><span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_switch_audio_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">zone</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Implementation for audio routing</span>
+        <span class="n">audio_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_audio_manager</span><span class="p">()</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">audio_manager</span><span class="o">.</span><span class="n">switch_output</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">zone</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;switched&quot;</span> <span class="k">if</span> <span class="n">success</span> <span class="k">else</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span> <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="cross-module-communication-via-mcp-over-mqtt"><strong>Cross-Module Communication via MCP over MQTT</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Core orchestrator handling cross-module requests</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoreOrchestrator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mqtt_client</span> <span class="o">=</span> <span class="n">MQTTClient</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcp_clients</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_user_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Parse natural language command</span>
+        <span class="n">intent</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">nlp_engine</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">intent</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;play_music_and_dim_lights&quot;</span><span class="p">:</span>
+            <span class="c1"># Multi-module coordination</span>
+            <span class="n">audio_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_mcp_tool</span><span class="p">(</span>
+                <span class="s2">&quot;ai-audio-assistant&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;play_music&quot;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">intent</span><span class="o">.</span><span class="n">music_query</span><span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="n">lights_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_mcp_tool</span><span class="p">(</span>
+                <span class="s2">&quot;ai-home-automation&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;control_lighting&quot;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;zone&quot;</span><span class="p">:</span> <span class="s2">&quot;kitchen&quot;</span><span class="p">,</span> <span class="s2">&quot;brightness&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="n">audio_result</span><span class="p">,</span> <span class="s2">&quot;lights&quot;</span><span class="p">:</span> <span class="n">lights_result</span><span class="p">}</span>
+</code></pre></div>
+<h2 id="testing-integration-strategy">🧪 <strong>Testing &amp; Integration Strategy</strong></h2>
+<h3 id="modular-testing-approach"><strong>Modular Testing Approach</strong></h3>
+<ol>
+<li><strong>Unit Tests</strong>: Each MCP server independently</li>
+<li><strong>Integration Tests</strong>: Module pairs (e.g., Audio + Platform Controller)</li>
+<li><strong>System Tests</strong>: Full ecosystem with simulated hardware</li>
+<li><strong>Performance Tests</strong>: Latency, throughput, resource usage</li>
+<li><strong>Cross-Platform Tests</strong>: Ensure compatibility across all target platforms</li>
+</ol>
+<h3 id="test-scenarios"><strong>Test Scenarios</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># test-scenarios.yml</span>
+<span class="nt">scenarios</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;cooking_assistant&quot;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Voice</span><span class="nv"> </span><span class="s">control</span><span class="nv"> </span><span class="s">while</span><span class="nv"> </span><span class="s">cooking&quot;</span>
+<span class="w">    </span><span class="nt">modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ai-audio</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ai-platform-linux</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">test_steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">voice_command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Play</span><span class="nv"> </span><span class="s">cooking</span><span class="nv"> </span><span class="s">playlist&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">audio_output_active</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">voice_command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Switch</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">headphones&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bluetooth_headphones_connected</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;cross_platform_messaging&quot;</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Send</span><span class="nv"> </span><span class="s">message</span><span class="nv"> </span><span class="s">from</span><span class="nv"> </span><span class="s">desktop</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">mobile</span><span class="nv"> </span><span class="s">platforms&quot;</span>
+<span class="w">    </span><span class="nt">modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ai-messages</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ai-platform-windows</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">ai-android-controller</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">test_steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Send</span><span class="nv"> </span><span class="s">WhatsApp</span><span class="nv"> </span><span class="s">message</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">John&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">message_delivered</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">android</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">verify</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">notification_received</span>
+</code></pre></div>
+<h3 id="continuous-integration-pipeline"><strong>Continuous Integration Pipeline</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c"># CI test environment</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:22.04</span>
+<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>docker-compose<span class="w"> </span>python3<span class="w"> </span>nodejs
+
+<span class="c"># Install platform simulators</span>
+<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>qemu-user-static
+<span class="k">RUN</span><span class="w"> </span>docker<span class="w"> </span>buildx<span class="w"> </span>create<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64
+
+<span class="c"># Test execution</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/ai-servis-universal
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/ai-servis-universal</span>
+<span class="k">RUN</span><span class="w"> </span>./scripts/run-integration-tests.sh
+</code></pre></div>
+<h2 id="technical-specifications">📊 <strong>Technical Specifications</strong></h2>
+<h3 id="system-requirements"><strong>System Requirements</strong></h3>
+<h4 id="minimum-requirements-home-desktop"><strong>Minimum Requirements (Home Desktop)</strong></h4>
+<ul>
+<li><strong>CPU</strong>: AMD64 dual-core 2.5GHz+ or ARM64 quad-core 1.8GHz+</li>
+<li><strong>RAM</strong>: 4GB (8GB recommended)</li>
+<li><strong>Storage</strong>: 10GB available space</li>
+<li><strong>Network</strong>: Wi-Fi 802.11n or Ethernet</li>
+<li><strong>Audio</strong>: Built-in or USB audio interface</li>
+</ul>
+<h4 id="recommended-requirements"><strong>Recommended Requirements</strong></h4>
+<ul>
+<li><strong>CPU</strong>: AMD64 quad-core 3.0GHz+ or ARM64 octa-core 2.0GHz+</li>
+<li><strong>RAM</strong>: 16GB</li>
+<li><strong>Storage</strong>: 50GB SSD</li>
+<li><strong>Network</strong>: Wi-Fi 6 or Gigabit Ethernet</li>
+<li><strong>Audio</strong>: Dedicated audio interface with multiple outputs</li>
+</ul>
+<h3 id="performance-targets"><strong>Performance Targets</strong></h3>
+<ul>
+<li><strong>Voice Command Latency</strong>: &lt;500ms end-to-end</li>
+<li><strong>Module Startup Time</strong>: &lt;10s for critical modules</li>
+<li><strong>Memory Usage</strong>: &lt;2GB for full system (moderate load)</li>
+<li><strong>CPU Usage</strong>: &lt;20% idle, &lt;80% peak processing</li>
+<li><strong>Network Bandwidth</strong>: &lt;1Mbps sustained, &lt;10Mbps burst</li>
+</ul>
+<h3 id="platform-support-matrix"><strong>Platform Support Matrix</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Audio Control</th>
+<th>System Control</th>
+<th>App Integration</th>
+<th>Hardware Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Linux AMD64</strong></td>
+<td>✅ PipeWire/ALSA</td>
+<td>✅ systemd/proc</td>
+<td>✅ D-Bus/APIs</td>
+<td>✅ Full access</td>
+</tr>
+<tr>
+<td><strong>Windows 10/11</strong></td>
+<td>✅ WASAPI</td>
+<td>✅ PowerShell/WMI</td>
+<td>✅ COM/UWP</td>
+<td>⚠️ Limited</td>
+</tr>
+<tr>
+<td><strong>macOS</strong></td>
+<td>✅ Core Audio</td>
+<td>✅ AppleScript</td>
+<td>✅ NSWorkspace</td>
+<td>⚠️ Sandboxed</td>
+</tr>
+<tr>
+<td><strong>Android</strong></td>
+<td>✅ AudioManager</td>
+<td>⚠️ Limited</td>
+<td>✅ Intent/APIs</td>
+<td>⚠️ Permissions</td>
+</tr>
+<tr>
+<td><strong>iOS</strong></td>
+<td>✅ AVAudioSession</td>
+<td>❌ Restricted</td>
+<td>⚠️ Shortcuts only</td>
+<td>❌ Sandboxed</td>
+</tr>
+<tr>
+<td><strong>RTOS</strong></td>
+<td>⚠️ Hardware-specific</td>
+<td>✅ Direct</td>
+<td>❌ N/A</td>
+<td>✅ Direct</td>
+</tr>
+</tbody>
+</table>
+<h2 id="security-privacy-architecture">🔒 <strong>Security &amp; Privacy Architecture</strong></h2>
+<h3 id="privacy-first-design"><strong>Privacy-First Design</strong></h3>
+<ol>
+<li><strong>Local Processing</strong>: Voice recognition and intent parsing on-device</li>
+<li><strong>Selective Cloud</strong>: Only when explicitly required (weather, maps)</li>
+<li><strong>Data Minimization</strong>: Collect only necessary information</li>
+<li><strong>Encrypted Communications</strong>: TLS 1.3 for all network traffic</li>
+<li><strong>User Consent</strong>: Granular permissions for each module</li>
+</ol>
+<h3 id="security-measures"><strong>Security Measures</strong></h3>
+<ul>
+<li><strong>MCP Authentication</strong>: JWT-based token validation</li>
+<li><strong>Container Isolation</strong>: Docker security profiles</li>
+<li><strong>Network Segmentation</strong>: VLANs for different component types</li>
+<li><strong>Regular Updates</strong>: Automated security patches</li>
+<li><strong>Audit Logging</strong>: All user commands and system actions</li>
+</ul>
+<h2 id="business-value-roi">📈 <strong>Business Value &amp; ROI</strong></h2>
+<h3 id="market-opportunities"><strong>Market Opportunities</strong></h3>
+<ol>
+<li><strong>Home Automation Market</strong>: $537B by 2030 (25% CAGR)</li>
+<li><strong>Voice Assistant Market</strong>: $50B by 2030 (24.9% CAGR) </li>
+<li><strong>Enterprise AI</strong>: $390B by 2025</li>
+<li><strong>Cross-Platform Development</strong>: Reduced development costs by 60-80%</li>
+</ol>
+<h3 id="competitive-advantages"><strong>Competitive Advantages</strong></h3>
+<ul>
+<li><strong>Privacy-First</strong>: Unlike Google/Amazon, all processing stays local</li>
+<li><strong>Universal Platform</strong>: Single solution across all environments</li>
+<li><strong>Open Architecture</strong>: MCP enables third-party extensions</li>
+<li><strong>Cost Effective</strong>: No subscription fees for core functionality</li>
+<li><strong>Modular Design</strong>: Pay only for features you need</li>
+</ul>
+<h3 id="revenue-streams"><strong>Revenue Streams</strong></h3>
+<ol>
+<li><strong>Hardware Bundles</strong>: Pre-configured devices (Raspberry Pi kits)</li>
+<li><strong>Professional Services</strong>: Custom integrations, consulting</li>
+<li><strong>Enterprise Licenses</strong>: Advanced features for business use</li>
+<li><strong>App Store</strong>: Third-party MCP modules marketplace</li>
+<li><strong>Cloud Services</strong>: Optional backup, sync, advanced AI models</li>
+</ol>
+<h2 id="implementation-roadmap">🚀 <strong>Implementation Roadmap</strong></h2>
+<h3 id="phase-1-foundation-months-1-3"><strong>Phase 1: Foundation (Months 1-3)</strong></h3>
+<ul>
+<li>Core orchestrator development</li>
+<li>MCP server framework</li>
+<li>Basic audio assistant module</li>
+<li>Docker containerization</li>
+<li>Linux platform controller</li>
+</ul>
+<h3 id="phase-2-multi-platform-months-4-6"><strong>Phase 2: Multi-Platform (Months 4-6)</strong></h3>
+<ul>
+<li>Windows &amp; macOS controllers</li>
+<li>Mobile platform bridges (Android/iOS)</li>
+<li>Home automation integrations</li>
+<li>MQTT communication layer</li>
+<li>Integration testing framework</li>
+</ul>
+<h3 id="phase-3-advanced-features-months-7-9"><strong>Phase 3: Advanced Features (Months 7-9)</strong></h3>
+<ul>
+<li>RTOS support for embedded systems</li>
+<li>Advanced security &amp; privacy features</li>
+<li>Performance optimizations</li>
+<li>Cloud-optional features</li>
+<li>Mobile apps (iOS/Android)</li>
+</ul>
+<h3 id="phase-4-ecosystem-polish-months-10-12"><strong>Phase 4: Ecosystem &amp; Polish (Months 10-12)</strong></h3>
+<ul>
+<li>Third-party MCP module SDK</li>
+<li>Advanced AI features (contextual awareness)</li>
+<li>Enterprise features</li>
+<li>Comprehensive documentation</li>
+<li>Community platform launch</li>
+</ul>
+<h2 id="success-metrics">🎯 <strong>Success Metrics</strong></h2>
+<h3 id="technical-kpis"><strong>Technical KPIs</strong></h3>
+<ul>
+<li><strong>Response Time</strong>: &lt;500ms voice command to action</li>
+<li><strong>Reliability</strong>: 99.9% uptime for critical modules</li>
+<li><strong>Cross-Platform Compatibility</strong>: 95%+ feature parity</li>
+<li><strong>Resource Efficiency</strong>: &lt;2GB RAM full system load</li>
+<li><strong>Module Independence</strong>: 100% isolated failure recovery</li>
+</ul>
+<h3 id="user-experience-kpis"><strong>User Experience KPIs</strong></h3>
+<ul>
+<li><strong>Voice Recognition Accuracy</strong>: &gt;95% in quiet environments</li>
+<li><strong>Task Completion Rate</strong>: &gt;90% successful intent execution</li>
+<li><strong>Learning Curve</strong>: &lt;30 minutes to basic proficiency</li>
+<li><strong>User Satisfaction</strong>: &gt;4.5/5 rating</li>
+<li><strong>Platform Adoption</strong>: &gt;3 platforms per active user</li>
+</ul>
+<h3 id="business-kpis"><strong>Business KPIs</strong></h3>
+<ul>
+<li><strong>Development Cost Reduction</strong>: 70% vs custom per-platform solutions</li>
+<li><strong>Time to Market</strong>: 50% faster than traditional approaches</li>
+<li><strong>Community Growth</strong>: 1000+ developers using MCP SDK (Year 1)</li>
+<li><strong>Enterprise Adoption</strong>: 100+ business customers (Year 2)</li>
+<li><strong>Revenue Growth</strong>: $1M ARR by end of Year 2</li>
+</ul>
+<h2 id="future-vision-extensibility">🔮 <strong>Future Vision &amp; Extensibility</strong></h2>
+<h3 id="advanced-ai-capabilities"><strong>Advanced AI Capabilities</strong></h3>
+<ul>
+<li><strong>Contextual Awareness</strong>: Learn user patterns and preferences</li>
+<li><strong>Predictive Actions</strong>: Anticipate needs based on time/location/activity</li>
+<li><strong>Multi-Modal Interaction</strong>: Voice + vision + gesture recognition</li>
+<li><strong>Emotional Intelligence</strong>: Adapt responses to user mood and situation</li>
+<li><strong>Collaborative AI</strong>: Multiple AI personalities for different contexts</li>
+</ul>
+<h3 id="extended-ecosystem"><strong>Extended Ecosystem</strong></h3>
+<ul>
+<li><strong>IoT Integration</strong>: Seamless device onboarding and control</li>
+<li><strong>Automotive Evolution</strong>: Full self-driving car integration</li>
+<li><strong>Enterprise Features</strong>: Teams, organizations, policy management</li>
+<li><strong>Health &amp; Wellness</strong>: Integration with fitness trackers, health monitors</li>
+<li><strong>Entertainment</strong>: Gaming, VR/AR experiences, content creation</li>
+</ul>
+<h3 id="technology-evolution"><strong>Technology Evolution</strong></h3>
+<ul>
+<li><strong>Edge AI Hardware</strong>: Dedicated NPUs for faster local processing</li>
+<li><strong>5G/6G Integration</strong>: Ultra-low latency cloud augmentation</li>
+<li><strong>Blockchain Integration</strong>: Decentralized identity and data ownership</li>
+<li><strong>Quantum-Safe Cryptography</strong>: Future-proof security</li>
+<li><strong>AR/VR Interfaces</strong>: Spatial computing integration</li>
+</ul>
+<hr />
+<p><strong>AI-SERVIS Universal represents the natural evolution from automotive-specific AI to a comprehensive, privacy-respecting, cross-platform AI ecosystem. By building on our proven automotive foundation and embracing industry standards like MCP, we create a sustainable competitive advantage in the rapidly growing AI assistant market while maintaining the core values of privacy, modularity, and user control that differentiate us from big tech solutions.</strong></p>
+<p><strong>This proposal positions us to capture significant market share across multiple verticals while building a thriving ecosystem of third-party developers and integrators, creating a network effect that compounds our market position over time.</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </article>
+            </div>
+
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+        <div class="md-social">
+
+
+
+
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+
+
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+
+
+  </body>
+</html>

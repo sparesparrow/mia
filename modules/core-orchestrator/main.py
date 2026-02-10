@@ -14,8 +14,8 @@ import websockets
 from datetime import datetime
 
 # Import our MCP framework
-from mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport, 
+from ..shared.mcp_framework import (
+    MCPServer, MCPClient, MCPMessage, MCPTransport,
     WebSocketTransport, Tool, create_tool
 )
 
@@ -361,62 +361,26 @@ class CoreOrchestrator(MCPServer):
         try:
             client = MCPClient(max_reconnect_attempts=5, reconnect_delay=3.0)
 
-            # Create WebSocket transport factory for reconnection with improved error handling
+            # Create WebSocket transport factory for reconnection
             async def create_transport():
                 try:
-                    logger.info(f"Connecting to WebSocket: ws://{host}:{port}")
-                    # Add connection timeout and proper error handling
-                    websocket = await asyncio.wait_for(
-                        websockets.connect(
-                            f"ws://{host}:{port}",
-                            ping_interval=30.0,  # Send ping every 30 seconds
-                            ping_timeout=10.0,   # Wait 10 seconds for pong
-                            close_timeout=5.0,   # Close timeout
-                            max_size=2**20       # 1MB max message size
-                        ),
-                        timeout=10.0  # Connection timeout
-                    )
-                    return WebSocketTransport(
-                        websocket,
-                        heartbeat_interval=30.0,
-                        max_reconnect_attempts=3
-                    )
-                except asyncio.TimeoutError:
-                    logger.error(f"Connection timeout to {host}:{port}")
-                    raise MCPError(-32000, f"Connection timeout to {host}:{port}")
-                except websockets.exceptions.InvalidURI:
-                    logger.error(f"Invalid WebSocket URI: ws://{host}:{port}")
-                    raise MCPError(-32603, f"Invalid WebSocket URI: ws://{host}:{port}")
-                except websockets.exceptions.ConnectionClosed as e:
-                    logger.error(f"WebSocket connection closed: {e}")
-                    raise MCPError(-32000, f"WebSocket connection closed: {e}")
+                    websocket = await websockets.connect(f"ws://{host}:{port}")
+                    return WebSocketTransport(websocket)
                 except Exception as e:
                     logger.error(f"Failed to create WebSocket transport to {host}:{port}: {e}")
-                    raise MCPError(-32603, f"Transport creation failed: {str(e)}")
+                    raise
 
             # Connect with transport factory for reconnection support
-            try:
-                transport = await create_transport()
-                await client.connect(transport, create_transport, timeout=15.0)
+            transport = await create_transport()
+            await client.connect(transport, create_transport, timeout=15.0)
 
-                self.mcp_clients[service_name] = client
-                service_info.health_status = "healthy"
-                service_info.last_seen = datetime.now()
-                logger.info(f"Successfully connected to service: {service_name}")
-
-            except MCPError as e:
-                logger.error(f"MCP connection error for {service_name}: {e}")
-                service_info.health_status = "disconnected"
-                raise
-            except Exception as e:
-                logger.error(f"Unexpected error connecting to {service_name}: {e}")
-                service_info.health_status = "error"
-                raise
+            self.mcp_clients[service_name] = client
+            service_info.health_status = "healthy"
+            logger.info(f"Successfully connected to service: {service_name}")
 
         except Exception as e:
             logger.error(f"Failed to connect to service {service_name}: {e}")
             service_info.health_status = "disconnected"
-            # Don't re-raise here, just log and mark as disconnected
     
     async def start_http_server(self, host: str = "0.0.0.0", port: int = 8080):
         """Start HTTP server for REST API"""
@@ -448,18 +412,43 @@ class CoreOrchestrator(MCPServer):
             result = await self.handle_list_services()
             return web.json_response(result)
         
+        async def handle_mcp(request: web_request.Request) -> web.Response:
+            """HTTP handler for MCP JSON-RPC"""
+            data = await request.json()
+            message = MCPMessage(
+                method=data.get("method", ""),
+                params=data.get("params", {}),
+                id=data.get("id")
+            )
+            response = await self.handle_message(message)
+            if response:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": response.id,
+                    "result": response.result
+                })
+            else:
+                return web.json_response({
+                    "jsonrpc": "2.0",
+                    "id": data.get("id"),
+                    "error": {"code": -32601, "message": "Method not found"}
+                })
+
         # Routes
+        app.router.add_post("/mcp", handle_mcp)
         app.router.add_post("/api/voice", handle_voice_command_http)
         app.router.add_get("/api/health", handle_health_http)
         app.router.add_get("/api/services", handle_services_http)
-        
+
         # CORS support
-        async def add_cors_headers(request, response):
+        @web.middleware
+        async def add_cors_headers(request, handler):
+            response = await handler(request)
             response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return response
-        
+
         app.middlewares.append(add_cors_headers)
         
         runner = web.AppRunner(app)

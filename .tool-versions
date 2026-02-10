@@ -1,0 +1,5 @@
+# AI-SERVIS Build Tool Versions (Sparetools Integration)
+# Managed by tools/bootstrap.sh
+python 3.12.7
+conan 2.3.2
+# Using sparetools-cpython from Conan: https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/

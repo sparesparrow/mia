@@ -22,7 +22,7 @@ try:
 except ImportError:
     # Skip tests if imports fail (common in CI environments without full setup)
     import pytest
-    pytest.skip("Hardware dependencies not available in test environment")
+    pytest.skip("Hardware dependencies not available in test environment", allow_module_level=True)
 
 
 class TestDynamicCarState:

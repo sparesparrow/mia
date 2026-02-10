@@ -1,42 +1,27 @@
-# CodeQL configuration for MIA Universal
 name: "MIA CodeQL Config"
 
-# Disable default queries and use only security queries
+# Disable default queries if needed
 disable-default-queries: false
 
-# Additional queries to run
+# Query suites to run
 queries:
-  - name: security-extended
-    uses: security-extended
-  - name: security-and-quality
-    uses: security-and-quality
+  - uses: security-and-quality
+  - uses: security-extended
 
-# Paths to include in analysis
-paths:
-  - modules/
-  - platforms/
-  - scripts/
-
-# Paths to exclude from analysis  
+# Paths to ignore during analysis
 paths-ignore:
-  - "**/test/**"
-  - "**/tests/**"
-  - "**/node_modules/**"
-  - "**/build/**"
-  - "**/dist/**"
-  - "**/*.min.js"
-  - "site/**"
+  - "tests/**"
+  - "**/*.test.py"
+  - "**/test_*.py"
+  - ".backups/**"
   - "exported-assets/**"
+  - "android/build/**"
+  - "platforms/cpp/build/**"
+  - "**/node_modules/**"
 
-# Language-specific configuration
-python:
-  # Include additional Python libraries
-  setup-python-dependencies: true
-  
-cpp:
-  # Build is handled in workflow steps
-  # CodeQL will automatically detect compile commands from CMake build
-    
-# JavaScript/TypeScript analysis disabled - project uses minimal JS
-# javascript:
-#   typescript: true
+# Paths to include (optional, analyze all if not specified)
+paths:
+  - "modules/**"
+  - "rpi/**"
+  - "platforms/cpp/**"
+  - "android/app/src/**"

@@ -1,0 +1,121 @@
+{
+  "name": "AI-Servis Development Environment",
+  "dockerComposeFile": "../docker-compose.dev.yml",
+  "service": "ai-servis-core",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        "ms-python.mypy-type-checker",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "ms-vscode.vscode-json",
+        "ms-python.debugpy",
+        "ms-toolsai.jupyter",
+        "ms-vscode.test-adapter-converter",
+        "hbenl.vscode-test-explorer",
+        "ms-vscode-remote.remote-containers",
+        "github.copilot",
+        "github.copilot-chat",
+        "ms-vscode.vscode-serial-monitor",
+        "platformio.platformio-ide"
+      ],
+      
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.mypyEnabled": true,
+        "python.formatting.provider": "black",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [
+          "tests"
+        ],
+        "cmake.buildDirectory": "${workspaceFolder}/platforms/cpp/build",
+        "cmake.configureSettings": {
+          "CMAKE_BUILD_TYPE": "Debug",
+          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        },
+        "files.watcherExclude": {
+          "**/build/**": true,
+          "**/.conan/**": true,
+          "**/node_modules/**": true,
+          "**/.gradle/**": true
+        },
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "git.autofetch": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+        }
+      }
+    }
+  },
+  
+  "forwardPorts": [
+    8080,  // Core Orchestrator
+    8081,  // MCP Host
+    8082,  // AI Audio Assistant
+    8083,  // Platform Controller
+    8090,  // Service Discovery
+    1883,  // MQTT
+    5432,  // PostgreSQL
+    6379,  // Redis
+    9090,  // Prometheus
+    3000,  // Grafana
+    8000,  // MkDocs
+    5678,  // Python Debugger
+    5679,  // Service Discovery Debugger
+    5680,  // Audio Assistant Debugger
+    5681   // Platform Controller Debugger
+  ],
+  
+  "portsAttributes": {
+    "8080": {
+      "label": "Core Orchestrator",
+      "onAutoForward": "openBrowser"
+    },
+    "8000": {
+      "label": "Documentation",
+      "onAutoForward": "openBrowser"
+    },
+    "3000": {
+      "label": "Grafana",
+      "onAutoForward": "openBrowser"
+    },
+    "9090": {
+      "label": "Prometheus",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=${localWorkspaceFolder}/.conan,target=/home/vscode/.conan2,type=bind",
+    "source=${localWorkspaceFolder}/.gradle,target=/home/vscode/.gradle,type=bind"
+  ],
+  
+  "remoteUser": "vscode",
+  "containerUser": "vscode"
+}

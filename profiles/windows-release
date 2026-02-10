@@ -1,0 +1,18 @@
+[settings]
+os=Windows
+arch=x86_64
+compiler=msvc
+compiler.version=193
+compiler.runtime=dynamic
+build_type=Release
+
+[options]
+jsoncpp/*:shared=False
+mosquitto/*:shared=False
+libcurl/*:shared=False
+openssl/*:shared=False
+
+[conf]
+tools.cmake.cmaketoolchain:generator=Visual Studio 17 2022
+tools.env:CC=cl
+tools.env:CXX=cl

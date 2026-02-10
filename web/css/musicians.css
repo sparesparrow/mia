@@ -1,0 +1,44 @@
+@import "./base.css";
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+:root {
+  --background: radial-gradient(circle at 15% 15%, rgba(255, 112, 247, 0.24), transparent 55%),
+    radial-gradient(circle at 85% 10%, rgba(129, 140, 248, 0.32), transparent 60%),
+    #0b0a1a;
+  --foreground: #f5f3ff;
+  --foreground-muted: rgba(224, 231, 255, 0.85);
+  --accent: #a855f7;
+  --accent-strong: #6366f1;
+  --card-background: rgba(17, 24, 39, 0.75);
+  --card-border: rgba(129, 140, 248, 0.35);
+  --button-background: linear-gradient(135deg, #a855f7, #6366f1);
+  --button-foreground: #0b0a1a;
+  --font-body: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-heading: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --shadow-elevated: 0 24px 50px rgba(79, 70, 229, 0.35);
+}
+
+body {
+  background: var(--background);
+}
+
+.hero h1 {
+  letter-spacing: -0.04em;
+}
+
+.nav a {
+  background: rgba(99, 102, 241, 0.22);
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+.card {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(79, 70, 229, 0.22);
+  background: linear-gradient(160deg, rgba(24, 24, 36, 0.78), rgba(49, 46, 129, 0.6));
+}
+
+.cta {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.32), rgba(79, 70, 229, 0.32));
+  border-color: rgba(99, 102, 241, 0.4);
+}

@@ -1,0 +1,1464 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+
+
+
+        <link rel="canonical" href="https://sparesparrow.github.io/ai-servis-universal/misc/%F0%9F%94%AC%20Comprehensive%20Research_%20Embedded%20AI%20LLM%20Agents%2C/">
+
+
+
+
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+
+
+
+        <title>🔬 Comprehensive Research Embedded AI LLM Agents, - AI-SERVIS Documentation</title>
+
+
+
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+
+
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+
+
+
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#comprehensive-research-embedded-ai-llm-agents-esp32-can-bus-elevenlabs-mcp" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              🔬 Comprehensive Research  Embedded AI LLM Agents,
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+
+
+</form>
+
+
+
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+
+
+
+
+  Overview
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+
+
+
+
+  Architecture
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+
+
+
+
+  Install
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+
+
+
+
+  Wiring & Power
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+
+
+
+
+  API & Contracts
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+
+
+
+
+  Privacy
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+
+
+
+
+  Troubleshooting
+
+      </a>
+    </li>
+
+
+
+    </ul>
+  </div>
+</nav>
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#embedded-ai-llm-agents-on-esp32" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤖 Embedded AI LLM Agents on ESP32
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🤖 Embedded AI LLM Agents on ESP32">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#current-state-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current State (2025)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#technical-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Capabilities
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#elevenlabs-integration-with-esp32" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎙️ ElevenLabs Integration with ESP32
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎙️ ElevenLabs Integration with ESP32">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#real-world-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Implementations
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#integration-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Architecture
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#esp32-can-bus-obd-2-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚗 ESP32 CAN Bus \&amp; OBD-2 Integration
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚗 ESP32 CAN Bus \& OBD-2 Integration">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#advanced-implementations-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Implementations (2025)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#technical-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Architecture
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#obd-2-protocol-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      OBD-2 Protocol Integration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#model-context-protocol-mcp-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      📡 Model Context Protocol (MCP) Implementation
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📡 Model Context Protocol (MCP) Implementation">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#revolutionary-development-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Revolutionary Development (2025)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#esp32-mcp-over-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      ESP32 MCP over MQTT
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#mcp-architecture-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Architecture Benefits
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#ai-servis-integration-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 AI-SERVIS Integration Architecture
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 AI-SERVIS Integration Architecture">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#complete-system-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete System Design
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#performance-metrics-2025" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Metrics (2025)
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#future-roadmap-opportunities" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Future Roadmap \&amp; Opportunities
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 Future Roadmap \& Opportunities">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#emerging-technologies-2025-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      Emerging Technologies (2025-2026)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#ai-servis-competitive-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI-SERVIS Competitive Advantages
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis-universal/edit/master/docs/misc/🔬 Comprehensive Research_ Embedded AI LLM Agents,.md" title="Edit this page" class="md-content__button md-icon">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+
+
+
+
+<p><img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/></p>
+<h1 id="comprehensive-research-embedded-ai-llm-agents-esp32-can-bus-elevenlabs-mcp">🔬 Comprehensive Research: Embedded AI LLM Agents, ESP32, CAN Bus, ElevenLabs \&amp; MCP</h1>
+<p>Based on extensive research across 2025's latest developments, here's a comprehensive overview of cutting-edge technologies for AI-SERVIS implementation.</p>
+<h2 id="embedded-ai-llm-agents-on-esp32">🤖 Embedded AI LLM Agents on ESP32</h2>
+<h3 id="current-state-2025"><strong>Current State (2025)</strong></h3>
+<p>The embedded AI landscape has evolved significantly, with ESP32 becoming a <strong>viable platform for LLM inference</strong>:</p>
+<p><strong>TinyML Breakthrough Projects:</strong></p>
+<ul>
+<li><strong>ESP32 LLM Implementation</strong> <a href="https://github.com/DaveBben/esp32-llm">^1</a>: Successfully running 260K parameter LLaMA models at <strong>19.13 tok/s</strong> on ESP32-S3 with 2MB PSRAM</li>
+<li><strong>EmbBERT-Q</strong> <a href="https://arxiv.org/pdf/2502.10001.pdf">^2</a>: Memory-optimized BERT models achieving balance between performance and embedded constraints</li>
+<li><strong>28nm AI microcontrollers</strong> <a href="http://arxiv.org/pdf/2503.11660.pdf">^3</a>: New automotive-grade chips with 4-bits/cell embedded flash enabling <strong>zero-standby power weight memory</strong></li>
+</ul>
+<h3 id="technical-capabilities"><strong>Technical Capabilities</strong></h3>
+<p><strong>ESP32-S3 Performance (2025):</strong></p>
+<ul>
+<li><strong>240MHz dual-core</strong> with vector instruction support</li>
+<li><strong>8MB PSRAM</strong> enables complex model storage</li>
+<li><strong>I2S audio processing</strong> for real-time voice interaction</li>
+<li><strong>Wi-Fi/BLE connectivity</strong> for hybrid cloud-edge processing</li>
+</ul>
+<p><strong>AI Frameworks Available:</strong></p>
+<ul>
+<li><strong>TensorFlow Lite Micro</strong> for neural networks</li>
+<li><strong>Edge Impulse</strong> integration for training pipelines</li>
+<li><strong>ESP-IDF AI components</strong> with hardware acceleration</li>
+<li><strong>ONNX Runtime</strong> for model portability</li>
+</ul>
+<h2 id="elevenlabs-integration-with-esp32">🎙️ ElevenLabs Integration with ESP32</h2>
+<h3 id="real-world-implementations"><strong>Real-World Implementations</strong></h3>
+<p><strong>Successful Projects (2025):</strong></p>
+<p><strong>BlitzGeek ESP32 TTS Demo</strong> <a href="https://www.youtube.com/watch?v=UKY2RSxC7Yg">^4</a>: Complete implementation showing:</p>
+<ul>
+<li>ESP32-S3 with 2.8" touchscreen</li>
+<li>ElevenLabs API integration over Wi-Fi</li>
+<li>PCM5101 DAC for high-quality audio output</li>
+<li>MP3 caching on SD card for offline playback</li>
+</ul>
+<p><strong>Build With Binh Project</strong> <a href="https://www.youtube.com/watch?v=4yU82_r0l0c">^5</a>: Advanced conversational AI:</p>
+<ul>
+<li>Real-time audio pipeline (Silero VAD + Whisper STT + GPT-4o + ElevenLabs TTS)</li>
+<li>WebRTC integration via LiveKit</li>
+<li>Custom voice training (Wheatley from Portal 2)</li>
+<li>Production-ready implementation</li>
+</ul>
+<h3 id="integration-architecture"><strong>Integration Architecture</strong></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ElevenLabs ESP32 Integration Pattern</span>
+<span class="n">HTTPClient</span><span class="w"> </span><span class="n">http</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">ttsEndpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://api.elevenlabs.io/v1/text-to-speech/&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">voiceId</span><span class="p">;</span>
+<span class="n">http</span><span class="p">.</span><span class="n">addHeader</span><span class="p">(</span><span class="s">&quot;xi-api-key&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">elevenlabsApiKey</span><span class="p">);</span>
+<span class="n">http</span><span class="p">.</span><span class="n">addHeader</span><span class="p">(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;application/json&quot;</span><span class="p">);</span>
+
+<span class="c1">// Stream audio directly to I2S DAC</span>
+<span class="k">while</span><span class="p">(</span><span class="n">http</span><span class="p">.</span><span class="n">connected</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">bytesAvailable</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">bytesToRead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">bufferSize</span><span class="p">,</span><span class="w"> </span><span class="n">bytesAvailable</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">bytesRead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">http</span><span class="p">.</span><span class="n">getStreamPtr</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">readBytes</span><span class="p">(</span><span class="n">audioBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">bytesToRead</span><span class="p">);</span>
+<span class="w">    </span><span class="n">i2s_write</span><span class="p">(</span><span class="n">I2S_NUM_0</span><span class="p">,</span><span class="w"> </span><span class="n">audioBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">bytesRead</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bytesWritten</span><span class="p">,</span><span class="w"> </span><span class="n">portMAX_DELAY</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li><strong>Voice cloning support</strong> with 10-second samples</li>
+<li><strong>Real-time streaming</strong> &lt; 2 second latency globally</li>
+<li><strong>Multiple language support</strong> 29+ languages</li>
+<li><strong>SSML integration</strong> for enhanced control</li>
+</ul>
+<h2 id="esp32-can-bus-obd-2-integration">🚗 ESP32 CAN Bus \&amp; OBD-2 Integration</h2>
+<h3 id="advanced-implementations-2025"><strong>Advanced Implementations (2025)</strong></h3>
+<p><strong>Production-Ready Solutions:</strong></p>
+<ul>
+<li><strong>ESP32 TWAI Driver</strong> <a href="https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/twai.html">^6</a>: Native CAN 2.0 support with 25Kbps-1Mbps speeds</li>
+<li><strong>Automotive IoT Projects</strong> <a href="https://ieeexplore.ieee.org/document/10639614/">^7</a>: Complete OBD-2 to MQTT cloud integration</li>
+<li><strong>Wireless CAN Gateways</strong> <a href="https://hackaday.com/2023/11/22/esp32-used-as-wireless-can-bus-reader/">^8</a>: ESPNow-based CAN bus monitoring</li>
+</ul>
+<h3 id="technical-architecture"><strong>Technical Architecture</strong></h3>
+<p><strong>ESP32 TWAI (CAN) Configuration:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Modern ESP32 CAN Setup (2025)</span>
+<span class="n">twai_general_config_t</span><span class="w"> </span><span class="n">g_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TWAI_GENERAL_CONFIG_DEFAULT</span><span class="p">(</span><span class="n">GPIO_NUM_17</span><span class="p">,</span><span class="w"> </span><span class="n">GPIO_NUM_16</span><span class="p">,</span><span class="w"> </span><span class="n">TWAI_MODE_NORMAL</span><span class="p">);</span>
+<span class="n">twai_timing_config_t</span><span class="w"> </span><span class="n">t_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TWAI_TIMING_CONFIG_500KBITS</span><span class="p">();</span><span class="w">  </span><span class="c1">// Standard automotive</span>
+<span class="n">twai_filter_config_t</span><span class="w"> </span><span class="n">f_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TWAI_FILTER_CONFIG_ACCEPT_ALL</span><span class="p">();</span>
+
+<span class="c1">// Initialize with error handling</span>
+<span class="n">ESP_ERROR_CHECK</span><span class="p">(</span><span class="n">twai_driver_install</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_config</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">t_config</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">f_config</span><span class="p">));</span>
+<span class="n">ESP_ERROR_CHECK</span><span class="p">(</span><span class="n">twai_start</span><span class="p">());</span>
+
+<span class="c1">// Read OBD-2 PIDs</span>
+<span class="n">twai_message_t</span><span class="w"> </span><span class="n">obd_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">.</span><span class="n">identifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x7DF</span><span class="p">,</span><span class="w">  </span><span class="c1">// Broadcast to all ECUs</span>
+<span class="w">    </span><span class="p">.</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mh">0x02</span><span class="p">,</span><span class="w"> </span><span class="mh">0x01</span><span class="p">,</span><span class="w"> </span><span class="n">PID_ENGINE_RPM</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00</span><span class="p">,</span><span class="w"> </span><span class="mh">0x00</span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<p><strong>Supported Features:</strong></p>
+<ul>
+<li><strong>ISO 11898-1 compliance</strong> (CAN 2.0)</li>
+<li><strong>Standard \&amp; Extended frames</strong> (11-bit \&amp; 29-bit IDs)</li>
+<li><strong>Hardware error detection</strong> and recovery</li>
+<li><strong>64-byte receive FIFO</strong> buffer</li>
+<li><strong>Multi-mode operation</strong> (Normal, Listen-Only, Self-Test)</li>
+</ul>
+<h3 id="obd-2-protocol-integration"><strong>OBD-2 Protocol Integration</strong></h3>
+<p><strong>Real-Time Diagnostics:</strong></p>
+<ul>
+<li><strong>Engine parameters</strong>: RPM, speed, coolant temp, fuel level</li>
+<li><strong>Emissions data</strong>: O2 sensors, catalytic converter efficiency</li>
+<li><strong>Diagnostic trouble codes</strong> (DTC) reading and clearing</li>
+<li><strong>Freeze frame data</strong> capture during fault conditions</li>
+</ul>
+<h2 id="model-context-protocol-mcp-implementation">📡 Model Context Protocol (MCP) Implementation</h2>
+<h3 id="revolutionary-development-2025"><strong>Revolutionary Development (2025)</strong></h3>
+<p>MCP has emerged as the <strong>USB-C for AI applications</strong> - a universal standard for connecting AI models to tools and data sources.</p>
+<h3 id="esp32-mcp-over-mqtt"><strong>ESP32 MCP over MQTT</strong></h3>
+<p><strong>Breakthrough Implementation</strong> <a href="https://components.espressif.com/components/mqtt-ai/esp-mcp-over-mqtt">^9</a>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ESP32 MCP Server over MQTT 5.0</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mcp_server.h&quot;</span>
+
+<span class="n">mcp_tool_t</span><span class="w"> </span><span class="n">vehicle_tools</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;get_obd_data&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">.</span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Read real-time vehicle diagnostics&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">.</span><span class="n">call</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">obd_data_callback</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;anpr_scan&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="p">.</span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Perform license plate recognition&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">.</span><span class="n">call</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">anpr_callback</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">mcp_server_t</span><span class="w"> </span><span class="o">*</span><span class="n">server</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mcp_server_init</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;ai_servis_vehicle&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;AI-SERVIS Vehicle MCP Server&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;mqtts://broker.ai-servis.cz&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;esp32_vehicle_001&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">cert</span>
+<span class="p">);</span>
+
+<span class="n">mcp_server_register_tool</span><span class="p">(</span><span class="n">server</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">vehicle_tools</span><span class="p">);</span>
+<span class="n">mcp_server_run</span><span class="p">(</span><span class="n">server</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="mcp-architecture-benefits"><strong>MCP Architecture Benefits</strong></h3>
+<p><strong>For AI-SERVIS:</strong></p>
+<ul>
+<li><strong>Standardized tool discovery</strong> - AI agents automatically find available vehicle functions</li>
+<li><strong>Secure tool execution</strong> - OAuth 2.0 + policy-based access control</li>
+<li><strong>Dynamic capability exposure</strong> - Vehicle features advertised to AI in real-time</li>
+<li><strong>Multi-modal integration</strong> - Voice, vision, and sensor data unified interface</li>
+</ul>
+<p><strong>Enterprise Security</strong> <a href="https://arxiv.org/abs/2504.08623">^10</a>:</p>
+<ul>
+<li><strong>Tool poisoning prevention</strong> through cryptographic verification</li>
+<li><strong>Fine-grained permissions</strong> based on user context</li>
+<li><strong>Audit trails</strong> for all AI-tool interactions</li>
+<li><strong>Zero-trust architecture</strong> compatible</li>
+</ul>
+<h2 id="ai-servis-integration-architecture">🎯 AI-SERVIS Integration Architecture</h2>
+<h3 id="complete-system-design"><strong>Complete System Design</strong></h3>
+<p><strong>ESP32 Hub (Vehicle Edge):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// AI-SERVIS ESP32 Architecture</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AIServISHub</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">TwaiController</span><span class="w"> </span><span class="n">can_bus</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ElevenLabsTTS</span><span class="w"> </span><span class="n">voice_synthesis</span><span class="p">;</span><span class="w">  </span>
+<span class="w">    </span><span class="n">McpServer</span><span class="w"> </span><span class="n">mcp_server</span><span class="p">;</span>
+<span class="w">    </span><span class="n">WiFiManager</span><span class="w"> </span><span class="n">connectivity</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Core vehicle functions exposed via MCP</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">register_vehicle_tools</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mcp_server</span><span class="p">.</span><span class="n">register_tool</span><span class="p">(</span><span class="s">&quot;read_diagnostics&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">can_bus</span><span class="p">.</span><span class="n">get_obd_data</span><span class="p">();</span>
+<span class="w">        </span><span class="p">});</span>
+
+<span class="w">        </span><span class="n">mcp_server</span><span class="p">.</span><span class="n">register_tool</span><span class="p">(</span><span class="s">&quot;voice_alert&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">voice_synthesis</span><span class="p">.</span><span class="n">speak</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="w">        </span><span class="p">});</span>
+
+<span class="w">        </span><span class="n">mcp_server</span><span class="p">.</span><span class="n">register_tool</span><span class="p">(</span><span class="s">&quot;anpr_detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">camera</span><span class="p">.</span><span class="n">capture_and_recognize</span><span class="p">();</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<p><strong>Cloud AI Agent:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># AI Agent with MCP Integration</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mcp_client</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">vehicle_assistant</span><span class="p">():</span>
+    <span class="c1"># Connect to ESP32 MCP server</span>
+    <span class="n">vehicle</span> <span class="o">=</span> <span class="k">await</span> <span class="n">mcp_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;mqtt://ai-servis-vehicle&quot;</span><span class="p">)</span>
+
+    <span class="c1"># AI agent can now use vehicle capabilities</span>
+    <span class="n">diagnostics</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">call_tool</span><span class="p">(</span><span class="s2">&quot;read_diagnostics&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">coolant_temp</span> <span class="o">&gt;</span> <span class="mi">105</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">vehicle</span><span class="o">.</span><span class="n">call_tool</span><span class="p">(</span><span class="s2">&quot;voice_alert&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Warning: Engine overheating detected!&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="performance-metrics-2025"><strong>Performance Metrics (2025)</strong></h3>
+<p><strong>ESP32-S3 Capabilities:</strong></p>
+<ul>
+<li><strong>TinyML inference</strong>: 40-50 tokens/sec for small models</li>
+<li><strong>Audio processing</strong>: 44.1kHz I2S with &lt;100ms latency</li>
+<li><strong>CAN bus monitoring</strong>: 1000+ messages/sec processing</li>
+<li><strong>MQTT throughput</strong>: 10MB/s over Wi-Fi 6</li>
+<li><strong>Power consumption</strong>: 150-300mA active, &lt;10µA deep sleep</li>
+</ul>
+<p><strong>System Integration:</strong></p>
+<ul>
+<li><strong>Voice command latency</strong>: &lt;2 seconds (including cloud round-trip)</li>
+<li><strong>OBD-2 polling rate</strong>: 10Hz for critical parameters</li>
+<li><strong>ANPR processing</strong>: 5-15 fps depending on lighting</li>
+<li><strong>MCP tool discovery</strong>: &lt;500ms for full capability enumeration</li>
+</ul>
+<h2 id="future-roadmap-opportunities">🚀 Future Roadmap \&amp; Opportunities</h2>
+<h3 id="emerging-technologies-2025-2026"><strong>Emerging Technologies (2025-2026)</strong></h3>
+<p><strong>Next-Generation Hardware:</strong></p>
+<ul>
+<li><strong>ESP32-P4</strong> with dedicated NPU for on-device LLM inference</li>
+<li><strong>CAN-FD support</strong> for higher bandwidth automotive communication</li>
+<li><strong>Hardware security modules</strong> for automotive-grade encryption</li>
+</ul>
+<p><strong>AI Model Evolution:</strong></p>
+<ul>
+<li><strong>Sub-billion parameter</strong> conversational models optimized for embedded</li>
+<li><strong>Multimodal LLMs</strong> processing voice, vision, and sensor data simultaneously</li>
+<li><strong>Federated learning</strong> for privacy-preserving vehicle AI training</li>
+</ul>
+<h3 id="ai-servis-competitive-advantages"><strong>AI-SERVIS Competitive Advantages</strong></h3>
+<ol>
+<li><strong>First-mover advantage</strong> in MCP over MQTT for vehicles</li>
+<li><strong>Edge-first architecture</strong> reducing cloud dependencies</li>
+<li><strong>Multi-protocol support</strong> (CAN, OBD-2, J1939, ISO 11783)</li>
+<li><strong>Voice-native interaction</strong> via ElevenLabs integration</li>
+<li><strong>Open-source foundation</strong> enabling rapid ecosystem development</li>
+</ol>
+<p><strong>This research reveals AI-SERVIS is positioned at the intersection of four major technology trends: embedded AI democratization, voice interface maturation, automotive protocol standardization, and AI agent interoperability - creating a unique market opportunity in 2025.</strong>
+<span style="display:none"><a href="https://ieeexplore.ieee.org/document/10696010/">^100</a><a href="https://journals.mmupress.com/index.php/jetap/article/view/907">^102</a><a href="https://iopscience.iop.org/article/10.1088/1742-6596/1907/1/012029">^104</a><a href="https://www.semanticscholar.org/paper/aec7bc8bd4b72411b1c6d636358dc8eb735033dc">^106</a><a href="https://www.sciencepubco.com/index.php/ijet/article/view/16624">^108</a><a href="https://www.matec-conferences.org/articles/matecconf/pdf/2018/41/matecconf_diagnostyka2018_01028.pdf">^11</a><a href="https://sciresol.s3.us-east-2.amazonaws.com/IJST/Articles/2015/Issue-21/Article28.pdf">^111</a><a href="https://www.mdpi.com/2072-666X/14/1/196/pdf?version=1673534057">^113</a><a href="https://arxiv.org/pdf/2309.10173.pdf">^115</a><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9864970/">^117</a><a href="https://arxiv.org/abs/2506.10627">^119</a><a href="https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial">^120</a><a href="https://www.autopi.io/blog/how-to-read-can-bus-data/">^122</a><a href="https://docs.espressif.com/projects/esp-idf/en/v4.4/esp32/api-reference/peripherals/twai.html">^124</a><a href="https://www.youtube.com/watch?v=XiqU5wpnupk">^126</a><a href="https://www.youtube.com/watch?v=dDBxC39lNQg">^128</a><a href="https://tasmota.github.io/docs/TWAI/">^13</a><a href="https://arxiv.org/abs/2505.16090">^14</a><a href="https://www.mdpi.com/1424-8220/25/6/1656">^16</a><a href="https://arxiv.org/pdf/2106.10652.pdf">^18</a><a href="https://arxiv.org/html/2503.11663v1">^20</a><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8122998/">^22</a><a href="https://arxiv.org/pdf/1901.05049.pdf">^24</a><a href="https://arxiv.org/pdf/2406.06282.pdf">^26</a><a href="https://arxiv.org/pdf/2308.14352.pdf">^28</a><a href="https://www.embedded.com/edge-ai-the-future-of-artificial-intelligence-in-embedded-systems/">^30</a><a href="https://www.reddit.com/r/esp8266/comments/1lb45ex/run_tinyml_ai_models_on_esp32_complete_guide_with/">^32</a><a href="https://mcpmarket.com/server/esp32-cam-ai">^34</a><a href="https://doi.mendelu.cz/pdfs/doi/9900/07/3100.pdf">^36</a><a href="https://arxiv.org/pdf/2507.05141.pdf">^38</a><a href="https://docs.espressif.com/projects/esp-techpedia/en/latest/esp-friends/solution-introduction/ai/llm-solution.html">^40</a><a href="https://ieeexplore.ieee.org/document/10593303/">^42</a><a href="https://ieeexplore.ieee.org/document/10956737/">^44</a><a href="https://ijsrem.com/download/iot-based-health-care-wristband-for-elderly-people-using-esp32/">^46</a><a href="https://ieeexplore.ieee.org/document/11049165/">^48</a><a href="https://arxiv.org/abs/2507.09481">^50</a><a href="https://www.int-arch-photogramm-remote-sens-spatial-inf-sci.net/XLIII-B2-2020/933/2020/isprs-archives-XLIII-B2-2020-933-2020.pdf">^52</a><a href="https://downloads.hindawi.com/journals/scn/2021/9928254.pdf">^54</a><a href="https://arxiv.org/pdf/2502.16909.pdf">^56</a><a href="https://linkinghub.elsevier.com/retrieve/pii/S2215016123003977">^58</a><a href="https://arxiv.org/pdf/2403.10194.pdf">^60</a><a href="https://ai-sdk.dev/providers/ai-sdk-providers/elevenlabs">^62</a><a href="https://news.ycombinator.com/item?id=25094956">^64</a><a href="https://www.linkedin.com/posts/thorwebdev_esp32-webrtc-activity-7350924659623649281-XLVI">^66</a><a href="https://www.youtube.com/watch?v=uhqJvIUES7k">^68</a><a href="https://www.semanticscholar.org/paper/153e3227cdc8e8b54034b6166a468bd751e117cc">^70</a><a href="https://arxiv.org/abs/2505.02279">^72</a><a href="https://arxiv.org/abs/2506.01333">^74</a><a href="https://arxiv.org/abs/2506.11019">^76</a><a href="https://arxiv.org/abs/2504.21030">^78</a><a href="http://jitecs.ub.ac.id/index.php/jitecs/article/view/20">^80</a><a href="http://arxiv.org/pdf/2404.05475.pdf">^82</a><a href="http://arxiv.org/pdf/1902.06288.pdf">^84</a><a href="https://arxiv.org/pdf/2208.01066.pdf">^86</a><a href="http://thesai.org/Downloads/Volume6No9/Paper_21-MCIP_Client_Application_for_SCADA_in_Iiot_Environment.pdf">^88</a><a href="https://docs.yourgpt.ai/chatbot/integrations/mcp/">^90</a><a href="https://treblle.com/blog/model-context-protocol-guide">^92</a><a href="https://opencv.org/blog/model-context-protocol/">^94</a><a href="https://www.seangoedecke.com/model-context-protocol/">^96</a><a href="https://www.linkedin.com/pulse/when-use-mcp-over-mqtt-your-questions-answered-emqtech-mpijc">^98</a></span></p>
+<div style="text-align: center">⁂</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </article>
+            </div>
+
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+        <div class="md-social">
+
+
+
+
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+
+
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+
+
+  </body>
+</html>

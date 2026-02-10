@@ -1,186 +1,467 @@
-# MIA (Modular IoT Assistant)
+# MIA Raspberry Pi Implementation
 
-MIA is a comprehensive IoT assistant platform supporting multiple hardware targets with AI-powered voice control, hardware monitoring, and automated deployment capabilities.
+This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in TODO.md.
 
-## Project Structure
+## Architecture
 
-This repository follows a modular architecture with separate directories for different platforms and components:
+- **ZeroMQ Broker** (`core/messaging/broker.py`): Message routing using ROUTER-DEALER pattern
+- **FastAPI Server** (`api/main.py`): REST API and WebSocket endpoints
+- **GPIO Worker** (`hardware/gpio_worker.py`): Hardware control via GPIO pins
+- **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
+- **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
 
-```
-mia/
-├── schemas/          # FlatBuffers schema definitions (shared interfaces)
-├── rpi/             # Raspberry Pi orchestration and Python services
-├── android/         # Android companion application
-└── docs/           # Project documentation (inherited from main repo)
-```
+## Workspace Organization
 
-## Architecture Overview
+This repository follows a structured workspace organization to separate development and deployment environments:
 
-### Communication Flow
-```
-Android App ↔ Raspberry Pi (WebSocket/REST/MQTT)
-    ↓
-Raspberry Pi ↔ ESP32 Devices (Serial/WiFi)
-    ↓
-Raspberry Pi ↔ Arduino Peripherals (Serial)
-```
+### Development Structure
+- **Development Repository**: `~/projects/mia/` - Contains the full source code, documentation, and build tools
+- **Configuration**: `config/paths.json` - Defines configurable paths for different environments
+- **Path Management**: `core/paths.py` - Python utility for resolving relative and configurable paths
 
-### Shared Interfaces
-All components communicate using FlatBuffers schemas defined in `schemas/`:
-- **Efficient serialization** for real-time data
-- **Cross-platform compatibility** (Python, Java/Kotlin, C++)
-- **Versioned interfaces** for API evolution
+### Installation Structure
+- **Installed Code**: `/opt/mia/` - Contains deployed/running code (symlinked to development repo during development)
+- **System Services**: `/etc/systemd/system/mia-*.service` - Systemd service definitions
+- **Configuration**: `/etc/mia/` - System-wide configuration files
+- **Data**: `/var/lib/mia/` - Persistent data and logs
+
+### Deployment Workflow
+1. **Development**: Work in `~/projects/mia/` with full access to source and tools
+2. **Testing**: Use relative paths and path configuration for environment-independent code
+3. **Deployment**: Copy or symlink code to `/opt/mia/` for production use
+4. **Services**: Use systemd services that reference `/opt/mia/` as the working directory
+
+This separation ensures clean development workflows while maintaining proper system integration for production deployments.
 
 ## Components
 
-### 🎯 Schemas (`schemas/`)
-- **FlatBuffers definitions** for all inter-component communication
-- **Shared data structures** ensuring type safety across platforms
-- **Schema evolution** support for backward/forward compatibility
+### ZeroMQ Broker
+- Listens on port 5555
+- Routes messages between FastAPI server and workers
+- Handles worker registration and message distribution
 
-### 🥧 Raspberry Pi (`rpi/`)
-- **Central orchestration hub** running Python services
-- **Hardware abstraction layer** for GPIO, sensors, cameras
-- **REST/WebSocket APIs** for Android communication
-- **ZeroMQ messaging** for internal service communication
-- **Systemd services** for production deployment
+### FastAPI Server
+- REST API on port 8000
+- Endpoints:
+  - `GET /devices` - List connected devices
+  - `POST /command` - Send device commands
+  - `GET /telemetry` - Get sensor readings
+  - `GET /status` - System health
+  - `POST /gpio/configure` - Configure GPIO pin
+  - `POST /gpio/set` - Set GPIO pin value
+  - `GET /gpio/{pin}` - Get GPIO pin value
+  - `WS /ws` - WebSocket for real-time telemetry
 
-### 🤖 Android App (`android/`)
-- **Mobile companion interface** with Material Design 3
-- **BLE device discovery** and OBD-II adapter communication
-- **Real-time telemetry** visualization and control
-- **Voice command processing** with AI assistance
-- **Offline operation** with local data storage
+### GPIO Worker
+- Connects to ZeroMQ broker
+- Controls Raspberry Pi GPIO pins
+- Supports digital input/output
+- Falls back to simulation mode if GPIO libraries unavailable
 
-## Development Setup
+### Serial Bridge
+- Reads JSON telemetry from ESP32/Arduino via USB Serial
+- Publishes telemetry to ZeroMQ PUB socket (port 5556) on topic `mcu/telemetry`
+- Auto-detects serial ports (`/dev/ttyUSB0`, `/dev/ttyACM0`, etc.)
+- Handles reconnection logic for robust operation
+- Falls back to mock data generation when hardware unavailable
 
-### Prerequisites
-- **Python 3.9+** for Raspberry Pi development
-- **Android Studio** for Android development
-- **FlatBuffers compiler** for schema generation
-- **Docker** for containerized development
+### OBD Worker (ELM327 Simulator)
+- Implements Digital Twin architecture for OBD-II simulation
+- Subscribes to hardware telemetry via PUB/SUB (port 5556)
+- Registers with ZeroMQ broker (port 5555) for command/control
+- Runs ELM327 emulator with dynamic PID responses based on real-time hardware input
+- Maps MCU potentiometer values to engine parameters (RPM, speed, coolant temp)
 
-### Quick Start
+### Citroën OBD-II Bridge
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/sparesparrow/mia.git
-   cd mia
-   ```
+The Citroën bridge connects to PSA vehicles via ELM327 OBD-II adapter.
 
-2. **Set up FlatBuffers schemas**
-   ```bash
-   cd schemas
-   # Generate code for target platforms
-   flatc --python *.fbs
-   flatc --java *.fbs
-   ```
-
-3. **Raspberry Pi development**
-   ```bash
-   cd rpi
-   pip install -r requirements.txt
-   python -m uvicorn api.main:app --reload
-   ```
-
-4. **Android development**
-   ```bash
-   cd android
-   # Open in Android Studio
-   ./gradlew build
-   ```
-
-## Building and Deployment
-
-### Raspberry Pi
+#### Quick Start
 ```bash
-cd rpi
-docker build -t mia-rpi .
-docker run -p 8000:8000 mia-rpi
+# Deploy service
+sudo cp rpi/services/mia-citroen-bridge.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable mia-citroen-bridge
+
+# Test with mock mode
+ELM_MOCK=1 python3 agents/citroen_bridge.py
+
+# Start real service
+sudo systemctl start mia-citroen-bridge
 ```
 
-### Android
+#### Supported PIDs
+- Standard: RPM, Speed, Coolant Temp
+- PSA-specific: DPF Soot, Oil Temp, Eolys Level
+
+See [docs/automotive/citroen-integration.md](../docs/automotive/citroen-integration.md) for full documentation.
+
+## Installation
+
+### Dependencies
+
 ```bash
-cd android
-./gradlew assembleRelease
-# Deploy to device or generate bundle for Play Store
+sudo apt-get update
+sudo apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    libzmq3-dev
 ```
 
-### Multi-platform Development
+### Python Packages
+
 ```bash
-# Use docker-compose for integrated development
-docker-compose up
+pip3 install -r requirements.txt
+```
+
+## Deployment
+
+Use the main deployment script:
+
+```bash
+sudo ./scripts/deploy-raspberry-pi.sh
+```
+
+This will:
+1. Install all dependencies
+2. Build C++ components
+3. Install Python services
+4. Create systemd services
+5. Enable services to start on boot
+
+## Manual Setup
+
+### 1. Install Python dependencies
+
+```bash
+pip3 install -r rpi/requirements.txt
+```
+
+### 2. Copy files to installation directory
+
+```bash
+sudo mkdir -p /opt/mia
+sudo cp -r . /opt/mia/
+```
+
+### 3. Install systemd services
+
+```bash
+sudo cp rpi/services/*.service /etc/systemd/system/
+sudo systemctl daemon-reload
+```
+
+### 4. Enable and start services
+
+```bash
+# Core services
+sudo systemctl enable zmq-broker mia-api mia-gpio-worker
+sudo systemctl start zmq-broker mia-api mia-gpio-worker
+
+# OBD Simulator services (optional)
+sudo systemctl enable mia-serial-bridge mia-obd-worker
+sudo systemctl start mia-serial-bridge mia-obd-worker
+```
+
+## Service Management
+
+### Start services
+
+```bash
+sudo systemctl start zmq-broker
+sudo systemctl start mia-api
+sudo systemctl start mia-gpio-worker
+sudo systemctl start mia-serial-bridge
+sudo systemctl start mia-obd-worker
+```
+
+### Stop services
+
+```bash
+sudo systemctl stop zmq-broker
+sudo systemctl stop mia-api
+sudo systemctl stop mia-gpio-worker
+sudo systemctl stop mia-obd-worker
+sudo systemctl stop mia-serial-bridge
+```
+
+### Check status
+
+```bash
+sudo systemctl status zmq-broker
+sudo systemctl status mia-api
+sudo systemctl status mia-gpio-worker
+sudo systemctl status mia-serial-bridge
+sudo systemctl status mia-obd-worker
+```
+
+### View logs
+
+```bash
+sudo journalctl -u zmq-broker -f
+sudo journalctl -u mia-api -f
+sudo journalctl -u mia-gpio-worker -f
+sudo journalctl -u mia-serial-bridge -f
+sudo journalctl -u mia-obd-worker -f
 ```
 
 ## Testing
 
-### Unit Tests
-```bash
-# Python tests (Raspberry Pi)
-cd rpi && python -m pytest tests/ -v
+### Test API endpoints
 
-# Android tests
-cd android && ./gradlew test
+```bash
+# Health check
+curl http://localhost:8000/status
+
+# List devices
+curl http://localhost:8000/devices
+
+# Configure GPIO pin 18 as output
+curl -X POST http://localhost:8000/gpio/configure \
+  -H "Content-Type: application/json" \
+  -d '{"pin": 18, "direction": "output"}'
+
+# Set GPIO pin 18 to HIGH
+curl -X POST http://localhost:8000/gpio/set \
+  -H "Content-Type: application/json" \
+  -d '{"pin": 18, "value": true}'
+
+# Get GPIO pin 18 value
+curl http://localhost:8000/gpio/18
 ```
 
-### Integration Tests
-```bash
-# End-to-end testing
-cd rpi && python test_integration.py
+### Test OBD Simulator
 
-# Hardware testing
-cd rpi && python hardware/test_end_to_end.py
+The OBD simulator creates a "Digital Twin" where physical controls (ESP32/Arduino potentiometers) drive OBD-II PID values in real-time.
+
+#### Hardware Setup
+
+1. **Flash ESP32/Arduino** with the following firmware:
+
+```cpp
+void setup() { 
+  Serial.begin(115200); 
+}
+
+void loop() {
+  int pot1 = analogRead(A0); // RPM Input (0-1023)
+  int pot2 = analogRead(A1); // Speed Input (0-1023)
+  
+  // Send JSON formatted line
+  Serial.print("{\"pot1\":");
+  Serial.print(pot1);
+  Serial.print(", \"pot2\":");
+  Serial.print(pot2);
+  Serial.println("}");
+  
+  delay(100); // 10Hz update rate
+}
 ```
 
-## Contributing
+2. **Connect ESP32/Arduino** to Raspberry Pi via USB
 
-### Development Workflow
-1. **Schema changes** → Update FlatBuffers definitions
-2. **Code generation** → Regenerate platform-specific code
-3. **Cross-platform testing** → Verify compatibility
-4. **Documentation updates** → Keep READMEs synchronized
+3. **Start services** (serial bridge will auto-detect the device):
 
-### Code Organization
-- **schemas/**: Interface definitions only
-- **rpi/**: Python orchestration code
-- **android/**: Kotlin/Android application code
-- **docs/**: Documentation and guides
+```bash
+sudo systemctl start zmq-broker
+sudo systemctl start mia-serial-bridge
+sudo systemctl start mia-obd-worker
+```
 
-### Commit Guidelines
-- Use conventional commits
-- Reference schema changes when updating interfaces
-- Include platform-specific tags (rpi/, android/)
+#### Verify Telemetry Flow
 
-## Deployment Environments
+Check that serial bridge is receiving data:
 
-### Development
-- Local Docker Compose setup
-- Hot reloading for rapid iteration
-- Mock hardware interfaces
+```bash
+sudo journalctl -u mia-serial-bridge -f
+```
 
-### Staging
-- Raspberry Pi with real hardware
-- Android emulator/device testing
-- Integration test suites
+You should see log entries showing telemetry being published.
 
-### Production
-- Systemd services on Raspberry Pi
-- Signed Android APKs
-- Monitoring and logging
-- Automated updates
+#### Connect OBD Scanner
 
-## Related Projects
+The ELM327 emulator creates a virtual serial port (PTY). Check logs to find the PTY path:
 
-- **BPM Detector**: ESP32-based heart rate monitoring with Arduino display client
-- **OMS**: OpenSSL Management System (similar modular architecture)
-- **SpareTools**: Pre-built components and dependency management
+```bash
+sudo journalctl -u mia-obd-worker | grep -i pty
+```
 
-## License
+Connect your OBD diagnostic tool to this PTY. As you turn the potentiometers on the ESP32, the RPM and speed values in the OBD responses will update in real-time.
 
-See LICENSE file for details.
+#### Manual Testing
 
-## Support
+Test serial bridge directly:
 
-- **Documentation**: See `docs/` directory
-- **Issues**: GitHub Issues for bug reports and feature requests
-- **Discussions**: GitHub Discussions for questions and community support
+```bash
+python3 rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+```
+
+Test OBD worker directly:
+
+```bash
+python3 rpi/services/obd_worker.py
+```
+
+### Test WebSocket
+
+```python
+import asyncio
+import websockets
+import json
+
+async def test_websocket():
+    uri = "ws://localhost:8000/ws"
+    async with websockets.connect(uri) as websocket:
+        while True:
+            message = await websocket.recv()
+            data = json.loads(message)
+            print(f"Received: {data}")
+
+asyncio.run(test_websocket())
+```
+
+## API Documentation
+
+Once the FastAPI server is running, visit:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+## Implementation Status
+
+### Phase 1: Foundation ✅
+- [x] Project structure
+- [x] ZeroMQ messaging broker (ROUTER-DEALER)
+- [x] Message handlers
+
+### Phase 2: Hardware Integration ✅
+- [x] GPIO control worker
+- [x] Hardware abstraction layer
+
+### Phase 3: FastAPI & Remote Control ✅
+- [x] REST API endpoints
+- [x] WebSocket server
+- [x] Request validation (Pydantic)
+
+### Phase 6: Deployment ✅
+- [x] Systemd services
+- [x] Auto-start on boot
+- [x] Deployment script
+
+### Phase 7: OBD Simulator (Digital Twin) ✅
+- [x] Serial bridge for ESP32/Arduino communication
+- [x] OBD worker with ELM327 emulator integration
+- [x] Dynamic PID responses based on hardware telemetry
+- [x] ZeroMQ PUB/SUB telemetry distribution
+- [x] Hardware-in-the-loop simulation architecture
+
+## Next Steps
+
+- [ ] Complete ELM327-emulator library integration (PTY creation)
+- [ ] Add FlatBuffers schema support
+- [ ] Add sensor drivers (I2C/SPI)
+- [ ] Implement device registry
+- [ ] Add authentication/authorization
+- [ ] Add comprehensive logging
+- [ ] Performance optimization
+- [ ] OBD-II PID response validation
+
+## Troubleshooting
+
+### Services won't start
+
+Check logs:
+```bash
+sudo journalctl -u zmq-broker -n 50
+sudo journalctl -u mia-api -n 50
+sudo journalctl -u mia-gpio-worker -n 50
+```
+
+### GPIO not working
+
+1. Check permissions:
+```bash
+ls -l /dev/gpiochip*
+```
+
+2. Ensure running as root or user in gpio group:
+```bash
+sudo usermod -a -G gpio $USER
+```
+
+3. Check if GPIO libraries are installed:
+```bash
+python3 -c "import RPi.GPIO; print('RPi.GPIO available')"
+python3 -c "import gpiozero; print('gpiozero available')"
+```
+
+### Port already in use
+
+```bash
+sudo netstat -tulpn | grep -E "5555|8000"
+```
+
+### ZeroMQ connection errors
+
+Ensure broker is running before starting other services:
+```bash
+sudo systemctl start zmq-broker
+sleep 2
+sudo systemctl start mia-api mia-gpio-worker
+```
+
+### Serial bridge not detecting device
+
+1. Check if device is connected:
+```bash
+ls -l /dev/ttyUSB* /dev/ttyACM*
+```
+
+2. Check permissions:
+```bash
+sudo usermod -a -G dialout $USER
+# Log out and back in, or use newgrp dialout
+```
+
+3. Specify port manually:
+```bash
+sudo systemctl edit mia-serial-bridge
+# Add:
+# [Service]
+# ExecStart=
+# ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+```
+
+4. Test serial connection manually:
+```bash
+python3 -c "import serial; s=serial.Serial('/dev/ttyUSB0', 115200); print(s.readline())"
+```
+
+### OBD worker not receiving telemetry
+
+1. Verify serial bridge is publishing:
+```bash
+sudo journalctl -u mia-serial-bridge | grep "Published telemetry"
+```
+
+2. Check ZeroMQ PUB socket is bound:
+```bash
+sudo netstat -tulpn | grep 5556
+```
+
+3. Verify OBD worker is subscribed:
+```bash
+sudo journalctl -u mia-obd-worker | grep "Subscribed to telemetry"
+```
+
+4. Test ZMQ subscription manually:
+```python
+import zmq
+ctx = zmq.Context()
+sub = ctx.socket(zmq.SUB)
+sub.connect("tcp://localhost:5556")
+sub.subscribe("mcu/telemetry")
+while True:
+    topic, msg = sub.recv_multipart()
+    print(f"Topic: {topic}, Message: {msg}")
+```

@@ -1,0 +1,288 @@
+# Automotive-specific alerting rules for AI-SERVIS Universal
+# Critical alerts for voice control and vehicle integration
+
+groups:
+  - name: automotive.critical
+    interval: 30s
+    rules:
+      - alert: VoiceProcessingLatencyHigh
+        expr: voice_processing_latency_seconds > 0.5
+        for: 1m
+        labels:
+          severity: critical
+          component: ai-audio-assistant
+          automotive: true
+        annotations:
+          summary: "Voice processing latency is too high"
+          description: "Voice processing latency is {{ $value }}s, exceeding 500ms threshold for automotive safety"
+          runbook_url: "https://docs.ai-servis.com/runbooks/voice-latency"
+
+      - alert: WakeWordDetectionFailed
+        expr: rate(wake_word_detection_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          component: ai-audio-assistant
+          automotive: true
+        annotations:
+          summary: "Wake word detection failing frequently"
+          description: "Wake word detection failure rate is {{ $value }}/min, affecting driver interaction"
+
+      - alert: VehicleDataStreamLoss
+        expr: up{job="vehicle-data"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: vehicle-integration
+          automotive: true
+        annotations:
+          summary: "Vehicle data stream lost"
+          description: "Connection to vehicle data collector lost, OBD integration offline"
+
+      - alert: ESP32DeviceOffline
+        expr: up{job="esp32-devices"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: hardware-bridge
+          automotive: true
+        annotations:
+          summary: "ESP32 device offline"
+          description: "ESP32 device {{ $labels.instance }} is offline, hardware integration compromised"
+
+      - alert: AutomotiveComplianceViolation
+        expr: automotive_compliance_score < 0.8
+        for: 5m
+        labels:
+          severity: critical
+          component: compliance
+          automotive: true
+        annotations:
+          summary: "Automotive compliance score below threshold"
+          description: "Compliance score is {{ $value }}, below required 0.8 for automotive deployment"
+
+  - name: automotive.warning
+    interval: 30s
+    rules:
+      - alert: AudioQualityDegraded
+        expr: audio_quality_score < 0.7
+        for: 3m
+        labels:
+          severity: warning
+          component: ai-audio-assistant
+          automotive: true
+        annotations:
+          summary: "Audio quality degraded"
+          description: "Audio quality score is {{ $value }}, may affect voice recognition accuracy"
+
+      - alert: VehicleSpeedAbnormal
+        expr: vehicle_speed_kmh > 200 or vehicle_speed_kmh < 0
+        for: 1m
+        labels:
+          severity: warning
+          component: vehicle-data
+          automotive: true
+        annotations:
+          summary: "Abnormal vehicle speed detected"
+          description: "Vehicle speed is {{ $value }} km/h, possible sensor malfunction"
+
+      - alert: EngineRPMAbnormal
+        expr: engine_rpm > 8000 or engine_rpm < 0
+        for: 1m
+        labels:
+          severity: warning
+          component: vehicle-data
+          automotive: true
+        annotations:
+          summary: "Abnormal engine RPM detected"
+          description: "Engine RPM is {{ $value }}, possible sensor malfunction or engine issue"
+
+      - alert: BatteryVoltageAbnormal
+        expr: battery_voltage < 11.5 or battery_voltage > 14.8
+        for: 2m
+        labels:
+          severity: warning
+          component: vehicle-data
+          automotive: true
+        annotations:
+          summary: "Abnormal battery voltage"
+          description: "Battery voltage is {{ $value }}V, outside normal range (11.5-14.8V)"
+
+      - alert: CoolantTemperatureHigh
+        expr: coolant_temp_celsius > 105
+        for: 1m
+        labels:
+          severity: warning
+          component: vehicle-data
+          automotive: true
+        annotations:
+          summary: "High coolant temperature"
+          description: "Coolant temperature is {{ $value }}°C, engine may be overheating"
+
+      - alert: FuelLevelLow
+        expr: fuel_level_percent < 10
+        for: 5m
+        labels:
+          severity: warning
+          component: vehicle-data
+          automotive: true
+        annotations:
+          summary: "Low fuel level"
+          description: "Fuel level is {{ $value }}%, driver should be notified"
+
+  - name: automotive.performance
+    interval: 1m
+    rules:
+      - alert: EdgeResourceConstraints
+        expr: |
+          (
+            node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1
+          ) or (
+            rate(node_cpu_seconds_total{mode!="idle"}[5m]) > 0.9
+          )
+        for: 3m
+        labels:
+          severity: warning
+          component: infrastructure
+          automotive: true
+        annotations:
+          summary: "Edge device resource constraints"
+          description: "Edge device running low on resources, may affect real-time processing"
+
+      - alert: MCPRequestLatencyHigh
+        expr: mcp_request_duration_seconds{quantile="0.95"} > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: mcp-bridge
+          automotive: true
+        annotations:
+          summary: "MCP request latency high"
+          description: "95th percentile MCP request latency is {{ $value }}s, affecting system responsiveness"
+
+      - alert: VoiceCommandsDropped
+        expr: rate(mcp_voice_commands_dropped_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          component: ai-audio-assistant
+          automotive: true
+        annotations:
+          summary: "Voice commands being dropped"
+          description: "Voice commands are being dropped at {{ $value }}/min rate"
+
+  - name: automotive.security
+    interval: 1m
+    rules:
+      - alert: SecurityScanFailed
+        expr: security_scan_success == 0
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+          automotive: true
+        annotations:
+          summary: "Security scan failed"
+          description: "Latest security scan failed for {{ $labels.component }}"
+
+      - alert: VulnerabilitiesDetected
+        expr: vulnerability_count{severity="critical"} > 0
+        for: 0s
+        labels:
+          severity: critical
+          component: security
+          automotive: true
+        annotations:
+          summary: "Critical vulnerabilities detected"
+          description: "{{ $value }} critical vulnerabilities detected in {{ $labels.component }}"
+
+      - alert: PrivacyComplianceViolation
+        expr: privacy_compliance_score < 0.9
+        for: 5m
+        labels:
+          severity: critical
+          component: privacy
+          automotive: true
+        annotations:
+          summary: "Privacy compliance violation"
+          description: "Privacy compliance score is {{ $value }}, below required 0.9 threshold"
+
+      - alert: UnauthorizedAccess
+        expr: rate(http_requests_total{code=~"4[0-9][13]"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+          automotive: true
+        annotations:
+          summary: "Unauthorized access attempts detected"
+          description: "{{ $value }} unauthorized access attempts per minute on {{ $labels.instance }}"
+
+  - name: automotive.connectivity
+    interval: 30s
+    rules:
+      - alert: MQTTBrokerDown
+        expr: up{job="mqtt-exporter"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: mqtt
+          automotive: true
+        annotations:
+          summary: "MQTT broker is down"
+          description: "MQTT broker is unreachable, vehicle-to-cloud communication affected"
+
+      - alert: ServiceDiscoveryFailed
+        expr: up{job="service-discovery"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          component: service-discovery
+          automotive: true
+        annotations:
+          summary: "Service discovery failed"
+          description: "Service discovery is down, new services may not be registered"
+
+      - alert: DatabaseConnectionFailed
+        expr: up{job=~"postgres-exporter|redis-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: database
+          automotive: true
+        annotations:
+          summary: "Database connection failed"
+          description: "Database {{ $labels.job }} is unreachable"
+
+  - name: automotive.business
+    interval: 1m
+    rules:
+      - alert: VoiceCommandSuccessRateLow
+        expr: |
+          (
+            rate(mcp_voice_commands_successful_total[5m]) /
+            rate(mcp_voice_commands_total[5m])
+          ) < 0.85
+        for: 3m
+        labels:
+          severity: warning
+          component: ai-audio-assistant
+          automotive: true
+        annotations:
+          summary: "Voice command success rate low"
+          description: "Voice command success rate is {{ $value }}, below 85% threshold"
+
+      - alert: AutomotiveFunctionFailureRate
+        expr: |
+          (
+            rate(mcp_automotive_functions_failed_total[5m]) /
+            rate(mcp_automotive_functions_total[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          component: automotive-functions
+          automotive: true
+        annotations:
+          summary: "Automotive function failure rate high"
+          description: "Automotive function failure rate is {{ $value }}, above 5% threshold"

@@ -1,0 +1,35 @@
+{
+  "name": "gpio-simulator",
+  "version": "1.0.0",
+  "description": "GPIO Hardware Simulator for Raspberry Pi",
+  "main": "src/gpio-simulator.js",
+  "scripts": {
+    "start": "node src/gpio-simulator.js",
+    "dev": "nodemon src/gpio-simulator.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4",
+    "mqtt": "^5.3.4",
+    "redis": "^4.6.11",
+    "winston": "^3.11.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  },
+  "keywords": [
+    "gpio",
+    "raspberry-pi",
+    "simulation",
+    "hardware"
+  ],
+  "author": "AI-Servis Team",
+  "license": "MIT"
+}
