@@ -1,0 +1,2832 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+
+
+
+        <link rel="canonical" href="https://sparesparrow.github.io/ai-servis-universal/TODO-master-list/">
+
+
+
+
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+
+
+
+        <title>📋 AI-SERVIS Universal: Master TODO List - AI-SERVIS Documentation</title>
+
+
+
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+
+
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+
+
+
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#ai-servis-universal-master-todo-list" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              📋 AI-SERVIS Universal: Master TODO List
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+
+
+</form>
+
+
+
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+
+
+
+
+  Overview
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../architecture/overview/" class="md-tabs__link">
+
+
+
+
+  Architecture
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../install/phone/" class="md-tabs__link">
+
+
+
+
+  Install
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../wiring/" class="md-tabs__link">
+
+
+
+
+  Wiring & Power
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../api/overview/" class="md-tabs__link">
+
+
+
+
+  API & Contracts
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../privacy/dpia-template/" class="md-tabs__link">
+
+
+
+
+  Privacy
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+
+
+
+
+  Troubleshooting
+
+      </a>
+    </li>
+
+
+
+    </ul>
+  </div>
+</nav>
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../architecture/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../architecture/diagrams/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/phone/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/hybrid/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/pro/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/pi-gateway/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/dev-docker/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../install/installer-checklist/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../wiring/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../api/changelog/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../privacy/dpia-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#project-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Project Overview
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#progress-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Progress Tracking
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 Progress Tracking">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#phase-completion-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase Completion Status
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#module-development-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Module Development Status
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#phase-0-foundation-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 PHASE 0: FOUNDATION SETUP
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 PHASE 0: FOUNDATION SETUP">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#repository-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Repository &amp; Environment Setup
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Repository & Environment Setup">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-001-repository-structure-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-001: Repository Structure Setup
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-002-development-environment-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-002: Development Environment Configuration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-003-cicd-pipeline-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-003: CI/CD Pipeline Setup
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#documentation-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Infrastructure
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Documentation Infrastructure">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-004-documentation-site-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-004: Documentation Site Setup
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-005-architecture-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-005: Architecture Documentation
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#core-framework-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Framework Development
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Core Framework Development">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-006-mcp-framework-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-006: MCP Framework Library
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-007-service-discovery-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-007: Service Discovery Framework
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-008-authentication-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-008: Authentication &amp; Authorization
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#phase-1-core-architecture-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏗️ PHASE 1: CORE ARCHITECTURE DEVELOPMENT
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏗️ PHASE 1: CORE ARCHITECTURE DEVELOPMENT">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#core-orchestrator-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Orchestrator Module
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Core Orchestrator Module">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-009-core-orchestrator-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-009: Core Orchestrator Service
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-010-user-interface-abstraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-010: User Interface Abstraction
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-011-command-processing-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-011: Command Processing Pipeline
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#ai-audio-assistant-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI Audio Assistant Module
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="AI Audio Assistant Module">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-012-audio-assistant-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-012: Audio Assistant MCP Server
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-013-cross-platform-audio-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-013: Cross-Platform Audio Engine
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-014-voice-processing-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-014: Voice Processing Integration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-015-music-service-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-015: Music Service Integration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-016-audio-zone-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-016: Audio Zone Management
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#communication-messaging-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Communication &amp; Messaging Module
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Communication & Messaging Module">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-017-messages-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-017: Messages MCP Server
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-018-social-media-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-018: Social Media Integration
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-019-voip-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-019: VoIP Integration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#phase-2-multi-platform-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      🖥️ PHASE 2: MULTI-PLATFORM SUPPORT
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🖥️ PHASE 2: MULTI-PLATFORM SUPPORT">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#platform-controller-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Controller Modules
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Platform Controller Modules">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-020-linux-platform-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-020: Linux Platform Controller
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-021-windows-platform-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-021: Windows Platform Controller
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-022-macos-platform-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-022: macOS Platform Controller
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-023-android-controller-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-023: Android Controller Bridge
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-024-ios-controller-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-024: iOS Controller Bridge
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-025-rtos-controller-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-025: RTOS Controller Framework
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#container-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Container &amp; Deployment
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Container & Deployment">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-026-multi-platform-container-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-026: Multi-Platform Container Images
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-027-raspberry-pi-simulation-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-027: Raspberry Pi Simulation Environment
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#phase-3-advanced-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏠 PHASE 3: ADVANCED FEATURES
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏠 PHASE 3: ADVANCED FEATURES">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#smart-home-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Smart Home Integration
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Smart Home Integration">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-028-home-automation-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-028: Home Automation MCP Server
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-029-iot-device-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-029: IoT Device Integration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#security-privacy-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security &amp; Privacy Module
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Security & Privacy Module">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-030-security-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-030: Security MCP Server
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-031-privacy-protection-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-031: Privacy Protection Framework
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#maps-navigation-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Maps &amp; Navigation Module
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Maps & Navigation Module">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-032-navigation-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-032: Navigation MCP Server
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-033-location-services-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-033: Location Services Integration
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#advanced-ai-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced AI Features
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Advanced AI Features">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-034-context-awareness-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-034: Context Awareness Engine
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-035-multi-modal-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-035: Multi-Modal Interface
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#phase-4-integration-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 PHASE 4: INTEGRATION &amp; TESTING
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🧪 PHASE 4: INTEGRATION & TESTING">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#testing-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Framework
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Testing Framework">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-036-unit-testing-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-036: Unit Testing Suite
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-037-system-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-037: System Integration Tests
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-038-automated-testing-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-038: Automated Testing Pipeline
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#documentation-user-guides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation &amp; User Guides
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Documentation & User Guides">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-039-user-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-039: User Documentation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-040-developer-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-040: Developer Documentation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-041-deployment-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-041: Deployment Documentation
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Performance Optimization">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-042-performance-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-042: Performance Profiling
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-043-scalability-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-043: Scalability Testing
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#additional-deliverables" class="md-nav__link">
+    <span class="md-ellipsis">
+      📱 ADDITIONAL DELIVERABLES
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📱 ADDITIONAL DELIVERABLES">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#mobile-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mobile Applications
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Mobile Applications">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-044-android-mobile-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-044: Android Mobile App
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-045-ios-mobile-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-045: iOS Mobile App
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#web-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Web Interfaces
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Web Interfaces">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-046-web-administration-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-046: Web Administration Dashboard
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-047-voice-web-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-047: Voice Web Interface
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#maintenance-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 MAINTENANCE &amp; OPERATIONS
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔧 MAINTENANCE & OPERATIONS">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#monitoring-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitoring &amp; Observability
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Monitoring & Observability">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-048-monitoring-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-048: Monitoring System
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-049-health-checking-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-049: Health Checking System
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#security-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security &amp; Compliance
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="Security & Compliance">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-050-security-audit-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-050: Security Audit &amp; Hardening
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#task-051-gdpr-compliance-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      TASK-051: GDPR Compliance Implementation
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#definition-of-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 DEFINITION OF DONE
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 DEFINITION OF DONE">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Quality
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#task-labels-priorities" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏷️ TASK LABELS &amp; PRIORITIES
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏷️ TASK LABELS & PRIORITIES">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#priority-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Priority Levels
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#component-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Labels
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#effort-estimation-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      Effort Estimation Scale
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#progress-tracking_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 PROGRESS TRACKING
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 PROGRESS TRACKING">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#weekly-sprint-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Weekly Sprint Planning
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#milestone-reviews" class="md-nav__link">
+    <span class="md-ellipsis">
+      Milestone Reviews
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Metrics
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#change-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 CHANGE MANAGEMENT
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔄 CHANGE MANAGEMENT">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#task-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task Updates
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#scope-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scope Changes
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis-universal/edit/master/docs/TODO-master-list.md" title="Edit this page" class="md-content__button md-icon">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+
+
+
+
+<h1 id="ai-servis-universal-master-todo-list">📋 AI-SERVIS Universal: Master TODO List</h1>
+<p><strong>Version</strong>: 1.0<br />
+<strong>Created</strong>: August 30, 2025<br />
+<strong>Status</strong>: Planning Phase<br />
+<strong>Completion</strong>: 0/142 tasks (0%)</p>
+<p>This document serves as the central source of truth for all implementation tasks in the AI-SERVIS Universal project. Each task includes clear acceptance criteria, dependencies, and estimated effort.</p>
+<hr />
+<h2 id="project-overview">🎯 <strong>Project Overview</strong></h2>
+<p>Transform AI-SERVIS from automotive-only to universal cross-platform AI assistant ecosystem using modular MCP architecture and containerization.</p>
+<p><strong>Key Objectives:</strong>
+- ✅ Extend audio assistant to home/desktop environments
+- ✅ Create modular MCP-based service architecture<br />
+- ✅ Support AMD64, ARM64, mobile, and RTOS platforms
+- ✅ Implement containerized testing and deployment
+- ✅ Maintain privacy-first, edge-computing principles</p>
+<hr />
+<h2 id="progress-tracking">📊 <strong>Progress Tracking</strong></h2>
+<h3 id="phase-completion-status"><strong>Phase Completion Status</strong></h3>
+<ul>
+<li><strong>Phase 0 - Foundation Setup</strong>: 0/25 tasks (0%)</li>
+<li><strong>Phase 1 - Core Architecture</strong>: 0/35 tasks (0%)</li>
+<li><strong>Phase 2 - Multi-Platform</strong>: 0/28 tasks (0%)</li>
+<li><strong>Phase 3 - Advanced Features</strong>: 0/32 tasks (0%)</li>
+<li><strong>Phase 4 - Integration &amp; Testing</strong>: 0/22 tasks (0%)</li>
+</ul>
+<h3 id="module-development-status"><strong>Module Development Status</strong></h3>
+<ul>
+<li><strong>Core Orchestrator</strong>: Not Started</li>
+<li><strong>AI Audio Assistant</strong>: Not Started</li>
+<li><strong>Platform Controllers</strong>: Not Started</li>
+<li><strong>Communication Layer</strong>: Not Started</li>
+<li><strong>Security &amp; Privacy</strong>: Not Started</li>
+<li><strong>Documentation</strong>: Not Started</li>
+</ul>
+<hr />
+<h2 id="phase-0-foundation-setup">🚀 <strong>PHASE 0: FOUNDATION SETUP</strong></h2>
+<p><em>Timeline: Week 1-2 | Priority: Critical</em></p>
+<h3 id="repository-environment-setup"><strong>Repository &amp; Environment Setup</strong></h3>
+<h4 id="task-001-repository-structure-setup"><strong>TASK-001: Repository Structure Setup</strong></h4>
+<ul>
+<li>[ ] Create monorepo directory structure
+  <div class="highlight"><pre><span></span><code>ai-servis-universal/
+├── modules/
+│   ├── core-orchestrator/
+│   ├── ai-audio-assistant/
+│   ├── ai-platform-controllers/
+│   ├── ai-communications/
+│   └── ai-security/
+├── containers/
+│   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   └── docker-compose.pi-sim.yml
+├── docs/
+│   ├── architecture/
+│   ├── modules/
+│   └── deployment/
+├── scripts/
+├── tests/
+└── ci/
+</code></pre></div></li>
+<li>[ ] Initialize Git repository with proper .gitignore</li>
+<li>[ ] Set up pre-commit hooks for code quality</li>
+<li>[ ] Create initial README.md with project overview</li>
+<li><strong>Acceptance Criteria</strong>: Repository structure matches specification, all directories created with placeholder README files</li>
+<li><strong>Estimated Effort</strong>: 2 hours</li>
+<li><strong>Dependencies</strong>: None</li>
+</ul>
+<h4 id="task-002-development-environment-configuration"><strong>TASK-002: Development Environment Configuration</strong></h4>
+<ul>
+<li>[ ] Set up Docker development environment</li>
+<li>[ ] Configure Docker Buildx for multi-platform builds (AMD64, ARM64)</li>
+<li>[ ] Set up development docker-compose.yml with hot reloading</li>
+<li>[ ] Configure VS Code devcontainer for consistent development</li>
+<li>[ ] Set up local MQTT broker (Eclipse Mosquitto)</li>
+<li><strong>Acceptance Criteria</strong>: Developers can run <code>docker-compose up</code> and have full development environment</li>
+<li><strong>Estimated Effort</strong>: 4 hours</li>
+<li><strong>Dependencies</strong>: TASK-001</li>
+</ul>
+<h4 id="task-003-cicd-pipeline-setup"><strong>TASK-003: CI/CD Pipeline Setup</strong></h4>
+<ul>
+<li>[ ] Set up GitHub Actions workflows</li>
+<li>[ ] Configure multi-platform Docker builds</li>
+<li>[ ] Set up automated testing pipeline</li>
+<li>[ ] Configure security scanning (Snyk, CodeQL)</li>
+<li>[ ] Set up artifact publishing to registry</li>
+<li><strong>Acceptance Criteria</strong>: All commits trigger automated builds and tests</li>
+<li><strong>Estimated Effort</strong>: 6 hours</li>
+<li><strong>Dependencies</strong>: TASK-001, TASK-002</li>
+</ul>
+<h3 id="documentation-infrastructure"><strong>Documentation Infrastructure</strong></h3>
+<h4 id="task-004-documentation-site-setup"><strong>TASK-004: Documentation Site Setup</strong></h4>
+<ul>
+<li>[ ] Configure MkDocs with Material theme</li>
+<li>[ ] Set up Mermaid diagram rendering</li>
+<li>[ ] Create documentation structure</li>
+<li>[ ] Configure automated deployment to GitHub Pages</li>
+<li>[ ] Add search functionality</li>
+<li><strong>Acceptance Criteria</strong>: Documentation site accessible at <code>https://sparesparrow.github.io/ai-servis-universal/</code></li>
+<li><strong>Estimated Effort</strong>: 3 hours</li>
+<li><strong>Dependencies</strong>: TASK-001</li>
+</ul>
+<h4 id="task-005-architecture-documentation"><strong>TASK-005: Architecture Documentation</strong></h4>
+<ul>
+<li>[ ] Create system architecture diagrams (Mermaid)</li>
+<li>[ ] Document MCP server specifications</li>
+<li>[ ] Create API documentation templates</li>
+<li>[ ] Document security architecture</li>
+<li>[ ] Create deployment guides</li>
+<li><strong>Acceptance Criteria</strong>: Complete architecture documentation with diagrams</li>
+<li><strong>Estimated Effort</strong>: 8 hours</li>
+<li><strong>Dependencies</strong>: TASK-004</li>
+</ul>
+<h3 id="core-framework-development"><strong>Core Framework Development</strong></h3>
+<h4 id="task-006-mcp-framework-library"><strong>TASK-006: MCP Framework Library</strong></h4>
+<ul>
+<li>[ ] Create base MCP server/client library in Python</li>
+<li>[ ] Implement JSON-RPC 2.0 communication</li>
+<li>[ ] Add transport layer abstractions (STDIO, HTTP, MQTT)</li>
+<li>[ ] Create type definitions and schemas</li>
+<li>[ ] Add comprehensive logging and debugging</li>
+<li><strong>Acceptance Criteria</strong>: Reusable MCP library with examples</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-002</li>
+</ul>
+<h4 id="task-007-service-discovery-framework"><strong>TASK-007: Service Discovery Framework</strong></h4>
+<ul>
+<li>[ ] Implement mDNS-based service discovery</li>
+<li>[ ] Create MQTT-based service registry</li>
+<li>[ ] Add health checking and monitoring</li>
+<li>[ ] Implement service lifecycle management</li>
+<li>[ ] Add configuration management system</li>
+<li><strong>Acceptance Criteria</strong>: Services automatically discover and register with core</li>
+<li><strong>Estimated Effort</strong>: 10 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-008-authentication-authorization"><strong>TASK-008: Authentication &amp; Authorization</strong></h4>
+<ul>
+<li>[ ] Implement JWT-based authentication</li>
+<li>[ ] Create role-based access control (RBAC)</li>
+<li>[ ] Add API key management</li>
+<li>[ ] Implement session management</li>
+<li>[ ] Create user preference storage</li>
+<li><strong>Acceptance Criteria</strong>: Secure authentication system with role management</li>
+<li><strong>Estimated Effort</strong>: 8 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<hr />
+<h2 id="phase-1-core-architecture-development">🏗️ <strong>PHASE 1: CORE ARCHITECTURE DEVELOPMENT</strong></h2>
+<p><em>Timeline: Week 3-8 | Priority: Critical</em></p>
+<h3 id="core-orchestrator-module"><strong>Core Orchestrator Module</strong></h3>
+<h4 id="task-009-core-orchestrator-service"><strong>TASK-009: Core Orchestrator Service</strong></h4>
+<ul>
+<li>[ ] Create main orchestrator service</li>
+<li>[ ] Implement MCP host functionality</li>
+<li>[ ] Add natural language processing pipeline</li>
+<li>[ ] Create intent recognition and routing</li>
+<li>[ ] Implement context management</li>
+<li><strong>Acceptance Criteria</strong>: Core service can receive commands and route to appropriate modules</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-006, TASK-007</li>
+</ul>
+<h4 id="task-010-user-interface-abstraction"><strong>TASK-010: User Interface Abstraction</strong></h4>
+<ul>
+<li>[ ] Create UI adapter interface</li>
+<li>[ ] Implement voice interface handler</li>
+<li>[ ] Add text-based interface support</li>
+<li>[ ] Create web interface adapter</li>
+<li>[ ] Implement mobile interface bridge</li>
+<li><strong>Acceptance Criteria</strong>: Multiple UI types can connect to core orchestrator</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-009</li>
+</ul>
+<h4 id="task-011-command-processing-pipeline"><strong>TASK-011: Command Processing Pipeline</strong></h4>
+<ul>
+<li>[ ] Implement command parsing and validation</li>
+<li>[ ] Add intent classification using lightweight NLP</li>
+<li>[ ] Create parameter extraction and validation</li>
+<li>[ ] Implement command queue and prioritization</li>
+<li>[ ] Add response formatting and delivery</li>
+<li><strong>Acceptance Criteria</strong>: Natural language commands processed correctly</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-009</li>
+</ul>
+<h3 id="ai-audio-assistant-module"><strong>AI Audio Assistant Module</strong></h3>
+<h4 id="task-012-audio-assistant-mcp-server"><strong>TASK-012: Audio Assistant MCP Server</strong></h4>
+<ul>
+<li>[ ] Create base MCP server for audio functionality</li>
+<li>[ ] Implement music playback tools</li>
+<li>[ ] Add audio output switching capabilities</li>
+<li>[ ] Create volume and zone control</li>
+<li>[ ] Implement voice command processing</li>
+<li><strong>Acceptance Criteria</strong>: Full audio control via MCP tools</li>
+<li><strong>Estimated Effort</strong>: 10 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-013-cross-platform-audio-engine"><strong>TASK-013: Cross-Platform Audio Engine</strong></h4>
+<ul>
+<li>[ ] Implement PipeWire support (Linux)</li>
+<li>[ ] Add WASAPI support (Windows)</li>
+<li>[ ] Implement Core Audio support (macOS)</li>
+<li>[ ] Create audio device enumeration</li>
+<li>[ ] Add format conversion and routing</li>
+<li><strong>Acceptance Criteria</strong>: Audio works on Linux, Windows, macOS</li>
+<li><strong>Estimated Effort</strong>: 18 hours</li>
+<li><strong>Dependencies</strong>: TASK-012</li>
+</ul>
+<h4 id="task-014-voice-processing-integration"><strong>TASK-014: Voice Processing Integration</strong></h4>
+<ul>
+<li>[ ] Integrate ElevenLabs TTS/STT APIs</li>
+<li>[ ] Add offline voice recognition (Whisper)</li>
+<li>[ ] Implement wake word detection</li>
+<li>[ ] Add voice activity detection</li>
+<li>[ ] Create voice command buffering</li>
+<li><strong>Acceptance Criteria</strong>: Voice commands processed with &lt;500ms latency</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-012</li>
+</ul>
+<h4 id="task-015-music-service-integration"><strong>TASK-015: Music Service Integration</strong></h4>
+<ul>
+<li>[ ] Implement Spotify Web API integration</li>
+<li>[ ] Add Apple Music API support</li>
+<li>[ ] Create local file playback</li>
+<li>[ ] Add streaming service abstraction</li>
+<li>[ ] Implement playlist management</li>
+<li><strong>Acceptance Criteria</strong>: Music playback from multiple sources</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-012</li>
+</ul>
+<h4 id="task-016-audio-zone-management"><strong>TASK-016: Audio Zone Management</strong></h4>
+<ul>
+<li>[ ] Implement multi-room audio support</li>
+<li>[ ] Add zone configuration management</li>
+<li>[ ] Create audio synchronization</li>
+<li>[ ] Implement per-zone volume control</li>
+<li>[ ] Add zone-based content filtering</li>
+<li><strong>Acceptance Criteria</strong>: Different audio content in different zones</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-013</li>
+</ul>
+<h3 id="communication-messaging-module"><strong>Communication &amp; Messaging Module</strong></h3>
+<h4 id="task-017-messages-mcp-server"><strong>TASK-017: Messages MCP Server</strong></h4>
+<ul>
+<li>[ ] Create base messaging MCP server</li>
+<li>[ ] Implement SMS/MMS support</li>
+<li>[ ] Add email integration (IMAP/SMTP)</li>
+<li>[ ] Create messaging service abstraction</li>
+<li>[ ] Implement message queuing and delivery</li>
+<li><strong>Acceptance Criteria</strong>: Send/receive messages via multiple channels</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-018-social-media-integration"><strong>TASK-018: Social Media Integration</strong></h4>
+<ul>
+<li>[ ] Implement WhatsApp Business API</li>
+<li>[ ] Add Telegram Bot API integration</li>
+<li>[ ] Create Twitter/X API integration</li>
+<li>[ ] Add Signal API support</li>
+<li>[ ] Implement Facebook Messenger integration</li>
+<li><strong>Acceptance Criteria</strong>: Post/read from social media platforms</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: TASK-017</li>
+</ul>
+<h4 id="task-019-voip-integration"><strong>TASK-019: VoIP Integration</strong></h4>
+<ul>
+<li>[ ] Implement SIP protocol support</li>
+<li>[ ] Add WebRTC for browser calls</li>
+<li>[ ] Create call management (hold, transfer, conference)</li>
+<li>[ ] Add voicemail integration</li>
+<li>[ ] Implement contact management</li>
+<li><strong>Acceptance Criteria</strong>: Make/receive voice calls via internet</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-017</li>
+</ul>
+<hr />
+<h2 id="phase-2-multi-platform-support">🖥️ <strong>PHASE 2: MULTI-PLATFORM SUPPORT</strong></h2>
+<p><em>Timeline: Week 9-16 | Priority: High</em></p>
+<h3 id="platform-controller-modules"><strong>Platform Controller Modules</strong></h3>
+<h4 id="task-020-linux-platform-controller"><strong>TASK-020: Linux Platform Controller</strong></h4>
+<ul>
+<li>[ ] Create Linux MCP server</li>
+<li>[ ] Implement system command execution</li>
+<li>[ ] Add process management tools</li>
+<li>[ ] Create file system operations</li>
+<li>[ ] Add network interface control</li>
+<li><strong>Acceptance Criteria</strong>: Control Linux system via voice commands</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-021-windows-platform-controller"><strong>TASK-021: Windows Platform Controller</strong></h4>
+<ul>
+<li>[ ] Create Windows MCP server</li>
+<li>[ ] Implement PowerShell integration</li>
+<li>[ ] Add Windows service management</li>
+<li>[ ] Create registry access tools</li>
+<li>[ ] Add application launcher</li>
+<li><strong>Acceptance Criteria</strong>: Control Windows system via voice commands</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-022-macos-platform-controller"><strong>TASK-022: macOS Platform Controller</strong></h4>
+<ul>
+<li>[ ] Create macOS MCP server</li>
+<li>[ ] Implement AppleScript integration</li>
+<li>[ ] Add system preferences control</li>
+<li>[ ] Create application management</li>
+<li>[ ] Add Finder operations</li>
+<li><strong>Acceptance Criteria</strong>: Control macOS system via voice commands</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-023-android-controller-bridge"><strong>TASK-023: Android Controller Bridge</strong></h4>
+<ul>
+<li>[ ] Create Android communication bridge</li>
+<li>[ ] Implement ADB-based control</li>
+<li>[ ] Add intent broadcasting</li>
+<li>[ ] Create notification management</li>
+<li>[ ] Add app installation/management</li>
+<li><strong>Acceptance Criteria</strong>: Control Android device from main system</li>
+<li><strong>Estimated Effort</strong>: 18 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-024-ios-controller-bridge"><strong>TASK-024: iOS Controller Bridge</strong></h4>
+<ul>
+<li>[ ] Create iOS communication bridge</li>
+<li>[ ] Implement Shortcuts integration</li>
+<li>[ ] Add device control via automation</li>
+<li>[ ] Create notification management</li>
+<li>[ ] Add app management (limited)</li>
+<li><strong>Acceptance Criteria</strong>: Control iOS device via Shortcuts integration</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-025-rtos-controller-framework"><strong>TASK-025: RTOS Controller Framework</strong></h4>
+<ul>
+<li>[ ] Create RTOS MCP server framework</li>
+<li>[ ] Implement FreeRTOS integration</li>
+<li>[ ] Add Zephyr OS support</li>
+<li>[ ] Create task management tools</li>
+<li>[ ] Add hardware abstraction layer</li>
+<li><strong>Acceptance Criteria</strong>: Control RTOS devices for embedded applications</li>
+<li><strong>Estimated Effort</strong>: 24 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h3 id="container-deployment"><strong>Container &amp; Deployment</strong></h3>
+<h4 id="task-026-multi-platform-container-images"><strong>TASK-026: Multi-Platform Container Images</strong></h4>
+<ul>
+<li>[ ] Create AMD64 base images</li>
+<li>[ ] Build ARM64 images for Raspberry Pi</li>
+<li>[ ] Add Windows container support</li>
+<li>[ ] Optimize image sizes</li>
+<li>[ ] Add health checks and monitoring</li>
+<li><strong>Acceptance Criteria</strong>: All modules available as containers for target platforms</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: All module tasks</li>
+</ul>
+<h4 id="task-027-raspberry-pi-simulation-environment"><strong>TASK-027: Raspberry Pi Simulation Environment</strong></h4>
+<ul>
+<li>[ ] Create Pi simulation docker-compose</li>
+<li>[ ] Add GPIO simulation</li>
+<li>[ ] Implement hardware emulation</li>
+<li>[ ] Create test data generators</li>
+<li>[ ] Add performance profiling</li>
+<li><strong>Acceptance Criteria</strong>: Full Pi environment simulation for testing</li>
+<li><strong>Estimated Effort</strong>: 10 hours</li>
+<li><strong>Dependencies</strong>: TASK-026</li>
+</ul>
+<hr />
+<h2 id="phase-3-advanced-features">🏠 <strong>PHASE 3: ADVANCED FEATURES</strong></h2>
+<p><em>Timeline: Week 17-24 | Priority: Medium</em></p>
+<h3 id="smart-home-integration"><strong>Smart Home Integration</strong></h3>
+<h4 id="task-028-home-automation-mcp-server"><strong>TASK-028: Home Automation MCP Server</strong></h4>
+<ul>
+<li>[ ] Create home automation MCP server</li>
+<li>[ ] Implement Matter/Thread support</li>
+<li>[ ] Add Zigbee/Z-Wave integration</li>
+<li>[ ] Create device discovery and pairing</li>
+<li>[ ] Add automation rule engine</li>
+<li><strong>Acceptance Criteria</strong>: Control smart home devices via voice</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-029-iot-device-integration"><strong>TASK-029: IoT Device Integration</strong></h4>
+<ul>
+<li>[ ] Implement MQTT device support</li>
+<li>[ ] Add HTTP-based device APIs</li>
+<li>[ ] Create device state management</li>
+<li>[ ] Add device grouping and scenes</li>
+<li>[ ] Implement scheduling system</li>
+<li><strong>Acceptance Criteria</strong>: Comprehensive IoT device control</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-028</li>
+</ul>
+<h3 id="security-privacy-module"><strong>Security &amp; Privacy Module</strong></h3>
+<h4 id="task-030-security-mcp-server"><strong>TASK-030: Security MCP Server</strong></h4>
+<ul>
+<li>[ ] Create security/ANPR MCP server</li>
+<li>[ ] Implement camera feed processing</li>
+<li>[ ] Add face recognition capabilities</li>
+<li>[ ] Create license plate recognition</li>
+<li>[ ] Add security alert system</li>
+<li><strong>Acceptance Criteria</strong>: Computer vision security features</li>
+<li><strong>Estimated Effort</strong>: 18 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-031-privacy-protection-framework"><strong>TASK-031: Privacy Protection Framework</strong></h4>
+<ul>
+<li>[ ] Implement data anonymization</li>
+<li>[ ] Add encryption for sensitive data</li>
+<li>[ ] Create privacy policy engine</li>
+<li>[ ] Add consent management</li>
+<li>[ ] Implement audit logging</li>
+<li><strong>Acceptance Criteria</strong>: GDPR-compliant privacy protection</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-008</li>
+</ul>
+<h3 id="maps-navigation-module"><strong>Maps &amp; Navigation Module</strong></h3>
+<h4 id="task-032-navigation-mcp-server"><strong>TASK-032: Navigation MCP Server</strong></h4>
+<ul>
+<li>[ ] Create navigation MCP server</li>
+<li>[ ] Implement routing and directions</li>
+<li>[ ] Add traffic information</li>
+<li>[ ] Create place search and discovery</li>
+<li>[ ] Add location tracking (with consent)</li>
+<li><strong>Acceptance Criteria</strong>: Full navigation capabilities via voice</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-006</li>
+</ul>
+<h4 id="task-033-location-services-integration"><strong>TASK-033: Location Services Integration</strong></h4>
+<ul>
+<li>[ ] Integrate Google Maps API</li>
+<li>[ ] Add OpenStreetMap support</li>
+<li>[ ] Implement geocoding/reverse geocoding</li>
+<li>[ ] Add point-of-interest database</li>
+<li>[ ] Create route optimization</li>
+<li><strong>Acceptance Criteria</strong>: Comprehensive location-based services</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-032</li>
+</ul>
+<h3 id="advanced-ai-features"><strong>Advanced AI Features</strong></h3>
+<h4 id="task-034-context-awareness-engine"><strong>TASK-034: Context Awareness Engine</strong></h4>
+<ul>
+<li>[ ] Implement user behavior learning</li>
+<li>[ ] Add location-based context</li>
+<li>[ ] Create time-based patterns</li>
+<li>[ ] Add preference learning</li>
+<li>[ ] Implement predictive suggestions</li>
+<li><strong>Acceptance Criteria</strong>: AI adapts to user patterns and preferences</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: TASK-009</li>
+</ul>
+<h4 id="task-035-multi-modal-interface"><strong>TASK-035: Multi-Modal Interface</strong></h4>
+<ul>
+<li>[ ] Add image/video processing</li>
+<li>[ ] Implement gesture recognition</li>
+<li>[ ] Create visual search capabilities</li>
+<li>[ ] Add OCR functionality</li>
+<li>[ ] Implement visual confirmation system</li>
+<li><strong>Acceptance Criteria</strong>: Voice + vision interaction capabilities</li>
+<li><strong>Estimated Effort</strong>: 24 hours</li>
+<li><strong>Dependencies</strong>: TASK-014</li>
+</ul>
+<hr />
+<h2 id="phase-4-integration-testing">🧪 <strong>PHASE 4: INTEGRATION &amp; TESTING</strong></h2>
+<p><em>Timeline: Week 25-28 | Priority: High</em></p>
+<h3 id="testing-framework"><strong>Testing Framework</strong></h3>
+<h4 id="task-036-unit-testing-suite"><strong>TASK-036: Unit Testing Suite</strong></h4>
+<ul>
+<li>[ ] Create unit tests for all MCP servers</li>
+<li>[ ] Add integration tests between modules</li>
+<li>[ ] Implement performance benchmarks</li>
+<li>[ ] Create load testing framework</li>
+<li>[ ] Add security testing suite</li>
+<li><strong>Acceptance Criteria</strong>: &gt;90% code coverage, all tests passing</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: All module tasks</li>
+</ul>
+<h4 id="task-037-system-integration-tests"><strong>TASK-037: System Integration Tests</strong></h4>
+<ul>
+<li>[ ] Create end-to-end test scenarios</li>
+<li>[ ] Add cross-platform compatibility tests</li>
+<li>[ ] Implement user journey testing</li>
+<li>[ ] Create failure recovery tests</li>
+<li>[ ] Add performance regression tests</li>
+<li><strong>Acceptance Criteria</strong>: All integration scenarios pass</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: TASK-036</li>
+</ul>
+<h4 id="task-038-automated-testing-pipeline"><strong>TASK-038: Automated Testing Pipeline</strong></h4>
+<ul>
+<li>[ ] Set up continuous testing in CI/CD</li>
+<li>[ ] Add automated deployment testing</li>
+<li>[ ] Create test reporting dashboard</li>
+<li>[ ] Implement test data management</li>
+<li>[ ] Add automated performance monitoring</li>
+<li><strong>Acceptance Criteria</strong>: Automated testing for all commits/releases</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-003, TASK-037</li>
+</ul>
+<h3 id="documentation-user-guides"><strong>Documentation &amp; User Guides</strong></h3>
+<h4 id="task-039-user-documentation"><strong>TASK-039: User Documentation</strong></h4>
+<ul>
+<li>[ ] Create user installation guides</li>
+<li>[ ] Write configuration tutorials</li>
+<li>[ ] Add troubleshooting guides</li>
+<li>[ ] Create video tutorials</li>
+<li>[ ] Add FAQ section</li>
+<li><strong>Acceptance Criteria</strong>: Complete user documentation available</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: All feature tasks</li>
+</ul>
+<h4 id="task-040-developer-documentation"><strong>TASK-040: Developer Documentation</strong></h4>
+<ul>
+<li>[ ] Create MCP server development guide</li>
+<li>[ ] Write API reference documentation</li>
+<li>[ ] Add code examples and samples</li>
+<li>[ ] Create contribution guidelines</li>
+<li>[ ] Add architecture decision records</li>
+<li><strong>Acceptance Criteria</strong>: Complete developer documentation</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: TASK-039</li>
+</ul>
+<h4 id="task-041-deployment-documentation"><strong>TASK-041: Deployment Documentation</strong></h4>
+<ul>
+<li>[ ] Create Docker deployment guides</li>
+<li>[ ] Write cloud deployment instructions</li>
+<li>[ ] Add scaling and monitoring guides</li>
+<li>[ ] Create backup and recovery procedures</li>
+<li>[ ] Add security configuration guides</li>
+<li><strong>Acceptance Criteria</strong>: Complete deployment documentation</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-040</li>
+</ul>
+<h3 id="performance-optimization"><strong>Performance Optimization</strong></h3>
+<h4 id="task-042-performance-profiling"><strong>TASK-042: Performance Profiling</strong></h4>
+<ul>
+<li>[ ] Profile all modules for bottlenecks</li>
+<li>[ ] Optimize memory usage</li>
+<li>[ ] Reduce startup times</li>
+<li>[ ] Optimize network communication</li>
+<li>[ ] Add caching where appropriate</li>
+<li><strong>Acceptance Criteria</strong>: Performance targets met (see proposal)</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: All module tasks</li>
+</ul>
+<h4 id="task-043-scalability-testing"><strong>TASK-043: Scalability Testing</strong></h4>
+<ul>
+<li>[ ] Test with multiple concurrent users</li>
+<li>[ ] Add horizontal scaling support</li>
+<li>[ ] Test resource limits</li>
+<li>[ ] Add auto-scaling capabilities</li>
+<li>[ ] Implement load balancing</li>
+<li><strong>Acceptance Criteria</strong>: System handles expected load</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-042</li>
+</ul>
+<hr />
+<h2 id="additional-deliverables">📱 <strong>ADDITIONAL DELIVERABLES</strong></h2>
+<h3 id="mobile-applications"><strong>Mobile Applications</strong></h3>
+<h4 id="task-044-android-mobile-app"><strong>TASK-044: Android Mobile App</strong></h4>
+<ul>
+<li>[ ] Create native Android app</li>
+<li>[ ] Implement voice interface</li>
+<li>[ ] Add system integration features</li>
+<li>[ ] Create settings and configuration UI</li>
+<li>[ ] Add offline capabilities</li>
+<li><strong>Acceptance Criteria</strong>: Functional Android app with core features</li>
+<li><strong>Estimated Effort</strong>: 40 hours</li>
+<li><strong>Dependencies</strong>: Core modules complete</li>
+</ul>
+<h4 id="task-045-ios-mobile-app"><strong>TASK-045: iOS Mobile App</strong></h4>
+<ul>
+<li>[ ] Create native iOS app</li>
+<li>[ ] Implement Shortcuts integration</li>
+<li>[ ] Add Siri integration</li>
+<li>[ ] Create voice interface</li>
+<li>[ ] Add system integration (limited)</li>
+<li><strong>Acceptance Criteria</strong>: Functional iOS app with core features</li>
+<li><strong>Estimated Effort</strong>: 40 hours</li>
+<li><strong>Dependencies</strong>: Core modules complete</li>
+</ul>
+<h3 id="web-interfaces"><strong>Web Interfaces</strong></h3>
+<h4 id="task-046-web-administration-dashboard"><strong>TASK-046: Web Administration Dashboard</strong></h4>
+<ul>
+<li>[ ] Create React-based web dashboard</li>
+<li>[ ] Add system monitoring views</li>
+<li>[ ] Implement configuration management</li>
+<li>[ ] Add user management interface</li>
+<li>[ ] Create module management system</li>
+<li><strong>Acceptance Criteria</strong>: Full web-based administration interface</li>
+<li><strong>Estimated Effort</strong>: 32 hours</li>
+<li><strong>Dependencies</strong>: Core modules complete</li>
+</ul>
+<h4 id="task-047-voice-web-interface"><strong>TASK-047: Voice Web Interface</strong></h4>
+<ul>
+<li>[ ] Create browser-based voice interface</li>
+<li>[ ] Implement WebRTC for audio</li>
+<li>[ ] Add push-to-talk functionality</li>
+<li>[ ] Create responsive design</li>
+<li>[ ] Add accessibility features</li>
+<li><strong>Acceptance Criteria</strong>: Voice control via web browser</li>
+<li><strong>Estimated Effort</strong>: 24 hours</li>
+<li><strong>Dependencies</strong>: TASK-046</li>
+</ul>
+<hr />
+<h2 id="maintenance-operations">🔧 <strong>MAINTENANCE &amp; OPERATIONS</strong></h2>
+<h3 id="monitoring-observability"><strong>Monitoring &amp; Observability</strong></h3>
+<h4 id="task-048-monitoring-system"><strong>TASK-048: Monitoring System</strong></h4>
+<ul>
+<li>[ ] Implement Prometheus metrics</li>
+<li>[ ] Add Grafana dashboards</li>
+<li>[ ] Create alerting rules</li>
+<li>[ ] Add log aggregation (ELK stack)</li>
+<li>[ ] Implement distributed tracing</li>
+<li><strong>Acceptance Criteria</strong>: Complete observability stack</li>
+<li><strong>Estimated Effort</strong>: 20 hours</li>
+<li><strong>Dependencies</strong>: All modules</li>
+</ul>
+<h4 id="task-049-health-checking-system"><strong>TASK-049: Health Checking System</strong></h4>
+<ul>
+<li>[ ] Add health endpoints to all services</li>
+<li>[ ] Implement dependency health checks</li>
+<li>[ ] Create health status dashboard</li>
+<li>[ ] Add automated recovery mechanisms</li>
+<li>[ ] Implement graceful degradation</li>
+<li><strong>Acceptance Criteria</strong>: Automated health monitoring and recovery</li>
+<li><strong>Estimated Effort</strong>: 12 hours</li>
+<li><strong>Dependencies</strong>: TASK-048</li>
+</ul>
+<h3 id="security-compliance"><strong>Security &amp; Compliance</strong></h3>
+<h4 id="task-050-security-audit-hardening"><strong>TASK-050: Security Audit &amp; Hardening</strong></h4>
+<ul>
+<li>[ ] Conduct security vulnerability assessment</li>
+<li>[ ] Implement security best practices</li>
+<li>[ ] Add input validation and sanitization</li>
+<li>[ ] Create security monitoring</li>
+<li>[ ] Add intrusion detection</li>
+<li><strong>Acceptance Criteria</strong>: Security audit passed, hardening implemented</li>
+<li><strong>Estimated Effort</strong>: 16 hours</li>
+<li><strong>Dependencies</strong>: All modules complete</li>
+</ul>
+<h4 id="task-051-gdpr-compliance-implementation"><strong>TASK-051: GDPR Compliance Implementation</strong></h4>
+<ul>
+<li>[ ] Add data inventory and mapping</li>
+<li>[ ] Implement right to erasure</li>
+<li>[ ] Add consent management</li>
+<li>[ ] Create privacy impact assessments</li>
+<li>[ ] Add data breach notification</li>
+<li><strong>Acceptance Criteria</strong>: Full GDPR compliance verified</li>
+<li><strong>Estimated Effort</strong>: 14 hours</li>
+<li><strong>Dependencies</strong>: TASK-031</li>
+</ul>
+<hr />
+<h2 id="definition-of-done">🎯 <strong>DEFINITION OF DONE</strong></h2>
+<p>Each task is considered complete when:</p>
+<h3 id="code-quality"><strong>Code Quality</strong></h3>
+<ul>
+<li>[ ] Code follows established style guidelines</li>
+<li>[ ] All code is peer-reviewed</li>
+<li>[ ] Unit tests written with &gt;80% coverage</li>
+<li>[ ] Integration tests passing</li>
+<li>[ ] No critical security vulnerabilities</li>
+<li>[ ] Performance benchmarks met</li>
+</ul>
+<h3 id="documentation"><strong>Documentation</strong></h3>
+<ul>
+<li>[ ] API documentation updated</li>
+<li>[ ] User-facing documentation written</li>
+<li>[ ] Architecture diagrams updated</li>
+<li>[ ] Deployment guides verified</li>
+<li>[ ] Troubleshooting guide updated</li>
+</ul>
+<h3 id="testing"><strong>Testing</strong></h3>
+<ul>
+<li>[ ] Manual testing completed</li>
+<li>[ ] Automated tests passing</li>
+<li>[ ] Cross-platform compatibility verified</li>
+<li>[ ] Performance requirements met</li>
+<li>[ ] Security testing completed</li>
+</ul>
+<h3 id="deployment"><strong>Deployment</strong></h3>
+<ul>
+<li>[ ] Docker images built and tagged</li>
+<li>[ ] CI/CD pipeline updated</li>
+<li>[ ] Monitoring/alerting configured</li>
+<li>[ ] Rollback procedures tested</li>
+<li>[ ] Production deployment verified</li>
+</ul>
+<hr />
+<h2 id="task-labels-priorities">🏷️ <strong>TASK LABELS &amp; PRIORITIES</strong></h2>
+<h3 id="priority-levels"><strong>Priority Levels</strong></h3>
+<ul>
+<li><strong>P0 - Critical</strong>: Blocks project progress</li>
+<li><strong>P1 - High</strong>: Important for milestone completion  </li>
+<li><strong>P2 - Medium</strong>: Enhances functionality</li>
+<li><strong>P3 - Low</strong>: Nice to have features</li>
+</ul>
+<h3 id="component-labels"><strong>Component Labels</strong></h3>
+<ul>
+<li><code>core</code> - Core orchestrator functionality</li>
+<li><code>audio</code> - Audio processing and control</li>
+<li><code>platform</code> - Platform-specific controllers</li>
+<li><code>comms</code> - Communication and messaging</li>
+<li><code>security</code> - Security and privacy features</li>
+<li><code>docs</code> - Documentation tasks</li>
+<li><code>testing</code> - Testing and QA</li>
+<li><code>infrastructure</code> - DevOps and deployment</li>
+</ul>
+<h3 id="effort-estimation-scale"><strong>Effort Estimation Scale</strong></h3>
+<ul>
+<li><strong>XS</strong>: 1-2 hours</li>
+<li><strong>S</strong>: 2-4 hours  </li>
+<li><strong>M</strong>: 4-8 hours</li>
+<li><strong>L</strong>: 8-16 hours</li>
+<li><strong>XL</strong>: 16-32 hours</li>
+<li><strong>XXL</strong>: 32+ hours</li>
+</ul>
+<hr />
+<h2 id="progress-tracking_1">📊 <strong>PROGRESS TRACKING</strong></h2>
+<h3 id="weekly-sprint-planning"><strong>Weekly Sprint Planning</strong></h3>
+<ul>
+<li>Review and update task status</li>
+<li>Assign tasks to team members</li>
+<li>Update effort estimates based on progress</li>
+<li>Identify and resolve blockers</li>
+<li>Plan next sprint deliverables</li>
+</ul>
+<h3 id="milestone-reviews"><strong>Milestone Reviews</strong></h3>
+<ul>
+<li><strong>M1 (Week 4)</strong>: Core architecture functional</li>
+<li><strong>M2 (Week 8)</strong>: Audio assistant working on desktop</li>
+<li><strong>M3 (Week 12)</strong>: Multi-platform support complete</li>
+<li><strong>M4 (Week 16)</strong>: Advanced features implemented</li>
+<li><strong>M5 (Week 20)</strong>: Testing and documentation complete</li>
+<li><strong>M6 (Week 24)</strong>: Production-ready release</li>
+</ul>
+<h3 id="success-metrics"><strong>Success Metrics</strong></h3>
+<ul>
+<li><strong>Velocity</strong>: Tasks completed per week</li>
+<li><strong>Quality</strong>: Defect density, test coverage</li>
+<li><strong>Performance</strong>: Response times, resource usage</li>
+<li><strong>User Satisfaction</strong>: Feedback scores, usage metrics</li>
+</ul>
+<hr />
+<h2 id="change-management">🔄 <strong>CHANGE MANAGEMENT</strong></h2>
+<h3 id="task-updates"><strong>Task Updates</strong></h3>
+<ul>
+<li>All task changes must be documented with reason</li>
+<li>Effort re-estimation requires team review</li>
+<li>Priority changes need stakeholder approval</li>
+<li>New tasks follow standard template</li>
+</ul>
+<h3 id="scope-changes"><strong>Scope Changes</strong></h3>
+<ul>
+<li>Major scope changes require architecture review</li>
+<li>Impact analysis on timeline and resources</li>
+<li>Stakeholder approval for significant additions</li>
+<li>Documentation updates for all changes</li>
+</ul>
+<hr />
+<p><strong>📝 Note</strong>: This TODO list is a living document that will be updated throughout the project lifecycle. All team members and AI agents should refer to this as the single source of truth for implementation tasks and project progress.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </article>
+            </div>
+
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+        <div class="md-social">
+
+
+
+
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+
+
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+
+
+  </body>
+</html>

@@ -1,0 +1,572 @@
+{
+  "mia-voice-command-learning": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MIA Voice Command Learning Output",
+    "description": "Learning extracted from a voice command interaction",
+    "type": "object",
+    "required": [
+      "command_pattern_family",
+      "success"
+    ],
+    "properties": {
+      "success": {
+        "type": "boolean",
+        "description": "Whether the command was successfully executed"
+      },
+      "command_pattern_family": {
+        "type": "string",
+        "description": "Intent family this command belongs to"
+      },
+      "phrasing_variations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Alternative ways users phrase this intent"
+      },
+      "parameter_extraction_quality": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "context_effectiveness": {
+        "type": "object",
+        "properties": {
+          "signals_used": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "improvement_potential": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "confidence_calibration": {
+        "type": "object",
+        "properties": {
+          "appropriate": {
+            "type": "boolean"
+          },
+          "adjustment": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          }
+        }
+      },
+      "failure_root_cause": {
+        "type": ["string", "null"],
+        "description": "Why command failed (if success=false)"
+      },
+      "user_adaptation_insights": {
+        "type": "object",
+        "description": "User-specific patterns discovered"
+      },
+      "next_command_prediction": {
+        "type": ["string", "null"],
+        "description": "Predicted next command based on sequence"
+      },
+      "learning_priorities": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "High-value learning areas"
+      },
+      "recommendations_for_improvement": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+
+  "mia-voice-command-failure-analysis": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MIA Voice Command Failure Analysis",
+    "description": "Analysis of voice command failure and recovery",
+    "type": "object",
+    "required": [
+      "failure_classification",
+      "preventable"
+    ],
+    "properties": {
+      "failure_classification": {
+        "type": "string",
+        "enum": ["edge_case", "systematic", "user_specific"],
+        "description": "Type of failure"
+      },
+      "preventable": {
+        "type": "boolean",
+        "description": "Can this failure be prevented?"
+      },
+      "root_causes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Identified root causes"
+      },
+      "recovery_strategy": {
+        "type": "object",
+        "properties": {
+          "clarifying_questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "alternative_interpretations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missing_context_signals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "pattern_discovery": {
+        "type": "object",
+        "properties": {
+          "pattern_name": {
+            "type": ["string", "null"]
+          },
+          "frequency": {
+            "type": ["string", "null"]
+          },
+          "similar_commands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "improvement_actions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string"
+            },
+            "impact": {
+              "type": ["string", "null"]
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["high", "medium", "low"]
+            }
+          },
+          "required": ["action"]
+        }
+      },
+      "user_personalization": {
+        "type": "object",
+        "properties": {
+          "user_specific_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "preference_learned": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "prevention_strategy": {
+        "type": ["string", "null"]
+      },
+      "learning_value": {
+        "type": "string",
+        "enum": ["high", "medium", "low"]
+      },
+      "follow_up_actions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+
+  "mia-voice-command-pattern-synthesis": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MIA Voice Command Pattern Synthesis",
+    "description": "Synthesized patterns from multiple interactions",
+    "type": "object",
+    "required": [
+      "summary"
+    ],
+    "properties": {
+      "summary": {
+        "type": "string",
+        "description": "High-level summary of patterns"
+      },
+      "interaction_statistics": {
+        "type": "object",
+        "properties": {
+          "total_analyzed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "success_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "average_confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "user_satisfaction_avg": {
+            "type": ["number", "null"],
+            "minimum": 1,
+            "maximum": 5
+          },
+          "unique_intents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unique_users": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "intent_families": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "intent": {
+              "type": "string"
+            },
+            "success_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "variations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "keyword_patterns": {
+              "type": "object"
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "context_dependency": {
+              "type": "string"
+            },
+            "confidence_threshold_recommended": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "common_failures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "user_satisfaction": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "required": ["intent"]
+        }
+      },
+      "parameter_extraction_rules": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "context_effectiveness_analysis": {
+        "type": "object"
+      },
+      "failure_pattern_analysis": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "personalization_opportunities": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "command_sequence_patterns": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "recommended_improvements": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "confidence_calibration_analysis": {
+        "type": "object"
+      },
+      "next_steps": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "learning_value": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "implementation_priority": {
+        "type": "string",
+        "enum": ["critical", "high", "medium", "low"]
+      }
+    }
+  },
+
+  "mia-voice-context-analyzer": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MIA Voice Context Analyzer Output",
+    "description": "Analysis of context effectiveness",
+    "type": "object",
+    "required": [
+      "context_impact_summary"
+    ],
+    "properties": {
+      "context_impact_summary": {
+        "type": "string"
+      },
+      "accuracy_metrics": {
+        "type": "object",
+        "properties": {
+          "without_context": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "with_partial_context": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "with_full_context": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "context_improvement_percentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["without_context", "with_full_context"]
+      },
+      "context_signal_importance": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "signal": {
+              "type": "string"
+            },
+            "value_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "improvement_impact": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "availability": {
+              "type": "string",
+              "enum": ["always", "sometimes", "rare"]
+            }
+          },
+          "required": ["signal"]
+        }
+      },
+      "intent_context_mapping": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "parameter_inference_rules": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "confidence_adjustment_rules": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "location_patterns": {
+        "type": "object"
+      },
+      "time_patterns": {
+        "type": "object"
+      },
+      "missing_context_analysis": {
+        "type": "object"
+      },
+      "recommendations": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "next_actions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+
+  "mia-voice-command-knowledge-synthesis": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MIA Voice Command Knowledge Synthesis",
+    "description": "Comprehensive knowledge synthesis from all learning dimensions",
+    "type": "object",
+    "required": [
+      "executive_summary"
+    ],
+    "properties": {
+      "executive_summary": {
+        "type": "string"
+      },
+      "synthesis_timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "data_sources": {
+        "type": "object",
+        "properties": {
+          "total_interactions_analyzed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "time_period": {
+            "type": ["string", "null"]
+          },
+          "users_represented": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "devices_represented": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "baseline_accuracy": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "command_family_library": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "intent_recognition_rules": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "failure_prevention_strategy": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "context_enhancement_plan": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "personalization_framework": {
+        "type": "object"
+      },
+      "improvement_roadmap": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "metrics_and_monitoring": {
+        "type": "object"
+      },
+      "implementation_checklist": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "risk_assessment": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "success_criteria": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "next_synthesis_trigger": {
+        "type": ["string", "null"]
+      },
+      "continuous_improvement_loop": {
+        "type": "object"
+      }
+    }
+  }
+}

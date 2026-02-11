@@ -1,0 +1,49 @@
+Android Device Setup - Environment Verification Report
+Generated on: Thu Dec 11 04:51:33 PM CET 2025
+Host: studio
+User: sparrow
+
+=== SYSTEM INFORMATION ===
+OS: Ubuntu 24.04.3 LTS
+Kernel: 6.8.0-88-generic
+Architecture: x86_64
+
+=== INSTALLED PACKAGES ===
+✓ adb: 1:34.0.4-1build3
+✗ fastboot: NOT INSTALLED
+✓ wget: 1.21.4-1ubuntu4.1
+✓ curl: 8.5.0-2ubuntu10.6
+✓ unzip: 6.0-28ubuntu4.1
+✓ python3: 3.12.3-0ubuntu2.1
+✓ python3-pip: 24.0+dfsg-1ubuntu1.3
+✓ git: 1:2.43.0-1ubuntu7.3
+✓ usbutils: 1:017-3build1
+✓ udev: 255.4-1ubuntu8.11
+
+=== ANDROID TOOLS ===
+ADB: Android Debug Bridge version 1.0.41
+Fastboot: fastboot version 36.0.0-13206524
+
+=== UDEV RULES ===
+✓ Android udev rules configured
+
+=== WORKING DIRECTORY ===
+✓ Work directory: /home/sparrow/projects/ai-servis/android-device-workspace
+Available space: 193G
+
+=== USB DEVICES ===
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 001 Device 003: ID 1cf1:0030 Dresden Elektronik ZigBee gateway [ConBee II]
+Bus 001 Device 004: ID 0a5c:2123 Broadcom Corp. Bluetooth dongle
+Bus 001 Device 005: ID 03f0:1d17 HP, Inc LaserJet 1320
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 002 Device 004: ID 1a2c:40e2 China Resource Semico Co., Ltd USB Keyboard
+Bus 002 Device 011: ID 1a40:0101 Terminus Technology Inc. Hub
+Bus 002 Device 012: ID 046d:c52b Logitech, Inc. Unifying Receiver
+
+=== RECOMMENDATIONS ===
+- Ensure USB debugging is enabled on Android device
+- Test device connection with: adb devices
+

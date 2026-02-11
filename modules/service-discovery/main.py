@@ -14,7 +14,7 @@ import aiohttp
 import websockets
 
 # Import our MCP framework
-from mcp_framework import (
+from ..shared.mcp_framework import (
     MCPServer, MCPClient, MCPMessage, MCPTransport,
     WebSocketTransport, Tool, create_tool
 )

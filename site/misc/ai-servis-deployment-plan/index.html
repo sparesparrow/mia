@@ -1,0 +1,1558 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+
+
+
+        <link rel="canonical" href="https://sparesparrow.github.io/ai-servis-universal/misc/ai-servis-deployment-plan/">
+
+
+
+
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+
+
+
+        <title>AI-SERVIS: Kompletní Deployment Plán & Dokumentace - AI-SERVIS Documentation</title>
+
+
+
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+
+
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+
+
+
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#ai-servis-kompletni-deployment-plan-dokumentace" class="md-skip">
+          Skip to content
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              AI-SERVIS: Kompletní Deployment Plán & Dokumentace
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+
+
+</form>
+
+
+
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+      </div>
+
+  </nav>
+
+</header>
+
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+
+
+
+
+  Overview
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+
+
+
+
+  Architecture
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+
+
+
+
+  Install
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+
+
+
+
+  Wiring & Power
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+
+
+
+
+  API & Contracts
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+
+
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+
+
+
+
+  Privacy
+
+        </a>
+      </li>
+
+
+
+
+
+
+
+
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+
+
+
+
+  Troubleshooting
+
+      </a>
+    </li>
+
+
+
+    </ul>
+  </div>
+</nav>
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/ai-servis-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/ai-servis-universal
+  </div>
+</a>
+    </div>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Install
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+
+
+
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#prehled-projektu" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚗 Přehled Projektu
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚗 Přehled Projektu">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#klicove-vyhody" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Klíčové Výhody
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#cenove-balicky" class="md-nav__link">
+    <span class="md-ellipsis">
+      💰 Cenové Balíčky
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="💰 Cenové Balíčky">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#konkurencni-vyhoda" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏆 Konkurenční Výhoda
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#technicka-architektura" class="md-nav__link">
+    <span class="md-ellipsis">
+      🏗️ Technická Architektura
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🏗️ Technická Architektura">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#hardware-komponenty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Komponenty
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#software-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software Stack
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#mcp-ekosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      MCP Ekosystém
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#deployment-timeline-28-tydnu" class="md-nav__link">
+    <span class="md-ellipsis">
+      📅 Deployment Timeline (28 týdnů)
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#cicd-devops-naklady" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 CI/CD &amp; DevOps Náklady
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔧 CI/CD & DevOps Náklady">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#mesicni-operacni-naklady" class="md-nav__link">
+    <span class="md-ellipsis">
+      Měsíční Operační Náklady
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#automatizovane-nasazeni" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatizované Nasazení
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#trzni-prilezitost" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Tržní Příležitost
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🎯 Tržní Příležitost">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#czech-automotive-aftermarket" class="md-nav__link">
+    <span class="md-ellipsis">
+      Czech Automotive Aftermarket
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#target-zakaznici" class="md-nav__link">
+    <span class="md-ellipsis">
+      Target Zákazníci
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#go-to-market-strategie" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Go-to-Market Strategie
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🚀 Go-to-Market Strategie">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#faze-1-pilot-mesice-1-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fáze 1: Pilot (Měsíce 1-3)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#faze-2-regionalni-expanze-mesice-4-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fáze 2: Regionální expanze (Měsíce 4-8)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#faze-3-narodni-skalovani-mesice-9-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fáze 3: Národní škálování (Měsíce 9-12)
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#financni-projekce" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Finanční Projekce
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="📊 Finanční Projekce">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#rok-1-cile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rok 1 Cíle
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#rok-2-3-skalovani" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rok 2-3 Škálování
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#compliance-bezpecnost" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔒 Compliance &amp; Bezpečnost
+    </span>
+  </a>
+
+    <nav class="md-nav" aria-label="🔒 Compliance & Bezpečnost">
+      <ul class="md-nav__list">
+
+          <li class="md-nav__item">
+  <a href="#gdpr-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      GDPR Compliance
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#technicka-bezpecnost" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technická Bezpečnost
+    </span>
+  </a>
+
+</li>
+
+      </ul>
+    </nav>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#kontaktni-informace" class="md-nav__link">
+    <span class="md-ellipsis">
+      📞 Kontaktní Informace
+    </span>
+  </a>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis-universal/edit/master/docs/misc/ai-servis-deployment-plan.md" title="Edit this page" class="md-content__button md-icon">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+
+
+
+
+<h1 id="ai-servis-kompletni-deployment-plan-dokumentace">AI-SERVIS: Kompletní Deployment Plán &amp; Dokumentace</h1>
+<h2 id="prehled-projektu">🚗 Přehled Projektu</h2>
+<p><strong>AI-SERVIS</strong> je inovativní autoservis specializující se na AI technologie pro automobily. Naším cílem je poskytovat modulární, cenově dostupné řešení založené na edge AI zpracování.</p>
+<h3 id="klicove-vyhody">🎯 Klíčové Výhody</h3>
+<ul>
+<li><strong>Edge AI zpracování</strong> - bez závislosti na cloudu</li>
+<li><strong>Modulární architektura</strong> - škálovatelná řešení</li>
+<li><strong>80% nižší TCO</strong> než tradiční ANPR systémy</li>
+<li><strong>Open source foundation</strong> - bez vendor lock-in</li>
+<li><strong>Lokální český support</strong> - rychlá reakce</li>
+</ul>
+<h2 id="cenove-balicky">💰 Cenové Balíčky</h2>
+<table>
+<thead>
+<tr>
+<th>Balíček</th>
+<th>Cena</th>
+<th>Náklady</th>
+<th>Marže</th>
+<th>Klíčové funkce</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Základní</strong></td>
+<td>42.000 Kč</td>
+<td>28.250 Kč</td>
+<td>32.7%</td>
+<td>Pi Server + ANPR + Android App</td>
+</tr>
+<tr>
+<td><strong>Komfort</strong></td>
+<td>61.000 Kč</td>
+<td>42.600 Kč</td>
+<td>30.2%</td>
+<td>+ AI Asistent + Audio Server + Wi-Fi</td>
+</tr>
+<tr>
+<td><strong>Premium</strong></td>
+<td>91.000 Kč</td>
+<td>65.400 Kč</td>
+<td>28.1%</td>
+<td>+ DVR + SIP Telefonie + Navigace</td>
+</tr>
+<tr>
+<td><strong>Enterprise</strong></td>
+<td>131.000 Kč</td>
+<td>97.300 Kč</td>
+<td>25.7%</td>
+<td>Všechny moduly + 24/7 Support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="konkurencni-vyhoda">🏆 Konkurenční Výhoda</h3>
+<ul>
+<li>Tradiční ANPR systémy: <strong>200.000 - 2.000.000 Kč</strong></li>
+<li>Naše řešení: <strong>42.000 - 131.000 Kč</strong> (úspora 70-93%)</li>
+</ul>
+<h2 id="technicka-architektura">🏗️ Technická Architektura</h2>
+<h3 id="hardware-komponenty">Hardware Komponenty</h3>
+<ol>
+<li><strong>Raspberry Pi 5</strong> (8GB RAM) - centrální server</li>
+<li><strong>ESP32-S3 DevKit</strong> (2x) - IoT senzory</li>
+<li><strong>ANPR Kamera 2MP + IR</strong> - rozpoznávání SPZ</li>
+<li><strong>USB Audio Interface</strong> - kvalitní zvuk</li>
+<li><strong>MicroSD 256GB A2</strong> - rychlé úložiště</li>
+<li><strong>PoE+ HAT</strong> - napájení přes Ethernet</li>
+<li><strong>12V/5A napájecí zdroj</strong> - stabilní napětí</li>
+<li><strong>Ochranný kryt IP65</strong> - odolnost vůči povětrnosti</li>
+</ol>
+<h3 id="software-stack">Software Stack</h3>
+<div class="highlight"><pre><span></span><code>┌─ Raspberry Pi 5 Server ─┐
+│ ├── Docker Containers   │
+│ │   ├── lpr-engine      │ &lt;- ANPR detekce
+│ │   ├── camera-server   │ &lt;- RTSP ingest
+│ │   ├── ai-agent        │ &lt;- ElevenLabs
+│ │   ├── audio-server    │ &lt;- RTP-MIDI
+│ │   ├── sip-server      │ &lt;- Asterisk
+│ │   ├── web-ui          │ &lt;- Dashboard
+│ │   └── mqtt-broker     │ &lt;- IoT komunikace
+│ └─────────────────────────┘
+</code></pre></div>
+<h3 id="mcp-ekosystem">MCP Ekosystém</h3>
+<ul>
+<li><strong>android-mcp-client</strong> - hlasové ovládání</li>
+<li><strong>rtp-midi</strong> - audio routing</li>
+<li><strong>bzeed-mobility</strong> - deployment orchestrace</li>
+</ul>
+<h2 id="deployment-timeline-28-tydnu">📅 Deployment Timeline (28 týdnů)</h2>
+<table>
+<thead>
+<tr>
+<th>Fáze</th>
+<th>Trvání</th>
+<th>Tým</th>
+<th>Náklady</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Analýza a návrh</td>
+<td>2 týdny</td>
+<td>1 architekt + 1 PM</td>
+<td>120.000 Kč</td>
+</tr>
+<tr>
+<td>Vývoj MVP</td>
+<td>4 týdny</td>
+<td>2 vývojáři + 1 UI/UX</td>
+<td>240.000 Kč</td>
+</tr>
+<tr>
+<td>Hardware procurement</td>
+<td>2 týdny</td>
+<td>1 procurement</td>
+<td>50.000 Kč</td>
+</tr>
+<tr>
+<td>Software development</td>
+<td>8 týdnů</td>
+<td>3 vývojáři + 1 DevOps</td>
+<td>480.000 Kč</td>
+</tr>
+<tr>
+<td>Testování a QA</td>
+<td>3 týdny</td>
+<td>2 testeři + 1 QA lead</td>
+<td>180.000 Kč</td>
+</tr>
+<tr>
+<td>Dokumentace</td>
+<td>2 týdny</td>
+<td>1 technical writer</td>
+<td>60.000 Kč</td>
+</tr>
+<tr>
+<td>Pilot instalace</td>
+<td>2 týdny</td>
+<td>2 technici + 1 support</td>
+<td>100.000 Kč</td>
+</tr>
+<tr>
+<td>Marketing launch</td>
+<td>1 týden</td>
+<td>1 marketing + 1 sales</td>
+<td>40.000 Kč</td>
+</tr>
+<tr>
+<td>Škálování</td>
+<td>4 týdny</td>
+<td>celý tým</td>
+<td>200.000 Kč</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Celkem: 1.470.000 Kč za 28 týdnů</strong></p>
+<h2 id="cicd-devops-naklady">🔧 CI/CD &amp; DevOps Náklady</h2>
+<h3 id="mesicni-operacni-naklady">Měsíční Operační Náklady</h3>
+<ul>
+<li><strong>GitHub Enterprise</strong>: $105 (2.415 Kč)</li>
+<li><strong>Docker Hub Pro</strong>: $35 (805 Kč)  </li>
+<li><strong>AWS EKS</strong>: $72 (1.656 Kč)</li>
+<li><strong>GitLab CI minutes</strong>: $0 (self-hosted)</li>
+<li><strong>Monitoring (Datadog)</strong>: $150 (3.450 Kč)</li>
+</ul>
+<p><strong>Celkem měsíčně: $362 (8.326 Kč)</strong></p>
+<h3 id="automatizovane-nasazeni">Automatizované Nasazení</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># docker-compose.yml excerpt</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">lpr-engine</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/lpr:latest</span>
+<span class="w">    </span><span class="nt">deploy</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">cpus</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2&#39;</span>
+<span class="w">          </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2G</span>
+
+<span class="w">  </span><span class="nt">camera-server</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/camera:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8554:8554&quot;</span><span class="w">  </span><span class="c1"># RTSP</span>
+
+<span class="w">  </span><span class="nt">ai-agent</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ai-servis/agent:latest</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ELEVENLABS_API_KEY=${ELEVENLABS_KEY}</span>
+</code></pre></div>
+<h2 id="trzni-prilezitost">🎯 Tržní Příležitost</h2>
+<h3 id="czech-automotive-aftermarket">Czech Automotive Aftermarket</h3>
+<ul>
+<li><strong>Velikost trhu</strong>: 1.2 miliardy EUR ročně</li>
+<li><strong>Růst</strong>: 5-10% ročně</li>
+<li><strong>Klíčoví hráči</strong>: LKQ CZ, SAG Group, Inter Cars CZ</li>
+</ul>
+<h3 id="target-zakaznici">Target Zákazníci</h3>
+<ol>
+<li><strong>Autoservisy</strong> (8.253+ v ČR) - instalace pro zákazníky</li>
+<li><strong>Fleet management</strong> - firemní vozidla </li>
+<li><strong>Taxi/rideshare</strong> - bezpečnost a monitoring</li>
+<li><strong>Individuální zákazníci</strong> - tech early adopters</li>
+</ol>
+<h2 id="go-to-market-strategie">🚀 Go-to-Market Strategie</h2>
+<h3 id="faze-1-pilot-mesice-1-3">Fáze 1: Pilot (Měsíce 1-3)</h3>
+<ul>
+<li>10 pilotních instalací v Brně</li>
+<li>Partnership s 3 autoservisy</li>
+<li>Feedback sběr a iterace</li>
+</ul>
+<h3 id="faze-2-regionalni-expanze-mesice-4-8">Fáze 2: Regionální expanze (Měsíce 4-8)</h3>
+<ul>
+<li>Rozšíření na Moravu</li>
+<li>Online marketing kampaň</li>
+<li>B2B sales tým</li>
+</ul>
+<h3 id="faze-3-narodni-skalovani-mesice-9-12">Fáze 3: Národní škálování (Měsíce 9-12)</h3>
+<ul>
+<li>Celá ČR + Slovensko</li>
+<li>Dealer/partner síť</li>
+<li>Enterprise zákazníci</li>
+</ul>
+<h2 id="financni-projekce">📊 Finanční Projekce</h2>
+<h3 id="rok-1-cile">Rok 1 Cíle</h3>
+<ul>
+<li><strong>Instalace</strong>: 100 systémů</li>
+<li><strong>Revenue</strong>: 5.5M Kč</li>
+<li><strong>Break-even</strong>: měsíc 8</li>
+<li><strong>Team</strong>: 12 lidí</li>
+</ul>
+<h3 id="rok-2-3-skalovani">Rok 2-3 Škálování</h3>
+<ul>
+<li><strong>Instalace/rok</strong>: 500-1000 systémů</li>
+<li><strong>Revenue/rok</strong>: 25-50M Kč  </li>
+<li><strong>Expanze</strong>: SK, AT, PL</li>
+<li><strong>Team</strong>: 25-40 lidí</li>
+</ul>
+<h2 id="compliance-bezpecnost">🔒 Compliance &amp; Bezpečnost</h2>
+<h3 id="gdpr-compliance">GDPR Compliance</h3>
+<ul>
+<li><strong>Lokální zpracování</strong> - žádné uploady do cloudu</li>
+<li><strong>Hashování SPZ</strong> - HMAC-SHA256 s pepper</li>
+<li><strong>Audit log</strong> - všechny akce zaznamenány</li>
+<li><strong>Retention policy</strong> - automatické mazání po 24-72h</li>
+<li><strong>User consent</strong> - opt-in funkcionalita</li>
+</ul>
+<h3 id="technicka-bezpecnost">Technická Bezpečnost</h3>
+<ul>
+<li><strong>mTLS</strong> mezi kontejnery</li>
+<li><strong>Role-based access</strong> - UI segmentace</li>
+<li><strong>Secure storage</strong> - TPM/secure element</li>
+<li><strong>OTA updates</strong> - signed &amp; verified</li>
+<li><strong>Network isolation</strong> - VPN/firewall</li>
+</ul>
+<h2 id="kontaktni-informace">📞 Kontaktní Informace</h2>
+<p><strong>AI-SERVIS s.r.o.</strong>
+- 📍 Brno-sever, Jihomoravský kraj<br />
+- 📞 +420 777 888 999
+- 📧 info@ai-servis.cz
+- 🌐 www.ai-servis.cz</p>
+<hr />
+<p><em>Dokumentace vytvořena: Srpen 2025</em><br />
+<em>Verze: 1.0</em><br />
+<em>Autor: AI-SERVIS Development Team</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </article>
+            </div>
+
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+      </main>
+
+        <footer class="md-footer">
+
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+
+
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+
+</div>
+
+        <div class="md-social">
+
+
+
+
+
+
+
+
+    <a href="https://github.com/sparesparrow/ai-servis" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+
+</div>
+
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+
+
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+
+
+  </body>
+</html>

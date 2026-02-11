@@ -1,324 +1,311 @@
 #!/bin/bash
-# MIA Universal Initialization Script
-# Initialize project environment and verify setup
+# =============================================================================
+# AI-SERVIS Development Environment Initialization
+# =============================================================================
+# Simple entry point that sets up the AI-SERVIS build environment.
+# Uses Cloudsmith-centric CPython-tool bootstrap (complete-bootstrap.py).
+#
+# Usage:
+#   ./tools/init.sh              # Full setup (calls complete-bootstrap.py)
+#   ./tools/init.sh --update     # Update existing environment
+#   ./tools/init.sh --clean      # Remove and reinstall
+#   source tools/init.sh --shell # Initialize for interactive use
+#
+# =============================================================================
 
 set -e
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Logging functions
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+# Get script and project root directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BUILDENV_DIR="$PROJECT_ROOT/.buildenv"
+
+# Display banner
+show_banner() {
+    echo -e "${CYAN}"
+    echo "  ╔═══════════════════════════════════════════════════════════════╗"
+    echo "  ║         AI-SERVIS Development Environment                      ║"
+    echo "  ║         Zero-Copy Bootstrap via Cloudsmith                     ║"
+    echo "  ╚═══════════════════════════════════════════════════════════════╝"
+    echo -e "${NC}"
 }
 
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Check if environment is properly set up
-check_environment() {
-    log_info "Checking environment setup..."
-
-    local issues=()
-
-    # Check Python
-    if ! python3 --version &> /dev/null; then
-        issues+=("Python 3 not found")
-    else
-        local python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
-        log_info "Python version: $python_version"
+# Setup Conan remote for sparetools packages
+setup_conan_remotes() {
+    echo -e "${CYAN}Setting up Conan remotes...${NC}"
+    
+    # Check if Conan is available
+    if ! command -v conan &> /dev/null; then
+        echo -e "${YELLOW}Conan not found. Will be installed during bootstrap.${NC}"
+        return 0
     fi
+    
+    # Add Cloudsmith remote for sparetools packages
+    conan remote add sparesparrow-conan \
+        https://dl.cloudsmith.io/public/sparesparrow-conan/openssl-conan/conan/ \
+        --force 2>/dev/null || true
+    
+    # Verify remote was added
+    if conan remote list | grep -q "sparesparrow-conan"; then
+        echo -e "${GREEN}  ✓ Cloudsmith remote configured${NC}"
+    fi
+}
 
+# Create AI-SERVIS specific zero-copy environment
+create_mia_env() {
+    echo -e "${CYAN}Creating AI-SERVIS build environment...${NC}"
+    
+    # Run the create-zero-copy-env.sh script
+    if [ -x "$SCRIPT_DIR/create-zero-copy-env.sh" ]; then
+        bash "$SCRIPT_DIR/create-zero-copy-env.sh"
+    else
+        echo -e "${YELLOW}create-zero-copy-env.sh not found or not executable${NC}"
+        echo -e "${YELLOW}Running full bootstrap instead...${NC}"
+        bash "$SCRIPT_DIR/bootstrap.sh"
+    fi
+}
+
+# Install AI-SERVIS specific Conan dependencies
+install_mia_deps() {
+    echo -e "${CYAN}Installing AI-SERVIS Conan dependencies...${NC}"
+    
+    # Activate environment if available
+    if [ -f "$BUILDENV_DIR/activate.sh" ]; then
+        source "$BUILDENV_DIR/activate.sh"
+    elif [ -f "${HOME}/.openssl-devenv/activate.sh" ]; then
+        source "${HOME}/.openssl-devenv/activate.sh"
+    fi
+    
     # Check Conan
-    if ! conan --version &> /dev/null; then
-        issues+=("Conan not found in PATH")
-    else
-        local conan_version=$(conan --version | head -n1)
-        log_info "Conan version: $conan_version"
+    if ! command -v conan &> /dev/null; then
+        echo -e "${RED}Conan not available after bootstrap. Something went wrong.${NC}"
+        exit 1
     fi
-
-    # Check required Python packages
-    local python_packages=("websockets" "aiohttp" "pydantic" "fastapi" "uvicorn")
-    for package in "${python_packages[@]}"; do
-        if ! python3 -c "import $package" 2>/dev/null; then
-            issues+=("Python package $package not installed")
-        fi
-    done
-
-    # Check project structure
-    local required_files=("conanfile.py" "modules/core-orchestrator/main.py")
-    for file in "${required_files[@]}"; do
-        if [ ! -f "$PROJECT_ROOT/$file" ]; then
-            issues+=("Required file missing: $file")
-        fi
-    done
-
-    if [ ${#issues[@]} -gt 0 ]; then
-        log_error "Environment check failed:"
-        for issue in "${issues[@]}"; do
-            log_error "  - $issue"
-        done
-        return 1
-    fi
-
-    log_success "Environment check passed"
-    return 0
-}
-
-# Install Conan dependencies
-install_conan_dependencies() {
-    log_info "Installing Conan dependencies..."
-
+    
+    # Install project dependencies using conanfile.py
     cd "$PROJECT_ROOT"
-
-    # Try Cloudsmith first
-    if conan remote list | grep -q "sparetools"; then
-        log_info "Using Cloudsmith repository..."
-        if ! conan install . --build=missing -r sparetools; then
-            log_warning "Cloudsmith installation failed, trying GitHub Packages..."
-            if ! conan install . --build=missing; then
-                log_error "Conan dependency installation failed"
-                return 1
-            fi
-        fi
-    else
-        log_info "Installing from default remotes..."
-        if ! conan install . --build=missing; then
-            log_error "Conan dependency installation failed"
-            return 1
-        fi
-    fi
-
-    log_success "Conan dependencies installed"
-    return 0
+    
+    echo -e "${BLUE}Installing dependencies from conanfile.py...${NC}"
+    conan install . --build=missing --output-folder="$BUILDENV_DIR/conan" || {
+        echo -e "${YELLOW}Conan install with options failed, trying basic install...${NC}"
+        conan install . --build=missing
+    }
+    
+    echo -e "${GREEN}  ✓ AI-SERVIS dependencies installed${NC}"
 }
 
-# Verify project can run
-verify_project() {
-    log_info "Verifying project setup..."
+# Generate environment activation script
+generate_activation_script() {
+    echo -e "${CYAN}Generating AI-SERVIS activation script...${NC}"
+    
+    mkdir -p "$BUILDENV_DIR"
+    
+    cat > "$BUILDENV_DIR/activate.sh" << 'ENVSCRIPT'
+#!/bin/bash
+# =============================================================================
+# AI-SERVIS Build Environment Activation
+# =============================================================================
+# Source this script to activate the build environment:
+#   source .buildenv/activate.sh
+# =============================================================================
 
-    # Try importing main modules
-    if ! python3 -c "import sys; sys.path.insert(0, 'modules'); import mcp_framework; print('MCP framework imported successfully')"; then
-        log_error "Failed to import MCP framework"
-        return 1
-    fi
+_BUILDENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export MIA_ROOT="$(cd "$_BUILDENV_DIR/.." && pwd)"
+export MIA_BUILDENV="$_BUILDENV_DIR"
 
-    if ! python3 -c "import sys; sys.path.insert(0, 'modules'); import core_orchestrator.main; print('Core orchestrator imported successfully')"; then
-        log_error "Failed to import core orchestrator"
-        return 1
-    fi
+# Activate sparetools environment if available
+SPARETOOLS_ACTIVATE="${HOME}/.openssl-devenv/activate.sh"
+if [ -f "$SPARETOOLS_ACTIVATE" ]; then
+    source "$SPARETOOLS_ACTIVATE"
+fi
 
-    log_success "Project verification passed"
-    return 0
+# Fallback to local venv if sparetools not available
+if [ -d "$MIA_BUILDENV/venv" ]; then
+    source "$MIA_BUILDENV/venv/bin/activate"
+fi
+
+# Set Conan home
+export CONAN_HOME="$MIA_BUILDENV/conan"
+
+# Add project bin to PATH
+export PATH="$MIA_ROOT/bin:$PATH"
+
+# Set build cache directory
+export CCACHE_DIR="$MIA_BUILDENV/ccache"
+
+# Helper functions
+mia-build() {
+    "$MIA_ROOT/tools/build.sh" "$@"
 }
 
-# Setup development environment
-setup_dev_environment() {
-    log_info "Setting up development environment..."
-
-    # Create virtual environment if it doesn't exist
-    if [ ! -d "venv" ]; then
-        log_info "Creating Python virtual environment..."
-        python3 -m venv venv
-    fi
-
-    # Activate virtual environment
-    source venv/bin/activate
-
-    # Install development dependencies
-    if [ -f "requirements-dev.txt" ]; then
-        log_info "Installing development dependencies..."
-        pip install -r requirements-dev.txt
-    fi
-
-    # Create .env file template if it doesn't exist
-    if [ ! -f ".env" ]; then
-        log_info "Creating .env template..."
-        cat > .env << 'EOF'
-# MIA Universal Environment Configuration
-
-# MCP Server Configuration
-MCP_HOST=localhost
-MCP_PORT=8080
-
-# Service Ports
-CORE_ORCHESTRATOR_PORT=8080
-AI_AUDIO_ASSISTANT_PORT=8082
-AI_PLATFORM_CONTROLLER_PORT=8083
-
-# Logging
-LOG_LEVEL=INFO
-LOG_FILE=logs/mia.log
-
-# Cloudsmith Configuration (optional)
-# CLOUDSMITH_USERNAME=your_username
-# CLOUDSMITH_API_KEY=your_api_key
-
-# GitHub Configuration (optional)
-# GITHUB_USERNAME=your_username
-# GITHUB_TOKEN=your_token
-EOF
-    fi
-
-    # Create logs directory
-    mkdir -p logs
-
-    log_success "Development environment setup complete"
+mia-clean() {
+    echo "Cleaning build directories..."
+    rm -rf "$MIA_ROOT/build-"* 2>/dev/null
+    rm -rf "$MIA_ROOT/platforms/cpp/build" 2>/dev/null
+    echo "Clean complete."
 }
 
-# Print project information
-print_project_info() {
-    echo
-    log_info "MIA Universal Project Information:"
-    echo "  Project Root: $PROJECT_ROOT"
-    echo "  Python: $(python3 --version 2>/dev/null || echo 'Not found')"
-    echo "  Conan: $(conan --version 2>/dev/null | head -n1 || echo 'Not found')"
-    echo
-    log_info "Available commands:"
-    echo "  Start core orchestrator: python3 modules/core-orchestrator/main.py"
-    echo "  Start audio assistant: python3 modules/ai-audio-assistant/main.py"
-    echo "  Install dependencies: conan install . --build=missing"
-    echo "  Run tests: python3 -m pytest"
-    echo
-    log_info "Documentation:"
-    echo "  docs/README.md - Main documentation"
-    echo "  docs/BOOTSTRAP.md - Bootstrap guide"
-    echo "  docs/DEPLOYMENT.md - Deployment instructions"
+mia-info() {
+    echo "AI-SERVIS Build Environment"
+    echo "  Project Root: $MIA_ROOT"
+    echo "  Build Env:    $MIA_BUILDENV"
+    echo "  Python:       $(which python3 2>/dev/null || which python 2>/dev/null || echo 'not found')"
+    echo "  Conan:        $(which conan 2>/dev/null || echo 'not found')"
+    echo "  Conan Home:   $CONAN_HOME"
+    echo ""
+    echo "Available commands:"
+    echo "  mia-build [target]  - Build components"
+    echo "  mia-clean           - Clean build directories"
+    echo "  mia-info            - Show this info"
 }
 
-# Print usage information
-print_usage() {
-    cat << EOF
-MIA Universal Initialization Script
+export -f mia-build mia-clean mia-info
 
-Usage: $0 [OPTIONS]
+echo "AI-SERVIS build environment activated."
+echo "Run 'mia-info' for help."
+ENVSCRIPT
 
-Options:
-    --help              Show this help message
-    --no-conan          Skip Conan dependency installation
-    --no-verify         Skip project verification
-    --dev               Setup development environment
-    --clean             Clean build artifacts and start fresh
+    chmod +x "$BUILDENV_DIR/activate.sh"
+    
+    # Also create tools/env.sh as an alias
+    cat > "$SCRIPT_DIR/env.sh" << 'ENVSCRIPT'
+#!/bin/bash
+# AI-SERVIS environment activation wrapper
+# Source this from project root: source tools/env.sh
 
-Examples:
-    $0                      # Standard initialization
-    $0 --dev               # Setup development environment
-    $0 --clean             # Clean and reinitialize
-    $0 --no-conan         # Skip Conan installation
-EOF
-}
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_PROJECT_ROOT="$(cd "$_SCRIPT_DIR/.." && pwd)"
 
-# Clean build artifacts
-clean_artifacts() {
-    log_info "Cleaning build artifacts..."
+if [ -f "$_PROJECT_ROOT/.buildenv/activate.sh" ]; then
+    source "$_PROJECT_ROOT/.buildenv/activate.sh"
+else
+    echo "Build environment not set up. Run: ./tools/init.sh"
+    return 1
+fi
+ENVSCRIPT
 
-    # Remove Conan build directories
-    rm -rf build-release/conan/
-    rm -rf build/
-
-    # Remove Python cache
-    find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-    find . -name "*.pyc" -delete 2>/dev/null || true
-
-    # Remove virtual environment
-    rm -rf venv/
-
-    # Remove logs
-    rm -rf logs/
-
-    log_success "Build artifacts cleaned"
+    chmod +x "$SCRIPT_DIR/env.sh"
+    
+    echo -e "${GREEN}  ✓ Activation scripts created${NC}"
 }
 
 # Main function
 main() {
-    local no_conan=false
-    local no_verify=false
-    local dev=false
-    local clean=false
-
-    # Parse arguments
+    local mode="setup"
+    local shell_mode=false
+    
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --help)
-                print_usage
-                exit 0
-                ;;
-            --no-conan)
-                no_conan=true
-                shift
-                ;;
-            --no-verify)
-                no_verify=true
-                shift
-                ;;
-            --dev)
-                dev=true
+            --update)
+                mode="update"
                 shift
                 ;;
             --clean)
-                clean=true
+                mode="clean"
                 shift
                 ;;
+            --shell)
+                shell_mode=true
+                shift
+                ;;
+            -h|--help)
+                echo "Usage: $0 [options]"
+                echo ""
+                echo "Options:"
+                echo "  --update    Update existing environment"
+                echo "  --clean     Remove and reinstall everything"
+                echo "  --shell     Just activate for interactive shell"
+                echo "  -h, --help  Show this help"
+                exit 0
+                ;;
             *)
-                log_error "Unknown option: $1"
-                print_usage
+                echo "Unknown option: $1"
                 exit 1
                 ;;
         esac
     done
-
-    log_info "MIA Universal Initialization Starting..."
-
-    if [ "$clean" = true ]; then
-        clean_artifacts
-    fi
-
-    if ! check_environment; then
-        log_error "Environment check failed. Run ./tools/bootstrap.sh first"
-        exit 1
-    fi
-
-    if [ "$no_conan" = false ]; then
-        if ! install_conan_dependencies; then
-            log_error "Conan dependency installation failed"
-            exit 1
+    
+    # Shell mode - just activate existing environment
+    if [ "$shell_mode" = true ]; then
+        if [ -f "$BUILDENV_DIR/activate.sh" ]; then
+            source "$BUILDENV_DIR/activate.sh"
+            return 0
+        else
+            echo "Environment not set up. Run: ./tools/init.sh"
+            return 1
         fi
-    else
-        log_info "Skipping Conan dependency installation"
     fi
-
-    if [ "$no_verify" = false ]; then
-        if ! verify_project; then
-            log_error "Project verification failed"
-            exit 1
+    
+    show_banner
+    
+    # Clean mode
+    if [ "$mode" = "clean" ]; then
+        echo -e "${YELLOW}Removing existing environment...${NC}"
+        rm -rf "$BUILDENV_DIR"
+        mode="setup"
+    fi
+    
+    # Update mode
+    if [ "$mode" = "update" ] && [ -f "$BUILDENV_DIR/activate.sh" ]; then
+        echo -e "${CYAN}Updating existing environment...${NC}"
+        source "$BUILDENV_DIR/activate.sh"
+        
+        if command -v pip &> /dev/null; then
+            pip install --upgrade pip conan
         fi
+        
+        install_mia_deps
+        echo -e "${GREEN}Update complete!${NC}"
+        exit 0
+    fi
+    
+    # Full setup - use Cloudsmith-centric bootstrap
+    echo -e "${BLUE}Starting AI-SERVIS environment setup...${NC}"
+    echo ""
+    
+    # Check if complete-bootstrap.py exists and run it
+    if [ -f "$PROJECT_ROOT/complete-bootstrap.py" ]; then
+        echo -e "${CYAN}Running Cloudsmith-centric bootstrap...${NC}"
+        python3 "$PROJECT_ROOT/complete-bootstrap.py" || {
+            echo -e "${YELLOW}Bootstrap script failed, falling back to legacy approach...${NC}"
+            setup_conan_remotes
+            create_mia_env
+        }
     else
-        log_info "Skipping project verification"
+        echo -e "${YELLOW}complete-bootstrap.py not found, using legacy approach...${NC}"
+        setup_conan_remotes
+        create_mia_env
     fi
 
-    if [ "$dev" = true ]; then
-        setup_dev_environment
+    # Generate activation script if it doesn't exist
+    if [ ! -f "$BUILDENV_DIR/activate.sh" ]; then
+        generate_activation_script
     fi
 
-    log_success "Initialization completed successfully!"
-    print_project_info
+    install_mia_deps
+    
+    echo ""
+    echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}  Setup Complete!${NC}"
+    echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
+    echo ""
+    echo -e "${CYAN}To activate the build environment:${NC}"
+    echo -e "  ${YELLOW}source tools/env.sh${NC}"
+    echo ""
+    echo -e "${CYAN}Or use the full activation script:${NC}"
+    echo -e "  ${YELLOW}source .buildenv/activate.sh${NC}"
+    echo ""
+    echo -e "${CYAN}To build all C++ components:${NC}"
+    echo -e "  ${YELLOW}./tools/build.sh${NC}"
+    echo ""
 }
 
-# Run main function
 main "$@"

@@ -1,0 +1,25 @@
+[Unit]
+Description=MIA Car Assistant Agent
+After=network.target
+Wants=mia-broker.service mia-gpio-worker.service mia-obd-worker.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/mia-car-assistant
+Environment=PYTHONPATH=/opt/mia-car-assistant
+ExecStart=/opt/mia-car-assistant/venv/bin/python /opt/mia-car-assistant/modules/hardware-bridge/hardware_server.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables for MCP and hardware
+Environment=GPIO_WORKER_ADDRESS=tcp://127.0.0.1:5555
+Environment=OBD_WORKER_ADDRESS=tcp://127.0.0.1:5556
+Environment=RF_WORKER_ADDRESS=tcp://127.0.0.1:5557
+Environment=MCP_MODE=car_assistant
+Environment=LOG_LEVEL=INFO
+
+[Install]
+WantedBy=multi-user.target

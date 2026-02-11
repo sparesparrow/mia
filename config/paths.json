@@ -1,0 +1,5 @@
+{
+  "project_root": ".",
+  "install_prefix": "/opt/mia",
+  "rpi_deploy_path": "/home/mia/mia-install"
+}

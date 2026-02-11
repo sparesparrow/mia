@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  mqtt-broker:
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+    volumes:
+      - ./services/mosquitto/secure.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./services/mosquitto/passwords:/mosquitto/passwords
+      - ./services/mosquitto/certs:/mosquitto/certs:ro
+
+

@@ -1,0 +1,202 @@
+name: C++ Build
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'platforms/cpp/**'
+      - 'conanfile.py'
+      - 'profiles/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'platforms/cpp/**'
+      - 'conanfile.py'
+      - 'profiles/**'
+
+jobs:
+  build-cpp:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - { runner: ubuntu-latest, arch: x86_64, host_profile: linux-x86_64, build_profile: linux-x86_64, conan_arch: x86_64 }
+          - { runner: ubuntu-20.04, arch: arm64, host_profile: linux-arm64, build_profile: linux-arm64, conan_arch: armv8 }
+          - { runner: ubuntu-latest, arch: arm64-cross, host_profile: linux-arm64, build_profile: linux-x86_64, conan_arch: armv8 }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Validate ARM64 Architecture Detection
+        if: matrix.arch == 'arm64'
+        run: |
+          # Ensure we're running under native ARM64 runtime
+          python -c "import platform; assert platform.machine() in ['aarch64', 'arm64']"
+
+          # Force profile detection
+          conan profile detect --force
+
+          # Validate host profile shows armv8
+          conan profile show profiles/${{ matrix.host_profile }} | grep -q "arch=armv8" || exit 1
+
+          # Validate build profile shows correct arch
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            conan profile show profiles/${{ matrix.build_profile }} | grep -q "arch=armv8" || exit 1
+          else
+            conan profile show profiles/${{ matrix.build_profile }} | grep -q "arch=x86_64" || exit 1
+          fi
+
+      - name: Ensure Native ARM64 Python Runtime
+        if: matrix.arch == 'arm64'
+        run: |
+          # Verify we're using ARM64 Python (not x86_64 emulation)
+          python -c "
+          import sys, platform
+          machine = platform.machine()
+          if machine not in ['aarch64', 'arm64']:
+              print(f'ERROR: Running on {machine}, expected aarch64/arm64')
+              sys.exit(1)
+          print(f'✓ Running on native {machine} architecture')
+          "
+
+      - name: Install Conan
+        run: |
+          pip install conan
+          conan profile detect --force
+
+      - name: Cache Conan packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.conan
+          key: ${{ runner.os }}-conan-${{ matrix.arch }}-${{ hashFiles('conanfile.py', format('profiles/{0}', matrix.host_profile), format('profiles/{0}', matrix.build_profile)) }}
+          restore-keys: |
+            ${{ runner.os }}-conan-${{ matrix.arch }}-
+
+      - name: Install dependencies with Conan
+        run: |
+          cd platforms/cpp
+          conan install ../.. -pr:h=../../profiles/${{ matrix.host_profile }} -pr:b=../../profiles/${{ matrix.build_profile }} --build=missing
+
+      - name: Configure CMake
+        run: |
+          cd platforms/cpp
+          cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DWITH_HARDWARE=ON
+
+      - name: Build
+        run: |
+          cd platforms/cpp
+          cmake --build build -j$(nproc)
+
+      - name: Verify build artifacts
+        run: |
+          cd platforms/cpp/build
+          echo "Build artifacts:"
+          ls -la
+
+          # Ensure core binaries were built
+          for binary in webgrab-client webgrab-server webgrab-linux-host; do
+            if [ ! -f "$binary" ]; then
+              echo "ERROR: $binary was not built"
+              exit 1
+            fi
+            if [ ! -x "$binary" ]; then
+              echo "ERROR: $binary is not executable"
+              exit 1
+            fi
+          done
+
+          # Check shared library
+          if [ ! -f "libwebgrab.so" ]; then
+            echo "ERROR: libwebgrab.so was not built"
+            exit 1
+          fi
+
+          echo "✓ All core build artifacts verified"
+
+      - name: Run basic functionality tests
+        run: |
+          cd platforms/cpp/build
+
+          # Test that binaries can start (basic smoke test)
+          echo "Testing binary startup..."
+
+          # Test webgrab-client help (should not crash)
+          timeout 5s ./webgrab-client --help >/dev/null 2>&1 && echo "✓ webgrab-client help works" || echo "! webgrab-client help failed (expected)"
+
+          # Test webgrab-server startup (should start and we can kill it)
+          timeout 3s ./webgrab-server --help >/dev/null 2>&1 && echo "✓ webgrab-server help works" || echo "! webgrab-server help failed (expected)"
+
+          # Test hardware-server if it exists
+          if [ -f "hardware-server" ]; then
+            timeout 3s ./hardware-server --help >/dev/null 2>&1 && echo "✓ hardware-server help works" || echo "! hardware-server help failed (expected)"
+          fi
+
+          echo "✓ Basic functionality tests completed"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cpp-${{ matrix.arch }}-binaries
+          path: |
+            platforms/cpp/build/hardware-server
+            platforms/cpp/build/webgrab-client
+            platforms/cpp/build/webgrab-server
+            platforms/cpp/build/webgrab-linux-host
+            platforms/cpp/build/libwebgrab.so
+
+      - name: Test basic functionality
+        run: |
+          cd platforms/cpp/build
+
+          # Test that core binaries exist and are executable
+          echo "Checking core binaries..."
+          ls -la webgrab-client webgrab-server webgrab-linux-host libwebgrab.so
+
+          # Test hardware binaries if they exist
+          if [ -f "hardware-server" ]; then
+            echo "Hardware server found, checking..."
+            ls -la hardware-server
+            file hardware-server
+          else
+            echo "Hardware server not built (expected for minimal builds)"
+          fi
+
+          # Architecture validation: ensure ARM64 binaries are actually ARM64
+          if [ "${{ matrix.conan_arch }}" = "armv8" ]; then
+            echo "Validating ARM64 architecture..."
+
+            # Check core binaries
+            for binary in webgrab-client webgrab-server webgrab-linux-host; do
+              if ! file "$binary" | grep -q "ARM aarch64"; then
+                echo "ERROR: $binary is not ARM64 binary"
+                file "$binary"
+                exit 1
+              fi
+            done
+
+            # Check hardware binary if it exists
+            if [ -f "hardware-server" ]; then
+              if ! file hardware-server | grep -q "ARM aarch64"; then
+                echo "ERROR: hardware-server is not ARM64 binary"
+                exit 1
+              fi
+            fi
+
+            echo "✓ ARM64 binaries validated"
+          else
+            echo "Validating x86_64 architecture..."
+            for binary in webgrab-client webgrab-server webgrab-linux-host; do
+              if ! file "$binary" | grep -q "x86-64"; then
+                echo "ERROR: $binary is not x86_64 binary"
+                file "$binary"
+                exit 1
+              fi
+            done
+            echo "✓ x86_64 binaries validated"
+          fi

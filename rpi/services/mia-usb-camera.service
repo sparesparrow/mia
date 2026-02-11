@@ -1,0 +1,26 @@
+[Unit]
+Description=MIA USB Camera Service
+After=network.target mia-broker.service
+Requires=mia-broker.service
+Wants=dev-video-device.target
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/projects/mia/rpi/services
+ExecStart=/opt/mia/rpi/bin/python3 usb_camera_service.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/mia/projects/mia/rpi
+Environment=PYTHONHOME=/opt/mia/rpi
+Environment=PATH=/opt/mia/rpi/bin:/usr/bin:/usr/local/bin
+# Camera device permissions
+SupplementaryGroups=video plugdev
+# USB device access
+Environment=UDEV=1
+
+[Install]
+WantedBy=multi-user.target

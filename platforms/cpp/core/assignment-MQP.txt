@@ -1,0 +1,33 @@
+## 2. Zadání B – WebGrab Server (vícevláknová služba)
+
+Naprogramujte v C++20 vícevláknovou službu „webgrab-server“, která naslouchá na TCP socketu, přijímá binární zprávy ve formátu `webgrab.fbs` a dává je do vytrvalé **fronty úloh** (může být souborová, SQLite nebo externí MQ).  
+
+Pracovní vlákna (2-4) čtou z fronty a zpracovávají úlohy:
+
+* DownloadRequest   → stáhnout soubor na disk (libcurl nebo wget) a uložit mapu sessionId→stav.  
+
+* DownloadStatusRequest → vrátit aktuální stav (Queued, Downloading, Completed, Failed, Aborted).  
+
+* DownloadAbortRequest  → příznak zrušení; běžící download má povinnost co nejdřív skončit.  
+
+* ShutdownRequest   → přijmout, ale zpracovat **až** fronta dosáhne prázdného stavu; pak korektně ukončit.
+
+### Funkční požadavky
+
+1. **Asynchronní** zpracování: přijetí zprávy se musí potvrdit klientovi okamžitě, skutečná práce probíhá na pozadí.
+
+2. Fronta musí přežít restart procesu; nedokončené joby se po startu znovu zařadí.
+
+3. Každý job má unikátní `sessionId` (uint32).  
+
+4. Stavová data i soubory je potřeba ukládat do samostatného pracovního adresáře, jenž je zadán parametrem při spuštění.
+
+5. Limity: paralelně nejvýš 4 downloads; ostatní čekají ve frontě.
+
+### Dodané artefakty
+
+* Stejné `webgrab.fbs` jako u klienta.  
+
+* Build skript `CMakeLists.txt`.  
+
+* README s pokyny k nasazení a příkladovým `systemd` service filem.

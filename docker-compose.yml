@@ -1,0 +1,195 @@
+version: '3.8'
+
+services:
+  # Core Orchestrator - Main MCP Host
+  ai-servis-core:
+    build:
+      context: ./modules/core-orchestrator
+      dockerfile: Dockerfile
+    container_name: ai-servis-core
+    restart: unless-stopped
+    environment:
+      - MCP_DISCOVERY_PORT=8080
+      - MQTT_BROKER=mqtt-broker:1883
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+    ports:
+      - "8080:8080"
+      - "8081:8081"  # MCP host port
+    volumes:
+      - ./volumes/core-config:/app/config
+      - ./volumes/core-data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - mqtt-broker
+      - service-discovery
+    networks:
+      - ai-servis-network
+
+  # Service Discovery
+  service-discovery:
+    build:
+      context: ./modules/service-discovery
+      dockerfile: Dockerfile
+    container_name: ai-servis-discovery
+    restart: unless-stopped
+    environment:
+      - MQTT_BROKER=mqtt-broker:1883
+      - DISCOVERY_PORT=8090
+      - LOG_LEVEL=INFO
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./volumes/discovery-data:/app/data
+    depends_on:
+      - mqtt-broker
+    networks:
+      - ai-servis-network
+
+  # AI Audio Assistant MCP Server
+  ai-audio-assistant:
+    build:
+      context: ./modules/ai-audio-assistant
+      dockerfile: Dockerfile
+    container_name: ai-audio-assistant
+    restart: unless-stopped
+    environment:
+      - MCP_SERVER_PORT=8082
+      - MQTT_BROKER=mqtt-broker:1883
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID:-}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET:-}
+      - LOG_LEVEL=INFO
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./volumes/audio-config:/app/config
+      - /dev/snd:/dev/snd:rw  # Audio device access
+    devices:
+      - /dev/snd
+    privileged: true  # Required for audio device access
+    depends_on:
+      - mqtt-broker
+      - service-discovery
+    networks:
+      - ai-servis-network
+
+  # Linux Platform Controller
+  ai-platform-linux:
+    build:
+      context: ./modules/ai-platform-controllers/linux
+      dockerfile: Dockerfile
+    container_name: ai-platform-linux
+    restart: unless-stopped
+    environment:
+      - MCP_SERVER_PORT=8083
+      - MQTT_BROKER=mqtt-broker:1883
+      - TARGET_PLATFORM=linux
+      - LOG_LEVEL=INFO
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./volumes/platform-config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker control
+      - /usr/bin/docker:/usr/bin/docker:ro
+    privileged: true  # Required for system control
+    depends_on:
+      - mqtt-broker
+      - service-discovery
+    networks:
+      - ai-servis-network
+
+  # MQTT Broker
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: ai-servis-mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./volumes/mqtt-data:/mosquitto/data
+      - ./volumes/mqtt-logs:/mosquitto/log
+    networks:
+      - ai-servis-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai-servis-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=aiservisbwx    
+      - POSTGRES_USER=aiservisdv
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-aiservisloc}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres-data:/var/lib/postgresql/data
+      - ./containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ai-servis-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ai-servis-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis-data:/data
+    networks:
+      - ai-servis-network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ai-servis-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./volumes/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - ai-servis-network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ai-servis-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - ./volumes/grafana-data:/var/lib/grafana
+      - ./containers/grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - ai-servis-network
+
+networks:
+  ai-servis-network:
+    driver: bridge
+
+volumes:
+  core-config:
+  core-data:
+  discovery-data:
+  audio-config:
+  platform-config:
+  mqtt-data:
+  mqtt-logs:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:

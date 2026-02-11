@@ -1,0 +1,21 @@
+[Unit]
+Description=MIA FastAPI Server for Raspberry Pi
+After=network.target zmq-broker.service
+Wants=zmq-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/home/mia/projects/mia/rpi/api
+Environment="PATH=/home/mia/.ai-servis/bin:/usr/bin:/usr/local/bin"
+Environment="PYTHONHOME=/home/mia/.ai-servis"
+Environment="PYTHONPATH=/home/mia/projects/mia/rpi:/home/mia/.ai-servis/lib/python3.13/site-packages"
+ExecStart=/home/mia/.ai-servis/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

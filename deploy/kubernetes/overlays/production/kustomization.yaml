@@ -1,0 +1,287 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: mia-universal-production
+
+# Base configuration
+bases:
+  - ../../base
+
+# Namespace override for production
+namespace: ai-servis-prod
+
+# Production-specific labels
+commonLabels:
+  environment: production
+  ai-servis.com/deployment: production
+  ai-servis.com/automotive-grade: "true"
+
+# Production annotations
+commonAnnotations:
+  ai-servis.com/environment: "production"
+  ai-servis.com/sla: "99.9"
+  ai-servis.com/automotive-certified: "true"
+  ai-servis.com/edge-optimized: "true"
+
+# Production images with specific tags
+images:
+  - name: mia/core-orchestrator
+    newName: ghcr.io/sparesparrow/mia-universal/core-orchestrator
+    newTag: v1.0.0
+  - name: mia/ai-audio-assistant
+    newName: ghcr.io/sparesparrow/mia-universal/ai-audio-assistant
+    newTag: v1.0.0
+  - name: mia/hardware-bridge
+    newName: ghcr.io/sparesparrow/mia-universal/hardware-bridge
+    newTag: v1.0.0
+  - name: mia/ai-security
+    newName: ghcr.io/sparesparrow/mia-universal/ai-security
+    newTag: v1.0.0
+  - name: mia/service-discovery
+    newName: ghcr.io/sparesparrow/mia-universal/service-discovery
+    newTag: v1.0.0
+
+# Production-specific configuration
+configMapGenerator:
+  - name: ai-servis-config-prod
+    files:
+      - config/orchestrator-config-prod.yaml
+      - config/audio-config-prod.yaml
+      - config/security-config-prod.yaml
+    options:
+      disableNameSuffixHash: true
+
+# Production secrets (will be managed externally)
+secretGenerator:
+  - name: ai-servis-secrets-prod
+    type: Opaque
+    literals:
+      - environment=production
+    options:
+      disableNameSuffixHash: true
+
+# Production-specific resources
+resources:
+  - production-config.yaml
+  - production-secrets.yaml
+  - production-monitoring.yaml
+  - production-ingress.yaml
+  - production-certificates.yaml
+  - production-backup.yaml
+
+# Production patches
+patches:
+  # Increase replica counts for production
+  - target:
+      kind: Deployment
+      name: core-orchestrator
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+
+  - target:
+      kind: Deployment
+      name: ai-audio-assistant
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5
+
+  - target:
+      kind: Deployment
+      name: hardware-bridge
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+
+  - target:
+      kind: Deployment
+      name: ai-security
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+
+  # Production resource limits
+  - target:
+      kind: Deployment
+      name: core-orchestrator
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+            ephemeral-storage: "2Gi"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+            ephemeral-storage: "4Gi"
+
+  - target:
+      kind: Deployment
+      name: ai-audio-assistant
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            memory: "2Gi"
+            cpu: "1500m"
+            ephemeral-storage: "4Gi"
+          limits:
+            memory: "4Gi"
+            cpu: "3000m"
+            ephemeral-storage: "8Gi"
+
+  # Production environment variables
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: ENVIRONMENT
+          value: "production"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: LOG_LEVEL
+          value: "WARN"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: AUTOMOTIVE_MODE
+          value: "true"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: EDGE_OPTIMIZATION
+          value: "aggressive"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: SECURITY_LEVEL
+          value: "high"
+
+  # Production node affinity for automotive-grade hardware
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/affinity/nodeAffinity
+        value:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: ai-servis.com/node-grade
+                    operator: In
+                    values: ["automotive", "industrial"]
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: ["amd64", "arm64"]
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: ai-servis.com/edge-optimized
+                    operator: In
+                    values: ["true"]
+            - weight: 80
+              preference:
+                matchExpressions:
+                  - key: node.kubernetes.io/instance-type
+                    operator: In
+                    values: ["c5.xlarge", "c5.2xlarge", "m5.xlarge"]
+
+  # Production tolerations for dedicated automotive nodes
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "ai-servis.com/automotive-grade"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "ai-servis.com/edge-node"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+
+  # Production security context enhancements
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/seccompProfile
+        value:
+          type: RuntimeDefault
+      - op: add
+        path: /spec/template/spec/containers/0/securityContext/capabilities
+        value:
+          drop:
+            - ALL
+          add: []
+
+  # Production probes with automotive-specific timeouts
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/livenessProbe
+        value:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe
+        value:
+          httpGet:
+            path: /ready
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+      - op: add
+        path: /spec/template/spec/containers/0/startupProbe
+        value:
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+
+# Production-specific HPA configurations
+replicas:
+  - name: core-orchestrator
+    count: 3
+  - name: ai-audio-assistant
+    count: 5
+  - name: hardware-bridge
+    count: 3
+  - name: ai-security
+    count: 3
+  - name: service-discovery
+    count: 2

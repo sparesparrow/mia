@@ -1,0 +1,5 @@
+{
+  "force_regen": "AT CMD REGEN_PSA_KEY",
+  "check_battery": "AT RV",
+  "reset_codes": "04"
+}

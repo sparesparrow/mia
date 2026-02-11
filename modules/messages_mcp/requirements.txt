@@ -1,0 +1,2 @@
+twilio==8.13.0
+aiosmtplib==2.0.2

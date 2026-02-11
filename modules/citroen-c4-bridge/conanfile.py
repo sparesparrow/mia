@@ -3,24 +3,6 @@ from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake
 
 
 class CitroenC4Bridge(ConanFile):
-
-    tool_requires = [
-    "sparetools-mia/2.0.0",
-    "sparetools-mcp-servers/1.0.0",
-    "sparetools-mcp-prompts/3.13.0",
-    "sparetools-mcp-ecosystem/1.0.0",
-    "sparetools-bpm-schemas/2.0.0",
-    "sparetools-protocols/1.0.0",
-    "sparetools-protocols/1.0.0",
-    "sparetools-mcp-core/1.0.0",
-    "sparetools-embedded/1.0.0",
-    "sparetools-flatbuffers/24.3.25",
-        "sparetools-cpython/3.12.7",
-    ]
-
-    python_requires = [
-        "sparetools-base/2.0.3",
-    ]
     """Conan package for Citroën C4 Vehicle Bridge"""
 
     name = "citroen-c4-bridge"

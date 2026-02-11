@@ -1,0 +1,103 @@
+{
+  "project": "AI-SERVIS",
+  "version": "1.0",
+  "deployment_specs": {
+    "Komponenty": [
+      "Raspberry Pi 5 (8GB RAM)",
+      "ESP32-S3 DevKit (2x)",
+      "ANPR Kamera 2MP + IR",
+      "USB Audio Interface",
+      "MicroSD 256GB A2",
+      "PoE+ HAT",
+      "12V/5A napájecí zdroj",
+      "Ochranný kryt IP65",
+      "Android tablet 10\" (volitelné)"
+    ],
+    "Software": [
+      "Raspberry Pi OS 64-bit",
+      "Docker + Docker Compose",
+      "MQTT Broker (Mosquitto)",
+      "OpenALPR Engine",
+      "TensorRT + OpenCV",
+      "ElevenLabs SDK",
+      "SIP Server (Asterisk)",
+      "PipeWire Audio Server",
+      "Android MCP Client App",
+      "Web UI Dashboard"
+    ],
+    "Služby_Docker": [
+      "lpr-engine (ANPR detekce)",
+      "camera-server (RTSP ingest)",
+      "ai-agent (ElevenLabs)",
+      "audio-server (RTP-MIDI bridge)",
+      "sip-server (Asterisk)",
+      "mqtt-broker (Mosquitto)",
+      "web-ui (React dashboard)",
+      "esp32-gateway (IoT bridge)",
+      "storage-manager (clips & logs)",
+      "update-service (OTA)"
+    ]
+  },
+  "timeline": {
+    "Fáze": [
+      "Analýza a návrh",
+      "Vývoj MVP",
+      "Hardware procurement",
+      "Software development",
+      "Testování a QA",
+      "Dokumentace",
+      "Pilot instalace",
+      "Marketing launch",
+      "Škálování"
+    ],
+    "Trvání_týdny": [
+      2,
+      4,
+      2,
+      8,
+      3,
+      2,
+      2,
+      1,
+      4
+    ],
+    "Zdroje": [
+      "1 architekt + 1 PM",
+      "2 vývojáři + 1 UI/UX",
+      "1 procurement specialist",
+      "3 vývojáři + 1 DevOps",
+      "2 testeři + 1 QA lead",
+      "1 technical writer",
+      "2 technici + 1 support",
+      "1 marketing + 1 sales",
+      "celý tým"
+    ],
+    "Náklady_Kč": [
+      120000,
+      240000,
+      50000,
+      480000,
+      180000,
+      60000,
+      100000,
+      40000,
+      200000
+    ]
+  },
+  "cicd_costs_usd_month": {
+    "GitHub Enterprise": 105,
+    "Docker Hub Pro": 35,
+    "AWS EKS": 72,
+    "GitLab CI minutes": 0,
+    "Monitoring (Datadog)": 150,
+    "Total_USD_month": 362
+  },
+  "target_market": "Czech automotive aftermarket (1.2B EUR/year)",
+  "competitive_advantage": [
+    "Edge AI processing (no cloud dependency)",
+    "Modular architecture",
+    "Lower TCO than traditional ANPR systems",
+    "Open source foundation",
+    "Local Czech support"
+  ]
+}

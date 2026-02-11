@@ -6,21 +6,6 @@ import os
 
 
 class TinyMCPConan(ConanFile):
-
-    tool_requires = [
-    "sparetools-mcp-servers/1.0.0",
-    "sparetools-mcp-prompts/3.13.0",
-    "sparetools-mcp-ecosystem/1.0.0",
-    "sparetools-protocols/1.0.0",
-    "sparetools-mcp-core/1.0.0",
-    "sparetools-embedded/1.0.0",
-    "sparetools-flatbuffers/24.3.25",
-        "sparetools-cpython/3.12.7",
-    ]
-
-    python_requires = [
-        "sparetools-base/2.0.3",
-    ]
     """TinyMCP - Lightweight C++ implementation of Model Context Protocol"""
     
     name = "tinymcp"

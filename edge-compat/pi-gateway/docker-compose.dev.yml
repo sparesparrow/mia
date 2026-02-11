@@ -1,0 +1,40 @@
+version: "3.8"
+
+name: ai-servis-dev
+
+networks:
+  veh_net:
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: dev-mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    networks: [veh_net]
+
+  dev-anpr-publisher:
+    build: ./services/dev-anpr-publisher
+    container_name: dev-anpr-publisher
+    restart: unless-stopped
+    environment:
+      - MQTT_URL=tcp://mqtt-broker:1883
+      - VIN=${VIN:-TESTVIN}
+      - INTERVAL_MS=2000
+    depends_on: [mqtt-broker]
+    networks: [veh_net]
+
+  obd-simulator:
+    build: ./services/obd-simulator
+    container_name: obd-simulator
+    restart: unless-stopped
+    environment:
+      - MQTT_URL=tcp://mqtt-broker:1883
+      - VIN=${VIN:-TESTVIN}
+      - RATE_HZ=5
+    depends_on: [mqtt-broker]
+    networks: [veh_net]
+
+
+

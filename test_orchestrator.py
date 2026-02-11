@@ -12,9 +12,10 @@ from pathlib import Path
 
 # Add the modules to path
 sys.path.append(str(Path(__file__).parent / "modules" / "core-orchestrator"))
+sys.path.append(str(Path(__file__).parent / "modules"))
 
 from enhanced_orchestrator import EnhancedCoreOrchestrator, ServiceInfo
-from mcp_framework import create_tool
+from shared.mcp_framework import create_tool
 
 
 class MockService:

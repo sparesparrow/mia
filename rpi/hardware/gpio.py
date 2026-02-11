@@ -11,14 +11,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 
-try:
-    from ..core.messaging import MessagingClient
-except ImportError:
-    # Fallback for when running outside package context
-    import sys
-    import os
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-    from core.messaging import MessagingClient
+from ..core.messaging.client import MessagingClient
 
 logger = logging.getLogger(__name__)
 

@@ -10,9 +10,7 @@ import sys
 import os
 from typing import Dict, Any, Optional, List
 
-# Add parent directory to path to import mcp_framework
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from mcp_framework import MCPServer, Tool, create_tool, WebSocketTransport
+from ..shared.mcp_framework import MCPServer, Tool, create_tool, WebSocketTransport
 
 from .arduino_led_controller import ArduinoLEDController
 

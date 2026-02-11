@@ -1,0 +1,157 @@
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@ai-servis.com'
+  smtp_auth_username: 'alerts@ai-servis.com'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: web.hook
+
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: critical-alerts
+      group_wait: 5s
+      repeat_interval: 15m
+
+    # Warning alerts - batched notifications
+    - match:
+        severity: warning
+      receiver: warning-alerts
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
+
+    # Security alerts - immediate notification
+    - match:
+        component: security
+      receiver: security-alerts
+      group_wait: 5s
+      repeat_interval: 30m
+
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/webhook'
+        send_resolved: true
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'ops-team@ai-servis.com'
+        subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }} - {{ .GroupLabels.service }}'
+        body: |
+          Critical alert detected:
+          
+          Alert: {{ .GroupLabels.alertname }}
+          Service: {{ .GroupLabels.service }}
+          Severity: {{ .CommonLabels.severity }}
+          
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+            Started: {{ .StartsAt }}
+          {{ end }}
+          
+          Please investigate immediately.
+    
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-critical'
+        title: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          *Service:* {{ .GroupLabels.service }}
+          *Severity:* {{ .CommonLabels.severity }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+        
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: 'http://localhost:3000/d/ai-servis-overview'
+          - type: button
+            text: 'View Logs'
+            url: 'http://localhost:3100'
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'dev-team@ai-servis.com'
+        subject: '⚠️ WARNING: {{ .GroupLabels.alertname }} - {{ .GroupLabels.service }}'
+        body: |
+          Warning alert detected:
+          
+          Alert: {{ .GroupLabels.alertname }}
+          Service: {{ .GroupLabels.service }}
+          Severity: {{ .CommonLabels.severity }}
+          
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+            Started: {{ .StartsAt }}
+          {{ end }}
+          
+          Please review when convenient.
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-warning'
+        title: '⚠️ Warning: {{ .GroupLabels.alertname }}'
+        text: |
+          *Service:* {{ .GroupLabels.service }}
+          *Count:* {{ len .Alerts }} alert(s)
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+
+  - name: 'security-alerts'
+    email_configs:
+      - to: 'security-team@ai-servis.com'
+        subject: '🔒 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+        body: |
+          Security alert detected:
+          
+          Alert: {{ .GroupLabels.alertname }}
+          Component: {{ .GroupLabels.component }}
+          Severity: {{ .CommonLabels.severity }}
+          
+          {{ range .Alerts }}
+          - {{ .Annotations.summary }}
+            {{ .Annotations.description }}
+            Started: {{ .StartsAt }}
+          {{ end }}
+          
+          Immediate investigation required.
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#security-alerts'
+        title: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          *Component:* {{ .GroupLabels.component }}
+          *Severity:* {{ .CommonLabels.severity }}
+          
+          {{ range .Alerts }}
+          • {{ .Annotations.summary }}
+          {{ end }}
+        
+        actions:
+          - type: button
+            text: 'View Security Dashboard'
+            url: 'http://localhost:3000/d/security-overview'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
