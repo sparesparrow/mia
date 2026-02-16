@@ -60,7 +60,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-cpython-${{ hashFiles('conanfile.py') }}
+          key: conan-cpython-${{ hashFiles('infra/conan/conanfile.py') }}
           restore-keys: conan-cpython-
       - name: Install bundled CPython via Conan
         run: |
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-${{ matrix.arch }}-${{ hashFiles('conanfile.py') }}
+          key: conan-${{ matrix.arch }}-${{ hashFiles('infra/conan/conanfile.py') }}
           restore-keys: conan-${{ matrix.arch }}-
       - name: Build
         continue-on-error: true
