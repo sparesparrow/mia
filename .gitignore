@@ -126,6 +126,9 @@ Dockerfile.prod
 build-Debug/
 build-Release/
 
+# Git worktrees (isolated feature workspaces)
+.worktrees/
+
 # Temporary pip cache files
 =*
 
