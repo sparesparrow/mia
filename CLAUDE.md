@@ -92,7 +92,7 @@ The shared MCP framework lives in `modules/shared/mcp_framework.py`. Note: copie
 
 `services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real OBD-II diagnostic tools with mapped engine parameters. Telemetry flows: MCU -> serial bridge -> ZMQ PUB -> OBD worker -> virtual PTY -> diagnostic tool.
 
-### Android App (`android/`)
+### Android App (`apps/android/`)
 
 Kotlin + Jetpack Compose with Hilt DI, Room DB, Retrofit/OkHttp, WebSocket. Features: BLE scanning, ANPR, dashboard recording, real-time telemetry charts.
 
@@ -106,7 +106,7 @@ FlatBuffers schemas in `schemas/` (main: `mia.fbs`) and `protos/` define message
 - **pytest.ini**: asyncio_mode=auto, strict markers, test discovery in `tests/`
 - **Flake8**: max-line-length=120, extends E203/W503 ignored
 - **Black + isort**: isort uses `--profile black`
-- **Pre-commit excludes**: `.backups/`, `exported-assets/`, `android/`, `platforms/cpp/` from Python linters
+- **Pre-commit excludes**: `.backups/`, `exported-assets/`, `apps/android/`, `platforms/cpp/` from Python linters
 
 ## Deployment
 
