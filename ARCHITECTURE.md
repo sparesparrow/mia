@@ -83,7 +83,7 @@ Cross-cutting concerns:
 - **MCP Modules**: Microservices under `orchestration/mcp/` handle domain logic
 
 ### Testing Strategy
-- **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/`
+- **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/` (corresponding to `apps/` platforms)
 - **Integration tests**: Named by business flow (e.g., `voice_command_led_brightness/`), located in `tests/integration/scenarios/`
 - **Markers**: `@pytest.mark.hardware`, `.integration`, `.slow` for selective execution
 
