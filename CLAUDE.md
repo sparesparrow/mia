@@ -69,7 +69,7 @@ A separate PUB/SUB channel on port 5556 distributes real-time MCU telemetry from
 
 `api/main.py` runs FastAPI on port 8000 with REST endpoints for GPIO control, device listing, telemetry, and a WebSocket endpoint (`/ws`) for real-time streaming. API key auth in `api/auth/`.
 
-### MCP Modules (`modules/`)
+### MCP Modules (`orchestration/mcp/modules/`)
 
 Each subdirectory is an MCP (Model Context Protocol) microservice:
 - **core-orchestrator** - Routes user commands to appropriate MCP modules
@@ -79,7 +79,7 @@ Each subdirectory is an MCP (Model Context Protocol) microservice:
 - **automotive-mcp-bridge** / **citroen-c4-bridge** - Vehicle OBD-II interface
 - **hardware-bridge** - Hardware abstraction
 
-The shared MCP framework lives in `modules/shared/mcp_framework.py`. Note: copies still exist in individual module directories (known duplication being consolidated).
+The shared MCP framework lives in `orchestration/mcp/modules/shared/mcp_framework.py`. Note: copies still exist in individual module directories (known duplication being consolidated).
 
 ### Hardware Layer
 
