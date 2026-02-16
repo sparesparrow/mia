@@ -15,13 +15,13 @@ paths-ignore:
   - "**/test_*.py"
   - ".backups/**"
   - "exported-assets/**"
-  - "android/build/**"
-  - "platforms/cpp/build/**"
+  - "apps/android/build/**"
+  - "apps/rpi-backend/cpp-audio/build/**"
   - "**/node_modules/**"
 
 # Paths to include (optional, analyze all if not specified)
 paths:
-  - "modules/**"
-  - "rpi/**"
-  - "platforms/cpp/**"
-  - "android/app/src/**"
+  - "orchestration/mcp/**"
+  - "apps/rpi-backend/py-api/**"
+  - "apps/rpi-backend/cpp-audio/**"
+  - "apps/android/app/src/**"

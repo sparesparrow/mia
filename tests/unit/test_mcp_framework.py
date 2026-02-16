@@ -1,7 +1,7 @@
 """Unit tests for MCP Framework"""
 
 import pytest
-from modules.shared.mcp_framework import MCPServer, MCPMessage, create_tool
+from orchestration.mcp.modules.shared.mcp_framework import MCPServer, MCPMessage, create_tool
 
 
 @pytest.mark.asyncio

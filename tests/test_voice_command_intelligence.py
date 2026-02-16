@@ -19,7 +19,7 @@ import pytest
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from modules.shared.mcp_framework import MCPClient  # noqa: E402
+from orchestration.mcp.modules.shared.mcp_framework import MCPClient  # noqa: E402
 
 
 # ---------------------------------------------------------------------------

@@ -53,23 +53,23 @@ cd android && ./gradlew assembleDebug
 ### Docker
 
 ```bash
-docker compose up          # full stack (orchestrator, MQTT, Postgres, Redis, Grafana)
-docker compose -f docker-compose.dev.yml up   # dev mode with volume mounts
+docker compose -f infra/docker/docker-compose.yml up          # full stack (orchestrator, MQTT, Postgres, Redis, Grafana)
+docker compose -f infra/docker/docker-compose.dev.yml up      # dev mode with volume mounts
 ```
 
 ## Architecture
 
 ### Messaging Layer (ZeroMQ)
 
-The central nervous system is a ZeroMQ ROUTER-DEALER broker (`core/messaging/broker.py`) on port 5555. Workers (GPIO, serial bridge, OBD) connect as DEALER sockets. The FastAPI server also connects as a DEALER to relay HTTP/WebSocket requests.
+The central nervous system is a ZeroMQ ROUTER-DEALER broker (`apps/rpi-backend/shared/messaging/broker.py`) on port 5555. Workers (GPIO, serial bridge, OBD) connect as DEALER sockets. The FastAPI server also connects as a DEALER to relay HTTP/WebSocket requests.
 
 A separate PUB/SUB channel on port 5556 distributes real-time MCU telemetry from the serial bridge to subscribers (OBD worker, etc.).
 
 ### REST/WebSocket Gateway
 
-`api/main.py` runs FastAPI on port 8000 with REST endpoints for GPIO control, device listing, telemetry, and a WebSocket endpoint (`/ws`) for real-time streaming. API key auth in `api/auth/`.
+`apps/rpi-backend/py-api/api/main.py` runs FastAPI on port 8000 with REST endpoints for GPIO control, device listing, telemetry, and a WebSocket endpoint (`/ws`) for real-time streaming. API key auth in `apps/rpi-backend/py-api/api/auth/`.
 
-### MCP Modules (`modules/`)
+### MCP Modules (`orchestration/mcp/modules/`)
 
 Each subdirectory is an MCP (Model Context Protocol) microservice:
 - **core-orchestrator** - Routes user commands to appropriate MCP modules
@@ -79,20 +79,20 @@ Each subdirectory is an MCP (Model Context Protocol) microservice:
 - **automotive-mcp-bridge** / **citroen-c4-bridge** - Vehicle OBD-II interface
 - **hardware-bridge** - Hardware abstraction
 
-The shared MCP framework lives in `modules/shared/mcp_framework.py`. Note: copies still exist in individual module directories (known duplication being consolidated).
+The shared MCP framework lives in `orchestration/mcp/modules/shared/mcp_framework.py`. Note: copies still exist in individual module directories (known duplication being consolidated).
 
 ### Hardware Layer
 
-- `hardware/gpio_worker.py` - GPIO control with simulation fallback when RPi.GPIO unavailable
-- `hardware/serial_bridge.py` - USB serial to ZeroMQ bridge for ESP32/Arduino
-- `hardware/sensor_drivers/` - I2C/SPI sensor drivers (BME280, DHT, etc.)
-- `rpi/hardware/` - Raspberry Pi-specific implementations
+- `apps/rpi-backend/py-api/hardware/gpio_worker.py` - GPIO control with simulation fallback when RPi.GPIO unavailable
+- `apps/rpi-backend/py-api/hardware/serial_bridge.py` - USB serial to ZeroMQ bridge for ESP32/Arduino
+- `apps/rpi-backend/py-api/hardware/` - I2C/SPI sensor drivers (BME280, DHT, etc.)
+- `apps/rpi-backend/cpp-audio/` - C++ audio and hardware implementations for RPi
 
 ### OBD-II Digital Twin
 
-`services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real OBD-II diagnostic tools with mapped engine parameters. Telemetry flows: MCU -> serial bridge -> ZMQ PUB -> OBD worker -> virtual PTY -> diagnostic tool.
+`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real OBD-II diagnostic tools with mapped engine parameters. Telemetry flows: MCU -> serial bridge -> ZMQ PUB -> OBD worker -> virtual PTY -> diagnostic tool.
 
-### Android App (`android/`)
+### Android App (`apps/android/`)
 
 Kotlin + Jetpack Compose with Hilt DI, Room DB, Retrofit/OkHttp, WebSocket. Features: BLE scanning, ANPR, dashboard recording, real-time telemetry charts.
 
@@ -106,11 +106,11 @@ FlatBuffers schemas in `schemas/` (main: `mia.fbs`) and `protos/` define message
 - **pytest.ini**: asyncio_mode=auto, strict markers, test discovery in `tests/`
 - **Flake8**: max-line-length=120, extends E203/W503 ignored
 - **Black + isort**: isort uses `--profile black`
-- **Pre-commit excludes**: `.backups/`, `exported-assets/`, `android/`, `platforms/cpp/` from Python linters
+- **Pre-commit excludes**: `.backups/`, `exported-assets/`, `apps/android/`, `platforms/cpp/` from Python linters
 
 ## Deployment
 
-Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `services/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-citroen-bridge, etc.). Deploy with `scripts/deploy-raspberry-pi.sh`. The ZMQ broker must start before other services.
+Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `infra/systemd/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-citroen-bridge, etc.). Deploy with `infra/deploy/rpi/deploy.sh`. The ZMQ broker must start before other services.
 
 ## Conventions
 

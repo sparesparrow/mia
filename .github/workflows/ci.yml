@@ -27,7 +27,7 @@ jobs:
       - name: flake8
         continue-on-error: true
         run: >
-          flake8 modules/ tests/ rpi/ api/ core/ agents/ services/ scripts/
+          flake8 orchestration/ tests/ apps/rpi-backend/ agents/ services/ scripts/
           --max-line-length=120
           --extend-ignore=E203,W503,W293,W291,E402,E302,E305,E501
           --per-file-ignores='tests/*:F401,F811'
@@ -36,11 +36,11 @@ jobs:
       - name: black --check
         run: >
           black --check --line-length 120
-          --exclude '/(\.git|\.venv|venv|build|android|platforms/cpp|Mia/Vehicle|web|\.backups|exported-assets)/'
+          --exclude '/(\.git|\.venv|venv|build|apps/android|apps/esp32|platforms/cpp|Mia/Vehicle|web|\.backups|exported-assets)/'
           .
         continue-on-error: true
       - name: isort --check
-        run: isort --check --profile black --skip .venv --skip venv --skip android --skip web .
+        run: isort --check --profile black --skip .venv --skip venv --skip apps/android --skip web .
         continue-on-error: true
 
   python-test:
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-cpython-${{ hashFiles('conanfile.py') }}
+          key: conan-cpython-${{ hashFiles('infra/conan/conanfile.py') }}
           restore-keys: conan-cpython-
       - name: Install bundled CPython via Conan
         run: |
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-${{ matrix.arch }}-${{ hashFiles('conanfile.py') }}
+          key: conan-${{ matrix.arch }}-${{ hashFiles('infra/conan/conanfile.py') }}
           restore-keys: conan-${{ matrix.arch }}-
       - name: Build
         continue-on-error: true
@@ -128,19 +128,19 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('android/**/*.gradle*', 'android/gradle-wrapper.properties') }}
+          key: gradle-${{ hashFiles('apps/android/**/*.gradle*', 'apps/android/gradle-wrapper.properties') }}
           restore-keys: gradle-
       - name: Build debug APK
         continue-on-error: true
         run: |
-          cd android
+          cd apps/android
           chmod +x gradlew 2>/dev/null || true
           ./gradlew assembleDebug --no-daemon || echo "Android build completed with warnings"
       - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: android-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: apps/android/app/build/outputs/apk/debug/app-debug.apk
 
   esp32-build:
     name: ESP32 Build
@@ -153,7 +153,7 @@ jobs:
       - name: Check for PlatformIO config
         id: check
         run: |
-          if [ -f esp32/platformio.ini ]; then
+          if [ -f apps/esp32/platformio.ini ]; then
             echo "has_pio=true" >> $GITHUB_OUTPUT
           else
             echo "has_pio=false" >> $GITHUB_OUTPUT
@@ -162,11 +162,11 @@ jobs:
         if: steps.check.outputs.has_pio == 'true'
         with:
           path: ~/.platformio
-          key: pio-${{ hashFiles('esp32/platformio.ini') }}
+          key: pio-${{ hashFiles('apps/esp32/platformio.ini') }}
       - name: Build with PlatformIO
         if: steps.check.outputs.has_pio == 'true'
         continue-on-error: true
         run: |
           pip install platformio
-          cd esp32
+          cd apps/esp32
           pio run || echo "ESP32 build completed with warnings"

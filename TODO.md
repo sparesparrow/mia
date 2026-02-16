@@ -22,7 +22,7 @@ MIA is a distributed control system designed for Raspberry Pi 4B as the primary 
   - `hardware/`: Arduino/ESP32 drivers and GPIO control
   - `api/`: FastAPI application and WebSocket handlers
   - `schemas/`: FlatBuffers schema definitions
-  - `android/`: Android app (native or Flutter)
+  - `apps/android/`: Android app (native or Flutter)
 - [x] Set up CI/CD pipeline (GitHub Actions) with ARM64 support
 - [x] Docker Compose configuration for local development and RPi deployment
 
@@ -563,8 +563,8 @@ Shared CPython bootstrap module for Android development tools.
 ### Files
 | File | Purpose |
 |------|---------|
-| `android/tools/lib/cpython_bootstrap.py` | Shared bootstrap module |
-| `android/tools/bootstrap-obd.py` | OBD-II simulator tool |
+| `apps/android/tools/lib/cpython_bootstrap.py` | Shared bootstrap module |
+| `apps/android/tools/bootstrap-obd.py` | OBD-II simulator tool |
 
 ---
 
