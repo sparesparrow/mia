@@ -1,0 +1,183 @@
+name: Resolve Issue with Claude
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_id:
+        description: 'Issue ID to resolve'
+        required: true
+        type: number
+
+jobs:
+  resolve-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Fetch issue details
+        id: get-issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.inputs.issue_id }}
+            });
+            core.setOutput('title', issue.data.title);
+            core.setOutput('body', issue.data.body);
+            core.setOutput('number', issue.data.number);
+            return issue.data;
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install anthropic requests
+      
+      - name: Resolve issue with Claude
+        id: claude-resolution
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ISSUE_TITLE: ${{ steps.get-issue.outputs.title }}
+          ISSUE_BODY: ${{ steps.get-issue.outputs.body }}
+          ISSUE_NUMBER: ${{ steps.get-issue.outputs.number }}
+        run: |
+          python << 'EOF'
+          import os
+          import json
+          import anthropic
+          import subprocess
+          
+          client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+          
+          issue_title = os.environ.get('ISSUE_TITLE', '')
+          issue_body = os.environ.get('ISSUE_BODY', '')
+          issue_number = os.environ.get('ISSUE_NUMBER', '')
+          
+          # Get repository structure
+          result = subprocess.run(['find', '.', '-type', 'f', '-not', '-path', '*/\.*'], 
+                                  capture_output=True, text=True)
+          repo_structure = result.stdout
+          
+          prompt = f"""You are a senior developer tasked with resolving the following GitHub issue:
+          
+          Issue #{issue_number}: {issue_title}
+          
+          Description:
+          {issue_body}
+          
+          Repository structure:
+          {repo_structure}
+          
+          Please analyze the issue and provide:
+          1. A list of files that need to be modified (JSON array)
+          2. The complete content for each file that needs changes
+          3. A brief explanation of the solution
+          
+          Respond in the following JSON format:
+          {{
+            "files": [
+              {{
+                "path": "path/to/file",
+                "content": "complete file content"
+              }}
+            ],
+            "explanation": "Brief explanation of changes",
+            "branch_name": "fix-issue-{issue_number}"
+          }}
+          """
+          
+          message = client.messages.create(
+              model="claude-3-5-sonnet-20241022",
+              max_tokens=8000,
+              messages=[{"role": "user", "content": prompt}]
+          )
+          
+          response_text = message.content[0].text
+          
+          # Extract JSON from response
+          start = response_text.find('{')
+          end = response_text.rfind('}') + 1
+          json_response = response_text[start:end]
+          
+          data = json.loads(json_response)
+          
+          # Save outputs
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"branch_name={data['branch_name']}\n")
+              f.write(f"explanation<<EOF\n{data['explanation']}\nEOF\n")
+              f.write(f"files={json.dumps(data['files'])}\n")
+          
+          # Apply changes
+          for file_info in data['files']:
+              file_path = file_info['path']
+              os.makedirs(os.path.dirname(file_path), exist_ok=True)
+              with open(file_path, 'w') as f:
+                  f.write(file_info['content'])
+              print(f"Modified: {file_path}")
+          
+          EOF
+      
+      - name: Create branch and commit changes
+        id: create-pr-branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          BRANCH_NAME="fix-issue-${{ github.event.inputs.issue_id }}"
+          git checkout -b "$BRANCH_NAME"
+          
+          git add .
+          git commit -m "Fix: Resolve issue #${{ github.event.inputs.issue_id }}
+          
+          ${{ steps.claude-resolution.outputs.explanation }}"
+          
+          git push origin "$BRANCH_NAME"
+          
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+      
+      - name: Create Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Fix: Resolve issue #${{ github.event.inputs.issue_id }}',
+              head: '${{ steps.create-pr-branch.outputs.branch_name }}',
+              base: 'main',
+              body: `## Automated fix for issue #${{ github.event.inputs.issue_id }}
+              
+              This PR was automatically generated by Claude AI to resolve the issue.
+              
+              ### Changes Made
+              ${{ steps.claude-resolution.outputs.explanation }}
+              
+              ### Issue Reference
+              Closes #${{ github.event.inputs.issue_id }}
+              
+              ---
+              *Generated by GitHub Actions workflow*`
+            });
+            
+            console.log(`Pull request created: ${pr.data.html_url}`);
+            
+            // Link PR to issue
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.inputs.issue_id }},
+              body: `🤖 I've created a pull request to resolve this issue: ${pr.data.html_url}`
+            });
