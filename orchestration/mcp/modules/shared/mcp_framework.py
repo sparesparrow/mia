@@ -277,7 +277,8 @@ class MCPServer:
         self.version = version
         self.tools: Dict[str, Tool] = {}
         self.resources: Dict[str, Resource] = {}
-        self.prompts: Dict[str, Prompt] = {}
+        self.prompts: List[Prompt] = []
+        self._prompts_by_name: Dict[str, Prompt] = {}
         self.transport: Optional[MCPTransport] = None
         self.initialized = False
         self.running = False
@@ -294,7 +295,8 @@ class MCPServer:
 
     def add_prompt(self, prompt: Prompt) -> None:
         """Add a prompt to the server"""
-        self.prompts[prompt.name] = prompt
+        self.prompts.append(prompt)
+        self._prompts_by_name[prompt.name] = prompt
         logger.info(f"Added prompt: {prompt.name}")
 
     async def handle_message(self, message: MCPMessage) -> Optional[MCPMessage]:
@@ -445,7 +447,7 @@ class MCPServer:
 
     async def _handle_prompts_list(self, message: MCPMessage) -> MCPMessage:
         """Handle prompts/list request"""
-        prompts_list = [prompt.to_dict() for prompt in self.prompts.values()]
+        prompts_list = [prompt.to_dict() for prompt in self.prompts]
         return MCPMessage(
             id=message.id,
             result={"prompts": prompts_list}
@@ -460,7 +462,7 @@ class MCPServer:
             )
 
         name = message.params.get("name")
-        if name not in self.prompts:
+        if name not in self._prompts_by_name:
             return MCPMessage(
                 id=message.id,
                 error=MCPError(-32602, f"Prompt not found: {name}").to_dict()
@@ -469,7 +471,7 @@ class MCPServer:
         return MCPMessage(
             id=message.id,
             result={
-                "description": self.prompts[name].description,
+                "description": self._prompts_by_name[name].description,
                 "messages": [
                     {
                         "role": "user",
