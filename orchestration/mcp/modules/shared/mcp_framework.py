@@ -11,9 +11,28 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Union, Callable, Awaitable
 from enum import Enum
-import websockets
-import aiohttp
-from pydantic import BaseModel, validator
+try:
+    import websockets
+    _WEBSOCKETS_AVAILABLE = True
+except ImportError:
+    websockets = None  # type: ignore[assignment]
+    _WEBSOCKETS_AVAILABLE = False
+
+try:
+    import aiohttp
+    _AIOHTTP_AVAILABLE = True
+except ImportError:
+    aiohttp = None  # type: ignore[assignment]
+    _AIOHTTP_AVAILABLE = False
+
+try:
+    from pydantic import BaseModel, validator
+    _PYDANTIC_AVAILABLE = True
+except ImportError:
+    BaseModel = object  # type: ignore[assignment,misc]
+    def validator(*args, **kwargs):  # type: ignore[misc]
+        return lambda f: f
+    _PYDANTIC_AVAILABLE = False
 
 
 # Logging setup
@@ -231,7 +250,7 @@ class WebSocketTransport(MCPTransport):
 class HTTPTransport(MCPTransport):
     """HTTP transport for MCP"""
 
-    def __init__(self, session: aiohttp.ClientSession, url: str):
+    def __init__(self, session: Any, url: str):  # session: aiohttp.ClientSession when available
         self.session = session
         self.url = url
 
@@ -524,7 +543,7 @@ class MCPServer:
 class MCPClient:
     """MCP Client implementation with persistent connection and response handling"""
 
-    def __init__(self, max_reconnect_attempts: int = 3, reconnect_delay: float = 5.0):
+    def __init__(self, name: str = "mcp-client", max_reconnect_attempts: int = 3, reconnect_delay: float = 5.0):
         self.transport: Optional[MCPTransport] = None
         self.request_id = 0
         self.pending_requests: Dict[Union[str, int], asyncio.Future] = {}

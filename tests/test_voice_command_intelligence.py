@@ -33,6 +33,8 @@ import importlib.util  # noqa: E402
 _eo_path = os.path.join(
     os.path.dirname(__file__),
     "..",
+    "orchestration",
+    "mcp",
     "modules",
     "core-orchestrator",
     "enhanced_orchestrator.py",
@@ -41,7 +43,8 @@ _spec = importlib.util.spec_from_file_location("enhanced_orchestrator", _eo_path
 _eo_module = importlib.util.module_from_spec(_spec)
 
 # Patch the relative import that enhanced_orchestrator uses
-_mcp_fw = importlib.import_module("modules.shared.mcp_framework")
+# The module is already in sys.modules after the import at the top of this file
+_mcp_fw = sys.modules["orchestration.mcp.modules.shared.mcp_framework"]
 sys.modules["modules"] = MagicMock()
 sys.modules["modules.shared"] = MagicMock()
 sys.modules["modules.shared.mcp_framework"] = _mcp_fw
