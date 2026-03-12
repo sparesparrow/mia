@@ -11,9 +11,28 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Union, Callable, Awaitable
 from enum import Enum
-import websockets
-import aiohttp
-from pydantic import BaseModel, validator
+try:
+    import websockets
+    _WEBSOCKETS_AVAILABLE = True
+except ImportError:
+    websockets = None  # type: ignore[assignment]
+    _WEBSOCKETS_AVAILABLE = False
+
+try:
+    import aiohttp
+    _AIOHTTP_AVAILABLE = True
+except ImportError:
+    aiohttp = None  # type: ignore[assignment]
+    _AIOHTTP_AVAILABLE = False
+
+try:
+    from pydantic import BaseModel, validator
+    _PYDANTIC_AVAILABLE = True
+except ImportError:
+    BaseModel = object  # type: ignore[assignment,misc]
+    def validator(*args, **kwargs):  # type: ignore[misc]
+        return lambda f: f
+    _PYDANTIC_AVAILABLE = False
 
 
 # Logging setup
@@ -231,7 +250,7 @@ class WebSocketTransport(MCPTransport):
 class HTTPTransport(MCPTransport):
     """HTTP transport for MCP"""
 
-    def __init__(self, session: aiohttp.ClientSession, url: str):
+    def __init__(self, session: Any, url: str):  # session: aiohttp.ClientSession when available
         self.session = session
         self.url = url
 
@@ -258,7 +277,8 @@ class MCPServer:
         self.version = version
         self.tools: Dict[str, Tool] = {}
         self.resources: Dict[str, Resource] = {}
-        self.prompts: Dict[str, Prompt] = {}
+        self.prompts: List[Prompt] = []
+        self._prompts_by_name: Dict[str, Prompt] = {}
         self.transport: Optional[MCPTransport] = None
         self.initialized = False
         self.running = False
@@ -275,7 +295,8 @@ class MCPServer:
 
     def add_prompt(self, prompt: Prompt) -> None:
         """Add a prompt to the server"""
-        self.prompts[prompt.name] = prompt
+        self.prompts.append(prompt)
+        self._prompts_by_name[prompt.name] = prompt
         logger.info(f"Added prompt: {prompt.name}")
 
     async def handle_message(self, message: MCPMessage) -> Optional[MCPMessage]:
@@ -426,7 +447,7 @@ class MCPServer:
 
     async def _handle_prompts_list(self, message: MCPMessage) -> MCPMessage:
         """Handle prompts/list request"""
-        prompts_list = [prompt.to_dict() for prompt in self.prompts.values()]
+        prompts_list = [prompt.to_dict() for prompt in self.prompts]
         return MCPMessage(
             id=message.id,
             result={"prompts": prompts_list}
@@ -441,7 +462,7 @@ class MCPServer:
             )
 
         name = message.params.get("name")
-        if name not in self.prompts:
+        if name not in self._prompts_by_name:
             return MCPMessage(
                 id=message.id,
                 error=MCPError(-32602, f"Prompt not found: {name}").to_dict()
@@ -450,7 +471,7 @@ class MCPServer:
         return MCPMessage(
             id=message.id,
             result={
-                "description": self.prompts[name].description,
+                "description": self._prompts_by_name[name].description,
                 "messages": [
                     {
                         "role": "user",
@@ -524,7 +545,7 @@ class MCPServer:
 class MCPClient:
     """MCP Client implementation with persistent connection and response handling"""
 
-    def __init__(self, max_reconnect_attempts: int = 3, reconnect_delay: float = 5.0):
+    def __init__(self, name: str = "mcp-client", max_reconnect_attempts: int = 3, reconnect_delay: float = 5.0):
         self.transport: Optional[MCPTransport] = None
         self.request_id = 0
         self.pending_requests: Dict[Union[str, int], asyncio.Future] = {}

@@ -12,8 +12,20 @@ import time
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Set, Tuple
-import aiohttp
-import websockets
+try:
+    import aiohttp
+    _AIOHTTP_AVAILABLE = True
+except ImportError:
+    aiohttp = None  # type: ignore[assignment]
+    _AIOHTTP_AVAILABLE = False
+
+try:
+    import websockets
+    _WEBSOCKETS_AVAILABLE = True
+except ImportError:
+    websockets = None  # type: ignore[assignment]
+    _WEBSOCKETS_AVAILABLE = False
+
 from pathlib import Path
 
 # Import our MCP framework

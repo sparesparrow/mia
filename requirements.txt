@@ -1,6 +1,8 @@
 # AI-SERVIS Universal Requirements
 # Core automotive AI voice control system dependencies
 # Core web framework and async
+# Template rendering (AI Self-Improvement Orchestrator)
+Jinja2>=3.1.0
 asyncio-mqtt==0.16.1
 aiohttp>=3.9.2
 websockets==12.0
