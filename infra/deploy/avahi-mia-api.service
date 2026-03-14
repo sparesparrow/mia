@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<!--
+  Avahi service definition for MIA REST API.
+  Deploy to /etc/avahi/services/ on the Raspberry Pi.
+  Android discovers this via NsdManager with type "_mia-api._tcp".
+-->
+<service-group>
+  <name replace-wildcards="yes">MIA API on %h</name>
+  <service>
+    <type>_mia-api._tcp</type>
+    <port>8000</port>
+    <txt-record>version=1.0.0</txt-record>
+    <txt-record>path=/</txt-record>
+  </service>
+</service-group>

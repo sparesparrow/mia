@@ -436,10 +436,7 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 
 	// Initialize WebSocket connection
 	androidx.compose.runtime.LaunchedEffect(Unit) {
-		// TODO: Get base URL from settings/preferences
-		// Changed from Android emulator (10.0.2.2) to Raspberry Pi IP
-		// Replace with actual Raspberry Pi IP address on the same network
-		ledVm.initializeWebSocket("ws://192.168.1.100:8000") // Raspberry Pi default
+		ledVm.initializeWebSocket(BuildConfig.WS_BASE_URL)
 	}
 
 	val ledState by ledVm.ledState.collectAsState()

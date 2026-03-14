@@ -6,4 +6,5 @@ object MQTTTopics {
 	fun anpr(vin: String): String = "vehicle/events/$vin/anpr"
 	fun health(vin: String): String = "device/health/$vin"
 	fun metrics(vin: String): String = "device/metrics/$vin"
+	fun session(sessionId: String): String = "system/session/$sessionId"
 }
