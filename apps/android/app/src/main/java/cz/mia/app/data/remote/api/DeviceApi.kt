@@ -2,9 +2,8 @@ package cz.mia.app.data.remote.api
 
 import cz.mia.app.data.remote.dto.CommandRequest
 import cz.mia.app.data.remote.dto.CommandResponse
-import cz.mia.app.data.remote.dto.DeviceDto
-import cz.mia.app.data.remote.dto.PairDeviceRequest
-import cz.mia.app.data.remote.dto.PairDeviceResponse
+import cz.mia.app.data.remote.dto.DeviceListResponse
+import cz.mia.app.data.remote.dto.SingleDeviceResponse
 import cz.mia.app.data.remote.dto.SystemStatus
 import retrofit2.Response
 import retrofit2.http.Body
@@ -16,27 +15,28 @@ import retrofit2.http.Query
 
 /**
  * Retrofit API interface for device management endpoints.
+ * Aligned with RPi FastAPI response shapes.
  */
 interface DeviceApi {
 
     /**
      * Get all registered devices.
+     * RPi returns {devices: [...], count, timestamp}.
      */
     @GET("devices")
     suspend fun getDevices(
         @Query("status") status: String? = null,
-        @Query("type") type: String? = null,
-        @Query("page") page: Int? = null,
-        @Query("page_size") pageSize: Int? = null
-    ): Response<List<DeviceDto>>
+        @Query("type") type: String? = null
+    ): Response<DeviceListResponse>
 
     /**
      * Get a specific device by ID.
+     * RPi returns {device: {...}, timestamp}.
      */
-    @GET("devices/{id}")
+    @GET("devices/{device_id}")
     suspend fun getDevice(
-        @Path("id") deviceId: String
-    ): Response<DeviceDto>
+        @Path("device_id") deviceId: String
+    ): Response<SingleDeviceResponse>
 
     /**
      * Send a command to a device.
@@ -53,44 +53,18 @@ interface DeviceApi {
     suspend fun getSystemStatus(): Response<SystemStatus>
 
     /**
-     * Pair/register a new device.
+     * Remove a device.
      */
-    @POST("devices/{id}/pair")
-    suspend fun pairDevice(
-        @Path("id") deviceId: String,
-        @Body request: PairDeviceRequest? = null
-    ): Response<PairDeviceResponse>
+    @DELETE("devices/{device_id}")
+    suspend fun removeDevice(
+        @Path("device_id") deviceId: String
+    ): Response<Map<String, Any>>
 
     /**
-     * Unpair/remove a device.
+     * Send device heartbeat.
      */
-    @DELETE("devices/{id}")
-    suspend fun unpairDevice(
-        @Path("id") deviceId: String
-    ): Response<Unit>
-
-    /**
-     * Update device information.
-     */
-    @POST("devices/{id}")
-    suspend fun updateDevice(
-        @Path("id") deviceId: String,
-        @Body device: DeviceDto
-    ): Response<DeviceDto>
-
-    /**
-     * Get device capabilities.
-     */
-    @GET("devices/{id}/capabilities")
-    suspend fun getDeviceCapabilities(
-        @Path("id") deviceId: String
-    ): Response<List<String>>
-
-    /**
-     * Ping/health check for a device.
-     */
-    @GET("devices/{id}/ping")
-    suspend fun pingDevice(
-        @Path("id") deviceId: String
-    ): Response<CommandResponse>
+    @POST("devices/{device_id}/heartbeat")
+    suspend fun heartbeat(
+        @Path("device_id") deviceId: String
+    ): Response<Map<String, Any>>
 }

@@ -3,6 +3,7 @@ package cz.mia.app.di
 import com.google.gson.Gson
 import cz.mia.app.BuildConfig
 import cz.mia.app.data.remote.api.DeviceApi
+import cz.mia.app.data.remote.api.SessionApi
 import cz.mia.app.data.remote.api.TelemetryApi
 import dagger.Module
 import dagger.Provides
@@ -86,6 +87,12 @@ object NetworkModule {
     @Singleton
     fun provideTelemetryApi(retrofit: Retrofit): TelemetryApi {
         return retrofit.create(TelemetryApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSessionApi(retrofit: Retrofit): SessionApi {
+        return retrofit.create(SessionApi::class.java)
     }
 
     @Provides

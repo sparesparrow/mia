@@ -101,6 +101,15 @@ system/health/{device-id}
 - **Payload**: Health metrics
 - **Frequency**: Every 60 seconds
 
+### Session Events
+```
+system/session/{session-id}
+```
+- **QoS**: 1
+- **Retained**: false
+- **Payload**: Session state changes (created, handoff, resumed, ended)
+- **Direction**: RPi → all clients
+
 ## Topic Examples
 
 ### OBD Data Example

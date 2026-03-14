@@ -17,10 +17,29 @@ class MdnsDiscovery @Inject constructor(
 	@ApplicationContext private val context: Context
 ) {
 	private var lastResults: List<String> = emptyList()
+	private var lastApiResults: List<String> = emptyList()
 
 	fun discoverServices(serviceType: String = "_mqtt._tcp.local."): List<String> = lastResults
 
+	/**
+	 * Discover MIA REST API via mDNS (_mia-api._tcp).
+	 * Returns list of "host:port" strings.
+	 */
+	suspend fun discoverApi(timeoutMs: Long = 2000L): List<String> {
+		val results = discoverServiceType("_mia-api._tcp", timeoutMs)
+		lastApiResults = results
+		return results
+	}
+
+	fun getLastApiResults(): List<String> = lastApiResults
+
 	suspend fun discoverMqtt(timeoutMs: Long = 2000L): List<String> {
+		val results = discoverServiceType("_mqtt._tcp", timeoutMs)
+		lastResults = results
+		return results
+	}
+
+	private suspend fun discoverServiceType(type: String, timeoutMs: Long): List<String> {
 		val wifi = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 		val lock = wifi.createMulticastLock("mia-mdns").apply { setReferenceCounted(true); acquire() }
 		val nsd = context.getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -41,8 +60,7 @@ class MdnsDiscovery @Inject constructor(
 			override fun onDiscoveryStarted(serviceType: String?) {}
 			override fun onDiscoveryStopped(serviceType: String?) {}
 			override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-				// Only resolve MQTT
-				if (serviceInfo.serviceType?.contains("_mqtt._tcp") == true) {
+				if (serviceInfo.serviceType?.contains(type) == true) {
 					if (Build.VERSION.SDK_INT >= 34) {
 						nsd.registerServiceInfoCallback(
 							serviceInfo,
@@ -53,9 +71,7 @@ class MdnsDiscovery @Inject constructor(
 									resolveListener.onServiceResolved(info)
 									try {
 										nsd.unregisterServiceInfoCallback(this)
-									} catch (e: Exception) {
-										// Ignore if already unregistered
-									}
+									} catch (e: Exception) {}
 								}
 								override fun onServiceLost() {}
 								override fun onServiceInfoCallbackUnregistered() {}
@@ -71,16 +87,14 @@ class MdnsDiscovery @Inject constructor(
 		}
 
 		return try {
-			val serviceType = "_mqtt._tcp"
-			nsd.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+			nsd.discoverServices(type, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
 			val results = mutableSetOf<String>()
 			withTimeoutOrNull(timeoutMs) {
 				for (i in 0 until 10) {
 					out.receiveCatching().getOrNull()?.let { results.add(it) }
 				}
 			}
-			lastResults = results.toList()
-			lastResults
+			results.toList()
 		} catch (_: Exception) {
 			emptyList()
 		} finally {

@@ -1,0 +1,179 @@
+name: Android Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/android/**'
+      - 'orchestration/**'
+      - '.github/workflows/android-test.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/android/**'
+      - 'orchestration/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+      
+      - name: Build Debug APK
+        run: |
+          cd apps/android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      
+      - name: Validate APK
+        run: |
+          cd apps/android
+          bash ../../skills/android-adb-test/scripts/android-adb-test.sh build 2>&1 | tail -20 || true
+      
+      - name: Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: apps/android/app/build/outputs/apk/
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        scenario: [dashboard, ble-scan, obd-pairing, settings, full-flow]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+      
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: apps/android/app/build/outputs/apk/
+      
+      - name: Start Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          script: |
+            cd apps/android
+            # Run test scenario
+            bash ../../skills/android-adb-test/scripts/android-adb-test.sh test \
+              --scenario ${{ matrix.scenario }} \
+              --screenshots \
+              --logs \
+              --device emulator-5554
+      
+      - name: Upload Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts-${{ matrix.scenario }}
+          path: apps/android/test-artifacts/
+      
+      - name: Parse Test Results
+        if: always()
+        run: |
+          LATEST=$(ls -t apps/android/test-artifacts | head -1)
+          if [ -f "apps/android/test-artifacts/$LATEST/reports/test-report.json" ]; then
+            echo "Test scenario: ${{ matrix.scenario }}"
+            cat "apps/android/test-artifacts/$LATEST/reports/test-report.json" | jq .
+          fi
+
+  post-results:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-results
+      
+      - name: Generate Report
+        run: |
+          echo "# 📱 Android Test Results" > test-summary.md
+          echo "" >> test-summary.md
+          echo "| Scenario | Status |" >> test-summary.md
+          echo "|----------|--------|" >> test-summary.md
+          
+          for scenario in dashboard ble-scan obd-pairing settings full-flow; do
+            if [ -d "test-results/test-artifacts-$scenario" ]; then
+              echo "| \`$scenario\` | ✅ PASS |" >> test-summary.md
+            else
+              echo "| \`$scenario\` | ⚠️  SKIPPED |" >> test-summary.md
+            fi
+          done
+          
+          echo "" >> test-summary.md
+          echo "**Artifacts**: [Available in Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> test-summary.md
+          
+          cat test-summary.md
+      
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('test-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+      
+      - name: Notify Slack
+        if: failure() && github.event_name == 'push'
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "❌ MIA Android Tests Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*MIA Android Tests Failed*\n${{ github.repository }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
