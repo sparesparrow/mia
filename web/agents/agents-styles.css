@@ -1,0 +1,546 @@
+/* MIA Agents Portal Styles */
+/* Three unhinged AI agents — each with their own visual signature */
+
+:root {
+    /* Inherited MIA palette */
+    --primary-color: #0F172A;
+    --primary-light: #1E293B;
+    --primary-dark: #020617;
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-light: #94A3B8;
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --bg-tertiary: #334155;
+    --border-color: #334155;
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
+    --error-color: #EF4444;
+
+    /* Agent accent colors */
+    --orchestrator-color: #e8a835;
+    --orchestrator-glow: rgba(232, 168, 53, 0.25);
+    --orchestrator-glow-strong: rgba(232, 168, 53, 0.5);
+    --evaluator-color: #5b8fb9;
+    --evaluator-glow: rgba(91, 143, 185, 0.25);
+    --evaluator-glow-strong: rgba(91, 143, 185, 0.5);
+    --executor-color: #00e5ff;
+    --executor-glow: rgba(0, 229, 255, 0.25);
+    --executor-glow-strong: rgba(0, 229, 255, 0.5);
+
+    /* Typography — matches MIA team portal */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 400ms ease;
+}
+
+/* ─── Reset & Base ─── */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ─── Header ─── */
+
+.agents-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: var(--spacing-md) var(--spacing-xl);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.header-title .subtitle {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-family: var(--font-mono);
+}
+
+.header-nav {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color var(--transition-fast);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.btn-icon {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    color: var(--text-primary);
+    border-color: var(--text-light);
+}
+
+/* ─── Main Layout ─── */
+
+.agents-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-2xl) var(--spacing-xl);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.section-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+}
+
+/* ─── Agent Grid ─── */
+
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+/* ─── Agent Card ─── */
+
+.agent-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--agent-color, var(--border-color));
+    opacity: 0.6;
+    transition: opacity var(--transition-base);
+}
+
+.agent-card:hover {
+    border-color: var(--agent-color, var(--border-color));
+    box-shadow: 0 0 24px var(--agent-glow, transparent);
+    transform: translateY(-2px);
+}
+
+.agent-card:hover::before {
+    opacity: 1;
+}
+
+.agent-card.active {
+    border-color: var(--agent-color, var(--border-color));
+    box-shadow: 0 0 32px var(--agent-glow-strong, transparent), 0 0 0 1px var(--agent-color, transparent);
+}
+
+.agent-card.active::before {
+    opacity: 1;
+}
+
+/* Per-agent color variables */
+.agent-card[data-agent="orchestrator"] {
+    --agent-color: var(--orchestrator-color);
+    --agent-glow: var(--orchestrator-glow);
+    --agent-glow-strong: var(--orchestrator-glow-strong);
+}
+
+.agent-card[data-agent="evaluator"] {
+    --agent-color: var(--evaluator-color);
+    --agent-glow: var(--evaluator-glow);
+    --agent-glow-strong: var(--evaluator-glow-strong);
+}
+
+.agent-card[data-agent="executor"] {
+    --agent-color: var(--executor-color);
+    --agent-glow: var(--executor-glow);
+    --agent-glow-strong: var(--executor-glow-strong);
+}
+
+/* ─── Agent Avatar ─── */
+
+.agent-avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.agent-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 3px solid var(--agent-color, var(--border-color));
+    transition: box-shadow var(--transition-base);
+}
+
+.agent-card.active .agent-avatar {
+    box-shadow: 0 0 20px var(--agent-glow-strong, transparent);
+}
+
+.agent-status-dot {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-secondary);
+    background: var(--bg-tertiary);
+    transition: background var(--transition-base);
+}
+
+.agent-status-dot.idle     { background: var(--bg-tertiary); }
+.agent-status-dot.active   { background: var(--agent-color, var(--success-color)); box-shadow: 0 0 8px var(--agent-glow, transparent); }
+.agent-status-dot.thinking { background: var(--warning-color); animation: pulse 1s ease-in-out infinite; }
+.agent-status-dot.error    { background: var(--error-color); }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* ─── Agent Info ─── */
+
+.agent-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--agent-color, var(--text-primary));
+    font-family: var(--font-mono);
+}
+
+.agent-title {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+}
+
+.agent-role {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ─── Agent Status Line ─── */
+
+.agent-status-line {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-family: var(--font-mono);
+    min-height: 1.2em;
+}
+
+.agent-status-line.active-text   { color: var(--agent-color, var(--success-color)); }
+.agent-status-line.thinking-text { color: var(--warning-color); }
+
+/* ─── Agent Actions ─── */
+
+.agent-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.btn-talk, .btn-chat, .btn-end {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    transition: all var(--transition-fast);
+}
+
+.btn-talk {
+    background: var(--agent-color, var(--bg-tertiary));
+    color: var(--bg-primary);
+}
+
+.btn-talk:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.btn-chat {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-chat:hover {
+    border-color: var(--agent-color, var(--border-color));
+    color: var(--text-primary);
+}
+
+.btn-end {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--error-color);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-end:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+/* ─── Chat Container ─── */
+
+.chat-section {
+    margin-top: var(--spacing-xl);
+}
+
+.chat-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    min-height: 200px;
+    padding: var(--spacing-xl);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.chat-container.orchestrator-active {
+    border-color: var(--orchestrator-color);
+    box-shadow: 0 0 16px var(--orchestrator-glow);
+}
+.chat-container.evaluator-active {
+    border-color: var(--evaluator-color);
+    box-shadow: 0 0 16px var(--evaluator-glow);
+}
+.chat-container.executor-active {
+    border-color: var(--executor-color);
+    box-shadow: 0 0 16px var(--executor-glow);
+}
+
+.chat-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+    gap: var(--spacing-md);
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.chat-placeholder i {
+    font-size: 2rem;
+    opacity: 0.4;
+}
+
+/* ElevenLabs widget container */
+.widget-wrapper {
+    width: 100%;
+}
+
+.widget-wrapper elevenlabs-convai {
+    width: 100%;
+}
+
+/* ─── Transcript ─── */
+
+.transcript {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.transcript-msg {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    max-width: 80%;
+}
+
+.transcript-msg.user {
+    background: var(--bg-tertiary);
+    align-self: flex-end;
+    color: var(--text-primary);
+}
+
+.transcript-msg.agent {
+    background: var(--primary-light);
+    align-self: flex-start;
+    border-left: 3px solid var(--agent-color, var(--border-color));
+    color: var(--text-secondary);
+}
+
+/* ─── Toast Notifications ─── */
+
+.toast-container {
+    position: fixed;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    z-index: 1000;
+}
+
+.toast {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    animation: slideIn var(--transition-base) ease;
+    max-width: 320px;
+}
+
+.toast.error   { border-color: var(--error-color);   color: var(--error-color); }
+.toast.success { border-color: var(--success-color); color: var(--success-color); }
+.toast.info    { border-color: var(--evaluator-color); }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0);   opacity: 1; }
+}
+
+/* ─── Keyboard Shortcuts Bar ─── */
+
+.shortcuts-bar {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.shortcut {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-family: var(--font-mono);
+}
+
+.shortcut kbd {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1px 6px;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 900px) {
+    .agents-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .agents-main {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+
+    .header-nav {
+        display: none;
+    }
+}
