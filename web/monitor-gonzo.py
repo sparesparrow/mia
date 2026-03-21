@@ -33,45 +33,29 @@ class GonzoMonitor:
         self.refresh_interval = refresh_interval
         self.web_dir = Path(__file__).parent
         self.dist_dir = self.web_dir / "dist"
-        self.gonzo_file = self.web_dir / "customers" / "journalists" / "index-gonzo.html"
         self.server = None
         self.monitor_thread = None
         self.running = False
-        
+
         # Ensure dist directory exists
         self.dist_dir.mkdir(exist_ok=True)
-        
-        # Copy gonzo files to dist for serving
+
+        # Set up index.html for serving
         self.setup_gonzo_files()
         
     def setup_gonzo_files(self):
-        """Copy gonzo files to dist directory for serving"""
+        """Set up index.html to serve journalists page"""
         try:
-            # Copy the gonzo HTML file
-            if self.gonzo_file.exists():
-                gonzo_dest = self.dist_dir / "index.html"
-                gonzo_dest.write_text(self.gonzo_file.read_text())
-                logger.info(f"Copied gonzo HTML to {gonzo_dest}")
-            
-            # Copy gonzo assets
-            gonzo_assets = self.web_dir / "customers" / "journalists"
-            for asset in gonzo_assets.glob("*"):
-                if asset.is_file():
-                    dest = self.dist_dir / asset.name
-                    dest.write_bytes(asset.read_bytes())
-                    logger.info(f"Copied asset {asset.name}")
-            
-            # Copy shared assets if they exist
-            shared_assets = self.web_dir / "assets" / "journalists"
-            if shared_assets.exists():
-                dest_assets = self.dist_dir / "assets"
-                dest_assets.mkdir(exist_ok=True)
-                for asset in shared_assets.glob("*"):
-                    if asset.is_file():
-                        dest = dest_assets / asset.name
-                        dest.write_bytes(asset.read_bytes())
-                        logger.info(f"Copied shared asset {asset.name}")
-                        
+            # Create index.html as symlink/copy of journalists.html
+            journalists_html = self.dist_dir / "journalists.html"
+            index_html = self.dist_dir / "index.html"
+
+            if journalists_html.exists():
+                index_html.write_text(journalists_html.read_text())
+                logger.info(f"Set up index.html for journalists page")
+            else:
+                logger.warning(f"journalists.html not found in {self.dist_dir}")
+
         except Exception as e:
             logger.error(f"Error setting up gonzo files: {e}")
     
@@ -80,7 +64,7 @@ class GonzoMonitor:
         try:
             logger.info("🔄 Pulling latest changes from git...")
             result = subprocess.run(
-                ["git", "pull", "origin", "feature/journalists-audio-autoplay"],
+                ["git", "pull"],
                 cwd=self.web_dir.parent,  # Go to project root
                 capture_output=True,
                 text=True,

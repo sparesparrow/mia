@@ -8,53 +8,85 @@ import com.google.gson.annotations.SerializedName
 enum class DeviceStatus {
     @SerializedName("online")
     ONLINE,
-    
+
     @SerializedName("offline")
     OFFLINE,
-    
+
     @SerializedName("error")
-    ERROR
+    ERROR,
+
+    @SerializedName("initializing")
+    INITIALIZING,
+
+    @SerializedName("unknown")
+    UNKNOWN
 }
 
 /**
- * Device data transfer object from/to the API.
+ * Device data transfer object — aligned with RPi DeviceProfile.to_dict().
  */
 data class DeviceDto(
-    @SerializedName("id")
-    val id: String,
-    
+    @SerializedName("device_id")
+    val deviceId: String,
+
     @SerializedName("name")
     val name: String,
-    
-    @SerializedName("type")
-    val type: String,
-    
+
+    @SerializedName("device_type")
+    val deviceType: String,
+
     @SerializedName("status")
-    val status: DeviceStatus,
-    
+    val status: DeviceStatus = DeviceStatus.UNKNOWN,
+
     @SerializedName("capabilities")
     val capabilities: List<String> = emptyList(),
-    
+
     @SerializedName("last_seen")
     val lastSeen: String? = null,
-    
-    @SerializedName("firmware_version")
-    val firmwareVersion: String? = null,
-    
+
     @SerializedName("metadata")
-    val metadata: Map<String, Any>? = null
+    val metadata: Map<String, Any>? = null,
+
+    @SerializedName("error_message")
+    val errorMessage: String? = null
+)
+
+/**
+ * RPi envelope: GET /devices returns {devices: [...], count, timestamp}.
+ */
+data class DeviceListResponse(
+    @SerializedName("devices")
+    val devices: List<DeviceDto>,
+
+    @SerializedName("count")
+    val count: Int,
+
+    @SerializedName("timestamp")
+    val timestamp: String
+)
+
+/**
+ * RPi envelope: GET /devices/{id} returns {device: {...}, timestamp}.
+ */
+data class SingleDeviceResponse(
+    @SerializedName("device")
+    val device: DeviceDto,
+
+    @SerializedName("timestamp")
+    val timestamp: String
 )
 
 /**
  * Request to send a command to a device.
+ * Sends device_id which RPi now accepts alongside device.
  */
 data class CommandRequest(
     @SerializedName("device_id")
     val deviceId: String,
-    
+
     @SerializedName("action")
     val action: String,
-    
+
     @SerializedName("params")
     val params: Map<String, Any>? = null
 )
@@ -65,69 +97,74 @@ data class CommandRequest(
 data class CommandResponse(
     @SerializedName("success")
     val success: Boolean,
-    
-    @SerializedName("message")
-    val message: String? = null,
-    
-    @SerializedName("data")
-    val data: Map<String, Any>? = null,
-    
-    @SerializedName("error_code")
-    val errorCode: String? = null
-)
 
-/**
- * Single telemetry reading from a sensor.
- */
-data class TelemetryReading(
-    @SerializedName("device_id")
-    val deviceId: String,
-    
+    @SerializedName("response")
+    val response: Map<String, Any>? = null,
+
+    @SerializedName("error")
+    val error: String? = null,
+
     @SerializedName("timestamp")
-    val timestamp: String,
-    
-    @SerializedName("sensor")
-    val sensor: String,
-    
-    @SerializedName("value")
-    val value: Double,
-    
-    @SerializedName("unit")
-    val unit: String
+    val timestamp: String? = null
 )
 
 /**
- * Batch of telemetry readings for upload.
+ * RPi envelope: GET /telemetry returns {telemetry: {...}, timestamp}.
  */
-data class TelemetryBatch(
-    @SerializedName("readings")
-    val readings: List<TelemetryReading>
+data class TelemetryResponse(
+    @SerializedName("telemetry")
+    val telemetry: Map<String, Any>,
+
+    @SerializedName("timestamp")
+    val timestamp: String
 )
 
 /**
- * System status information.
+ * System status — aligned with RPi's nested memory/cpu structure.
  */
+data class MemoryInfo(
+    @SerializedName("total")
+    val total: Long,
+
+    @SerializedName("available")
+    val available: Long,
+
+    @SerializedName("percent")
+    val percent: Double,
+
+    @SerializedName("used")
+    val used: Long
+)
+
+data class CpuInfo(
+    @SerializedName("percent")
+    val percent: Double,
+
+    @SerializedName("count")
+    val count: Int
+)
+
 data class SystemStatus(
-    @SerializedName("uptime")
-    val uptime: Long,
-    
-    @SerializedName("cpu_usage")
-    val cpuUsage: Double,
-    
-    @SerializedName("memory_usage")
-    val memoryUsage: Double,
-    
-    @SerializedName("active_devices")
-    val activeDevices: Int,
-    
-    @SerializedName("total_devices")
-    val totalDevices: Int,
-    
-    @SerializedName("version")
-    val version: String? = null,
-    
-    @SerializedName("healthy")
-    val healthy: Boolean = true
+    @SerializedName("status")
+    val status: String,
+
+    @SerializedName("uptime_seconds")
+    val uptimeSeconds: Long,
+
+    @SerializedName("uptime_human")
+    val uptimeHuman: String? = null,
+
+    @SerializedName("memory")
+    val memory: MemoryInfo? = null,
+
+    @SerializedName("cpu")
+    val cpu: CpuInfo? = null,
+
+    @SerializedName("devices_connected")
+    val devicesConnected: Int = 0,
+
+    @SerializedName("timestamp")
+    val timestamp: String? = null
 )
 
 /**
@@ -136,16 +173,16 @@ data class SystemStatus(
 data class PaginatedResponse<T>(
     @SerializedName("items")
     val items: List<T>,
-    
+
     @SerializedName("total")
     val total: Int,
-    
+
     @SerializedName("page")
     val page: Int,
-    
+
     @SerializedName("page_size")
     val pageSize: Int,
-    
+
     @SerializedName("has_more")
     val hasMore: Boolean
 )
@@ -156,43 +193,15 @@ data class PaginatedResponse<T>(
 data class ApiError(
     @SerializedName("error")
     val error: String,
-    
+
     @SerializedName("message")
     val message: String,
-    
+
     @SerializedName("code")
     val code: Int? = null,
-    
+
     @SerializedName("details")
     val details: Map<String, Any>? = null
-)
-
-/**
- * Device pairing request.
- */
-data class PairDeviceRequest(
-    @SerializedName("device_id")
-    val deviceId: String,
-    
-    @SerializedName("device_name")
-    val deviceName: String? = null,
-    
-    @SerializedName("device_type")
-    val deviceType: String? = null
-)
-
-/**
- * Device pairing response.
- */
-data class PairDeviceResponse(
-    @SerializedName("success")
-    val success: Boolean,
-    
-    @SerializedName("device")
-    val device: DeviceDto? = null,
-    
-    @SerializedName("message")
-    val message: String? = null
 )
 
 /**
@@ -200,7 +209,7 @@ data class PairDeviceResponse(
  */
 data class WebSocketSubscription(
     @SerializedName("action")
-    val action: String,  // "subscribe" or "unsubscribe"
+    val action: String,
 
     @SerializedName("device_id")
     val deviceId: String? = null,
@@ -223,7 +232,7 @@ data class LEDState(
     val brightness: Float,
 
     @SerializedName("service_status")
-    val serviceStatus: String,
+    val serviceStatus: String? = null,
 
     @SerializedName("emergency")
     val emergency: Boolean = false,
@@ -240,7 +249,7 @@ data class LEDState(
  */
 data class WebSocketMessage(
     @SerializedName("type")
-    val type: String? = null,  // For backward compatibility
+    val type: String? = null,
 
     @SerializedName("timestamp")
     val timestamp: String,

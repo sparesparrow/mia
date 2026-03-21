@@ -4,7 +4,7 @@ Implements Phase 3.1: REST API Development
 """
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 from typing import List, Optional, Dict, Any
 import zmq
 import zmq.asyncio
@@ -49,6 +49,13 @@ except ImportError:
     CitroenTelemetry = None
     DpfStatus = None
     logger.warning("Could not import Mia.Vehicle FlatBuffers bindings. Telemetry decoding disabled.")
+
+# Import session management
+from api.sessions import (
+    SessionManager, CreateSessionRequest, UpdateSessionRequest, ResumeSessionRequest
+)
+
+session_manager = SessionManager()
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
 
 # CORS middleware
@@ -95,9 +102,19 @@ active_connections: List[WebSocket] = []
 
 # Pydantic models
 class DeviceCommand(BaseModel):
-    device: str
+    device: Optional[str] = None
+    device_id: Optional[str] = None
     action: str
     params: Optional[Dict[str, Any]] = None
+
+    @model_validator(mode="after")
+    def normalize_device_field(self):
+        """Accept both 'device' and 'device_id' — Android sends device_id."""
+        if self.device_id and not self.device:
+            self.device = self.device_id
+        if not self.device:
+            raise ValueError("Either 'device' or 'device_id' must be provided")
+        return self
 
 
 class GPIOCommand(BaseModel):
@@ -584,7 +601,7 @@ async def get_status():
                 "percent": cpu_percent,
                 "count": psutil.cpu_count()
             },
-            "devices_connected": len(device_registry),
+            "devices_connected": len(device_registry.get_all()) if (REGISTRY_AVAILABLE and device_registry) else len(device_registry_simple),
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
@@ -733,6 +750,113 @@ async def get_gpio(pin: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============================================================================
+# Device Alias Endpoints (Android compatibility)
+# ============================================================================
+
+@app.get("/devices/{device_id}", response_model=Dict[str, Any])
+async def get_device_alias(device_id: str):
+    """GET /devices/{device_id} — alias for /registry/devices/{device_id}"""
+    return await get_registry_device(device_id)
+
+
+@app.delete("/devices/{device_id}", response_model=Dict[str, Any])
+async def delete_device_alias(device_id: str):
+    """DELETE /devices/{device_id} — alias for /registry/devices/{device_id}"""
+    return await unregister_device(device_id)
+
+
+@app.post("/devices/{device_id}/heartbeat", response_model=Dict[str, Any])
+async def device_heartbeat_alias(device_id: str):
+    """POST /devices/{device_id}/heartbeat — alias for /registry/devices/{device_id}/heartbeat"""
+    return await device_heartbeat(device_id)
+
+
+# ============================================================================
+# Session Management Endpoints
+# ============================================================================
+
+@app.post("/sessions", response_model=Dict[str, Any])
+async def create_session(req: CreateSessionRequest):
+    """POST /sessions — create a client session"""
+    session = session_manager.create(req)
+    return {
+        "session": session.model_dump(mode="json"),
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.get("/sessions/{session_id}", response_model=Dict[str, Any])
+async def get_session(session_id: str):
+    """GET /sessions/{session_id} — get session state"""
+    session = session_manager.get(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "session": session.model_dump(mode="json"),
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.patch("/sessions/{session_id}", response_model=Dict[str, Any])
+async def update_session(session_id: str, req: UpdateSessionRequest):
+    """PATCH /sessions/{session_id} — update subscriptions/metadata"""
+    session = session_manager.update(session_id, req)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "session": session.model_dump(mode="json"),
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.delete("/sessions/{session_id}", response_model=Dict[str, Any])
+async def delete_session(session_id: str):
+    """DELETE /sessions/{session_id} — end session"""
+    if not session_manager.delete(session_id):
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "success": True,
+        "session_id": session_id,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.post("/sessions/{session_id}/handoff", response_model=Dict[str, Any])
+async def session_handoff(session_id: str):
+    """POST /sessions/{session_id}/handoff — generate handoff token (5 min TTL)"""
+    token = session_manager.generate_handoff(session_id)
+    if not token:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "handoff_token": token,
+        "expires_in_seconds": 300,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.post("/sessions/resume", response_model=Dict[str, Any])
+async def resume_session(req: ResumeSessionRequest):
+    """POST /sessions/resume — resume session with handoff token"""
+    session = session_manager.resume_with_token(req.handoff_token)
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid or expired handoff token")
+    return {
+        "session": session.model_dump(mode="json"),
+        "timestamp": datetime.now().isoformat()
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    # Read port from shared config, fallback to 8000
+    config_port = 8000
+    try:
+        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'contracts', 'config.json')
+        with open(config_path) as f:
+            config_port = json.load(f).get("api", {}).get("port", 8000)
+    except Exception:
+        pass
+
+    uvicorn.run(app, host="0.0.0.0", port=config_port)

@@ -2,7 +2,8 @@ package cz.mia.app.data.remote.websocket
 
 import android.util.Log
 import com.google.gson.Gson
-import cz.mia.app.data.remote.dto.TelemetryReading
+import cz.mia.app.data.remote.dto.LEDState
+import cz.mia.app.data.remote.dto.WebSocketMessage
 import cz.mia.app.data.remote.dto.WebSocketSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,17 +51,23 @@ class TelemetryWebSocket(
     
     private val subscribedDevices = mutableSetOf<String>()
     
-    private val _telemetryFlow = MutableSharedFlow<TelemetryReading>(
+    private val _telemetryFlow = MutableSharedFlow<WebSocketMessage>(
         replay = 0,
         extraBufferCapacity = 64
     )
-    val telemetryFlow: SharedFlow<TelemetryReading> = _telemetryFlow.asSharedFlow()
+    val telemetryFlow: SharedFlow<WebSocketMessage> = _telemetryFlow.asSharedFlow()
     
     private val _stateFlow = MutableSharedFlow<WebSocketState>(
         replay = 1,
         extraBufferCapacity = 8
     )
     val stateFlow: SharedFlow<WebSocketState> = _stateFlow.asSharedFlow()
+
+    private val _ledStateFlow = MutableSharedFlow<LEDState>(
+        replay = 1,
+        extraBufferCapacity = 8
+    )
+    val ledStateFlow: SharedFlow<LEDState> = _ledStateFlow.asSharedFlow()
 
     init {
         // Initialize state lazily to avoid issues during DI construction
@@ -154,9 +161,10 @@ class TelemetryWebSocket(
             override fun onMessage(message: String?) {
                 message?.let { msg ->
                     try {
-                        val reading = gson.fromJson(msg, TelemetryReading::class.java)
+                        val wsMsg = gson.fromJson(msg, WebSocketMessage::class.java)
                         scope.launch {
-                            _telemetryFlow.emit(reading)
+                            _telemetryFlow.emit(wsMsg)
+                            wsMsg.ledState?.let { _ledStateFlow.emit(it) }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Failed to parse telemetry message: $msg", e)
@@ -228,6 +236,54 @@ class TelemetryWebSocket(
         }
     }
     
+    // LED Control Methods
+
+    fun setLedMode(mode: String) {
+        sendCommand(mapOf("action" to "set_mode", "mode" to mode))
+    }
+
+    fun setAiState(aiState: String) {
+        sendCommand(mapOf("action" to "set_ai_state", "ai_state" to aiState))
+    }
+
+    fun setLedBrightness(brightness: Int) {
+        sendCommand(mapOf("action" to "set_brightness", "brightness" to brightness))
+    }
+
+    fun setLedColor(r: Int, g: Int, b: Int) {
+        sendCommand(mapOf("action" to "set_color", "r" to r, "g" to g, "b" to b))
+    }
+
+    fun triggerEmergency() {
+        sendCommand(mapOf("action" to "trigger_emergency"))
+    }
+
+    fun clearEmergency() {
+        sendCommand(mapOf("action" to "clear_emergency"))
+    }
+
+    fun startAnimation(animation: String, speed: Int = 100) {
+        sendCommand(mapOf("action" to "start_animation", "animation" to animation, "speed" to speed))
+    }
+
+    fun stopAnimation() {
+        sendCommand(mapOf("action" to "stop_animation"))
+    }
+
+    private fun sendCommand(command: Map<String, Any>) {
+        if (webSocketClient?.isOpen != true) {
+            Log.w(TAG, "Cannot send command - not connected")
+            return
+        }
+        try {
+            val json = gson.toJson(command)
+            webSocketClient?.send(json)
+            Log.d(TAG, "Sent command: $json")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send command", e)
+        }
+    }
+
     /**
      * Clean up resources.
      */

@@ -1,0 +1,7 @@
+{
+  "api": {"host": "0.0.0.0", "port": 8000},
+  "ws": {"port": 8000, "paths": {"telemetry": "/ws/telemetry", "general": "/ws"}},
+  "mqtt": {"port": 1883},
+  "zmq": {"router_port": 5555, "pub_port": 5556},
+  "mdns": {"api_type": "_mia-api._tcp", "mqtt_type": "_mqtt._tcp"}
+}
