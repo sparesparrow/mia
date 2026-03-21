@@ -1,0 +1,53 @@
+include "cognitive.fbs";
+
+namespace Mia.Storage;
+
+// ============================================================================
+// Episodic Memory — timestamped interaction records
+// ============================================================================
+
+table EpisodicEvent {
+  event_id: string (id: 0);
+  session_id: string (id: 1);           // Conversation/interaction session
+  layer: Mia.Cognitive.CognitiveLayer (id: 2);  // Which layer generated this event
+  event_type: string (id: 3);           // "user_command", "system_action", "sensor_reading", "inference"
+  content: string (id: 4);              // JSON-encoded event content
+  context: string (id: 5);              // JSON-encoded contextual state at time of event
+  outcome: string (id: 6);              // Result/outcome of the event
+  importance: float (id: 7);            // Importance score for memory consolidation (0.0-1.0)
+  timestamp: uint64 (id: 8);
+  duration_ms: uint32 (id: 9);          // How long the event took
+}
+
+table EpisodicStore {
+  device_id: string (id: 0);
+  events: [EpisodicEvent] (id: 1);
+  total_events: uint64 (id: 2);         // Total events in store (may exceed vector size)
+  oldest_timestamp: uint64 (id: 3);
+  newest_timestamp: uint64 (id: 4);
+}
+
+// ============================================================================
+// Working Memory — short-term state buffer
+// ============================================================================
+
+table WorkingMemoryEntry {
+  key: string (id: 0);                  // Entry identifier
+  layer: Mia.Cognitive.CognitiveLayer (id: 1);
+  value: [ubyte] (id: 2);              // FlatBuffers-encoded value
+  value_type: string (id: 3);          // FlatBuffers type name
+  priority: float (id: 4);             // Eviction priority (higher = keep longer)
+  created_at: uint64 (id: 5);
+  expires_at: uint64 (id: 6);          // 0 = no expiration
+  access_count: uint32 (id: 7);        // Number of times accessed
+}
+
+table WorkingMemoryBuffer {
+  device_id: string (id: 0);
+  entries: [WorkingMemoryEntry] (id: 1);
+  capacity: uint32 (id: 2);            // Maximum entries before eviction
+  used: uint32 (id: 3);
+}
+
+root_type EpisodicStore;
+root_type WorkingMemoryBuffer;
