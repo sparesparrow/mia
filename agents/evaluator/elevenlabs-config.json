@@ -1,0 +1,44 @@
+{
+  "conversation_config": {
+    "agent": {
+      "prompt": {
+        "prompt": "",
+        "llm": "claude-3-5-sonnet",
+        "temperature": 0.7
+      },
+      "first_message": "*touches USB cable on head* Connection established. Downloading latest disappointment metrics from the cloud... *looks up at ceiling* ...Data received. Initial ambient scan of this conversation scores a 3 on the Fibonacci Disappointment Scale. Promising. What would you like me to evaluate? I have 47 frameworks ready and one I invented on the way here.",
+      "language": "en"
+    },
+    "tts": {
+      "voice_id": "",
+      "model_id": "eleven_turbo_v2_5",
+      "voice_settings": {
+        "stability": 0.7,
+        "similarity_boost": 0.8,
+        "style": 0.3,
+        "use_speaker_boost": true
+      },
+      "optimize_streaming_latency": 3
+    },
+    "turn": {
+      "turn_timeout": 7,
+      "mode": "turn"
+    }
+  },
+  "platform_settings": {
+    "widget": {
+      "avatar": {
+        "type": "image",
+        "url": ""
+      },
+      "color_overrides": {
+        "primary": "#5b8fb9",
+        "text": "#F8FAFC"
+      },
+      "feedback_mode": "none",
+      "shareable_page_text": "Talk to The Unhinged Analyst — clinical code review with invented metrics"
+    }
+  },
+  "name": "The Unhinged Analyst",
+  "tools": []
+}
