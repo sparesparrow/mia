@@ -40,5 +40,102 @@
     }
   },
   "name": "The Feral Maestro",
-  "tools": []
+  "tools": [
+    {
+      "type": "webhook",
+      "name": "control_lights",
+      "description": "Control smart home lights — set color and brightness in any room.",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["control_lights"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "color":      { "type": "string", "description": "CSS color name or hex value, e.g. 'blue' or '#0000ff'" },
+                "brightness": { "type": "number", "minimum": 0, "maximum": 100, "description": "Brightness percentage 0–100" },
+                "room":       { "type": "string", "description": "Room name, e.g. 'living room'" }
+              },
+              "required": ["color"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    },
+    {
+      "type": "webhook",
+      "name": "git_operation",
+      "description": "Run a read-only git command (status, diff, log, branch) on the MIA repository.",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["git_operation"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "operation": { "type": "string", "enum": ["status", "diff", "log", "branch"], "description": "Git subcommand" },
+                "args":      { "type": "array", "items": { "type": "string" }, "description": "Additional flags" }
+              },
+              "required": ["operation"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    },
+    {
+      "type": "webhook",
+      "name": "deploy_service",
+      "description": "Request deployment of a MIA microservice.",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["deploy_service"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "service":     { "type": "string", "description": "Service name, e.g. 'mia-api'" },
+                "environment": { "type": "string", "enum": ["dev", "staging", "prod"], "description": "Target environment" }
+              },
+              "required": ["service"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    },
+    {
+      "type": "webhook",
+      "name": "read_file",
+      "description": "Read a file from the MIA project (read-only, within project root).",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["read_file"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "path": { "type": "string", "description": "File path relative to project root" }
+              },
+              "required": ["path"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    }
+  ]
 }

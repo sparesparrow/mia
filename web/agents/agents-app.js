@@ -30,7 +30,11 @@
         },
     };
 
-    const API_BASE = 'http://localhost:8042';
+    // API_BASE is configurable via window.MIA_AGENTS_API_BASE (injected by server/template),
+    // falls back to relative URL so it works behind any reverse proxy without hardcoding localhost.
+    var API_BASE = (typeof window.MIA_AGENTS_API_BASE === 'string' && window.MIA_AGENTS_API_BASE)
+        ? window.MIA_AGENTS_API_BASE.replace(/\/$/, '')
+        : '';
 
     let activeAgent = null;
 
@@ -38,16 +42,32 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         loadTheme();
-        loadAgentConfig();
+        loadAgentConfigWithRetry();
         setupKeyboardShortcuts();
     });
 
     // ─── Agent Config Loading ──────────────────────────────────────────────────
 
+    async function loadAgentConfigWithRetry() {
+        setAllCardsLoading(true);
+        const delays = [0, 2000, 4000, 8000];
+        for (let i = 0; i < delays.length; i++) {
+            if (delays[i] > 0) await sleep(delays[i]);
+            const ok = await loadAgentConfig();
+            if (ok) {
+                setAllCardsLoading(false);
+                return;
+            }
+        }
+        setAllCardsLoading(false);
+        // All retries exhausted — show toast but don't crash
+        showToast('Agent configuration unavailable. Using cached data if present.', 'info');
+    }
+
     async function loadAgentConfig() {
         // Try API server first, fall back to localStorage
         try {
-            const resp = await fetch(`${API_BASE}/api/agents/config`, { signal: AbortSignal.timeout(2000) });
+            const resp = await fetch(`${API_BASE}/api/agents/config`, { signal: AbortSignal.timeout(3000) });
             if (resp.ok) {
                 const config = await resp.json();
                 Object.keys(AGENTS).forEach(function (name) {
@@ -55,22 +75,39 @@
                         AGENTS[name].agentId = config[name].agent_id;
                     }
                 });
-                return;
+                return true;
             }
         } catch (_) {
             // API not running — try localStorage
         }
 
         // localStorage fallback (set manually for dev)
+        let found = false;
         Object.keys(AGENTS).forEach(function (name) {
             const stored = localStorage.getItem('agent_id_' + name);
-            if (stored) AGENTS[name].agentId = stored;
+            if (stored) {
+                AGENTS[name].agentId = stored;
+                found = true;
+            }
+        });
+        return found;
+    }
+
+    function setAllCardsLoading(loading) {
+        Object.keys(AGENTS).forEach(function (name) {
+            const card = document.getElementById('card-' + name);
+            if (!card) return;
+            if (loading) {
+                card.classList.add('loading');
+            } else {
+                card.classList.remove('loading');
+            }
         });
     }
 
     // ─── Voice Session Management ──────────────────────────────────────────────
 
-    window.startVoiceSession = function (agentName) {
+    window.startVoiceSession = async function (agentName) {
         if (activeAgent === agentName) {
             // Already active — end it
             endCurrentSession();
@@ -83,7 +120,7 @@
         if (!agent) return;
 
         if (!agent.agentId) {
-            showToast('Agent ID not configured. Run deploy-agents.py first.', 'error');
+            showToast('This agent is not yet available. Please try again later or contact support.', 'error');
             return;
         }
 
@@ -99,9 +136,27 @@
         wrapper.style.display = 'block';
         container.className = 'chat-container ' + agentName + '-active';
 
-        // Create ElevenLabs convai widget
-        const widget = document.createElement('elevenlabs-convai');
-        widget.setAttribute('agent-id', agent.agentId);
+        // Fetch a signed URL so the agent session is authenticated and rate-limited server-side.
+        // Falls back to public agent-id if the signed-url endpoint is unavailable (e.g. local dev).
+        let widget;
+        try {
+            const sigResp = await fetch(
+                `${API_BASE}/api/agents/signed-url?agent=${encodeURIComponent(agentName)}`,
+                { signal: AbortSignal.timeout(5000) }
+            );
+            if (sigResp.ok) {
+                const { signed_url } = await sigResp.json();
+                widget = document.createElement('elevenlabs-convai');
+                widget.setAttribute('signed-url', signed_url);
+            } else {
+                throw new Error(`Signed-URL error ${sigResp.status}`);
+            }
+        } catch (sigErr) {
+            // Fallback: use public agent-id (works for public agents in local dev)
+            console.warn('Signed URL unavailable, falling back to public agent-id:', sigErr.message);
+            widget = document.createElement('elevenlabs-convai');
+            widget.setAttribute('agent-id', agent.agentId);
+        }
 
         // Listen for widget events
         widget.addEventListener('elevenlabs-convai:connect', function () {
@@ -272,6 +327,12 @@
             toast.style.transition = '250ms ease';
             setTimeout(function () { toast.remove(); }, 300);
         }, 4000);
+    }
+
+    // ─── Utilities ─────────────────────────────────────────────────────────────
+
+    function sleep(ms) {
+        return new Promise(function (resolve) { setTimeout(resolve, ms); });
     }
 
     // Expose for potential external use (e.g. from ElevenLabs client tool callbacks)

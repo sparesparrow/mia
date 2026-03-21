@@ -80,6 +80,14 @@ def load_agent_payload(name: str, env: dict[str, str]) -> dict:
     if avatar_url:
         config["platform_settings"]["widget"]["avatar"]["url"] = avatar_url
 
+    # Inject webhook URL into all server tool definitions.
+    # Set AGENTS_WEBHOOK_URL=https://your-domain.com/api/agents/webhook in .env.
+    webhook_url = env.get("AGENTS_WEBHOOK_URL", os.getenv("AGENTS_WEBHOOK_URL", ""))
+    if webhook_url and "tools" in config:
+        for tool in config["tools"]:
+            if tool.get("type") == "webhook" and "api_schema" in tool:
+                tool["api_schema"]["url"] = webhook_url
+
     return config
 
 

@@ -33,6 +33,9 @@
                     <i class="fas fa-arrow-left"></i> Team Portal
                 </a>
                 <a href="../../" class="nav-link">Home</a>
+                <!-- Language switcher -->
+                <button class="btn-lang" data-lang="en" title="English">EN</button>
+                <button class="btn-lang" data-lang="cs" title="Česky">CS</button>
             </nav>
             <div class="header-actions">
                 <button class="btn-icon" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">
@@ -46,8 +49,8 @@
     <main class="agents-main">
 
         <div class="section-header">
-            <h2>Your Agent Team</h2>
-            <p>Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
+            <h2 data-i18n="agents.title">Your Agent Team</h2>
+            <p data-i18n="agents.subtitle">Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
         </div>
 
         <!-- Agent Cards -->
@@ -67,19 +70,19 @@
 
                 <div class="agent-name">ORCHESTRATOR</div>
                 <div class="agent-title">The Feral Maestro</div>
-                <div class="agent-role">Planning · Coordination · Creative Chaos</div>
+                <div class="agent-role" data-i18n="agents.orchestrator.role">Planning · Coordination · Creative Chaos</div>
 
                 <div class="agent-status-line" id="status-orchestrator">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span>Idle — click Talk to start</span>
+                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
                     <button class="btn-talk" onclick="startVoiceSession('orchestrator')">
-                        <i class="fas fa-microphone"></i> Talk
+                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
                     </button>
                     <button class="btn-chat" onclick="focusAgent('orchestrator')">
-                        <i class="fas fa-keyboard"></i> Focus
+                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
@@ -98,19 +101,19 @@
 
                 <div class="agent-name">EVALUATOR</div>
                 <div class="agent-title">The Unhinged Analyst</div>
-                <div class="agent-role">Code Review · Metrics · Clinical Devastation</div>
+                <div class="agent-role" data-i18n="agents.evaluator.role">Code Review · Metrics · Clinical Devastation</div>
 
                 <div class="agent-status-line" id="status-evaluator">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span>Idle — click Talk to start</span>
+                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
                     <button class="btn-talk" onclick="startVoiceSession('evaluator')">
-                        <i class="fas fa-microphone"></i> Talk
+                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
                     </button>
                     <button class="btn-chat" onclick="focusAgent('evaluator')">
-                        <i class="fas fa-keyboard"></i> Focus
+                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
@@ -129,19 +132,19 @@
 
                 <div class="agent-name">EXECUTOR</div>
                 <div class="agent-title">The Obsessive Closer</div>
-                <div class="agent-role">Execution · Deployment · Bug Hunting</div>
+                <div class="agent-role" data-i18n="agents.executor.role">Execution · Deployment · Bug Hunting</div>
 
                 <div class="agent-status-line" id="status-executor">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span>Idle — click Talk to start</span>
+                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
                     <button class="btn-talk" onclick="startVoiceSession('executor')">
-                        <i class="fas fa-microphone"></i> Talk
+                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
                     </button>
                     <button class="btn-chat" onclick="focusAgent('executor')">
-                        <i class="fas fa-keyboard"></i> Focus
+                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
@@ -153,9 +156,9 @@
             <div class="chat-container" id="chatContainer">
                 <div class="chat-placeholder" id="chatPlaceholder">
                     <i class="fas fa-robot"></i>
-                    <span>Select an agent and click <strong>Talk</strong> to begin a voice session</span>
+                    <span data-i18n="agents.select_prompt">Select an agent and click <strong>Talk</strong> to begin a voice session</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-light);">
-                        Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select · <kbd>Esc</kbd> to end
+                        <span data-i18n="agents.keyboard_hint">Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select · <kbd>Esc</kbd> to end</span>
                     </span>
                 </div>
                 <div class="widget-wrapper" id="widgetWrapper" style="display:none;"></div>
@@ -164,11 +167,11 @@
 
         <!-- Keyboard shortcuts reference -->
         <div class="shortcuts-bar">
-            <div class="shortcut"><kbd>1</kbd> Orchestrator</div>
-            <div class="shortcut"><kbd>2</kbd> Evaluator</div>
-            <div class="shortcut"><kbd>3</kbd> Executor</div>
-            <div class="shortcut"><kbd>Esc</kbd> End session</div>
-            <div class="shortcut"><kbd>T</kbd> Toggle theme</div>
+            <div class="shortcut"><kbd>1</kbd> <span data-i18n="agents.shortcuts.orchestrator">Orchestrator</span></div>
+            <div class="shortcut"><kbd>2</kbd> <span data-i18n="agents.shortcuts.evaluator">Evaluator</span></div>
+            <div class="shortcut"><kbd>3</kbd> <span data-i18n="agents.shortcuts.executor">Executor</span></div>
+            <div class="shortcut"><kbd>Esc</kbd> <span data-i18n="agents.shortcuts.end_session">End session</span></div>
+            <div class="shortcut"><kbd>T</kbd> <span data-i18n="agents.shortcuts.toggle_theme">Toggle theme</span></div>
         </div>
 
     </main>
@@ -176,6 +179,30 @@
     <!-- Toast container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- i18n loader (reuses existing MIA infrastructure) -->
+    <script src="../js/i18n-loader.js"></script>
+    <script>
+        // Bootstrap i18n with agents namespace from common.yaml
+        // The i18n-loader reads data-i18n attributes and translates them.
+        (function () {
+            var savedLang = localStorage.getItem('mia-lang') || 'en';
+            if (window.I18nLoader) {
+                window.I18nLoader.init({
+                    defaultLanguage: savedLang,
+                    i18nDataPath: '../i18n/common.yaml',
+                });
+            }
+
+            // Language switcher buttons
+            document.querySelectorAll('.btn-lang').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var lang = btn.getAttribute('data-lang');
+                    if (window.I18nLoader) window.I18nLoader.setLanguage(lang);
+                    localStorage.setItem('mia-lang', lang);
+                });
+            });
+        })();
+    </script>
     <script src="agents-app.js"></script>
 </body>
 </html>

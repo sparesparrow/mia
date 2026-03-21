@@ -40,5 +40,53 @@
     }
   },
   "name": "The Unhinged Analyst",
-  "tools": []
+  "tools": [
+    {
+      "type": "webhook",
+      "name": "git_operation",
+      "description": "Run a read-only git command (status, diff, log, branch) on the MIA repository to inspect code changes.",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["git_operation"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "operation": { "type": "string", "enum": ["status", "diff", "log", "branch"], "description": "Git subcommand" },
+                "args":      { "type": "array", "items": { "type": "string" }, "description": "Additional flags" }
+              },
+              "required": ["operation"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    },
+    {
+      "type": "webhook",
+      "name": "read_file",
+      "description": "Read a source file from the MIA project for code review (read-only, within project root).",
+      "api_schema": {
+        "url": "",
+        "method": "POST",
+        "request_body_schema": {
+          "type": "object",
+          "properties": {
+            "tool_name": { "type": "string", "enum": ["read_file"] },
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "path": { "type": "string", "description": "File path relative to project root" }
+              },
+              "required": ["path"]
+            }
+          },
+          "required": ["tool_name", "parameters"]
+        }
+      }
+    }
+  ]
 }
