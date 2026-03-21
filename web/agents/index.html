@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SERVIS — Agent Team</title>
+    <meta name="description" content="Personal AI agent team: ORCHESTRATOR, EVALUATOR, EXECUTOR — voice-enabled conversational agents.">
+
+    <link rel="stylesheet" href="agents-styles.css">
+
+    <!-- Fonts — same as MIA team portal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ElevenLabs Conversational AI widget (no bundler needed) -->
+    <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="agents-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>AI-SERVIS</h1>
+                <span class="subtitle">Agent Team</span>
+            </div>
+            <nav class="header-nav">
+                <a href="../team/" class="nav-link">
+                    <i class="fas fa-arrow-left"></i> Team Portal
+                </a>
+                <a href="../../" class="nav-link">Home</a>
+            </nav>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="agents-main">
+
+        <div class="section-header">
+            <h2>Your Agent Team</h2>
+            <p>Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
+        </div>
+
+        <!-- Agent Cards -->
+        <section class="agents-grid" id="agentsGrid">
+
+            <!-- ORCHESTRATOR -->
+            <div class="agent-card" data-agent="orchestrator" id="card-orchestrator">
+                <div class="agent-avatar-wrapper">
+                    <img
+                        class="agent-avatar"
+                        src="../assets/agents/orchestrator.jpg"
+                        alt="The Feral Maestro"
+                        loading="eager"
+                    >
+                    <div class="agent-status-dot idle" id="dot-orchestrator"></div>
+                </div>
+
+                <div class="agent-name">ORCHESTRATOR</div>
+                <div class="agent-title">The Feral Maestro</div>
+                <div class="agent-role">Planning · Coordination · Creative Chaos</div>
+
+                <div class="agent-status-line" id="status-orchestrator">
+                    <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
+                    <span>Idle — click Talk to start</span>
+                </div>
+
+                <div class="agent-actions">
+                    <button class="btn-talk" onclick="startVoiceSession('orchestrator')">
+                        <i class="fas fa-microphone"></i> Talk
+                    </button>
+                    <button class="btn-chat" onclick="focusAgent('orchestrator')">
+                        <i class="fas fa-keyboard"></i> Focus
+                    </button>
+                </div>
+            </div>
+
+            <!-- EVALUATOR -->
+            <div class="agent-card" data-agent="evaluator" id="card-evaluator">
+                <div class="agent-avatar-wrapper">
+                    <img
+                        class="agent-avatar"
+                        src="../assets/agents/evaluator.jpg"
+                        alt="The Unhinged Analyst"
+                        loading="eager"
+                    >
+                    <div class="agent-status-dot idle" id="dot-evaluator"></div>
+                </div>
+
+                <div class="agent-name">EVALUATOR</div>
+                <div class="agent-title">The Unhinged Analyst</div>
+                <div class="agent-role">Code Review · Metrics · Clinical Devastation</div>
+
+                <div class="agent-status-line" id="status-evaluator">
+                    <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
+                    <span>Idle — click Talk to start</span>
+                </div>
+
+                <div class="agent-actions">
+                    <button class="btn-talk" onclick="startVoiceSession('evaluator')">
+                        <i class="fas fa-microphone"></i> Talk
+                    </button>
+                    <button class="btn-chat" onclick="focusAgent('evaluator')">
+                        <i class="fas fa-keyboard"></i> Focus
+                    </button>
+                </div>
+            </div>
+
+            <!-- EXECUTOR -->
+            <div class="agent-card" data-agent="executor" id="card-executor">
+                <div class="agent-avatar-wrapper">
+                    <img
+                        class="agent-avatar"
+                        src="../assets/agents/executor.jpg"
+                        alt="The Obsessive Closer"
+                        loading="eager"
+                    >
+                    <div class="agent-status-dot idle" id="dot-executor"></div>
+                </div>
+
+                <div class="agent-name">EXECUTOR</div>
+                <div class="agent-title">The Obsessive Closer</div>
+                <div class="agent-role">Execution · Deployment · Bug Hunting</div>
+
+                <div class="agent-status-line" id="status-executor">
+                    <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
+                    <span>Idle — click Talk to start</span>
+                </div>
+
+                <div class="agent-actions">
+                    <button class="btn-talk" onclick="startVoiceSession('executor')">
+                        <i class="fas fa-microphone"></i> Talk
+                    </button>
+                    <button class="btn-chat" onclick="focusAgent('executor')">
+                        <i class="fas fa-keyboard"></i> Focus
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Chat / Widget Container -->
+        <section class="chat-section">
+            <div class="chat-container" id="chatContainer">
+                <div class="chat-placeholder" id="chatPlaceholder">
+                    <i class="fas fa-robot"></i>
+                    <span>Select an agent and click <strong>Talk</strong> to begin a voice session</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-light);">
+                        Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select · <kbd>Esc</kbd> to end
+                    </span>
+                </div>
+                <div class="widget-wrapper" id="widgetWrapper" style="display:none;"></div>
+            </div>
+        </section>
+
+        <!-- Keyboard shortcuts reference -->
+        <div class="shortcuts-bar">
+            <div class="shortcut"><kbd>1</kbd> Orchestrator</div>
+            <div class="shortcut"><kbd>2</kbd> Evaluator</div>
+            <div class="shortcut"><kbd>3</kbd> Executor</div>
+            <div class="shortcut"><kbd>Esc</kbd> End session</div>
+            <div class="shortcut"><kbd>T</kbd> Toggle theme</div>
+        </div>
+
+    </main>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="agents-app.js"></script>
+</body>
+</html>
