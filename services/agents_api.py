@@ -20,6 +20,7 @@ Environment variables (from .env):
     GITHUB_TOKEN              (optional, for git_operation tool)
 """
 
+import collections
 import hashlib
 import hmac
 import os
@@ -34,12 +35,45 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="MIA Agents API", version="1.0.0")
 
+# CORS origins — restrict via CORS_ORIGINS env var in production.
+# Example: CORS_ORIGINS=https://ai-servis.example.com,https://team.ai-servis.example.com
+_cors_origins_env = os.getenv("CORS_ORIGINS", "*")
+CORS_ORIGINS = [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# ─── Simple In-Memory Rate Limiter ────────────────────────────────────────────
+# Limits /api/agents/signed-url to SIGNED_URL_RATE_LIMIT requests per minute per IP.
+# For production deployments behind a load balancer, replace with Redis-backed rate limiting.
+
+SIGNED_URL_RATE_LIMIT = int(os.getenv("SIGNED_URL_RATE_LIMIT", "10"))  # requests per minute
+_rate_limit_store: dict[str, collections.deque] = {}
+
+
+def _check_rate_limit(client_ip: str) -> bool:
+    """Return True if the request is allowed, False if rate limit exceeded."""
+    now = time.monotonic()
+    window = 60.0  # 1 minute window
+    bucket = _rate_limit_store.setdefault(client_ip, collections.deque())
+    # Drop timestamps outside the window
+    while bucket and now - bucket[0] > window:
+        bucket.popleft()
+    if len(bucket) >= SIGNED_URL_RATE_LIMIT:
+        return False
+    bucket.append(now)
+    return True
+
+
+def _get_client_ip(request: Request) -> str:
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 
@@ -66,8 +100,15 @@ async def get_agent_config() -> dict[str, Any]:
 
 
 @app.get("/api/agents/signed-url")
-async def get_signed_url(agent: str = Query(..., description="Agent name: orchestrator | evaluator | executor")) -> dict[str, str]:
+async def get_signed_url(request: Request, agent: str = Query(..., description="Agent name: orchestrator | evaluator | executor")) -> dict[str, str]:
     """Generate a signed URL for a private ElevenLabs conversation session."""
+    client_ip = _get_client_ip(request)
+    if not _check_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded ({SIGNED_URL_RATE_LIMIT} requests/minute). Please wait before starting another session.",
+        )
+
     if agent not in AGENT_IDS:
         raise HTTPException(status_code=404, detail=f"Unknown agent: {agent!r}. Valid: {list(AGENT_IDS)}")
 

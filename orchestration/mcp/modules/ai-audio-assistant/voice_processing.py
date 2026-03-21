@@ -6,6 +6,7 @@ Provides TTS/STT with ElevenLabs, OpenAI Whisper, wake word detection, and VAD
 
 import asyncio
 import logging
+import math
 import os
 import json
 import io
@@ -20,6 +21,11 @@ import threading
 import queue
 import tempfile
 import wave
+
+try:
+    import httpx as _httpx
+except ImportError:  # pragma: no cover
+    _httpx = None  # type: ignore
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -209,77 +215,86 @@ class ElevenLabsProcessor(VoiceProcessorInterface):
         self.request_cache.clear()
     
     async def text_to_speech(self, request: TTSRequest) -> TTSResponse:
-        """Convert text to speech using ElevenLabs"""
+        """Convert text to speech using ElevenLabs API."""
         start_time = time.time()
-        
-        logger.info(f"--- ElevenLabs TTS Request ---")
+
+        logger.info("--- ElevenLabs TTS Request ---")
         logger.info(f"Text length: {len(request.text)} characters")
         logger.info(f"Voice: {request.voice_profile.name}")
         logger.info(f"Speed: {request.speed}")
-        
+
         try:
             if not self.initialized:
                 raise Exception("ElevenLabs processor not initialized")
-            
+
             # Check cache first
             cache_key = self._generate_tts_cache_key(request)
             if cache_key in self.request_cache:
                 logger.debug("Using cached TTS result")
-                cached_response = self.request_cache[cache_key]
-                return cached_response
-            
-            # Prepare request data
+                return self.request_cache[cache_key]
+
             tts_data = {
                 "text": request.text,
-                "model_id": "eleven_monolingual_v1",
+                "model_id": "eleven_turbo_v2_5",
                 "voice_settings": {
                     "stability": request.voice_profile.stability,
                     "similarity_boost": request.voice_profile.similarity_boost,
                     "style": request.voice_profile.style,
-                    "use_speaker_boost": request.voice_profile.use_speaker_boost
-                }
+                    "use_speaker_boost": request.voice_profile.use_speaker_boost,
+                },
             }
-            
-            # Mock API call for now
-            await asyncio.sleep(0.5)  # Simulate API latency
-            
-            # Generate mock audio data
-            mock_audio_data = self._generate_mock_audio(request.text, request.voice_profile.sample_rate)
-            
+
+            if _httpx is None:
+                raise RuntimeError("httpx is not installed. Add 'httpx' to requirements.")
+
+            async with _httpx.AsyncClient(timeout=30.0) as client:
+                resp = await client.post(
+                    f"{self.base_url}/text-to-speech/{request.voice_profile.id}",
+                    headers={
+                        "xi-api-key": self.api_key,
+                        "Accept": "audio/mpeg",
+                        "Content-Type": "application/json",
+                    },
+                    json=tts_data,
+                )
+
+            if resp.status_code != 200:
+                raise Exception(f"ElevenLabs API error {resp.status_code}: {resp.text[:200]}")
+
+            audio_data = resp.content
             processing_time = int((time.time() - start_time) * 1000)
-            
+
             response = TTSResponse(
                 success=True,
-                audio_data=mock_audio_data,
-                duration_ms=len(request.text) * 50,  # Rough estimate
+                audio_data=audio_data,
+                duration_ms=len(request.text) * 50,  # rough estimate; ElevenLabs does not return duration
                 engine_used=VoiceEngine.ELEVENLABS,
-                processing_time_ms=processing_time
+                processing_time_ms=processing_time,
             )
-            
-            # Cache response
+
+            # Cache response (LRU-style eviction)
             self.request_cache[cache_key] = response
             if len(self.request_cache) > 100:
-                # Remove oldest entries
                 oldest_keys = list(self.request_cache.keys())[:50]
                 for key in oldest_keys:
                     del self.request_cache[key]
-            
-            logger.info(f"--- ElevenLabs TTS Completed Successfully ---")
-            logger.info(f"Audio data size: {len(mock_audio_data)} bytes")
+
+            logger.info("--- ElevenLabs TTS Completed Successfully ---")
+            logger.info(f"Audio data size: {len(audio_data)} bytes")
             logger.info(f"Processing time: {processing_time}ms")
-            
+
             return response
-            
+
         except Exception as e:
             processing_time = int((time.time() - start_time) * 1000)
-            logger.error(f"--- ElevenLabs TTS Failed ---")
+            logger.error("--- ElevenLabs TTS Failed ---")
             logger.error(f"Error: {e}")
-            
+
             return TTSResponse(
                 success=False,
                 error=str(e),
                 engine_used=VoiceEngine.ELEVENLABS,
-                processing_time_ms=processing_time
+                processing_time_ms=processing_time,
             )
     
     async def speech_to_text(self, request: STTRequest) -> STTResponse:
@@ -292,86 +307,86 @@ class ElevenLabsProcessor(VoiceProcessorInterface):
         )
     
     async def get_available_voices(self) -> List[VoiceProfile]:
-        """Get available ElevenLabs voices"""
+        """Get available ElevenLabs voices from the API."""
         logger.debug("Getting ElevenLabs available voices")
-        
+
+        if not self.api_key:
+            logger.warning("No API key — returning built-in fallback voices")
+            return self._get_fallback_voices()
+
+        if _httpx is None:
+            logger.warning("httpx not installed — returning built-in fallback voices")
+            return self._get_fallback_voices()
+
         try:
-            if not self.api_key:
-                logger.warning("No API key, returning mock voices")
-                return self._get_mock_voices()
-            
-            # Mock API call - in real implementation would call ElevenLabs API
-            await asyncio.sleep(0.2)
-            
-            # Return mock voices for now
-            voices = self._get_mock_voices()
-            
-            # Cache voices
-            for voice in voices:
-                self.voice_cache[voice.id] = voice
-            
-            logger.info(f"Retrieved {len(voices)} ElevenLabs voices")
+            async with _httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    f"{self.base_url}/voices",
+                    headers={"xi-api-key": self.api_key},
+                )
+
+            if resp.status_code != 200:
+                logger.error(f"ElevenLabs voices API error {resp.status_code}")
+                return self._get_fallback_voices()
+
+            data = resp.json()
+            voices = []
+            for v in data.get("voices", []):
+                profile = VoiceProfile(
+                    id=v["voice_id"],
+                    name=v["name"],
+                    gender=VoiceGender.NEUTRAL,
+                    language="en",
+                    description=v.get("description", ""),
+                    engine=VoiceEngine.ELEVENLABS,
+                    sample_rate=22050,
+                )
+                voices.append(profile)
+                self.voice_cache[profile.id] = profile
+
+            logger.info(f"Retrieved {len(voices)} ElevenLabs voices from API")
             return voices
-            
+
         except Exception as e:
             logger.error(f"Error getting ElevenLabs voices: {e}")
-            return []
+            return self._get_fallback_voices()
     
-    def _get_mock_voices(self) -> List[VoiceProfile]:
-        """Get mock voice profiles for testing"""
+    def _get_fallback_voices(self) -> List[VoiceProfile]:
+        """Built-in fallback voice profiles used when the API is unavailable."""
         return [
             VoiceProfile(
-                id="elevenlabs_rachel",
+                id="21m00Tcm4TlvDq8ikWAM",
                 name="Rachel",
                 gender=VoiceGender.FEMALE,
                 language="en",
                 description="American English, young adult female",
                 engine=VoiceEngine.ELEVENLABS,
-                sample_rate=22050
+                sample_rate=22050,
             ),
             VoiceProfile(
-                id="elevenlabs_drew",
+                id="29vD33N1CtxCmqQRPOHJ",
                 name="Drew",
                 gender=VoiceGender.MALE,
                 language="en",
                 description="American English, middle-aged male",
                 engine=VoiceEngine.ELEVENLABS,
-                sample_rate=22050
+                sample_rate=22050,
             ),
             VoiceProfile(
-                id="elevenlabs_clyde",
+                id="2EiwWnXFnvU5JabPnv8n",
                 name="Clyde",
                 gender=VoiceGender.MALE,
                 language="en",
                 description="American English, warm male voice",
                 engine=VoiceEngine.ELEVENLABS,
-                sample_rate=22050
-            )
+                sample_rate=22050,
+            ),
         ]
     
     def _generate_tts_cache_key(self, request: TTSRequest) -> str:
-        """Generate cache key for TTS request"""
+        """Generate cache key for TTS request."""
         key_data = f"{request.text}_{request.voice_profile.id}_{request.speed}_{request.pitch}_{request.volume}"
         return hashlib.md5(key_data.encode()).hexdigest()
-    
-    def _generate_mock_audio(self, text: str, sample_rate: int) -> bytes:
-        """Generate mock audio data for testing"""
-        # Create a simple sine wave based on text length
-        import math
-        
-        duration_seconds = len(text) * 0.05  # ~50ms per character
-        samples = int(sample_rate * duration_seconds)
-        
-        audio_data = []
-        for i in range(samples):
-            # Simple sine wave with some variation
-            frequency = 440 + (hash(text) % 200)
-            sample = math.sin(2 * math.pi * frequency * i / sample_rate)
-            # Convert to 16-bit PCM
-            sample_16bit = int(sample * 32767)
-            audio_data.extend([sample_16bit & 0xFF, (sample_16bit >> 8) & 0xFF])
-        
-        return bytes(audio_data)
 
 
 class OpenAIProcessor(VoiceProcessorInterface):

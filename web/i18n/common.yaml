@@ -341,3 +341,69 @@ common:
     copyright:
       en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
       cs: © 2025 AI-SERVIS. Všechna práva vyhrazena.
+
+# Agent portal translations
+agents:
+  title:
+    en: Your Agent Team
+    cs: Váš tým agentů
+  subtitle:
+    en: Three unhinged, sarcastic, and genuinely excellent conversational AI agents.
+    cs: Tři rozjetí, sarkastičtí a skutečně výborní konverzační AI agenti.
+  select_prompt:
+    en: Select an agent and click Talk to begin a voice session
+    cs: Vyberte agenta a klikněte na Mluvit pro zahájení hlasové relace
+  keyboard_hint:
+    en: "Press 1 2 3 to select · Esc to end"
+    cs: "Stiskněte 1 2 3 pro výběr · Esc pro ukončení"
+  status:
+    idle:
+      en: Idle — click Talk to start
+      cs: Nečinný — klikněte na Mluvit
+    active:
+      en: Connected — listening...
+      cs: Připojen — naslouchám...
+    thinking:
+      en: Processing...
+      cs: Zpracovávám...
+    error:
+      en: Connection error
+      cs: Chyba připojení
+  buttons:
+    talk:
+      en: Talk
+      cs: Mluvit
+    end:
+      en: End
+      cs: Ukončit
+    focus:
+      en: Focus
+      cs: Zaměřit
+  orchestrator:
+    role:
+      en: Planning · Coordination · Creative Chaos
+      cs: Plánování · Koordinace · Kreativní chaos
+  evaluator:
+    role:
+      en: Code Review · Metrics · Clinical Devastation
+      cs: Code review · Metriky · Klinická devastace
+  executor:
+    role:
+      en: Execution · Deployment · Bug Hunting
+      cs: Provádění · Nasazení · Lov chyb
+  shortcuts:
+    orchestrator:
+      en: Orchestrator
+      cs: Orchestrátor
+    evaluator:
+      en: Evaluator
+      cs: Hodnotitel
+    executor:
+      en: Executor
+      cs: Exekutor
+    end_session:
+      en: End session
+      cs: Ukončit relaci
+    toggle_theme:
+      en: Toggle theme
+      cs: Přepnout téma
