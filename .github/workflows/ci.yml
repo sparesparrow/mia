@@ -15,6 +15,25 @@ env:
   JAVA_VERSION: '17'
 
 jobs:
+  schema-check:
+    name: Schema Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install flatc
+        run: sudo apt-get update && sudo apt-get install -y flatbuffers-compiler
+      - name: Validate schemas compile
+        run: |
+          flatc --python -o /tmp/fb-validate schemas/mia.fbs
+          flatc --python -o /tmp/fb-validate schemas/cognitive.fbs
+          flatc --python -o /tmp/fb-validate protos/vehicle.fbs
+          flatc --cpp -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
+      - name: Check backward compatibility
+        run: |
+          flatc --conform schemas/baseline/mia.fbs -- schemas/mia.fbs
+          flatc --conform schemas/baseline/cognitive.fbs -- schemas/cognitive.fbs
+          flatc --conform schemas/baseline/vehicle.fbs -- protos/vehicle.fbs
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -46,7 +65,7 @@ jobs:
   python-test:
     name: Python Tests
     runs-on: ubuntu-latest
-    needs: lint
+    needs: [lint, schema-check]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -1,0 +1,96 @@
+namespace Mia.Cognitive;
+
+// ============================================================================
+// Seven-Layer Cognitive Architecture for Distributed Intelligence
+// ============================================================================
+
+enum CognitiveLayer : byte {
+  Perceptual = 0,     // Sensor data ingestion and feature extraction
+  Episodic = 1,       // Interaction history and temporal context
+  Semantic = 2,       // Knowledge graph and concept relationships
+  Procedural = 3,     // Action execution and learned sequences
+  MetaCognitive = 4,  // Self-monitoring, anomaly detection, resource awareness
+  Transfer = 5,       // Cross-domain knowledge application
+  Evaluative = 6      // Outcome assessment and feedback loops
+}
+
+// ============================================================================
+// Knowledge Graph Types
+// ============================================================================
+
+table KGNode {
+  id: string (id: 0, key);       // Unique node ID, sorted for O(log n) lookup
+  label: string (id: 1);         // Human-readable label
+  node_type: string (id: 2);     // "concept", "entity", "action", "sensor"
+  properties: [KGProperty] (id: 3); // Arbitrary key-value properties
+  layer: CognitiveLayer (id: 4); // Which cognitive layer owns this node
+  confidence: float (id: 5);     // Confidence score (0.0-1.0)
+  created_at: uint64 (id: 6);    // Creation timestamp
+  updated_at: uint64 (id: 7);    // Last update timestamp
+}
+
+table KGProperty {
+  key: string (id: 0);
+  value: string (id: 1);
+}
+
+table KGEdge {
+  id: string (id: 0, key);       // Unique edge ID
+  source_id: string (id: 1);     // Source node ID
+  target_id: string (id: 2);     // Target node ID
+  relation: string (id: 3);      // Relationship type ("causes", "contains", "precedes", etc.)
+  weight: float (id: 4);         // Edge weight / strength (0.0-1.0)
+  properties: [KGProperty] (id: 5);
+  created_at: uint64 (id: 6);
+}
+
+// ============================================================================
+// Inference Types
+// ============================================================================
+
+table InferenceResult {
+  inference_id: string (id: 0);   // Unique inference identifier
+  source_layer: CognitiveLayer (id: 1);
+  model_id: string (id: 2);      // Which model produced this result
+  input_summary: string (id: 3); // Summary of input data
+  output: string (id: 4);        // JSON-encoded inference output
+  confidence: float (id: 5);     // Overall confidence (0.0-1.0)
+  latency_ms: uint32 (id: 6);    // Processing time
+  timestamp: uint64 (id: 7);
+}
+
+// ============================================================================
+// Cognitive State (aggregate view of system intelligence)
+// ============================================================================
+
+table CognitiveState {
+  device_id: string (id: 0);     // Device owning this state
+  active_layer: CognitiveLayer (id: 1); // Currently dominant layer
+  nodes: [KGNode] (id: 2);       // Active knowledge graph nodes
+  edges: [KGEdge] (id: 3);       // Active knowledge graph edges
+  recent_inferences: [InferenceResult] (id: 4);
+  system_load: float (id: 5);    // 0.0-1.0 cognitive load estimate
+  timestamp: uint64 (id: 6);
+}
+
+// ============================================================================
+// Cognitive Message Envelope (inter-layer communication)
+// ============================================================================
+
+table CognitiveMessage {
+  message_id: string (id: 0);    // Unique message identifier
+  source_device: string (id: 1); // Originating device ID
+  source_layer: CognitiveLayer (id: 2);
+  target_layer: CognitiveLayer (id: 3);
+  payload: [ubyte] (id: 4);      // FlatBuffers-encoded payload (type depends on layers)
+  payload_type: string (id: 5);  // FlatBuffers type name of payload
+  confidence: float (id: 6);     // Message confidence/priority (0.0-1.0)
+  correlation_id: string (id: 7); // For request-response correlation
+  timestamp: uint64 (id: 8);
+}
+
+root_type CognitiveMessage;
+root_type CognitiveState;
+root_type KGNode;
+root_type KGEdge;
+root_type InferenceResult;
