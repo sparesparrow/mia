@@ -15,6 +15,15 @@ android/*.iml
 android/app/release/
 android/app/debug/
 android/keystore/
+# Android (apps/ subdirectory layout)
+apps/android/.gradle/
+apps/android/build/
+apps/android/app/build/
+apps/android/local.properties
+apps/android/.idea/
+apps/android/**/*.iml
+# Setup status files (not for version control)
+ANDROID_TESTING_SETUP_COMPLETE.txt
 keystore.properties
 
 # ESP32
