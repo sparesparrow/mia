@@ -6,8 +6,85 @@
 #include "freertos/queue.h"
 #include "driver/twai.h"
 #include "driver/gpio.h"
+#include "mqtt_client.h"
+#include <string.h>
+#include <stdio.h>
 
 static const char *TAG = "AI_SERVIS_OBD";
+
+// MQTT alert client
+#ifndef MQTT_ALERT_BROKER_URI
+#define MQTT_ALERT_BROKER_URI "mqtt://192.168.1.100:1883"
+#endif
+
+static esp_mqtt_client_handle_t s_mqtt_alert_client = NULL;
+
+/**
+ * Initialize the MQTT client used for alert publishing.
+ * Called from ai_servis_obd_init(). Errors are non-fatal – alerts will be
+ * skipped when the client is unavailable.
+ */
+static void mqtt_alert_client_init(void)
+{
+    esp_mqtt_client_config_t mqtt_cfg = {
+        .broker.address.uri = MQTT_ALERT_BROKER_URI,
+    };
+
+    s_mqtt_alert_client = esp_mqtt_client_init(&mqtt_cfg);
+    if (!s_mqtt_alert_client) {
+        ESP_LOGE(TAG, "Failed to create MQTT alert client");
+        return;
+    }
+
+    esp_err_t ret = esp_mqtt_client_start(s_mqtt_alert_client);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start MQTT alert client: %s", esp_err_to_name(ret));
+        esp_mqtt_client_destroy(s_mqtt_alert_client);
+        s_mqtt_alert_client = NULL;
+        return;
+    }
+
+    ESP_LOGI(TAG, "MQTT alert client started, broker: %s", MQTT_ALERT_BROKER_URI);
+}
+
+/**
+ * Publish a JSON alert payload to an MQTT topic.
+ *
+ * @param topic     MQTT topic string, e.g. "mia/alerts/fuel"
+ * @param severity  "warning" or "critical"
+ * @param param     Name of the measured parameter (e.g. "fuel_level")
+ * @param value     Current measured value
+ * @param threshold Threshold that was exceeded
+ */
+static void send_mqtt_alert(const char *topic, const char *severity,
+                             const char *param, int value, int threshold)
+{
+    if (!s_mqtt_alert_client) {
+        ESP_LOGW(TAG, "MQTT alert client not available, dropping alert on %s", topic);
+        return;
+    }
+
+    char payload[256];
+    int len = snprintf(payload, sizeof(payload),
+                       "{\"severity\":\"%s\",\"param\":\"%s\","
+                       "\"value\":%d,\"threshold\":%d,"
+                       "\"timestamp\":%lu}",
+                       severity, param, value, threshold,
+                       (unsigned long)xTaskGetTickCount());
+
+    if (len < 0 || (size_t)len >= sizeof(payload)) {
+        ESP_LOGE(TAG, "Alert payload truncated for topic %s", topic);
+        return;
+    }
+
+    int msg_id = esp_mqtt_client_publish(s_mqtt_alert_client, topic, payload, len,
+                                         /*qos=*/1, /*retain=*/0);
+    if (msg_id < 0) {
+        ESP_LOGE(TAG, "Failed to publish alert to %s", topic);
+    } else {
+        ESP_LOGI(TAG, "Alert published to %s (msg_id=%d): %s", topic, msg_id, payload);
+    }
+}
 
 // TWAI configuration
 #define TWAI_RX_PIN GPIO_NUM_16
@@ -67,6 +144,9 @@ esp_err_t ai_servis_obd_init(void)
         ESP_LOGE(TAG, "Failed to create OBD queue");
         return ESP_ERR_NO_MEM;
     }
+
+    // Initialize MQTT alert client (non-fatal if unavailable)
+    mqtt_alert_client_init();
 
     obd_initialized = true;
     ESP_LOGI(TAG, "OBD component initialized successfully");
@@ -208,18 +288,21 @@ void ai_servis_obd_check_alerts(obd_data_t *data)
     // Check fuel level
     if (data->fuel_level < 20) {
         ESP_LOGW(TAG, "Low fuel alert: %d%%", data->fuel_level);
-        // TODO: Send alert to MQTT/BLE
+        send_mqtt_alert("mia/alerts/fuel", "warning",
+                        "fuel_level", data->fuel_level, 20);
     }
 
     // Check coolant temperature
     if (data->coolant_temp > 105) {
         ESP_LOGE(TAG, "High coolant temperature alert: %d°C", data->coolant_temp);
-        // TODO: Send critical alert
+        send_mqtt_alert("mia/alerts/coolant", "critical",
+                        "coolant_temp", data->coolant_temp, 105);
     }
 
     // Check engine RPM
     if (data->engine_rpm > 6000) {
         ESP_LOGW(TAG, "High RPM alert: %d", data->engine_rpm);
-        // TODO: Send warning
+        send_mqtt_alert("mia/alerts/rpm", "warning",
+                        "engine_rpm", data->engine_rpm, 6000);
     }
 }
