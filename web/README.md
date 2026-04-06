@@ -1,173 +1,169 @@
-# MIA Web Pages Generator
+# MIA Web Pages
 
-This system generates multiple web page variants from a shared template using native web technologies and GitHub Actions.
+This directory contains the static web surfaces for MIA and AI-SERVIS. Most public landing pages are generated from a shared template, while a few pages are standalone experiences maintained by hand.
 
-## 🏗️ Architecture
+## What Lives Here
 
-### Native Web Technologies
-- **HTML Templates**: Uses native `<template>` tags and JavaScript template literals
-- **No Frameworks**: Pure JavaScript, HTML, and CSS
-- **YAML Configuration**: Translation files for internationalization
-- **GitHub Actions**: Automated build and deployment
+- Generated segment landing pages in `dist/`: `business.html`, `family.html`, `musicians.html`, and `journalists.html`
+- A shared page generator driven by `template.html`, `scripts/generatePages.js`, and YAML content in `i18n/`
+- Customer-specific presentation assets in `customers/<segment>/`
+- Standalone pages such as `index.html`, `voice-chat.html`, `team/index.html`, and `404.html`
 
-### File Structure
-```
+## Stack
+
+- Package: `mia-web@1.0.0`
+- Build dependency: `js-yaml@4.1.0`
+- Output model: static HTML, CSS, and JavaScript
+- Runtime services: Google Fonts, Font Awesome CDN, in-browser YAML loading for language switching
+
+## Generated Landing Pages
+
+The generator builds one shared page structure for multiple customer segments:
+
+- `business.html`: business fleets, productivity, navigation, and analytics
+- `family.html`: safety, monitoring, and family-oriented protection messaging
+- `musicians.html`: mobile studio and performance workflows
+- `journalists.html`: investigative and gonzo-themed messaging with a dedicated style treatment
+
+Each generated landing page follows the same high-level structure:
+
+- Language switcher
+- Navigation bar
+- Hero section with headline, subtitle, stats, and CTA buttons
+- Feature grid
+- Use-case section
+- Pricing cards
+- Technology section
+- Final CTA block
+- Footer
+
+This keeps the information architecture consistent while allowing each segment to swap copy, pricing language, imagery, and styling.
+
+## How the Generator Works
+
+Build-time generation is handled by `scripts/generatePages.js`.
+
+1. The script reads `template.html` as the shared page shell.
+2. It selects a customer configuration with a namespace, default language, YAML file, and image directory.
+3. It loads YAML translation data from `i18n/` using `js-yaml`.
+4. `generatePageData()` normalizes customer-specific keys into one common view model.
+5. `renderTemplate()` expands `{{variable}}`, `{{#each}}`, and `{{#if}}` blocks.
+6. The generated HTML is written to `dist/<segment>.html`.
+7. Shared runtime files are copied into `dist/`.
+8. Customer-specific styles are copied into `dist/<segment>/styles.css`.
+9. Optional per-segment assets are copied into `dist/<segment>/assets/` when those assets exist.
+
+The result is a static site that can be hosted on GitHub Pages or any simple file server.
+
+## Content Model
+
+Generated pages are assembled from three layers of content:
+
+- Shared structure in `template.html`
+- Shared and segment-specific text in `i18n/common.yaml` and `i18n/<segment>.yaml`
+- Segment-specific presentation in `customers/<segment>/styles.css`
+
+That split matters when expanding the pages:
+
+- Change `template.html` when every generated page needs a new section or layout change.
+- Change `i18n/*.yaml` when the page needs more copy, translation coverage, or pricing text.
+- Change `customers/<segment>/styles.css` when only one segment needs a different visual identity.
+
+## Runtime Behavior
+
+The generated pages are mostly static at load time, but two shared runtime scripts provide the interactive behavior:
+
+- `scripts/app.js`: smooth scrolling, navbar state, mobile menu behavior, reveal animations, and the demo-request modal
+- `scripts/i18n-loader.js`: loads YAML translations in the browser, switches language between Czech and English, and persists the selected language in `localStorage`
+
+Important behavior notes:
+
+- The primary copy is already rendered into the HTML during the build.
+- JavaScript is mainly responsible for interaction polish and runtime language swapping.
+- The demo form is currently UI-only. Submission is handled in-browser and logged rather than sent to a backend.
+
+## Standalone Pages
+
+Not every page in this directory comes from the shared generator.
+
+- `index.html`: a hand-authored gonzo landing page with custom audio and a distinct journalists-focused visual style
+- `voice-chat.html` and `voice-chat.js`: a standalone voice chat or monitoring UI prototype
+- `team/index.html`: an internal team portal for architecture, modules, and status views
+- `404.html`: redirect logic used for deployed site variants on static hosting
+
+These standalone pages can diverge significantly from the generated landing pages in both tone and implementation.
+
+## Relevant Layout
+
+This is the generator-focused part of the directory structure:
+
+```text
 web/
-├── template.html              # Shared HTML template
-├── scripts/
-│   ├── generatePages.js      # Page generation script
-│   └── cleanup.js            # Cleanup script
-├── i18n/                     # Translation files
-│   ├── common.yaml
-│   ├── business.yaml
-│   ├── family.yaml
-│   ├── musicians.yaml
-│   └── gonzo.yaml
-├── dist/                     # Generated pages (output)
-│   ├── business.html
-│   ├── family.html
-│   ├── musicians.html
-│   ├── journalists.html
-│   ├── i18n-loader.js
-│   ├── app.js
-│   └── styles.css
-└── package.json
+|- template.html
+|- scripts/
+|  |- generatePages.js
+|  |- app.js
+|  `- i18n-loader.js
+|- i18n/
+|  |- common.yaml
+|  |- business.yaml
+|  |- family.yaml
+|  |- musicians.yaml
+|  `- journalists.yaml
+|- customers/
+|  |- business/
+|  |- family/
+|  |- musicians/
+|  `- journalists/
+|- assets/
+`- dist/
 ```
 
-## 🚀 Usage
+And the wider web surface also includes:
 
-### Local Development
+- `index.html`
+- `voice-chat.html`
+- `team/`
+- `404.html`
+
+## Local Workflow
+
+Install and build the generated landing pages:
+
 ```bash
 cd web
 npm install
 npm run build
 ```
 
-### GitHub Actions
-The workflow automatically triggers on any commit containing changes in the `web/` directory.
+Preview the generated output from a static server:
 
-## 🔧 Template System
-
-### Template Syntax
-The template uses Handlebars-like syntax:
-
-```html
-<!-- Simple variables -->
-<h1>{{hero.main_title}}</h1>
-
-<!-- Loops -->
-{{#each features.items}}
-<div class="feature">
-    <h3>{{this.title}}</h3>
-    <p>{{this.description}}</p>
-</div>
-{{/each}}
-
-<!-- Nested data access -->
-<p>{{footer.copyright}}</p>
+```bash
+cd web/dist
+python3 -m http.server 8080
 ```
 
-### Data Structure
-Each page variant is generated from:
-1. **Common translations** (`common.yaml`)
-2. **Page-specific translations** (e.g., `business.yaml`)
-3. **Customer configuration** (defined in `generatePages.js`)
+Then open:
 
-## 🌐 Internationalization
+- `/business.html`
+- `/family.html`
+- `/musicians.html`
+- `/journalists.html`
 
-### Translation Files
-- YAML format with nested structure
-- Support for multiple languages (en, cs)
-- Namespace-based organization
+Use a real HTTP server for preview. The i18n runtime loads YAML files with `fetch()`, which is often blocked or unreliable from `file://` URLs.
 
-### Usage in Templates
-```html
-<span data-i18n="navigation.features" data-i18n-ns="business">Features</span>
-```
+## When to Edit Which File
 
-### JavaScript API
-```javascript
-// Get translation
-const text = window.i18n.t('navigation.features', 'business');
+- Add or expand a shared section: `template.html`
+- Change copy, labels, pricing text, or translations: `i18n/*.yaml`
+- Change a segment's visual identity: `customers/<segment>/styles.css`
+- Add a new segment: update `scripts/generatePages.js`, create a new YAML file, and add customer styles
+- Build a one-off concept page: edit the standalone HTML, CSS, and JavaScript files directly
 
-// Switch language
-window.i18n.switchLanguage('en');
-```
+## Troubleshooting
 
-## 📦 Generated Pages
-
-### Business Page
-- **URL**: `/business.html`
-- **Namespace**: `business`
-- **Target**: Business professionals
-
-### Family Page
-- **URL**: `/family.html`
-- **Namespace**: `family`
-- **Target**: Family safety
-
-### Musicians Page
-- **URL**: `/musicians.html`
-- **Namespace**: `musicians`
-- **Target**: DJs and musicians
-
-### Journalists Page
-- **URL**: `/journalists.html`
-- **Namespace**: `journalists`
-- **Target**: Investigative journalists
-
-## 🔄 Build Process
-
-1. **Template Processing**: Shared template is processed with customer-specific data
-2. **YAML Loading**: Translation files are loaded and parsed
-3. **Page Generation**: Individual HTML files are generated
-4. **Asset Copying**: Shared assets (CSS, JS) are copied to dist
-5. **Cleanup**: Redundant source files are removed
-
-## 🛠️ Customization
-
-### Adding New Page Variants
-1. Add customer configuration in `generatePages.js`
-2. Create corresponding YAML translation file
-3. Update the `customers` array
-
-### Modifying Templates
-Edit `template.html` to change the shared structure. All variants will inherit the changes.
-
-### Adding Translations
-Add new keys to the appropriate YAML files in the `i18n/` directory.
-
-## 🧹 Cleanup
-
-After build completion, the following files are automatically removed:
-- Individual customer HTML files
-- Individual customer JS files
-- Individual customer i18n loaders
-- Shared template file
-- Empty directories
-
-## 📊 Benefits
-
-1. **No Framework Dependencies**: Uses native web technologies
-2. **Automated Builds**: GitHub Actions handles everything
-3. **Maintainable**: Single template, multiple variants
-4. **Internationalized**: Built-in i18n support
-5. **Clean Output**: Automatic cleanup of redundant files
-6. **Performance**: Optimized for production
-
-## 🔍 Troubleshooting
-
-### Build Failures
-- Check YAML syntax in translation files
-- Verify customer configurations in `generatePages.js`
-- Ensure all required assets exist
-
-### Translation Issues
-- Verify namespace matches between template and YAML
-- Check language codes (en, cs)
-- Ensure translation keys exist in YAML files
-
-### GitHub Actions Issues
-- Check workflow file syntax
-- Verify file paths in scripts
-- Review action logs for detailed errors
+- If a page still shows raw `{{...}}` markers, the template key is missing from the generated data model.
+- If language switching fails, confirm the namespace YAML file exists in `i18n/` and is copied into `dist/i18n/`.
+- If a page renders without styling, confirm the segment stylesheet exists under `customers/<segment>/`.
+- If images or media are missing, confirm the segment asset directory exists and is copied into the generated output.
+- If the page works in production but not locally, make sure you are previewing it through an HTTP server instead of opening the file directly.

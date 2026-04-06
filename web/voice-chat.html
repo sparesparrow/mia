@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIA — VOICE INTERCEPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --void:    #010106;
+  --red:     #ff0040;
+  --cyan:    #00ffff;
+  --amber:   #ffb300;
+  --dim:     rgba(0,255,255,0.18);
+  --glass:   rgba(1,1,10,0.82);
+  --font-terminal: 'VT323', monospace;
+  --font-body:     'Courier Prime', 'Courier New', monospace;
+  --scanline-h:    3px;
+  --bar-h:         44px;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--void);
+  color: var(--cyan);
+  font-family: var(--font-body);
+  cursor: crosshair;
+}
+
+/* ── Canvas Visualizer (background) ─────────────────────────────────────────── */
+#viz {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Scanlines ─────────────────────────────────────────────────────────────── */
+#scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent calc(var(--scanline-h) - 1px),
+    rgba(0,0,0,0.18) calc(var(--scanline-h) - 1px),
+    rgba(0,0,0,0.18) var(--scanline-h)
+  );
+  animation: scanroll 8s linear infinite;
+}
+@keyframes scanroll {
+  from { background-position: 0 0; }
+  to   { background-position: 0 60px; }
+}
+
+/* Vignette */
+#scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 50%,
+    rgba(0,0,0,0.65) 100%
+  );
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--bar-h);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(1,1,10,0.75);
+  border-bottom: 1px solid rgba(0,255,255,0.12);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-terminal);
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  user-select: none;
+}
+
+.hdr-left {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+
+.hdr-logo {
+  color: var(--red);
+  text-shadow: 0 0 14px rgba(255,0,64,0.7);
+  font-size: 1.55rem;
+  animation: logoFlicker 6s step-end infinite;
+}
+@keyframes logoFlicker {
+  0%,94%,96%,100% { opacity: 1; }
+  95%              { opacity: 0.4; }
+}
+
+.hdr-ch {
+  color: rgba(0,255,255,0.45);
+  font-size: 1.1rem;
+}
+
+.hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.sig-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.sig-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--dim);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.sig-dot.active {
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.connection-status {
+  font-family: var(--font-terminal);
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+  transition: color 0.3s, text-shadow 0.3s;
+  text-shadow: 0 0 10px currentColor;
+  min-width: 100px;
+  text-align: right;
+}
+
+.mock-badge {
+  font-family: var(--font-terminal);
+  font-size: 1.1rem;
+  color: var(--amber);
+  border: 1px solid rgba(255,179,0,0.45);
+  padding: 1px 8px;
+  animation: amberblink 2s step-end infinite;
+  display: none;
+}
+.mock-badge.visible { display: inline-block; }
+@keyframes amberblink {
+  0%,49% { opacity: 1; } 50%,100% { opacity: 0.3; }
+}
+
+/* ── Paranoia strip (below header) ─────────────────────────────────────────── */
+.paranoia-strip {
+  position: fixed;
+  top: var(--bar-h); left: 0; right: 0;
+  height: 2px;
+  z-index: 9;
+  background: rgba(255,255,255,0.04);
+}
+.paranoia-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--amber));
+  transition: width 1.4s ease;
+  box-shadow: 0 0 12px rgba(255,0,64,0.5);
+}
+
+/* ── Chat area ─────────────────────────────────────────────────────────────── */
+.chat-wrapper {
+  position: fixed;
+  top: calc(var(--bar-h) + 2px);
+  bottom: 118px;
+  left: 0; right: 0;
+  z-index: 5;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 20px 0 10px;
+}
+
+.chat-wrapper::-webkit-scrollbar { width: 2px; }
+.chat-wrapper::-webkit-scrollbar-thumb { background: rgba(0,255,255,0.2); }
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Transmission bubbles ─────────────────────────────────────────────────── */
+.bubble {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,255,255,0.06);
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 0 16px;
+  animation: rxPkt 0.15s ease;
+  word-break: break-word;
+}
+@keyframes rxPkt {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bubble-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.bubble-time {
+  font-family: var(--font-terminal);
+  font-size: 0.95rem;
+  color: rgba(0,255,255,0.3);
+  letter-spacing: 0.04em;
+}
+
+.bubble-role {
+  font-family: var(--font-terminal);
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+}
+
+.bubble-content {
+  padding-top: 1px;
+  overflow: hidden;
+}
+
+/* Roles */
+.bubble.user .bubble-role { color: var(--amber); }
+.bubble.user .bubble-content { color: rgba(255,179,0,0.88); }
+
+.bubble.mia .bubble-role { color: var(--cyan); }
+.bubble.mia .bubble-content { color: rgba(255,255,255,0.82); }
+
+.bubble.system {
+  grid-template-columns: 1fr;
+  text-align: center;
+  border-bottom: none;
+  padding: 8px 0;
+}
+.bubble.system .bubble-content {
+  font-family: var(--font-terminal);
+  font-size: 0.95rem;
+  color: rgba(0,255,255,0.28);
+  letter-spacing: 0.08em;
+}
+
+/* Voice typing indicator (inline) */
+.voice-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 18px;
+  margin-top: 2px;
+}
+.voice-indicator .bar {
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  animation: vbar 0.75s ease-in-out infinite;
+}
+.bubble.user .voice-indicator .bar { background: var(--amber); }
+.bubble.mia  .voice-indicator .bar { background: var(--cyan); }
+.voice-indicator .bar:nth-child(2) { animation-delay: 0.12s; }
+.voice-indicator .bar:nth-child(3) { animation-delay: 0.24s; }
+.voice-indicator .bar:nth-child(4) { animation-delay: 0.36s; }
+@keyframes vbar {
+  0%,100% { height: 3px; }
+  50%      { height: 15px; }
+}
+
+/* Typewriter cursor */
+.tw-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  background: var(--cyan);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: twblink 0.7s step-end infinite;
+}
+@keyframes twblink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+/* ── Footer ─────────────────────────────────────────────────────────────────── */
+footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 118px;
+  z-index: 10;
+  background: rgba(1,1,10,0.88);
+  border-top: 1px solid rgba(0,255,255,0.1);
+  backdrop-filter: blur(14px);
+  padding: 12px 24px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.text-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,255,255,0.22);
+  color: var(--amber);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 6px 4px;
+  outline: none;
+  transition: border-color 0.2s;
+  caret-color: var(--amber);
+}
+.text-input::placeholder { color: rgba(0,255,255,0.2); }
+.text-input:focus { border-bottom-color: rgba(0,255,255,0.55); }
+
+.btn {
+  background: none;
+  border: none;
+  cursor: crosshair;
+  font-family: var(--font-terminal);
+  transition: all 0.2s;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+}
+
+.btn-send {
+  font-size: 1.2rem;
+  padding: 4px 14px;
+  border: 1px solid rgba(0,255,255,0.3);
+  transition: all 0.2s;
+}
+.btn-send:hover {
+  background: rgba(0,255,255,0.08);
+  border-color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan);
+}
+.btn-send:disabled { opacity: 0.2; cursor: default; }
+
+/* Voice button: oscilloscope ring */
+.btn-voice {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,255,0.25);
+  font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.btn-voice:hover {
+  border-color: rgba(0,255,255,0.6);
+  box-shadow: 0 0 18px rgba(0,255,255,0.3);
+}
+.btn-voice.listening {
+  border-color: var(--red);
+  box-shadow: 0 0 22px rgba(255,0,64,0.5), inset 0 0 14px rgba(255,0,64,0.08);
+  animation: micPulse 1.1s ease-in-out infinite;
+}
+.btn-voice.processing {
+  border-color: rgba(0,255,255,0.4);
+  animation: spin 1.4s linear infinite;
+}
+@keyframes micPulse {
+  0%,100% { box-shadow: 0 0 14px rgba(255,0,64,0.4); }
+  50%      { box-shadow: 0 0 32px rgba(255,0,64,0.7), 0 0 60px rgba(255,0,64,0.2); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Info strip ─────────────────────────────────────────────────────────────── */
+.info-strip {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+  font-family: var(--font-terminal);
+  font-size: 1.05rem;
+  color: rgba(0,255,255,0.3);
+  letter-spacing: 0.06em;
+}
+
+.info-paranoia {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.paranoia-track {
+  width: 80px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.paranoia-mini {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--amber));
+  transition: width 1.4s ease;
+}
+
+.state-label {
+  flex: 1;
+  text-align: right;
+  font-family: var(--font-terminal);
+  font-size: 1.1rem;
+  color: rgba(0,255,255,0.35);
+  letter-spacing: 0.08em;
+  transition: color 0.3s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.state-label.active { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+
+/* ── ANPR toast ─────────────────────────────────────────────────────────────── */
+.anpr-toast {
+  position: fixed;
+  top: 58px; right: 16px;
+  z-index: 50;
+  background: rgba(255,0,64,0.92);
+  color: white;
+  font-family: var(--font-terminal);
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  padding: 8px 16px;
+  border-left: 3px solid white;
+  animation: toastSlide 0.25s ease;
+  max-width: 260px;
+}
+@keyframes toastSlide {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Glitch on state change ─────────────────────────────────────────────────── */
+@keyframes glitch {
+  0%   { clip-path: inset(0 0 98% 0); transform: translateX(-3px); }
+  20%  { clip-path: inset(30% 0 50% 0); transform: translateX(3px); }
+  40%  { clip-path: inset(60% 0 20% 0); transform: translateX(-2px); }
+  60%  { clip-path: inset(80% 0 5% 0); transform: translateX(2px); }
+  80%  { clip-path: inset(10% 0 80% 0); transform: translateX(-1px); }
+  100% { clip-path: inset(0); transform: translateX(0); }
+}
+.glitch-flash::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--red);
+  animation: glitch 0.3s steps(1) 1;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Background visualizer -->
+<canvas id="viz"></canvas>
+
+<!-- Scanline overlay -->
+<div id="scanlines"></div>
+
+<header>
+  <div class="hdr-left">
+    <span class="hdr-logo">MIA//VOICE</span>
+    <span class="hdr-ch">CH:07</span>
+  </div>
+  <div class="hdr-right">
+    <div class="sig-dots" id="sigDots">
+      <div class="sig-dot"></div>
+      <div class="sig-dot"></div>
+      <div class="sig-dot"></div>
+      <div class="sig-dot"></div>
+      <div class="sig-dot"></div>
+    </div>
+    <span class="mock-badge" id="mockBadge">SIM</span>
+    <span class="connection-status" id="connStatus" style="color:#ffff00">◌ ...</span>
+  </div>
+</header>
+
+<div class="paranoia-strip">
+  <div class="paranoia-fill" id="paranoiaFill" style="width:0%"></div>
+</div>
+
+<div class="chat-wrapper" id="chatWrapper">
+  <div class="chat-container" id="chatContainer"></div>
+</div>
+
+<footer>
+  <div class="controls">
+    <button class="btn btn-voice" id="voiceBtn" title="Click to record">🎙</button>
+    <input class="text-input" id="textInput" type="text" placeholder="transmit message..." autocomplete="off" spellcheck="false">
+    <button class="btn btn-send" id="sendBtn">TX</button>
+  </div>
+  <div class="info-strip">
+    <div class="info-paranoia">
+      <span>PRN</span>
+      <div class="paranoia-track">
+        <div class="paranoia-mini" id="paranoia-mini" style="width:0%"></div>
+      </div>
+      <span id="paranoia-pct">0%</span>
+    </div>
+    <div class="state-label" id="stateLabel">AWAITING SIGNAL</div>
+  </div>
+</footer>
+
+<script src="voice-chat.js"></script>
+</body>
+</html>
