@@ -39,7 +39,7 @@ class ClaudepyBridge:
         self,
         prompts_dir: str = "data",
         chroma_db_path: str = "./chroma_db",
-        default_provider: str = "anthropic"
+        default_provider: str = "kimi"
     ):
         self.prompts_dir = prompts_dir
         self.chroma_db_path = chroma_db_path
