@@ -13,7 +13,7 @@ Restart=always
 RestartSec=5
 StandardOutput=journal
 StandardError=journal
-WatchdogSec=30
+WatchdogSec=0
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 Environment=IGNITION_GPIO_PIN=17
 Environment=SHUTDOWN_DELAY=5

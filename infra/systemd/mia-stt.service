@@ -11,7 +11,7 @@ EnvironmentFile=-/etc/mia/environment
 ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/stt_service.py'
 Restart=always
 RestartSec=5
-WatchdogSec=30
+WatchdogSec=0
 StandardOutput=journal
 StandardError=journal
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
