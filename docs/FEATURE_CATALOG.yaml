@@ -8,7 +8,7 @@ categories:
   # ── Hardware ──────────────────────────────────────────────────────────────
   hardware:
     - name: GPIO Control
-      state: TESTED
+      state: DEPLOYED
       description: Digital I/O pin control via ZeroMQ with REST endpoints
       services: [mia-gpio-worker, mia-api]
       files: [hardware/gpio.py, hardware/gpio_worker.py]
@@ -26,7 +26,7 @@ categories:
       files: [hardware/arduino.py, arduino/MIAProtocol/]
 
     - name: Serial Bridge (MCU Telemetry)
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: USB serial to ZeroMQ PUB bridge with auto-detect, exponential backoff reconnect, mcu/status events
       services: [mia-serial-bridge]
       files: [hardware/serial_bridge.py]
@@ -58,19 +58,19 @@ categories:
   # ── Networking ───────────────────────────────────────────────────────────
   networking:
     - name: ZeroMQ Message Broker
-      state: TESTED
+      state: DEPLOYED
       description: ROUTER-DEALER broker on :5555, worker registration, request/response routing
       services: [zmq-broker]
       files: [core/messaging/broker.py, core/messaging/client.py]
 
     - name: FastAPI REST Backend
-      state: TESTED
+      state: DEPLOYED
       description: Async REST API with device, GPIO, telemetry, LED, session endpoints
       services: [mia-api]
       files: [api/main.py, api/server.py]
 
     - name: WebSocket Real-Time Telemetry
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: "/ws and /ws/telemetry endpoints at 10Hz for telemetry + LED state"
       services: [mia-api]
       files: [api/main.py]
@@ -94,7 +94,7 @@ categories:
       files: [api/sessions.py]
 
     - name: Device Registry
-      state: TESTED
+      state: DEPLOYED
       description: Persistent registry with health monitoring, auto-discovery, device profiles
       services: [mia-api]
       files: [core/registry/device_registry.py, core/registry/device_profile.py]
@@ -102,7 +102,7 @@ categories:
   # ── Automotive ───────────────────────────────────────────────────────────
   automotive:
     - name: OBD-II Digital Twin
-      state: TESTED
+      state: DEPLOYED
       description: DynamicCarState from hardware telemetry, ELM327 emulator with AT init, CAN auto-detect, retry backoff
       services: [mia-obd-worker]
       files: [services/obd_worker.py]
@@ -176,31 +176,31 @@ categories:
       files: [docs/superpowers/specs/2026-03-13-voice-command-chaining-ux-learning-design.md]
 
     - name: In-Car Audio Capture
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: USB mic capture to ZMQ pipeline (sounddevice/pyaudio/simulation)
       services: [mia-audio-capture]
       files: [services/audio_capture.py]
 
     - name: In-Car Wake Word Detection
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Hey Mia wake word via openWakeWord on RPi (energy fallback)
       services: [mia-wake-word]
       files: [services/wake_word.py]
 
     - name: In-Car Local STT
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: On-device speech-to-text via faster-whisper tiny model
       services: [mia-stt]
       files: [services/stt_service.py]
 
     - name: In-Car Local TTS
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: On-device text-to-speech via piper-tts (espeak fallback)
       services: [mia-tts]
       files: [services/tts_service.py]
 
     - name: In-Car Voice Command Router
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Confidence-scored command routing with confirmation mode for ambiguous matches
       services: [mia-voice-router]
       files: [services/voice_command_router.py]
@@ -353,10 +353,10 @@ categories:
 
   # ── Deployment ───────────────────────────────────────────────────────────
   deployment:
-    - name: Systemd Services (11 units)
-      state: IMPLEMENTED
+    - name: Systemd Services (17 units)
+      state: DEPLOYED
       description: All RPi services with Restart=always, ordering dependencies
-      services: [zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-ble-advertiser, mia-ble-obd, mia-led-monitor, mia-usb-camera, mia-citroen-bridge, mia-broker]
+      services: [zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-ble-advertiser, mia-ble-obd, mia-led-monitor, mia-usb-camera, mia-citroen-bridge, mia-audio-capture, mia-wake-word, mia-stt, mia-tts, mia-voice-router, mia-power-monitor, mia-selftest]
       files: [infra/systemd/]
 
     - name: Docker Compose
@@ -372,13 +372,13 @@ categories:
       files: [.github/workflows/]
 
     - name: RPi Deploy Script
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Single-command LAN discovery, SSH key push, code sync, service bootstrap
       services: []
       files: [scripts/deploy-mia-rpi.sh]
 
     - name: mDNS Advertisement (Avahi)
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Broadcasts _mia-api._tcp for Android auto-discovery
       services: []
       files: [infra/deploy/avahi-mia-api.service]
@@ -412,19 +412,19 @@ categories:
   # ── In-Car Infrastructure (Planned) ──────────────────────────────────────
   in-car:
     - name: Graceful Shutdown (Ignition Off)
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: GPIO-triggered safe poweroff on ignition loss via optocoupler
       services: [mia-power-monitor]
       files: [services/power_monitor.py]
 
     - name: Hardware Watchdog
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: BCM2711 /dev/watchdog with WatchdogSec on all services
       services: []
       files: [infra/deploy/rpi/watchdog.conf]
 
     - name: Thermal Monitoring
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: SoC temperature monitoring with 70/80/90C thresholds
       services: [mia-api]
       files: [api/main.py]
@@ -442,25 +442,25 @@ categories:
       files: [infra/deploy/rpi/setup-wifi-ap.sh, infra/deploy/rpi/hostapd.conf]
 
     - name: USB Device Management (udev)
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Stable /dev/obd2 symlinks and auto-start on device plug
       services: []
       files: [infra/deploy/rpi/udev/99-mia-devices.rules]
 
     - name: OTA Updates
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: HTTP-based firmware update with atomic swap and rollback
       services: [mia-api]
       files: [api/routers/ota.py]
 
     - name: Remote Log Viewer
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: Journal log viewing API for headless debugging (replaces SSH)
       services: [mia-api]
       files: [api/routers/logs.py]
 
     - name: Boot Self-Test
-      state: IMPLEMENTED
+      state: DEPLOYED
       description: SD card health, free space, thermal, network checks before service start
       services: [mia-selftest]
       files: [infra/deploy/rpi/selftest.sh]
