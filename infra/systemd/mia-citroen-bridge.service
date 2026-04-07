@@ -9,12 +9,14 @@ Type=simple
 User=mia
 Group=dialout
 WorkingDirectory=/opt/mia/orchestration/mcp/modules/citroen-c4-bridge
+EnvironmentFile=-/etc/mia/environment
 Environment=ELM_SERIAL_PORT=/dev/ttyUSB0
 Environment=ELM_BAUD_RATE=38400
 Environment=ZMQ_PUB_PORT=5557
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api:/opt/mia
-ExecStart=/opt/mia/venv/bin/python3 /opt/mia/orchestration/mcp/modules/citroen-c4-bridge/main.py
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" /opt/mia/orchestration/mcp/modules/citroen-c4-bridge/main.py'
 Restart=always
+WatchdogSec=0
 RestartSec=5
 StandardOutput=journal
 StandardError=journal

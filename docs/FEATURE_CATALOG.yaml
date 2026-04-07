@@ -409,6 +409,12 @@ categories:
       services: []
       files: [orchestration/mcp/modules/messages_mcp/]
 
+    - name: Driver Simulator
+      state: IMPLEMENTED
+      description: Scenario-driven E2E test — voice commands, telemetry, sessions, GPIO, WebSocket
+      services: []
+      files: [tools/driver-simulator/simulator.py]
+
   # ── In-Car Infrastructure (Planned) ──────────────────────────────────────
   in-car:
     - name: Graceful Shutdown (Ignition Off)
