@@ -5,13 +5,15 @@ Before=mia-api.service mia-gpio-worker.service
 
 [Service]
 Type=simple
-User=root
-WorkingDirectory=/opt/mia/rpi
-ExecStart=/usr/bin/python3 /opt/mia/rpi/core/messaging/broker.py
+User=mia
+Group=mia
+WorkingDirectory=/opt/mia/apps/rpi-backend/shared/messaging
+ExecStart=/opt/mia/venv/bin/python3 /opt/mia/apps/rpi-backend/shared/messaging/broker.py
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 
 [Install]
 WantedBy=multi-user.target

@@ -1,0 +1,516 @@
+# MIA Feature Catalog
+# Machine-readable catalog of all MIA capabilities and their development state.
+# States: IDEA | PLANNED | IMPLEMENTED | TESTED | QA | DEPLOYED
+# Served at GET /features by the FastAPI gateway.
+
+categories:
+
+  # ── Hardware ──────────────────────────────────────────────────────────────
+  hardware:
+    - name: GPIO Control
+      state: TESTED
+      description: Digital I/O pin control via ZeroMQ with REST endpoints
+      services: [mia-gpio-worker, mia-api]
+      files: [hardware/gpio.py, hardware/gpio_worker.py]
+
+    - name: I2C Sensor Drivers
+      state: TESTED
+      description: BME280, SHT30, ADS1115 drivers with calibration and factory function
+      services: [mia-api]
+      files: [hardware/sensors_i2c.py, hardware/sensors.py]
+
+    - name: Arduino Serial Communication
+      state: TESTED
+      description: Handshake, device discovery, text-based command/response protocol
+      services: [mia-serial-bridge]
+      files: [hardware/arduino.py, arduino/MIAProtocol/]
+
+    - name: Serial Bridge (MCU Telemetry)
+      state: IMPLEMENTED
+      description: USB serial to ZeroMQ PUB bridge with auto-detect, exponential backoff reconnect, mcu/status events
+      services: [mia-serial-bridge]
+      files: [hardware/serial_bridge.py]
+
+    - name: LED Strip Controller (WS2812B)
+      state: TESTED
+      description: 23-LED AI state visualizer with drive/parked/night/service modes
+      services: [mia-led-monitor]
+      files: [hardware/led_controller.py, arduino/led_strip_controller/]
+
+    - name: Hardware Manager
+      state: TESTED
+      description: Unified interface for DeviceRegistry, GPIO, Sensors, Arduino
+      services: [mia-api]
+      files: [hardware/hardware_manager.py]
+
+    - name: USB Camera Service
+      state: IMPLEMENTED
+      description: Camera discovery, stream lifecycle, hotplug via ZeroMQ + MQTT
+      services: [mia-usb-camera]
+      files: [services/usb_camera_service.py]
+
+    - name: ESP32 OBD Firmware
+      state: IMPLEMENTED
+      description: ESP32 ELM327 emulator firmware, Serial2 state updates
+      services: []
+      files: [firmware/esp32_obd/src/main.cpp]
+
+  # ── Networking ───────────────────────────────────────────────────────────
+  networking:
+    - name: ZeroMQ Message Broker
+      state: TESTED
+      description: ROUTER-DEALER broker on :5555, worker registration, request/response routing
+      services: [zmq-broker]
+      files: [core/messaging/broker.py, core/messaging/client.py]
+
+    - name: FastAPI REST Backend
+      state: TESTED
+      description: Async REST API with device, GPIO, telemetry, LED, session endpoints
+      services: [mia-api]
+      files: [api/main.py, api/server.py]
+
+    - name: WebSocket Real-Time Telemetry
+      state: IMPLEMENTED
+      description: "/ws and /ws/telemetry endpoints at 10Hz for telemetry + LED state"
+      services: [mia-api]
+      files: [api/main.py]
+
+    - name: BLE Advertising
+      state: IMPLEMENTED
+      description: RPi discoverable as MIA OBD-II Adapter via BlueZ D-Bus
+      services: [mia-ble-advertiser]
+      files: [services/ble_advertiser.py]
+
+    - name: BLE OBD GATT Service
+      state: IMPLEMENTED
+      description: Nordic UART Service (NUS) bridging Android OBD commands to ZeroMQ
+      services: [mia-ble-obd]
+      files: [services/ble_obd_service.py]
+
+    - name: Session Management
+      state: IMPLEMENTED
+      description: Multi-client sessions with 5-min TTL handoff tokens (Android, Quest, web)
+      services: [mia-api]
+      files: [api/sessions.py]
+
+    - name: Device Registry
+      state: TESTED
+      description: Persistent registry with health monitoring, auto-discovery, device profiles
+      services: [mia-api]
+      files: [core/registry/device_registry.py, core/registry/device_profile.py]
+
+  # ── Automotive ───────────────────────────────────────────────────────────
+  automotive:
+    - name: OBD-II Digital Twin
+      state: TESTED
+      description: DynamicCarState from hardware telemetry, ELM327 emulator with AT init, CAN auto-detect, retry backoff
+      services: [mia-obd-worker]
+      files: [services/obd_worker.py]
+
+    - name: OBD Physics Engine
+      state: IMPLEMENTED
+      description: Hardware-to-ESP32 binary struct bridge at 20Hz for RPM/speed physics
+      services: [mia-obd-worker]
+      files: [services/obd_physics.py]
+
+    - name: OBD Transport Agent (MCP)
+      state: IMPLEMENTED
+      description: MCP-compatible OBD-II with FlatBuffers, Android USB-OTG, ISO-TP queue
+      services: []
+      files: [orchestration/mcp/modules/obd-transport-agent/]
+
+    - name: Automotive MCP Bridge
+      state: IMPLEMENTED
+      description: Safety-aware vehicle state with ISO 26262 levels, AUTOSAR integration
+      services: []
+      files: [orchestration/mcp/modules/automotive-mcp-bridge/]
+
+    - name: Citroen C4 Vehicle Bridge
+      state: TESTED
+      description: PSA-specific diagnostics — DPF, Eolys, BSI with real ZMQ data ingestion and vehicle alerts
+      services: [mia-citroen-bridge]
+      files: [orchestration/mcp/modules/citroen-c4-bridge/main.py]
+
+    - name: Vehicle Telemetry FlatBuffers
+      state: TESTED
+      description: Schemas for engine, DPF, Eolys, GPIO, sensors, LED, system status
+      services: []
+      files: [schemas/mia.fbs, protos/vehicle.fbs]
+
+  # ── Voice & AI ───────────────────────────────────────────────────────────
+  voice:
+    - name: AI Audio Assistant (MCP)
+      state: TESTED
+      description: Voice processing, music playback, audio device management (cloud APIs mock)
+      services: []
+      files: [orchestration/mcp/modules/ai-audio-assistant/]
+
+    - name: Voice Command Intelligence
+      state: TESTED
+      description: Intent recognition, parameter extraction, success/failure tracking
+      services: []
+      files: [orchestration/mcp/modules/agents/voice_command_intelligence.py]
+
+    - name: Voice Learning Server (MCP)
+      state: TESTED
+      description: 5 MCP tools for command learning, failure analysis, pattern synthesis
+      services: []
+      files: [orchestration/mcp/modules/voice-learning/]
+
+    - name: Context Manager Agent
+      state: IMPLEMENTED
+      description: Interaction context, user preferences, privacy-preserving storage
+      services: []
+      files: [orchestration/mcp/modules/agents/context_manager.py]
+
+    - name: Web Voice Chat UI
+      state: IMPLEMENTED
+      description: Retro terminal-style web UI with canvas audio visualizer
+      services: []
+      files: [web/voice-chat.html, web/voice-chat.js]
+
+    - name: Voice Command Chaining
+      state: IDEA
+      description: Planned multi-step voice command chaining with UX learning
+      services: []
+      files: [docs/superpowers/specs/2026-03-13-voice-command-chaining-ux-learning-design.md]
+
+    - name: In-Car Audio Capture
+      state: IMPLEMENTED
+      description: USB mic capture to ZMQ pipeline (sounddevice/pyaudio/simulation)
+      services: [mia-audio-capture]
+      files: [services/audio_capture.py]
+
+    - name: In-Car Wake Word Detection
+      state: IMPLEMENTED
+      description: Hey Mia wake word via openWakeWord on RPi (energy fallback)
+      services: [mia-wake-word]
+      files: [services/wake_word.py]
+
+    - name: In-Car Local STT
+      state: IMPLEMENTED
+      description: On-device speech-to-text via faster-whisper tiny model
+      services: [mia-stt]
+      files: [services/stt_service.py]
+
+    - name: In-Car Local TTS
+      state: IMPLEMENTED
+      description: On-device text-to-speech via piper-tts (espeak fallback)
+      services: [mia-tts]
+      files: [services/tts_service.py]
+
+    - name: In-Car Voice Command Router
+      state: IMPLEMENTED
+      description: Confidence-scored command routing with confirmation mode for ambiguous matches
+      services: [mia-voice-router]
+      files: [services/voice_command_router.py]
+
+  # ── MCP Orchestration ────────────────────────────────────────────────────
+  orchestration:
+    - name: Core Orchestrator (MCP Host)
+      state: TESTED
+      description: Main MCP host with NLP intent routing, capability registry, WebSocket transport
+      services: []
+      files: [orchestration/mcp/modules/core-orchestrator/]
+
+    - name: Service Discovery (MCP)
+      state: IMPLEMENTED
+      description: Auto-registration, heartbeat health checks (30s timeout), capability queries
+      services: []
+      files: [orchestration/mcp/modules/service-discovery/main.py]
+
+    - name: MCP Framework (Shared)
+      state: TESTED
+      description: MCPServer, MCPClient, MCPMessage, WebSocketTransport, create_tool decorator
+      services: []
+      files: [orchestration/mcp/modules/shared/mcp_framework.py]
+
+    - name: Hardware Bridge (MCP)
+      state: TESTED
+      description: GPIO, OBD query, RF capture, Arduino LED exposed as MCP tools
+      services: []
+      files: [orchestration/mcp/modules/hardware-bridge/]
+
+    - name: AI Self-Improvement Orchestrator
+      state: TESTED
+      description: 5-phase learning loop with persistent JSON knowledge base
+      services: []
+      files: [orchestration/ai_self_improvement/]
+
+    - name: Learning Loop Agents
+      state: IMPLEMENTED
+      description: Error coordinator, knowledge synthesizer, performance monitor agents
+      services: []
+      files: [orchestration/mcp/modules/agents/]
+
+    - name: ClaudePy Bridge (MCP)
+      state: IMPLEMENTED
+      description: Claude AI integration bridge for MIA system
+      services: []
+      files: [orchestration/mcp/modules/claudepy-bridge/main.py]
+
+    - name: AI Platform Controller (Linux)
+      state: IMPLEMENTED
+      description: Linux-specific platform controller for system-level AI operations
+      services: []
+      files: [orchestration/mcp/modules/ai-platform-controllers/linux/main.py]
+
+  # ── Android ──────────────────────────────────────────────────────────────
+  android:
+    - name: BLE Device Management
+      state: TESTED
+      description: BLE scanning, connection lifecycle, device list UI with Hilt DI
+      services: []
+      files: [apps/android/.../BLEManager.kt, BleDevicesScreen.kt]
+
+    - name: OBD Manager
+      state: TESTED
+      description: OBD-II data reading, BLE OBD pairing screen
+      services: []
+      files: [apps/android/.../OBDManager.kt, OBDPairingScreen.kt]
+
+    - name: Dashboard & Telemetry
+      state: TESTED
+      description: Real-time gauges, WebSocket telemetry, Citroen-specific display
+      services: []
+      files: [apps/android/.../DashboardViewModel.kt, Gauges.kt, TelemetryWebSocket.kt]
+
+    - name: ANPR (Number Plate Recognition)
+      state: TESTED
+      description: Camera-based ANPR with ML postprocessor, privacy-preserving PlateHasher
+      services: []
+      files: [apps/android/.../ANPRManager.kt, AnprPostprocessor.kt, PlateHasher.kt]
+
+    - name: DVR (Dashcam Recording)
+      state: TESTED
+      description: Continuous recording, clip offload, retention cleanup, playback UI
+      services: []
+      files: [apps/android/.../DVRManager.kt, DvrOffloadWorker.kt, ClipsViewModel.kt]
+
+    - name: MQTT Client
+      state: TESTED
+      description: MQTT pub/sub with configurable topics and connection lifecycle
+      services: []
+      files: [apps/android/.../MQTTManager.kt, MQTTTopics.kt]
+
+    - name: Driving Service (Foreground)
+      state: TESTED
+      description: Orchestrates ANPR, DVR, OBD, BLE during driving with notifications
+      services: []
+      files: [apps/android/.../DrivingService.kt]
+
+    - name: mDNS Discovery & Networking
+      state: TESTED
+      description: Auto-discover RPi via _mia-api._tcp, Wi-Fi Direct, connectivity observer
+      services: []
+      files: [apps/android/.../MdnsDiscovery.kt, WifiDirectManager.kt, ConnectivityObserver.kt]
+
+    - name: Voice Manager
+      state: TESTED
+      description: Android-side voice command interface
+      services: []
+      files: [apps/android/.../VoiceManager.kt]
+
+    - name: Rules Engine
+      state: TESTED
+      description: Client-side automation rules engine
+      services: []
+      files: [apps/android/.../RulesEngine.kt]
+
+    - name: Room Database & Repositories
+      state: TESTED
+      description: Local storage with DAOs for alerts, ANPR, telemetry, clips, audit
+      services: []
+      files: [apps/android/.../AppDatabase.kt, Daos.kt, Entities.kt]
+
+  # ── Security ─────────────────────────────────────────────────────────────
+  security:
+    - name: API Key Authentication
+      state: TESTED
+      description: Argon2 hashing, scoped permissions (read/write), key rotation
+      services: [mia-api]
+      files: [api/auth/api_key.py, api/auth/dependencies.py]
+
+    - name: Automotive Security Scanner
+      state: IMPLEMENTED
+      description: ISO 26262/21434/WP.29/J3061 compliance checks, threat detection
+      services: []
+      files: [orchestration/mcp/modules/security-scanner/automotive_security.py]
+
+    - name: Proxy MCP Client (Kernun)
+      state: IMPLEMENTED
+      description: Kernun network proxy integration for traffic/TLS analysis
+      services: []
+      files: [orchestration/mcp/modules/security/proxy_mcp_client.py]
+
+  # ── Monitoring ───────────────────────────────────────────────────────────
+  monitoring:
+    - name: Prometheus Automotive Monitoring
+      state: IMPLEMENTED
+      description: Scrape targets + 30+ alert rules for automotive, voice, security
+      services: []
+      files: [monitoring/prometheus-automotive.yml, monitoring/rules/]
+
+  # ── Deployment ───────────────────────────────────────────────────────────
+  deployment:
+    - name: Systemd Services (11 units)
+      state: IMPLEMENTED
+      description: All RPi services with Restart=always, ordering dependencies
+      services: [zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-ble-advertiser, mia-ble-obd, mia-led-monitor, mia-usb-camera, mia-citroen-bridge, mia-broker]
+      files: [infra/systemd/]
+
+    - name: Docker Compose
+      state: IMPLEMENTED
+      description: Dev + monitoring + Pi-simulation compose files with GPIO simulator
+      services: []
+      files: [infra/docker/, docker-compose.pi-simulation.yml]
+
+    - name: CI/CD (GitHub Actions)
+      state: IMPLEMENTED
+      description: CI, deploy, security scanning, Android test workflows
+      services: []
+      files: [.github/workflows/]
+
+    - name: RPi Deploy Script
+      state: IMPLEMENTED
+      description: Single-command LAN discovery, SSH key push, code sync, service bootstrap
+      services: []
+      files: [scripts/deploy-mia-rpi.sh]
+
+    - name: mDNS Advertisement (Avahi)
+      state: IMPLEMENTED
+      description: Broadcasts _mia-api._tcp for Android auto-discovery
+      services: []
+      files: [infra/deploy/avahi-mia-api.service]
+
+  # ── Tools ────────────────────────────────────────────────────────────────
+  tools:
+    - name: Communications Gateway
+      state: IMPLEMENTED
+      description: Unified Telegram/Signal/WhatsApp/KDE Connect bridge to MIA WebSocket
+      services: []
+      files: [tools/comms-gateway/]
+
+    - name: SIP Bridge (ElevenLabs)
+      state: IMPLEMENTED
+      description: SIP to ElevenLabs AI voice agent via Tailscale + Asterisk PBX
+      services: []
+      files: [tools/sip-bridge/]
+
+    - name: Chatka Booking Tool
+      state: IMPLEMENTED
+      description: Voice-driven cabin booking with espeak/LLM, FastAPI webhook
+      services: []
+      files: [tools/chatka-booking/]
+
+    - name: Messaging MCP (SMS/Email)
+      state: IMPLEMENTED
+      description: Twilio SMS + SMTP/IMAP email via MCP tools
+      services: []
+      files: [orchestration/mcp/modules/messages_mcp/]
+
+  # ── In-Car Infrastructure (Planned) ──────────────────────────────────────
+  in-car:
+    - name: Graceful Shutdown (Ignition Off)
+      state: IMPLEMENTED
+      description: GPIO-triggered safe poweroff on ignition loss via optocoupler
+      services: [mia-power-monitor]
+      files: [services/power_monitor.py]
+
+    - name: Hardware Watchdog
+      state: IMPLEMENTED
+      description: BCM2711 /dev/watchdog with WatchdogSec on all services
+      services: []
+      files: [infra/deploy/rpi/watchdog.conf]
+
+    - name: Thermal Monitoring
+      state: IMPLEMENTED
+      description: SoC temperature monitoring with 70/80/90C thresholds
+      services: [mia-api]
+      files: [api/main.py]
+
+    - name: OverlayFS Filesystem Protection
+      state: IMPLEMENTED
+      description: Read-only rootfs with tmpfs overlay to prevent SD card wear
+      services: []
+      files: [infra/deploy/rpi/setup-overlayfs.sh]
+
+    - name: WiFi Access Point Mode
+      state: IMPLEMENTED
+      description: MIA-Car WiFi network via hostapd for Android connectivity
+      services: []
+      files: [infra/deploy/rpi/setup-wifi-ap.sh, infra/deploy/rpi/hostapd.conf]
+
+    - name: USB Device Management (udev)
+      state: IMPLEMENTED
+      description: Stable /dev/obd2 symlinks and auto-start on device plug
+      services: []
+      files: [infra/deploy/rpi/udev/99-mia-devices.rules]
+
+    - name: OTA Updates
+      state: IMPLEMENTED
+      description: HTTP-based firmware update with atomic swap and rollback
+      services: [mia-api]
+      files: [api/routers/ota.py]
+
+    - name: Remote Log Viewer
+      state: IMPLEMENTED
+      description: Journal log viewing API for headless debugging (replaces SSH)
+      services: [mia-api]
+      files: [api/routers/logs.py]
+
+    - name: Boot Self-Test
+      state: IMPLEMENTED
+      description: SD card health, free space, thermal, network checks before service start
+      services: [mia-selftest]
+      files: [infra/deploy/rpi/selftest.sh]
+
+  # ── Future Ideas ─────────────────────────────────────────────────────────
+  ideas:
+    - name: AI Home Automation
+      state: IDEA
+      description: Smart home integration (lights, thermostat, locks)
+
+    - name: AI Maps & Navigation
+      state: IDEA
+      description: In-car navigation with voice-guided directions
+
+    - name: XR / VR Integration
+      state: IDEA
+      description: Meta Quest spatial interface for vehicle data
+
+    - name: AI iOS Controller
+      state: IDEA
+      description: iOS companion app
+
+    - name: AI macOS Controller
+      state: IDEA
+      description: macOS platform controller
+
+    - name: AI Windows Controller
+      state: IDEA
+      description: Windows platform controller
+
+    - name: AI RTOS Controller
+      state: IDEA
+      description: Real-time OS controller for safety-critical tasks
+
+    - name: On-Device ML (TFLite)
+      state: IDEA
+      description: Anomaly detection, predictive maintenance, computer vision
+
+    - name: IoT Cloud Integration
+      state: IDEA
+      description: AWS IoT / Google Cloud IoT platform bridges
+
+    - name: Smart Home Protocols
+      state: IDEA
+      description: Zigbee, Z-Wave, Matter protocol support
+
+    - name: Kubernetes Deployment
+      state: IDEA
+      description: K8s manifests, Istio/Linkerd service mesh
+
+    - name: DPIA (Privacy Compliance)
+      state: IDEA
+      description: GDPR Data Protection Impact Assessment template

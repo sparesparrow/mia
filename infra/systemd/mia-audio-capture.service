@@ -1,5 +1,5 @@
 [Unit]
-Description=MIA Serial Bridge - ESP32/Arduino to ZeroMQ
+Description=MIA Audio Capture (microphone to ZMQ)
 After=network.target zmq-broker.service
 Wants=zmq-broker.service
 
@@ -7,12 +7,16 @@ Wants=zmq-broker.service
 Type=simple
 User=root
 WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
-ExecStart=/opt/mia/venv/bin/python3 hardware/serial_bridge.py
+ExecStart=/opt/mia/venv/bin/python3 services/audio_capture.py
 Restart=always
-RestartSec=10
+RestartSec=5
+WatchdogSec=30
 StandardOutput=journal
 StandardError=journal
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_PUB_PORT=5558
+# SupplementaryGroups=audio for ALSA access
+SupplementaryGroups=audio
 
 [Install]
 WantedBy=multi-user.target

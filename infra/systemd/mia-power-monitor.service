@@ -1,18 +1,21 @@
 [Unit]
-Description=MIA Serial Bridge - ESP32/Arduino to ZeroMQ
+Description=MIA Power Monitor (graceful shutdown on ignition-off)
 After=network.target zmq-broker.service
-Wants=zmq-broker.service
+Before=mia-api.service mia-gpio-worker.service
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
-ExecStart=/opt/mia/venv/bin/python3 hardware/serial_bridge.py
+ExecStart=/opt/mia/venv/bin/python3 services/power_monitor.py
 Restart=always
-RestartSec=10
+RestartSec=5
 StandardOutput=journal
 StandardError=journal
+WatchdogSec=30
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=IGNITION_GPIO_PIN=17
+Environment=SHUTDOWN_DELAY=5
 
 [Install]
 WantedBy=multi-user.target

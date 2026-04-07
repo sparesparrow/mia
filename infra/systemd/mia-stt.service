@@ -1,0 +1,24 @@
+[Unit]
+Description=MIA Local STT (faster-whisper speech-to-text)
+After=mia-wake-word.service mia-audio-capture.service
+Requires=mia-audio-capture.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+ExecStart=/opt/mia/venv/bin/python3 services/stt_service.py
+Restart=always
+RestartSec=5
+WatchdogSec=30
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_WAKE_PORT=5559
+Environment=ZMQ_AUDIO_PORT=5558
+Environment=ZMQ_PUB_PORT=5560
+Environment=WHISPER_MODEL=tiny
+Environment=WHISPER_LANGUAGE=en
+
+[Install]
+WantedBy=multi-user.target

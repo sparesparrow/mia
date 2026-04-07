@@ -15,6 +15,7 @@ from datetime import datetime
 import psutil
 import os
 import sys
+import yaml
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -57,6 +58,12 @@ from api.sessions import (
 
 session_manager = SessionManager()
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
+
+# ── Routers ───────────────────────────────────────────────────────────────
+from api.routers.ota import router as ota_router
+from api.routers.logs import router as logs_router
+app.include_router(ota_router)
+app.include_router(logs_router)
 
 # CORS middleware
 app.add_middleware(
@@ -843,6 +850,96 @@ async def resume_session(req: ResumeSessionRequest):
         raise HTTPException(status_code=401, detail="Invalid or expired handoff token")
     return {
         "session": session.model_dump(mode="json"),
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+# ============================================================================
+# Feature Catalog Endpoint
+# ============================================================================
+
+@app.get("/features", response_model=Dict[str, Any])
+async def get_features(category: Optional[str] = None, state: Optional[str] = None):
+    """GET /features — serve the feature catalog as JSON.
+
+    Query parameters:
+    - category: filter by category name (e.g. 'automotive', 'voice')
+    - state: filter by development state (IDEA, PLANNED, IMPLEMENTED, TESTED, QA, DEPLOYED)
+    """
+    catalog_paths = [
+        os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'docs', 'FEATURE_CATALOG.yaml'),
+        '/opt/mia/docs/FEATURE_CATALOG.yaml',
+    ]
+    catalog = None
+    for p in catalog_paths:
+        try:
+            with open(p) as f:
+                catalog = yaml.safe_load(f)
+            break
+        except FileNotFoundError:
+            continue
+
+    if not catalog:
+        raise HTTPException(status_code=404, detail="Feature catalog not found")
+
+    categories = catalog.get("categories", {})
+
+    if category:
+        categories = {k: v for k, v in categories.items() if k == category}
+
+    if state:
+        state_upper = state.upper()
+        categories = {
+            k: [feat for feat in v if feat.get("state") == state_upper]
+            for k, v in categories.items()
+        }
+        categories = {k: v for k, v in categories.items() if v}
+
+    # Compute summary counts
+    all_features = [f for feats in categories.values() for f in feats]
+    summary = {}
+    for f in all_features:
+        s = f.get("state", "UNKNOWN")
+        summary[s] = summary.get(s, 0) + 1
+
+    return {
+        "categories": categories,
+        "total": len(all_features),
+        "summary": summary,
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+# ============================================================================
+# Thermal Health Endpoint
+# ============================================================================
+
+@app.get("/health/thermal", response_model=Dict[str, Any])
+async def get_thermal_health():
+    """GET /health/thermal — SoC temperature and thermal status."""
+    thermal_path = "/sys/class/thermal/thermal_zone0/temp"
+    try:
+        with open(thermal_path) as f:
+            temp_millic = int(f.read().strip())
+        temp_c = temp_millic / 1000.0
+    except (FileNotFoundError, ValueError):
+        temp_c = None
+
+    if temp_c is None:
+        status = "unavailable"
+    elif temp_c >= 90:
+        status = "critical"
+    elif temp_c >= 80:
+        status = "throttle"
+    elif temp_c >= 70:
+        status = "warning"
+    else:
+        status = "normal"
+
+    return {
+        "temperature_c": temp_c,
+        "status": status,
+        "thresholds": {"warning": 70, "throttle": 80, "critical": 90},
         "timestamp": datetime.now().isoformat()
     }
 

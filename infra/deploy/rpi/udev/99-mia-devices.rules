@@ -1,0 +1,42 @@
+# /etc/udev/rules.d/99-mia-devices.rules
+# Stable symlinks for MIA USB devices regardless of enumeration order.
+#
+# Creates:
+#   /dev/obd2      — ELM327 OBD-II adapter (FTDI or CH340 chipset)
+#   /dev/mia-audio — USB audio device (microphone + speaker)
+#   /dev/mia-mcu   — Arduino/ESP32 serial MCU
+#
+# After deploying, reload rules:
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+
+# ── ELM327 OBD-II Adapters ────────────────────────────────────────────────
+# FTDI FT232R (most common ELM327 USB cable)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", \
+    SYMLINK+="obd2", MODE="0666", GROUP="dialout", \
+    TAG+="systemd", ENV{SYSTEMD_ALIAS}="/dev/obd2"
+
+# CH340 (cheap ELM327 clones)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", \
+    SYMLINK+="obd2", MODE="0666", GROUP="dialout", \
+    TAG+="systemd", ENV{SYSTEMD_ALIAS}="/dev/obd2"
+
+# CP2102 (SiLabs, some ELM327 adapters)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", \
+    SYMLINK+="obd2", MODE="0666", GROUP="dialout", \
+    TAG+="systemd", ENV{SYSTEMD_ALIAS}="/dev/obd2"
+
+# ── Arduino / ESP32 MCU ──────────────────────────────────────────────────
+# Arduino Mega 2560 / Uno
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", \
+    SYMLINK+="mia-mcu", MODE="0666", GROUP="dialout"
+
+# ESP32 DevKit (Espressif VID)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", \
+    SYMLINK+="mia-mcu", MODE="0666", GROUP="dialout"
+
+# ── USB Audio ────────────────────────────────────────────────────────────
+# Generic USB audio device (any USB sound card / mic / speaker combo)
+# The specific vendor ID should be updated after identifying the actual hardware.
+# For now, tag any USB audio device for systemd.
+SUBSYSTEM=="sound", ATTR{id}!="", DRIVERS=="usb", \
+    TAG+="systemd", ENV{MIA_AUDIO_DEVICE}="1"
