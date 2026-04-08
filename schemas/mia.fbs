@@ -1,3 +1,5 @@
+include "vehicle_telemetry.fbs";
+
 namespace Mia;
 
 // ============================================================================
@@ -92,35 +94,6 @@ table LEDState {
   brightness: float;  // 0.0 to 1.0
   service_status: [string];  // List of service names and their status
   obd_data: [ubyte];  // OBD telemetry data
-  timestamp: uint64;
-}
-
-// ============================================================================
-// Vehicle Telemetry (existing, expanded)
-// ============================================================================
-
-enum DpfStatus : byte { Normal = 0, Regenerating = 1, Warning = 2, Critical = 3 }
-
-table VehicleTelemetry {
-  // Engine data
-  rpm: float;
-  speed_kmh: float;
-  coolant_temp_c: float;
-  oil_temperature_c: float;
-  battery_voltage: float;
-
-  // DPF data
-  dpf_soot_load_percent: float;
-  dpf_soot_mass_g: float;
-  dpf_regeneration_status: DpfStatus;
-  eolys_additive_level_percent: float;
-  eolys_additive_level_l: float;
-
-  // Additional sensors
-  intake_air_temp_c: float;
-  fuel_level_percent: float;
-  engine_load_percent: float;
-
   timestamp: uint64;
 }
 

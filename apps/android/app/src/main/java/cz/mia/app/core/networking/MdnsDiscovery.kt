@@ -19,7 +19,10 @@ class MdnsDiscovery @Inject constructor(
 	private var lastResults: List<String> = emptyList()
 	private var lastApiResults: List<String> = emptyList()
 
-	fun discoverServices(serviceType: String = "_mqtt._tcp.local."): List<String> = lastResults
+	fun discoverServices(serviceType: String = "_mqtt._tcp.local."): List<String> = when (serviceType) {
+		"_mia-api._tcp", "_mia-api._tcp.local." -> lastApiResults
+		else -> lastResults
+	}
 
 	/**
 	 * Discover MIA REST API via mDNS (_mia-api._tcp).

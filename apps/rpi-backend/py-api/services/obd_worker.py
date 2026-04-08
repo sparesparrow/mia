@@ -25,6 +25,8 @@ try:
     from elm.obd_message import ObdMessage
     ELM327_AVAILABLE = True
 except ImportError as e:
+    Elm = None  # type: ignore[assignment]
+    ObdMessage = None  # type: ignore[assignment]
     ELM327_AVAILABLE = False
     logging.warning(f"ELM327-emulator not available: {e}. OBD simulation disabled.")
 
@@ -293,9 +295,9 @@ class MIAOBDWorker:
         response = {
             "type": "OBD_STATUS_RESPONSE",
             "status": "running" if self._elm_initialized else "initializing",
-            "rpm": self.car_state.get_rpm(),
-            "speed": self.car_state.get_speed(),
-            "coolant_temp": self.car_state.get_coolant_temp(),
+            "engine_rpm": self.car_state.get_rpm(),
+            "speed_kmh": self.car_state.get_speed(),
+            "coolant_temp_c": self.car_state.get_coolant_temp(),
             "elm_initialized": self._elm_initialized,
             "active_protocol": self._active_protocol,
             "mcu_connected": self._mcu_connected,
@@ -318,7 +320,7 @@ class MIAOBDWorker:
         self.broker_socket.send_json(response)
 
     def _telemetry_publish_loop(self):
-        """Publish OBD telemetry data periodically"""
+        """Publish OBD telemetry data periodically using the normalized payload shape."""
         if not self.telemetry_socket:
             return
 
@@ -326,14 +328,21 @@ class MIAOBDWorker:
             try:
                 current_time = time.time()
                 if current_time - self.last_telemetry_publish >= self.telemetry_interval:
-                    # Publish OBD telemetry
                     telemetry_data = {
-                        "rpm": self.car_state.get_rpm(),
-                        "speed": self.car_state.get_speed(),
-                        "coolant_temp": self.car_state.get_coolant_temp(),
-                        "load": 0,  # Not implemented yet
-                        "timestamp": datetime.now().isoformat()
+                        "engine_rpm": self.car_state.get_rpm(),
+                        "speed_kmh": self.car_state.get_speed(),
+                        "coolant_temp_c": self.car_state.get_coolant_temp(),
+                        "device_id": "obd_worker",
+                        "timestamp": datetime.now().isoformat(),
                     }
+
+                    if self._active_protocol:
+                        telemetry_data["adapter_capabilities"] = {
+                            "adapter_kind": "elm327_emulator",
+                            "transport": "virtual_pty",
+                            "connection_state": "connected" if self._elm_initialized else "initializing",
+                            "active_protocol": self._active_protocol,
+                        }
 
                     topic = "obd/telemetry"
                     message = json.dumps(telemetry_data).encode('utf-8')

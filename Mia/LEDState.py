@@ -99,62 +99,33 @@ class LEDState(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def LEDStateStart(builder):
-    builder.StartObject(6)
-
+def LEDStateStart(builder): builder.StartObject(6)
 def Start(builder):
-    LEDStateStart(builder)
-
-def LEDStateAddMode(builder, mode):
-    builder.PrependInt8Slot(0, mode, 0)
-
+    return LEDStateStart(builder)
+def LEDStateAddMode(builder, mode): builder.PrependInt8Slot(0, mode, 0)
 def AddMode(builder, mode):
-    LEDStateAddMode(builder, mode)
-
-def LEDStateAddAiState(builder, aiState):
-    builder.PrependInt8Slot(1, aiState, 0)
-
+    return LEDStateAddMode(builder, mode)
+def LEDStateAddAiState(builder, aiState): builder.PrependInt8Slot(1, aiState, 0)
 def AddAiState(builder, aiState):
-    LEDStateAddAiState(builder, aiState)
-
-def LEDStateAddBrightness(builder, brightness):
-    builder.PrependFloat32Slot(2, brightness, 0.0)
-
+    return LEDStateAddAiState(builder, aiState)
+def LEDStateAddBrightness(builder, brightness): builder.PrependFloat32Slot(2, brightness, 0.0)
 def AddBrightness(builder, brightness):
-    LEDStateAddBrightness(builder, brightness)
-
-def LEDStateAddServiceStatus(builder, serviceStatus):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(serviceStatus), 0)
-
+    return LEDStateAddBrightness(builder, brightness)
+def LEDStateAddServiceStatus(builder, serviceStatus): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(serviceStatus), 0)
 def AddServiceStatus(builder, serviceStatus):
-    LEDStateAddServiceStatus(builder, serviceStatus)
-
-def LEDStateStartServiceStatusVector(builder, numElems):
-    return builder.StartVector(4, numElems, 4)
-
+    return LEDStateAddServiceStatus(builder, serviceStatus)
+def LEDStateStartServiceStatusVector(builder, numElems): return builder.StartVector(4, numElems, 4)
 def StartServiceStatusVector(builder, numElems):
     return LEDStateStartServiceStatusVector(builder, numElems)
-
-def LEDStateAddObdData(builder, obdData):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(obdData), 0)
-
+def LEDStateAddObdData(builder, obdData): builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(obdData), 0)
 def AddObdData(builder, obdData):
-    LEDStateAddObdData(builder, obdData)
-
-def LEDStateStartObdDataVector(builder, numElems):
-    return builder.StartVector(1, numElems, 1)
-
+    return LEDStateAddObdData(builder, obdData)
+def LEDStateStartObdDataVector(builder, numElems): return builder.StartVector(1, numElems, 1)
 def StartObdDataVector(builder, numElems):
     return LEDStateStartObdDataVector(builder, numElems)
-
-def LEDStateAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(5, timestamp, 0)
-
+def LEDStateAddTimestamp(builder, timestamp): builder.PrependUint64Slot(5, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    LEDStateAddTimestamp(builder, timestamp)
-
-def LEDStateEnd(builder):
-    return builder.EndObject()
-
+    return LEDStateAddTimestamp(builder, timestamp)
+def LEDStateEnd(builder): return builder.EndObject()
 def End(builder):
     return LEDStateEnd(builder)

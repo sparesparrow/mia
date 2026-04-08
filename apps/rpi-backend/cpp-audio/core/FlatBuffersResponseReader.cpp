@@ -22,17 +22,17 @@ bool FlatBuffersResponseReader::recv(DownloadResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
     auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
-    if (msg && msg->response_type() == fb::Response_DownloadResponse) {
+    if (msg && msg->response_type() == fb::Response::DownloadResponse) {
         auto resp = msg->response_as_DownloadResponse();
         if (resp) {
-            out.session_id = resp->sessionId();
+            out.sessionId = resp->session_id();
             return true;
         }
     }
     // Fallback to direct parsing
     auto resp = flatbuffers::GetRoot<fb::DownloadResponse>(buffer_.data());
     if (!resp) return false;
-    out.session_id = resp->sessionId();
+    out.sessionId = resp->session_id();
     return true;
 }
 
@@ -40,10 +40,10 @@ bool FlatBuffersResponseReader::recv(StatusResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
     auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
-    if (msg && msg->response_type() == fb::Response_DownloadStatusResponse) {
+    if (msg && msg->response_type() == fb::Response::DownloadStatusResponse) {
         auto resp = msg->response_as_DownloadStatusResponse();
         if (resp) {
-            out.session_id = 0;
+            out.sessionId = 0;
             out.status = resp->status() ? resp->status()->str() : "";
             return true;
         }
@@ -51,7 +51,7 @@ bool FlatBuffersResponseReader::recv(StatusResponse& out) {
     // Fallback to direct parsing
     auto resp = flatbuffers::GetRoot<fb::DownloadStatusResponse>(buffer_.data());
     if (!resp) return false;
-    out.session_id = 0;
+    out.sessionId = 0;
     out.status = resp->status() ? resp->status()->str() : "";
     return true;
 }
@@ -60,7 +60,7 @@ bool FlatBuffersResponseReader::recv(ErrorResponse& out) {
     if (!receiveMessage()) return false;
     // Try Message union first
     auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
-    if (msg && msg->response_type() == fb::Response_ErrorResponse) {
+    if (msg && msg->response_type() == fb::Response::ErrorResponse) {
         auto resp = msg->response_as_ErrorResponse();
         if (resp) {
             out.error = resp->error() ? resp->error()->str() : "";
@@ -89,7 +89,7 @@ bool FlatBuffersResponseReader::tryRecv(DownloadResponse& out, std::chrono::mill
         if (receiveMessage()) {
             auto resp = flatbuffers::GetRoot<fb::DownloadResponse>(buffer_.data());
             if (resp) {
-                out.session_id = resp->sessionId();
+                out.sessionId = resp->session_id();
                 result = true;
                 break;
             }
@@ -117,7 +117,7 @@ bool FlatBuffersResponseReader::tryRecv(StatusResponse& out, std::chrono::millis
         if (receiveMessage()) {
             auto resp = flatbuffers::GetRoot<fb::DownloadStatusResponse>(buffer_.data());
             if (resp) {
-                out.session_id = 0; // StatusResponse doesn't have sessionId in the struct
+                out.sessionId = 0; // StatusResponse doesn't have sessionId in the struct
                 out.status = resp->status() ? resp->status()->str() : "";
                 result = true;
                 break;

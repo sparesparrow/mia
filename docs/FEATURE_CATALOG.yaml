@@ -361,7 +361,7 @@ categories:
 
     - name: Docker Compose
       state: IMPLEMENTED
-      description: Dev + monitoring + Pi-simulation compose files with GPIO simulator
+      description: Canonical compose files under infra/docker plus the root Pi simulation stack
       services: []
       files: [infra/docker/, docker-compose.pi-simulation.yml]
 

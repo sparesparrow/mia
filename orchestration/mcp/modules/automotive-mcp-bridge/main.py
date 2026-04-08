@@ -9,10 +9,10 @@ safety-critical response times, and edge optimization.
 
 import asyncio
 import importlib.util
-import json
 import logging
+import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union, Callable
 from pathlib import Path
@@ -67,6 +67,7 @@ def _load_vag_audi_bridge_class():
                 raise ImportError(f"Unable to load module spec for {module_path}")
 
             module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = module
             spec.loader.exec_module(module)
             return module.VagAudiBridge, True
         except Exception as exc:
@@ -101,6 +102,26 @@ class SafetyLevel(Enum):
     LOW = "low"              # Non-essential features
 
 
+def _serialize_for_transport(value: Any) -> Any:
+    """Convert runtime objects to JSON-safe transport values."""
+    if is_dataclass(value):
+        return _serialize_for_transport(asdict(value))
+
+    if isinstance(value, Enum):
+        return value.value
+
+    if isinstance(value, datetime):
+        return value.isoformat()
+
+    if isinstance(value, dict):
+        return {key: _serialize_for_transport(item) for key, item in value.items()}
+
+    if isinstance(value, (list, tuple)):
+        return [_serialize_for_transport(item) for item in value]
+
+    return value
+
+
 @dataclass
 class VehicleState:
     """Current vehicle state information"""
@@ -116,6 +137,9 @@ class VehicleState:
     headlights_on: bool = False
     context: AutomotiveContext = AutomotiveContext.PARKED
     last_update: datetime = field(default_factory=datetime.now)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return _serialize_for_transport(self)
 
 
 @dataclass
@@ -423,7 +447,7 @@ class AutomotiveMCPBridge:
                         "tool": command.intent,
                         "arguments": command.entities,
                         "automotive_context": {
-                            "vehicle_state": self.vehicle_state.__dict__,
+                            "vehicle_state": self.vehicle_state.to_dict(),
                             "safety_level": command.safety_level.value,
                             "max_response_time_ms": command.max_response_time_ms
                         }
@@ -727,7 +751,7 @@ class AutomotiveMCPBridge:
         """Get comprehensive system status for automotive deployment"""
         base_status = {
             "bridge_status": "active",
-            "vehicle_state": self.vehicle_state.__dict__,
+            "vehicle_state": self.vehicle_state.to_dict(),
             "mcp_servers": {name: server.get("connected", False) for name, server in self.mcp_servers.items()},
             "metrics": self.metrics,
             "safety_monitor": await self.safety_monitor.get_status(),
@@ -771,8 +795,10 @@ class AutomotiveMCPBridge:
                     "bridge_active": True,
                     "vehicle_info": vag_status.get("vehicle_info"),
                     "current_state": vag_status.get("current_state"),
+                    "connection": vag_status.get("connection"),
                     "telemetry": vag_status.get("telemetry"),
                     "diagnostics": vag_status.get("diagnostics"),
+                    "adapter_capabilities": vag_status.get("adapter_capabilities"),
                     "capabilities": vag_status.get("capabilities"),
                 }
             except Exception as e:
@@ -787,7 +813,7 @@ class AutomotiveMCPBridge:
                 "reason": "VAG Audi Bridge not available"
             }
 
-        return base_status
+        return _serialize_for_transport(base_status)
 
 
 class AutomotiveSafetyMonitor:
@@ -906,6 +932,8 @@ class AutomotivePerformanceMonitor:
 
 async def main():
     """Main entry point for automotive MCP bridge"""
+    if aiohttp is None:
+        raise RuntimeError("aiohttp is required to run the automotive MCP bridge HTTP server")
 
     config = {
         "voice_timeout_ms": 500,

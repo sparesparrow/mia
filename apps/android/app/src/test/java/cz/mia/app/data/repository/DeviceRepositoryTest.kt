@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import retrofit2.Response
@@ -41,7 +42,7 @@ class DeviceRepositoryTest {
                 capabilities = listOf("read_pids", "dtc_clear")
             )
         )
-        whenever(deviceApi.getDevices(any(), any())).thenReturn(
+        whenever(deviceApi.getDevices(anyOrNull(), anyOrNull())).thenReturn(
             Response.success(DeviceListResponse(devices = devices, count = 1, timestamp = "2026-03-12T10:00:00"))
         )
 
@@ -101,7 +102,7 @@ class DeviceRepositoryTest {
 
     @Test
     fun `getDevices returns error on network failure`() = runTest {
-        whenever(deviceApi.getDevices(any(), any())).thenThrow(RuntimeException("Connection refused"))
+        whenever(deviceApi.getDevices(anyOrNull(), anyOrNull())).thenThrow(RuntimeException("Connection refused"))
 
         val result = repository.getDevices()
         assertTrue(result.isError)

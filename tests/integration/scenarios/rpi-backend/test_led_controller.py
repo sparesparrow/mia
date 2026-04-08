@@ -11,6 +11,8 @@ import sys
 import os
 from typing import Dict, Any, Optional
 
+import pytest
+
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -107,6 +109,11 @@ class MockSerialController(AIServiceLEDController):
         time.sleep(0.05)
         logger.debug(f"Mock command: {cmd_dict} -> {response}")
         return response
+
+
+@pytest.fixture
+def controller():
+    return MockSerialController()
 
 
 def test_json_protocol():

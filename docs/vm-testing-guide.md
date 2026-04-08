@@ -397,7 +397,7 @@ lsof -i :8080
 sudo kill -9 <PID>
 
 # Or use different ports:
-# Edit docker-compose.dev.yml
+# Edit infra/docker/docker-compose.dev.yml
 ```
 
 ### Performance Optimization

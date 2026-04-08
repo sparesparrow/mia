@@ -109,7 +109,7 @@ void VoiceUIAdapter::processAudioInput() {
             
             UIContext context;
             context.userId = "voice_user";
-            context.session_id = "voice_session_" + std::to_string(commandIndex);
+            context.sessionId = "voice_session_" + std::to_string(commandIndex);
             context.interfaceType = "voice";
             context.timestamp = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
             
@@ -278,7 +278,7 @@ void TextUIAdapter::inputLoop() {
         
         UIContext context;
         context.userId = "text_user";
-        context.session_id = "text_session";
+        context.sessionId = "text_session";
         context.interfaceType = "text";
         context.timestamp = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
         
@@ -397,7 +397,7 @@ void WebUIAdapter::processCommand(const std::string& command, const UIContext& c
 }
 
 bool WebUIAdapter::sendResponse(const UIResponse& response, const UIContext& context) {
-    std::cout << "Web response to session " << context.session_id << ": " << response.content << std::endl;
+    std::cout << "Web response to session " << context.sessionId << ": " << response.content << std::endl;
     
     // In a real implementation, send HTTP/WebSocket response
     return true;
@@ -413,7 +413,7 @@ void WebUIAdapter::handleHttpRequest(const std::string& path, const std::string&
         // Process command via orchestrator
         UIContext context;
         context.userId = "web_user";
-        context.session_id = generateSessionId();
+        context.sessionId = generateSessionId();
         context.interfaceType = "web";
         context.timestamp = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
         
@@ -551,7 +551,7 @@ void MobileUIAdapter::handleMobileAPIRequest(const std::string& endpoint, const 
     if (endpoint == "/api/command") {
         UIContext context;
         context.userId = "mobile_user";
-        context.session_id = "mobile_session";
+        context.sessionId = "mobile_session";
         context.interfaceType = "mobile";
         context.timestamp = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
         

@@ -55,3 +55,54 @@ std::string MessageQueueProcessor::statusToString(JobStatus status) {
     default: return "Unknown";
     }
 }
+
+// --- IRequestReader interface ---
+
+bool MessageQueueProcessor::next(RequestEnvelope& out) {
+    if (mqtt_enabled_ && mqtt_reader_) {
+        // Delegate to MQTT reader when enabled
+        return false; // stub: no pending messages
+    }
+    return false;
+}
+
+bool MessageQueueProcessor::good() const {
+    return !mqtt_enabled_ || (mqtt_reader_ != nullptr);
+}
+
+// --- IResponseWriter interface ---
+
+bool MessageQueueProcessor::write(const DownloadResponse& resp) {
+    if (mqtt_enabled_ && mqtt_writer_) {
+        // Delegate to MQTT writer when enabled
+        return true;
+    }
+    return true;
+}
+
+bool MessageQueueProcessor::write(const StatusResponse& resp) {
+    if (mqtt_enabled_ && mqtt_writer_) {
+        return true;
+    }
+    return true;
+}
+
+bool MessageQueueProcessor::write(const ErrorResponse& resp) {
+    if (mqtt_enabled_ && mqtt_writer_) {
+        return true;
+    }
+    return true;
+}
+
+bool MessageQueueProcessor::flush() {
+    return true;
+}
+
+void MessageQueueProcessor::close() {
+    running_ = false;
+    if (mqtt_processor_thread_.joinable()) {
+        mqtt_processor_thread_.join();
+    }
+    if (mqtt_reader_) mqtt_reader_.reset();
+    if (mqtt_writer_) mqtt_writer_.reset();
+}

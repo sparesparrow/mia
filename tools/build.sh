@@ -13,7 +13,7 @@
 #   ./tools/build.sh --help       # Show help
 # =============================================================================
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -31,6 +31,16 @@ BUILD_TYPE="Release"
 CLEAN_BUILD=false
 USE_NINJA=true
 BUILD_DIR="build"
+
+get_cpu_count() {
+    if command -v nproc >/dev/null 2>&1; then
+        nproc
+    elif command -v sysctl >/dev/null 2>&1; then
+        sysctl -n hw.ncpu
+    else
+        printf '1\n'
+    fi
+}
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -76,12 +86,17 @@ echo -e "${GREEN}  AI-SERVIS Build (${BUILD_TYPE})${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
+if ! command -v cmake >/dev/null 2>&1; then
+    echo -e "${RED}cmake is required but was not found in PATH${NC}"
+    exit 1
+fi
+
 cd "$PROJECT_ROOT"
 
 # Determine generator
-GENERATOR=""
+GENERATOR_ARGS=()
 if [ "$USE_NINJA" = true ] && command -v ninja &> /dev/null; then
-    GENERATOR="-G Ninja"
+    GENERATOR_ARGS=(-G Ninja)
     echo -e "${CYAN}Using Ninja build system${NC}"
 else
     echo -e "${CYAN}Using Make build system${NC}"
@@ -97,12 +112,12 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # Check if Conan toolchain exists (from conan install)
-CONAN_TOOLCHAIN=""
+CONAN_TOOLCHAIN_ARGS=()
 if [ -f "conan_toolchain.cmake" ]; then
-    CONAN_TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake"
+    CONAN_TOOLCHAIN_ARGS=(-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake)
     echo -e "${CYAN}Using Conan toolchain${NC}"
 elif [ -f "../build-release/conan_toolchain.cmake" ]; then
-    CONAN_TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../build-release/conan_toolchain.cmake"
+    CONAN_TOOLCHAIN_ARGS=(-DCMAKE_TOOLCHAIN_FILE=../build-release/conan_toolchain.cmake)
     echo -e "${CYAN}Using Conan toolchain from build-release${NC}"
 else
     echo -e "${YELLOW}No Conan toolchain found, using system libraries${NC}"
@@ -111,16 +126,16 @@ fi
 # Configure
 echo ""
 echo -e "${CYAN}Configuring CMake...${NC}"
-cmake $GENERATOR \
-    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+cmake "${GENERATOR_ARGS[@]}" \
+    "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-    $CONAN_TOOLCHAIN \
+    "${CONAN_TOOLCHAIN_ARGS[@]}" \
     ../platforms/cpp/core
 
 # Build
 echo ""
 echo -e "${CYAN}Building...${NC}"
-cmake --build . --parallel $(nproc)
+cmake --build . --parallel "$(get_cpu_count)"
 
 echo ""
 echo -e "${GREEN}========================================${NC}"

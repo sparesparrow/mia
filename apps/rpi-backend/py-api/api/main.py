@@ -11,6 +11,7 @@ import zmq.asyncio
 import json
 import asyncio
 import logging
+from contextlib import asynccontextmanager, suppress
 from datetime import datetime
 import psutil
 import os
@@ -44,12 +45,10 @@ except ImportError as e:
     logger.warning("Authentication module not available")
 
 try:
-    import Mia.Vehicle.CitroenTelemetry as CitroenTelemetry
-    import Mia.Vehicle.DpfStatus as DpfStatus
+    from Mia.vehicle_codec import parse_citroen_telemetry
 except ImportError:
-    CitroenTelemetry = None
-    DpfStatus = None
-    logger.warning("Could not import Mia.Vehicle FlatBuffers bindings. Telemetry decoding disabled.")
+    parse_citroen_telemetry = None
+    logger.warning("Could not import Mia vehicle FlatBuffers codec. Telemetry decoding disabled.")
 
 # Import session management
 from api.sessions import (
@@ -57,22 +56,10 @@ from api.sessions import (
 )
 
 session_manager = SessionManager()
-app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0")
 
 # ── Routers ───────────────────────────────────────────────────────────────
 from api.routers.ota import router as ota_router
 from api.routers.logs import router as logs_router
-app.include_router(ota_router)
-app.include_router(logs_router)
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # ZeroMQ context and socket for messaging
 zmq_context = zmq.Context()
@@ -105,6 +92,72 @@ led_state: Dict[str, Any] = {
 
 # WebSocket connections
 active_connections: List[WebSocket] = []
+telemetry_tasks: List[asyncio.Task] = []
+
+MCU_TELEMETRY_PORT = int(os.environ.get("ZMQ_MCU_PORT", "5556"))
+VEHICLE_TELEMETRY_PORT = int(os.environ.get("ZMQ_VEHICLE_PORT", os.environ.get("ZMQ_PUB_PORT", "5557")))
+
+# ── Transport health tracking ─────────────────────────────────────────
+_transport_health: Dict[str, Any] = {
+    "mcu_telemetry": {"connected": False, "last_message_at": None, "message_count": 0},
+    "vehicle_telemetry": {"connected": False, "last_message_at": None, "message_count": 0},
+    "broker": {"connected": False},
+}
+_api_start_time: Optional[str] = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage API background consumers and registry lifecycle."""
+    global _api_start_time
+    _api_start_time = datetime.now().isoformat()
+    logger.info("FastAPI server starting up...")
+    logger.info("Connected to ZeroMQ router at tcp://localhost:5555")
+    _transport_health["broker"]["connected"] = True
+
+    if REGISTRY_AVAILABLE and device_registry:
+        device_registry.start()
+        logger.info("Device registry started")
+
+    telemetry_tasks.clear()
+    telemetry_tasks.extend(
+        [
+            asyncio.create_task(consume_mcu_telemetry(), name="mia-mcu-telemetry"),
+            asyncio.create_task(consume_vehicle_telemetry(), name="mia-vehicle-telemetry"),
+        ]
+    )
+
+    try:
+        yield
+    finally:
+        for task in telemetry_tasks:
+            task.cancel()
+        for task in telemetry_tasks:
+            with suppress(asyncio.CancelledError):
+                await task
+        telemetry_tasks.clear()
+
+        if REGISTRY_AVAILABLE and device_registry:
+            device_registry.stop()
+            logger.info("Device registry stopped")
+
+        if not zmq_socket.closed:
+            zmq_socket.close(0)
+        if not zmq_context.closed:
+            zmq_context.term()
+        logger.info("FastAPI server shutting down...")
+
+
+app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0", lifespan=lifespan)
+app.include_router(ota_router)
+app.include_router(logs_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Pydantic models
@@ -149,80 +202,265 @@ class LEDCommand(BaseModel):
     params: Optional[Dict[str, Any]] = None
 
 
-async def consume_telemetry():
+def _resolve_mcu_device_id(payload: Dict[str, Any]) -> str:
+    for key in ("device_id", "node_id"):
+        value = payload.get(key)
+        if isinstance(value, str) and value:
+            return value
+
+    device = payload.get("device")
+    if isinstance(device, str) and device:
+        if device.startswith("/dev/"):
+            return f"serial-{os.path.basename(device)}"
+        return device
+
+    return "esp32-bridge"
+
+
+def _sync_mcu_device_state(device_id: str, status: str, metadata: Optional[Dict[str, Any]] = None):
+    metadata = {key: value for key, value in (metadata or {}).items() if value is not None}
+    device_name = metadata.pop("name", device_id)
+    timestamp = datetime.now().isoformat()
+    device_type = getattr(DeviceType, "ESP32", getattr(DeviceType, "SERIAL", DeviceType.UNKNOWN))
+
+    if REGISTRY_AVAILABLE and device_registry:
+        profile = device_registry.get(device_id)
+        if profile is None:
+            profile = DeviceProfile(
+                device_id=device_id,
+                device_type=device_type,
+                name=device_name,
+                capabilities=["get_telemetry", "firmware_info"],
+                metadata={"device_class": "esp32", **metadata},
+            )
+            device_registry.register(profile)
+            profile = device_registry.get(device_id)
+
+        if profile:
+            profile.name = device_name or profile.name
+            profile.metadata.update({"device_class": "esp32", **metadata})
+            if status == "offline":
+                profile.set_offline()
+            elif status == "error":
+                profile.set_error(metadata.get("error_message", "device reported an error"))
+            else:
+                profile.set_online()
+        return
+
+    device_entry = device_registry_simple.setdefault(
+        device_id,
+        {
+            "device_id": device_id,
+            "device_type": "esp32",
+            "name": device_name,
+            "capabilities": ["get_telemetry", "firmware_info"],
+            "metadata": {},
+        },
+    )
+    device_entry["name"] = device_name or device_entry["name"]
+    device_entry["status"] = status
+    device_entry["last_seen"] = timestamp
+    device_entry["metadata"] = {**device_entry.get("metadata", {}), **metadata}
+    device_entry["is_healthy"] = status == "online"
+    device_entry["error_message"] = metadata.get("error_message") if status == "error" else None
+
+
+def _handle_mcu_telemetry(payload: Dict[str, Any]) -> str:
+    device_id = _resolve_mcu_device_id(payload)
+    cache_entry = dict(telemetry_cache.get(device_id, {}))
+    source_timestamp = payload.get("timestamp")
+
+    cache_entry.update(payload)
+    cache_entry["timestamp"] = datetime.now().isoformat()
+    cache_entry["source"] = "mcu/telemetry"
+    if source_timestamp is not None:
+        cache_entry["source_timestamp"] = source_timestamp
+
+    telemetry_cache[device_id] = cache_entry
+
+    _transport_health["mcu_telemetry"]["connected"] = True
+    _transport_health["mcu_telemetry"]["last_message_at"] = cache_entry["timestamp"]
+    _transport_health["mcu_telemetry"]["message_count"] += 1
+
+    _sync_mcu_device_state(
+        device_id,
+        "online",
+        {
+            "name": payload.get("device_name") or payload.get("name") or device_id,
+            "transport": "serial",
+            "last_topic": "mcu/telemetry",
+        },
+    )
+    return device_id
+
+
+def _handle_mcu_status(payload: Dict[str, Any]) -> str:
+    device_id = _resolve_mcu_device_id(payload)
+    cache_entry = dict(telemetry_cache.get(device_id, {}))
+    event = payload.get("event", "unknown")
+
+    cache_entry.update(
+        {
+            "transport_status": event,
+            "transport_device": payload.get("device"),
+            "transport_reason": payload.get("reason"),
+            "transport_consecutive_errors": payload.get("consecutive_errors"),
+            "timestamp": datetime.now().isoformat(),
+            "source": "mcu/status",
+        }
+    )
+    telemetry_cache[device_id] = {
+        key: value for key, value in cache_entry.items() if value is not None
+    }
+
+    device_status = "online"
+    if event == "disconnected":
+        device_status = "offline"
+    elif event == "error":
+        device_status = "error"
+
+    _sync_mcu_device_state(
+        device_id,
+        device_status,
+        {
+            "name": device_id,
+            "transport": "serial",
+            "serial_device": payload.get("device"),
+            "last_topic": "mcu/status",
+            "error_message": payload.get("reason"),
+        },
+    )
+    return device_id
+
+
+def _build_telemetry_source_summary() -> Dict[str, Any]:
+    """Build a compact summary of known telemetry sources, freshness, and adapter info."""
+    sources: Dict[str, Any] = {}
+    now = datetime.now()
+
+    for device_id, entry in telemetry_cache.items():
+        ts_raw = entry.get("timestamp")
+        age_seconds = None
+        if ts_raw:
+            try:
+                ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00")).replace(tzinfo=None)
+                age_seconds = round((now - ts).total_seconds(), 1)
+            except (ValueError, TypeError):
+                pass
+
+        source_info: Dict[str, Any] = {
+            "last_update": ts_raw,
+            "age_seconds": age_seconds,
+            "source": entry.get("source"),
+        }
+
+        adapter_caps = entry.get("adapter_capabilities")
+        if adapter_caps:
+            source_info["adapter_kind"] = adapter_caps.get("adapter_kind")
+            source_info["capability_class"] = adapter_caps.get("capability_class")
+            source_info["connection_state"] = adapter_caps.get("connection_state")
+
+        sources[device_id] = source_info
+
+    return sources
+
+
+async def consume_mcu_telemetry():
+    """
+    Background task to consume JSON telemetry/status emitted by the serial bridge.
+    """
+    ctx = zmq.asyncio.Context()
+    sub = ctx.socket(zmq.SUB)
+
+    try:
+        sub.connect(f"tcp://localhost:{MCU_TELEMETRY_PORT}")
+        sub.setsockopt(zmq.SUBSCRIBE, b"mcu/telemetry")
+        sub.setsockopt(zmq.SUBSCRIBE, b"mcu/status")
+        logger.info(f"Connected to MCU telemetry subscriber on tcp://localhost:{MCU_TELEMETRY_PORT}")
+
+        while True:
+            try:
+                parts = await sub.recv_multipart()
+                if len(parts) != 2:
+                    logger.warning(f"Unexpected MCU telemetry frame count: {len(parts)}")
+                    continue
+
+                topic = parts[0].decode("utf-8")
+                payload = json.loads(parts[1].decode("utf-8"))
+
+                if topic == "mcu/telemetry":
+                    _handle_mcu_telemetry(payload)
+                elif topic == "mcu/status":
+                    _handle_mcu_status(payload)
+
+            except asyncio.CancelledError:
+                raise
+            except json.JSONDecodeError as e:
+                logger.warning(f"Malformed MCU JSON payload: {e}")
+            except Exception as e:
+                logger.error(f"Error processing MCU telemetry message: {e}")
+                await asyncio.sleep(1)
+
+    except asyncio.CancelledError:
+        logger.info("MCU telemetry consumer cancelled")
+        raise
+    except Exception as e:
+        logger.error(f"Failed to start MCU telemetry consumer: {e}")
+    finally:
+        sub.close(0)
+        ctx.term()
+
+
+async def consume_vehicle_telemetry():
     """
     Background task to consume vehicle telemetry from ZMQ PUB socket.
     Decodes FlatBuffers messages and updates the telemetry cache.
     """
     ctx = zmq.asyncio.Context()
     sub = ctx.socket(zmq.SUB)
-    port = int(os.environ.get('ZMQ_PUB_PORT', 5557))
 
     try:
-        sub.connect(f"tcp://localhost:{port}")
+        sub.connect(f"tcp://localhost:{VEHICLE_TELEMETRY_PORT}")
         sub.setsockopt(zmq.SUBSCRIBE, b"")
-        logger.info(f"Connected to vehicle telemetry subscriber on tcp://localhost:{port}")
+        logger.info(f"Connected to vehicle telemetry subscriber on tcp://localhost:{VEHICLE_TELEMETRY_PORT}")
 
         while True:
             try:
                 # Receive raw FlatBuffers data
                 msg = await sub.recv()
 
-                if CitroenTelemetry:
-                    # Decode FlatBuffers message
-                    telemetry = CitroenTelemetry.CitroenTelemetry.GetRootAs(msg, 0)
-
-                    data = {
-                        "rpm": round(telemetry.Rpm(), 1),
-                        "speed_kmh": round(telemetry.SpeedKmh(), 1),
-                        "coolant_temp_c": round(telemetry.CoolantTempC(), 1),
-                        "dpf_soot_mass_g": round(telemetry.DpfSootMassG(), 2),
-                        "oil_temp_c": round(telemetry.OilTemperatureC(), 1),
-                        "eolys_level_pct": round(telemetry.EolysAdditiveLevelPercent(), 1),
-                        "eolys_level_l": round(telemetry.EolysAdditiveLevelL(), 2),
-                        "dpf_status": telemetry.DpfRegenerationStatus(),
-                        "timestamp": datetime.now().isoformat()
-                    }
+                if parse_citroen_telemetry:
+                    data = parse_citroen_telemetry(msg, require_identifier=True)
+                    source_timestamp_ms = data.pop("timestamp", 0)
+                    data["timestamp"] = datetime.now().isoformat()
+                    if source_timestamp_ms:
+                        data["source_timestamp_ms"] = source_timestamp_ms
 
                     # Update global cache
                     telemetry_cache["vehicle"] = data
+
+                    _transport_health["vehicle_telemetry"]["connected"] = True
+                    _transport_health["vehicle_telemetry"]["last_message_at"] = data["timestamp"]
+                    _transport_health["vehicle_telemetry"]["message_count"] += 1
 
                 else:
                     # Wait a bit if we can't decode to avoid tight loop if something is spamming
                     await asyncio.sleep(1)
 
+            except asyncio.CancelledError:
+                raise
             except Exception as e:
                 logger.error(f"Error processing telemetry message: {e}")
                 await asyncio.sleep(1)
 
+    except asyncio.CancelledError:
+        logger.info("Vehicle telemetry consumer cancelled")
+        raise
     except Exception as e:
         logger.error(f"Failed to start telemetry consumer: {e}")
-@app.on_event("startup")
-async def startup_event():
-    """Initialize ZeroMQ connection on startup"""
-    logger.info("FastAPI server starting up...")
-    logger.info("Connected to ZeroMQ router at tcp://localhost:5555")
-
-    # Start device registry
-    if REGISTRY_AVAILABLE and device_registry:
-        device_registry.start()
-        logger.info("Device registry started")
-
-    # Start telemetry consumer background task
-    asyncio.create_task(consume_telemetry())
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Cleanup on shutdown"""
-    # Stop device registry
-    if REGISTRY_AVAILABLE and device_registry:
-        device_registry.stop()
-        logger.info("Device registry stopped")
-
-    zmq_socket.close()
-    zmq_context.term()
-    logger.info("FastAPI server shutting down...")
+    finally:
+        sub.close(0)
+        ctx.term()
 
 
 @app.get("/")
@@ -451,14 +689,15 @@ async def send_command(command: DeviceCommand):
             "timestamp": datetime.now().isoformat()
         }
         
-        zmq_socket.send_json(message)
-        
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+
         # Wait for response (with timeout)
         poller = zmq.Poller()
         poller.register(zmq_socket, zmq.POLLIN)
-        
+
         if poller.poll(5000):  # 5 second timeout
-            response = zmq_socket.recv_json()
+            parts = zmq_socket.recv_multipart()
+            response = json.loads(parts[-1])
             return {
                 "success": True,
                 "response": response,
@@ -531,7 +770,7 @@ async def set_led_state(state: LEDState):
             "timestamp": datetime.now().isoformat()
         }
 
-        zmq_socket.send_json(message)
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
 
         # Update local state immediately for responsiveness
         return {
@@ -562,7 +801,7 @@ async def send_led_command(command: LEDCommand):
             "timestamp": datetime.now().isoformat()
         }
 
-        zmq_socket.send_json(message)
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
 
         return {
             "success": True,
@@ -609,6 +848,9 @@ async def get_status():
                 "count": psutil.cpu_count()
             },
             "devices_connected": len(device_registry.get_all()) if (REGISTRY_AVAILABLE and device_registry) else len(device_registry_simple),
+            "telemetry_sources": _build_telemetry_source_summary(),
+            "transport_health": _transport_health,
+            "api_start_time": _api_start_time,
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
@@ -694,13 +936,14 @@ async def configure_gpio(gpio: GPIOCommand):
             "timestamp": datetime.now().isoformat()
         }
         
-        zmq_socket.send_json(message)
-        
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+
         poller = zmq.Poller()
         poller.register(zmq_socket, zmq.POLLIN)
-        
+
         if poller.poll(5000):
-            response = zmq_socket.recv_json()
+            parts = zmq_socket.recv_multipart()
+            response = json.loads(parts[-1])
             return {"success": True, "response": response}
         else:
             return {"success": False, "error": "Timeout"}
@@ -718,14 +961,15 @@ async def set_gpio(gpio: GPIOCommand):
             "value": gpio.value,
             "timestamp": datetime.now().isoformat()
         }
-        
-        zmq_socket.send_json(message)
-        
+
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+
         poller = zmq.Poller()
         poller.register(zmq_socket, zmq.POLLIN)
-        
+
         if poller.poll(5000):
-            response = zmq_socket.recv_json()
+            parts = zmq_socket.recv_multipart()
+            response = json.loads(parts[-1])
             return {"success": True, "response": response}
         else:
             return {"success": False, "error": "Timeout"}
@@ -742,14 +986,15 @@ async def get_gpio(pin: int):
             "pin": pin,
             "timestamp": datetime.now().isoformat()
         }
-        
-        zmq_socket.send_json(message)
-        
+
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+
         poller = zmq.Poller()
         poller.register(zmq_socket, zmq.POLLIN)
-        
+
         if poller.poll(5000):
-            response = zmq_socket.recv_json()
+            parts = zmq_socket.recv_multipart()
+            response = json.loads(parts[-1])
             return {"success": True, "response": response}
         else:
             return {"success": False, "error": "Timeout"}

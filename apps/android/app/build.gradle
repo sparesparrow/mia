@@ -27,8 +27,8 @@ android {
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
         buildConfigField "String", "GIT_BRANCH", "\"${getGitBranch()}\""
         buildConfigField "String", "VERSION_NAME", "\"${getVersionName()}\""
-        buildConfigField 'String', 'API_BASE_URL', '"http://192.168.200.134:8000/"'
-        buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.200.134:8000"'
+        buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(false)}\""
+        buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(false)}\""
     }
 
     lintOptions {
@@ -61,17 +61,14 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            // Production URLs - should be configured via environment variables or properties
-            buildConfigField 'String', 'API_BASE_URL', '"https://api.mia-app.com"'
-            buildConfigField 'String', 'WS_BASE_URL', '"wss://ws.mia-app.com"'
+            buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(true)}\""
+            buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(true)}\""
         }
         debug {
             // applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
-            testCoverageEnabled true
-            // Debug URLs - MIA RPi server
-            buildConfigField 'String', 'API_BASE_URL', '"http://192.168.200.134:8000/"'
-            buildConfigField 'String', 'WS_BASE_URL', '"ws://192.168.200.134:8000"'
+            buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(false)}\""
+            buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(false)}\""
         }
     }
 
@@ -91,17 +88,21 @@ android {
     }
     testOptions {
         unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
     }
     packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    androidResources {
+        noCompress 'tflite', 'bincfg'
+    }
 }
 
 kapt {
     correctErrorTypes = true
-    includeCompileClasspath = true
+    useBuildCache = false
 }
 
 tasks.withType(Test) {
@@ -110,6 +111,50 @@ tasks.withType(Test) {
         showExceptions true
         showCauses true
         showStackTraces true
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { task ->
+    doFirst {
+        def variantName = task.name
+            .replaceFirst('^compile', '')
+            .replaceFirst('JavaWithJavac$', '')
+        if (!variantName) {
+            return
+        }
+
+        def variantDir = variantName[0].toLowerCase() + variantName.substring(1)
+        def annotationProcessorList = layout.buildDirectory
+            .file("intermediates/annotation_processor_list/${variantDir}/annotationProcessors.json")
+            .get()
+            .asFile
+
+        if (!annotationProcessorList.exists()) {
+            annotationProcessorList.parentFile.mkdirs()
+            annotationProcessorList.text = '[]'
+        }
+    }
+}
+
+tasks.matching { it.name.startsWith('process') && it.name.endsWith('MainManifest') }.configureEach { task ->
+    doFirst {
+        def variantName = task.name
+            .replaceFirst('^process', '')
+            .replaceFirst('MainManifest$', '')
+        if (!variantName) {
+            return
+        }
+
+        def variantDir = variantName[0].toLowerCase() + variantName.substring(1)
+        def navigationJson = layout.buildDirectory
+            .file("intermediates/navigation_json/${variantDir}/navigation.json")
+            .get()
+            .asFile
+
+        if (!navigationJson.exists()) {
+            navigationJson.parentFile.mkdirs()
+            navigationJson.text = '[]'
+        }
     }
 }
 
@@ -207,6 +252,8 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.9.22'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
+    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation 'app.cash.turbine:turbine:1.0.0'
     testImplementation 'org.mockito:mockito-core:5.8.0'
     testImplementation 'org.mockito:mockito-inline:5.2.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
@@ -287,5 +334,47 @@ def getGitBranch() {
     } catch (Exception e) {
         return "unknown"
     }
+}
+
+def getConfiguredValue(List<String> propertyKeys, List<String> envKeys, String defaultValue) {
+    for (def key : propertyKeys) {
+        if (project.hasProperty(key)) {
+            def value = project.property(key)?.toString()?.trim()
+            if (value) {
+                return value
+            }
+        }
+    }
+
+    for (def key : envKeys) {
+        def value = System.getenv(key)?.trim()
+        if (value) {
+            return value
+        }
+    }
+
+    return defaultValue
+}
+
+def getApiBaseUrl(boolean releaseBuild) {
+    def defaultValue = releaseBuild ? "https://api.mia-app.com/" : "http://10.0.2.2:8000/"
+    def value = getConfiguredValue(
+        releaseBuild ? ["miaReleaseApiBaseUrl", "miaApiBaseUrl"] : ["miaApiBaseUrl"],
+        releaseBuild ? ["MIA_RELEASE_API_BASE_URL", "MIA_API_BASE_URL"] : ["MIA_API_BASE_URL"],
+        defaultValue
+    )
+
+    return value.endsWith("/") ? value : "${value}/"
+}
+
+def getWsBaseUrl(boolean releaseBuild) {
+    def defaultValue = releaseBuild ? "wss://ws.mia-app.com" : "ws://10.0.2.2:8000"
+    def value = getConfiguredValue(
+        releaseBuild ? ["miaReleaseWsBaseUrl", "miaWsBaseUrl"] : ["miaWsBaseUrl"],
+        releaseBuild ? ["MIA_RELEASE_WS_BASE_URL", "MIA_WS_BASE_URL"] : ["MIA_WS_BASE_URL"],
+        defaultValue
+    )
+
+    return value.endsWith("/") ? value[0..-2] : value
 }
 

@@ -16,7 +16,8 @@ HardwareControlServer::HardwareControlServer(int port,
                                              const std::string& mqtt_host,
                                              int mqtt_port)
     : port(port), serverSocket(-1), running(false),
-      mqtt_host(mqtt_host), mqtt_port(mqtt_port), mqtt_client(nullptr),
+    mqtt_host(mqtt_host), mqtt_port(mqtt_port), mqtt_client(nullptr),
+    mqttLibraryInitialized(false),
       chip(nullptr) {
 }
 
@@ -25,6 +26,11 @@ HardwareControlServer::~HardwareControlServer() {
 }
 
 bool HardwareControlServer::Start() {
+    if (running.load()) {
+        std::cerr << "Hardware Control Server is already running" << std::endl;
+        return false;
+    }
+
     if (!InitializeGPIO()) {
         std::cerr << "Failed to initialize GPIO" << std::endl;
         return false;
@@ -32,46 +38,53 @@ bool HardwareControlServer::Start() {
 
     if (!SetupServerSocket()) {
         std::cerr << "Failed to setup server socket" << std::endl;
+        CleanupGPIO();
         return false;
     }
+
+    running = true;
 
     if (!InitializeMQTT()) {
         std::cerr << "Failed to initialize MQTT (continuing without MQTT)" << std::endl;
         // Continue without MQTT - it's optional
     }
 
-    running = true;
-    acceptThread = std::thread(&HardwareControlServer::AcceptConnections, this);
+    try {
+        acceptThread = std::thread(&HardwareControlServer::AcceptConnections, this);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to start accept thread: " << e.what() << std::endl;
+        Stop();
+        return false;
+    }
 
     std::cout << "Hardware Control Server started on port " << port << std::endl;
     return true;
 }
 
 void HardwareControlServer::Stop() {
-    running = false;
+    const bool wasRunning = running.exchange(false);
+
+    CloseServerSocket();
 
     if (acceptThread.joinable()) {
         acceptThread.join();
     }
 
-    if (serverSocket != -1) {
-        close(serverSocket);
-        serverSocket = -1;
-    }
+    ShutdownClientConnections();
 
-    // Clean up MQTT
-    if (mqtt_client) {
-        mosquitto_disconnect(mqtt_client);
-        mosquitto_destroy(mqtt_client);
-        mqtt_client = nullptr;
+    for (auto& clientThread : clientThreads) {
+        if (clientThread.joinable()) {
+            clientThread.join();
+        }
     }
+    clientThreads.clear();
 
-    if (mqttThread.joinable()) {
-        mqttThread.join();
-    }
-
+    CleanupMQTT();
     CleanupGPIO();
-    std::cout << "Hardware Control Server stopped" << std::endl;
+
+    if (wasRunning) {
+        std::cout << "Hardware Control Server stopped" << std::endl;
+    }
 }
 
 bool HardwareControlServer::InitializeGPIO() {
@@ -97,11 +110,11 @@ bool HardwareControlServer::InitializeGPIO() {
 void HardwareControlServer::CleanupGPIO() {
     std::lock_guard<std::mutex> lock(gpioMutex);
     
-    // Release all line requests
+    // Release all requested lines.
     for (auto& [pin, info] : activeLines) {
-        if (info.request) {
-            gpiod_line_request_release(info.request);
-            info.request = nullptr;
+        if (info.line) {
+            gpiod_line_release(info.line);
+            info.line = nullptr;
         }
     }
     activeLines.clear();
@@ -110,6 +123,44 @@ void HardwareControlServer::CleanupGPIO() {
     if (chip) {
         gpiod_chip_close(chip);
         chip = nullptr;
+    }
+}
+
+void HardwareControlServer::CleanupMQTT() {
+    if (mqtt_client) {
+        mosquitto_disconnect(mqtt_client);
+    }
+
+    if (mqttThread.joinable()) {
+        mqttThread.join();
+    }
+
+    if (mqtt_client) {
+        mosquitto_destroy(mqtt_client);
+        mqtt_client = nullptr;
+    }
+
+    if (mqttLibraryInitialized) {
+        mosquitto_lib_cleanup();
+        mqttLibraryInitialized = false;
+    }
+}
+
+void HardwareControlServer::CloseServerSocket() {
+    if (serverSocket == -1) {
+        return;
+    }
+
+    shutdown(serverSocket, SHUT_RDWR);
+    close(serverSocket);
+    serverSocket = -1;
+}
+
+void HardwareControlServer::ShutdownClientConnections() {
+    std::lock_guard<std::mutex> lock(clientMutex);
+
+    for (int clientSocket : clientSockets) {
+        shutdown(clientSocket, SHUT_RDWR);
     }
 }
 
@@ -123,6 +174,7 @@ bool HardwareControlServer::SetupServerSocket() {
     int opt = 1;
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
         std::cerr << "Failed to set socket options" << std::endl;
+        CloseServerSocket();
         return false;
     }
 
@@ -133,11 +185,13 @@ bool HardwareControlServer::SetupServerSocket() {
 
     if (bind(serverSocket, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr)) == -1) {
         std::cerr << "Failed to bind socket" << std::endl;
+        CloseServerSocket();
         return false;
     }
 
     if (listen(serverSocket, 5) == -1) {
         std::cerr << "Failed to listen on socket" << std::endl;
+        CloseServerSocket();
         return false;
     }
 
@@ -158,7 +212,22 @@ void HardwareControlServer::AcceptConnections() {
         }
 
         std::cout << "Client connected" << std::endl;
-        std::thread(&HardwareControlServer::HandleClient, this, clientSocket).detach();
+
+        {
+            std::lock_guard<std::mutex> lock(clientMutex);
+            clientSockets.insert(clientSocket);
+        }
+
+        try {
+            clientThreads.emplace_back(&HardwareControlServer::HandleClient, this, clientSocket);
+        } catch (const std::exception& e) {
+            {
+                std::lock_guard<std::mutex> lock(clientMutex);
+                clientSockets.erase(clientSocket);
+            }
+            close(clientSocket);
+            std::cerr << "Failed to start client thread: " << e.what() << std::endl;
+        }
     }
 }
 
@@ -175,10 +244,19 @@ void HardwareControlServer::HandleClient(int clientSocket) {
         std::string request(buffer);
         std::string response = HandleGPIOControl(request);
 
-        send(clientSocket, response.c_str(), response.length(), 0);
+        if (send(clientSocket, response.c_str(), response.length(), MSG_NOSIGNAL) < 0) {
+            break;
+        }
     }
 
+    shutdown(clientSocket, SHUT_RDWR);
     close(clientSocket);
+
+    {
+        std::lock_guard<std::mutex> lock(clientMutex);
+        clientSockets.erase(clientSocket);
+    }
+
     std::cout << "Client disconnected" << std::endl;
 }
 
@@ -284,71 +362,31 @@ bool HardwareControlServer::ConfigureGPIOPin(int pin, const std::string& directi
         // Release existing line request if it exists
         auto it = activeLines.find(pin);
         if (it != activeLines.end()) {
-            if (it->second.request) {
-                gpiod_line_request_release(it->second.request);
+            if (it->second.line) {
+                gpiod_line_release(it->second.line);
             }
             activeLines.erase(it);
         }
 
-        // Create line settings
-        struct gpiod_line_settings* settings = gpiod_line_settings_new();
-        if (!settings) {
-            std::cerr << "Failed to create line settings" << std::endl;
+        struct gpiod_line* line = gpiod_chip_get_line(chip, static_cast<unsigned int>(pin));
+        if (!line) {
+            std::cerr << "Failed to get GPIO line " << pin << std::endl;
             return false;
         }
 
-        // Set direction
         bool is_output = (direction == "output");
-        if (is_output) {
-            gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_OUTPUT);
-            gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_INACTIVE);
-        } else {
-            gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
-        }
-
-        // Create line config
-        struct gpiod_line_config* line_config = gpiod_line_config_new();
-        if (!line_config) {
-            gpiod_line_settings_free(settings);
-            std::cerr << "Failed to create line config" << std::endl;
-            return false;
-        }
-
-        // Add the line offset to config
-        unsigned int offset = static_cast<unsigned int>(pin);
-        int ret = gpiod_line_config_add_line_settings(line_config, &offset, 1, settings);
-        gpiod_line_settings_free(settings);
+        int ret = is_output
+            ? gpiod_line_request_output(line, "hardware-control-server", 0)
+            : gpiod_line_request_input(line, "hardware-control-server");
 
         if (ret < 0) {
-            gpiod_line_config_free(line_config);
-            std::cerr << "Failed to add line settings to config" << std::endl;
-            return false;
-        }
-
-        // Create request config with consumer name
-        struct gpiod_request_config* req_config = gpiod_request_config_new();
-        if (!req_config) {
-            gpiod_line_config_free(line_config);
-            std::cerr << "Failed to create request config" << std::endl;
-            return false;
-        }
-        gpiod_request_config_set_consumer(req_config, "hardware-control-server");
-
-        // Request the line
-        struct gpiod_line_request* request = gpiod_chip_request_lines(chip, req_config, line_config);
-        
-        gpiod_request_config_free(req_config);
-        gpiod_line_config_free(line_config);
-
-        if (!request) {
             std::cerr << "Failed to request GPIO line " << pin << std::endl;
             return false;
         }
 
-        // Store the configured line
         GPIOLineInfo info;
-        info.request = request;
-        info.offset = offset;
+        info.line = line;
+        info.offset = static_cast<unsigned int>(pin);
         info.is_output = is_output;
         activeLines[pin] = info;
 
@@ -365,7 +403,7 @@ bool HardwareControlServer::SetGPIOPin(int pin, bool value) {
     std::lock_guard<std::mutex> lock(gpioMutex);
 
     auto it = activeLines.find(pin);
-    if (it == activeLines.end() || !it->second.request) {
+    if (it == activeLines.end() || !it->second.line) {
         std::cerr << "GPIO pin " << pin << " not configured" << std::endl;
         return false;
     }
@@ -375,8 +413,7 @@ bool HardwareControlServer::SetGPIOPin(int pin, bool value) {
         return false;
     }
 
-    enum gpiod_line_value val = value ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE;
-    int ret = gpiod_line_request_set_value(it->second.request, it->second.offset, val);
+    int ret = gpiod_line_set_value(it->second.line, value ? 1 : 0);
     
     if (ret < 0) {
         std::cerr << "Failed to set GPIO pin " << pin << std::endl;
@@ -390,24 +427,33 @@ bool HardwareControlServer::GetGPIOPin(int pin, bool& value) {
     std::lock_guard<std::mutex> lock(gpioMutex);
 
     auto it = activeLines.find(pin);
-    if (it == activeLines.end() || !it->second.request) {
+    if (it == activeLines.end() || !it->second.line) {
         std::cerr << "GPIO pin " << pin << " not configured" << std::endl;
         return false;
     }
 
-    enum gpiod_line_value val = gpiod_line_request_get_value(it->second.request, it->second.offset);
+    int ret = gpiod_line_get_value(it->second.line);
     
-    if (val == GPIOD_LINE_VALUE_ERROR) {
+    if (ret < 0) {
         std::cerr << "Failed to get GPIO pin " << pin << std::endl;
         return false;
     }
 
-    value = (val == GPIOD_LINE_VALUE_ACTIVE);
+    value = (ret != 0);
     return true;
 }
 
 bool HardwareControlServer::InitializeMQTT() {
-    mosquitto_lib_init();
+    if (!mqttLibraryInitialized) {
+        const int initResult = mosquitto_lib_init();
+        if (initResult != MOSQ_ERR_SUCCESS) {
+            std::cerr << "Failed to initialize MQTT library: "
+                      << mosquitto_strerror(initResult) << std::endl;
+            return false;
+        }
+
+        mqttLibraryInitialized = true;
+    }
     
     mqtt_client = mosquitto_new("hardware-control-server", true, this);
     if (!mqtt_client) {
@@ -427,11 +473,27 @@ bool HardwareControlServer::InitializeMQTT() {
     }
 
     // Subscribe to GPIO control topics
-    mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/control", 0);
-    mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/status", 0);
+    int subscribeRc = mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/control", 0);
+    if (subscribeRc != MOSQ_ERR_SUCCESS) {
+        std::cerr << "Failed to subscribe to hardware/gpio/control: "
+                  << mosquitto_strerror(subscribeRc) << std::endl;
+    }
+
+    subscribeRc = mosquitto_subscribe(mqtt_client, nullptr, "hardware/gpio/status", 0);
+    if (subscribeRc != MOSQ_ERR_SUCCESS) {
+        std::cerr << "Failed to subscribe to hardware/gpio/status: "
+                  << mosquitto_strerror(subscribeRc) << std::endl;
+    }
 
     // Start MQTT loop thread
-    mqttThread = std::thread(&HardwareControlServer::MQTTLoop, this);
+    try {
+        mqttThread = std::thread(&HardwareControlServer::MQTTLoop, this);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to start MQTT thread: " << e.what() << std::endl;
+        mosquitto_destroy(mqtt_client);
+        mqtt_client = nullptr;
+        return false;
+    }
 
     std::cout << "MQTT initialized and connected to " << mqtt_host << ":" << mqtt_port << std::endl;
     return true;
@@ -487,26 +549,28 @@ void HardwareControlServer::HandleMQTTMessage(const std::string& topic, const st
     } else if (topic == "hardware/gpio/status") {
         // Handle status request
         Json::Value status;
-        status["active_pins"] = static_cast<int>(activeLines.size());
-        
         Json::Value pins(Json::arrayValue);
-        for (const auto& [pin, info] : activeLines) {
-            Json::Value pinInfo;
-            pinInfo["pin"] = pin;
-            pinInfo["is_output"] = info.is_output;
-            
-            bool value;
-            // Temporarily unlock for GetGPIOPin (it will lock again)
-            // Actually, since we're in HandleMQTTMessage which already holds mqttMutex,
-            // and GetGPIOPin holds gpioMutex, this is safe
-            if (info.request) {
-                enum gpiod_line_value val = gpiod_line_request_get_value(info.request, info.offset);
-                if (val != GPIOD_LINE_VALUE_ERROR) {
-                    pinInfo["value"] = (val == GPIOD_LINE_VALUE_ACTIVE) ? 1 : 0;
+
+        {
+            std::lock_guard<std::mutex> gpioLock(gpioMutex);
+            status["active_pins"] = static_cast<int>(activeLines.size());
+
+            for (const auto& [pin, info] : activeLines) {
+                Json::Value pinInfo;
+                pinInfo["pin"] = pin;
+                pinInfo["is_output"] = info.is_output;
+
+                if (info.line) {
+                    int value = gpiod_line_get_value(info.line);
+                    if (value >= 0) {
+                        pinInfo["value"] = value;
+                    }
                 }
+
+                pins.append(pinInfo);
             }
-            pins.append(pinInfo);
         }
+
         status["pins"] = pins;
         
         Json::StreamWriterBuilder builder;

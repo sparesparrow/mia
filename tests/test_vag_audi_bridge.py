@@ -51,10 +51,13 @@ class TestVagAudiBridge(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status["vehicle_info"]["brand"], "Audi")
         self.assertIn("telemetry", status)
         self.assertIn("diagnostics", status)
+        self.assertIn("adapter_capabilities", status)
         self.assertEqual(status["diagnostics"]["dtc_codes"], [])
         self.assertEqual(status["diagnostics"]["did_values"], {})
         self.assertTrue(status["capabilities"]["read_only"])
         self.assertFalse(status["capabilities"]["write_operations"])
+        self.assertEqual(status["adapter_capabilities"]["capability_class"], "unknown")
+        self.assertEqual(status["adapter_capabilities"]["connection_state"], "probing")
 
     async def test_read_data_identifiers_returns_disabled_when_uds_is_off(self):
         result = await self.bridge.read_data_identifiers(["f190"])
@@ -89,6 +92,44 @@ class TestVagAudiBridge(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(status["telemetry"]["speed_kmh"], 52)
         self.assertEqual(status["telemetry"]["engine_rpm"], 1350)
         self.assertEqual(status["telemetry"]["battery_voltage"], 12.4)
+        self.assertEqual(status["adapter_capabilities"]["capability_class"], "generic_pid_only")
+        self.assertEqual(status["adapter_capabilities"]["connection_state"], "connected")
+        self.assertIsNotNone(status["adapter_capabilities"]["last_pid_success_at"])
+
+    async def test_read_data_identifiers_are_blocked_without_uds_transport_capability(self):
+        bridge = VagAudiBridge({"enable_uds_polling": True})
+        await bridge.initialize()
+
+        try:
+            result = await bridge.read_data_identifiers(["F190"])
+        finally:
+            await bridge.shutdown()
+
+        self.assertEqual(result["status"], "blocked")
+        self.assertEqual(result["identifiers"], ["F190"])
+        self.assertIn("does not support read-only UDS polling", result["message"])
+
+    async def test_uds_capability_can_be_verified_from_transport_payload(self):
+        bridge = VagAudiBridge({"enable_uds_polling": True})
+        await bridge.initialize()
+
+        try:
+            await bridge.ingest_transport_message(
+                (
+                    b"obd/telemetry",
+                    b'{"adapter_capabilities": {"supports_uds": true, "adapter_kind": "obdlink", "active_protocol": "ISO 15765-4 CAN"}, "did_values": {"F190": "WAUZZZ8V0FA000001"}}',
+                )
+            )
+            status = await bridge.get_vehicle_status()
+            result = await bridge.read_data_identifiers(["F190"])
+        finally:
+            await bridge.shutdown()
+
+        self.assertEqual(status["adapter_capabilities"]["capability_class"], "uds_read_only")
+        self.assertEqual(status["adapter_capabilities"]["adapter_kind"], "obdlink")
+        self.assertEqual(status["adapter_capabilities"]["active_protocol"], "ISO 15765-4 CAN")
+        self.assertIsNotNone(status["adapter_capabilities"]["last_uds_success_at"])
+        self.assertEqual(result["status"], "unavailable")
 
 
 if __name__ == "__main__":

@@ -14,11 +14,7 @@ DownloadTask::DownloadTask(const std::shared_ptr<MCP::Request>& spRequest, WebGr
 }
 
 std::shared_ptr<MCP::CMCPTask> DownloadTask::Clone() const {
-    auto spClone = std::make_shared<DownloadTask>(nullptr, clientWrapper);
-    if (spClone) {
-        *spClone = *this;
-    }
-    return spClone;
+    return std::make_shared<DownloadTask>(m_spRequest, clientWrapper);
 }
 
 int DownloadTask::Cancel() {

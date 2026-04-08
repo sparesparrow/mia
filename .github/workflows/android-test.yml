@@ -5,44 +5,59 @@ on:
     branches: [main, develop]
     paths:
       - 'apps/android/**'
-      - 'orchestration/**'
+      - 'skills/android-adb-test/**'
+      - 'scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'apps/android/**'
-      - 'orchestration/**'
+      - 'skills/android-adb-test/**'
+      - 'scripts/test-orchestrator.sh'
+      - '.github/workflows/android-test.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      
+          cache: gradle
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          build-tools: 34.0.0
-      
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
       - name: Build Debug APK
         run: |
           cd apps/android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-      
+
       - name: Validate APK
         run: |
           cd apps/android
-          bash ../../skills/android-adb-test/scripts/android-adb-test.sh build 2>&1 | tail -20 || true
-      
+          set -o pipefail
+          bash ../../skills/android-adb-test/scripts/android-adb-test.sh build 2>&1 | tail -20
+
       - name: Upload Build Artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,94 +68,127 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 45
     strategy:
+      fail-fast: false
+      max-parallel: 2
       matrix:
         scenario: [dashboard, ble-scan, obd-pairing, settings, full-flow]
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      
+          cache: gradle
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          build-tools: 34.0.0
-      
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
           name: android-apk
           path: apps/android/app/build/outputs/apk/
-      
+
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           arch: x86_64
+          disable-linux-hw-accel: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
           script: |
-            cd apps/android
-            # Run test scenario
-            bash ../../skills/android-adb-test/scripts/android-adb-test.sh test \
+            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test \
               --scenario ${{ matrix.scenario }} \
               --screenshots \
               --logs \
               --device emulator-5554
-      
+
+      - name: Parse Test Results
+        if: always()
+        run: |
+          if [ -d apps/android/test-artifacts ]; then
+            LATEST=$(ls -t apps/android/test-artifacts | head -1)
+            if [ -n "$LATEST" ] && [ -f "apps/android/test-artifacts/$LATEST/reports/test-report.json" ]; then
+              echo "Test scenario: ${{ matrix.scenario }}"
+              jq . "apps/android/test-artifacts/$LATEST/reports/test-report.json"
+            fi
+          fi
+
+      - name: Capture Scenario Status
+        if: always()
+        run: |
+          mkdir -p apps/android/test-artifacts
+          echo "${{ job.status }}" > apps/android/test-artifacts/status.txt
+
       - name: Upload Test Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-artifacts-${{ matrix.scenario }}
           path: apps/android/test-artifacts/
-      
-      - name: Parse Test Results
-        if: always()
-        run: |
-          LATEST=$(ls -t apps/android/test-artifacts | head -1)
-          if [ -f "apps/android/test-artifacts/$LATEST/reports/test-report.json" ]; then
-            echo "Test scenario: ${{ matrix.scenario }}"
-            cat "apps/android/test-artifacts/$LATEST/reports/test-report.json" | jq .
-          fi
 
   post-results:
     runs-on: ubuntu-latest
     needs: test
     if: always()
-    
+    permissions:
+      contents: read
+      issues: write
+
     steps:
-      - uses: actions/checkout@v4
-      
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
           path: test-results
-      
+
       - name: Generate Report
         run: |
           echo "# 📱 Android Test Results" > test-summary.md
           echo "" >> test-summary.md
           echo "| Scenario | Status |" >> test-summary.md
           echo "|----------|--------|" >> test-summary.md
-          
+
           for scenario in dashboard ble-scan obd-pairing settings full-flow; do
-            if [ -d "test-results/test-artifacts-$scenario" ]; then
-              echo "| \`$scenario\` | ✅ PASS |" >> test-summary.md
+            status_file="test-results/test-artifacts-$scenario/status.txt"
+            if [ -f "$status_file" ]; then
+              status=$(cat "$status_file")
             else
-              echo "| \`$scenario\` | ⚠️  SKIPPED |" >> test-summary.md
+              status="missing"
             fi
+
+            case "$status" in
+              success)
+                label="✅ PASS"
+                ;;
+              failure)
+                label="❌ FAIL"
+                ;;
+              cancelled)
+                label="⚪ CANCELLED"
+                ;;
+              *)
+                label="⚠️ ${status^^}"
+                ;;
+            esac
+
+            echo "| \`$scenario\` | $label |" >> test-summary.md
           done
-          
+
           echo "" >> test-summary.md
           echo "**Artifacts**: [Available in Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> test-summary.md
-          
+
           cat test-summary.md
-      
+
       - name: Comment PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -148,15 +196,36 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const body = fs.readFileSync('test-summary.md', 'utf8');
-            
-            github.rest.issues.createComment({
+            const marker = '<!-- mia-android-test-summary -->';
+            const body = `${marker}\n${fs.readFileSync('test-summary.md', 'utf8')}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: body
+              per_page: 100
             });
-      
+
+            const existing = comments.find((comment) =>
+              comment.user.type === 'Bot' && comment.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                comment_id: existing.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body
+              });
+            }
+
       - name: Notify Slack
         if: failure() && github.event_name == 'push'
         uses: slackapi/slack-github-action@v1

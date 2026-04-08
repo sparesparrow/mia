@@ -10,12 +10,16 @@ This script:
 """
 
 import serial.tools.list_ports
+import logging
 import json
 import sys
 import subprocess
 from typing import List, Dict, Any, Optional
-import socket
 import asyncio
+import re
+
+
+logger = logging.getLogger(__name__)
 
 # USB VID:PID mappings for common USB-serial chips
 USB_CHIP_PATTERNS = {
@@ -72,8 +76,9 @@ def identify_device_type(port) -> Dict[str, Any]:
             }
 
     # Check for generic ESP32 (usually CH340 or CP210x)
-    if any(keyword in description for keyword in ESP32_KEYWORDS) or \
-       any(vid_pid in patterns for patterns in [USB_CHIP_PATTERNS['CH340'], USB_CHIP_PATTERNS['CP210x']] for vid_pid_pattern in patterns if vid_pid == vid_pid_pattern):
+    if any(keyword in description for keyword in ESP32_KEYWORDS) or vid_pid in (
+        USB_CHIP_PATTERNS['CH340'] + USB_CHIP_PATTERNS['CP210x']
+    ):
         return {
             "port": port.device,
             "type": "esp32",
@@ -128,6 +133,61 @@ def detect_serial_devices() -> List[Dict[str, Any]]:
 
     return devices
 
+
+def build_summary(devices: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Build a platform summary for the detected device manifest."""
+    return {
+        "total_devices": len(devices),
+        "esp32_devices": len([d for d in devices if d.get("platform") == "esp32"]),
+        "android_devices": len([d for d in devices if d.get("platform") == "android"]),
+        "rpi_devices": len([d for d in devices if d.get("platform") == "rpi"]),
+    }
+
+
+def get_local_subnet() -> Optional[str]:
+    """Get the local subnet prefix used for Raspberry Pi discovery."""
+    try:
+        result = subprocess.run(
+            ["ip", "route", "get", "8.8.8.8"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.warning("Could not determine local subnet: %s", exc)
+        return None
+
+    if result.returncode != 0:
+        logger.warning("Could not determine local subnet: ip route returned %s", result.returncode)
+        return None
+
+    match = re.search(r'src\s+(\d+\.\d+\.\d+)\.\d+', result.stdout)
+    if match:
+        return match.group(1)
+
+    logger.warning("Could not parse local subnet from ip route output")
+    return None
+
+
+def get_android_model(device_id: str) -> str:
+    """Get an Android device model via adb, defaulting cleanly when unavailable."""
+    try:
+        model_proc = subprocess.run(
+            ["adb", "-s", device_id, "shell", "getprop", "ro.product.model"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.debug("Could not read model for Android device %s: %s", device_id, exc)
+        return "Unknown"
+
+    if model_proc.returncode == 0:
+        return model_proc.stdout.strip() or "Unknown"
+
+    logger.debug("adb getprop failed for %s with exit code %s", device_id, model_proc.returncode)
+    return "Unknown"
+
 def detect_android_devices() -> List[Dict[str, Any]]:
     """Detect connected Android devices via ADB."""
     devices = []
@@ -146,17 +206,7 @@ def detect_android_devices() -> List[Dict[str, Any]]:
                 parts = line.split()
                 device_id = parts[0]
 
-                # Get device model
-                try:
-                    model_proc = subprocess.run(
-                        ["adb", "-s", device_id, "shell", "getprop", "ro.product.model"],
-                        capture_output=True,
-                        text=True,
-                        timeout=5,
-                    )
-                    model = model_proc.stdout.strip() if model_proc.returncode == 0 else "Unknown"
-                except:
-                    model = "Unknown"
+                model = get_android_model(device_id)
 
                 devices.append({
                     "device_id": device_id,
@@ -167,8 +217,8 @@ def detect_android_devices() -> List[Dict[str, Any]]:
                     "connection_type": "adb"
                 })
 
-    except Exception as e:
-        print(f"Warning: Could not detect Android devices: {e}")
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.warning("Could not detect Android devices: %s", exc)
 
     return devices
 
@@ -176,33 +226,18 @@ async def detect_raspberry_pi_devices() -> List[Dict[str, Any]]:
     """Detect Raspberry Pi devices on the network."""
     devices = []
 
-    try:
-        # Get local subnet
-        result = subprocess.run(
-            ["ip", "route", "get", "8.8.8.8"],
-            capture_output=True, text=True, timeout=5
-        )
+    subnet = get_local_subnet()
+    if subnet is None:
+        return devices
 
-        if result.returncode == 0:
-            import re
-            match = re.search(r'src\s+(\d+\.\d+\.\d+)\.\d+', result.stdout)
-            if match:
-                subnet = match.group(1)
+    tasks = [check_raspberry_pi(f"{subnet}.{i}") for i in range(1, 255)]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
 
-                # Scan for Raspberry Pi devices (simple ping sweep)
-                tasks = []
-                for i in range(1, 255):
-                    ip = f"{subnet}.{i}"
-                    tasks.append(check_raspberry_pi(ip))
-
-                results = await asyncio.gather(*tasks, return_exceptions=True)
-
-                for result in results:
-                    if isinstance(result, dict):
-                        devices.append(result)
-
-    except Exception as e:
-        print(f"Warning: Could not detect Raspberry Pi devices: {e}")
+    for result in results:
+        if isinstance(result, dict):
+            devices.append(result)
+        elif isinstance(result, Exception):
+            logger.debug("Raspberry Pi probe task failed: %s", result)
 
     return devices
 
@@ -232,11 +267,14 @@ async def check_raspberry_pi(ip: str) -> Optional[Dict[str, Any]]:
                     "http_port": port if port in [80, 8080] else None
                 }
 
-            except:
+            except (asyncio.TimeoutError, ConnectionError, OSError):
+                continue
+            except Exception as exc:
+                logger.debug("Unexpected Raspberry Pi probe error for %s:%s: %s", ip, port, exc)
                 continue
 
-    except:
-        pass
+    except Exception as exc:
+        logger.debug("Unexpected Raspberry Pi host scan error for %s: %s", ip, exc)
 
     return None
 
@@ -252,20 +290,19 @@ def detect_all_devices() -> Dict[str, Any]:
 
     # Detect network Raspberry Pi devices
     loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    rpi_devices = loop.run_until_complete(detect_raspberry_pi_devices())
+    try:
+        asyncio.set_event_loop(loop)
+        rpi_devices = loop.run_until_complete(detect_raspberry_pi_devices())
+    finally:
+        asyncio.set_event_loop(None)
+        loop.close()
 
     # Combine all devices
     all_devices = serial_devices + android_devices + rpi_devices
 
     manifest = {
         "devices": all_devices,
-        "summary": {
-            "total_devices": len(all_devices),
-            "esp32_devices": len([d for d in all_devices if d.get("platform") == "esp32"]),
-            "android_devices": len([d for d in all_devices if d.get("platform") == "android"]),
-            "rpi_devices": len([d for d in all_devices if d.get("platform") == "rpi"])
-        }
+        "summary": build_summary(all_devices)
     }
 
     return manifest
@@ -353,7 +390,7 @@ def main():
             d for d in manifest["devices"]
             if d.get("platform") in args.filter_platform
         ]
-        manifest["summary"]["total_devices"] = len(manifest["devices"])
+        manifest["summary"] = build_summary(manifest["devices"])
 
     # Print human-readable output (unless --json is specified)
     if not args.json:

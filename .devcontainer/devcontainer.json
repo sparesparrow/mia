@@ -1,6 +1,6 @@
 {
   "name": "AI-Servis Development Environment",
-  "dockerComposeFile": "../docker-compose.dev.yml",
+  "dockerComposeFile": "../infra/docker/docker-compose.dev.yml",
   "service": "ai-servis-core",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",

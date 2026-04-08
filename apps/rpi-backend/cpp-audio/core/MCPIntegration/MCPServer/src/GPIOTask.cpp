@@ -5,25 +5,40 @@
 #include <Public/StringHelper.h>
 
 // Standard library includes
+#include <array>
 #include <iostream>
 
 namespace MCPIntegration {
 
+namespace {
+
+std::unique_ptr<gpiod::chip> OpenGpioChip() {
+    constexpr std::array<const char*, 2> chipPaths = {
+        "/dev/gpiochip0",
+        "/dev/gpiochip4",
+    };
+
+    for (const char* chipPath : chipPaths) {
+        try {
+            return std::make_unique<gpiod::chip>(chipPath, gpiod::chip::OPEN_BY_PATH);
+        } catch (const std::exception&) {
+        }
+    }
+
+    return nullptr;
+}
+
+} // namespace
+
 GPIOTask::GPIOTask(const std::shared_ptr<MCP::Request>& spRequest)
-    : ProcessCallToolRequest(spRequest) {
-    try {
-        chip = std::make_unique<gpiod::chip>("gpiochip0");
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to open GPIO chip: " << e.what() << std::endl;
+    : ProcessCallToolRequest(spRequest), chip(OpenGpioChip()) {
+    if (!chip) {
+        std::cerr << "Failed to open any GPIO chip" << std::endl;
     }
 }
 
 std::shared_ptr<MCP::CMCPTask> GPIOTask::Clone() const {
-    auto spClone = std::make_shared<GPIOTask>(nullptr);
-    if (spClone) {
-        *spClone = *this;
-    }
-    return spClone;
+    return std::make_shared<GPIOTask>(m_spRequest);
 }
 
 int GPIOTask::Cancel() {
@@ -81,7 +96,7 @@ int GPIOTask::Execute() {
 
     // Execute GPIO operation
     try {
-        gpiod::line line = chip->get_line(pin);
+        gpiod::line line = chip->get_line(static_cast<unsigned int>(pin));
 
         if (direction == "output") {
             line.request({"mcp_gpio", gpiod::line::direction::OUTPUT});

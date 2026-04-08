@@ -150,6 +150,7 @@ Get latest sensor/telemetry readings.
       "coolant_temp_c": 85.0,
       "dpf_soot_mass_g": 12.5,
       "oil_temp_c": 95.0,
+      "source_timestamp_ms": 1710000000123,
       "timestamp": "2025-01-15T12:00:00"
     }
   },

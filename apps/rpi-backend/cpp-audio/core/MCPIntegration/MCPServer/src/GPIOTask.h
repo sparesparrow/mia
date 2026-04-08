@@ -10,6 +10,7 @@
 // Standard library includes
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 namespace MCPIntegration {
 

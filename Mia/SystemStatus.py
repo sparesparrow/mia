@@ -59,44 +59,24 @@ class SystemStatus(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def SystemStatusStart(builder):
-    builder.StartObject(5)
-
+def SystemStatusStart(builder): builder.StartObject(5)
 def Start(builder):
-    SystemStatusStart(builder)
-
-def SystemStatusAddUptimeSeconds(builder, uptimeSeconds):
-    builder.PrependUint64Slot(0, uptimeSeconds, 0)
-
+    return SystemStatusStart(builder)
+def SystemStatusAddUptimeSeconds(builder, uptimeSeconds): builder.PrependUint64Slot(0, uptimeSeconds, 0)
 def AddUptimeSeconds(builder, uptimeSeconds):
-    SystemStatusAddUptimeSeconds(builder, uptimeSeconds)
-
-def SystemStatusAddMemoryPercent(builder, memoryPercent):
-    builder.PrependFloat32Slot(1, memoryPercent, 0.0)
-
+    return SystemStatusAddUptimeSeconds(builder, uptimeSeconds)
+def SystemStatusAddMemoryPercent(builder, memoryPercent): builder.PrependFloat32Slot(1, memoryPercent, 0.0)
 def AddMemoryPercent(builder, memoryPercent):
-    SystemStatusAddMemoryPercent(builder, memoryPercent)
-
-def SystemStatusAddCpuPercent(builder, cpuPercent):
-    builder.PrependFloat32Slot(2, cpuPercent, 0.0)
-
+    return SystemStatusAddMemoryPercent(builder, memoryPercent)
+def SystemStatusAddCpuPercent(builder, cpuPercent): builder.PrependFloat32Slot(2, cpuPercent, 0.0)
 def AddCpuPercent(builder, cpuPercent):
-    SystemStatusAddCpuPercent(builder, cpuPercent)
-
-def SystemStatusAddDeviceCount(builder, deviceCount):
-    builder.PrependInt32Slot(3, deviceCount, 0)
-
+    return SystemStatusAddCpuPercent(builder, cpuPercent)
+def SystemStatusAddDeviceCount(builder, deviceCount): builder.PrependInt32Slot(3, deviceCount, 0)
 def AddDeviceCount(builder, deviceCount):
-    SystemStatusAddDeviceCount(builder, deviceCount)
-
-def SystemStatusAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(4, timestamp, 0)
-
+    return SystemStatusAddDeviceCount(builder, deviceCount)
+def SystemStatusAddTimestamp(builder, timestamp): builder.PrependUint64Slot(4, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    SystemStatusAddTimestamp(builder, timestamp)
-
-def SystemStatusEnd(builder):
-    return builder.EndObject()
-
+    return SystemStatusAddTimestamp(builder, timestamp)
+def SystemStatusEnd(builder): return builder.EndObject()
 def End(builder):
     return SystemStatusEnd(builder)

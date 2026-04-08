@@ -21,8 +21,8 @@ bool WebGrabClient::executeDownload(const std::string& url, uint32_t& sessionId)
     if (!writer_->send(req)) return false;
     DownloadResponse resp;
     if (reader_->recv(resp)) {
-        sessionId = resp.session_id;
-        std::cout << "Download started, session ID: " << resp.session_id << std::endl;
+        sessionId = resp.sessionId;
+        std::cout << "Download started, session ID: " << resp.sessionId << std::endl;
         return true;
     }
     return false;

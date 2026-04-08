@@ -52,38 +52,21 @@ class GPIOCommand(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def GPIOCommandStart(builder):
-    builder.StartObject(4)
-
+def GPIOCommandStart(builder): builder.StartObject(4)
 def Start(builder):
-    GPIOCommandStart(builder)
-
-def GPIOCommandAddPin(builder, pin):
-    builder.PrependInt32Slot(0, pin, 0)
-
+    return GPIOCommandStart(builder)
+def GPIOCommandAddPin(builder, pin): builder.PrependInt32Slot(0, pin, 0)
 def AddPin(builder, pin):
-    GPIOCommandAddPin(builder, pin)
-
-def GPIOCommandAddDirection(builder, direction):
-    builder.PrependInt8Slot(1, direction, 0)
-
+    return GPIOCommandAddPin(builder, pin)
+def GPIOCommandAddDirection(builder, direction): builder.PrependInt8Slot(1, direction, 0)
 def AddDirection(builder, direction):
-    GPIOCommandAddDirection(builder, direction)
-
-def GPIOCommandAddValue(builder, value):
-    builder.PrependBoolSlot(2, value, 0)
-
+    return GPIOCommandAddDirection(builder, direction)
+def GPIOCommandAddValue(builder, value): builder.PrependBoolSlot(2, value, 0)
 def AddValue(builder, value):
-    GPIOCommandAddValue(builder, value)
-
-def GPIOCommandAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(3, timestamp, 0)
-
+    return GPIOCommandAddValue(builder, value)
+def GPIOCommandAddTimestamp(builder, timestamp): builder.PrependUint64Slot(3, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    GPIOCommandAddTimestamp(builder, timestamp)
-
-def GPIOCommandEnd(builder):
-    return builder.EndObject()
-
+    return GPIOCommandAddTimestamp(builder, timestamp)
+def GPIOCommandEnd(builder): return builder.EndObject()
 def End(builder):
     return GPIOCommandEnd(builder)

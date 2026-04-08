@@ -548,30 +548,12 @@ class ZeroMQBroker:
             request_id, "outbound", "client", client_id, message.get("type", "RESPONSE"), message
         )
 
-        logger.info(
-            "Routing response for request %s back to client %s",
-            request_id,
-            client_id.hex()[:8],
-        )
-
-        self._send_to_peer(client_id, message)
-
-    def _route_response_to_client(self, request_id: str, message: Dict) -> None:
-        """Forward a worker response back to the originating client."""
-        client_id = self.pending_requests.pop(request_id, None)
-        if not client_id:
-            logger.warning(
-                "No pending client found for request_id=%s (message type=%s)",
-                request_id,
-                message.get("type"),
-            )
-            return
-
         logger.debug(
             "Routing response for request %s back to client %s",
             request_id,
             client_id.hex()[:8],
         )
+
         self._send_to_peer(client_id, message)
 
     def _send_to_peer(self, peer_id: bytes, message: Dict) -> None:

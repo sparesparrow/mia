@@ -1,5 +1,45 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+BUILD_DIR="$PROJECT_ROOT/build-raspberry-pi"
+INSTALL_DIR="${MIA_INSTALL_DIR:-/opt/mia}"
+SYSTEMD_SOURCE_DIR="$PROJECT_ROOT/infra/systemd"
+PY_API_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/py-api"
+SHARED_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/shared"
+
+get_cpu_count() {
+    if command -v nproc >/dev/null 2>&1; then
+        nproc
+    elif command -v sysctl >/dev/null 2>&1; then
+        sysctl -n hw.ncpu
+    else
+        printf '1\n'
+    fi
+}
+
+run_privileged() {
+    if [ "$EUID" -eq 0 ]; then
+        "$@"
+    else
+        if ! command -v sudo >/dev/null 2>&1; then
+            echo "sudo is required for deployment actions" >&2
+            exit 1
+        fi
+
+        sudo "$@"
+    fi
+}
+
+install_python_requirements() {
+    local requirements_file="$1"
+
+    if ! run_privileged python3 -m pip install -r "$requirements_file"; then
+        run_privileged python3 -m pip install --break-system-packages -r "$requirements_file"
+    fi
+}
 
 echo "========================================"
 echo "  AI-SERVIS Raspberry Pi Deployment"
@@ -30,10 +70,11 @@ fi
 
 # Install dependencies
 echo "Installing dependencies..."
-sudo apt-get update
-sudo apt-get install -y \
+run_privileged env DEBIAN_FRONTEND=noninteractive apt-get update
+run_privileged env DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
     cmake \
+    ninja-build \
     pkg-config \
     libcurl4-openssl-dev \
     libmosquitto-dev \
@@ -52,7 +93,6 @@ sudo apt-get install -y \
     libzmq3-dev
 
 # Create build directory
-BUILD_DIR="build-raspberry-pi"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
@@ -67,40 +107,55 @@ cmake ../platforms/cpp/core \
 # Build
 echo ""
 echo "Building..."
-make -j$(nproc)
+cmake --build . --parallel "$(get_cpu_count)"
 
 # Create installation directory
-INSTALL_DIR="/opt/mia"
 RPI_DIR="$INSTALL_DIR/rpi"
+PY_API_TARGET_DIR="$INSTALL_DIR/apps/rpi-backend/py-api"
+SHARED_TARGET_DIR="$INSTALL_DIR/apps/rpi-backend/shared"
 echo ""
 echo "Installing to $INSTALL_DIR..."
-sudo mkdir -p "$INSTALL_DIR/bin"
-sudo mkdir -p "$INSTALL_DIR/config"
-sudo mkdir -p "$INSTALL_DIR/logs"
-sudo mkdir -p "$RPI_DIR"
+run_privileged mkdir -p "$INSTALL_DIR/bin"
+run_privileged mkdir -p "$INSTALL_DIR/config"
+run_privileged mkdir -p "$INSTALL_DIR/logs"
+run_privileged mkdir -p "$RPI_DIR"
+run_privileged mkdir -p "$PY_API_TARGET_DIR"
+run_privileged mkdir -p "$SHARED_TARGET_DIR"
+run_privileged mkdir -p "$INSTALL_DIR/Mia"
 
 # Copy binaries
-sudo cp mia-rpi "$INSTALL_DIR/bin/" 2>/dev/null || true
-sudo cp hardware-server "$INSTALL_DIR/bin/" 2>/dev/null || true
-sudo chmod +x "$INSTALL_DIR/bin/"* 2>/dev/null || true
+run_privileged cp mia-rpi "$INSTALL_DIR/bin/" 2>/dev/null || true
+run_privileged cp hardware-server "$INSTALL_DIR/bin/" 2>/dev/null || true
+run_privileged chmod +x "$INSTALL_DIR/bin/"* 2>/dev/null || true
 
 # Install Python dependencies
 echo ""
 echo "Installing Python dependencies..."
-cd ..
-if [ -f "rpi/requirements.txt" ]; then
-    sudo pip3 install -r rpi/requirements.txt
+cd "$PROJECT_ROOT"
+if [ -f "$PROJECT_ROOT/requirements.txt" ]; then
+    install_python_requirements "$PROJECT_ROOT/requirements.txt"
 fi
 
 # Copy Python code
-if [ -d "rpi" ]; then
+if [ -d "$PY_API_SOURCE_DIR" ]; then
     echo "Copying Python services..."
-    sudo cp -r rpi/* "$RPI_DIR/"
-    sudo chown -R root:root "$RPI_DIR"
+    run_privileged cp -r "$PY_API_SOURCE_DIR/." "$PY_API_TARGET_DIR/"
+fi
+
+if [ -d "$SHARED_SOURCE_DIR" ]; then
+    run_privileged cp -r "$SHARED_SOURCE_DIR/." "$SHARED_TARGET_DIR/"
+fi
+
+if [ -d "$PROJECT_ROOT/Mia" ]; then
+    run_privileged cp -r "$PROJECT_ROOT/Mia/." "$INSTALL_DIR/Mia/"
+fi
+
+if [ -d "$PROJECT_ROOT/config" ]; then
+    run_privileged cp -r "$PROJECT_ROOT/config/." "$INSTALL_DIR/config/"
 fi
 
 # Create config directory with example config
-sudo tee "$INSTALL_DIR/config/ai-servis.conf" > /dev/null <<EOF
+run_privileged tee "$INSTALL_DIR/config/ai-servis.conf" > /dev/null <<EOF
 # AI-SERVIS Configuration
 ORCHESTRATOR_PORT=8080
 HARDWARE_SERVER_PORT=8081
@@ -115,39 +170,22 @@ EOF
 echo ""
 echo "Creating systemd services..."
 
-# ZeroMQ Broker service
-if [ -f "rpi/services/zmq-broker.service" ]; then
-    sudo cp rpi/services/zmq-broker.service /etc/systemd/system/
-    echo "  - Installed zmq-broker.service"
-fi
-
-# FastAPI service
-if [ -f "rpi/services/mia-api.service" ]; then
-    sudo cp rpi/services/mia-api.service /etc/systemd/system/
-    echo "  - Installed mia-api.service"
-fi
-
-# GPIO Worker service
-if [ -f "rpi/services/mia-gpio-worker.service" ]; then
-    sudo cp rpi/services/mia-gpio-worker.service /etc/systemd/system/
-    echo "  - Installed mia-gpio-worker.service"
-fi
-
-# Serial Bridge service (OBD Simulator)
-if [ -f "rpi/services/mia-serial-bridge.service" ]; then
-    sudo cp rpi/services/mia-serial-bridge.service /etc/systemd/system/
-    echo "  - Installed mia-serial-bridge.service"
-fi
-
-# OBD Worker service (OBD Simulator)
-if [ -f "rpi/services/mia-obd-worker.service" ]; then
-    sudo cp rpi/services/mia-obd-worker.service /etc/systemd/system/
-    echo "  - Installed mia-obd-worker.service"
-fi
+for service in \
+    zmq-broker.service \
+    mia-api.service \
+    mia-gpio-worker.service \
+    mia-serial-bridge.service \
+    mia-obd-worker.service
+do
+    if [ -f "$SYSTEMD_SOURCE_DIR/$service" ]; then
+        run_privileged cp "$SYSTEMD_SOURCE_DIR/$service" /etc/systemd/system/
+        echo "  - Installed $service"
+    fi
+done
 
 # Legacy C++ service (if binary exists)
 if [ -f "$INSTALL_DIR/bin/mia-rpi" ]; then
-    sudo tee /etc/systemd/system/ai-servis.service > /dev/null <<EOF
+    run_privileged tee /etc/systemd/system/ai-servis.service > /dev/null <<EOF
 [Unit]
 Description=AI-SERVIS Universal Raspberry Pi Service (C++)
 After=network.target mosquitto.service
@@ -169,17 +207,17 @@ EOF
 fi
 
 # Reload systemd
-sudo systemctl daemon-reload
+run_privileged systemctl daemon-reload
 
 # Enable services to start on boot
 echo ""
 echo "Enabling services to start on boot..."
-sudo systemctl enable zmq-broker.service 2>/dev/null || true
-sudo systemctl enable mia-api.service 2>/dev/null || true
-sudo systemctl enable mia-gpio-worker.service 2>/dev/null || true
-sudo systemctl enable mia-serial-bridge.service 2>/dev/null || true
-sudo systemctl enable mia-obd-worker.service 2>/dev/null || true
-sudo systemctl enable ai-servis.service 2>/dev/null || true
+run_privileged systemctl enable zmq-broker.service 2>/dev/null || true
+run_privileged systemctl enable mia-api.service 2>/dev/null || true
+run_privileged systemctl enable mia-gpio-worker.service 2>/dev/null || true
+run_privileged systemctl enable mia-serial-bridge.service 2>/dev/null || true
+run_privileged systemctl enable mia-obd-worker.service 2>/dev/null || true
+run_privileged systemctl enable ai-servis.service 2>/dev/null || true
 
 echo ""
 echo -e "${GREEN}Deployment complete!${NC}"
@@ -227,8 +265,8 @@ echo ""
 
 # Ensure bundled CPython is properly configured
 echo "🔧 Setting up bundled CPython environment..."
-if [[ -f "scripts/ensure-bundled-cpython.sh" ]]; then
-    bash scripts/ensure-bundled-cpython.sh "$INSTALL_DIR"
+if [[ -f "$PROJECT_ROOT/scripts/ensure-bundled-cpython.sh" ]]; then
+    bash "$PROJECT_ROOT/scripts/ensure-bundled-cpython.sh" "$INSTALL_DIR"
 else
     echo "⚠️  Bundled CPython setup script not found, skipping..."
 fi

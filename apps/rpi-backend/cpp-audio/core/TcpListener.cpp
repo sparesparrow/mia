@@ -8,8 +8,14 @@
 TcpListener::TcpListener(uint16_t port) : listenfd_(-1), port_(port) {}
 
 TcpListener::~TcpListener() {
+    stop();
+}
+
+void TcpListener::stop() {
     if (listenfd_ >= 0) {
+        shutdown(listenfd_, SHUT_RDWR);
         close(listenfd_);
+        listenfd_ = -1;
     }
 }
 

@@ -3,26 +3,147 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.tool-versions'
+      - 'pytest.ini'
+      - 'requirements*.txt'
+      - 'agents/**'
+      - 'apps/esp32/**'
+      - 'apps/rpi-backend/**'
+      - 'conan-recipes/**'
+      - 'infra/conan/**'
+      - 'Mia/**'
+      - 'mcp-cpp-bridge/**'
+      - 'modules/**'
+      - 'orchestration/**'
+      - 'platforms/**'
+      - 'rpi/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'services/**'
+      - 'tests/**'
+      - 'tools/**'
   pull_request:
     branches: [main]
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.tool-versions'
+      - 'pytest.ini'
+      - 'requirements*.txt'
+      - 'agents/**'
+      - 'apps/esp32/**'
+      - 'apps/rpi-backend/**'
+      - 'conan-recipes/**'
+      - 'infra/conan/**'
+      - 'Mia/**'
+      - 'mcp-cpp-bridge/**'
+      - 'modules/**'
+      - 'orchestration/**'
+      - 'platforms/**'
+      - 'rpi/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'services/**'
+      - 'tests/**'
+      - 'tools/**'
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
-  PYTHON_VERSION: '3.11'
-  JAVA_VERSION: '17'
+  PYTHON_VERSION: '3.12'
+  CONAN_VERSION: '2.3.2'
 
 jobs:
-  lint:
-    name: Lint
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      schema: ${{ steps.filter.outputs.schema }}
+      cpp: ${{ steps.filter.outputs.cpp }}
+      esp32: ${{ steps.filter.outputs.esp32 }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - '.github/workflows/ci.yml'
+              - '.tool-versions'
+              - 'pytest.ini'
+              - 'requirements*.txt'
+              - 'agents/**'
+              - 'apps/rpi-backend/py-api/**'
+              - 'apps/rpi-backend/shared/**'
+              - 'Mia/**'
+              - 'modules/**'
+              - 'orchestration/**'
+              - 'rpi/**'
+              - 'schemas/**'
+              - 'scripts/**'
+              - 'services/**'
+              - 'tests/**'
+              - 'tools/**'
+            schema:
+              - '.github/workflows/ci.yml'
+              - 'apps/rpi-backend/cpp-audio/core/webgrab.fbs'
+              - 'protos/**'
+              - 'schemas/**'
+              - 'schemas/generate.py'
+              - 'scripts/generate-schemas.sh'
+            cpp:
+              - '.github/workflows/ci.yml'
+              - '.tool-versions'
+              - 'apps/rpi-backend/cpp-audio/**'
+              - 'conan-recipes/**'
+              - 'infra/conan/**'
+              - 'mcp-cpp-bridge/**'
+              - 'platforms/cpp/**'
+            esp32:
+              - '.github/workflows/ci.yml'
+              - '.tool-versions'
+              - 'apps/esp32/**'
+
+  schema-validation:
+    if: needs.changes.outputs.schema == 'true'
+    name: Schema Validation
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install flatc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatbuffers-compiler
+      - name: Validate schemas compile
+        run: |
+          mkdir -p /tmp/fb-validate
+          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/mia.fbs
+          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs protos/vehicle.fbs
+          flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
+
+  lint:
+    if: needs.changes.outputs.python == 'true'
+    name: Lint
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
       - run: pip install flake8 black isort
       - name: flake8
         continue-on-error: true
@@ -44,23 +165,28 @@ jobs:
         continue-on-error: true
 
   python-test:
+    if: needs.changes.outputs.python == 'true'
     name: Python Tests
     runs-on: ubuntu-latest
-    needs: lint
+    needs: [changes, lint]
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
       - name: Install Conan & configure remotes
         run: |
-          pip install conan
+          python -m pip install --upgrade pip
+          python -m pip install "conan==${{ env.CONAN_VERSION }}"
           conan profile detect --force
           conan remote add sparetools https://conan.cloudsmith.io/sparesparrow-conan/sparetools/ --index 0 || true
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-cpython-${{ hashFiles('infra/conan/conanfile.py') }}
+          key: conan-cpython-${{ hashFiles('infra/conan/conanfile.py', '.tool-versions') }}
           restore-keys: conan-cpython-
       - name: Install bundled CPython via Conan
         run: |
@@ -76,14 +202,14 @@ jobs:
       - name: Run tests
         run: |
           source conanbuild.sh
-          python3 -m pytest tests/ -v -m "not hardware" --tb=short -q || python3 -m pytest tests/unit/ -v
+          python3 -m pytest tests/ -v -m "not hardware" --tb=short -q
 
   cpp-build:
+    if: needs.changes.outputs.cpp == 'true'
     name: C++ Build (${{ matrix.arch }})
     runs-on: ubuntu-latest
-    if: >
-      contains(github.event.head_commit.message, '[cpp]') ||
-      github.event_name == 'pull_request'
+    needs: changes
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -93,63 +219,38 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
       - name: Install Conan & configure remotes
         run: |
-          pip install conan
+          python -m pip install --upgrade pip
+          python -m pip install "conan==${{ env.CONAN_VERSION }}"
           conan profile detect --force
           conan remote add sparetools https://conan.cloudsmith.io/sparesparrow-conan/sparetools/ --index 0 || true
       - uses: actions/cache@v4
         with:
           path: ~/.conan2
-          key: conan-${{ matrix.arch }}-${{ hashFiles('infra/conan/conanfile.py') }}
+          key: conan-${{ matrix.arch }}-${{ hashFiles('infra/conan/conanfile.py', '.tool-versions') }}
           restore-keys: conan-${{ matrix.arch }}-
       - name: Build
-        continue-on-error: true
         run: |
           cd platforms/cpp
-          conan install ../.. --build=missing || true
-          cmake -B build . 2>/dev/null && cmake --build build -j$(nproc) || echo "C++ build completed with warnings"
-
-  android-build:
-    name: Android Build
-    runs-on: ubuntu-latest
-    if: >
-      contains(github.event.head_commit.message, '[android]') ||
-      github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: temurin
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('apps/android/**/*.gradle*', 'apps/android/gradle-wrapper.properties') }}
-          restore-keys: gradle-
-      - name: Build debug APK
-        continue-on-error: true
-        run: |
-          cd apps/android
-          chmod +x gradlew 2>/dev/null || true
-          ./gradlew assembleDebug --no-daemon || echo "Android build completed with warnings"
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: android-debug-apk
-          path: apps/android/app/build/outputs/apk/debug/app-debug.apk
+          conan install ../.. --build=missing
+          cmake -B build .
+          cmake --build build -j$(nproc)
 
   esp32-build:
+    if: needs.changes.outputs.esp32 == 'true'
     name: ESP32 Build
     runs-on: ubuntu-latest
-    if: >
-      contains(github.event.head_commit.message, '[esp32]') ||
-      github.event_name == 'pull_request'
+    needs: changes
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
       - name: Check for PlatformIO config
         id: check
         run: |
@@ -165,8 +266,7 @@ jobs:
           key: pio-${{ hashFiles('apps/esp32/platformio.ini') }}
       - name: Build with PlatformIO
         if: steps.check.outputs.has_pio == 'true'
-        continue-on-error: true
         run: |
-          pip install platformio
+          python -m pip install --upgrade pip platformio
           cd apps/esp32
-          pio run || echo "ESP32 build completed with warnings"
+          pio run

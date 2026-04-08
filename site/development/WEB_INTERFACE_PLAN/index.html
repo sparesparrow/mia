@@ -1,0 +1,2262 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/development/WEB_INTERFACE_PLAN/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>MIA Web Interface Development Plan - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mia-web-interface-development-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MIA Web Interface Development Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Wiring & Power
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Install
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phone Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pro Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API & Contracts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Automotive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Privacy
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DPIA Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspiration-kernun-web-interface-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inspiration: Kernun Web Interface Pattern
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inspiration: Kernun Web Interface Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-aspects-to-analyze-in-kernun-when-access-is-available" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Aspects to Analyze in Kernun (when access is available):
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#based-on-analysis-of-embedded-system-web-interfaces-similar-to-kernun-the-interface-should" class="md-nav__link">
+    <span class="md-ellipsis">
+      Based on analysis of embedded system web interfaces (similar to kernun), the interface should:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-frontend-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Frontend Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Frontend Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technology Stack
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Directory Structure
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-backend-api-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Backend API Extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Backend API Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-fastapi-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      New FastAPI Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-websocket-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. WebSocket Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. WebSocket Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#websocket-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-systemd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Systemd Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Systemd Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-systemd-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Systemd Interface
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-c-application-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. C++ Application Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. C++ Application Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeromq-command-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZeroMQ Command Interface
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-dashboard-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Dashboard Views
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Dashboard Views">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Main Dashboard
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telemetry-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Telemetry Dashboard
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Dashboard
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logs-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logs Dashboard
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Security Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authorization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Security
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-implementation-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Implementation Phases
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Implementation Phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-foundation-week-1-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Foundation (Week 1-2)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-service-management-week-2-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Service Management (Week 2-3)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-real-time-updates-week-3-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Real-time Updates (Week 3-4)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-hardware-management-week-4-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Hardware Management (Week 4-5)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-configuration-management-week-5-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: Configuration Management (Week 5-6)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-telemetry-dashboard-week-6-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 6: Telemetry Dashboard (Week 6-7)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-polish-testing-week-7-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 7: Polish &amp; Testing (Week 7-8)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-technical-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Technical Specifications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Technical Specifications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frontend Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. File Structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-integration-with-existing-mia-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Integration with Existing MIA Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Integration with Existing MIA Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeromq-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZeroMQ Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#device-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Device Registry
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. Deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      13. Testing Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Testing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      14. Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#developer-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Developer Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/development/WEB_INTERFACE_PLAN.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mia-web-interface-development-plan">MIA Web Interface Development Plan</h1>
+<h2 id="overview">Overview</h2>
+<p>This document outlines the plan to develop a comprehensive web interface for MIA that allows users to:
+- View real-time dashboards of system status, hardware sensors, and vehicle telemetry
+- Configure Raspberry Pi system settings and services
+- Monitor and control MIA services (systemd)
+- Manage hardware interfaces (GPIO, Bluetooth, Serial, I2C)
+- Access the interface from any device on the network without requiring a display on the Raspberry Pi</p>
+<h2 id="inspiration-kernun-web-interface-pattern">Inspiration: Kernun Web Interface Pattern</h2>
+<p><strong>Note</strong>: Direct analysis of kernun web interface at <code>192.168.200.23:/home/sparrow/Desktop/kernun</code> requires SSH access setup. The following plan is based on common embedded system web interface patterns and best practices.</p>
+<h3 id="key-aspects-to-analyze-in-kernun-when-access-is-available">Key Aspects to Analyze in Kernun (when access is available):</h3>
+<ol>
+<li><strong>Frontend Architecture</strong></li>
+<li>Framework/library used (React, Vue, vanilla JS, etc.)</li>
+<li>Build system and bundling approach</li>
+<li>State management pattern</li>
+<li>
+<p>Component structure and organization</p>
+</li>
+<li>
+<p><strong>Backend Integration</strong></p>
+</li>
+<li>How frontend communicates with backend (REST, WebSocket, both)</li>
+<li>API endpoint structure and naming conventions</li>
+<li>Authentication/authorization mechanism</li>
+<li>
+<p>Error handling patterns</p>
+</li>
+<li>
+<p><strong>C++ Application Integration</strong></p>
+</li>
+<li>How web interface sends commands to C++ applications</li>
+<li>IPC mechanism (D-Bus, ZeroMQ, Unix sockets, HTTP)</li>
+<li>Message format and protocol</li>
+<li>
+<p>Response handling and error propagation</p>
+</li>
+<li>
+<p><strong>System Integration</strong></p>
+</li>
+<li>How it manages Linux services (systemd integration)</li>
+<li>System configuration management</li>
+<li>Log viewing and monitoring</li>
+<li>
+<p>Hardware interface control</p>
+</li>
+<li>
+<p><strong>Real-time Features</strong></p>
+</li>
+<li>WebSocket implementation details</li>
+<li>Data streaming patterns</li>
+<li>Update frequency and efficiency</li>
+<li>
+<p>Connection management</p>
+</li>
+<li>
+<p><strong>UI/UX Patterns</strong></p>
+</li>
+<li>Dashboard layout and organization</li>
+<li>Navigation structure</li>
+<li>Configuration UI patterns</li>
+<li>Status indicators and alerts</li>
+</ol>
+<h3 id="based-on-analysis-of-embedded-system-web-interfaces-similar-to-kernun-the-interface-should">Based on analysis of embedded system web interfaces (similar to kernun), the interface should:</h3>
+<ol>
+<li><strong>Lightweight Frontend</strong>: Modern, responsive web UI that works on mobile and desktop</li>
+<li><strong>Real-time Updates</strong>: WebSocket connections for live data streaming</li>
+<li><strong>Backend Integration</strong>: REST API for configuration, WebSocket for telemetry</li>
+<li><strong>System Integration</strong>: Direct integration with systemd for service management</li>
+<li><strong>C++ Application Control</strong>: Ability to send commands to C++ applications via IPC/ZeroMQ</li>
+<li><strong>No External Dependencies</strong>: Self-contained, runs on the Raspberry Pi</li>
+</ol>
+<h2 id="architecture">Architecture</h2>
+<h3 id="1-frontend-architecture">1. Frontend Architecture</h3>
+<h4 id="technology-stack">Technology Stack</h4>
+<ul>
+<li><strong>Framework</strong>: Vanilla JavaScript (ES6+) or lightweight framework (Vue.js 3 or Preact)</li>
+<li><strong>Styling</strong>: CSS3 with CSS Grid/Flexbox, responsive design</li>
+<li><strong>Build Tool</strong>: Vite or esbuild for fast development and minimal bundle size</li>
+<li><strong>State Management</strong>: Custom lightweight state management or Pinia (if Vue)</li>
+<li><strong>Real-time</strong>: WebSocket API for live updates</li>
+</ul>
+<h4 id="directory-structure">Directory Structure</h4>
+<div class="highlight"><pre><span></span><code>web-interface/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   └── assets/
+├── src/
+│   ├── components/
+│   │   ├── Dashboard/
+│   │   │   ├── SystemStatus.js
+│   │   │   ├── ServiceStatus.js
+│   │   │   ├── HardwareStatus.js
+│   │   │   └── TelemetryChart.js
+│   │   ├── Configuration/
+│   │   │   ├── ServiceConfig.js
+│   │   │   ├── HardwareConfig.js
+│   │   │   └── SystemConfig.js
+│   │   ├── Common/
+│   │   │   ├── NavBar.js
+│   │   │   ├── Sidebar.js
+│   │   │   └── StatusIndicator.js
+│   │   └── Layout/
+│   │       ├── MainLayout.js
+│   │       └── PageHeader.js
+│   ├── services/
+│   │   ├── api.js          # REST API client
+│   │   ├── websocket.js    # WebSocket client
+│   │   └── systemd.js      # Systemd service management
+│   ├── stores/
+│   │   ├── system.js       # System state
+│   │   ├── services.js     # Service state
+│   │   ├── hardware.js     # Hardware state
+│   │   └── telemetry.js    # Telemetry state
+│   ├── utils/
+│   │   ├── formatters.js
+│   │   └── validators.js
+│   ├── styles/
+│   │   ├── main.css
+│   │   ├── components.css
+│   │   └── themes.css
+│   └── main.js
+├── package.json
+├── vite.config.js
+└── README.md
+</code></pre></div>
+<h3 id="2-backend-api-extensions">2. Backend API Extensions</h3>
+<h4 id="new-fastapi-endpoints">New FastAPI Endpoints</h4>
+<p><strong>System Management</strong>
+- <code>GET /api/system/status</code> - System health, CPU, memory, disk, network
+- <code>GET /api/system/info</code> - OS version, kernel, uptime, hostname
+- <code>GET /api/system/logs</code> - System logs (journalctl integration)
+- <code>POST /api/system/reboot</code> - Reboot system (with authentication)
+- <code>POST /api/system/shutdown</code> - Shutdown system (with authentication)</p>
+<p><strong>Service Management</strong>
+- <code>GET /api/services</code> - List all MIA systemd services
+- <code>GET /api/services/{service_name}/status</code> - Get service status
+- <code>POST /api/services/{service_name}/start</code> - Start service
+- <code>POST /api/services/{service_name}/stop</code> - Stop service
+- <code>POST /api/services/{service_name}/restart</code> - Restart service
+- <code>GET /api/services/{service_name}/logs</code> - Get service logs
+- <code>GET /api/services/{service_name}/config</code> - Get service configuration
+- <code>PUT /api/services/{service_name}/config</code> - Update service configuration</p>
+<p><strong>Hardware Configuration</strong>
+- <code>GET /api/hardware/gpio/status</code> - GPIO pin status
+- <code>POST /api/hardware/gpio/configure</code> - Configure GPIO pins
+- <code>GET /api/hardware/bluetooth/status</code> - Bluetooth adapter status
+- <code>POST /api/hardware/bluetooth/scan</code> - Scan for devices
+- <code>GET /api/hardware/serial/ports</code> - List serial ports
+- <code>GET /api/hardware/i2c/devices</code> - List I2C devices</p>
+<p><strong>Configuration Management</strong>
+- <code>GET /api/config</code> - Get all configuration
+- <code>PUT /api/config</code> - Update configuration
+- <code>GET /api/config/schema</code> - Get configuration schema
+- <code>POST /api/config/validate</code> - Validate configuration
+- <code>POST /api/config/reset</code> - Reset to defaults</p>
+<p><strong>Real-time Telemetry (WebSocket)</strong>
+- <code>WS /ws/telemetry</code> - Real-time telemetry stream
+- <code>WS /ws/system</code> - Real-time system metrics
+- <code>WS /ws/services</code> - Real-time service status updates</p>
+<h3 id="3-websocket-integration">3. WebSocket Integration</h3>
+<h4 id="websocket-endpoints">WebSocket Endpoints</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Real-time telemetry stream</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s2">&quot;/ws/telemetry&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_telemetry</span><span class="p">(</span><span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="c1"># Subscribe to ZeroMQ telemetry PUB socket</span>
+    <span class="c1"># Forward messages to WebSocket clients</span>
+
+<span class="c1"># System metrics stream</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s2">&quot;/ws/system&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_system</span><span class="p">(</span><span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="c1"># Stream CPU, memory, disk, network metrics</span>
+    <span class="c1"># Update every 1-2 seconds</span>
+
+<span class="c1"># Service status updates</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s2">&quot;/ws/services&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_services</span><span class="p">(</span><span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="c1"># Monitor systemd service status changes</span>
+    <span class="c1"># Forward status updates to clients</span>
+</code></pre></div>
+<h3 id="4-systemd-integration">4. Systemd Integration</h3>
+<h4 id="python-systemd-interface">Python Systemd Interface</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># rpi/api/systemd_client.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SystemdClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Client for managing systemd services&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_service_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get service status using systemctl&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;systemctl&#39;</span><span class="p">,</span> <span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="n">service_name</span><span class="p">,</span> <span class="s1">&#39;--no-pager&#39;</span><span class="p">,</span> <span class="s1">&#39;--property=ActiveState,SubState,LoadState&#39;</span><span class="p">],</span>
+            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="c1"># Parse output and return structured data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_service</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a systemd service&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;sudo&#39;</span><span class="p">,</span> <span class="s1">&#39;systemctl&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">service_name</span><span class="p">],</span>
+            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_service_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get service logs using journalctl&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;journalctl&#39;</span><span class="p">,</span> <span class="s1">&#39;-u&#39;</span><span class="p">,</span> <span class="n">service_name</span><span class="p">,</span> <span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="s1">&#39;--no-pager&#39;</span><span class="p">],</span>
+            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="5-c-application-integration">5. C++ Application Integration</h3>
+<h4 id="zeromq-command-interface">ZeroMQ Command Interface</h4>
+<p>The existing ZeroMQ infrastructure can be extended to support web interface commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># rpi/api/cpp_bridge.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CppApplicationBridge</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bridge for communicating with C++ applications via ZeroMQ&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send command to C++ application via ZeroMQ&quot;&quot;&quot;</span>
+        <span class="c1"># Use existing ZeroMQ DEALER socket</span>
+        <span class="c1"># Format: {&quot;app&quot;: app_name, &quot;command&quot;: command, &quot;params&quot;: {...}}</span>
+        <span class="n">zmq_socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;WEB_COMMAND&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="n">app_name</span><span class="p">,</span>
+            <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+        <span class="p">})</span>
+        <span class="c1"># Wait for response</span>
+        <span class="k">return</span> <span class="n">zmq_socket</span><span class="o">.</span><span class="n">recv_json</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="6-dashboard-views">6. Dashboard Views</h3>
+<h4 id="main-dashboard">Main Dashboard</h4>
+<ul>
+<li><strong>System Overview</strong>: CPU, memory, disk usage, network stats</li>
+<li><strong>Service Status</strong>: All MIA services with start/stop controls</li>
+<li><strong>Hardware Status</strong>: GPIO, Bluetooth, Serial, I2C status</li>
+<li><strong>Active Connections</strong>: WebSocket connections, API requests</li>
+<li><strong>Recent Logs</strong>: Last 50 log entries from all services</li>
+</ul>
+<h4 id="telemetry-dashboard">Telemetry Dashboard</h4>
+<ul>
+<li><strong>Real-time Charts</strong>: RPM, speed, temperature, DPF status</li>
+<li><strong>Historical Data</strong>: Time-series charts (last hour, day, week)</li>
+<li><strong>Device Status</strong>: Connected OBD devices, sensors</li>
+<li><strong>Alerts</strong>: Warning and error notifications</li>
+</ul>
+<h4 id="configuration-dashboard">Configuration Dashboard</h4>
+<ul>
+<li><strong>Service Configuration</strong>: Edit systemd service files</li>
+<li><strong>Hardware Configuration</strong>: GPIO pin mapping, Bluetooth pairing</li>
+<li><strong>System Settings</strong>: Network, timezone, hostname</li>
+<li><strong>API Keys</strong>: Manage authentication keys</li>
+</ul>
+<h4 id="logs-dashboard">Logs Dashboard</h4>
+<ul>
+<li><strong>Service Logs</strong>: Filterable log viewer for each service</li>
+<li><strong>System Logs</strong>: journalctl integration</li>
+<li><strong>Error Tracking</strong>: Error log aggregation</li>
+<li><strong>Export</strong>: Download logs as text/JSON</li>
+</ul>
+<h3 id="7-security-considerations">7. Security Considerations</h3>
+<h4 id="authentication">Authentication</h4>
+<ul>
+<li><strong>API Key Authentication</strong>: Use existing <code>api.auth</code> module</li>
+<li><strong>Session Management</strong>: JWT tokens for web sessions</li>
+<li><strong>Role-Based Access</strong>: Read-only vs. admin roles</li>
+</ul>
+<h4 id="authorization">Authorization</h4>
+<ul>
+<li><strong>Service Control</strong>: Require admin role for start/stop/restart</li>
+<li><strong>System Control</strong>: Require admin role for reboot/shutdown</li>
+<li><strong>Configuration Changes</strong>: Require admin role for config updates</li>
+</ul>
+<h4 id="network-security">Network Security</h4>
+<ul>
+<li><strong>HTTPS</strong>: Use self-signed certificate or Let's Encrypt</li>
+<li><strong>CORS</strong>: Configure CORS for local network access</li>
+<li><strong>Rate Limiting</strong>: Prevent API abuse</li>
+</ul>
+<h3 id="8-implementation-phases">8. Implementation Phases</h3>
+<h4 id="phase-1-foundation-week-1-2">Phase 1: Foundation (Week 1-2)</h4>
+<ul>
+<li>[ ] Set up frontend project structure</li>
+<li>[ ] Create basic layout and navigation</li>
+<li>[ ] Implement REST API client</li>
+<li>[ ] Add system status endpoint</li>
+<li>[ ] Create system status dashboard component</li>
+</ul>
+<h4 id="phase-2-service-management-week-2-3">Phase 2: Service Management (Week 2-3)</h4>
+<ul>
+<li>[ ] Implement systemd client</li>
+<li>[ ] Add service management endpoints</li>
+<li>[ ] Create service status component</li>
+<li>[ ] Add start/stop/restart controls</li>
+<li>[ ] Implement service logs viewer</li>
+</ul>
+<h4 id="phase-3-real-time-updates-week-3-4">Phase 3: Real-time Updates (Week 3-4)</h4>
+<ul>
+<li>[ ] Implement WebSocket server endpoints</li>
+<li>[ ] Create WebSocket client service</li>
+<li>[ ] Add real-time system metrics</li>
+<li>[ ] Implement telemetry streaming</li>
+<li>[ ] Add service status updates</li>
+</ul>
+<h4 id="phase-4-hardware-management-week-4-5">Phase 4: Hardware Management (Week 4-5)</h4>
+<ul>
+<li>[ ] Add hardware status endpoints</li>
+<li>[ ] Create hardware status components</li>
+<li>[ ] Implement GPIO configuration UI</li>
+<li>[ ] Add Bluetooth device management</li>
+<li>[ ] Create serial port configuration</li>
+</ul>
+<h4 id="phase-5-configuration-management-week-5-6">Phase 5: Configuration Management (Week 5-6)</h4>
+<ul>
+<li>[ ] Implement configuration API</li>
+<li>[ ] Create configuration editor</li>
+<li>[ ] Add configuration validation</li>
+<li>[ ] Implement configuration backup/restore</li>
+<li>[ ] Add configuration templates</li>
+</ul>
+<h4 id="phase-6-telemetry-dashboard-week-6-7">Phase 6: Telemetry Dashboard (Week 6-7)</h4>
+<ul>
+<li>[ ] Integrate charting library (Chart.js or similar)</li>
+<li>[ ] Create real-time telemetry charts</li>
+<li>[ ] Add historical data storage</li>
+<li>[ ] Implement data export</li>
+<li>[ ] Add alerting system</li>
+</ul>
+<h4 id="phase-7-polish-testing-week-7-8">Phase 7: Polish &amp; Testing (Week 7-8)</h4>
+<ul>
+<li>[ ] Responsive design improvements</li>
+<li>[ ] Mobile optimization</li>
+<li>[ ] Error handling and user feedback</li>
+<li>[ ] Performance optimization</li>
+<li>[ ] Documentation</li>
+<li>[ ] Testing on physical hardware</li>
+</ul>
+<h3 id="9-technical-specifications">9. Technical Specifications</h3>
+<h4 id="frontend-requirements">Frontend Requirements</h4>
+<ul>
+<li><strong>Browser Support</strong>: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+</li>
+<li><strong>Mobile Support</strong>: iOS 14+, Android 10+</li>
+<li><strong>Bundle Size</strong>: &lt; 500KB gzipped</li>
+<li><strong>Load Time</strong>: &lt; 2 seconds on local network</li>
+<li><strong>Responsive</strong>: Works on 320px to 4K displays</li>
+</ul>
+<h4 id="backend-requirements">Backend Requirements</h4>
+<ul>
+<li><strong>Python</strong>: 3.8+</li>
+<li><strong>FastAPI</strong>: Latest stable</li>
+<li><strong>WebSocket</strong>: FastAPI WebSocket support</li>
+<li><strong>Systemd</strong>: systemctl and journalctl access</li>
+<li><strong>Permissions</strong>: sudo access for service management</li>
+</ul>
+<h4 id="network-requirements">Network Requirements</h4>
+<ul>
+<li><strong>Port</strong>: 8080 (configurable) for web interface</li>
+<li><strong>Protocol</strong>: HTTP/HTTPS, WebSocket/WebSocket Secure</li>
+<li><strong>Access</strong>: Local network (192.168.x.x) or localhost</li>
+<li><strong>Discovery</strong>: Optional mDNS/Bonjour for automatic discovery</li>
+</ul>
+<h3 id="10-file-structure">10. File Structure</h3>
+<div class="highlight"><pre><span></span><code>projects/mia/
+├── rpi/
+│   ├── api/
+│   │   ├── main.py              # Existing API (extend)
+│   │   ├── systemd_client.py    # NEW: Systemd integration
+│   │   ├── cpp_bridge.py        # NEW: C++ app bridge
+│   │   └── websocket_handlers.py # NEW: WebSocket handlers
+│   └── web-interface/           # NEW: Frontend application
+│       ├── public/
+│       ├── src/
+│       ├── package.json
+│       └── vite.config.js
+├── docs/
+│   └── development/
+│       └── WEB_INTERFACE_PLAN.md # This file
+└── scripts/
+    └── deploy-web-interface.sh   # NEW: Deployment script
+</code></pre></div>
+<h3 id="11-integration-with-existing-mia-components">11. Integration with Existing MIA Components</h3>
+<h4 id="zeromq-integration">ZeroMQ Integration</h4>
+<ul>
+<li>Use existing ZeroMQ router (port 5555) for commands</li>
+<li>Subscribe to existing ZeroMQ PUB socket (port 5557) for telemetry</li>
+<li>Extend message protocol for web interface commands</li>
+</ul>
+<h4 id="device-registry">Device Registry</h4>
+<ul>
+<li>Use existing <code>DeviceRegistry</code> for device status</li>
+<li>Expose device information via API</li>
+<li>Add device management UI</li>
+</ul>
+<h4 id="authentication_1">Authentication</h4>
+<ul>
+<li>Integrate with existing <code>api.auth</code> module</li>
+<li>Add web session management</li>
+<li>Implement role-based access control</li>
+</ul>
+<h3 id="12-deployment">12. Deployment</h3>
+<h4 id="installation">Installation</h4>
+<ul>
+<li>Add web interface build step to <code>deploy-complete-system.sh</code></li>
+<li>Serve static files via FastAPI or nginx</li>
+<li>Configure systemd service for web interface</li>
+<li>Set up automatic updates</li>
+</ul>
+<h4 id="configuration">Configuration</h4>
+<ul>
+<li>Environment variables for port, host, SSL</li>
+<li>Configuration file for UI settings</li>
+<li>Integration with existing MIA config system</li>
+</ul>
+<h3 id="13-testing-strategy">13. Testing Strategy</h3>
+<h4 id="unit-tests">Unit Tests</h4>
+<ul>
+<li>API endpoint tests</li>
+<li>Systemd client tests</li>
+<li>WebSocket handler tests</li>
+</ul>
+<h4 id="integration-tests">Integration Tests</h4>
+<ul>
+<li>End-to-end service management</li>
+<li>Real-time data streaming</li>
+<li>Configuration updates</li>
+</ul>
+<h4 id="manual-testing">Manual Testing</h4>
+<ul>
+<li>Test on physical Raspberry Pi</li>
+<li>Test on various browsers and devices</li>
+<li>Test network access from other devices</li>
+</ul>
+<h3 id="14-documentation">14. Documentation</h3>
+<h4 id="user-documentation">User Documentation</h4>
+<ul>
+<li>Web interface user guide</li>
+<li>Dashboard explanation</li>
+<li>Configuration guide</li>
+<li>Troubleshooting</li>
+</ul>
+<h4 id="developer-documentation">Developer Documentation</h4>
+<ul>
+<li>API documentation (OpenAPI/Swagger)</li>
+<li>Frontend architecture</li>
+<li>Backend extension guide</li>
+<li>Contribution guidelines</li>
+</ul>
+<h2 id="next-steps">Next Steps</h2>
+<ol>
+<li><strong>Review and Approve Plan</strong>: Review this plan and provide feedback</li>
+<li><strong>Set Up Development Environment</strong>: Create frontend project structure</li>
+<li><strong>Implement Phase 1</strong>: Start with foundation and basic dashboard</li>
+<li><strong>Iterate</strong>: Build incrementally, test frequently</li>
+<li><strong>Deploy</strong>: Integrate into deployment scripts</li>
+</ol>
+<h2 id="references">References</h2>
+<ul>
+<li>FastAPI WebSocket: https://fastapi.tiangolo.com/advanced/websockets/</li>
+<li>Systemd D-Bus API: https://www.freedesktop.org/wiki/Software/systemd/dbus/</li>
+<li>ZeroMQ Guide: https://zeromq.org/get-started/</li>
+<li>Chart.js: https://www.chartjs.org/</li>
+<li>Vue.js: https://vuejs.org/ (if using Vue)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

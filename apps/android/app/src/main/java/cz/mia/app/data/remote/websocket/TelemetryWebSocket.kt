@@ -7,6 +7,7 @@ import cz.mia.app.data.remote.dto.WebSocketMessage
 import cz.mia.app.data.remote.dto.WebSocketSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,6 +49,7 @@ class TelemetryWebSocket(
     private var webSocketClient: WebSocketClient? = null
     private var reconnectAttempts = 0
     private var isManualDisconnect = false
+    private var reconnectJob: Job? = null
     
     private val subscribedDevices = mutableSetOf<String>()
     
@@ -84,14 +86,23 @@ class TelemetryWebSocket(
      * Connect to the WebSocket server.
      */
     fun connect() {
+        attemptConnection(resetReconnectAttempts = true)
+    }
+
+    private fun attemptConnection(resetReconnectAttempts: Boolean) {
         if (webSocketClient?.isOpen == true) {
             Log.d(TAG, "Already connected")
             return
         }
-        
+
         isManualDisconnect = false
-        reconnectAttempts = 0
-        
+        reconnectJob?.cancel()
+        reconnectJob = null
+
+        if (resetReconnectAttempts) {
+            reconnectAttempts = 0
+        }
+
         scope.launch {
             try {
                 _stateFlow.emit(WebSocketState.Connecting)
@@ -109,6 +120,8 @@ class TelemetryWebSocket(
      */
     fun disconnect() {
         isManualDisconnect = true
+        reconnectJob?.cancel()
+        reconnectJob = null
         scope.launch {
             try {
                 webSocketClient?.close()
@@ -149,6 +162,8 @@ class TelemetryWebSocket(
             override fun onOpen(handshakedata: ServerHandshake?) {
                 Log.d(TAG, "WebSocket connected")
                 reconnectAttempts = 0
+                reconnectJob?.cancel()
+                reconnectJob = null
                 scope.launch {
                     _stateFlow.emit(WebSocketState.Connected)
                     // Resubscribe to previously subscribed devices
@@ -174,9 +189,10 @@ class TelemetryWebSocket(
             
             override fun onClose(code: Int, reason: String?, remote: Boolean) {
                 Log.d(TAG, "WebSocket closed: code=$code, reason=$reason, remote=$remote")
+                webSocketClient = null
                 scope.launch {
                     _stateFlow.emit(WebSocketState.Disconnected)
-                    if (!isManualDisconnect && remote) {
+                    if (!isManualDisconnect) {
                         scheduleReconnect()
                     }
                 }
@@ -228,10 +244,11 @@ class TelemetryWebSocket(
         
         Log.d(TAG, "Scheduling reconnect attempt $reconnectAttempts in ${delayMs}ms")
         
-        scope.launch {
+        reconnectJob?.cancel()
+        reconnectJob = scope.launch {
             delay(delayMs)
             if (!isManualDisconnect) {
-                connect()
+                attemptConnection(resetReconnectAttempts = false)
             }
         }
     }
@@ -288,6 +305,8 @@ class TelemetryWebSocket(
      * Clean up resources.
      */
     fun cleanup() {
+        reconnectJob?.cancel()
+        reconnectJob = null
         disconnect()
         subscribedDevices.clear()
     }

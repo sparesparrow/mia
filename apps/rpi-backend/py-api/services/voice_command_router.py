@@ -220,7 +220,7 @@ def _format_telemetry(data: dict) -> str:
     vehicle = t.get("vehicle", {})
     if not vehicle:
         return "No vehicle telemetry data available."
-    rpm = vehicle.get("rpm", "unknown")
+    rpm = vehicle.get("engine_rpm") or vehicle.get("rpm", "unknown")
     speed = vehicle.get("speed_kmh", "unknown")
     coolant = vehicle.get("coolant_temp_c", "unknown")
     return f"Engine at {rpm} RPM, speed {speed} kilometers per hour, coolant temperature {coolant} degrees."

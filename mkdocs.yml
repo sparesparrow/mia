@@ -38,6 +38,10 @@ nav:
   - API & Contracts:
     - Overview: api/overview.md
     - Changelog: api/changelog.md
+  - Automotive:
+    - Quick Start: AUTOMOTIVE_QUICK_START.md
+    - Citroen Integration: automotive/citroen-integration.md
+    - Audi on Raspberry Pi: automotive/raspberry-pi-audi-integration.md
   - Privacy:
     - DPIA Template: privacy/dpia-template.md
   - Troubleshooting: troubleshooting.md

@@ -295,6 +295,14 @@ class BLEManagerImpl @Inject constructor(
             _connectionState.value = BleConnectionState.Error("Bluetooth is disabled")
             return@withContext
         }
+
+        if (!PermissionHelper.hasBluetoothPermissions(context)) {
+            val missingPermissions = PermissionHelper.getMissingBluetoothPermissions(context)
+            _connectionState.value = BleConnectionState.Error(
+                "Missing permissions: ${missingPermissions.joinToString()}"
+            )
+            return@withContext
+        }
         
         bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         Log.d(TAG, "BLE Manager initialized")
