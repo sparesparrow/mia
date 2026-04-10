@@ -12,6 +12,7 @@ SOURCE_PATHS = [
     REPO_ROOT / "orchestration" / "mia-agents",
     REPO_ROOT / "orchestration" / "mcp" / "modules",
     REPO_ROOT / "orchestration" / "mcp" / "modules" / "core-orchestrator",
+    REPO_ROOT / "orchestration" / "meta_harness",
 ]
 
 for source_path in reversed(SOURCE_PATHS):
