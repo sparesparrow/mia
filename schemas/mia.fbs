@@ -1,3 +1,5 @@
+include "vehicle_telemetry.fbs";
+
 namespace Mia;
 
 // ============================================================================
@@ -93,56 +95,6 @@ table LEDState {
   service_status: [string] (id: 3);  // List of service names and their status
   obd_data: [ubyte] (id: 4);  // OBD telemetry data
   timestamp: uint64 (id: 5);
-}
-
-// ============================================================================
-// Vehicle Telemetry (existing, expanded)
-// ============================================================================
-
-enum DpfStatus : byte { Normal = 0, Regenerating = 1, Warning = 2, Critical = 3 }
-
-table VehicleTelemetry {
-  // Engine data
-  rpm: float (id: 0);
-  speed_kmh: float (id: 1);
-  coolant_temp_c: float (id: 2);
-  oil_temperature_c: float (id: 3);
-  battery_voltage: float (id: 4);
-
-  // DPF data
-  dpf_soot_load_percent: float (id: 5);
-  dpf_soot_mass_g: float (id: 6);
-  dpf_regeneration_status: DpfStatus (id: 7);
-  eolys_additive_level_percent: float (id: 8);
-  eolys_additive_level_l: float (id: 9);
-
-  // Additional sensors
-  intake_air_temp_c: float (id: 10);
-  fuel_level_percent: float (id: 11);
-  engine_load_percent: float (id: 12);
-
-  timestamp: uint64 (id: 13);
-}
-
-// ============================================================================
-// ESP32 BPM Detector - zero-overhead structs for ESP-NOW (250-byte limit)
-// Note: structs have fixed layout, no field IDs needed
-// Workaround for ESP-IDF conflict: #undef STRUCT_END before including
-// ============================================================================
-
-struct AudioFeatures {
-  bpm: float;
-  beat_confidence: float;
-  dominant_freq: float;
-  rms_energy: float;
-  timestamp_ms: uint32;
-}
-
-struct BeatEvent {
-  bpm: float;
-  beat_confidence: float;
-  beat_number: uint32;
-  timestamp_ms: uint32;
 }
 
 // ============================================================================

@@ -1,0 +1,10 @@
+--------- beginning of main
+04-10 14:11:18.958  6654  6654 D WM-PackageManagerHelper: androidx.work.impl.background.systemjob.SystemJobService enabled
+04-10 14:11:18.959  6654  6654 D WM-Schedulers: Created SystemJobScheduler and enabled SystemJobService
+04-10 14:11:19.257  6654  6654 I cz.mia.app: Waiting for a blocking GC ClassLinker
+04-10 14:11:19.283  6654  6654 I cz.mia.app: WaitForGcToComplete blocked ClassLinker on ClassLinker for 26.428ms
+04-10 14:11:19.393  6654  6654 E cz.mia.app: Invalid ID 0x00000000.
+04-10 14:11:19.633  6654  6654 I Choreographer: Skipped 57 frames!  The application may be doing too much work on its main thread.
+04-10 14:11:20.912  6654  6654 W cz.mia.app: Accessing hidden method Landroid/view/View;->getViewRootImpl()Landroid/view/ViewRootImpl; (greylist, reflection, allowed)
+04-10 14:11:20.912  6654  6654 W cz.mia.app: Accessing hidden field Landroid/view/View$AttachInfo;->mVisibleInsets:Landroid/graphics/Rect; (greylist, reflection, allowed)
+04-10 14:11:20.912  6654  6654 W cz.mia.app: Accessing hidden field Landroid/view/ViewRootImpl;->mAttachInfo:Landroid/view/View$AttachInfo; (greylist, reflection, allowed)

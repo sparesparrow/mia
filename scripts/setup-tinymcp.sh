@@ -1,10 +1,31 @@
 #!/bin/bash
 # Setup script for TinyMCP integration with AI-SERVIS
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(dirname "$SCRIPT_DIR")"
+
+get_cpu_count() {
+    if command -v nproc >/dev/null 2>&1; then
+        nproc
+    elif command -v sysctl >/dev/null 2>&1; then
+        sysctl -n hw.ncpu
+    else
+        printf '1\n'
+    fi
+}
+
+run_pip() {
+    if command -v pip >/dev/null 2>&1; then
+        pip "$@"
+    elif command -v python3 >/dev/null 2>&1; then
+        python3 -m pip "$@"
+    else
+        echo "Python with pip is required but was not found" >&2
+        exit 1
+    fi
+}
 
 echo "=== Setting up TinyMCP for AI-SERVIS ==="
 
@@ -16,7 +37,12 @@ fi
 # Ensure Conan is installed
 if ! command -v conan &> /dev/null; then
     echo "Installing Conan..."
-    pip install conan
+    run_pip install conan
+fi
+
+if ! command -v cmake >/dev/null 2>&1; then
+    echo "cmake is required but was not found in PATH" >&2
+    exit 1
 fi
 
 # Create and export TinyMCP package
@@ -59,7 +85,7 @@ cmake .. \
     -DMCP_WITH_MQTT=ON \
     -DMCP_ENABLE_TESTING=ON
 
-cmake --build . --parallel $(nproc)
+cmake --build . --parallel "$(get_cpu_count)"
 
 echo "=== Build complete ==="
 

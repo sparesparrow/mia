@@ -17,6 +17,8 @@ success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 
 # Quick test functions
+COMPOSE_FILE="infra/docker/docker-compose.dev.yml"
+
 quick_system_check() {
     log "Quick system check..."
     
@@ -53,8 +55,13 @@ quick_project_test() {
     log "Quick project test..."
     
     # Check if we're in the project directory
-    if [ ! -f "docker-compose.dev.yml" ]; then
+    if [ ! -f "$COMPOSE_FILE" ]; then
         error "Not in AI-Servis project directory"
+        return 1
+    fi
+
+    if ! docker compose -f "$COMPOSE_FILE" config >/dev/null; then
+        error "Development Compose configuration is invalid"
         return 1
     fi
     
@@ -95,7 +102,7 @@ quick_service_test() {
     
     # Start minimal services (just core)
     log "Starting core services..."
-    if ! timeout 120s docker compose -f docker-compose.dev.yml up -d ai-servis-core mqtt-broker postgres redis >/dev/null 2>&1; then
+    if ! timeout 120s docker compose -f "$COMPOSE_FILE" up -d ai-servis-core mqtt-broker postgres redis >/dev/null 2>&1; then
         error "Failed to start core services"
         return 1
     fi
@@ -111,7 +118,7 @@ quick_service_test() {
     fi
     
     # Cleanup
-    docker compose -f docker-compose.dev.yml down >/dev/null 2>&1
+    docker compose -f "$COMPOSE_FILE" down >/dev/null 2>&1
     
     success "Service test completed"
     return 0

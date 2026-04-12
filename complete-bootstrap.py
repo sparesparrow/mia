@@ -7,6 +7,7 @@ Direct download bootstrap with Cloudsmith/GitHub Packages support
 import os
 import sys
 import json
+import importlib.util
 import subprocess
 import argparse
 import logging
@@ -178,20 +179,56 @@ class BootstrapManager:
                 sha256.update(chunk)
         return sha256.hexdigest()
 
+    @staticmethod
+    def _is_safe_extract_path(extract_to: Path, member_name: str) -> bool:
+        """Ensure archive members stay within the target directory."""
+        destination = (extract_to / member_name).resolve()
+        extract_root = extract_to.resolve()
+        return destination == extract_root or extract_root in destination.parents
+
+    def _validate_tar_members(self, tar, extract_to: Path) -> bool:
+        """Reject tar members that would escape the extraction root."""
+        for member in tar.getmembers():
+            if not self._is_safe_extract_path(extract_to, member.name):
+                logger.error(f"Unsafe tar member path detected: {member.name}")
+                return False
+
+            if member.issym() or member.islnk():
+                link_target = Path(member.linkname)
+                if link_target.is_absolute() or ".." in link_target.parts:
+                    logger.error(f"Unsafe tar link target detected: {member.linkname}")
+                    return False
+
+        return True
+
+    def _validate_zip_members(self, archive, extract_to: Path) -> bool:
+        """Reject zip members that would escape the extraction root."""
+        for member_name in archive.namelist():
+            if not self._is_safe_extract_path(extract_to, member_name):
+                logger.error(f"Unsafe zip member path detected: {member_name}")
+                return False
+        return True
+
     def extract_archive(self, archive_path: Path, extract_to: Path) -> bool:
         """Extract archive based on file extension"""
         try:
             if archive_path.suffix == '.tar':
                 import tarfile
                 with tarfile.open(archive_path) as tar:
+                    if not self._validate_tar_members(tar, extract_to):
+                        return False
                     tar.extractall(extract_to)
             elif archive_path.suffix == '.gz' and archive_path.suffixes[-2] == '.tar':
                 import tarfile
                 with tarfile.open(archive_path, 'r:gz') as tar:
+                    if not self._validate_tar_members(tar, extract_to):
+                        return False
                     tar.extractall(extract_to)
             elif archive_path.suffix == '.zip':
                 import zipfile
                 with zipfile.ZipFile(archive_path) as zf:
+                    if not self._validate_zip_members(zf, extract_to):
+                        return False
                     zf.extractall(extract_to)
             else:
                 logger.error(f"Unsupported archive format: {archive_path.suffix}")
@@ -339,6 +376,35 @@ class BootstrapManager:
             logger.error(f"Failed to configure repositories: {e}")
             return False
 
+    def verify_installation(self) -> bool:
+        """Verify that bootstrap prerequisites were installed successfully."""
+        issues = []
+
+        conan_candidates = [self.target_dir / "tools" / "conan" / "conan"]
+        if self.system == "windows":
+            conan_candidates.append(self.target_dir / "tools" / "conan" / "conan.exe")
+
+        conan_found = any(candidate.exists() for candidate in conan_candidates) or shutil.which("conan") is not None
+        if not conan_found:
+            issues.append("Conan executable not found")
+
+        required_modules = ["websockets", "aiohttp", "pydantic", "fastapi", "uvicorn"]
+        missing_modules = [
+            module_name
+            for module_name in required_modules
+            if importlib.util.find_spec(module_name) is None
+        ]
+        if missing_modules:
+            issues.append(f"Missing Python packages: {', '.join(missing_modules)}")
+
+        if issues:
+            for issue in issues:
+                logger.error(issue)
+            return False
+
+        logger.info("Bootstrap verification succeeded")
+        return True
+
     def bootstrap_project(self) -> bool:
         """Run the complete bootstrap process"""
         logger.info("Starting MIA Universal bootstrap process")
@@ -384,9 +450,7 @@ def main():
     bootstrap = BootstrapManager(args.target_dir)
 
     if args.verify_only:
-        # TODO: Implement verification logic
-        logger.info("Verification not yet implemented")
-        return 0
+        return 0 if bootstrap.verify_installation() else 1
 
     # Run bootstrap
     if bootstrap.bootstrap_project():

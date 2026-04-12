@@ -115,13 +115,24 @@ class CitroenC4Bridge:
         # ZeroMQ integration
         self.zmq_ctx = zmq.asyncio.Context()
         self.telemetry_sub = self.zmq_ctx.socket(zmq.SUB)
-        self.telemetry_sub.connect("tcp://127.0.0.1:5556")  # Connect to OBD agent
-        self.telemetry_sub.setsockopt_string(zmq.SUBSCRIBE, "")
+        self.telemetry_sub.connect("tcp://127.0.0.1:5556")  # Connect to serial bridge PUB
+        self.telemetry_sub.subscribe(b"mcu/telemetry")
+        self.telemetry_sub.subscribe(b"obd/telemetry")
+        self.telemetry_sub.subscribe(b"mcu/status")
+
+        # Alert publisher — DPF/safety alerts go here for voice + UI
+        self.alert_pub = self.zmq_ctx.socket(zmq.PUB)
+        self.alert_pub.bind("tcp://*:5562")
 
         # Vehicle state
         self.current_telemetry = CitroenC4Telemetry()
         self.vehicle_state = CitroenC4State.ECO_MODE
         self.last_dpf_check = datetime.now()
+        self._mcu_connected = False
+        self._last_telemetry_ts: Optional[datetime] = None
+
+        # PSA-specific data learned from OBD (populated by real queries)
+        self._psa_extra: Dict[str, Any] = {}
 
         # Citroën C4 specific configuration
         self.model_year = config.get("model_year", 2012)
@@ -194,43 +205,65 @@ class CitroenC4Bridge:
             return False
 
     async def _monitor_telemetry(self):
-        """Monitor real-time telemetry from OBD agent"""
-        logger.info("📊 Starting telemetry monitoring...")
+        """Monitor real-time telemetry from OBD agent via ZMQ multipart"""
+        logger.info("Starting telemetry monitoring...")
 
         while True:
             try:
-                # Receive telemetry data from OBD agent
-                # In real implementation, would receive FlatBuffers data
-                message = await self.telemetry_sub.recv_json()
+                # Receive multipart: [topic, payload]
+                parts = await self.telemetry_sub.recv_multipart()
+                if len(parts) < 2:
+                    continue
 
-                # Update Citroën C4 specific telemetry
-                await self._update_citroen_telemetry(message)
+                topic = parts[0].decode("utf-8")
+                payload = json.loads(parts[1].decode("utf-8"))
 
-                # Check for critical conditions
-                await self._check_critical_conditions()
+                if topic == "mcu/telemetry" or topic == "obd/telemetry":
+                    # Update Citroen C4 specific telemetry
+                    await self._update_citroen_telemetry(payload)
+                    self._last_telemetry_ts = datetime.now()
 
-                await asyncio.sleep(0.1)  # High frequency monitoring
+                    # Check for critical conditions
+                    await self._check_critical_conditions()
 
+                elif topic == "mcu/status":
+                    event = payload.get("event")
+                    if event == "connected":
+                        self._mcu_connected = True
+                        logger.info(f"MCU connected: {payload.get('device')}")
+                    elif event == "disconnected":
+                        self._mcu_connected = False
+                        logger.warning(f"MCU disconnected: {payload.get('reason')}")
+
+            except json.JSONDecodeError as e:
+                logger.error(f"Telemetry JSON decode error: {e}")
             except Exception as e:
                 logger.error(f"Telemetry monitoring error: {e}")
                 await asyncio.sleep(1.0)
 
     async def _update_citroen_telemetry(self, obd_data: Dict[str, Any]):
-        """Update Citroën-specific telemetry from OBD data"""
+        """Update Citroen-specific telemetry from OBD data"""
         try:
             telemetry = CitroenC4Telemetry()
 
             # Copy standard OBD data
-            telemetry.speed_kmh = obd_data.get("speed_kmh")
-            telemetry.engine_rpm = obd_data.get("engine_rpm")
-            telemetry.coolant_temp_c = obd_data.get("coolant_temp_c")
+            telemetry.speed_kmh = obd_data.get("speed_kmh") or obd_data.get("speed")
+            telemetry.engine_rpm = obd_data.get("engine_rpm") or obd_data.get("rpm")
+            telemetry.coolant_temp_c = obd_data.get("coolant_temp_c") or obd_data.get("coolant_temp")
             telemetry.fuel_level_percent = obd_data.get("fuel_level_percent")
             telemetry.battery_voltage = obd_data.get("battery_voltage")
 
-            # Citroën PSA specific data
+            # Citroen PSA specific data
             telemetry.dpf_soot_mass_g = obd_data.get("dpf_soot_mass_g")
             telemetry.eolys_additive_level_l = obd_data.get("eolys_additive_level_l")
             telemetry.differential_pressure_kpa = obd_data.get("differential_pressure_kpa")
+
+            # Stash extended PSA parameters for _read_psa_specific_parameters
+            for key in ("transmission_temp_c", "eolys_consumption_l_1000km",
+                        "dpf_regeneration_count", "ac_compressor_status",
+                        "ac_pressure_bar", "dtc_codes"):
+                if key in obd_data:
+                    self._psa_extra[key] = obd_data[key]
 
             # Calculate DPF status
             telemetry.dpf_status = self._calculate_dpf_status(telemetry)
@@ -299,23 +332,27 @@ class CitroenC4Bridge:
         return CitroenC4State.ECO_MODE
 
     async def _read_psa_specific_parameters(self, telemetry: CitroenC4Telemetry):
-        """Read additional PSA manufacturer-specific parameters"""
+        """Read additional PSA manufacturer-specific parameters from OBD data.
+
+        When connected to a real vehicle, these values arrive via the
+        obd/telemetry ZMQ stream from OBD worker (mode 22 / extended PIDs).
+        We store them in self._psa_extra as they arrive and apply them here.
+        """
         try:
-            # These would use PSA mode 22 commands
-            # For simulation, set mock values
+            extra = self._psa_extra
 
-            # Transmission temperature
-            telemetry.transmission_temp_c = 85.0
+            # Transmission temperature (PSA PID 0x2113)
+            telemetry.transmission_temp_c = extra.get("transmission_temp_c")
 
-            # Eolys additive consumption rate
-            telemetry.eolys_consumption_l_1000km = 1.2
+            # Eolys additive consumption rate (PSA PID 0x21C0)
+            telemetry.eolys_consumption_l_1000km = extra.get("eolys_consumption_l_1000km")
 
-            # DPF regeneration count
-            telemetry.dpf_regeneration_count = 42
+            # DPF regeneration count (PSA PID 0x2150)
+            telemetry.dpf_regeneration_count = extra.get("dpf_regeneration_count")
 
-            # AC system status
-            telemetry.ac_compressor_status = True
-            telemetry.ac_pressure_bar = 12.5
+            # AC system status (PSA PID 0x2144/2145)
+            telemetry.ac_compressor_status = extra.get("ac_compressor_status")
+            telemetry.ac_pressure_bar = extra.get("ac_pressure_bar")
 
         except Exception as e:
             logger.error(f"PSA parameter read error: {e}")
@@ -370,21 +407,29 @@ class CitroenC4Bridge:
             self.vehicle_state = CitroenC4State.MAINTENANCE_DUE
 
     async def _check_dtc_codes(self):
-        """Check for DTC codes and map to PSA descriptions"""
+        """Check for DTC codes from OBD data and map to PSA descriptions.
+
+        DTCs are read by the OBD worker via mode 03 and arrive in the
+        telemetry stream under the 'dtc_codes' key.  We consume them
+        from self._psa_extra where they are cached.
+        """
         try:
-            # In real implementation, would query mode 03 for DTCs
-            # For simulation, mock some PSA DTCs
-            mock_dtcs = ["P0300", "P2452"]  # Example codes
+            raw_dtcs = self._psa_extra.get("dtc_codes", [])
 
-            for dtc in mock_dtcs:
-                if dtc in self.psa_dtc_map:
-                    description = self.psa_dtc_map[dtc]
-                    logger.warning(f"🔧 DTC Detected: {dtc} - {description}")
+            for dtc in raw_dtcs:
+                description = self.psa_dtc_map.get(dtc, "Unknown DTC")
 
-                    # Add to current telemetry
-                    if dtc not in self.current_telemetry.dtc_codes:
-                        self.current_telemetry.dtc_codes.append(dtc)
-                        self.current_telemetry.psa_dtc_descriptions[dtc] = description
+                if dtc not in self.current_telemetry.dtc_codes:
+                    self.current_telemetry.dtc_codes.append(dtc)
+                    self.current_telemetry.psa_dtc_descriptions[dtc] = description
+                    logger.warning(f"DTC Detected: {dtc} - {description}")
+
+                    # Publish alert for the voice/UI layer
+                    await self._publish_alert(
+                        level="warning",
+                        category="dtc",
+                        message=f"Diagnostic code {dtc}: {description}",
+                    )
 
         except Exception as e:
             logger.error(f"DTC check error: {e}")
@@ -405,9 +450,6 @@ class CitroenC4Bridge:
         if telemetry.coolant_temp_c and telemetry.coolant_temp_c > 115:
             critical_conditions.append("ENGINE_OVERHEAT")
 
-        # Low oil pressure (would need oil pressure sensor)
-        # Low fuel (already covered by fuel_level_percent)
-
         # DPF critical
         if telemetry.dpf_status == DPFStatus.REGENERATION_NEEDED:
             critical_conditions.append("DPF_REGENERATION_REQUIRED")
@@ -417,22 +459,52 @@ class CitroenC4Bridge:
             critical_conditions.append("BATTERY_CRITICAL")
 
         if critical_conditions:
-            logger.critical(f"🚨 CRITICAL CONDITIONS: {', '.join(critical_conditions)}")
-            # Would trigger emergency protocols
+            logger.critical(f"CRITICAL CONDITIONS: {', '.join(critical_conditions)}")
+            for condition in critical_conditions:
+                await self._publish_alert(
+                    level="critical",
+                    category="vehicle",
+                    message=f"Critical: {condition.replace('_', ' ').title()}",
+                )
+
+    async def _publish_alert(self, level: str, category: str, message: str):
+        """Publish a vehicle alert to the ZMQ alert channel.
+
+        Subscribers: voice router (TTS announcement), Android app (push),
+        dashboard (visual alert).
+        """
+        alert = {
+            "level": level,
+            "category": category,
+            "message": message,
+            "vehicle": "Citroen C4",
+            "timestamp": datetime.now().isoformat(),
+        }
+        try:
+            self.alert_pub.send_multipart([
+                f"mia/vehicle/alert/{level}".encode(),
+                json.dumps(alert).encode(),
+            ])
+        except Exception as e:
+            logger.error(f"Failed to publish alert: {e}")
 
     async def get_vehicle_status(self) -> Dict[str, Any]:
-        """Get comprehensive Citroën C4 vehicle status"""
+        """Get comprehensive Citroen C4 vehicle status"""
         telemetry = self.current_telemetry
 
         return {
             "vehicle_info": {
-                "model": "Citroën C4",
+                "model": "Citroen C4",
                 "year": self.model_year,
                 "engine": self.engine_type,
                 "transmission": self.transmission_type,
                 "equipment": self.equipment_level
             },
             "current_state": self.vehicle_state.value,
+            "connection": {
+                "mcu_connected": self._mcu_connected,
+                "last_telemetry": self._last_telemetry_ts.isoformat() if self._last_telemetry_ts else None,
+            },
             "telemetry": {
                 "timestamp": telemetry.timestamp.isoformat(),
                 "speed_kmh": telemetry.speed_kmh,

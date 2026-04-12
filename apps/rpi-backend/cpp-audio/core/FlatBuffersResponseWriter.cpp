@@ -1,6 +1,8 @@
 #include "FlatBuffersResponseWriter.h"
 #include "TcpSocket.h"
 #include "webgrab_generated.h"
+
+namespace fb = Mia::Protocol;
 #include <cstring>
 #include <arpa/inet.h>
 
@@ -13,7 +15,7 @@ FlatBuffersResponseWriter::~FlatBuffersResponseWriter() {
 
 bool FlatBuffersResponseWriter::write(const DownloadResponse& resp) {
     builder_.Clear();
-    auto fb_resp = webgrab::CreateDownloadResponse(builder_, resp.sessionId);
+    auto fb_resp = fb::CreateDownloadResponse(builder_, resp.sessionId);
     builder_.Finish(fb_resp);
     return sendResponse();
 }
@@ -21,7 +23,7 @@ bool FlatBuffersResponseWriter::write(const DownloadResponse& resp) {
 bool FlatBuffersResponseWriter::write(const StatusResponse& resp) {
     builder_.Clear();
     auto status_str = builder_.CreateString(resp.status);
-    auto fb_resp = webgrab::CreateDownloadStatusResponse(builder_, status_str);
+    auto fb_resp = fb::CreateDownloadStatusResponse(builder_, status_str);
     builder_.Finish(fb_resp);
     return sendResponse();
 }
@@ -29,7 +31,7 @@ bool FlatBuffersResponseWriter::write(const StatusResponse& resp) {
 bool FlatBuffersResponseWriter::write(const ErrorResponse& resp) {
     builder_.Clear();
     auto error_str = builder_.CreateString(resp.error);
-    auto fb_resp = webgrab::CreateErrorResponse(builder_, error_str);
+    auto fb_resp = fb::CreateErrorResponse(builder_, error_str);
     builder_.Finish(fb_resp);
     return sendResponse();
 }

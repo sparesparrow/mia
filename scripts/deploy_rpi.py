@@ -15,8 +15,13 @@ import sys
 import json
 import subprocess
 import argparse
+import logging
+import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
+
+
+logger = logging.getLogger(__name__)
 
 class RPiDeployer:
     """Deploy MIA services to Raspberry Pi via SSH"""
@@ -50,7 +55,8 @@ class RPiDeployer:
         try:
             result = self.run_ssh_command("echo 'SSH connection successful'", check=False)
             return result.returncode == 0
-        except:
+        except (OSError, subprocess.SubprocessError) as exc:
+            logger.warning("SSH connection check failed for %s: %s", self.host, exc)
             return False
 
     def install_dependencies(self) -> bool:
@@ -117,7 +123,8 @@ class RPiDeployer:
         try:
             self.run_ssh_command("cd /opt && sudo tar -xzf /tmp/mia_services.tar.gz")
             self.run_ssh_command("sudo chown -R mia:mia /opt/modules")
-        except:
+        except (OSError, subprocess.SubprocessError) as exc:
+            logger.error("Failed to extract services on %s: %s", self.host, exc)
             return False
 
         return True
@@ -279,30 +286,38 @@ WantedBy=multi-user.target
 
         checks = {}
 
+        def run_remote_check(name: str, command: str, predicate: Callable[[subprocess.CompletedProcess], bool]) -> None:
+            try:
+                result = self.run_ssh_command(command)
+                checks[name] = predicate(result)
+            except (OSError, subprocess.SubprocessError) as exc:
+                logger.debug("Remote deployment check failed for %s: %s", name, exc)
+                checks[name] = False
+
         # Check if services are running
         services = ["mia-zeromq-broker", "mia-orchestrator", "mia-gpio-worker"]
         for service in services:
-            try:
-                result = self.run_ssh_command(f"sudo systemctl is-active {service}")
-                checks[f"{service}_active"] = "active" in result.stdout.strip()
-            except:
-                checks[f"{service}_active"] = False
+            run_remote_check(
+                f"{service}_active",
+                f"sudo systemctl is-active {service}",
+                lambda result: "active" in result.stdout.strip(),
+            )
 
         # Check if ports are listening
         ports = [5555, 5556, 8000]
         for port in ports:
-            try:
-                result = self.run_ssh_command(f"sudo netstat -tlnp | grep :{port}")
-                checks[f"port_{port}_listening"] = str(port) in result.stdout
-            except:
-                checks[f"port_{port}_listening"] = False
+            run_remote_check(
+                f"port_{port}_listening",
+                f"sudo netstat -tlnp | grep :{port}",
+                lambda result, port=port: str(port) in result.stdout,
+            )
 
         # Check Python environment
-        try:
-            result = self.run_ssh_command("/opt/mia_env/bin/python --version")
-            checks["python_env"] = "Python" in result.stdout
-        except:
-            checks["python_env"] = False
+        run_remote_check(
+            "python_env",
+            "/opt/mia_env/bin/python --version",
+            lambda result: "Python" in result.stdout,
+        )
 
         return checks
 

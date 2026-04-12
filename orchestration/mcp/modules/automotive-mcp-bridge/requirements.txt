@@ -8,7 +8,7 @@ asyncio-mqtt==0.16.1
 pydantic==2.5.2
 
 # Voice processing and audio
-numpy==1.24.4
+numpy==1.26.4
 scipy==1.11.4
 librosa==0.10.1
 soundfile==0.12.1

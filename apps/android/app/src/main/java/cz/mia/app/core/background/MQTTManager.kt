@@ -16,6 +16,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
+import java.util.UUID
 
 interface MQTTManager {
 	suspend fun connect()
@@ -37,7 +38,7 @@ class MQTTManagerImpl @Inject constructor(
 	@Volatile private var client: MqttAndroidClient? = null
 	private val envBrokerUrl: String? = System.getenv("MIA_MQTT_URL")
 	private val defaultBrokerUrl: String = "tcp://test.mosquitto.org:1883"
-	private val clientId: String = "mia-android-" + android.os.Build.SERIAL
+	private val clientId: String = "mia-android-${UUID.randomUUID()}"
 
 	override suspend fun connect() = withContext(Dispatchers.IO) {
 		if (client?.isConnected == true) return@withContext
@@ -64,7 +65,6 @@ class MQTTManagerImpl @Inject constructor(
 		}
 
 		val backoffMs = listOf(0L, 2000L, 5000L, 10000L)
-		var connected = false
 
 		loop@ for (delayMs in backoffMs) {
 			if (delayMs > 0) delay(delayMs)
@@ -77,7 +77,6 @@ class MQTTManagerImpl @Inject constructor(
 						override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) { }
 					}
 					client = c
-					connected = true
 					break@loop
 				} catch (e: MqttException) {
 					// try next candidate or back off

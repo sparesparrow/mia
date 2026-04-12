@@ -1,0 +1,62 @@
+[
+  {
+    "_description": "Generic PID telemetry from a basic ELM327 clone, ignition on, engine running",
+    "device_id": "elm327_usb_0",
+    "speed_kmh": 0,
+    "engine_rpm": 820,
+    "coolant_temp_c": 42,
+    "fuel_level_percent": 68.5,
+    "battery_voltage": 12.3,
+    "adapter_capabilities": {
+      "capability_class": "generic_pid_only",
+      "capability_source": "probed",
+      "adapter_kind": "elm327",
+      "transport": "usb_serial",
+      "device_path_or_address": "/dev/ttyUSB0",
+      "connection_state": "connected",
+      "active_protocol": "ISO 15765-4 CAN 11-bit 500k",
+      "supports_uds": false
+    }
+  },
+  {
+    "_description": "Generic PID telemetry while driving, no adapter_capabilities block (legacy producer)",
+    "speed_kmh": 52,
+    "engine_rpm": 1850,
+    "coolant_temp_c": 89,
+    "fuel_level_percent": 55.0,
+    "battery_voltage": 14.1
+  },
+  {
+    "_description": "Ignition on, engine off, generic-only adapter",
+    "device_id": "elm327_usb_0",
+    "speed_kmh": 0,
+    "engine_rpm": 0,
+    "coolant_temp_c": 21,
+    "battery_voltage": 12.6,
+    "adapter_capabilities": {
+      "capability_class": "generic_pid_only",
+      "capability_source": "configured",
+      "adapter_kind": "elm327",
+      "transport": "usb_serial",
+      "connection_state": "connected"
+    }
+  },
+  {
+    "_description": "Arduino MCU telemetry with potentiometer values (digital twin)",
+    "device_id": "arduino_0",
+    "pot1": 512,
+    "pot2": 200,
+    "timestamp": "2026-04-08T10:00:00+00:00"
+  },
+  {
+    "_description": "Minimal heartbeat, no PID data yet",
+    "device_id": "elm327_usb_0",
+    "adapter_capabilities": {
+      "capability_class": "unknown",
+      "capability_source": "unknown",
+      "adapter_kind": "elm327",
+      "transport": "usb_serial",
+      "connection_state": "probing"
+    }
+  }
+]

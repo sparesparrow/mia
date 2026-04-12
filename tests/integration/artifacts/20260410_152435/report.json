@@ -1,0 +1,165 @@
+{
+  "run_id": "20260410_152435",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "e2e",
+      "steps": [
+        {
+          "name": "android_network_reaches_api",
+          "verdict": "PASS",
+          "duration_s": 1.1200284869992174,
+          "detail": "host_verified: API reachable (200), phone is USB-tethered",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_registry_roundtrip",
+          "verdict": "PASS",
+          "duration_s": 0.020402883004862815,
+          "detail": "android-usb-HT36TW903516",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "telemetry_flow",
+          "verdict": "PASS",
+          "duration_s": 0.004354756994871423,
+          "detail": "telemetry, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "gpio_read_pin",
+          "verdict": "PASS",
+          "duration_s": 5.035940653993748,
+          "detail": "error, success",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "websocket_route_exists",
+          "verdict": "PASS",
+          "duration_s": 0.012497596006141976,
+          "detail": "ws_telemetry_probe=404",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "session_lifecycle",
+          "verdict": "PASS",
+          "duration_s": 0.028522847016574815,
+          "detail": "session=09ae1bc7-5f3..., lifecycle=create\u2192get\u2192delete",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "led_state_roundtrip",
+          "verdict": "FAIL",
+          "duration_s": 0.018111680983565748,
+          "detail": "",
+          "error": "PUT /led/state returned 422: {\"detail\":[{\"type\":\"dict_type\",\"loc\":[\"body\",\"color\"],\"msg\":\"Input should be a valid dictionary\",\"input\":\"#00ff88\",\"url\":\"https://errors.pydantic.dev/2.12/v/dict_type\"}]}",
+          "remediation_applied": ""
+        },
+        {
+          "name": "auth_status",
+          "verdict": "PASS",
+          "duration_s": 0.004685303982114419,
+          "detail": "enabled, keys_configured, message",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "thermal_health",
+          "verdict": "PASS",
+          "duration_s": 0.00686450899229385,
+          "detail": "status, temperature_c, thresholds, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "log_query",
+          "verdict": "PASS",
+          "duration_s": 0.021506170014617965,
+          "detail": "log_services=17, sample=mia-api(200)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "ota_status",
+          "verdict": "PASS",
+          "duration_s": 0.00423385199974291,
+          "detail": "current_version, live_dir, rollback_available, staging_ready",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_command",
+          "verdict": "PASS",
+          "duration_s": 5.030930592998629,
+          "detail": "command_route=200, error, success, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "registry_status",
+          "verdict": "PASS",
+          "duration_s": 0.011705251992680132,
+          "detail": "by_type, error, healthy, offline, online, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_logcat_health",
+          "verdict": "PASS",
+          "duration_s": 3.2833912660134956,
+          "detail": "crash_markers=0, warnings=0, lines=0",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:24:35.617241+00:00",
+      "finished": "2026-04-10T13:24:50.871211+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T13:24:42.507762+00:00",
+      "step": "led_state_roundtrip",
+      "pattern": "returned\\ 422:\\ \\{\"detail\":\\[\\{\"type\":\"dict_type\",\"loc\":\\[\"body\",\"color\"\\],\"msg\":",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    }
+  ],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 0.929,
+      "phase_success_rate": 0.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.071
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "coverage-expansion",
+    "top_diagnoses": [
+      {
+        "diagnosis": "Profile mismatch",
+        "count": 1
+      },
+      {
+        "diagnosis": "unknown",
+        "count": 1
+      }
+    ],
+    "focus_histogram": {
+      "coverage-expansion": 1,
+      "device-profile": 1
+    },
+    "applied_remediations": [],
+    "knowledge_entries": 2
+  },
+  "total_duration_s": 15.253999001026386
+}

@@ -31,7 +31,9 @@ This directory contains the FlatBuffers schema definitions for the Modular IoT A
 - `AIState` - AI assistant states for LED feedback
 
 #### Vehicle Telemetry
-- `VehicleTelemetry` - Comprehensive vehicle sensor data (expanded from original CitroenTelemetry)
+- `vehicle_telemetry.fbs` - Canonical source for `VehicleTelemetry` and `DpfStatus`
+- `VehicleTelemetry` - Shared vehicle telemetry table included by `schemas/mia.fbs`
+- `protos/vehicle.fbs` - Thin wire wrapper that pins the PUB/SUB file identifier for vehicle telemetry
 - `DpfStatus` - Diesel Particulate Filter regeneration states
 
 ## Usage
@@ -41,14 +43,14 @@ This directory contains the FlatBuffers schema definitions for the Modular IoT A
 Run the generation script to create language-specific bindings:
 
 ```bash
-# Generate both Python and C++ bindings
-python schemas/generate.py
+# Generate all known schemas and targets
+python schemas/generate.py --all
 
 # Generate only Python bindings
-python schemas/generate.py --cpp=false
+python schemas/generate.py --all --no-cpp
 
 # Generate only C++ bindings
-python schemas/generate.py --python=false
+python schemas/generate.py --all --no-python
 
 # Specify custom output directory
 python schemas/generate.py --output-dir /custom/path
@@ -112,7 +114,9 @@ The schemas integrate with:
 - **API Layer** (`api/main.py`) - REST endpoints and WebSocket streaming
 - **Hardware Workers** (`hardware/gpio_worker.py`, `services/obd_worker.py`) - Device communication
 - **Message Broker** (`core/messaging/broker.py`) - Inter-process communication
-- **Android App** - Mobile device control and telemetry display
+- **Vehicle telemetry PUB/SUB path** (`orchestration/mia-agents/agents/citroen_bridge.py` -> `apps/rpi-backend/py-api/api/main.py`) - Live `VehicleTelemetry` transport with `CTEL` file identifier and legacy-key compatibility in `Mia/vehicle_codec.py`
+
+Keep `schemas/vehicle_telemetry.fbs` as the single source of truth for live vehicle telemetry fields. Android consumes the JSON/MQTT surface instead of these FlatBuffers directly.
 
 ## Performance Characteristics
 

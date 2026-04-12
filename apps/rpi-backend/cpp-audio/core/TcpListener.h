@@ -11,6 +11,7 @@ public:
     ~TcpListener();
 
     bool start();
+    void stop();
     std::unique_ptr<TcpSocket> accept();
 
 private:

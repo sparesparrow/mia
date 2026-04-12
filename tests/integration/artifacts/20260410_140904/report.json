@@ -1,0 +1,255 @@
+{
+  "run_id": "20260410_140904",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "deploy",
+      "steps": [
+        {
+          "name": "deploy",
+          "verdict": "SKIP",
+          "duration_s": 0.0,
+          "detail": "--skip-deploy",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "",
+      "finished": ""
+    },
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "FAIL",
+          "duration_s": 0.11279983900021762,
+          "detail": "",
+          "error": "GET /status returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "FAIL",
+          "duration_s": 0.0051866829744540155,
+          "detail": "",
+          "error": "GET /devices returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "FAIL",
+          "duration_s": 0.006811731000198051,
+          "detail": "",
+          "error": "GET /telemetry returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "FAIL",
+          "duration_s": 0.01159220701083541,
+          "detail": "",
+          "error": "GET /features returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "FAIL",
+          "duration_s": 0.7259619630058296,
+          "detail": "",
+          "error": "ZMQ broker not listening on :5555",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_selftest",
+          "verdict": "PASS",
+          "duration_s": 0.4286778690002393,
+          "detail": "SELFTEST_NOT_DEPLOYED",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:09:04.906541+00:00",
+      "finished": "2026-04-10T12:09:06.202963+00:00"
+    },
+    {
+      "phase": "android",
+      "steps": [
+        {
+          "name": "adb_device_check",
+          "verdict": "PASS",
+          "duration_s": 0.032495321007445455,
+          "detail": "HT36TW903516           device usb:2-1.3 product:lineage_m7 model:One device:m7 transport_id:1",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "build_apk",
+          "verdict": "PASS",
+          "duration_s": 59.22171930799959,
+          "detail": "APK built: 74294KB, API\u2192http://192.168.200.134:8000/",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "install_apk",
+          "verdict": "PASS",
+          "duration_s": 67.24445761099923,
+          "detail": "installed",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "grant_permissions",
+          "verdict": "PASS",
+          "duration_s": 0.5998101489967667,
+          "detail": "granted 3/7 permissions",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "launch_app",
+          "verdict": "PASS",
+          "duration_s": 4.333042657002807,
+          "detail": "launched",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "verify_app_running",
+          "verdict": "PASS",
+          "duration_s": 1.1411493640043773,
+          "detail": "running (pid=6654), screenshot saved",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:09:06.203184+00:00",
+      "finished": "2026-04-10T12:11:18.775973+00:00"
+    },
+    {
+      "phase": "e2e",
+      "steps": [
+        {
+          "name": "android_reaches_api",
+          "verdict": "FAIL",
+          "duration_s": 0.08383664299617521,
+          "detail": "",
+          "error": "Android\u2192Pi /status returned 000 (expected 200)",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_registration",
+          "verdict": "PASS",
+          "duration_s": 0.25245552699198015,
+          "detail": "register response: ",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "command_relay",
+          "verdict": "PASS",
+          "duration_s": 0.0021629649854730815,
+          "detail": "GPIO read: status=0, body=<urlopen error [Errno 111] Connection refused>",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "telemetry_flow",
+          "verdict": "FAIL",
+          "duration_s": 0.0027270769933238626,
+          "detail": "",
+          "error": "Telemetry endpoint returned 0",
+          "remediation_applied": ""
+        },
+        {
+          "name": "websocket_connect",
+          "verdict": "PASS",
+          "duration_s": 0.0468963099992834,
+          "detail": "WS probe returned HTTP 000 (route exists)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "logcat_health",
+          "verdict": "PASS",
+          "duration_s": 3.2453736640163697,
+          "detail": "logcat clean (10 lines), saved to logcat_e2e.txt",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "screenshot_final",
+          "verdict": "PASS",
+          "duration_s": 1.1998018430022057,
+          "detail": "final screenshot: e2e_final_141122.png",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:11:18.776121+00:00",
+      "finished": "2026-04-10T12:11:23.610421+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T12:09:05.022343+00:00",
+      "step": "api_status",
+      "pattern": "GET\\ /status\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:09:05.028143+00:00",
+      "step": "api_devices",
+      "pattern": "GET\\ /devices\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:09:05.035484+00:00",
+      "step": "api_telemetry",
+      "pattern": "GET\\ /telemetry\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:09:05.047643+00:00",
+      "step": "api_features",
+      "pattern": "GET\\ /features\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:09:05.774224+00:00",
+      "step": "zmq_broker_port",
+      "pattern": "ZMQ\\ broker\\ not\\ listening\\ on\\ :5555",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:11:18.860511+00:00",
+      "step": "android_reaches_api",
+      "pattern": "Android\u2192Pi\\ /status\\ returned\\ 000\\ \\(expected\\ 200\\)",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:11:19.118284+00:00",
+      "step": "telemetry_flow",
+      "pattern": "Telemetry\\ endpoint\\ returned\\ 0",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    }
+  ],
+  "total_duration_s": 138.70415719100856
+}

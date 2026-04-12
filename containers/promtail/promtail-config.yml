@@ -1,0 +1,25 @@
+server:
+  http_listen_port: 9081
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: mia-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mia
+          __path__: /var/log/ai-servis/*.log
+  - job_name: host-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: host
+          __path__: /var/log/host/*.log

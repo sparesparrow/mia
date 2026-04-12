@@ -6,14 +6,15 @@ Wants=zmq-broker.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/mia/rpi
-ExecStart=/opt/mia/rpi/bin/python3 /opt/mia/rpi/hardware/serial_bridge.py
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" hardware/serial_bridge.py'
 Restart=always
+WatchdogSec=0
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONHOME=/opt/mia/rpi
-Environment=PATH=/opt/mia/rpi/bin:/usr/bin:/usr/local/bin
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 
 [Install]
 WantedBy=multi-user.target

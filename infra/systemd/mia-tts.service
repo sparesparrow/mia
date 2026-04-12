@@ -1,0 +1,25 @@
+[Unit]
+Description=MIA Local TTS (piper text-to-speech)
+After=mia-voice-router.service
+Requires=mia-voice-router.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/tts_service.py'
+Restart=always
+RestartSec=5
+WatchdogSec=0
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_RESPONSE_PORT=5561
+Environment=PIPER_MODEL=en_US-amy-medium
+Environment=PIPER_DATA_DIR=/opt/mia/data/piper
+# audio group for ALSA access
+SupplementaryGroups=audio
+
+[Install]
+WantedBy=multi-user.target

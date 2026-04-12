@@ -29,10 +29,16 @@ except ImportError:
 from pathlib import Path
 
 # Import our MCP framework
-from ..shared.mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport,
-    WebSocketTransport, HTTPTransport, Tool, Prompt, create_tool
-)
+try:
+    from ..shared.mcp_framework import (
+        MCPServer, MCPClient, MCPMessage, MCPTransport,
+        WebSocketTransport, HTTPTransport, Tool, Prompt, create_tool
+    )
+except ImportError:
+    from shared.mcp_framework import (  # type: ignore[no-redef]
+        MCPServer, MCPClient, MCPMessage, MCPTransport,
+        WebSocketTransport, HTTPTransport, Tool, Prompt, create_tool
+    )
 
 # Logging setup
 logging.basicConfig(

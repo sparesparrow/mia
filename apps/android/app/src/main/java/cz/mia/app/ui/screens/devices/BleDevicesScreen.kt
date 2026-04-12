@@ -70,6 +70,7 @@ import cz.mia.app.core.background.BleDeviceInfo
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("UNUSED_PARAMETER")
 fun BleDevicesScreen(
     viewModel: BleDevicesViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {}

@@ -1,0 +1,6 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+aiohttp>=3.9
+python-telegram-bot>=21.0
+telethon>=1.36
+dbus-python>=1.3

@@ -1,0 +1,2 @@
+--------- beginning of main
+04-10 14:24:33.140  7440  7536 D ProfileInstaller: Installing profile for cz.mia.app

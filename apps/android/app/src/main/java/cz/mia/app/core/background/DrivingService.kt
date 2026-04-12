@@ -15,7 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import cz.mia.app.MIAApplication.Companion.CHANNEL_DRIVING_SERVICE
 import cz.mia.app.MainActivity
 import cz.mia.app.R
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,43 +27,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import cz.mia.app.core.rules.RulesEngine
 import cz.mia.app.core.voice.VoiceManager
 import cz.mia.app.data.repositories.EventRepository
 import cz.mia.app.core.networking.ConnectivityObserver
 
-@AndroidEntryPoint
 class DrivingService : LifecycleService() {
 
-	@Inject
 	lateinit var bleManager: BLEManager
 
-	@Inject
 	lateinit var mqttManager: MQTTManager
 
-	@Inject
 	lateinit var obdManager: OBDManager
 
-	@Inject
 	lateinit var anprManager: ANPRManager
 
-	@Inject
 	lateinit var dvrManager: DVRManager
 
-	@Inject
 	lateinit var voiceManager: VoiceManager
 
-	@Inject
 	lateinit var rulesEngine: RulesEngine
 
-	@Inject
 	lateinit var events: EventRepository
 
-	@Inject
 	lateinit var connectivityObserver: ConnectivityObserver
 
-	@Inject
 	lateinit var systemPolicyManager: SystemPolicyManager
 
 	private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -77,6 +68,20 @@ class DrivingService : LifecycleService() {
 
 	override fun onCreate() {
 		super.onCreate()
+		val entryPoint = EntryPointAccessors.fromApplication(
+			applicationContext,
+			DrivingServiceEntryPoint::class.java,
+		)
+		bleManager = entryPoint.bleManager()
+		mqttManager = entryPoint.mqttManager()
+		obdManager = entryPoint.obdManager()
+		anprManager = entryPoint.anprManager()
+		dvrManager = entryPoint.dvrManager()
+		voiceManager = entryPoint.voiceManager()
+		rulesEngine = entryPoint.rulesEngine()
+		events = entryPoint.events()
+		connectivityObserver = entryPoint.connectivityObserver()
+		systemPolicyManager = entryPoint.systemPolicyManager()
 		startForeground(NOTIFICATION_ID, createNotification())
 	}
 
@@ -303,6 +308,21 @@ class DrivingService : LifecycleService() {
 		const val ACTION_PAUSE = "cz.mia.app.PAUSE_DRIVING_SERVICE"
 		const val ACTION_RESUME = "cz.mia.app.RESUME_DRIVING_SERVICE"
 	}
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface DrivingServiceEntryPoint {
+	fun bleManager(): BLEManager
+	fun mqttManager(): MQTTManager
+	fun obdManager(): OBDManager
+	fun anprManager(): ANPRManager
+	fun dvrManager(): DVRManager
+	fun voiceManager(): VoiceManager
+	fun rulesEngine(): RulesEngine
+	fun events(): EventRepository
+	fun connectivityObserver(): ConnectivityObserver
+	fun systemPolicyManager(): SystemPolicyManager
 }
 
 enum class ServiceState {

@@ -1,19 +1,12 @@
-"""
-ZeroMQ Messaging Client
-Implements Phase 1.3: ZeroMQ Core Messaging Layer
-
-Python client for communicating with the ZeroMQ broker using FlatBuffers messages.
-"""
+"""ZeroMQ messaging client for the JSON request/response broker path."""
 
 import asyncio
 import json
 import logging
 import uuid
-from typing import Any, Dict, Optional, Callable, Union
+from typing import Any, Dict, Optional
 import zmq
 import zmq.asyncio
-
-from ..flatbuffers import MessageBuilder, MessageParser
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +18,13 @@ class MessagingClient:
     Features:
     - Async/await support
     - Automatic request/response correlation
-    - FlatBuffers message serialization
+    - JSON message serialization
     - Connection retry logic
     - Request timeout handling
 
     Usage:
         async with MessagingClient("tcp://localhost:5555") as client:
-            # Send a GPIO request
-            response = await client.send_gpio_request("set", pin=17, value=1)
+            response = await client.send_gpio_set_request(pin=17, value=True)
             print(f"Response: {response}")
     """
 

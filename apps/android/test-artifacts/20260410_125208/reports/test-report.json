@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-04-10T12:53:11+02:00",
+  "device": "HT36TW903516",
+  "scenario": "full-flow",
+  "package": "cz.mia.app",
+  "apk_path": "/home/sparrow/projects/mia/apps/android/app/build/outputs/apk/debug/app-debug.apk",
+  "screenshots_captured": 4,
+  "logcat_available": true,
+  "output_dir": "/home/sparrow/projects/mia/apps/android/test-artifacts/20260410_125208"
+}

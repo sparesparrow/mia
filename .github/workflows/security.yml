@@ -3,17 +3,61 @@ name: Security
 on:
   push:
     branches: [main, develop]
+    paths:
+      - '.github/workflows/security.yml'
+      - '.tool-versions'
+      - 'requirements*.txt'
+      - 'agents/**'
+      - 'apps/**'
+      - 'containers/**'
+      - 'contracts/**'
+      - 'infra/**'
+      - 'Mia/**'
+      - 'modules/**'
+      - 'orchestration/**'
+      - 'platforms/**'
+      - 'protos/**'
+      - 'rpi/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'services/**'
+      - 'tests/**'
+      - 'tools/**'
   pull_request:
     branches: [main]
+    paths:
+      - '.github/workflows/security.yml'
+      - '.tool-versions'
+      - 'requirements*.txt'
+      - 'agents/**'
+      - 'apps/**'
+      - 'containers/**'
+      - 'contracts/**'
+      - 'infra/**'
+      - 'Mia/**'
+      - 'modules/**'
+      - 'orchestration/**'
+      - 'platforms/**'
+      - 'protos/**'
+      - 'rpi/**'
+      - 'schemas/**'
+      - 'scripts/**'
+      - 'services/**'
+      - 'tests/**'
+      - 'tools/**'
   schedule:
     - cron: '0 3 * * 1'
 
+permissions:
+  contents: read
+
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
   codeql:
+    if: github.event_name != 'pull_request'
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-latest
     permissions:
@@ -34,37 +78,76 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
 
-  trivy:
-    name: Trivy Scan
+  trivy-config:
+    if: github.event_name != 'schedule'
+    name: Trivy Config Scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Filesystem scan
-        uses: aquasecurity/trivy-action@0.18.0
-        with:
-          scan-type: fs
-          format: sarif
-          output: trivy-fs.sarif
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: trivy-fs.sarif
       - name: Config scan
-        continue-on-error: true
-        uses: aquasecurity/trivy-action@0.18.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: config
+          scan-ref: .
           format: sarif
           output: trivy-config.sarif
           exit-code: '0'
           scanners: misconfig
           severity: CRITICAL,HIGH
+          hide-progress: true
+          limit-severities-for-sarif: true
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-config.sarif
+          category: config
+
+  trivy-deep:
+    if: github.event_name == 'schedule'
+    name: Trivy Deep Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Filesystem scan
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          hide-progress: true
+          limit-severities-for-sarif: true
+      - name: Upload filesystem SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-fs.sarif
+          category: filesystem
+      - name: Config scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-config.sarif
+          exit-code: '0'
+          scanners: misconfig
+          severity: CRITICAL,HIGH
+          hide-progress: true
+          limit-severities-for-sarif: true
+          skip-setup-trivy: true
       - name: Upload config SARIF
         uses: github/codeql-action/upload-sarif@v3
         if: always() && hashFiles('trivy-config.sarif') != ''
@@ -72,19 +155,64 @@ jobs:
           sarif_file: trivy-config.sarif
           category: config
 
-  dependency-check:
+  dependency-audit:
+    if: github.event_name != 'schedule'
     name: Dependency Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Check dependencies
+          python-version: '3.12'
+          cache: pip
+      - name: Audit dependency manifests
         continue-on-error: true
         run: |
-          pip install safety bandit
-          if [ -f requirements.txt ]; then
-            safety check -r requirements.txt || true
+          python -m pip install --upgrade pip
+          python -m pip install pip-audit
+          for requirements_file in requirements.txt requirements-dev.txt requirements-ci.txt; do
+            if [ -f "$requirements_file" ]; then
+              echo "Auditing $requirements_file"
+              pip-audit -r "$requirements_file" || true
+            fi
+          done
+
+  bandit:
+    if: github.event_name != 'schedule'
+    name: Bandit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Run Bandit on maintained Python surfaces
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install bandit
+          targets=(
+            agents
+            apps/rpi-backend/py-api
+            apps/rpi-backend/shared
+            modules
+            orchestration
+            rpi
+            scripts
+            services
+            tools
+          )
+          existing_targets=()
+          for target in "${targets[@]}"; do
+            if [ -d "$target" ]; then
+              existing_targets+=("$target")
+            fi
+          done
+          if [ "${#existing_targets[@]}" -gt 0 ]; then
+            bandit -r "${existing_targets[@]}" -ll --exclude tests -f txt || true
+          else
+            echo "No Bandit targets found"
           fi
-          bandit -r modules/ rpi/ -ll --exclude tests -f txt || true

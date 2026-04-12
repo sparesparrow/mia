@@ -1,19 +1,4 @@
-namespace Mia.Vehicle;
+include "../schemas/vehicle_telemetry.fbs";
 
-enum DpfStatus : byte { Normal = 0, Regenerating = 1, Warning = 2 }
-
-table CitroenTelemetry {
-  rpm: float (id: 0);
-  speed_kmh: float (id: 1);
-  coolant_temp_c: float (id: 2);
-  // New PSA Specifics
-  dpf_soot_load_percent: float (id: 3);
-  dpf_soot_mass_g: float (id: 4);
-  dpf_regeneration_status: DpfStatus (id: 5);
-  eolys_additive_level_percent: float (id: 6);
-  eolys_additive_level_l: float (id: 7);
-  battery_voltage: float (id: 8);
-  oil_temperature_c: float (id: 9);
-}
-
-root_type CitroenTelemetry;
+file_identifier "CTEL";
+root_type Mia.VehicleTelemetry;

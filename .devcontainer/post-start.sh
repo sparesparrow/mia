@@ -3,12 +3,14 @@ set -euo pipefail
 
 echo "🌟 Starting AI-Servis development environment..."
 
+COMPOSE_FILE="infra/docker/docker-compose.dev.yml"
+
 # Check if services are already running
-if docker-compose ps | grep -q "Up"; then
+if docker compose -f "$COMPOSE_FILE" ps --status running | grep -q .; then
     echo "📊 Services already running"
 else
     echo "🚀 Starting development services..."
-    docker-compose -f docker-compose.dev.yml up -d
+    docker compose -f "$COMPOSE_FILE" up -d
     
     # Wait for services to be ready
     echo "⏳ Waiting for services to be ready..."

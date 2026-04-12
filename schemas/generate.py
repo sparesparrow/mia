@@ -53,36 +53,34 @@ def find_flatc():
 
     return None
 
+def _normalize_schema_files(schema_files):
+    if isinstance(schema_files, (str, Path)):
+        return [Path(schema_files)]
+    return [Path(schema_file) for schema_file in schema_files]
 
-def generate_bindings(schema_file, output_dir, language, extra_flags=None):
-    """Generate bindings for a given language from a FlatBuffers schema.
 
-    Args:
-        schema_file: Path to .fbs schema file
-        output_dir: Output directory for generated code
-        language: flatc flag (e.g., '--python', '--cpp', '--kotlin', '--ts', '--rust')
-        extra_flags: Additional flatc flags (list of strings)
-
-    Returns:
-        True on success, False on failure
-    """
+def generate_python_bindings(schema_files, output_dir):
+    """Generate Python bindings from one or more FlatBuffers schemas."""
     flatc = find_flatc()
     if not flatc:
         print("Error: flatc compiler not found. Install with: sudo apt install flatbuffers-compiler")
         return False
 
-    schema_path = Path(schema_file)
-    if not schema_path.exists():
-        print(f"Error: Schema file not found: {schema_file}")
+    schema_paths = _normalize_schema_files(schema_files)
+    missing = [str(schema_path) for schema_path in schema_paths if not schema_path.exists()]
+    if missing:
+        print(f"Error: Schema file not found: {', '.join(missing)}")
         return False
 
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    cmd = [flatc, language, '-o', str(output_path)]
-    if extra_flags:
-        cmd.extend(extra_flags)
-    cmd.append(str(schema_path))
+    cmd = [
+        flatc,
+        '--python',
+        '-o', str(output_path),
+        *[str(schema_path) for schema_path in schema_paths],
+    ]
 
     lang_name = language.lstrip('-')
     print(f"  Generating {lang_name}: {' '.join(cmd)}")
@@ -99,96 +97,155 @@ def generate_bindings(schema_file, output_dir, language, extra_flags=None):
         print(f"  -> ERROR {lang_name}: {e}")
         return False
 
+def generate_cpp_bindings(schema_files, output_dir):
+    """Generate C++ bindings from one or more FlatBuffers schemas."""
+    flatc = find_flatc()
+    if not flatc:
+        print("Error: flatc compiler not found. Install with: sudo apt install flatbuffers-compiler")
+        return False
 
-def find_all_schemas(project_root):
-    """Find all .fbs files in schemas/ and protos/ directories."""
+    schema_paths = _normalize_schema_files(schema_files)
+    missing = [str(schema_path) for schema_path in schema_paths if not schema_path.exists()]
+    if missing:
+        print(f"Error: Schema file not found: {', '.join(missing)}")
+        return False
+
+    output_path = Path(output_dir)
+
+    # Create output directory if it doesn't exist
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    cmd = [
+        flatc,
+        '--cpp',
+        '--gen-mutable',
+        '--scoped-enums',
+        '-o', str(output_path),
+        *[str(schema_path) for schema_path in schema_paths],
+    ]
+
+    print(f"Generating C++ bindings: {' '.join(cmd)}")
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=output_dir)
+        if result.returncode == 0:
+            print(f"✓ C++ bindings generated successfully in {output_path}")
+            return True
+        else:
+            print(f"✗ Failed to generate C++ bindings: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"✗ Error generating C++ bindings: {e}")
+        return False
+
+def generate_all(project_root, gen_python=True, gen_cpp=True):
+    """Generate bindings from all known FlatBuffers schemas in the project.
+
+    Schema sources and their outputs:
+    schemas/vehicle_telemetry.fbs + schemas/mia.fbs -> Mia/*.py / platforms/cpp/core/*.h
+    schemas/vehicle_telemetry.fbs + protos/vehicle.fbs -> canonical vehicle bindings with wire wrapper validation
+    cpp-audio webgrab.fbs -> webgrab_generated.h (C++ only)
+    """
+    success = True
     schemas = []
-    for search_dir in ['schemas', 'protos']:
-        schema_dir = project_root / search_dir
-        if schema_dir.exists():
-            for fbs in sorted(schema_dir.glob('*.fbs')):
-                schemas.append(fbs)
-    return schemas
+
+    vehicle_shared_schema = project_root / "schemas" / "vehicle_telemetry.fbs"
+
+    # 1. Core schema (GPIO, sensors, system, LED, vehicle base)
+    core_schema = project_root / "schemas" / "mia.fbs"
+    if core_schema.exists() and vehicle_shared_schema.exists():
+        schemas.append(("core (mia.fbs)", core_schema))
+        if gen_python:
+            print("\n[core] Generating Python bindings from mia.fbs ...")
+            if not generate_python_bindings([vehicle_shared_schema, core_schema], project_root):
+                success = False
+        if gen_cpp:
+            print("\n[core] Generating C++ bindings from mia.fbs ...")
+            cpp_out = project_root / "platforms" / "cpp" / "core"
+            if not generate_cpp_bindings([vehicle_shared_schema, core_schema], cpp_out):
+                success = False
+    else:
+        print(f"⚠ Schema not found: {core_schema} or {vehicle_shared_schema}")
+
+    # 2. Vehicle wire wrapper (validates root type + file identifier for PUB/SUB telemetry)
+    vehicle_schema = project_root / "protos" / "vehicle.fbs"
+    if vehicle_schema.exists() and vehicle_shared_schema.exists():
+        schemas.append(("vehicle (vehicle.fbs)", vehicle_schema))
+        if gen_python:
+            print("\n[vehicle] Generating Python bindings from vehicle.fbs ...")
+            if not generate_python_bindings([vehicle_shared_schema, vehicle_schema], project_root):
+                success = False
+    else:
+        print(f"⚠ Schema not found: {vehicle_schema} or {vehicle_shared_schema}")
+
+    # 3. C++ protocol schema (webgrab.fbs) — C++ only
+    webgrab_schema = project_root / "apps" / "rpi-backend" / "cpp-audio" / "core" / "webgrab.fbs"
+    if webgrab_schema.exists():
+        schemas.append(("protocol (webgrab.fbs)", webgrab_schema))
+        if gen_cpp:
+            print("\n[protocol] Generating C++ bindings from webgrab.fbs ...")
+            webgrab_out = webgrab_schema.parent
+            if not generate_cpp_bindings(webgrab_schema, webgrab_out):
+                success = False
+    else:
+        print(f"⚠ Schema not found: {webgrab_schema}")
+
+    print("\n" + "-" * 50)
+    print(f"Schemas processed: {', '.join(name for name, _ in schemas)}")
+    return success
 
 
 def main():
     parser = argparse.ArgumentParser(description='Generate FlatBuffers bindings')
-    parser.add_argument('--python', action='store_true', default=False,
+    parser.add_argument('--python', action='store_true', default=None,
                        help='Generate Python bindings')
-    parser.add_argument('--cpp', action='store_true', default=False,
+    parser.add_argument('--no-python', action='store_true', default=False,
+                       help='Skip Python bindings')
+    parser.add_argument('--cpp', action='store_true', default=None,
                        help='Generate C++ bindings')
-    parser.add_argument('--kotlin', action='store_true', default=False,
-                       help='Generate Kotlin bindings')
-    parser.add_argument('--ts', action='store_true', default=False,
-                       help='Generate TypeScript bindings')
-    parser.add_argument('--rust', action='store_true', default=False,
-                       help='Generate Rust bindings')
-    parser.add_argument('--all-schemas', action='store_true', default=False,
-                       help='Process all .fbs files in schemas/ and protos/')
+    parser.add_argument('--no-cpp', action='store_true', default=False,
+                       help='Skip C++ bindings')
+    parser.add_argument('--all', action='store_true', default=False,
+                       help='Generate from all known schemas (mia.fbs, vehicle.fbs, webgrab.fbs)')
     parser.add_argument('--output-dir', default='..',
                        help='Output directory relative to schemas/ (default: ..)')
     parser.add_argument('--schema', default='mia.fbs',
-                       help='Schema file to process (default: mia.fbs)')
+                       help='Schema file to process when not using --all (default: mia.fbs)')
 
     args = parser.parse_args()
 
-    # If no language flags specified, default to python + cpp
-    if not any([args.python, args.cpp, args.kotlin, args.ts, args.rust]):
-        args.python = True
-        args.cpp = True
+    gen_python = not args.no_python
+    gen_cpp = not args.no_cpp
 
-    # Get script directory and resolve paths
     script_dir = Path(__file__).parent.absolute()
-    project_root = script_dir.parent
-    output_dir = (script_dir / args.output_dir).absolute()
+    project_root = (script_dir / args.output_dir).absolute()
 
-    # Determine which schemas to process
-    if args.all_schemas:
-        schema_files = find_all_schemas(project_root)
-    else:
-        schema_files = [script_dir / args.schema]
-
-    print(f"FlatBuffers Schema Generation (flatc {FLATC_VERSION})")
-    print(f"Output: {output_dir}")
-    print(f"Schemas: {len(schema_files)} file(s)")
+    print(f"FlatBuffers Schema Generation")
+    print(f"Project root: {project_root}")
     print("-" * 50)
 
-    success = True
+    if args.all:
+        success = generate_all(project_root, gen_python=gen_python, gen_cpp=gen_cpp)
+    else:
+        schema_file = script_dir / args.schema
+        print(f"Schema: {schema_file}")
+        print("-" * 50)
 
-    for schema_file in schema_files:
-        print(f"\nProcessing: {schema_file.name}")
-
-        if args.python:
-            if not generate_bindings(schema_file, output_dir, '--python'):
+        success = True
+        if gen_python:
+            print("Generating Python bindings...")
+            if not generate_python_bindings(schema_file, project_root):
                 success = False
-
-        if args.cpp:
-            cpp_output = output_dir / "platforms" / "cpp" / "core"
-            if not generate_bindings(schema_file, cpp_output, '--cpp',
-                                     ['--gen-mutable', '--scoped-enums']):
-                success = False
-
-        if args.kotlin:
-            kotlin_output = output_dir / "generated" / "kotlin"
-            if not generate_bindings(schema_file, kotlin_output, '--kotlin'):
-                success = False
-
-        if args.ts:
-            ts_output = output_dir / "generated" / "ts"
-            if not generate_bindings(schema_file, ts_output, '--ts'):
-                success = False
-
-        if args.rust:
-            rust_output = output_dir / "generated" / "rust"
-            if not generate_bindings(schema_file, rust_output, '--rust'):
+        if gen_cpp:
+            print("Generating C++ bindings...")
+            cpp_output = project_root / "platforms" / "cpp" / "core"
+            if not generate_cpp_bindings(schema_file, cpp_output):
                 success = False
 
     if success:
-        print("\n" + "-" * 50)
-        print("All bindings generated successfully!")
+        print("✓ All bindings generated successfully!")
     else:
-        print("\n" + "-" * 50)
-        print("Some bindings failed to generate. Check errors above.")
+        print("✗ Some bindings failed to generate. Check errors above.")
         sys.exit(1)
 
 

@@ -7,13 +7,15 @@ Requires=bluetooth.service
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/opt/ai-servis/rpi/services
-ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/services/ble_advertiser.py
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/ble_advertiser.py'
 Restart=always
+WatchdogSec=0
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/opt/ai-servis/rpi
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 
 # Capabilities for Bluetooth
 CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN

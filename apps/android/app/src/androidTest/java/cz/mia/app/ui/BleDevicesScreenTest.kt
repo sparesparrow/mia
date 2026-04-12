@@ -12,8 +12,7 @@ import cz.mia.app.core.background.BleConnectionState
 import cz.mia.app.core.background.BleDeviceInfo
 import cz.mia.app.ui.screens.devices.BleDevicesScreen
 import cz.mia.app.ui.screens.devices.BleDevicesViewModel
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -22,17 +21,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * UI tests for BleDevicesScreen.
  */
-@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
 class BleDevicesScreenTest {
 
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 1)
+    @get:Rule
     val composeRule = createComposeRule()
 
     private lateinit var mockBleManager: BLEManager
@@ -41,8 +38,6 @@ class BleDevicesScreenTest {
 
     @Before
     fun setup() {
-        hiltRule.inject()
-        
         mockBleManager = mockk(relaxed = true)
         every { mockBleManager.connectionState } returns connectionStateFlow
         every { mockBleManager.discoveredDevices } returns discoveredDevicesFlow

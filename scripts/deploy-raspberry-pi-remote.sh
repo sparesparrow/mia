@@ -4,7 +4,7 @@
 # Deploys AI-SERVIS components to Raspberry Pi via SSH
 #
 
-set -e
+set -euo pipefail
 
 # Configuration
 RPI_USER="${RPI_USER:-mia}"
@@ -20,6 +20,16 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+SSH_BASE_CMD=(ssh -p "$RPI_PORT")
+RSYNC_SSH_CMD=(ssh -p "$RPI_PORT")
+
+if [ -n "$SSH_KEY" ]; then
+    SSH_BASE_CMD+=(-i "$SSH_KEY")
+    RSYNC_SSH_CMD+=(-i "$SSH_KEY")
+fi
+
+SSH_TARGET=("${RPI_USER}@${RPI_HOST}")
+
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}  AI-SERVIS Remote Raspberry Pi Deployment${NC}"
 echo -e "${BLUE}========================================${NC}"
@@ -28,16 +38,9 @@ echo -e "Target: ${GREEN}${RPI_USER}@${RPI_HOST}:${RPI_PORT}${NC}"
 echo -e "Path: ${GREEN}${RPI_PATH}${NC}"
 echo ""
 
-# Build SSH command
-SSH_CMD="ssh"
-if [ -n "$SSH_KEY" ]; then
-    SSH_CMD="$SSH_CMD -i $SSH_KEY"
-fi
-SSH_CMD="$SSH_CMD -p $RPI_PORT ${RPI_USER}@${RPI_HOST}"
-
 # Test SSH connection
 echo -e "${YELLOW}Testing SSH connection...${NC}"
-if ! $SSH_CMD "echo 'SSH connection successful'" > /dev/null 2>&1; then
+if ! "${SSH_BASE_CMD[@]}" "${SSH_TARGET[@]}" "echo 'SSH connection successful'" > /dev/null 2>&1; then
     echo -e "${RED}Error: Cannot connect to ${RPI_USER}@${RPI_HOST}:${RPI_PORT}${NC}"
     echo ""
     echo "Troubleshooting:"
@@ -51,13 +54,13 @@ echo ""
 
 # Create remote directory structure
 echo -e "${YELLOW}Creating remote directory structure...${NC}"
-$SSH_CMD "mkdir -p ${RPI_PATH}/{modules/hardware-bridge,arduino/led_strip_controller,scripts}"
+"${SSH_BASE_CMD[@]}" "${SSH_TARGET[@]}" "mkdir -p ${RPI_PATH}/{modules/hardware-bridge,arduino/led_strip_controller,scripts}"
 echo -e "${GREEN}✓ Directories created${NC}"
 echo ""
 
 # Deploy Python modules
 echo -e "${YELLOW}Deploying Python modules...${NC}"
-rsync -avz -e "ssh -p $RPI_PORT ${SSH_KEY:+-i $SSH_KEY}" \
+rsync -avz -e "${RSYNC_SSH_CMD[*]}" \
     --exclude='__pycache__' \
     --exclude='*.pyc' \
     --exclude='.git' \
@@ -71,7 +74,7 @@ echo ""
 
 # Deploy Arduino code (for reference/documentation)
 echo -e "${YELLOW}Deploying Arduino code and documentation...${NC}"
-rsync -avz -e "ssh -p $RPI_PORT ${SSH_KEY:+-i $SSH_KEY}" \
+rsync -avz -e "${RSYNC_SSH_CMD[*]}" \
     arduino/led_strip_controller/ \
     ${RPI_USER}@${RPI_HOST}:${RPI_PATH}/arduino/led_strip_controller/
 echo -e "${GREEN}✓ Arduino code deployed${NC}"
@@ -80,7 +83,7 @@ echo ""
 # Deploy requirements
 echo -e "${YELLOW}Deploying requirements...${NC}"
 if [ -f modules/hardware-bridge/requirements.txt ]; then
-    rsync -avz -e "ssh -p $RPI_PORT ${SSH_KEY:+-i $SSH_KEY}" \
+    rsync -avz -e "${RSYNC_SSH_CMD[*]}" \
         modules/hardware-bridge/requirements.txt \
         ${RPI_USER}@${RPI_HOST}:${RPI_PATH}/modules/hardware-bridge/
 fi
@@ -89,7 +92,7 @@ echo ""
 
 # Install Python dependencies on remote
 echo -e "${YELLOW}Installing Python dependencies on Raspberry Pi...${NC}"
-$SSH_CMD "cd ${RPI_PATH} && \
+"${SSH_BASE_CMD[@]}" "${SSH_TARGET[@]}" "cd ${RPI_PATH} && \
     python3 -m pip install --user -r modules/hardware-bridge/requirements.txt 2>&1 | tail -5"
 echo -e "${GREEN}✓ Dependencies installed${NC}"
 echo ""
@@ -103,13 +106,13 @@ Target: ${RPI_USER}@${RPI_HOST}:${RPI_PATH}
 Arduino Port: /dev/ttyUSB0
 EOF
 )
-echo "$DEPLOY_INFO" | $SSH_CMD "cat > ${RPI_PATH}/DEPLOYMENT_INFO.txt"
+echo "$DEPLOY_INFO" | "${SSH_BASE_CMD[@]}" "${SSH_TARGET[@]}" "cat > ${RPI_PATH}/DEPLOYMENT_INFO.txt"
 echo -e "${GREEN}✓ Deployment info created${NC}"
 echo ""
 
 # Test deployment
 echo -e "${YELLOW}Testing deployment...${NC}"
-$SSH_CMD "cd ${RPI_PATH} && \
+"${SSH_BASE_CMD[@]}" "${SSH_TARGET[@]}" "cd ${RPI_PATH} && \
     python3 -c 'import sys; sys.path.insert(0, \"modules/hardware-bridge\"); from arduino_led_controller import ArduinoLEDController; print(\"✓ Module imports successfully\")'" || {
     echo -e "${YELLOW}Warning: Module test failed, but deployment completed${NC}"
 }

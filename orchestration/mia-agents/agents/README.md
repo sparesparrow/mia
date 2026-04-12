@@ -16,9 +16,9 @@ This agent bridges an ELM327 OBD-II adapter to the Mia system via ZeroMQ. It que
     ```
 
 2.  **FlatBuffers Generation**:
-    The agent expects the `Mia.Vehicle` python package to be generated from `protos/vehicle.fbs`.
+    The agent expects the canonical `Mia.VehicleTelemetry` bindings plus the vehicle wire wrapper validation generated from `schemas/vehicle_telemetry.fbs` and `protos/vehicle.fbs`.
     ```bash
-    flatc --python -o . protos/vehicle.fbs
+    python3 schemas/generate.py --all --no-cpp
     ```
     (This is handled by the `conanfile.py` build step as well).
 

@@ -10,7 +10,7 @@
 #   ./scripts/build-hardware-server-rpi.sh --clean  # Clean and rebuild
 # =============================================================================
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -25,6 +25,16 @@ NC='\033[0m'
 BUILD_DIR="$PROJECT_ROOT/build-hardware-server"
 CMAKE_FILE="$PROJECT_ROOT/platforms/cpp/core/CMakeLists-rpi-minimal.txt"
 SOURCE_DIR="$PROJECT_ROOT/platforms/cpp/core"
+
+get_cpu_count() {
+    if command -v nproc >/dev/null 2>&1; then
+        nproc
+    elif command -v sysctl >/dev/null 2>&1; then
+        sysctl -n hw.ncpu
+    else
+        printf '1\n'
+    fi
+}
 
 # Parse arguments
 CLEAN_BUILD=false
@@ -72,6 +82,7 @@ mkdir -p "$BUILD_DIR"
 
 # Create a temporary source directory with just the files we need
 TEMP_SRC="$BUILD_DIR/src"
+rm -rf "$TEMP_SRC"
 mkdir -p "$TEMP_SRC"
 
 # Copy only the required source files
@@ -84,9 +95,9 @@ cp "$SOURCE_DIR/HardwareControlServer.h" "$TEMP_SRC/"
 cd "$BUILD_DIR"
 
 # Determine generator
-GENERATOR=""
+GENERATOR_ARGS=()
 if command -v ninja &> /dev/null; then
-    GENERATOR="-G Ninja"
+    GENERATOR_ARGS=(-G Ninja)
     echo -e "${CYAN}Using Ninja build system${NC}"
 else
     echo -e "${CYAN}Using Make build system${NC}"
@@ -95,7 +106,7 @@ fi
 # Configure
 echo ""
 echo -e "${CYAN}Configuring CMake...${NC}"
-cmake $GENERATOR \
+cmake "${GENERATOR_ARGS[@]}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     "$TEMP_SRC"
@@ -103,7 +114,7 @@ cmake $GENERATOR \
 # Build
 echo ""
 echo -e "${CYAN}Building...${NC}"
-cmake --build . --parallel $(nproc)
+cmake --build . --parallel "$(get_cpu_count)"
 
 echo ""
 echo -e "${GREEN}========================================${NC}"

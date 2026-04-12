@@ -1,0 +1,17 @@
+[Unit]
+Description=MIA Boot Self-Test
+DefaultDependencies=no
+Before=zmq-broker.service mia-api.service mia-gpio-worker.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WatchdogSec=0
+ExecStart=/opt/mia/infra/deploy/rpi/selftest.sh
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target

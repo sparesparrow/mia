@@ -3,7 +3,7 @@
 # This script can be sent to RPi via scp and executed remotely
 # Usage: scp scripts/deploy-ble-obd-service.sh mia@mia.local:/tmp/ && ssh mia@mia.local 'sudo bash /tmp/deploy-ble-obd-service.sh'
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -37,17 +37,24 @@ fi
 log_info "Starting BLE OBD Service deployment..."
 
 # Configuration
-PROJECT_DIR="/opt/ai-servis"
-SERVICES_DIR="$PROJECT_DIR/rpi/services"
-SERVICE_USER="mia"
-SERVICE_GROUP="mia"
+PROJECT_DIR="${MIA_INSTALL_DIR:-/opt/mia}"
+SERVICES_DIR="$PROJECT_DIR/apps/rpi-backend/py-api/services"
+SERVICE_USER="${MIA_USER:-mia}"
+SERVICE_GROUP="${MIA_GROUP:-$SERVICE_USER}"
+LOG_DIR="${MIA_LOG_DIR:-/var/log/mia}"
+SYSTEMD_DIR="${MIA_SYSTEMD_DIR:-/etc/systemd/system}"
+
+if ! id "$SERVICE_USER" >/dev/null 2>&1; then
+    log_info "Creating service user $SERVICE_USER..."
+    useradd -r -s /bin/bash -m -G bluetooth,dialout "$SERVICE_USER"
+fi
 
 # Create directories
 log_info "Creating directories..."
 mkdir -p "$SERVICES_DIR"
-mkdir -p /var/log/ai-servis
+mkdir -p "$LOG_DIR"
 chown -R "$SERVICE_USER:$SERVICE_GROUP" "$PROJECT_DIR"
-chown -R "$SERVICE_USER:$SERVICE_GROUP" /var/log/ai-servis
+chown -R "$SERVICE_USER:$SERVICE_GROUP" "$LOG_DIR"
 
 # Install dependencies if needed
 log_info "Checking dependencies..."
@@ -59,7 +66,7 @@ fi
 
 if ! python3 -c "import zmq" 2>/dev/null; then
     log_info "Installing pyzmq..."
-    pip3 install pyzmq || log_warning "Could not install pyzmq"
+    python3 -m pip install pyzmq || python3 -m pip install --break-system-packages pyzmq || log_warning "Could not install pyzmq"
 fi
 
 # Extract and deploy BLE OBD service file
@@ -606,24 +613,25 @@ chown "$SERVICE_USER:$SERVICE_GROUP" "$SERVICES_DIR/ble_obd_service.py"
 
 # Deploy systemd service file
 log_info "Deploying systemd service file..."
-cat > /etc/systemd/system/mia-ble-obd.service << 'ENDOFFILE'
+cat > "$SYSTEMD_DIR/mia-ble-obd.service" << ENDOFFILE
 [Unit]
 Description=MIA BLE OBD Service - BLE GATT Server for OBD-II Communication
-After=network.target bluetooth.service mia-broker.service
+After=network.target bluetooth.service zmq-broker.service
 Requires=bluetooth.service
-Wants=mia-broker.service
+Wants=zmq-broker.service
 
 [Service]
 Type=simple
-User=mia
-Group=mia
-WorkingDirectory=/opt/ai-servis/rpi/services
-ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/services/ble_obd_service.py
+User=$SERVICE_USER
+Group=$SERVICE_GROUP
+WorkingDirectory=$PROJECT_DIR/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/ble_obd_service.py'
 Restart=always
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=PYTHONPATH=/opt/ai-servis/rpi
+Environment=PYTHONPATH=$PROJECT_DIR/apps/rpi-backend/py-api
 
 # Capabilities for Bluetooth
 CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN

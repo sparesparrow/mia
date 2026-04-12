@@ -56,7 +56,6 @@ class BLEManagerTest {
         Dispatchers.resetMain()
         unmockkObject(PermissionHelper)
     }
-    }
 
     @Test
     fun `connectionState starts as Disconnected`() {
@@ -283,5 +282,4 @@ class BLEManagerTest {
         assertNotNull(bleManager.connectionState)
         assertNotNull(bleManager.discoveredDevices)
     }
->>>>>>> a424be7 (feat(android): implement comprehensive BLE, API, and architecture improvements):android/app/src/test/java/cz/aiservis/app/core/background/BLEManagerTest.kt
 }

@@ -1,0 +1,198 @@
+{
+  "run_id": "20260410_142324",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "deploy",
+      "steps": [
+        {
+          "name": "deploy",
+          "verdict": "SKIP",
+          "duration_s": 0.0,
+          "detail": "--skip-deploy",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "",
+      "finished": ""
+    },
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "PASS",
+          "duration_s": 1.0563246950041503,
+          "detail": "status=healthy, uptime=1264511s",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "PASS",
+          "duration_s": 0.015201951988274232,
+          "detail": "devices response: {\"devices\":[],\"count\":0,\"timestamp\":\"2026-04-10T14:23:25.398526\"}",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "PASS",
+          "duration_s": 0.01093008799944073,
+          "detail": "telemetry response: {\"telemetry\":{},\"timestamp\":\"2026-04-10T14:23:25.409453\"}",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "PASS",
+          "duration_s": 0.022803433996159583,
+          "detail": "features catalog not deployed (OK \u2014 optional)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "PASS",
+          "duration_s": 0.40022476299782284,
+          "detail": "ZMQ broker not running (non-fatal \u2014 API can work standalone)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_selftest",
+          "verdict": "PASS",
+          "duration_s": 0.367020471021533,
+          "detail": "SELFTEST_NOT_DEPLOYED",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:23:24.329884+00:00",
+      "finished": "2026-04-10T12:23:26.202515+00:00"
+    },
+    {
+      "phase": "android",
+      "steps": [
+        {
+          "name": "adb_device_check",
+          "verdict": "PASS",
+          "duration_s": 0.00816630499321036,
+          "detail": "HT36TW903516           device usb:2-1.3 product:lineage_m7 model:One device:m7 transport_id:1",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "build_apk",
+          "verdict": "PASS",
+          "duration_s": 45.60361479499261,
+          "detail": "APK built: 74366KB, API\u2192http://192.168.200.134:8000/",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "install_apk",
+          "verdict": "PASS",
+          "duration_s": 8.591275782004232,
+          "detail": "installed",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "grant_permissions",
+          "verdict": "PASS",
+          "duration_s": 0.6324760020070244,
+          "detail": "granted 3/7 permissions",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "launch_app",
+          "verdict": "PASS",
+          "duration_s": 4.3542661770188715,
+          "detail": "launched",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "verify_app_running",
+          "verdict": "PASS",
+          "duration_s": 1.1200354140019044,
+          "detail": "running (pid=7440), screenshot saved",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:23:26.202796+00:00",
+      "finished": "2026-04-10T12:24:26.512748+00:00"
+    },
+    {
+      "phase": "e2e",
+      "steps": [
+        {
+          "name": "android_reaches_api",
+          "verdict": "PASS",
+          "duration_s": 1.3250551380042452,
+          "detail": "Android device reached Pi API: HTTP 200",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_registration",
+          "verdict": "PASS",
+          "duration_s": 0.2700402899936307,
+          "detail": "register (android): {\"detail\":\"Invalid device type: android\"}",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "command_relay",
+          "verdict": "PASS",
+          "duration_s": 5.03049970799475,
+          "detail": "GPIO read: status=200, body={\"success\":false,\"error\":\"Timeout\"}",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "telemetry_flow",
+          "verdict": "PASS",
+          "duration_s": 0.005043217010097578,
+          "detail": "telemetry OK: {\"telemetry\":{},\"timestamp\":\"2026-04-10T14:24:33.142442\"}",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "websocket_connect",
+          "verdict": "PASS",
+          "duration_s": 0.1265217010222841,
+          "detail": "streaming/command probe returned HTTP 405",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "logcat_health",
+          "verdict": "PASS",
+          "duration_s": 3.228587845020229,
+          "detail": "logcat clean (2 lines), saved to logcat_e2e.txt",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "screenshot_final",
+          "verdict": "PASS",
+          "duration_s": 1.105146177986171,
+          "detail": "final screenshot: e2e_final_142436.png",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:24:26.512887+00:00",
+      "finished": "2026-04-10T12:24:37.603877+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [],
+  "total_duration_s": 73.27427970399731
+}

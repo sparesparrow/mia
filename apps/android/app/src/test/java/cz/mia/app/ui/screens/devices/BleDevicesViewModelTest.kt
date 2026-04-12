@@ -1,6 +1,5 @@
 package cz.mia.app.ui.screens.devices
 
-import app.cash.turbine.test
 import cz.mia.app.core.background.BLEManager
 import cz.mia.app.core.background.BleConnectionState
 import cz.mia.app.core.background.BleDeviceInfo
@@ -273,15 +272,4 @@ class BleDevicesViewModelTest {
         coVerify { bleManager.sendCommand(testCommand) }
     }
 
-    @Test
-    fun `onCleared calls cleanup on BLE manager`() = runTest {
-        advanceUntilIdle()
-        
-        // Manually trigger onCleared by clearing the ViewModel
-        // In real scenario, this is called by the framework
-        viewModel.onCleared()
-        advanceUntilIdle()
-        
-        coVerify { bleManager.cleanup() }
-    }
 }

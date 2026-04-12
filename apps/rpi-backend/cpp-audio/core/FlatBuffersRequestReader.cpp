@@ -1,5 +1,7 @@
 #include "FlatBuffersRequestReader.h"
 #include "webgrab_generated.h"
+
+namespace fb = Mia::Protocol;
 #include <flatbuffers/verifier.h>
 
 FlatBuffersRequestReader::FlatBuffersRequestReader()
@@ -15,19 +17,19 @@ bool FlatBuffersRequestReader::next(RequestEnvelope& out) {
     if (!receiveMessage()) return false;
 
     // Try to parse as Message union first
-    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
-    if (msg && msg->request_type() != webgrab::Request_NONE) {
+    auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
+    if (msg && msg->request_type() != fb::Request::NONE) {
         switch (msg->request_type()) {
-            case webgrab::Request_DownloadRequest:
+            case fb::Request::DownloadRequest:
                 current_type_ = RequestType::Download;
                 break;
-            case webgrab::Request_DownloadStatusRequest:
+            case fb::Request::DownloadStatusRequest:
                 current_type_ = RequestType::Status;
                 break;
-            case webgrab::Request_DownloadAbortRequest:
+            case fb::Request::DownloadAbortRequest:
                 current_type_ = RequestType::Abort;
                 break;
-            case webgrab::Request_ShutdownRequest:
+            case fb::Request::ShutdownRequest:
                 current_type_ = RequestType::Shutdown;
                 break;
             default:
@@ -37,13 +39,13 @@ bool FlatBuffersRequestReader::next(RequestEnvelope& out) {
     } else {
         // Fallback: try to parse as individual message types
         flatbuffers::Verifier verifier(buffer_.data(), buffer_.size());
-        if (verifier.VerifyBuffer<webgrab::DownloadRequest>(nullptr)) {
+        if (verifier.VerifyBuffer<fb::DownloadRequest>(nullptr)) {
             current_type_ = RequestType::Download;
-        } else if (verifier.VerifyBuffer<webgrab::DownloadStatusRequest>(nullptr)) {
+        } else if (verifier.VerifyBuffer<fb::DownloadStatusRequest>(nullptr)) {
             current_type_ = RequestType::Status;
-        } else if (verifier.VerifyBuffer<webgrab::DownloadAbortRequest>(nullptr)) {
+        } else if (verifier.VerifyBuffer<fb::DownloadAbortRequest>(nullptr)) {
             current_type_ = RequestType::Abort;
-        } else if (verifier.VerifyBuffer<webgrab::ShutdownRequest>(nullptr)) {
+        } else if (verifier.VerifyBuffer<fb::ShutdownRequest>(nullptr)) {
             current_type_ = RequestType::Shutdown;
         } else {
             current_type_ = RequestType::Unknown;
@@ -80,35 +82,35 @@ bool FlatBuffersRequestReader::receiveMessage() {
 std::string FlatBuffersRequestReader::getDownloadUrl() const {
     if (current_type_ == RequestType::Download) {
         // Try Message union first
-        auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
-        if (msg && msg->request_type() == webgrab::Request_DownloadRequest) {
+        auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
+        if (msg && msg->request_type() == fb::Request::DownloadRequest) {
             auto req = msg->request_as_DownloadRequest();
             return req && req->url() ? req->url()->str() : "";
         }
         // Fallback to direct parsing
-        auto req = flatbuffers::GetRoot<webgrab::DownloadRequest>(buffer_.data());
+        auto req = flatbuffers::GetRoot<fb::DownloadRequest>(buffer_.data());
         return req && req->url() ? req->url()->str() : "";
     }
     return "";
 }
 
 uint32_t FlatBuffersRequestReader::getSessionId() const {
-    auto msg = flatbuffers::GetRoot<webgrab::Message>(buffer_.data());
+    auto msg = flatbuffers::GetRoot<fb::Message>(buffer_.data());
     
     if (current_type_ == RequestType::Status) {
-        if (msg && msg->request_type() == webgrab::Request_DownloadStatusRequest) {
+        if (msg && msg->request_type() == fb::Request::DownloadStatusRequest) {
             auto req = msg->request_as_DownloadStatusRequest();
-            return req ? req->sessionId() : 0;
+            return req ? req->session_id() : 0;
         }
-        auto req = flatbuffers::GetRoot<webgrab::DownloadStatusRequest>(buffer_.data());
-        return req ? req->sessionId() : 0;
+        auto req = flatbuffers::GetRoot<fb::DownloadStatusRequest>(buffer_.data());
+        return req ? req->session_id() : 0;
     } else if (current_type_ == RequestType::Abort) {
-        if (msg && msg->request_type() == webgrab::Request_DownloadAbortRequest) {
+        if (msg && msg->request_type() == fb::Request::DownloadAbortRequest) {
             auto req = msg->request_as_DownloadAbortRequest();
-            return req ? req->sessionId() : 0;
+            return req ? req->session_id() : 0;
         }
-        auto req = flatbuffers::GetRoot<webgrab::DownloadAbortRequest>(buffer_.data());
-        return req ? req->sessionId() : 0;
+        auto req = flatbuffers::GetRoot<fb::DownloadAbortRequest>(buffer_.data());
+        return req ? req->session_id() : 0;
     }
     return 0;
 }
@@ -117,13 +119,13 @@ bool FlatBuffersRequestReader::isValid() const {
     flatbuffers::Verifier verifier(buffer_.data(), buffer_.size());
     switch (current_type_) {
     case RequestType::Download:
-        return verifier.VerifyBuffer<webgrab::DownloadRequest>(nullptr);
+        return verifier.VerifyBuffer<fb::DownloadRequest>(nullptr);
     case RequestType::Status:
-        return verifier.VerifyBuffer<webgrab::DownloadStatusRequest>(nullptr);
+        return verifier.VerifyBuffer<fb::DownloadStatusRequest>(nullptr);
     case RequestType::Abort:
-        return verifier.VerifyBuffer<webgrab::DownloadAbortRequest>(nullptr);
+        return verifier.VerifyBuffer<fb::DownloadAbortRequest>(nullptr);
     case RequestType::Shutdown:
-        return verifier.VerifyBuffer<webgrab::ShutdownRequest>(nullptr);
+        return verifier.VerifyBuffer<fb::ShutdownRequest>(nullptr);
     default:
         return false;
     }

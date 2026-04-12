@@ -7,15 +7,16 @@ Wants=zmq-broker.service
 Type=simple
 User=mia
 Group=mia
-WorkingDirectory=/home/mia/projects/mia/rpi/api
-Environment="PATH=/home/mia/.ai-servis/bin:/usr/bin:/usr/local/bin"
-Environment="PYTHONHOME=/home/mia/.ai-servis"
-Environment="PYTHONPATH=/home/mia/projects/mia/rpi:/home/mia/.ai-servis/lib/python3.13/site-packages"
-ExecStart=/home/mia/.ai-servis/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" -m uvicorn api.main:app --host 0.0.0.0 --port 8000'
 Restart=always
 RestartSec=10
+# WatchdogSec disabled — uvicorn doesn't call sd_notify(WATCHDOG=1)
+WatchdogSec=0
 StandardOutput=journal
 StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 
 [Install]
 WantedBy=multi-user.target

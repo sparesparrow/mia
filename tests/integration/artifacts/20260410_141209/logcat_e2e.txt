@@ -1,0 +1,10 @@
+--------- beginning of main
+04-10 14:13:55.117  6925  6925 D Sentry  : io.sentry.auto-init read: false
+04-10 14:13:55.117  6925  6925 I Sentry  : Retrieving auto-init from AndroidManifest.xml
+04-10 14:13:55.511  6925  6925 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemjob.SystemJobService
+04-10 14:13:55.511  6925  6925 D WM-Schedulers: Created SystemJobScheduler and enabled SystemJobService
+04-10 14:13:55.934  6925  6925 E cz.mia.app: Invalid ID 0x00000000.
+04-10 14:13:56.170  6925  6925 I Choreographer: Skipped 56 frames!  The application may be doing too much work on its main thread.
+04-10 14:13:57.558  6925  6925 W cz.mia.app: Accessing hidden method Landroid/view/View;->getViewRootImpl()Landroid/view/ViewRootImpl; (greylist, reflection, allowed)
+04-10 14:13:57.559  6925  6925 W cz.mia.app: Accessing hidden field Landroid/view/View$AttachInfo;->mVisibleInsets:Landroid/graphics/Rect; (greylist, reflection, allowed)
+04-10 14:13:57.559  6925  6925 W cz.mia.app: Accessing hidden field Landroid/view/ViewRootImpl;->mAttachInfo:Landroid/view/View$AttachInfo; (greylist, reflection, allowed)

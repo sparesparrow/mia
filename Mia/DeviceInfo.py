@@ -106,68 +106,36 @@ class DeviceInfo(object):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         return o == 0
 
-def DeviceInfoStart(builder):
-    builder.StartObject(7)
-
+def DeviceInfoStart(builder): builder.StartObject(7)
 def Start(builder):
-    DeviceInfoStart(builder)
-
-def DeviceInfoAddDeviceId(builder, deviceId):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(deviceId), 0)
-
+    return DeviceInfoStart(builder)
+def DeviceInfoAddDeviceId(builder, deviceId): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(deviceId), 0)
 def AddDeviceId(builder, deviceId):
-    DeviceInfoAddDeviceId(builder, deviceId)
-
-def DeviceInfoAddDeviceType(builder, deviceType):
-    builder.PrependInt8Slot(1, deviceType, 0)
-
+    return DeviceInfoAddDeviceId(builder, deviceId)
+def DeviceInfoAddDeviceType(builder, deviceType): builder.PrependInt8Slot(1, deviceType, 0)
 def AddDeviceType(builder, deviceType):
-    DeviceInfoAddDeviceType(builder, deviceType)
-
-def DeviceInfoAddName(builder, name):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(name), 0)
-
+    return DeviceInfoAddDeviceType(builder, deviceType)
+def DeviceInfoAddName(builder, name): builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(name), 0)
 def AddName(builder, name):
-    DeviceInfoAddName(builder, name)
-
-def DeviceInfoAddCapabilities(builder, capabilities):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(capabilities), 0)
-
+    return DeviceInfoAddName(builder, name)
+def DeviceInfoAddCapabilities(builder, capabilities): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(capabilities), 0)
 def AddCapabilities(builder, capabilities):
-    DeviceInfoAddCapabilities(builder, capabilities)
-
-def DeviceInfoStartCapabilitiesVector(builder, numElems):
-    return builder.StartVector(4, numElems, 4)
-
+    return DeviceInfoAddCapabilities(builder, capabilities)
+def DeviceInfoStartCapabilitiesVector(builder, numElems): return builder.StartVector(4, numElems, 4)
 def StartCapabilitiesVector(builder, numElems):
     return DeviceInfoStartCapabilitiesVector(builder, numElems)
-
-def DeviceInfoAddStatus(builder, status):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(status), 0)
-
+def DeviceInfoAddStatus(builder, status): builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(status), 0)
 def AddStatus(builder, status):
-    DeviceInfoAddStatus(builder, status)
-
-def DeviceInfoAddLastSeen(builder, lastSeen):
-    builder.PrependUint64Slot(5, lastSeen, 0)
-
+    return DeviceInfoAddStatus(builder, status)
+def DeviceInfoAddLastSeen(builder, lastSeen): builder.PrependUint64Slot(5, lastSeen, 0)
 def AddLastSeen(builder, lastSeen):
-    DeviceInfoAddLastSeen(builder, lastSeen)
-
-def DeviceInfoAddMetadata(builder, metadata):
-    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(metadata), 0)
-
+    return DeviceInfoAddLastSeen(builder, lastSeen)
+def DeviceInfoAddMetadata(builder, metadata): builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(metadata), 0)
 def AddMetadata(builder, metadata):
-    DeviceInfoAddMetadata(builder, metadata)
-
-def DeviceInfoStartMetadataVector(builder, numElems):
-    return builder.StartVector(1, numElems, 1)
-
+    return DeviceInfoAddMetadata(builder, metadata)
+def DeviceInfoStartMetadataVector(builder, numElems): return builder.StartVector(1, numElems, 1)
 def StartMetadataVector(builder, numElems):
     return DeviceInfoStartMetadataVector(builder, numElems)
-
-def DeviceInfoEnd(builder):
-    return builder.EndObject()
-
+def DeviceInfoEnd(builder): return builder.EndObject()
 def End(builder):
     return DeviceInfoEnd(builder)

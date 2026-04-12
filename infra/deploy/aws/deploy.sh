@@ -2,7 +2,7 @@
 # AI-SERVIS Multi-Site AWS Deployment Script
 # Deploys different customer segments to separate S3 buckets with CloudFront
 
-set -e
+set -euo pipefail
 
 # Configuration
 AWS_REGION="${AWS_REGION:-us-east-1}"

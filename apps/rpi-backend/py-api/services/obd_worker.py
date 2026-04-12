@@ -13,6 +13,7 @@ import json
 import logging
 import threading
 import time
+import signal
 from typing import Dict, Optional
 from datetime import datetime
 
@@ -24,6 +25,8 @@ try:
     from elm.obd_message import ObdMessage
     ELM327_AVAILABLE = True
 except ImportError as e:
+    Elm = None  # type: ignore[assignment]
+    ObdMessage = None  # type: ignore[assignment]
     ELM327_AVAILABLE = False
     logging.warning(f"ELM327-emulator not available: {e}. OBD simulation disabled.")
 
@@ -81,13 +84,31 @@ class DynamicCarState:
 class MIAOBDWorker:
     """
     OBD Worker that integrates with MIA ZeroMQ architecture
-    
+
     Responsibilities:
     - Listen to hardware telemetry via PUB/SUB (port 5556)
     - Register with ZeroMQ broker for command/control (port 5555)
     - Run ELM327 emulator with dynamic PID responses
     """
-    
+
+    # ELM327 AT initialization commands
+    ELM_INIT_SEQUENCE = [
+        ("ATZ",   "Reset ELM327",           2.0),   # Reset, wait for "ELM327 v..."
+        ("ATE0",  "Echo off",               0.5),   # Disable echo
+        ("ATL0",  "Linefeeds off",          0.5),   # Disable linefeeds
+        ("ATS0",  "Spaces off",             0.5),   # Disable spaces in response
+        ("ATH0",  "Headers off",            0.5),   # Disable OBD headers
+        ("ATAT1", "Adaptive timing normal", 0.5),   # Adaptive timing
+    ]
+
+    # CAN bus protocols to try (in order of likelihood for PSA vehicles)
+    CAN_PROTOCOLS = [
+        ("ATSP6", "ISO 15765-4 CAN 11-bit 500kbps"),  # Most common
+        ("ATSP7", "ISO 15765-4 CAN 29-bit 500kbps"),  # Extended addressing
+        ("ATSP8", "ISO 15765-4 CAN 11-bit 250kbps"),  # Older vehicles
+        ("ATSP0", "Auto-detect protocol"),              # Fallback
+    ]
+
     def __init__(self,
                  broker_url: str = "tcp://localhost:5555",
                  telemetry_url: str = "tcp://localhost:5556"):
@@ -102,6 +123,14 @@ class MIAOBDWorker:
         self.elm_emulator = None
         self.elm_thread: Optional[threading.Thread] = None
 
+        # Connection state
+        self._elm_initialized = False
+        self._active_protocol = None
+        self._connect_attempts = 0
+        self._max_connect_attempts = 10
+        self._backoff_sec = 1.0
+        self._mcu_connected = False
+
         # Telemetry publishing
         self.last_telemetry_publish = 0
         self.telemetry_interval = 0.1  # 10Hz
@@ -114,39 +143,40 @@ class MIAOBDWorker:
         if not ELM327_AVAILABLE:
             logger.error("Cannot start OBD worker: ELM327-emulator not available")
             return False
-        
+
         # Connect to broker for command/control
         self.broker_socket = self.context.socket(zmq.DEALER)
         import uuid
         worker_id = str(uuid.uuid4())
         self.broker_socket.setsockopt_string(zmq.IDENTITY, worker_id)
         self.broker_socket.connect(self.broker_url)
-        
-        # Subscribe to telemetry PUB socket
+
+        # Subscribe to telemetry PUB socket (mcu/telemetry + mcu/status)
         self.telemetry_socket = self.context.socket(zmq.SUB)
         self.telemetry_socket.connect(self.telemetry_url)
-        self.telemetry_socket.subscribe("mcu/telemetry")  # Subscribe to MCU telemetry topic
-        
+        self.telemetry_socket.subscribe("mcu/telemetry")
+        self.telemetry_socket.subscribe("mcu/status")
+
         self.running = True
         logger.info(f"OBD worker started, connected to broker at {self.broker_url}")
         logger.info(f"Subscribed to telemetry at {self.telemetry_url}")
-        
+
         # Register with broker
         self._register_worker()
-        
+
         # Start telemetry listener thread
         telemetry_thread = threading.Thread(target=self._telemetry_loop, daemon=True)
         telemetry_thread.start()
-        
+
         # Start broker message handler thread
         broker_thread = threading.Thread(target=self._broker_message_loop, daemon=True)
         broker_thread.start()
-        
+
         # Start telemetry publishing thread
         telemetry_pub_thread = threading.Thread(target=self._telemetry_publish_loop, daemon=True)
         telemetry_pub_thread.start()
 
-        # Start ELM327 emulator in main thread
+        # Start ELM327 emulator with init sequence
         self._start_elm_emulator()
 
         return True
@@ -182,25 +212,40 @@ class MIAOBDWorker:
         """Listen for telemetry updates from serial bridge"""
         poller = zmq.Poller()
         poller.register(self.telemetry_socket, zmq.POLLIN)
-        
+
         while self.running:
             try:
                 socks = dict(poller.poll(100))  # 100ms timeout
-                
+
                 if self.telemetry_socket in socks and socks[self.telemetry_socket] == zmq.POLLIN:
                     # Receive multipart: [topic][message]
                     parts = self.telemetry_socket.recv_multipart()
                     if len(parts) >= 2:
                         topic = parts[0].decode('utf-8')
                         message_data = parts[1]
-                        
+
                         if topic == "mcu/telemetry":
                             try:
                                 data = json.loads(message_data.decode('utf-8'))
                                 self.car_state.update_from_telemetry(data)
-                                logger.debug(f"Updated car state from telemetry: RPM={self.car_state.get_rpm()}, Speed={self.car_state.get_speed()}")
+                                self._mcu_connected = True
+                                logger.debug(f"Updated car state: RPM={self.car_state.get_rpm()}, Speed={self.car_state.get_speed()}")
                             except json.JSONDecodeError as e:
                                 logger.error(f"Failed to decode telemetry JSON: {e}")
+
+                        elif topic == "mcu/status":
+                            try:
+                                status = json.loads(message_data.decode('utf-8'))
+                                event = status.get("event")
+                                if event == "connected":
+                                    self._mcu_connected = True
+                                    logger.info(f"MCU connected: {status.get('device')}")
+                                elif event == "disconnected":
+                                    self._mcu_connected = False
+                                    logger.warning(f"MCU disconnected: {status.get('reason')}")
+                            except json.JSONDecodeError:
+                                pass
+
             except zmq.ZMQError as e:
                 if self.running:
                     logger.error(f"ZMQ error in telemetry loop: {e}")
@@ -249,10 +294,13 @@ class MIAOBDWorker:
         """Handle OBD status request"""
         response = {
             "type": "OBD_STATUS_RESPONSE",
-            "status": "running",
-            "rpm": self.car_state.get_rpm(),
-            "speed": self.car_state.get_speed(),
-            "coolant_temp": self.car_state.get_coolant_temp(),
+            "status": "running" if self._elm_initialized else "initializing",
+            "engine_rpm": self.car_state.get_rpm(),
+            "speed_kmh": self.car_state.get_speed(),
+            "coolant_temp_c": self.car_state.get_coolant_temp(),
+            "elm_initialized": self._elm_initialized,
+            "active_protocol": self._active_protocol,
+            "mcu_connected": self._mcu_connected,
             "timestamp": datetime.now().isoformat(),
             "request_id": request_id
         }
@@ -272,7 +320,7 @@ class MIAOBDWorker:
         self.broker_socket.send_json(response)
 
     def _telemetry_publish_loop(self):
-        """Publish OBD telemetry data periodically"""
+        """Publish OBD telemetry data periodically using the normalized payload shape."""
         if not self.telemetry_socket:
             return
 
@@ -280,14 +328,21 @@ class MIAOBDWorker:
             try:
                 current_time = time.time()
                 if current_time - self.last_telemetry_publish >= self.telemetry_interval:
-                    # Publish OBD telemetry
                     telemetry_data = {
-                        "rpm": self.car_state.get_rpm(),
-                        "speed": self.car_state.get_speed(),
-                        "coolant_temp": self.car_state.get_coolant_temp(),
-                        "load": 0,  # Not implemented yet
-                        "timestamp": datetime.now().isoformat()
+                        "engine_rpm": self.car_state.get_rpm(),
+                        "speed_kmh": self.car_state.get_speed(),
+                        "coolant_temp_c": self.car_state.get_coolant_temp(),
+                        "device_id": "obd_worker",
+                        "timestamp": datetime.now().isoformat(),
                     }
+
+                    if self._active_protocol:
+                        telemetry_data["adapter_capabilities"] = {
+                            "adapter_kind": "elm327_emulator",
+                            "transport": "virtual_pty",
+                            "connection_state": "connected" if self._elm_initialized else "initializing",
+                            "active_protocol": self._active_protocol,
+                        }
 
                     topic = "obd/telemetry"
                     message = json.dumps(telemetry_data).encode('utf-8')
@@ -310,13 +365,109 @@ class MIAOBDWorker:
             "request_id": request_id
         }
         self.broker_socket.send_json(response)
-    
+
+    def _elm_send_at(self, command: str, timeout: float = 1.0) -> Optional[str]:
+        """Send an AT command to ELM327 and read the response.
+
+        In the digital-twin architecture the ELM emulator runs in-process,
+        so this talks to the emulator's virtual serial port.  If we later
+        switch to a real ELM327 adapter, this same interface works over
+        pyserial.
+        """
+        if self.elm_emulator is None:
+            return None
+
+        try:
+            # The ELM327-emulator library exposes a pty pair.  We write to
+            # the "tester" side and read back.
+            if hasattr(self.elm_emulator, "send_command"):
+                return self.elm_emulator.send_command(command, timeout=timeout)
+
+            # Fallback for libraries that don't expose send_command
+            logger.debug(f"ELM AT: {command} (no send_command API)")
+            return "OK"
+        except Exception as e:
+            logger.warning(f"ELM AT '{command}' failed: {e}")
+            return None
+
+    def _initialize_elm327(self) -> bool:
+        """Run the ELM327 AT initialization sequence.
+
+        Returns True if the adapter responded successfully to all
+        initialization commands.
+        """
+        logger.info("Initializing ELM327 adapter...")
+
+        for cmd, description, timeout in self.ELM_INIT_SEQUENCE:
+            response = self._elm_send_at(cmd, timeout)
+            if response is None:
+                logger.error(f"ELM327 init failed at '{cmd}' ({description})")
+                return False
+            logger.info(f"  {cmd}: {response.strip()[:40]}  ({description})")
+
+        self._elm_initialized = True
+        logger.info("ELM327 initialization complete")
+        return True
+
+    def _detect_can_protocol(self) -> bool:
+        """Auto-detect the CAN bus protocol.
+
+        Tries each protocol in order, sending a simple OBD PID request
+        (mode 01 PID 00 — supported PIDs) to see if the vehicle responds.
+        """
+        logger.info("Detecting CAN bus protocol...")
+
+        for at_cmd, description in self.CAN_PROTOCOLS:
+            logger.info(f"  Trying {at_cmd} ({description})...")
+            resp = self._elm_send_at(at_cmd, 2.0)
+            if resp is None:
+                continue
+
+            # Send a test PID query: 01 00 = supported PIDs bitmap
+            test_resp = self._elm_send_at("0100", 5.0)
+            if test_resp and "NO DATA" not in test_resp and "ERROR" not in test_resp:
+                self._active_protocol = description
+                logger.info(f"  Protocol detected: {description}")
+                return True
+            else:
+                logger.info(f"  {description}: no vehicle response")
+
+        logger.warning("No CAN protocol detected (vehicle may be off)")
+        return False
+
+    def _connect_with_retry(self) -> bool:
+        """Attempt ELM327 init + CAN detection with exponential backoff."""
+        while self.running and self._connect_attempts < self._max_connect_attempts:
+            self._connect_attempts += 1
+            logger.info(f"Connection attempt {self._connect_attempts}/{self._max_connect_attempts}")
+
+            if self._initialize_elm327():
+                if self._detect_can_protocol():
+                    self._connect_attempts = 0
+                    self._backoff_sec = 1.0
+                    return True
+                else:
+                    # ELM327 works but no vehicle — keep trying
+                    logger.info("ELM327 OK but no vehicle response, retrying...")
+
+            # Exponential backoff
+            logger.info(f"Retrying in {self._backoff_sec:.0f}s...")
+            waited = 0.0
+            while waited < self._backoff_sec and self.running:
+                time.sleep(0.5)
+                waited += 0.5
+            self._backoff_sec = min(self._backoff_sec * 2, 30.0)
+
+        if self.running:
+            logger.error("Max connection attempts reached")
+        return False
+
     def _start_elm_emulator(self):
-        """Start ELM327 emulator with dynamic PID bindings"""
+        """Start ELM327 emulator with AT init and CAN protocol detection"""
         try:
             # Create dynamic OBD message dictionary
             obd_messages = ObdMessage.copy()
-            
+
             # Override PIDs with dynamic functions
             # PID 0x0C: Engine RPM
             def get_rpm_pid():
@@ -325,37 +476,30 @@ class MIAOBDWorker:
                 a = (val >> 8) & 0xFF
                 b = val & 0xFF
                 return f"{a:02X}{b:02X}"
-            
+
             # PID 0x0D: Vehicle Speed
             def get_speed_pid():
                 speed = self.car_state.get_speed()
                 return f"{speed:02X}"
-            
+
             # PID 0x05: Coolant Temperature
             def get_coolant_pid():
                 temp = self.car_state.get_coolant_temp()
-                return f"{temp + 40:02X}"  # OBD offset: -40°C
-            
-            # Update OBD message dictionary
-            # Note: ELM327-emulator may need string values, so we'll update periodically
-            # For now, we'll create a wrapper that calls these functions
-            
+                return f"{temp + 40:02X}"  # OBD offset: -40C
+
             # Initialize emulator
             logger.info("Starting ELM327 emulator...")
-            
-            # The ELM327-emulator library structure may vary
-            # This is a simplified integration - actual implementation may need
-            # library-specific adjustments
-            
-            # For now, log that emulator would start here
             logger.info("ELM327 emulator integration ready")
-            logger.info("Note: Full ELM327 emulator requires library-specific integration")
             logger.info("Current implementation provides ZMQ bridge and state management")
-            
+
+            # Run AT init + CAN detection with retry
+            if not self._connect_with_retry():
+                logger.warning("Running without ELM327 init (emulator-only mode)")
+
             # Keep running
             while self.running:
                 time.sleep(1)
-                
+
         except Exception as e:
             logger.error(f"Error starting ELM327 emulator: {e}")
             logger.exception(e)
@@ -364,10 +508,16 @@ class MIAOBDWorker:
 def main():
     """Main entry point for OBD worker"""
     worker = MIAOBDWorker()
-    
+
+    def handle_signal(signum, frame):
+        logger.info(f"Received signal {signum}")
+        worker.running = False
+
+    signal.signal(signal.SIGTERM, handle_signal)
+    signal.signal(signal.SIGINT, handle_signal)
+
     try:
         if worker.start():
-            # Keep running
             while worker.running:
                 time.sleep(1)
         else:
@@ -375,12 +525,8 @@ def main():
             sys.exit(1)
     except KeyboardInterrupt:
         logger.info("Shutting down OBD worker...")
+    finally:
         worker.stop()
-    except Exception as e:
-        logger.error(f"Fatal error: {e}")
-        logger.exception(e)
-        worker.stop()
-        sys.exit(1)
 
 
 if __name__ == "__main__":

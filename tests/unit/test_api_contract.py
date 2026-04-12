@@ -10,12 +10,24 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'apps', 'rpi-backend', 'py-api'))
 
 from fastapi.testclient import TestClient
+from api import main as api_main
 from api.main import app
 
 
 @pytest.fixture
 def client():
     return TestClient(app)
+
+
+def _clear_api_runtime_state():
+    api_main.telemetry_cache.clear()
+    api_main.device_registry_simple.clear()
+
+    registry = getattr(api_main, "device_registry", None)
+    if registry is not None:
+        registry._persistence_path = None
+        with registry._lock:
+            registry._devices.clear()
 
 
 class TestDevicesContract:
@@ -79,6 +91,43 @@ class TestStatusContract:
         assert "cpu" in body
         assert isinstance(body["cpu"], dict)
         assert "timestamp" in body
+
+
+class TestTelemetryContract:
+    """GET /telemetry should surface MCU serial bridge data by device_id."""
+
+    def test_telemetry_contains_mcu_payload(self, client):
+        _clear_api_runtime_state()
+        api_main._handle_mcu_telemetry(
+            {
+                "device_id": "esp32-obd-001",
+                "device_type": "esp32",
+                "adc_value": 512,
+                "pot1": 512,
+            }
+        )
+
+        resp = client.get("/telemetry")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["telemetry"]["esp32-obd-001"]["adc_value"] == 512
+        assert body["telemetry"]["esp32-obd-001"]["source"] == "mcu/telemetry"
+
+    def test_devices_reflect_serial_bridge_status(self, client):
+        _clear_api_runtime_state()
+        api_main._handle_mcu_status(
+            {
+                "event": "connected",
+                "device": "/dev/ttyUSB0",
+            }
+        )
+
+        resp = client.get("/devices")
+        assert resp.status_code == 200
+        body = resp.json()
+        devices = {device["device_id"]: device for device in body["devices"]}
+        assert "serial-ttyUSB0" in devices
+        assert devices["serial-ttyUSB0"]["status"] == "online"
 
 
 class TestSessionLifecycle:

@@ -327,8 +327,6 @@ private fun PolicyAdvisory(message: String?, mode: String, battery: Int) {
 
 @Composable
 private fun CitroenControls(latest: TelemetryEntity?) {
-	val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-
 	Column(modifier = Modifier.fillMaxWidth()) {
 		Text("Citroën C4 Controls", style = MaterialTheme.typography.titleMedium)
 
@@ -361,7 +359,7 @@ private fun CitroenControls(latest: TelemetryEntity?) {
 						// This would send regeneration command to citroen-c4-bridge
 					},
 					modifier = Modifier.weight(1f),
-					enabled = latest?.dpfStatus == "ok" || latest?.dpfStatus == "warning",
+					enabled = latest.dpfStatus == "ok" || latest.dpfStatus == "warning",
 					colors = ButtonDefaults.buttonColors(
 						containerColor = Color(0xFF4CAF50) // Green for regeneration
 					)

@@ -1,0 +1,39 @@
+{
+  "metrics": {
+    "step_pass_rate": 0.4,
+    "phase_success_rate": 0.0,
+    "execution_efficiency": 1.0,
+    "error_rate": 0.4
+  },
+  "remediation_success_rate": 0.0,
+  "next_focus": "coverage-expansion",
+  "top_diagnoses": [
+    {
+      "diagnosis": "Profile mismatch",
+      "count": 1
+    },
+    {
+      "diagnosis": "unknown",
+      "count": 1
+    }
+  ],
+  "focus_histogram": {
+    "coverage-expansion": 1,
+    "device-profile": 1
+  },
+  "applied_remediations": [],
+  "knowledge_entries": 2,
+  "regression": {
+    "previous_run": "20260410_151959",
+    "regressions": [],
+    "improvements": [],
+    "new_steps": [
+      "target_profile",
+      "target_network_profile",
+      "android_usb_transport",
+      "android_root_verification",
+      "android_network_profile"
+    ],
+    "prev_pass_rate": 1.0
+  }
+}

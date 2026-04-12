@@ -226,8 +226,8 @@ void CommandProcessingJob::execute() {
         
         // Send success response
         StatusResponse response;
-        response.session_id = sessionId;
-        response.message = result;
+        response.sessionId = sessionId;
+        response.status = result;
         responseWriter->write(response);
         
     } catch (const std::exception& e) {
@@ -235,7 +235,6 @@ void CommandProcessingJob::execute() {
         
         // Send error response
         ErrorResponse response;
-        response.session_id = sessionId;
         response.error = "Command processing failed: " + std::string(e.what());
         responseWriter->write(response);
     }
@@ -554,8 +553,9 @@ void CoreOrchestrator::acceptLoop() {
 
 void CoreOrchestrator::handleClient(std::unique_ptr<TcpSocket> clientSocket) {
     try {
-        auto reader = std::make_unique<FlatBuffersRequestReader>(clientSocket.get());
-        auto writer = std::make_unique<FlatBuffersResponseWriter>(clientSocket.get());
+        auto sharedSocket = std::shared_ptr<TcpSocket>(clientSocket.release());
+        auto reader = std::make_unique<FlatBuffersRequestReader>();
+        auto writer = std::make_unique<FlatBuffersResponseWriter>(sharedSocket);
         
         processClientRequest(std::move(reader), writer.get());
         
@@ -568,25 +568,32 @@ void CoreOrchestrator::processClientRequest(std::unique_ptr<IRequestReader> read
                                           IResponseWriter* writer) {
     RequestEnvelope envelope;
     
+    // Downcast for legacy processMessage which needs FlatBuffersRequestReader
+    auto* fbReader = dynamic_cast<FlatBuffersRequestReader*>(reader.get());
+    
     while (reader->good() && reader->next(envelope)) {
         // Check request type and process accordingly
-        if (envelope.type == RequestType::VoiceCommand) {
+        if (envelope.type == RequestType::Download) {
             // Extract voice command data
             std::string command = "example voice command"; // Extract from envelope
             std::string context = "{}"; // Extract context
             
             // Create and execute command processing job
             auto job = std::make_unique<CommandProcessingJob>(
-                command, context, envelope.session_id, writer, this);
+                command, context, 0, writer, this);
             
             job->execute();
         }
-        else {
+        else if (fbReader) {
             // Delegate to existing message processor for other request types
-            auto legacyJob = messageProcessor->processMessage(std::move(reader), writer);
+            // Release ownership and wrap in unique_ptr<FlatBuffersRequestReader>
+            reader.release();
+            auto legacyReader = std::unique_ptr<FlatBuffersRequestReader>(fbReader);
+            auto legacyJob = messageProcessor->processMessage(std::move(legacyReader), writer);
             if (legacyJob) {
                 legacyJob->execute();
             }
+            return; // Reader ownership transferred
         }
     }
 }

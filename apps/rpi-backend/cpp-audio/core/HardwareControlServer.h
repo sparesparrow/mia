@@ -1,6 +1,6 @@
 #pragma once
 
-// Use libgpiod C API for compatibility with both 1.x and 2.x
+// Use the libgpiod C line API shipped on Raspberry Pi OS Bookworm.
 #include <gpiod.h>
 #include <json/json.h>
 #include <mosquitto.h>
@@ -12,6 +12,8 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 #include <mutex>
 
 namespace WebGrab {
@@ -21,19 +23,17 @@ namespace WebGrab {
  */
 struct GPIOLineInfo {
     struct gpiod_line* line;
-    struct gpiod_line_request* request;
     unsigned int offset;
     bool is_output;
 
-    GPIOLineInfo() : line(nullptr), request(nullptr), offset(0), is_output(false) {}
+    GPIOLineInfo() : line(nullptr), offset(0), is_output(false) {}
 };
 
 /**
  * @brief Hardware Control Server for GPIO operations
  *
  * This server provides GPIO control capabilities for Raspberry Pi
- * via hybrid TCP + MQTT communication. Uses libgpiod C API for
- * maximum compatibility across different libgpiod versions.
+ * via hybrid TCP + MQTT communication using the libgpiod 1.x line API.
  */
 class HardwareControlServer {
 public:
@@ -41,6 +41,11 @@ public:
                                    const std::string& mqtt_host = "localhost",
                                    int mqtt_port = 1883);
     ~HardwareControlServer();
+
+    HardwareControlServer(const HardwareControlServer&) = delete;
+    HardwareControlServer& operator=(const HardwareControlServer&) = delete;
+    HardwareControlServer(HardwareControlServer&&) = delete;
+    HardwareControlServer& operator=(HardwareControlServer&&) = delete;
 
     bool Start();
     void Stop();
@@ -56,6 +61,7 @@ private:
     std::string mqtt_host;
     int mqtt_port;
     struct mosquitto* mqtt_client;
+    bool mqttLibraryInitialized;
     std::thread mqttThread;
     std::mutex mqttMutex;
 
@@ -67,11 +73,18 @@ private:
     // Server methods
     bool InitializeGPIO();
     void CleanupGPIO();
+    void CleanupMQTT();
     bool SetupServerSocket();
+    void CloseServerSocket();
+    void ShutdownClientConnections();
     bool InitializeMQTT();
     void AcceptConnections();
     void HandleClient(int clientSocket);
     void MQTTLoop();
+
+    std::vector<std::thread> clientThreads;
+    std::unordered_set<int> clientSockets;
+    std::mutex clientMutex;
 
     // MQTT callbacks
     static void on_mqtt_connect(struct mosquitto* mosq, void* obj, int rc);

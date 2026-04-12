@@ -79,50 +79,27 @@ class CommandAck(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def CommandAckStart(builder):
-    builder.StartObject(5)
-
+def CommandAckStart(builder): builder.StartObject(5)
 def Start(builder):
-    CommandAckStart(builder)
-
-def CommandAckAddCommandId(builder, commandId):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(commandId), 0)
-
+    return CommandAckStart(builder)
+def CommandAckAddCommandId(builder, commandId): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(commandId), 0)
 def AddCommandId(builder, commandId):
-    CommandAckAddCommandId(builder, commandId)
-
-def CommandAckAddStatus(builder, status):
-    builder.PrependInt8Slot(1, status, 0)
-
+    return CommandAckAddCommandId(builder, commandId)
+def CommandAckAddStatus(builder, status): builder.PrependInt8Slot(1, status, 0)
 def AddStatus(builder, status):
-    CommandAckAddStatus(builder, status)
-
-def CommandAckAddErrorMessage(builder, errorMessage):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(errorMessage), 0)
-
+    return CommandAckAddStatus(builder, status)
+def CommandAckAddErrorMessage(builder, errorMessage): builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(errorMessage), 0)
 def AddErrorMessage(builder, errorMessage):
-    CommandAckAddErrorMessage(builder, errorMessage)
-
-def CommandAckAddResponseData(builder, responseData):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(responseData), 0)
-
+    return CommandAckAddErrorMessage(builder, errorMessage)
+def CommandAckAddResponseData(builder, responseData): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(responseData), 0)
 def AddResponseData(builder, responseData):
-    CommandAckAddResponseData(builder, responseData)
-
-def CommandAckStartResponseDataVector(builder, numElems):
-    return builder.StartVector(1, numElems, 1)
-
+    return CommandAckAddResponseData(builder, responseData)
+def CommandAckStartResponseDataVector(builder, numElems): return builder.StartVector(1, numElems, 1)
 def StartResponseDataVector(builder, numElems):
     return CommandAckStartResponseDataVector(builder, numElems)
-
-def CommandAckAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(4, timestamp, 0)
-
+def CommandAckAddTimestamp(builder, timestamp): builder.PrependUint64Slot(4, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    CommandAckAddTimestamp(builder, timestamp)
-
-def CommandAckEnd(builder):
-    return builder.EndObject()
-
+    return CommandAckAddTimestamp(builder, timestamp)
+def CommandAckEnd(builder): return builder.EndObject()
 def End(builder):
     return CommandAckEnd(builder)

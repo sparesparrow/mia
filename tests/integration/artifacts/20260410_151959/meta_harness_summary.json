@@ -1,0 +1,23 @@
+{
+  "metrics": {
+    "step_pass_rate": 1.0,
+    "phase_success_rate": 1.0,
+    "execution_efficiency": 1.0,
+    "error_rate": 0.0
+  },
+  "remediation_success_rate": 0.0,
+  "next_focus": "coverage-expansion",
+  "top_diagnoses": [],
+  "focus_histogram": {},
+  "applied_remediations": [],
+  "knowledge_entries": 0,
+  "regression": {
+    "previous_run": "20260410_142324",
+    "regressions": [],
+    "improvements": [],
+    "new_steps": [
+      "target_service_snapshot"
+    ],
+    "prev_pass_rate": 0
+  }
+}

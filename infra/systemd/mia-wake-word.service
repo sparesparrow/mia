@@ -1,0 +1,24 @@
+[Unit]
+Description=MIA Wake Word Detector (Hey Mia)
+After=mia-audio-capture.service
+Requires=mia-audio-capture.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/wake_word.py'
+Restart=always
+RestartSec=5
+WatchdogSec=0
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_AUDIO_PORT=5558
+Environment=ZMQ_PUB_PORT=5559
+Environment=WAKE_WORD=hey_mia
+Environment=SENSITIVITY=0.5
+
+[Install]
+WantedBy=multi-user.target

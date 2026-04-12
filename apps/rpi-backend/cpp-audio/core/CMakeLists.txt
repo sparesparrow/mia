@@ -111,12 +111,18 @@ if(WIN32)
 endif()
 
 # Raspberry Pi Main Application
-add_executable(mia-rpi main_raspberry_pi.cpp)
+add_executable(mia-rpi main_raspberry_pi.cpp HardwareControlServer.cpp)
 target_link_libraries(mia-rpi
     webgrab_lib
     ${JSONCPP_LIBRARIES}
+    ${GPIOD_LIBRARIES}
+    ${MOSQUITTO_LIBRARIES}
 )
-target_include_directories(mia-rpi PRIVATE ${JSONCPP_INCLUDE_DIRS})
+target_include_directories(mia-rpi PRIVATE
+    ${JSONCPP_INCLUDE_DIRS}
+    ${GPIOD_INCLUDE_DIRS}
+    ${MOSQUITTO_INCLUDE_DIRS}
+)
 
 # Unit tests
 enable_testing()

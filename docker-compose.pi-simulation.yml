@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   # Raspberry Pi simulation environment
   pi-gateway-sim:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/pi-simulation
       dockerfile: Dockerfile
@@ -40,6 +40,8 @@ services:
 
   # GPIO Hardware Simulator
   gpio-simulator:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/gpio-simulator
       dockerfile: Dockerfile
@@ -62,6 +64,8 @@ services:
 
   # ESP32 Device Simulators
   esp32-obd-sim:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
@@ -81,6 +85,8 @@ services:
       - mia-pi-network
 
   esp32-io-sim:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
@@ -100,6 +106,8 @@ services:
       - mia-pi-network
 
   esp32-cam-sim:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/esp32-simulator
       dockerfile: Dockerfile
@@ -123,6 +131,8 @@ services:
 
   # Vehicle Data Generator
   vehicle-data-generator:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/vehicle-simulator
       dockerfile: Dockerfile
@@ -144,6 +154,8 @@ services:
 
   # Hardware Performance Monitor
   hardware-monitor:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/hardware-monitor
       dockerfile: Dockerfile
@@ -178,11 +190,19 @@ services:
       - ./containers/mosquitto/mosquitto-pi-sim.conf:/mosquitto/config/mosquitto.conf
       - ./volumes/mqtt-pi-data:/mosquitto/data
       - ./volumes/mqtt-pi-logs:/mosquitto/log
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -t mia/pi-healthcheck -m ok >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - mia-pi-network
 
   # Simulation Control Panel
   simulation-control:
+    profiles:
+      - legacy-sim
     build:
       context: ./containers/simulation-control
       dockerfile: Dockerfile
@@ -200,7 +220,6 @@ services:
       - redis
     networks:
       - mia-pi-network
-      - mia-dev-network  # Connect to main network for Redis
 
   # Redis for simulation state
   redis:
@@ -211,15 +230,18 @@ services:
       - "6380:6379"  # Different port to avoid conflicts
     volumes:
       - ./volumes/redis-sim-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - mia-pi-network
-      - mia-dev-network
 
 networks:
   mia-pi-network:
     driver: bridge
-  mia-dev-network:
-    external: true
 
 volumes:
   pi-sim-config:

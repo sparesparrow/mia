@@ -7,177 +7,453 @@ on:
         description: 'Issue ID to resolve'
         required: true
         type: number
+      base_branch:
+        description: 'Base branch for the fix'
+        required: true
+        default: main
+        type: string
+      dry_run:
+        description: 'Generate and validate changes without pushing a branch or PR'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.issue_id }}
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: '3.12'
+  MAX_FILE_CHANGES: '10'
 
 jobs:
   resolve-issue:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     permissions:
       contents: write
-      issues: read
+      issues: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.base_branch }}
           fetch-depth: 0
-      
-      - name: Fetch issue details
-        id: get-issue
+
+      - name: Fetch and validate issue details
+        id: issue
         uses: actions/github-script@v7
         with:
           script: |
+            const issueNumber = Number('${{ github.event.inputs.issue_id }}');
+            const baseBranch = '${{ github.event.inputs.base_branch }}';
             const issue = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ github.event.inputs.issue_id }}
+              issue_number: issueNumber
             });
+
+            if (issue.data.pull_request) {
+              core.setFailed('The selected item is a pull request, not an issue.');
+              return;
+            }
+
+            if (issue.data.state !== 'open') {
+              core.setFailed('Only open issues can be processed.');
+              return;
+            }
+
+            const slug = issue.data.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+              .slice(0, 40) || `issue-${issueNumber}`;
+
+            const branchName = `fix-issue-${issueNumber}-${slug}`;
+
+            const { data: openPulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: baseBranch,
+              per_page: 100
+            });
+
+            const existingPull = openPulls.find((pull) => {
+              const body = pull.body || '';
+              return body.includes(`Closes #${issueNumber}`) || pull.head.ref === branchName;
+            });
+
             core.setOutput('title', issue.data.title);
-            core.setOutput('body', issue.data.body);
-            core.setOutput('number', issue.data.number);
-            return issue.data;
-      
+            core.setOutput('body', issue.data.body || '');
+            core.setOutput('number', String(issue.data.number));
+            core.setOutput('branch_name', branchName);
+            core.setOutput('existing_pr_url', existingPull ? existingPull.html_url : '');
+
+      - name: Stop if open PR already exists
+        if: steps.issue.outputs.existing_pr_url != '' && github.event.inputs.dry_run != 'true'
+        run: |
+          echo "Open PR already exists for this issue: ${{ steps.issue.outputs.existing_pr_url }}"
+          exit 1
+
+      - name: Ensure Anthropic secret is configured
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY is not configured"
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install workflow dependencies
         run: |
-          pip install anthropic requests
-      
+          python -m pip install --upgrade pip
+          python -m pip install anthropic
+
       - name: Resolve issue with Claude
         id: claude-resolution
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ISSUE_TITLE: ${{ steps.get-issue.outputs.title }}
-          ISSUE_BODY: ${{ steps.get-issue.outputs.body }}
-          ISSUE_NUMBER: ${{ steps.get-issue.outputs.number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.body }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          BRANCH_NAME: ${{ steps.issue.outputs.branch_name }}
         run: |
-          python << 'EOF'
-          import os
+          python <<'PY'
           import json
-          import anthropic
+          import os
+          import re
           import subprocess
-          
+          from pathlib import Path
+
+          import anthropic
+
+
+          MAX_FILE_CHANGES = int(os.environ.get('MAX_FILE_CHANGES', '10'))
+          PROTECTED_PREFIXES = (
+              '.git/',
+              '.github/workflows/',
+              '.venv/',
+              'apps/android/.gradle/',
+              'build/',
+              'build-hardware-server/',
+              'node_modules/',
+              'site/',
+          )
+          BINARY_SUFFIXES = {
+              '.apk',
+              '.bin',
+              '.class',
+              '.dll',
+              '.gif',
+              '.jar',
+              '.jpeg',
+              '.jpg',
+              '.png',
+              '.pyc',
+              '.so',
+              '.webp',
+          }
+          IGNORE_PREFIXES = (
+              'apps/android/.gradle/',
+              'build/',
+              'build-hardware-server/',
+              'node_modules/',
+              'site/',
+          )
+
+
+          def extract_json(text: str) -> str:
+              fenced = re.search(r'```json\s*(\{.*\})\s*```', text, re.DOTALL)
+              if fenced:
+                  return fenced.group(1)
+
+              start = text.find('{')
+              end = text.rfind('}')
+              if start == -1 or end == -1 or end <= start:
+                  raise ValueError('Model response did not contain a JSON object')
+              return text[start : end + 1]
+
+
+          def is_protected(path: str) -> bool:
+              return any(path == prefix.rstrip('/') or path.startswith(prefix) for prefix in PROTECTED_PREFIXES)
+
+
+          def tracked_files_snapshot() -> str:
+              result = subprocess.run(
+                  ['git', 'ls-files'],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              files = [
+                  line
+                  for line in result.stdout.splitlines()
+                  if line and not any(line.startswith(prefix) for prefix in IGNORE_PREFIXES)
+              ]
+              return '\n'.join(files[:400])
+
+
           client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
-          
-          issue_title = os.environ.get('ISSUE_TITLE', '')
+          issue_title = os.environ['ISSUE_TITLE']
           issue_body = os.environ.get('ISSUE_BODY', '')
-          issue_number = os.environ.get('ISSUE_NUMBER', '')
-          
-          # Get repository structure
-          result = subprocess.run(['find', '.', '-type', 'f', '-not', '-path', '*/\.*'], 
-                                  capture_output=True, text=True)
-          repo_structure = result.stdout
-          
-          prompt = f"""You are a senior developer tasked with resolving the following GitHub issue:
-          
+          issue_number = os.environ['ISSUE_NUMBER']
+          branch_name = os.environ['BRANCH_NAME']
+          repo_snapshot = tracked_files_snapshot()
+
+          prompt = f"""You are preparing a minimal draft fix for a GitHub issue in a monorepo.
+
           Issue #{issue_number}: {issue_title}
-          
+
           Description:
           {issue_body}
-          
-          Repository structure:
-          {repo_structure}
-          
-          Please analyze the issue and provide:
-          1. A list of files that need to be modified (JSON array)
-          2. The complete content for each file that needs changes
-          3. A brief explanation of the solution
-          
-          Respond in the following JSON format:
+
+          Tracked repository files (truncated):
+          {repo_snapshot}
+
+          Constraints:
+          - Return JSON only.
+          - Change at most {MAX_FILE_CHANGES} files.
+          - Prefer the smallest valid fix.
+          - Do not modify generated/build artifacts, workflow files, virtualenv contents, or site output.
+          - If a test file should change, include it.
+          - Each file entry must contain a repo-relative path and the full file content.
+
+          Response schema:
           {{
             "files": [
               {{
-                "path": "path/to/file",
-                "content": "complete file content"
+                "path": "relative/path/to/file",
+                "content": "full file contents"
               }}
             ],
-            "explanation": "Brief explanation of changes",
-            "branch_name": "fix-issue-{issue_number}"
+            "explanation": "brief explanation of the proposed fix"
           }}
           """
-          
+
           message = client.messages.create(
-              model="claude-3-5-sonnet-20241022",
-              max_tokens=8000,
-              messages=[{"role": "user", "content": prompt}]
+              model='claude-3-5-sonnet-20241022',
+              max_tokens=6000,
+              messages=[{'role': 'user', 'content': prompt}],
           )
-          
-          response_text = message.content[0].text
-          
-          # Extract JSON from response
-          start = response_text.find('{')
-          end = response_text.rfind('}') + 1
-          json_response = response_text[start:end]
-          
-          data = json.loads(json_response)
-          
-          # Save outputs
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-              f.write(f"branch_name={data['branch_name']}\n")
-              f.write(f"explanation<<EOF\n{data['explanation']}\nEOF\n")
-              f.write(f"files={json.dumps(data['files'])}\n")
-          
-          # Apply changes
-          for file_info in data['files']:
-              file_path = file_info['path']
-              os.makedirs(os.path.dirname(file_path), exist_ok=True)
-              with open(file_path, 'w') as f:
-                  f.write(file_info['content'])
-              print(f"Modified: {file_path}")
-          
-          EOF
-      
+
+          response_text = ''.join(
+              block.text for block in message.content if getattr(block, 'type', '') == 'text'
+          )
+          data = json.loads(extract_json(response_text))
+          files = data.get('files') or []
+          explanation = (data.get('explanation') or '').strip()
+
+          if not isinstance(files, list) or not files:
+              raise ValueError('Model response did not contain any file changes')
+
+          if len(files) > MAX_FILE_CHANGES:
+              raise ValueError(f'Model proposed {len(files)} files, exceeding the limit of {MAX_FILE_CHANGES}')
+
+          changed_files = []
+
+          for item in files:
+              if not isinstance(item, dict):
+                  raise ValueError('Each file entry must be an object')
+
+              raw_path = str(item.get('path', '')).strip().replace('\\', '/')
+              content = item.get('content')
+
+              if not raw_path or not isinstance(content, str):
+                  raise ValueError('Each file entry must include string path and content fields')
+
+              normalized = os.path.normpath(raw_path).replace('\\', '/')
+              if os.path.isabs(raw_path) or normalized == '..' or normalized.startswith('../'):
+                  raise ValueError(f'Unsafe file path returned: {raw_path}')
+
+              if is_protected(normalized):
+                  raise ValueError(f'Protected path returned: {normalized}')
+
+              suffix = Path(normalized).suffix.lower()
+              if suffix in BINARY_SUFFIXES:
+                  raise ValueError(f'Binary file path returned: {normalized}')
+
+              destination = Path(normalized)
+              if destination.parent != Path('.'):
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+
+              current_content = destination.read_text(encoding='utf-8') if destination.exists() else None
+              if current_content == content:
+                  continue
+
+              destination.write_text(content, encoding='utf-8')
+              changed_files.append(normalized)
+
+          resolution = {
+              'issue_number': issue_number,
+              'branch_name': branch_name,
+              'explanation': explanation,
+              'changed_files': changed_files,
+          }
+          Path('automation-resolution.json').write_text(json.dumps(resolution, indent=2), encoding='utf-8')
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f'branch_name={branch_name}\n')
+              output.write(f'has_changes={str(bool(changed_files)).lower()}\n')
+              output.write(f'changed_count={len(changed_files)}\n')
+              output.write(f'explanation<<EOF\n{explanation}\nEOF\n')
+          PY
+
+      - name: Validate generated changes
+        if: steps.claude-resolution.outputs.has_changes == 'true'
+        run: |
+          git diff --check
+
+          mapfile -t changed_files < <(git diff --name-only)
+          python_files=()
+          for file in "${changed_files[@]}"; do
+            case "$file" in
+              *.py)
+                python_files+=("$file")
+                ;;
+            esac
+          done
+
+          if [ "${#python_files[@]}" -gt 0 ]; then
+            python -m py_compile "${python_files[@]}"
+          fi
+
+      - name: Write workflow summary
+        if: always()
+        env:
+          RESOLUTION_EXPLANATION: ${{ steps.claude-resolution.outputs.explanation }}
+        run: |
+          {
+            echo "## Issue Resolution Summary"
+            echo ""
+            echo "- Issue: #${{ github.event.inputs.issue_id }}"
+            echo "- Base branch: ${{ github.event.inputs.base_branch }}"
+            echo "- Dry run: ${{ github.event.inputs.dry_run }}"
+            echo "- Proposed file changes: ${{ steps.claude-resolution.outputs.changed_count || '0' }}"
+            echo ""
+            echo "### Explanation"
+            printf '%s\n' "${RESOLUTION_EXPLANATION:-No explanation returned.}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload resolution artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-resolution-${{ github.event.inputs.issue_id }}
+          path: automation-resolution.json
+          if-no-files-found: ignore
+
       - name: Create branch and commit changes
         id: create-pr-branch
+        if: github.event.inputs.dry_run != 'true' && steps.claude-resolution.outputs.has_changes == 'true'
+        env:
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          BRANCH_NAME="fix-issue-${{ github.event.inputs.issue_id }}"
-          git checkout -b "$BRANCH_NAME"
-          
-          git add .
-          git commit -m "Fix: Resolve issue #${{ github.event.inputs.issue_id }}
-          
-          ${{ steps.claude-resolution.outputs.explanation }}"
-          
-          git push origin "$BRANCH_NAME"
-          
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-      
-      - name: Create Pull Request
+
+          branch_name="${{ steps.claude-resolution.outputs.branch_name }}"
+          git switch -c "$branch_name"
+
+          mapfile -t changed_files < <(git diff --name-only)
+          git add "${changed_files[@]}"
+          commit_title=$(printf '%s' "$ISSUE_TITLE" | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g')
+          git commit -m "Fix issue #${{ github.event.inputs.issue_id }}: ${commit_title:0:60}"
+          git push --set-upstream origin "$branch_name"
+
+          echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        id: create-pr
+        if: github.event.inputs.dry_run != 'true' && steps.claude-resolution.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          RESOLUTION_EXPLANATION: ${{ steps.claude-resolution.outputs.explanation }}
+        with:
+          script: |
+            const branchName = '${{ steps.create-pr-branch.outputs.branch_name }}';
+            const baseBranch = '${{ github.event.inputs.base_branch }}';
+            const issueNumber = Number('${{ github.event.inputs.issue_id }}');
+            const issueTitle = process.env.ISSUE_TITLE || `Issue ${issueNumber}`;
+            const explanation = process.env.RESOLUTION_EXPLANATION || 'No explanation returned.';
+            const prTitle = `Fix issue #${issueNumber}: ${issueTitle}`;
+            const prBody = `## Automated fix for issue #${issueNumber}
+
+            This PR was generated by the issue resolution workflow after validating the returned file list and syntax-checking any changed Python files.
+
+            ### Proposed change
+            ${explanation}
+
+            ### Issue reference
+            Closes #${issueNumber}`;
+
+            const { data: existingPulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${branchName}`,
+              base: baseBranch,
+            });
+
+            let pull = existingPulls[0];
+            if (!pull) {
+              const response = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: prTitle,
+                head: branchName,
+                base: baseBranch,
+                body: prBody,
+              });
+              pull = response.data;
+            }
+
+            core.setOutput('pr_url', pull.html_url);
+
+      - name: Comment on issue
+        if: github.event.inputs.dry_run != 'true' && steps.create-pr.outputs.pr_url != ''
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = await github.rest.pulls.create({
+            const marker = '<!-- issue-resolution-workflow -->';
+            const body = `${marker}\nCreated or updated PR: ${{ steps.create-pr.outputs.pr_url }}`;
+            const issueNumber = Number('${{ github.event.inputs.issue_id }}');
+
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Fix: Resolve issue #${{ github.event.inputs.issue_id }}',
-              head: '${{ steps.create-pr-branch.outputs.branch_name }}',
-              base: 'main',
-              body: `## Automated fix for issue #${{ github.event.inputs.issue_id }}
-              
-              This PR was automatically generated by Claude AI to resolve the issue.
-              
-              ### Changes Made
-              ${{ steps.claude-resolution.outputs.explanation }}
-              
-              ### Issue Reference
-              Closes #${{ github.event.inputs.issue_id }}
-              
-              ---
-              *Generated by GitHub Actions workflow*`
+              issue_number: issueNumber,
+              per_page: 100,
             });
-            
-            console.log(`Pull request created: ${pr.data.html_url}`);
-            
-            // Link PR to issue
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ github.event.inputs.issue_id }},
-              body: `🤖 I've created a pull request to resolve this issue: ${pr.data.html_url}`
-            });
+
+            const existing = comments.find((comment) =>
+              comment.user.type === 'Bot' && comment.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body,
+              });
+            }
