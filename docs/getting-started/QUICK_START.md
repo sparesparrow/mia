@@ -273,13 +273,13 @@ ai-servis/
 
 ```bash
 # Start all services
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f infra/docker/docker-compose.dev.yml up -d
 
 # Check logs
-docker-compose logs -f core-orchestrator
+docker compose -f infra/docker/docker-compose.dev.yml logs -f ai-servis-core
 
 # Stop services
-docker-compose down
+docker compose -f infra/docker/docker-compose.dev.yml down
 ```
 
 #### 2. Build C++ Components
@@ -453,7 +453,7 @@ mypy .
 | `orchestrator-config.yaml` | Main configuration |
 | `requirements.txt` | Python dependencies |
 | `requirements-minimal.txt` | Minimal dependencies |
-| `docker-compose.yml` | Docker services |
+| `infra/docker/docker-compose.yml` | Canonical production-like Docker stack |
 | `test_orchestrator_simple.py` | Simple test suite |
 | `build_orchestrator.py` | Build automation |
 

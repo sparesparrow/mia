@@ -1,0 +1,70 @@
+services:
+
+  # ── Signal CLI REST API ──────────────────────────────────────────────────────
+  # First-time setup:
+  #   docker compose exec signal-cli curl -X POST "http://localhost:8080/v1/register/+420XXXXXXXXX"
+  #   docker compose exec signal-cli curl -X POST "http://localhost:8080/v1/register/+420XXXXXXXXX/verify/CODE"
+  signal-cli:
+    image: bbernhard/signal-cli-rest-api:latest
+    container_name: mia-signal
+    restart: unless-stopped
+    environment:
+      - MODE=normal
+      - AUTO_RECEIVE_SCHEDULE=*/2 * * * *   # poll every 2 min
+    volumes:
+      - signal-data:/home/.local/share/signal-cli
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/v1/about"]
+      interval: 30s
+      retries: 3
+
+  # ── WhatsApp Bridge (Baileys / whatsapp-web.js) ──────────────────────────────
+  # First-time: open http://studio:3000/qr in browser, scan with Moto G15 WhatsApp
+  whatsapp:
+    image: chrishubert/whatsapp-web-api:latest
+    container_name: mia-whatsapp
+    restart: unless-stopped
+    environment:
+      - WEBHOOK_URL=http://mia-comms-gateway:9000/webhook/whatsapp
+      - WEBHOOK_ALLOWED_EVENTS=message
+    volumes:
+      - whatsapp-session:/app/.wwebjs_auth
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/status"]
+      interval: 30s
+      retries: 5
+
+  # ── MIA Comms Gateway ────────────────────────────────────────────────────────
+  comms-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mia-comms-gateway
+    restart: unless-stopped
+    network_mode: host          # needs DBus access for KDE Connect
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - SIGNAL_REST_URL=http://127.0.0.1:8080
+      - SIGNAL_PHONE=${SIGNAL_PHONE}
+      - WHATSAPP_BRIDGE_URL=http://127.0.0.1:3000
+      - MIA_WS_URL=${MIA_WS_URL:-ws://127.0.0.1:8000/ws}
+      - GATEWAY_PORT=9000
+    volumes:
+      - /run/user/1000/bus:/run/user/1000/bus:ro   # DBus for KDE Connect
+      - telegram-session:/tmp
+    depends_on:
+      signal-cli:
+        condition: service_healthy
+      whatsapp:
+        condition: service_healthy
+
+volumes:
+  signal-data:
+  whatsapp-session:
+  telegram-session:

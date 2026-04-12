@@ -11,9 +11,9 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo "Docker Compose is not installed. Please install Docker Compose first."
+# Check if Docker Compose plugin is installed
+if ! docker compose version &> /dev/null; then
+    echo "Docker Compose plugin is not installed. Please install Docker Compose first."
     exit 1
 fi
 
@@ -40,4 +40,4 @@ fi
 mkdir -p logs volumes
 
 echo "Development environment setup complete!"
-echo "Run 'docker-compose -f docker-compose.dev.yml up' to start the development environment."
+echo "Run 'docker compose -f infra/docker/docker-compose.dev.yml up' to start the development environment."

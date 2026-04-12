@@ -14,11 +14,7 @@ StatusTask::StatusTask(const std::shared_ptr<MCP::Request>& spRequest, WebGrabCl
 }
 
 std::shared_ptr<MCP::CMCPTask> StatusTask::Clone() const {
-    auto spClone = std::make_shared<StatusTask>(nullptr, clientWrapper);
-    if (spClone) {
-        *spClone = *this;
-    }
-    return spClone;
+    return std::make_shared<StatusTask>(m_spRequest, clientWrapper);
 }
 
 int StatusTask::Cancel() {

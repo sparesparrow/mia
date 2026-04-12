@@ -1,0 +1,1859 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/automotive/raspberry-pi-audi-integration/">
+      
+      
+        <link rel="prev" href="../citroen-integration/">
+      
+      
+        <link rel="next" href="../../privacy/dpia-template/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Audi on Raspberry Pi - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#raspberry-pi-and-audi-integration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Audi on Raspberry Pi
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Wiring & Power
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Install
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phone Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pro Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API & Contracts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Automotive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../citroen-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#integration-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Goal
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-audi-needs-a-different-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Audi Needs a Different Path
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-starter-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Starter Platform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raspberry-pi-runtime-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raspberry Pi Runtime Topology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-repository-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Repository Status
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current Repository Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-safety-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default Safety Posture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audi-intents-already-routed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audi Intents Already Routed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability Matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardware-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Recommendations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-on-the-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment on the Pi
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-validation-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Validation Sequence
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Validation Sequence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bench-validation-without-a-car" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Bench Validation Without a Car
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-raspberry-pi-runtime-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Raspberry Pi Runtime Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-in-vehicle-passive-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. In-Vehicle Passive Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-controlled-read-only-uds-trial" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Controlled Read-Only UDS Trial
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Boundaries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Gaps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-next-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practical Next Step
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Privacy
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DPIA Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#integration-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Goal
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-audi-needs-a-different-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Audi Needs a Different Path
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-starter-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Starter Platform
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raspberry-pi-runtime-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raspberry Pi Runtime Topology
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-repository-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Repository Status
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current Repository Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implemented
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default-safety-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default Safety Posture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audi-intents-already-routed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Audi Intents Already Routed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capability-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capability Matrix
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardware-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Recommendations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-on-the-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment on the Pi
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-validation-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Validation Sequence
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Validation Sequence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-bench-validation-without-a-car" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Bench Validation Without a Car
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-raspberry-pi-runtime-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Raspberry Pi Runtime Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-in-vehicle-passive-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. In-Vehicle Passive Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-controlled-read-only-uds-trial" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Controlled Read-Only UDS Trial
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design Boundaries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Gaps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-next-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practical Next Step
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/automotive/raspberry-pi-audi-integration.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="raspberry-pi-and-audi-integration">Raspberry Pi and Audi Integration</h1>
+<p>This document explains how MIA integrates an Audi vehicle through a Raspberry Pi gateway, what is already implemented in the repository, and where the current limits are.</p>
+<h2 id="integration-goal">Integration Goal</h2>
+<p>For Audi support, the Raspberry Pi is the edge runtime that sits between the vehicle bus and the rest of MIA. Its job is to:</p>
+<ul>
+<li>collect transport data from an OBD-II interface or transport agent</li>
+<li>normalize safe read-only telemetry into MIA runtime surfaces</li>
+<li>expose vehicle state to orchestration, API, WebSocket, and Android consumers</li>
+<li>keep hardware-specific concerns on the Pi instead of pushing them into UI clients</li>
+</ul>
+<p>The current Audi strategy is intentionally conservative: generic OBD where possible, passive ingestion first, and optional read-only UDS only after the transport path is stable.</p>
+<h2 id="why-audi-needs-a-different-path">Why Audi Needs a Different Path</h2>
+<p>Audi vehicles fit under the wider VAG family, so the integration model is different from a simple SAE J1979-only adapter.</p>
+<ul>
+<li>Generic OBD PIDs cover baseline signals such as RPM, speed, coolant temperature, and fuel level.</li>
+<li>Deeper Audi diagnostics usually move into UDS over CAN and depend on module-specific identifiers, gateway routing, and ISO-TP behavior.</li>
+<li>Many cheap ELM327 clones are good enough for standard PIDs but unreliable for sustained UDS work.</li>
+<li>Operations such as coding, adaptation, security access, routine control, and ECU resets should stay out of scope for MIA unless there is a dedicated safety and validation program.</li>
+</ul>
+<p>That is why the repository currently treats Audi as a read-only integration problem, not a vehicle-coding platform.</p>
+<h2 id="recommended-starter-platform">Recommended Starter Platform</h2>
+<p>The best first validation target is Audi A3 8V on MQB, roughly model years 2015 to 2019.</p>
+<p>Reasons:</p>
+<ul>
+<li>widespread platform with strong community tooling and known UDS behavior</li>
+<li>modern enough to exercise VAG gateway realities without jumping to newer security constraints everywhere</li>
+<li>realistic overlap with the generic telemetry already present in MIA</li>
+</ul>
+<h2 id="raspberry-pi-runtime-topology">Raspberry Pi Runtime Topology</h2>
+<p>The Pi-side architecture should stay aligned with the existing MIA runtime boundary.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role in Audi integration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apps/rpi-backend/shared/messaging/broker.py</code></td>
+<td>ZeroMQ ROUTER/DEALER control plane on port <code>5555</code></td>
+</tr>
+<tr>
+<td>ZeroMQ PUB/SUB telemetry path</td>
+<td>vehicle and MCU telemetry fan-out on port <code>5556</code></td>
+</tr>
+<tr>
+<td><code>apps/rpi-backend/py-api/api/main.py</code></td>
+<td>FastAPI boundary for HTTP and WebSocket consumers</td>
+</tr>
+<tr>
+<td><code>orchestration/mcp/modules/automotive-mcp-bridge/main.py</code></td>
+<td>command routing and vehicle-aware orchestration</td>
+</tr>
+<tr>
+<td><code>orchestration/mcp/modules/vag-audi-bridge/main.py</code></td>
+<td>read-only Audi/VAG telemetry and diagnostic scaffold</td>
+</tr>
+<tr>
+<td><code>hardware/serial_bridge.py</code> or other transport source</td>
+<td>injects raw or normalized telemetry into the Pi runtime</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>flowchart TD
+    Car[Audi OBD-II / CAN gateway] --&gt; Adapter[USB OBD or BLE transport adapter]
+    Adapter --&gt; Transport[Serial bridge or transport agent]
+    Transport --&gt; Telemetry[ZeroMQ PUB/SUB :5556]
+    Telemetry --&gt; Vag[VAG Audi Bridge]
+    Vag --&gt; Auto[Automotive MCP Bridge]
+    Auto --&gt; Broker[ZeroMQ control plane :5555]
+    Auto --&gt; Api[FastAPI REST and WebSocket]
+    Api --&gt; Clients[Android app, dashboards, tools]
+</code></pre></div>
+<p>The important constraint is that Audi-specific logic should remain at the Pi orchestration layer, while the API and Android layers consume normalized outputs.</p>
+<h2 id="current-repository-status">Current Repository Status</h2>
+<p>The repository already contains a first-pass Audi path.</p>
+<h3 id="implemented">Implemented</h3>
+<ul>
+<li><code>orchestration/mcp/modules/vag-audi-bridge/main.py</code> provides a <code>VagAudiBridge</code> with safe read-only defaults.</li>
+<li><code>orchestration/mcp/modules/automotive-mcp-bridge/main.py</code> loads that bridge when available and exposes Audi-specific intents.</li>
+<li>The Audi bridge can ingest transport messages, keep a current telemetry snapshot, and return read-only status data.</li>
+<li>Focused tests cover the standalone bridge and its integration with the automotive bridge.</li>
+</ul>
+<h3 id="default-safety-posture">Default Safety Posture</h3>
+<ul>
+<li>passive monitoring enabled</li>
+<li>UDS polling disabled</li>
+<li>allowlisted read services limited to <code>0x19</code> and <code>0x22</code></li>
+<li>default identifier hint limited to <code>F190</code> for VIN</li>
+<li>extended session disabled</li>
+<li>security access disabled</li>
+<li>write services disabled</li>
+</ul>
+<h3 id="audi-intents-already-routed">Audi Intents Already Routed</h3>
+<p>The automotive bridge already recognizes these Audi-oriented operations:</p>
+<ul>
+<li><code>audi_vehicle_status</code></li>
+<li><code>audi_read_vin</code></li>
+<li><code>audi_read_dtc</code></li>
+<li><code>audi_read_identifiers</code></li>
+<li><code>audi_diagnostics</code></li>
+</ul>
+<p>These are still read-only surfaces. They do not turn MIA into a coding or dealership-style diagnostic tool.</p>
+<h2 id="capability-matrix">Capability Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Current state</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Passive telemetry ingestion</td>
+<td>Available</td>
+<td>Accepts normalized transport payloads and updates bridge state</td>
+</tr>
+<tr>
+<td>Generic OBD-style values</td>
+<td>Available</td>
+<td>Speed, RPM, coolant, fuel, voltage, and VIN aliases are accepted</td>
+</tr>
+<tr>
+<td>VIN via DID <code>F190</code></td>
+<td>Scaffolded</td>
+<td>Routed through <code>audi_read_vin</code>, but live UDS polling is disabled by default</td>
+</tr>
+<tr>
+<td>DTC summary via service <code>0x19</code></td>
+<td>Scaffolded</td>
+<td>Read-only surface exists, but transport is not wired to a live DTC source yet</td>
+</tr>
+<tr>
+<td>Arbitrary DID reads via service <code>0x22</code></td>
+<td>Scaffolded</td>
+<td>Allowlisted, but currently returns availability status until transport is connected</td>
+</tr>
+<tr>
+<td>Coding, adaptation, write services</td>
+<td>Blocked</td>
+<td>Explicitly out of scope</td>
+</tr>
+<tr>
+<td>Security access and extended diagnostic session</td>
+<td>Blocked</td>
+<td>Explicitly forced off in config</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hardware-recommendations">Hardware Recommendations</h2>
+<p>For Raspberry Pi validation, prefer known-good hardware instead of the cheapest possible adapter.</p>
+<ul>
+<li>Raspberry Pi 4B is the current baseline target.</li>
+<li>A stable USB adapter is safer than a random BLE clone when you want repeatable diagnostics.</li>
+<li>OBDLink SX, OBDLink MX+, or another interface with reliable ISO-TP behavior is a better starting point than generic ELM327 v2.1 clones.</li>
+<li>If BLE is used, keep it for convenience or Android pairing, not as the first path for deeper UDS experiments.</li>
+</ul>
+<h2 id="deployment-on-the-pi">Deployment on the Pi</h2>
+<p>The Pi deployment model should continue to use the existing MIA runtime anchors.</p>
+<ul>
+<li>install path: <code>/opt/mia</code></li>
+<li>bundled Python environment prepared by <code>scripts/ensure-bundled-cpython.sh</code></li>
+<li>runtime environment file: <code>/etc/mia/environment</code></li>
+<li>Python services resolve the interpreter via <code>MIA_PYTHON</code> with fallback to the generated wrapper</li>
+</ul>
+<p>Operational order still matters:</p>
+<ol>
+<li><code>zmq-broker</code></li>
+<li><code>mia-api</code></li>
+<li>telemetry-producing workers such as <code>mia-serial-bridge</code> and <code>mia-obd-worker</code></li>
+<li>orchestration surfaces that consume or enrich vehicle state</li>
+</ol>
+<p>The repo does not currently ship a dedicated <code>mia-vag-audi-bridge.service</code>. The Audi bridge exists as a module-level integration point and can also be started directly for development or test harness use.</p>
+<h2 id="recommended-validation-sequence">Recommended Validation Sequence</h2>
+<h3 id="1-bench-validation-without-a-car">1. Bench Validation Without a Car</h3>
+<ul>
+<li>run the focused Audi bridge tests</li>
+<li>feed sample transport payloads into the bridge</li>
+<li>verify that the automotive bridge status includes a <code>vag_audi</code> section</li>
+</ul>
+<p>Useful check:</p>
+<div class="highlight"><pre><span></span><code>/bin/python3.13<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>tests.test_vag_audi_bridge<span class="w"> </span>tests.test_automotive_mcp_bridge_vag
+</code></pre></div>
+<h3 id="2-raspberry-pi-runtime-validation">2. Raspberry Pi Runtime Validation</h3>
+<ul>
+<li>confirm the bundled Python environment is prepared</li>
+<li>confirm <code>zmq-broker</code>, <code>mia-api</code>, <code>mia-serial-bridge</code>, and <code>mia-obd-worker</code> are healthy</li>
+<li>verify telemetry is flowing on the Pi before enabling any Audi-specific polling</li>
+</ul>
+<p>Useful checks:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>zmq-broker<span class="w"> </span>mia-api<span class="w"> </span>mia-serial-bridge<span class="w"> </span>mia-obd-worker
+curl<span class="w"> </span>http://localhost:8000/status
+</code></pre></div>
+<h3 id="3-in-vehicle-passive-monitoring">3. In-Vehicle Passive Monitoring</h3>
+<ul>
+<li>start with ignition on and passive telemetry only</li>
+<li>verify that speed, RPM, coolant, fuel, and voltage are stable</li>
+<li>confirm that no write, session, or security operations are attempted</li>
+</ul>
+<h3 id="4-controlled-read-only-uds-trial">4. Controlled Read-Only UDS Trial</h3>
+<p>Only after passive transport is stable:</p>
+<ul>
+<li>enable UDS polling explicitly</li>
+<li>start with VIN DID <code>F190</code></li>
+<li>add DTC summary reads through <code>0x19</code></li>
+<li>add more DIDs only after confirming module and gateway behavior on the target platform</li>
+</ul>
+<h2 id="design-boundaries">Design Boundaries</h2>
+<p>Keep these boundaries intact while extending Audi support.</p>
+<ul>
+<li>The Pi owns transport, hardware timing, and bus-adjacent logic.</li>
+<li>The automotive bridge owns orchestration and intent routing.</li>
+<li>FastAPI and Android should consume normalized data, not implement Audi protocol knowledge.</li>
+<li>Schema changes are not required for the current scaffold and should stay separate from transport experiments.</li>
+</ul>
+<h2 id="open-gaps">Open Gaps</h2>
+<p>The current implementation is intentionally incomplete in a few places.</p>
+<ul>
+<li>No live Audi-specific UDS transport is connected yet.</li>
+<li>No capability negotiation exists yet for different Audi or VW platform variants.</li>
+<li>No dedicated Pi deployment asset exists yet for running the Audi bridge as its own service.</li>
+<li>Cloud-backed Audi Connect style integrations are not part of this path and should be treated as a separate data source if added later.</li>
+</ul>
+<h2 id="practical-next-step">Practical Next Step</h2>
+<p>The next useful engineering step is not more documentation. It is wiring a real Pi transport source into the VAG Audi bridge in read-only mode, validating VIN and DTC access on one known-good Audi A3 8V target, and only then widening the identifier set.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

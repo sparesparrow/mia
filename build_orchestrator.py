@@ -111,6 +111,50 @@ class BuildResult:
 
 class SecurityScanner:
     """Advanced security scanning for automotive AI systems"""
+
+    @staticmethod
+    def _parse_json_output(tool_name: str, stdout: bytes, stderr: bytes) -> Optional[Dict[str, Any]]:
+        """Safely decode JSON output from external scanners."""
+        stderr_text = stderr.decode(errors="ignore").strip()
+        if not stdout:
+            if stderr_text:
+                logger.warning("%s returned no JSON output: %s", tool_name, stderr_text)
+            else:
+                logger.warning("%s returned no JSON output", tool_name)
+            return None
+
+        try:
+            return json.loads(stdout.decode())
+        except UnicodeDecodeError as exc:
+            logger.warning("%s output is not valid UTF-8: %s", tool_name, exc)
+        except json.JSONDecodeError as exc:
+            preview = stdout.decode(errors="ignore").strip()
+            if len(preview) > 200:
+                preview = f"{preview[:200]}..."
+            logger.warning(
+                "%s returned invalid JSON: %s; stderr=%s; stdout=%s",
+                tool_name,
+                exc,
+                stderr_text or "<empty>",
+                preview or "<empty>",
+            )
+        return None
+
+    @staticmethod
+    def _summarize_trivy_results(scan_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Summarize Trivy output without losing the original result structure."""
+        result_sets = scan_results.get("Results", []) or []
+        vulnerabilities = [
+            vulnerability
+            for result_set in result_sets
+            for vulnerability in (result_set.get("Vulnerabilities") or [])
+        ]
+        return {
+            "vulnerabilities": result_sets,
+            "total_vulns": len(vulnerabilities),
+            "critical": sum(1 for vulnerability in vulnerabilities if vulnerability.get("Severity") == "CRITICAL"),
+            "high": sum(1 for vulnerability in vulnerabilities if vulnerability.get("Severity") == "HIGH"),
+        }
     
     def __init__(self):
         if DOCKER_AVAILABLE:
@@ -136,18 +180,23 @@ class SecurityScanner:
                 stderr=asyncio.subprocess.PIPE
             )
             stdout, stderr = await result.communicate()
-            
+
             if result.returncode == 0:
-                scan_results = json.loads(stdout.decode())
-                return {
-                    "vulnerabilities": scan_results.get("Results", []),
-                    "total_vulns": len(scan_results.get("Results", [])),
-                    "critical": len([v for v in scan_results.get("Results", []) 
-                                   if v.get("Severity") == "CRITICAL"]),
-                    "high": len([v for v in scan_results.get("Results", []) 
-                               if v.get("Severity") == "HIGH"]),
-                    "scan_timestamp": datetime.now(timezone.utc).isoformat()
-                }
+                scan_results = self._parse_json_output("trivy", stdout, stderr)
+                if scan_results is None:
+                    return {
+                        "error": "Trivy returned invalid JSON output",
+                        "scan_failed": True,
+                        "scan_timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+
+                summary = self._summarize_trivy_results(scan_results)
+                summary["scan_timestamp"] = datetime.now(timezone.utc).isoformat()
+                return summary
+
+            stderr_text = stderr.decode(errors="ignore").strip()
+            if stderr_text:
+                logger.warning("Trivy exited with %s: %s", result.returncode, stderr_text)
         except Exception as e:
             logger.error(f"Security scan failed: {e}")
             return {"error": str(e), "scan_failed": True}
@@ -168,8 +217,16 @@ class SecurityScanner:
                     stderr=asyncio.subprocess.PIPE
                 )
                 stdout, stderr = await result.communicate()
-                if result.returncode == 0:
-                    results["bandit"] = json.loads(stdout.decode())
+                if result.returncode in (0, 1):
+                    parsed = self._parse_json_output("bandit", stdout, stderr)
+                    if parsed is not None:
+                        results["bandit"] = parsed
+                else:
+                    logger.warning(
+                        "Bandit scan failed with exit code %s: %s",
+                        result.returncode,
+                        stderr.decode(errors="ignore").strip() or "<no stderr>",
+                    )
             except Exception as e:
                 logger.warning(f"Bandit scan failed: {e}")
         
@@ -181,8 +238,16 @@ class SecurityScanner:
                 stderr=asyncio.subprocess.PIPE
             )
             stdout, stderr = await result.communicate()
-            if result.returncode == 0:
-                results["semgrep"] = json.loads(stdout.decode())
+            if result.returncode in (0, 1):
+                parsed = self._parse_json_output("semgrep", stdout, stderr)
+                if parsed is not None:
+                    results["semgrep"] = parsed
+            else:
+                logger.warning(
+                    "Semgrep scan failed with exit code %s: %s",
+                    result.returncode,
+                    stderr.decode(errors="ignore").strip() or "<no stderr>",
+                )
         except Exception as e:
             logger.warning(f"Semgrep scan failed: {e}")
         

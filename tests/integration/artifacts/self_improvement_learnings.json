@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2026-04-10T13:20:12.832309+00:00",
+    "step": "android_network_profile",
+    "pattern": "Profile\\ mismatch",
+    "diagnosis": "Profile mismatch",
+    "remediation": "none",
+    "success": false,
+    "focus": "device-profile"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "metrics": {
+    "step_pass_rate": 0.929,
+    "phase_success_rate": 0.0,
+    "execution_efficiency": 1.0,
+    "error_rate": 0.071
+  },
+  "remediation_success_rate": 0.0,
+  "next_focus": "coverage-expansion",
+  "top_diagnoses": [
+    {
+      "diagnosis": "Profile mismatch",
+      "count": 1
+    },
+    {
+      "diagnosis": "unknown",
+      "count": 1
+    }
+  ],
+  "focus_histogram": {
+    "coverage-expansion": 1,
+    "device-profile": 1
+  },
+  "applied_remediations": [],
+  "knowledge_entries": 2,
+  "regression": {
+    "previous_run": "20260410_152424",
+    "regressions": [],
+    "improvements": [],
+    "new_steps": [
+      "android_network_reaches_api",
+      "device_registry_roundtrip",
+      "telemetry_flow",
+      "gpio_read_pin",
+      "websocket_route_exists",
+      "session_lifecycle",
+      "led_state_roundtrip",
+      "auth_status",
+      "thermal_health",
+      "log_query",
+      "ota_status",
+      "device_command",
+      "registry_status",
+      "android_logcat_health"
+    ],
+    "prev_pass_rate": 0.8
+  }
+}

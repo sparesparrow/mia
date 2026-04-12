@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   # Core Orchestrator - Main MCP Host
   ai-servis-core:
     build:
-      context: ./modules/core-orchestrator
-      dockerfile: Dockerfile
+      context: ../../orchestration/mcp/modules
+      dockerfile: core-orchestrator/Dockerfile
     container_name: ai-servis-core
     restart: unless-stopped
     environment:
@@ -17,20 +15,22 @@ services:
       - "8080:8080"
       - "8081:8081"  # MCP host port
     volumes:
-      - ./volumes/core-config:/app/config
-      - ./volumes/core-data:/app/data
-      - ./logs:/app/logs
+      - ../../volumes/core-config:/app/config
+      - ../../volumes/core-data:/app/data
+      - ../../logs:/app/logs
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-network
 
   # Service Discovery
   service-discovery:
     build:
-      context: ./modules/service-discovery
-      dockerfile: Dockerfile
+      context: ../../orchestration/mcp/modules
+      dockerfile: service-discovery/Dockerfile
     container_name: ai-servis-discovery
     restart: unless-stopped
     environment:
@@ -40,17 +40,18 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./volumes/discovery-data:/app/data
+      - ../../volumes/discovery-data:/app/data
     depends_on:
-      - mqtt-broker
+      mqtt-broker:
+        condition: service_healthy
     networks:
       - ai-servis-network
 
   # AI Audio Assistant MCP Server
   ai-audio-assistant:
     build:
-      context: ./modules/ai-audio-assistant
-      dockerfile: Dockerfile
+      context: ../../orchestration/mcp/modules
+      dockerfile: ai-audio-assistant/Dockerfile
     container_name: ai-audio-assistant
     restart: unless-stopped
     environment:
@@ -63,22 +64,20 @@ services:
     ports:
       - "8082:8082"
     volumes:
-      - ./volumes/audio-config:/app/config
-      - /dev/snd:/dev/snd:rw  # Audio device access
-    devices:
-      - /dev/snd
-    privileged: true  # Required for audio device access
+      - ../../volumes/audio-config:/app/config
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-network
 
   # Linux Platform Controller
   ai-platform-linux:
     build:
-      context: ./modules/ai-platform-controllers/linux
-      dockerfile: Dockerfile
+      context: ../../orchestration/mcp/modules
+      dockerfile: ai-platform-controllers/linux/Dockerfile
     container_name: ai-platform-linux
     restart: unless-stopped
     environment:
@@ -89,13 +88,14 @@ services:
     ports:
       - "8083:8083"
     volumes:
-      - ./volumes/platform-config:/app/config
+      - ../../volumes/platform-config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker control
       - /usr/bin/docker:/usr/bin/docker:ro
-    privileged: true  # Required for system control
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-network
 
@@ -108,9 +108,15 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./volumes/mqtt-data:/mosquitto/data
-      - ./volumes/mqtt-logs:/mosquitto/log
+      - ../../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../../volumes/mqtt-data:/mosquitto/data
+      - ../../volumes/mqtt-logs:/mosquitto/log
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -t mia/healthcheck -m ok >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - ai-servis-network
 
@@ -126,8 +132,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./volumes/postgres-data:/var/lib/postgresql/data
-      - ./containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../volumes/postgres-data:/var/lib/postgresql/data
+      - ../../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aiservisdv -d aiservisbwx"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - ai-servis-network
 
@@ -139,7 +151,13 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./volumes/redis-data:/data
+      - ../../volumes/redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - ai-servis-network
 
@@ -151,8 +169,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./volumes/prometheus-data:/prometheus
+      - ../../containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../volumes/prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -172,13 +190,13 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
     volumes:
-      - ./volumes/grafana-data:/var/lib/grafana
-      - ./containers/grafana/provisioning:/etc/grafana/provisioning
+      - ../../volumes/grafana-data:/var/lib/grafana
     networks:
       - ai-servis-network
 
 networks:
   ai-servis-network:
+    name: ai-servis-network
     driver: bridge
 
 volumes:

@@ -1,0 +1,1984 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/deployment/COMPLETE_DEPLOYMENT_GUIDE/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>🚗 MIA Complete Deployment Guide - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mia-complete-deployment-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              🚗 MIA Complete Deployment Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Wiring & Power
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Install
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phone Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pro Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API & Contracts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Automotive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Privacy
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DPIA Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Prerequisites
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📋 Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardware-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#software-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Software Requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-5-minutes" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Quick Start (5 minutes)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      📖 Detailed Deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📖 Detailed Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-system-preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: System Preparation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-repository-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Repository Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-dependencies-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Dependencies Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-hardware-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Hardware Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-mia-services-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: MIA Services Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-validation-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 6: Validation &amp; Testing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-monitoring-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 7: Monitoring Setup
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Manual Configuration Options
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Manual Configuration Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-installation-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Installation Paths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selective-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Selective Deployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-specific-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware-Specific Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-deployment-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Post-Deployment Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Post-Deployment Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validation-tests-include" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Tests Include:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#starting-and-managing-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Starting and Managing Services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Starting and Managing Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automatic-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Startup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Monitoring and Maintenance
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Monitoring and Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Built-in Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prometheus Metrics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-mia-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 Accessing MIA Services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌐 Accessing MIA Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Endpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Interfaces
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#services-not-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Services Not Starting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-not-detected" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hardware Not Detected
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-import-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Import Errors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recovery-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recovery Procedures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recovery Procedures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#complete-redeployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete Redeployment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Service Reset
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Additional Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Additional Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Files
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ready-for-automotive-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚗 Ready for Automotive Integration
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/deployment/COMPLETE_DEPLOYMENT_GUIDE.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mia-complete-deployment-guide">🚗 MIA Complete Deployment Guide</h1>
+<p>This guide provides comprehensive instructions for deploying MIA (Modular Intelligent Automotive) system from scratch on a fresh Raspberry Pi OS or Ubuntu installation.</p>
+<h2 id="prerequisites">📋 Prerequisites</h2>
+<h3 id="hardware-requirements">Hardware Requirements</h3>
+<ul>
+<li><strong>Raspberry Pi 4 or 5</strong> (recommended) or Ubuntu/Debian system</li>
+<li><strong>8GB RAM minimum</strong> (16GB recommended for full functionality)</li>
+<li><strong>32GB SD card/SSD minimum</strong> (64GB+ recommended)</li>
+<li><strong>Stable power supply</strong> (3A+ for Raspberry Pi)</li>
+<li><strong>Ethernet or WiFi</strong> connectivity</li>
+</ul>
+<h3 id="software-requirements">Software Requirements</h3>
+<ul>
+<li><strong>Fresh Raspberry Pi OS</strong> (64-bit) or <strong>Ubuntu Server 22.04+</strong></li>
+<li><strong>SSH access</strong> enabled</li>
+<li><strong>sudo privileges</strong></li>
+<li><strong>Internet connectivity</strong> for package installation</li>
+</ul>
+<h2 id="quick-start-5-minutes">🎯 Quick Start (5 minutes)</h2>
+<p>For the fastest deployment on a fresh Raspberry Pi:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Update system and install git</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>git
+
+<span class="c1"># 2. Clone MIA repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sparesparrow/mia.git<span class="w"> </span>~/mia
+<span class="nb">cd</span><span class="w"> </span>~/mia
+
+<span class="c1"># 3. Run complete deployment</span>
+sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+
+<span class="c1"># 4. Validate deployment</span>
+sudo<span class="w"> </span>./scripts/validate-mia-deployment.py
+</code></pre></div>
+<p>That's it! Your MIA system will be fully operational.</p>
+<h2 id="detailed-deployment">📖 Detailed Deployment</h2>
+<h3 id="phase-1-system-preparation">Phase 1: System Preparation</h3>
+<p>The deployment script handles complete system setup:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>system
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Updates system packages
+- ✅ Creates dedicated <code>mia</code> user with proper permissions
+- ✅ Configures SSH security (disables password auth, root login)
+- ✅ Sets up real-time scheduling limits
+- ✅ Configures timezone and locale
+- ✅ Enables persistent systemd journaling
+- ✅ Sets up log rotation</p>
+<h3 id="phase-2-repository-setup">Phase 2: Repository Setup</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>repository
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Clones/updates MIA repository
+- ✅ Verifies repository integrity
+- ✅ Sets proper file permissions
+- ✅ Configures Git (if needed)</p>
+<h3 id="phase-3-dependencies-installation">Phase 3: Dependencies Installation</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>dependencies
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Installs system build tools (cmake, gcc, etc.)
+- ✅ Installs Python 3 and pip
+- ✅ Installs all required system packages
+- ✅ Installs Python dependencies (PyZMQ, FlatBuffers, etc.)
+- ✅ Installs Raspberry Pi specific packages (RPi.GPIO, gpiozero)
+- ✅ Verifies critical dependency functionality</p>
+<h3 id="phase-4-hardware-configuration">Phase 4: Hardware Configuration</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>hardware
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Enables I2C, SPI, and UART interfaces
+- ✅ Configures GPIO permissions and udev rules
+- ✅ Sets up Bluetooth with OBD-II class configuration
+- ✅ Configures PulseAudio for audio processing
+- ✅ Tests hardware interface functionality</p>
+<h3 id="phase-5-mia-services-deployment">Phase 5: MIA Services Deployment</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>services
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Creates installation directory structure (<code>/opt/mia</code>)
+- ✅ Copies MIA Python code and modules
+- ✅ Installs systemd service files
+- ✅ Configures service permissions and ownership
+- ✅ Enables services for automatic startup</p>
+<h3 id="phase-6-validation-testing">Phase 6: Validation &amp; Testing</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>validate
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Tests Python environment and imports
+- ✅ Validates MIA installation structure
+- ✅ Checks systemd service file syntax
+- ✅ Tests network connectivity
+- ✅ Validates hardware interfaces
+- ✅ Performs service startup tests</p>
+<h3 id="phase-7-monitoring-setup">Phase 7: Monitoring Setup</h3>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>monitor
+</code></pre></div>
+<p><strong>What it does:</strong>
+- ✅ Installs Prometheus Node Exporter
+- ✅ Configures log rotation for MIA services
+- ✅ Sets up system monitoring scripts
+- ✅ Creates health check utilities
+- ✅ Configures automated monitoring timers</p>
+<h2 id="manual-configuration-options">🔧 Manual Configuration Options</h2>
+<h3 id="custom-installation-paths">Custom Installation Paths</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Use custom repository URL</span>
+<span class="nv">REPO_URL</span><span class="o">=</span><span class="s2">&quot;https://github.com/your-org/mia.git&quot;</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+
+<span class="c1"># Use different branch</span>
+<span class="nv">REPO_BRANCH</span><span class="o">=</span><span class="s2">&quot;development&quot;</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+
+<span class="c1"># Custom MIA user</span>
+<span class="nv">MIA_USER</span><span class="o">=</span><span class="s2">&quot;automotive&quot;</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+</code></pre></div>
+<h3 id="selective-deployment">Selective Deployment</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Deploy only specific components</span>
+sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--phase<span class="w"> </span>dependencies<span class="w"> </span>--phase<span class="w"> </span>hardware
+
+<span class="c1"># Skip validation (faster deployment)</span>
+sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--skip-validation
+
+<span class="c1"># Verbose output</span>
+sudo<span class="w"> </span>./scripts/deploy-complete-system.sh<span class="w"> </span>--verbose
+</code></pre></div>
+<h3 id="hardware-specific-options">Hardware-Specific Options</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Disable Bluetooth features</span>
+<span class="nv">ENABLE_BLUETOOTH</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+
+<span class="c1"># Disable GPIO features</span>
+<span class="nv">ENABLE_GPIO</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+
+<span class="c1"># Disable serial features</span>
+<span class="nv">ENABLE_SERIAL</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+</code></pre></div>
+<h2 id="post-deployment-validation">🧪 Post-Deployment Validation</h2>
+<p>After deployment, run comprehensive validation:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run full validation suite</span>
+sudo<span class="w"> </span>./scripts/validate-mia-deployment.py
+
+<span class="c1"># Generate detailed report</span>
+sudo<span class="w"> </span>./scripts/validate-mia-deployment.py<span class="w"> </span>--output<span class="w"> </span>validation-report.json
+
+<span class="c1"># Verbose validation output</span>
+sudo<span class="w"> </span>./scripts/validate-mia-deployment.py<span class="w"> </span>--verbose
+</code></pre></div>
+<h3 id="validation-tests-include">Validation Tests Include:</h3>
+<ul>
+<li>✅ System information and resources</li>
+<li>✅ Python environment and dependencies</li>
+<li>✅ MIA installation structure</li>
+<li>✅ Hardware interface functionality</li>
+<li>✅ Network connectivity</li>
+<li>✅ Systemd service status</li>
+<li>✅ Service integration testing</li>
+<li>✅ Performance benchmarks</li>
+</ul>
+<h2 id="starting-and-managing-services">🚀 Starting and Managing Services</h2>
+<h3 id="automatic-startup">Automatic Startup</h3>
+<p>Services are configured to start automatically on boot. To start manually:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Start core services</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-broker
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-api
+
+<span class="c1"># Start hardware services (if available)</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-gpio-worker
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-serial-bridge
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-obd-worker
+
+<span class="c1"># Start Bluetooth services (if available)</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-ble-obd
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-ble-advertiser
+</code></pre></div>
+<h3 id="service-management">Service Management</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check service status</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>mia-*
+
+<span class="c1"># View service logs</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>mia-broker<span class="w"> </span>-f
+sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>mia-api<span class="w"> </span>-f
+
+<span class="c1"># Restart services</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>mia-broker
+
+<span class="c1"># Stop all MIA services</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>mia-*
+</code></pre></div>
+<h2 id="monitoring-and-maintenance">📊 Monitoring and Maintenance</h2>
+<h3 id="built-in-monitoring">Built-in Monitoring</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># System monitoring</span>
+sudo<span class="w"> </span>mia-monitor
+
+<span class="c1"># Health checks</span>
+sudo<span class="w"> </span>mia-health-check
+
+<span class="c1"># View recent logs</span>
+sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mia/*.log
+</code></pre></div>
+<h3 id="prometheus-metrics">Prometheus Metrics</h3>
+<ul>
+<li><strong>Node Exporter</strong>: http://localhost:9100</li>
+<li>Access system metrics and MIA service status</li>
+</ul>
+<h3 id="log-management">Log Management</h3>
+<ul>
+<li>Logs are automatically rotated daily</li>
+<li>Located in <code>/var/log/mia/</code></li>
+<li>Systemd journal provides additional logging</li>
+</ul>
+<h2 id="accessing-mia-services">🌐 Accessing MIA Services</h2>
+<h3 id="api-endpoints">API Endpoints</h3>
+<ul>
+<li><strong>REST API</strong>: http://localhost:8000</li>
+<li>Health check: <code>GET /health</code></li>
+<li>API docs: <code>GET /docs</code></li>
+<li>Device list: <code>GET /devices</code></li>
+<li>Telemetry: <code>GET /status</code></li>
+</ul>
+<h3 id="websocket">WebSocket</h3>
+<ul>
+<li><strong>Real-time telemetry</strong>: <code>ws://localhost:8000/ws</code></li>
+</ul>
+<h3 id="hardware-interfaces">Hardware Interfaces</h3>
+<ul>
+<li><strong>GPIO</strong>: Direct hardware control via API</li>
+<li><strong>Serial</strong>: ESP32/Arduino communication</li>
+<li><strong>Bluetooth</strong>: OBD-II adapter connectivity</li>
+<li><strong>I2C/SPI</strong>: Sensor and peripheral communication</li>
+</ul>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="services-not-starting">Services Not Starting</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check service status</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>&lt;service-name&gt;
+
+<span class="c1"># View detailed logs</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>&lt;service-name&gt;<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># Check for dependency issues</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>list-dependencies<span class="w"> </span>&lt;service-name&gt;
+</code></pre></div>
+<h4 id="hardware-not-detected">Hardware Not Detected</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check GPIO permissions</span>
+groups<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># Test hardware interfaces</span>
+sudo<span class="w"> </span>i2cdetect<span class="w"> </span>-y<span class="w"> </span><span class="m">1</span>
+sudo<span class="w"> </span>hciconfig<span class="w"> </span>hci0
+</code></pre></div>
+<h4 id="network-issues">Network Issues</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check connectivity</span>
+ping<span class="w"> </span><span class="m">8</span>.8.8.8
+
+<span class="c1"># Check service ports</span>
+sudo<span class="w"> </span>netstat<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:8000
+sudo<span class="w"> </span>netstat<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:5555
+</code></pre></div>
+<h4 id="python-import-errors">Python Import Errors</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check Python path</span>
+python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys; print(sys.path)&quot;</span>
+
+<span class="c1"># Reinstall dependencies</span>
+sudo<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</code></pre></div>
+<h3 id="recovery-procedures">Recovery Procedures</h3>
+<h4 id="complete-redeployment">Complete Redeployment</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Stop all services</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>mia-*
+
+<span class="c1"># Remove installation</span>
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/opt/mia
+
+<span class="c1"># Re-run deployment</span>
+sudo<span class="w"> </span>./scripts/deploy-complete-system.sh
+</code></pre></div>
+<h4 id="service-reset">Service Reset</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Reset specific service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>mia-broker
+sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>mia-broker
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>mia-broker
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mia-broker
+</code></pre></div>
+<h2 id="additional-resources">📚 Additional Resources</h2>
+<h3 id="documentation">Documentation</h3>
+<ul>
+<li><strong>API Documentation</strong>: <code>/opt/mia/docs/api.md</code></li>
+<li><strong>Hardware Integration</strong>: <code>/opt/mia/docs/hardware/</code></li>
+<li><strong>Deployment Guide</strong>: <code>/opt/mia/docs/deployment/</code></li>
+</ul>
+<h3 id="configuration-files">Configuration Files</h3>
+<ul>
+<li><strong>System Config</strong>: <code>/opt/mia/config/mia.conf</code></li>
+<li><strong>Service Configs</strong>: <code>/etc/systemd/system/mia-*.service</code></li>
+<li><strong>Environment</strong>: <code>/etc/mia/environment</code></li>
+</ul>
+<h3 id="log-files">Log Files</h3>
+<ul>
+<li><strong>Application Logs</strong>: <code>/var/log/mia/</code></li>
+<li><strong>System Logs</strong>: <code>sudo journalctl -u mia-*</code></li>
+<li><strong>Deployment Logs</strong>: <code>~/mia/deployment-*.log</code></li>
+</ul>
+<h2 id="ready-for-automotive-integration">🚗 Ready for Automotive Integration</h2>
+<p>After successful deployment and validation:</p>
+<ol>
+<li>✅ <strong>MIA Core Services</strong> are running</li>
+<li>✅ <strong>Hardware Interfaces</strong> are configured</li>
+<li>✅ <strong>Network Connectivity</strong> is established</li>
+<li>✅ <strong>Monitoring</strong> is active</li>
+<li>✅ <strong>API Endpoints</strong> are accessible</li>
+</ol>
+<p>Your MIA system is now ready for automotive AI integration! Connect your OBD-II adapter, Arduino sensors, or other automotive peripherals and start building intelligent vehicle applications.</p>
+<hr />
+<p><strong>Need Help?</strong>
+- Check the troubleshooting section above
+- Review deployment logs: <code>tail -f ~/mia/deployment-*.log</code>
+- Run validation: <code>sudo ./scripts/validate-mia-deployment.py</code>
+- Visit the project repository for updates and community support</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

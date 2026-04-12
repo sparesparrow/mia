@@ -1,0 +1,33 @@
+{
+  "metrics": {
+    "step_pass_rate": 0.6,
+    "phase_success_rate": 0.0,
+    "execution_efficiency": 1.0,
+    "error_rate": 0.2
+  },
+  "remediation_success_rate": 0.0,
+  "next_focus": "coverage-expansion",
+  "top_diagnoses": [
+    {
+      "diagnosis": "Profile mismatch",
+      "count": 1
+    },
+    {
+      "diagnosis": "unknown",
+      "count": 1
+    }
+  ],
+  "focus_histogram": {
+    "coverage-expansion": 1,
+    "device-profile": 1
+  },
+  "applied_remediations": [],
+  "knowledge_entries": 2,
+  "regression": {
+    "previous_run": "20260410_152133",
+    "regressions": [],
+    "improvements": [],
+    "new_steps": [],
+    "prev_pass_rate": 0.6
+  }
+}

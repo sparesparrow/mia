@@ -86,56 +86,30 @@ class SensorTelemetry(object):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         return o == 0
 
-def SensorTelemetryStart(builder):
-    builder.StartObject(6)
-
+def SensorTelemetryStart(builder): builder.StartObject(6)
 def Start(builder):
-    SensorTelemetryStart(builder)
-
-def SensorTelemetryAddSensorId(builder, sensorId):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(sensorId), 0)
-
+    return SensorTelemetryStart(builder)
+def SensorTelemetryAddSensorId(builder, sensorId): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(sensorId), 0)
 def AddSensorId(builder, sensorId):
-    SensorTelemetryAddSensorId(builder, sensorId)
-
-def SensorTelemetryAddSensorType(builder, sensorType):
-    builder.PrependInt8Slot(1, sensorType, 0)
-
+    return SensorTelemetryAddSensorId(builder, sensorId)
+def SensorTelemetryAddSensorType(builder, sensorType): builder.PrependInt8Slot(1, sensorType, 0)
 def AddSensorType(builder, sensorType):
-    SensorTelemetryAddSensorType(builder, sensorType)
-
-def SensorTelemetryAddValue(builder, value):
-    builder.PrependFloat32Slot(2, value, 0.0)
-
+    return SensorTelemetryAddSensorType(builder, sensorType)
+def SensorTelemetryAddValue(builder, value): builder.PrependFloat32Slot(2, value, 0.0)
 def AddValue(builder, value):
-    SensorTelemetryAddValue(builder, value)
-
-def SensorTelemetryAddUnit(builder, unit):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(unit), 0)
-
+    return SensorTelemetryAddValue(builder, value)
+def SensorTelemetryAddUnit(builder, unit): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(unit), 0)
 def AddUnit(builder, unit):
-    SensorTelemetryAddUnit(builder, unit)
-
-def SensorTelemetryAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(4, timestamp, 0)
-
+    return SensorTelemetryAddUnit(builder, unit)
+def SensorTelemetryAddTimestamp(builder, timestamp): builder.PrependUint64Slot(4, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    SensorTelemetryAddTimestamp(builder, timestamp)
-
-def SensorTelemetryAddMetadata(builder, metadata):
-    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(metadata), 0)
-
+    return SensorTelemetryAddTimestamp(builder, timestamp)
+def SensorTelemetryAddMetadata(builder, metadata): builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(metadata), 0)
 def AddMetadata(builder, metadata):
-    SensorTelemetryAddMetadata(builder, metadata)
-
-def SensorTelemetryStartMetadataVector(builder, numElems):
-    return builder.StartVector(1, numElems, 1)
-
+    return SensorTelemetryAddMetadata(builder, metadata)
+def SensorTelemetryStartMetadataVector(builder, numElems): return builder.StartVector(1, numElems, 1)
 def StartMetadataVector(builder, numElems):
     return SensorTelemetryStartMetadataVector(builder, numElems)
-
-def SensorTelemetryEnd(builder):
-    return builder.EndObject()
-
+def SensorTelemetryEnd(builder): return builder.EndObject()
 def End(builder):
     return SensorTelemetryEnd(builder)

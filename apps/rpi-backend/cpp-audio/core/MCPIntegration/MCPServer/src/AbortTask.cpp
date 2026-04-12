@@ -14,11 +14,7 @@ AbortTask::AbortTask(const std::shared_ptr<MCP::Request>& spRequest, WebGrabClie
 }
 
 std::shared_ptr<MCP::CMCPTask> AbortTask::Clone() const {
-    auto spClone = std::make_shared<AbortTask>(nullptr, clientWrapper);
-    if (spClone) {
-        *spClone = *this;
-    }
-    return spClone;
+    return std::make_shared<AbortTask>(m_spRequest, clientWrapper);
 }
 
 int AbortTask::Cancel() {

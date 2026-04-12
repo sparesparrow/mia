@@ -32,6 +32,7 @@ class MIAApplication : Application(), Configuration.Provider {
 		}
 		initSentry()
 		createNotificationChannels()
+		initializeWorkManager()
 		scheduleRetentionWorker()
 		scheduleHealthPingWorker()
 		scheduleMetricsWorker()
@@ -92,6 +93,14 @@ class MIAApplication : Application(), Configuration.Provider {
 			notificationManager.createNotificationChannels(
 				listOf(drivingChannel, alertsChannel, anprChannel)
 			)
+		}
+	}
+
+	private fun initializeWorkManager() {
+		try {
+			WorkManager.initialize(this, workManagerConfiguration)
+		} catch (alreadyInitialized: IllegalStateException) {
+			Log.w("MIA", "WorkManager was already initialized", alreadyInitialized)
 		}
 	}
 

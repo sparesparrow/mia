@@ -2,9 +2,8 @@ import logging
 import os
 import sys
 import time
-from typing import Optional
+from typing import Callable, Optional
 
-import flatbuffers
 import serial
 import zmq
 
@@ -14,14 +13,45 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Attempt to import generated FlatBuffers classes
 # In a real setup, these would be generated into a known python path
 try:
-    import Mia.Vehicle.CitroenTelemetry as CitroenTelemetry
-    import Mia.Vehicle.DpfStatus as DpfStatus
+    from Mia.vehicle_codec import build_citroen_telemetry
 except ImportError:
-    # Fallback/Placeholder if not yet generated
-    CitroenTelemetry = None
-    DpfStatus = None
+    build_citroen_telemetry = None
 
 from agents import psa_decoder
+
+logger = logging.getLogger(__name__)
+
+
+def parse_hex_val(resp: str, prefix: str = '41') -> str:
+    """Extract the payload bytes from an ELM327-style hexadecimal response."""
+    clean = resp.replace(" ", "").replace(">", "").strip()
+    if prefix and prefix in clean:
+        idx = clean.find(prefix)
+        return clean[idx + 4:]
+    return clean
+
+
+def decode_hex_measurement(
+    raw_response: str,
+    prefix: str,
+    field_name: str,
+    transform: Callable[[int], float],
+) -> float:
+    """Decode a numeric OBD field and fall back to 0.0 when the payload is malformed."""
+    payload = parse_hex_val(raw_response, prefix)
+    if not payload:
+        return 0.0
+
+    try:
+        return transform(int(payload, 16))
+    except ValueError:
+        logger.warning(
+            "Failed to parse %s from response %r (payload=%r)",
+            field_name,
+            raw_response,
+            payload,
+        )
+        return 0.0
 
 def main():
     logging.basicConfig(
@@ -119,40 +149,9 @@ def main():
                 eolys_raw = "64"  # 100%
 
             # -- Parsing --
-            
-            def parse_hex_val(resp, prefix='41'):
-                # Basic parser for ELM327 response
-                # Removes spaces, checks for prefix
-                clean = resp.replace(" ", "").replace(">", "").strip()
-                # If using ATS0, spaces are already gone
-                # Response to 010C might be 410C0AFF
-                if prefix and prefix in clean:
-                    idx = clean.find(prefix)
-                    # Return part after prefix + PID
-                    # e.g. 410C -> data starts at idx + 4
-                    return clean[idx+4:]
-                return clean
-
-            rpm = 0.0
-            rpm_data = parse_hex_val(rpm_raw, '410C')
-            if rpm_data:
-                try:
-                    rpm = int(rpm_data, 16) / 4.0
-                except ValueError: pass
-
-            speed = 0.0
-            speed_data = parse_hex_val(speed_raw, '410D')
-            if speed_data:
-                try:
-                    speed = float(int(speed_data, 16))
-                except ValueError: pass
-
-            coolant = 0.0
-            coolant_data = parse_hex_val(coolant_raw, '4105')
-            if coolant_data:
-                try:
-                    coolant = float(int(coolant_data, 16) - 40)
-                except ValueError: pass
+            rpm = decode_hex_measurement(rpm_raw, '410C', 'rpm', lambda value: value / 4.0)
+            speed = decode_hex_measurement(speed_raw, '410D', 'speed', float)
+            coolant = decode_hex_measurement(coolant_raw, '4105', 'coolant', lambda value: float(value - 40))
 
             # Use PSA Decoder
             # Note: The decoder expects raw hex of the data, or the full response?
@@ -163,28 +162,20 @@ def main():
             dpf_status_val = psa_decoder.decode_dpf_status(soot_raw) # Assuming status is in same response or similar
 
             # -- Serialization --
-            if CitroenTelemetry:
-                builder = flatbuffers.Builder(1024)
-                
-                CitroenTelemetry.CitroenTelemetryStart(builder)
-                CitroenTelemetry.CitroenTelemetryAddRpm(builder, rpm)
-                CitroenTelemetry.CitroenTelemetryAddSpeedKmh(builder, speed)
-                CitroenTelemetry.CitroenTelemetryAddCoolantTempC(builder, coolant)
-                
-                CitroenTelemetry.CitroenTelemetryAddDpfSootMassG(builder, soot_mass)
-                CitroenTelemetry.CitroenTelemetryAddOilTemperatureC(builder, oil_temp)
-                CitroenTelemetry.CitroenTelemetryAddEolysAdditiveLevelPercent(builder, eolys_pct)
-                CitroenTelemetry.CitroenTelemetryAddEolysAdditiveLevelL(builder, eolys_l)
-                
-                # Check enum validity
-                if DpfStatus:
-                     # Simple mapping, assuming decoder returned int 0, 1, 2
-                    CitroenTelemetry.CitroenTelemetryAddDpfRegenerationStatus(builder, dpf_status_val)
-                
-                telemetry = CitroenTelemetry.CitroenTelemetryEnd(builder)
-                builder.Finish(telemetry)
-                
-                buf = builder.Output()
+            if build_citroen_telemetry:
+                buf = build_citroen_telemetry(
+                    {
+                        "rpm": rpm,
+                        "speed_kmh": speed,
+                        "coolant_temp_c": coolant,
+                        "dpf_soot_mass_g": soot_mass,
+                        "oil_temperature_c": oil_temp,
+                        "eolys_additive_level_percent": eolys_pct,
+                        "eolys_additive_level_l": eolys_l,
+                        "dpf_regeneration_status": dpf_status_val,
+                        "timestamp": int(time.time() * 1000),
+                    }
+                )
                 socket.send(buf)
             else:
                 logging.warning("FlatBuffers not available, skipping publish")

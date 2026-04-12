@@ -2,10 +2,24 @@
 # Setup BLE Service for Raspberry Pi OBD-II Adapter
 # This script installs dependencies and configures BLE services
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+INSTALL_DIR="${MIA_INSTALL_DIR:-/opt/mia}"
+PY_API_DIR="$INSTALL_DIR/apps/rpi-backend/py-api"
+BLE_SERVICE_DIR="$PY_API_DIR/services"
+LOG_DIR="${MIA_LOG_DIR:-/var/log/mia}"
+SERVICE_USER="${MIA_USER:-mia}"
+SYSTEMD_DIR="${MIA_SYSTEMD_DIR:-/etc/systemd/system}"
+SERVICE_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/py-api/services"
+SYSTEMD_SOURCE_DIR="$PROJECT_ROOT/infra/systemd"
+
+install_pip_packages() {
+    if ! python3 -m pip install "$@"; then
+        python3 -m pip install --break-system-packages "$@"
+    fi
+}
 
 # Colors for output
 RED='\033[0;31m'
@@ -43,10 +57,22 @@ fi
 
 log_info "Setting up BLE services for MIA OBD-II Adapter..."
 
+for required_file in \
+    "$SERVICE_SOURCE_DIR/ble_obd_service.py" \
+    "$SERVICE_SOURCE_DIR/ble_advertiser.py" \
+    "$SYSTEMD_SOURCE_DIR/mia-ble-obd.service" \
+    "$SYSTEMD_SOURCE_DIR/mia-ble-advertiser.service"
+do
+    if [ ! -f "$required_file" ]; then
+        log_error "Required BLE asset not found: $required_file"
+        exit 1
+    fi
+done
+
 # Install system dependencies
 log_info "Installing system dependencies..."
-apt-get update
-apt-get install -y \
+env DEBIAN_FRONTEND=noninteractive apt-get update
+env DEBIAN_FRONTEND=noninteractive apt-get install -y \
     python3-pip \
     python3-dev \
     libbluetooth-dev \
@@ -56,8 +82,8 @@ apt-get install -y \
 
 # Install Python dependencies
 log_info "Installing Python dependencies..."
-pip3 install --upgrade pip
-pip3 install \
+install_pip_packages --upgrade pip
+install_pip_packages \
     bleak \
     bluepy \
     dbus-python \
@@ -65,44 +91,35 @@ pip3 install \
     pygatt
 
 # Create service user if it doesn't exist
-if ! id "mia" &>/dev/null; then
-    log_info "Creating mia user..."
-    useradd -r -s /bin/bash -m -G bluetooth,dialout mia
+if ! id "$SERVICE_USER" &>/dev/null; then
+    log_info "Creating $SERVICE_USER user..."
+    useradd -r -s /bin/bash -m -G bluetooth,dialout "$SERVICE_USER"
 else
-    log_info "User 'mia' already exists, adding to bluetooth group..."
-    usermod -a -G bluetooth,dialout mia
+    log_info "User '$SERVICE_USER' already exists, adding to bluetooth group..."
+    usermod -a -G bluetooth,dialout "$SERVICE_USER"
 fi
 
 # Create directories
 log_info "Creating service directories..."
-mkdir -p /opt/ai-servis/rpi/services
-mkdir -p /var/log/ai-servis
+mkdir -p "$BLE_SERVICE_DIR"
+mkdir -p "$LOG_DIR"
 
 # Copy service files
 log_info "Installing service files..."
-if [ -f "$PROJECT_ROOT/rpi/services/ble_obd_service.py" ]; then
-    cp "$PROJECT_ROOT/rpi/services/ble_obd_service.py" /opt/ai-servis/rpi/services/
-    chmod +x /opt/ai-servis/rpi/services/ble_obd_service.py
-fi
+cp "$SERVICE_SOURCE_DIR/ble_obd_service.py" "$BLE_SERVICE_DIR/"
+chmod +x "$BLE_SERVICE_DIR/ble_obd_service.py"
 
-if [ -f "$PROJECT_ROOT/rpi/services/ble_advertiser.py" ]; then
-    cp "$PROJECT_ROOT/rpi/services/ble_advertiser.py" /opt/ai-servis/rpi/services/
-    chmod +x /opt/ai-servis/rpi/services/ble_advertiser.py
-fi
+cp "$SERVICE_SOURCE_DIR/ble_advertiser.py" "$BLE_SERVICE_DIR/"
+chmod +x "$BLE_SERVICE_DIR/ble_advertiser.py"
 
 # Copy systemd service files
 log_info "Installing systemd services..."
-if [ -f "$PROJECT_ROOT/rpi/services/mia-ble-obd.service" ]; then
-    cp "$PROJECT_ROOT/rpi/services/mia-ble-obd.service" /etc/systemd/system/
-fi
-
-if [ -f "$PROJECT_ROOT/rpi/services/mia-ble-advertiser.service" ]; then
-    cp "$PROJECT_ROOT/rpi/services/mia-ble-advertiser.service" /etc/systemd/system/
-fi
+cp "$SYSTEMD_SOURCE_DIR/mia-ble-obd.service" "$SYSTEMD_DIR/"
+cp "$SYSTEMD_SOURCE_DIR/mia-ble-advertiser.service" "$SYSTEMD_DIR/"
 
 # Set permissions
-chown -R mia:mia /opt/ai-servis
-chown -R mia:mia /var/log/ai-servis
+chown -R "$SERVICE_USER:$SERVICE_USER" "$INSTALL_DIR"
+chown -R "$SERVICE_USER:$SERVICE_USER" "$LOG_DIR"
 
 # Enable Bluetooth
 log_info "Enabling Bluetooth..."

@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   # Core Orchestrator - Development mode with hot reloading
   ai-servis-core:
     build:
-      context: ./modules/core-orchestrator
-      dockerfile: Dockerfile.dev
+      context: ../../orchestration/mcp/modules
+      dockerfile: core-orchestrator/Dockerfile.dev
     container_name: ai-servis-core-dev
     restart: unless-stopped
     environment:
@@ -20,21 +18,24 @@ services:
       - "8081:8081"
       - "5678:5678"  # Debugger port
     volumes:
-      - ./modules/core-orchestrator:/app:cached
-      - ./volumes/core-config:/app/config
-      - ./volumes/core-data:/app/data
-      - ./logs:/app/logs
+      - ../../orchestration/mcp/modules/core-orchestrator:/app:cached
+      - ../../orchestration/mcp/modules/shared:/app/shared:cached
+      - ../../volumes/core-config:/app/config
+      - ../../volumes/core-data:/app/data
+      - ../../logs:/app/logs
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-dev-network
 
   # Service Discovery - Development
   service-discovery:
     build:
-      context: ./modules/service-discovery
-      dockerfile: Dockerfile.dev
+      context: ../../orchestration/mcp/modules
+      dockerfile: service-discovery/Dockerfile.dev
     container_name: ai-servis-discovery-dev
     restart: unless-stopped
     environment:
@@ -46,18 +47,20 @@ services:
       - "8090:8090"
       - "5679:5678"  # Debugger port
     volumes:
-      - ./modules/service-discovery:/app:cached
-      - ./volumes/discovery-data:/app/data
+      - ../../orchestration/mcp/modules/service-discovery:/app:cached
+      - ../../orchestration/mcp/modules/shared:/app/shared:cached
+      - ../../volumes/discovery-data:/app/data
     depends_on:
-      - mqtt-broker
+      mqtt-broker:
+        condition: service_healthy
     networks:
       - ai-servis-dev-network
 
   # AI Audio Assistant - Development
   ai-audio-assistant:
     build:
-      context: ./modules/ai-audio-assistant
-      dockerfile: Dockerfile.dev
+      context: ../../orchestration/mcp/modules
+      dockerfile: ai-audio-assistant/Dockerfile.dev
     container_name: ai-audio-assistant-dev
     restart: unless-stopped
     environment:
@@ -73,23 +76,22 @@ services:
       - "8082:8082"
       - "5680:5678"  # Debugger port
     volumes:
-      - ./modules/ai-audio-assistant:/app:cached
-      - ./volumes/audio-config:/app/config
-      - /dev/snd:/dev/snd:rw
-    devices:
-      - /dev/snd
-    privileged: true
+      - ../../orchestration/mcp/modules/ai-audio-assistant:/app:cached
+      - ../../orchestration/mcp/modules/shared:/app/shared:cached
+      - ../../volumes/audio-config:/app/config
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-dev-network
 
   # Linux Platform Controller - Development
   ai-platform-linux:
     build:
-      context: ./modules/ai-platform-controllers/linux
-      dockerfile: Dockerfile.dev
+      context: ../../orchestration/mcp/modules
+      dockerfile: ai-platform-controllers/linux/Dockerfile.dev
     container_name: ai-platform-linux-dev
     restart: unless-stopped
     environment:
@@ -102,14 +104,16 @@ services:
       - "8083:8083"
       - "5681:5678"  # Debugger port
     volumes:
-      - ./modules/ai-platform-controllers/linux:/app:cached
-      - ./volumes/platform-config:/app/config
+      - ../../orchestration/mcp/modules/ai-platform-controllers/linux:/app:cached
+      - ../../orchestration/mcp/modules/shared:/app/shared:cached
+      - ../../volumes/platform-config:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /usr/bin/docker:/usr/bin/docker:ro
-    privileged: true
     depends_on:
-      - mqtt-broker
-      - service-discovery
+      mqtt-broker:
+        condition: service_healthy
+      service-discovery:
+        condition: service_healthy
     networks:
       - ai-servis-dev-network
 
@@ -122,9 +126,15 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./volumes/mqtt-data:/mosquitto/data
-      - ./volumes/mqtt-logs:/mosquitto/log
+      - ../../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../../volumes/mqtt-data:/mosquitto/data
+      - ../../volumes/mqtt-logs:/mosquitto/log
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -t mia/healthcheck -m ok >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - ai-servis-dev-network
 
@@ -140,8 +150,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./volumes/postgres-data-dev:/var/lib/postgresql/data
-      - ./containers/postgres/init-dev.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../volumes/postgres-data-dev:/var/lib/postgresql/data
+      - ../../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aiservispdev -d aiservisdwxb"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
     networks:
       - ai-servis-dev-network
 
@@ -153,7 +169,13 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./volumes/redis-data-dev:/data
+      - ../../volumes/redis-data-dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     networks:
       - ai-servis-dev-network
 
@@ -165,13 +187,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./:/docs:cached
+      - ../../:/docs:cached
     command: serve --dev-addr=0.0.0.0:8000
     networks:
       - ai-servis-dev-network
 
 networks:
   ai-servis-dev-network:
+    name: ai-servis-dev-network
     driver: bridge
 
 volumes:

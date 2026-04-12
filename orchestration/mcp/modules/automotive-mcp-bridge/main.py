@@ -8,17 +8,39 @@ safety-critical response times, and edge optimization.
 """
 
 import asyncio
-import json
+import importlib.util
 import logging
+import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union, Callable
 from pathlib import Path
-import aiohttp
-import websockets
 from datetime import datetime, timedelta
-import numpy as np
+
+try:
+    import aiohttp
+except ImportError:
+    aiohttp = None
+    logging.warning("aiohttp not available - HTTP integrations limited")
+
+try:
+    import websockets
+except ImportError:
+    websockets = None
+    logging.warning("websockets not available - MCP websocket integrations limited")
+
+try:
+    import numpy as np
+except ImportError:
+    class _NumpyFallback:
+        class random:
+            @staticmethod
+            def normal(*args, **kwargs):
+                return 0.0
+
+    np = _NumpyFallback()
+    logging.warning("numpy not available - using deterministic fallback")
 
 # Import Citroën C4 Bridge for PSA-specific integration
 try:
@@ -27,6 +49,33 @@ try:
 except ImportError:
     CITROEN_BRIDGE_AVAILABLE = False
     logging.warning("Citroën C4 Bridge not available - limited functionality")
+
+
+def _load_vag_audi_bridge_class():
+    try:
+        from vag_audi_bridge import VagAudiBridge
+        return VagAudiBridge, True
+    except ImportError:
+        module_path = Path(__file__).resolve().parent.parent / "vag-audi-bridge" / "main.py"
+        if not module_path.exists():
+            logging.warning("VAG Audi Bridge not available - limited functionality")
+            return None, False
+
+        try:
+            spec = importlib.util.spec_from_file_location("vag_audi_bridge_main", module_path)
+            if spec is None or spec.loader is None:
+                raise ImportError(f"Unable to load module spec for {module_path}")
+
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[spec.name] = module
+            spec.loader.exec_module(module)
+            return module.VagAudiBridge, True
+        except Exception as exc:
+            logging.warning(f"VAG Audi Bridge not available - limited functionality: {exc}")
+            return None, False
+
+
+VagAudiBridge, VAG_AUDI_BRIDGE_AVAILABLE = _load_vag_audi_bridge_class()
 
 # Configure logging
 logging.basicConfig(
@@ -53,6 +102,26 @@ class SafetyLevel(Enum):
     LOW = "low"              # Non-essential features
 
 
+def _serialize_for_transport(value: Any) -> Any:
+    """Convert runtime objects to JSON-safe transport values."""
+    if is_dataclass(value):
+        return _serialize_for_transport(asdict(value))
+
+    if isinstance(value, Enum):
+        return value.value
+
+    if isinstance(value, datetime):
+        return value.isoformat()
+
+    if isinstance(value, dict):
+        return {key: _serialize_for_transport(item) for key, item in value.items()}
+
+    if isinstance(value, (list, tuple)):
+        return [_serialize_for_transport(item) for item in value]
+
+    return value
+
+
 @dataclass
 class VehicleState:
     """Current vehicle state information"""
@@ -68,6 +137,9 @@ class VehicleState:
     headlights_on: bool = False
     context: AutomotiveContext = AutomotiveContext.PARKED
     last_update: datetime = field(default_factory=datetime.now)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return _serialize_for_transport(self)
 
 
 @dataclass
@@ -119,6 +191,25 @@ class AutomotiveMCPBridge:
                 logger.warning(f"Failed to instantiate Citroën C4 Bridge: {e}")
                 self.citroen_bridge = None
 
+        # VAG Audi Bridge integration (read-only)
+        self.vag_audi_bridge = None
+        if VAG_AUDI_BRIDGE_AVAILABLE and config.get("enable_vag_audi_integration", True):
+            try:
+                vag_audi_config = {
+                    "model_hint": "Audi A3 8V MQB",
+                    "model_year": 2017,
+                    "enable_passive_monitoring": True,
+                    "enable_uds_polling": False,
+                    "allowed_read_services": ["19", "22"],
+                    "default_identifiers": ["F190"],
+                }
+                vag_audi_config.update(config.get("vag_audi_config", {}))
+                self.vag_audi_bridge = VagAudiBridge(vag_audi_config)
+                logger.info("VAG Audi Bridge instantiated successfully")
+            except Exception as e:
+                logger.warning(f"Failed to instantiate VAG Audi Bridge: {e}")
+                self.vag_audi_bridge = None
+
         # Real-time metrics
         self.metrics = {
             "commands_processed": 0,
@@ -126,7 +217,8 @@ class AutomotiveMCPBridge:
             "safety_violations": 0,
             "voice_recognition_accuracy": 0.95,
             "system_uptime_hours": 0.0,
-            "citroen_bridge_active": CITROEN_BRIDGE_AVAILABLE and self.citroen_bridge is not None
+            "citroen_bridge_active": CITROEN_BRIDGE_AVAILABLE and self.citroen_bridge is not None,
+            "vag_audi_bridge_active": VAG_AUDI_BRIDGE_AVAILABLE and self.vag_audi_bridge is not None,
         }
 
     async def initialize(self):
@@ -144,6 +236,15 @@ class AutomotiveMCPBridge:
                 logger.info("✅ Citroën C4 Bridge initialized successfully")
             else:
                 logger.warning("❌ Citroën C4 Bridge initialization failed - using generic mode")
+
+        # Initialize VAG Audi Bridge if available
+        if self.vag_audi_bridge:
+            logger.info("🔧 Initializing VAG Audi Bridge integration")
+            vag_success = await self.vag_audi_bridge.initialize()
+            if vag_success:
+                logger.info("✅ VAG Audi Bridge initialized successfully")
+            else:
+                logger.warning("❌ VAG Audi Bridge initialization failed - using generic mode")
 
         # Start vehicle data monitoring
         asyncio.create_task(self._monitor_vehicle_data())
@@ -297,7 +398,13 @@ class AutomotiveMCPBridge:
             "check_additive": "vehicle_control",
             "diagnostics": "vehicle_control",
             "engine_temp": "vehicle_control",
-            "battery_status": "vehicle_control"
+            "battery_status": "vehicle_control",
+            # Audi-specific read-only commands
+            "audi_vehicle_status": "vehicle_control",
+            "audi_read_vin": "vehicle_control",
+            "audi_read_dtc": "vehicle_control",
+            "audi_read_identifiers": "vehicle_control",
+            "audi_diagnostics": "vehicle_control",
         }
         
         # Execute with timeout based on safety level
@@ -312,6 +419,17 @@ class AutomotiveMCPBridge:
                 # Apply safety-critical timeout to Citroën commands
                 result = await asyncio.wait_for(
                     self._execute_citroen_command(command),
+                    timeout=timeout
+                )
+            elif self.vag_audi_bridge and command.intent in [
+                "audi_vehicle_status",
+                "audi_read_vin",
+                "audi_read_dtc",
+                "audi_read_identifiers",
+                "audi_diagnostics",
+            ]:
+                result = await asyncio.wait_for(
+                    self._execute_vag_audi_command(command),
                     timeout=timeout
                 )
             else:
@@ -329,7 +447,7 @@ class AutomotiveMCPBridge:
                         "tool": command.intent,
                         "arguments": command.entities,
                         "automotive_context": {
-                            "vehicle_state": self.vehicle_state.__dict__,
+                            "vehicle_state": self.vehicle_state.to_dict(),
                             "safety_level": command.safety_level.value,
                             "max_response_time_ms": command.max_response_time_ms
                         }
@@ -456,6 +574,32 @@ class AutomotiveMCPBridge:
                 "error": str(e)
             }
 
+    async def _execute_vag_audi_command(self, command: AutomotiveCommand) -> Dict[str, Any]:
+        """Execute read-only Audi-specific commands through the VAG bridge."""
+        if not self.vag_audi_bridge:
+            raise Exception("VAG Audi Bridge not available")
+
+        intent = command.intent
+        entities = command.entities
+
+        if intent == "audi_vehicle_status":
+            return await self.vag_audi_bridge.get_vehicle_status()
+
+        if intent == "audi_read_vin":
+            return await self.vag_audi_bridge.read_data_identifiers(["F190"])
+
+        if intent == "audi_read_dtc":
+            return await self.vag_audi_bridge.read_dtc_summary()
+
+        if intent == "audi_read_identifiers":
+            identifiers = entities.get("identifiers", ["F190"])
+            return await self.vag_audi_bridge.read_data_identifiers(identifiers)
+
+        if intent == "audi_diagnostics":
+            return await self.vag_audi_bridge.get_diagnostics_report()
+
+        raise Exception(f"Unknown VAG Audi command: {intent}")
+
     async def _monitor_vehicle_data(self):
         """Monitor real-time vehicle data"""
         while True:
@@ -465,6 +609,8 @@ class AutomotiveMCPBridge:
                     # Bridge handles its own telemetry monitoring
                     # We just need to sync the generic vehicle state
                     await self._sync_from_citroen_bridge()
+                elif self.vag_audi_bridge:
+                    await self._sync_from_vag_audi_bridge()
                 else:
                     # Fallback to generic simulation
                     await self._update_vehicle_state()
@@ -533,6 +679,34 @@ class AutomotiveMCPBridge:
             # Fallback to generic update
             await self._update_vehicle_state()
 
+    async def _sync_from_vag_audi_bridge(self):
+        """Sync generic vehicle state from the read-only VAG Audi bridge."""
+        if not self.vag_audi_bridge:
+            return
+
+        try:
+            vag_status = await self.vag_audi_bridge.get_vehicle_status()
+            telemetry = vag_status.get("telemetry", {})
+
+            self.vehicle_state.speed_kmh = telemetry.get("speed_kmh") or 0.0
+            self.vehicle_state.engine_rpm = telemetry.get("engine_rpm") or 0.0
+            self.vehicle_state.coolant_temp_celsius = telemetry.get("coolant_temp_c") or 90.0
+            self.vehicle_state.fuel_level_percent = telemetry.get("fuel_level_percent") or 100.0
+            self.vehicle_state.battery_voltage = telemetry.get("battery_voltage") or 12.0
+
+            if self.vehicle_state.speed_kmh > 5:
+                self.vehicle_state.context = AutomotiveContext.DRIVING
+            elif telemetry.get("dtc_codes"):
+                self.vehicle_state.context = AutomotiveContext.MAINTENANCE
+            else:
+                self.vehicle_state.context = AutomotiveContext.PARKED
+
+            self.vehicle_state.last_update = datetime.now()
+
+        except Exception as e:
+            logger.error(f"VAG Audi bridge sync error: {e}")
+            await self._update_vehicle_state()
+
     async def _update_vehicle_context(self):
         """Update vehicle context for command processing"""
         # This method would update context from various sensors
@@ -540,6 +714,8 @@ class AutomotiveMCPBridge:
         if (datetime.now() - self.vehicle_state.last_update).seconds > 5:
             if self.citroen_bridge:
                 await self._sync_from_citroen_bridge()
+            elif self.vag_audi_bridge:
+                await self._sync_from_vag_audi_bridge()
             else:
                 await self._update_vehicle_state()
 
@@ -575,7 +751,7 @@ class AutomotiveMCPBridge:
         """Get comprehensive system status for automotive deployment"""
         base_status = {
             "bridge_status": "active",
-            "vehicle_state": self.vehicle_state.__dict__,
+            "vehicle_state": self.vehicle_state.to_dict(),
             "mcp_servers": {name: server.get("connected", False) for name, server in self.mcp_servers.items()},
             "metrics": self.metrics,
             "safety_monitor": await self.safety_monitor.get_status(),
@@ -611,7 +787,33 @@ class AutomotiveMCPBridge:
                 "reason": "Citroën C4 Bridge not available"
             }
 
-        return base_status
+        # Add VAG Audi specific status if available
+        if self.vag_audi_bridge:
+            try:
+                vag_status = await self.vag_audi_bridge.get_vehicle_status()
+                base_status["vag_audi"] = {
+                    "bridge_active": True,
+                    "vehicle_info": vag_status.get("vehicle_info"),
+                    "current_state": vag_status.get("current_state"),
+                    "connection": vag_status.get("connection"),
+                    "telemetry": vag_status.get("telemetry"),
+                    "diagnostics": vag_status.get("diagnostics"),
+                    "adapter_capabilities": vag_status.get("adapter_capabilities"),
+                    "capabilities": vag_status.get("capabilities"),
+                }
+            except Exception as e:
+                logger.error(f"VAG Audi status error: {e}")
+                base_status["vag_audi"] = {
+                    "bridge_active": False,
+                    "error": str(e)
+                }
+        else:
+            base_status["vag_audi"] = {
+                "bridge_active": False,
+                "reason": "VAG Audi Bridge not available"
+            }
+
+        return _serialize_for_transport(base_status)
 
 
 class AutomotiveSafetyMonitor:
@@ -730,6 +932,8 @@ class AutomotivePerformanceMonitor:
 
 async def main():
     """Main entry point for automotive MCP bridge"""
+    if aiohttp is None:
+        raise RuntimeError("aiohttp is required to run the automotive MCP bridge HTTP server")
 
     config = {
         "voice_timeout_ms": 500,
@@ -737,11 +941,20 @@ async def main():
         "edge_optimization_enabled": True,
         "log_level": "INFO",
         "enable_citroen_integration": True,
+        "enable_vag_audi_integration": True,
         "citroen_config": {
             "model_year": 2012,
             "engine_type": "HDi",
             "transmission_type": "manual",
             "equipment_level": "VTi"
+        },
+        "vag_audi_config": {
+            "model_hint": "Audi A3 8V MQB",
+            "model_year": 2017,
+            "enable_passive_monitoring": True,
+            "enable_uds_polling": False,
+            "allowed_read_services": ["19", "22"],
+            "default_identifiers": ["F190"]
         }
     }
     
@@ -784,6 +997,11 @@ async def main():
         logger.info("✅ Citroën C4 Bridge integration enabled")
     else:
         logger.warning("⚠️  Citroën C4 Bridge not available - limited functionality")
+
+    if VAG_AUDI_BRIDGE_AVAILABLE:
+        logger.info("✅ VAG Audi Bridge integration enabled")
+    else:
+        logger.warning("⚠️  VAG Audi Bridge not available - Audi functionality disabled")
 
     logger.info("🚗 Automotive MCP Bridge started on port 8084")
 

@@ -1,0 +1,252 @@
+{
+  "run_id": "20260410_152617",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "preflight",
+      "steps": [
+        {
+          "name": "target_profile",
+          "verdict": "PASS",
+          "duration_s": 0.3556710900156759,
+          "detail": "os=Kali GNU/Linux Rolling, arch=x86_64, model=not-reported",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_network_profile",
+          "verdict": "PASS",
+          "duration_s": 0.33007323302445,
+          "detail": "target_ip=192.168.200.134, remote_ips=['192.168.200.134', '172.18.0.1', '172.17.0.1'], subnet=192.168.200.0/24",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_usb_transport",
+          "verdict": "PASS",
+          "duration_s": 0.11883216700516641,
+          "detail": "serial=HT36TW903516, devpath=usb:2-1.3, usb_state=mtp,adb",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_root_verification",
+          "verdict": "SKIP",
+          "duration_s": 0.0,
+          "detail": "--allow-unrooted-phone requested",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_network_profile",
+          "verdict": "PASS",
+          "duration_s": 0.08756592599092983,
+          "detail": "android_ips=['usb-only'], subnet_match=false (USB-tethered OK)",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:26:17.455660+00:00",
+      "finished": "2026-04-10T13:26:18.347892+00:00"
+    },
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "PASS",
+          "duration_s": 1.0744462760048918,
+          "detail": "api_start_time, cpu, devices_connected, memory, status, telemetry_sources",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "PASS",
+          "duration_s": 0.0043813909869641066,
+          "detail": "count, devices, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "PASS",
+          "duration_s": 0.015816694009117782,
+          "detail": "telemetry, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "PASS",
+          "duration_s": 0.007164012000430375,
+          "detail": "features catalog not deployed (OK \u2014 optional)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "PASS",
+          "duration_s": 0.3584648260148242,
+          "detail": "ZMQ broker not running (non-fatal \u2014 API works standalone)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_service_snapshot",
+          "verdict": "PASS",
+          "duration_s": 0.6218340009800158,
+          "detail": "tests/integration/artifacts/20260410_152617/smoke_services_target_snapshot.txt",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:26:18.347917+00:00",
+      "finished": "2026-04-10T13:26:20.430120+00:00"
+    },
+    {
+      "phase": "e2e",
+      "steps": [
+        {
+          "name": "android_network_reaches_api",
+          "verdict": "PASS",
+          "duration_s": 1.0791545620013494,
+          "detail": "host_verified: API reachable (200), phone is USB-tethered",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_registry_roundtrip",
+          "verdict": "PASS",
+          "duration_s": 0.01914149001822807,
+          "detail": "android-usb-HT36TW903516",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "telemetry_flow",
+          "verdict": "PASS",
+          "duration_s": 0.003681956004584208,
+          "detail": "telemetry, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "gpio_read_pin",
+          "verdict": "PASS",
+          "duration_s": 5.0358687120024115,
+          "detail": "error, success",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "websocket_route_exists",
+          "verdict": "PASS",
+          "duration_s": 0.005417621025117114,
+          "detail": "ws_telemetry_probe=404",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "session_lifecycle",
+          "verdict": "PASS",
+          "duration_s": 0.019876093982020393,
+          "detail": "session=c0c0603c-70e..., lifecycle=create\u2192get\u2192delete",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "led_state_roundtrip",
+          "verdict": "PASS",
+          "duration_s": 0.019956881005782634,
+          "detail": "led_roundtrip=get\u2192put\u2192verify, keys=led_state, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "auth_status",
+          "verdict": "PASS",
+          "duration_s": 0.006694901006994769,
+          "detail": "enabled, keys_configured, message",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "thermal_health",
+          "verdict": "PASS",
+          "duration_s": 0.0036530799989122897,
+          "detail": "status, temperature_c, thresholds, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "log_query",
+          "verdict": "PASS",
+          "duration_s": 0.020918247988447547,
+          "detail": "log_services=17, sample=mia-api(200)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "ota_status",
+          "verdict": "PASS",
+          "duration_s": 0.004416991025209427,
+          "detail": "current_version, live_dir, rollback_available, staging_ready",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "device_command",
+          "verdict": "PASS",
+          "duration_s": 5.027079727995442,
+          "detail": "command_route=200, error, success, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "registry_status",
+          "verdict": "PASS",
+          "duration_s": 0.0038085939886514097,
+          "detail": "by_type, error, healthy, offline, online, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_logcat_health",
+          "verdict": "PASS",
+          "duration_s": 3.2847834219865035,
+          "detail": "crash_markers=0, warnings=0, lines=0",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:26:20.430147+00:00",
+      "finished": "2026-04-10T13:26:34.964963+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 0.96,
+      "phase_success_rate": 1.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.0
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "device-profile",
+    "top_diagnoses": [
+      {
+        "diagnosis": "Profile mismatch",
+        "count": 1
+      }
+    ],
+    "focus_histogram": {
+      "device-profile": 1
+    },
+    "applied_remediations": [],
+    "knowledge_entries": 1
+  },
+  "total_duration_s": 17.509334781992948
+}

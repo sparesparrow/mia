@@ -8,6 +8,8 @@ import logging
 import os
 import json
 import subprocess
+import sys
+from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 import aiohttp
@@ -15,10 +17,21 @@ import websockets
 from datetime import datetime
 
 # Import our MCP framework
-from ..shared.mcp_framework import (
-    MCPServer, MCPClient, MCPMessage, MCPTransport,
-    WebSocketTransport, Tool, create_tool
-)
+try:
+    from ..shared.mcp_framework import (
+        MCPServer, MCPClient, MCPMessage, MCPTransport,
+        WebSocketTransport, Tool, create_tool
+    )
+except ImportError:
+    for shared_dir in [Path(__file__).resolve().parent / "shared", *[parent / "shared" for parent in Path(__file__).resolve().parents]]:
+        if shared_dir.exists():
+            sys.path.insert(0, str(shared_dir))
+            break
+
+    from mcp_framework import (  # type: ignore
+        MCPServer, MCPClient, MCPMessage, MCPTransport,
+        WebSocketTransport, Tool, create_tool
+    )
 
 
 # Logging setup

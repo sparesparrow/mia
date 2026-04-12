@@ -272,10 +272,27 @@ deploy_with_compose() {
     
     cd "$PROJECT_ROOT"
     
-    local compose_file="docker-compose.$DEPLOYMENT_ENV.yml"
+    local compose_file
+    case "$DEPLOYMENT_ENV" in
+        development|dev)
+            compose_file="infra/docker/docker-compose.dev.yml"
+            ;;
+        production|prod)
+            compose_file="infra/docker/docker-compose.yml"
+            ;;
+        monitoring)
+            compose_file="infra/docker/docker-compose.monitoring.yml"
+            ;;
+        pi-sim)
+            compose_file="docker-compose.pi-simulation.yml"
+            ;;
+        *)
+            compose_file="infra/docker/docker-compose.${DEPLOYMENT_ENV}.yml"
+            ;;
+    esac
     
     if [[ ! -f "$compose_file" ]]; then
-        compose_file="docker-compose.yml"
+        compose_file="infra/docker/docker-compose.yml"
     fi
     
     if [[ ! -f "$compose_file" ]]; then
@@ -289,7 +306,7 @@ deploy_with_compose() {
     export VOICE_TIMEOUT_MS=500
     
     # Deploy services
-    docker-compose -f "$compose_file" up -d --remove-orphans
+    docker compose -f "$compose_file" up -d --remove-orphans
     
     # Wait for services to be healthy
     log_info "Waiting for services to become healthy..."
@@ -297,7 +314,7 @@ deploy_with_compose() {
     local elapsed=0
     
     while [[ $elapsed -lt $timeout ]]; do
-        if docker-compose -f "$compose_file" ps | grep -q "unhealthy\|starting"; then
+        if docker compose -f "$compose_file" ps | grep -q "unhealthy\|starting"; then
             log_info "Services still starting... ($elapsed/$timeout seconds)"
             sleep 10
             elapsed=$((elapsed + 10))
@@ -308,12 +325,12 @@ deploy_with_compose() {
     
     if [[ $elapsed -ge $timeout ]]; then
         log_error "Services failed to become healthy within $timeout seconds"
-        docker-compose -f "$compose_file" ps
+        docker compose -f "$compose_file" ps
         return 1
     fi
     
     log_success "Docker Compose deployment completed"
-    docker-compose -f "$compose_file" ps
+    docker compose -f "$compose_file" ps
 }
 
 # Run performance tests

@@ -10,7 +10,7 @@
 #   ./tools/install-deps-rpi.sh --minimal # Minimal build dependencies only
 # =============================================================================
 
-set -e
+set -euo pipefail
 
 # Colors
 RED='\033[0;31m'
@@ -21,6 +21,12 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 MINIMAL=false
+
+APT_PREFIX=()
+
+run_apt() {
+    "${APT_PREFIX[@]}" apt-get "$@"
+}
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -63,14 +69,20 @@ if ! command -v apt-get &> /dev/null; then
 fi
 
 # Determine if we need sudo
-SUDO=""
 if [ "$EUID" -ne 0 ]; then
-    SUDO="sudo"
+    if ! command -v sudo >/dev/null 2>&1; then
+        echo -e "${RED}sudo is required to install system packages but was not found.${NC}"
+        exit 1
+    fi
+
+    APT_PREFIX=(sudo)
     echo -e "${YELLOW}Note: Some commands will use sudo${NC}"
 fi
 
+export DEBIAN_FRONTEND="${DEBIAN_FRONTEND:-noninteractive}"
+
 echo -e "${CYAN}Updating package lists...${NC}"
-$SUDO apt-get update
+run_apt update
 
 # Essential build tools
 ESSENTIAL_PKGS=(
@@ -117,22 +129,22 @@ RUNTIME_PKGS=(
 )
 
 echo -e "${CYAN}Installing essential build tools...${NC}"
-$SUDO apt-get install -y "${ESSENTIAL_PKGS[@]}"
+run_apt install -y "${ESSENTIAL_PKGS[@]}"
 
 echo -e "${CYAN}Installing Python packages...${NC}"
-$SUDO apt-get install -y "${PYTHON_PKGS[@]}"
+run_apt install -y "${PYTHON_PKGS[@]}"
 
 echo -e "${CYAN}Installing C++ development libraries...${NC}"
-$SUDO apt-get install -y "${CPP_DEV_PKGS[@]}"
+run_apt install -y "${CPP_DEV_PKGS[@]}"
 
 if [ "$MINIMAL" = false ]; then
     echo -e "${CYAN}Installing optional development tools...${NC}"
-    $SUDO apt-get install -y "${OPTIONAL_PKGS[@]}" 2>/dev/null || {
+    run_apt install -y "${OPTIONAL_PKGS[@]}" 2>/dev/null || {
         echo -e "${YELLOW}Some optional packages not available, skipping...${NC}"
     }
 
     echo -e "${CYAN}Installing runtime packages...${NC}"
-    $SUDO apt-get install -y "${RUNTIME_PKGS[@]}"
+    run_apt install -y "${RUNTIME_PKGS[@]}"
 fi
 
 # Check compiler version

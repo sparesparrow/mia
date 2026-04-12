@@ -1,0 +1,90 @@
+{
+  "run_id": "20260410_140120",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "deploy",
+      "steps": [
+        {
+          "name": "ssh_connectivity",
+          "verdict": "PASS",
+          "duration_s": 0.7793741949717514,
+          "detail": "uid=1000(sparrow) gid=1000(sparrow) groups=1000(sparrow),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),103(scanner),116(bluetooth),120(lpadmin),124(wireshark),134(kaboxer),135(docker),996(input)\nLinux studijko 6.16.8+kali-amd64 #1 SMP PREEMPT_DYNAMIC Kali 6.16.8-1kali1 (2025-09-24) x86_64 GNU/Linux",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "create_target_dirs",
+          "verdict": "PASS",
+          "duration_s": 0.403389626997523,
+          "detail": "dirs created",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "sync_backend_code",
+          "verdict": "PASS",
+          "duration_s": 0.6340484810061753,
+          "detail": "backend synced",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "sync_schemas",
+          "verdict": "PASS",
+          "duration_s": 2.4059690019930713,
+          "detail": "schemas + config synced",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "create_venv",
+          "verdict": "PASS",
+          "duration_s": 2.88433989600162,
+          "detail": "CREATED",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "install_pip_deps",
+          "verdict": "FAIL",
+          "duration_s": 213.57690347000607,
+          "detail": "",
+          "error": "Command '['ssh', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'BatchMode=yes', '-p', '22', 'sparrow@192.168.200.134', '/opt/mia/venv/bin/pip install --upgrade pip -q && /opt/mia/venv/bin/pip install -r /opt/mia/requirements-ci.txt -q']' returned non-zero exit status 1.",
+          "remediation_applied": ""
+        },
+        {
+          "name": "deploy_systemd_units",
+          "verdict": "PASS",
+          "duration_s": 13.699043686996447,
+          "detail": "17 units deployed",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "start_services",
+          "verdict": "PASS",
+          "duration_s": 13.193948837986682,
+          "detail": "zmq-broker=activating\ninactive, mia-api=activating\ninactive, mia-gpio-worker=activating\ninactive, direct-api=down",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:01:20.749394+00:00",
+      "finished": "2026-04-10T12:05:28.335078+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T12:05:01.441967+00:00",
+      "step": "install_pip_deps",
+      "pattern": "Command\\ '\\['ssh',\\ '\\-o',\\ 'StrictHostKeyChecking=accept\\-new',\\ '\\-o',\\ 'BatchMode=yes',\\ '\\-p',\\ '22',\\ 'sparrow@192\\.168\\.200\\.134',",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    }
+  ],
+  "total_duration_s": 247.58608973099035
+}

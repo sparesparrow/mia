@@ -1,0 +1,102 @@
+{
+  "run_id": "20260410_152012",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "preflight",
+      "steps": [
+        {
+          "name": "target_profile",
+          "verdict": "FAIL",
+          "duration_s": 0.0006234539905562997,
+          "detail": "",
+          "error": "embedded null byte",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_network_profile",
+          "verdict": "PASS",
+          "duration_s": 0.3448345900105778,
+          "detail": "target_ip=192.168.200.134, remote_ips=['192.168.200.134', '172.18.0.1', '172.17.0.1'], subnet=192.168.200.0/24",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_usb_transport",
+          "verdict": "PASS",
+          "duration_s": 0.17256833499413915,
+          "detail": "serial=HT36TW903516, devpath=usb:2-1.3, usb_state=[audio.offload.disable]: [1]\n[camera.disable_treble]: [true]\n[camera2.portability.force_api]: [1]\n[dalvik.vm.appimageformat]: [lz4]\n[dalvik.vm.dex2oat-Xms]: [64m]\n[dalvik.vm.dex2oat-Xmx]: [512m]\n[dalvik.vm.dex2oat-max-image-block-size]: [524288]\n[dalvik.vm.dex2oat-minidebuginfo]: [true]\n[dalvik.vm.dex2oat-resolve-startup-strings]: [true]\n[dalvik.vm.dex2oat-swap]: [false]\n[dalvik.vm.dexopt.secondary]: [true]\n[dalvik.vm.heapgrowthlimit]: [192m]\n[dalvik.vm.heapmaxfree]: [8m]\n[dalvik.vm.heapminfree]: [2m]\n[dalvik.vm.heapsize]: [512m]\n[dalvik.vm.heapstartsize]: [16m]\n[dalvik.vm.heaptargetutilization]: [0.75]\n[dalvik.vm.image-dex2oat-Xms]: [64m]\n[dalvik.vm.image-dex2oat-Xmx]: [64m]\n[dalvik.vm.isa.arm.features]: [default]\n[dalvik.vm.isa.arm.variant]: [krait]\n[dalvik.vm.lockprof.threshold]: [500]\n[dalvik.vm.minidebuginfo]: [true]\n[dalvik.vm.usejit]: [true]\n[dalvik.vm.usejitprofiles]: [true]\n[debug.atrace.tags.enableflags]: [0]\n[debug.camcorder.disablemeta]: [true]\n[debug.composition.type]: [dyn]\n[debug.egl.hw]: [1]\n[debug.force_rtl]: [false]\n[debug.hwui.use_buffer_age]: [false]\n[debug.mdpcomp.logs]: [0]\n[debug.nfc.fw_boot_download]: [false]\n[debug.nfc.fw_download]: [true]\n[debug.nfc.se]: [true]\n[debug.sf.disable_backpressure]: [1]\n[debug.sf.hw]: [1]\n[debug.sf.latch_unsignaled]: [1]\n[debug.stagefright.ccodec]: [0]\n[debug.stagefright.omx_default_rank]: [0]\n[debug.stagefright.omx_default_rank.sw-audio]: [1]\n[dev.bootcomplete]: [1]\n[efsks.pid]: [604]\n[gsm.current.phone-type]: [1]\n[gsm.network.type]: [Unknown]\n[gsm.operator.alpha]: []\n[gsm.operator.iso-country]: []\n[gsm.operator.isroaming]: [false]\n[gsm.operator.numeric]: []\n[gsm.version.baseband]: [4T.35.3218.16_10.33Q.1718.01L]\n[gsm.version.ril-impl]: [Qualcomm RIL 1.0]\n[hwservicemanager.ready]: [true]\n[init.svc.adb_root]: [running]\n[init.svc.adbd]: [running]\n[init.svc.akmd]: [running]\n[init.svc.apexd]: [running]\n[init.svc.apexd-bootstrap]: [stopped]\n[init.svc.ashmemd]: [running]\n[init.svc.audioserver]: [running]\n[init.svc.bootanim]: [stopped]\n[init.svc.bpfloader]: [stopped]\n[init.svc.cir_fw_update]: [stopped]\n[init.svc.drm]: [running]\n[init.svc.gatekeeperd]: [running]\n[init.svc.gpu]: [running]\n[init.svc.gsid]: [stopped]\n[init.svc.hidl_memory]: [running]\n[init.svc.hwservicemanager]: [running]\n[init.svc.idmap2d]: [stopped]\n[init.svc.incidentd]: [running]\n[init.svc.installd]: [running]\n[init.svc.iorapd]: [stopped]\n[init.svc.keystore]: [running]\n[init.svc.kickstartgsm]: [running]\n[init.svc.light-hal-2-0]: [running]\n[init.svc.lmkd]: [running]\n[init.svc.logd]: [running]\n[init.svc.logd-auditctl]: [stopped]\n[init.svc.logd-reinit]: [stopped]\n[init.svc.mdnsd]: [stopped]\n[init.svc.media]: [running]\n[init.svc.media.swcodec]: [running]\n[init.svc.mediadrm]: [running]\n[init.svc.mediaextractor]: [running]\n[init.svc.mediametrics]: [running]\n[init.svc.mpdecision]: [running]\n[init.svc.netd]: [running]\n[init.svc.netmgrd]: [running]\n[init.svc.qcamerasvr]: [running]\n[init.svc.qmuxd]: [running]\n[init.svc.qseecomd]: [running]\n[init.svc.ril-daemon]: [running]\n[init.svc.servicemanager]: [running]\n[init.svc.statsd]: [running]\n[init.svc.storaged]: [running]\n[init.svc.surfaceflinger]: [running]\n[init.svc.system_suspend]: [running]\n[init.svc.thermal-engine]: [running]\n[init.svc.time_daemon]: [running]\n[init.svc.tombstoned]: [running]\n[init.svc.ueventd]: [running]\n[init.svc.usbd]: [stopped]\n[init.svc.vendor.audio-hal-2-0]: [running]\n[init.svc.vendor.cas-hal-1-1]: [running]\n[init.svc.vendor.configstore-hal]: [running]\n[init.svc.vendor.drm-hal-1-0]: [running]\n[init.svc.vendor.gnss_service]: [running]\n[init.svc.vendor.gralloc-2-0]: [running]\n[init.svc.vendor.health-hal-2-0]: [running]\n[init.svc.vendor.hwcomposer-2-1]: [running]\n[init.svc.vendor.media.omx]: [running]\n[init.svc.vendor.power-hal-1-2]: [running]\n[init.svc.vendor.sensors-hal-1-0]: [running]\n[init.svc.vendor.touch-hal-1-0]: [running]\n[init.svc.vendor.trust-hal-1-0]: [running]\n[init.svc.vendor.usb-hal-1-0]: [running]\n[init.svc.vendor.wifi_hal_legacy]: [running]\n[init.svc.vndservicemanager]: [running]\n[init.svc.vold]: [running]\n[init.svc.wificond]: [running]\n[init.svc.wpa_supplicant]: [running]\n[init.svc.zygote]: [running]\n[keyguard.no_require_sim]: [true]\n[log.tag.APM_AudioPolicyManager]: [D]\n[log.tag.WifiHAL]: [D]\n[log.tag.stats_log]: [I]\n[logd.logpersistd.enable]: [true]\n[media.recorder.show_manufacturer_and_model]: [true]\n[media.stagefright.legacyencoder]: [true]\n[media.stagefright.less-secure]: [true]\n[net.bt.name]: [Android]\n[net.hostname]: []\n[net.qtaguid_enabled]: [1]\n[net.tcp.default_init_rwnd]: [60]\n[net.tethering.noprovisioning]: [true]\n[nfc.initialized]: [true]\n[persist.adb.nonblocking_ffs]: [0]\n[persist.audio.fluence.speaker]: [true]\n[persist.audio.fluence.voicecall]: [true]\n[persist.audio.fluence.voicerec]: [false]\n[persist.camera.forceuseaudio]: [0]\n[persist.camera.optical]: [0.1.1.1]\n[persist.camera.zoemode]: [0]\n[persist.debug.dalvik.vm.core_platform_api_policy]: [just-warn]\n[persist.hwc.mdpcomp.enable]: [true]\n[persist.logd.logpersistd]: []\n[persist.radio.adb_log_on]: [1]\n[persist.sys.boot.reason]: []\n[persist.sys.boot.reason.history]: [reboot,1775602140\nreboot,1775092994\nreboot,1772333565\nreboot,1772290587]\n[persist.sys.dalvik.vm.lib.2]: [libart.so]\n[persist.sys.device_provisioned]: [1]\n[persist.sys.displayinset.top]: [0]\n[persist.sys.dun.override]: [0]\n[persist.sys.isolated_storage]: [true]\n[persist.sys.timezone]: [Europe/Amsterdam]\n[persist.sys.usb.config]: [adb]\n[persist.thermal.monitor]: [true]\n[persist.timed.enable]: [true]\n[persist.vendor.audio.fluence.speaker]: [true]\n[persist.vendor.audio.fluence.voicecall]: [true]\n[persist.vendor.audio.fluence.voicerec]: [false]\n[pm.dexopt.ab-ota]: [speed-profile]\n[pm.dexopt.bg-dexopt]: [speed-profile]\n[pm.dexopt.boot]: [verify]\n[pm.dexopt.first-boot]: [quicken]\n[pm.dexopt.inactive]: [verify]\n[pm.dexopt.install]: [speed-profile]\n[pm.dexopt.shared]: [speed]\n[qcom.audio.init]: [complete]\n[ril.ecclist]: [911,112,000,08,110,999,118,119]\n[ril.reload.count]: [1]\n[rild.libargs]: [-d /dev/smd0]\n[rild.libpath]: [/system/lib/libril-qc-qmi-1.so]\n[ro.actionable_compatible_property.enabled]: [false]\n[ro.adb.nonblocking_ffs]: [0]\n[ro.adb.secure]: [1]\n[ro.allow.mock.location]: [0]\n[ro.baseband]: [4T.35.3218.16]\n[ro.baseband.arch]: [mdm]\n[ro.bionic.2nd_arch]: [ro.bionic.2nd_cpu_variant=persist.sys.dalvik.vm.lib.2=libart.so]\n[ro.bionic.arch]: [arm]\n[ro.bionic.cpu_variant]: [krait]\n[ro.board.platform]: [msm8960]\n[ro.boot.baseband]: [4T.35.3218.16]\n[ro.boot.batt_poweron]: [good_battery]\n[ro.boot.bootloader]: [1.61.0000]\n[ro.boot.bootreason]: [reboot]\n[ro.boot.carrier]: [ALL]\n[ro.boot.cid]: [11111111]\n[ro.boot.ddrmid]: [(0x3)]\n[ro.boot.devicerev]: [3]\n[ro.boot.dq]: [PASS]\n[ro.boot.efuse_info]: [4FSL]\n[ro.boot.emmc]: [true]\n[ro.boot.hardware]: [qcom]\n[ro.boot.hasfp]: [0]\n[ro.boot.keycaps]: [qwerty]\n[ro.boot.lb]: [1]\n[ro.boot.mid]: [PN0712000]\n[ro.boot.mode]: [normal]\n[ro.boot.nledhw]: [0]\n[ro.boot.pagesize]: [2048]\n[ro.boot.serialno]: [HT36TW903516]\n[ro.bootimage.build.date]: [Sun Aug 9 14:38:36 CST 2020]\n[ro.bootimage.build.date.utc]: [1596955116]\n[ro.bootimage.build.fingerprint]: [htc/m7_google/m7:5.1/LMY47O.H18/666675:user/release-keys]\n[ro.bootloader]: [1.61.0000]\n[ro.bootmode]: [normal]\n[ro.build.characteristics]: [default]\n[ro.build.date]: [Sun Aug  9 14:38:36 CST 2020]\n[ro.build.date.utc]: [1596955116]\n[ro.build.description]: [6.04.1700.18 CL536258 release-keys]\n[ro.build.display.id]: [lineage_m7-userdebug 10 QQ3A.200805.001 eng.tark.20200809.143929 test-keys]\n[ro.build.fingerprint]: [htc/m7_google/m7:5.1/LMY47O.H18/666675:user/release-keys]\n[ro.build.flavor]: [lineage_m7-userdebug]\n[ro.build.host]: [enfecker-builder]\n[ro.build.id]: [QQ3A.200805.001]\n[ro.build.product]: [m7]\n[ro.build.shutdown_timeout]: [3]\n[ro.build.tags]: [test-keys]\n[ro.build.type]: [userdebug]\n[ro.build.user]: [tark]\n[ro.build.version.all_codenames]: [REL]\n[ro.build.version.base_os]: []\n[ro.build.version.codename]: [REL]\n[ro.build.version.incremental]: [eng.tark.20200809.143929]\n[ro.build.version.min_supported_target_sdk]: [23]\n[ro.build.version.preview_sdk]: [0]\n[ro.build.version.preview_sdk_fingerprint]: [REL]\n[ro.build.version.release]: [10]\n[ro.build.version.sdk]: [29]\n[ro.build.version.security_patch]: [2020-08-05]\n[ro.cam.hw.version]: [m7]\n[ro.carrier]: [unknown]\n[ro.com.google.clientidbase]: [android-google]\n[ro.config.alarm_alert]: [Hassium.ogg]\n[ro.config.notification_sound]: [Argon.ogg]\n[ro.config.ringtone]: [Orion.ogg]\n[ro.control_privapp_permissions]: [enforce]\n[ro.crypto.state]: [unencrypted]\n[ro.dalvik.vm.native.bridge]: [0]\n[ro.debuggable]: [1]\n[ro.device_owner]: [false]\n[ro.fastbootd.available]: [true]\n[ro.gps.set_privacy]: [1]\n[ro.hardware]: [qcom]\n[ro.hwui.use_vulkan]: []\n[ro.input.noresample]: [1]\n[ro.iorapd.enable]: [false]\n[ro.lineage.build.vendor_security_patch]: [2015-08-05]\n[ro.lineage.build.version]: [17.1]\n[ro.lineage.build.version.plat.rev]: [0]\n[ro.lineage.build.version.plat.sdk]: [9]\n[ro.lineage.device]: [m7]\n[ro.lineage.display.version]: [17.1-20200809-UNOFFICIAL-m7]\n[ro.lineage.releasetype]: [UNOFFICIAL]\n[ro.lineage.version]: [17.1-20200809-UNOFFICIAL-m7]\n[ro.lineagelegal.url]: [https://lineageos.org/legal]\n[ro.lmk.kill_heaviest_task]: [true]\n[ro.lmk.kill_timeout_ms]: [100]\n[ro.lmk.log_stats]: [true]\n[ro.lmk.use_minfree_levels]: [true]\n[ro.logd.size.stats]: [64K]\n[ro.minui.pixel_format]: [RGBX_8888]\n[ro.modversion]: [17.1-20200809-UNOFFICIAL-m7]\n[ro.nfc.port]: [I2C]\n[ro.odm.build.date]: [Sun Aug  9 14:38:36 CST 2020]\n[ro.odm.build.date.utc]: [1596955116]\n[ro.odm.build.fingerprint]: [htc/m7_google/m7:5.1/LMY47O.H18/666675:user/release-keys]\n[ro.odm.build.id]: [QQ3A.200805.001]\n[ro.odm.build.tags]: [test-keys]\n[ro.odm.build.type]: [userdebug]\n[ro.odm.build.version.incremental]: [eng.tark.20200809.143929]\n[ro.odm.build.version.release]: [10]\n[ro.odm.build.version.sdk]: [29]\n[ro.odm.product.cpu.abilist]: [armeabi-v7a,armeabi]\n[ro.odm.product.cpu.abilist32]: [armeabi-v7a,armeabi]\n[ro.odm.product.cpu.abilist64]: []\n[ro.postinstall.fstab.prefix]: [/system]\n[ro.product.board]: [m7]\n[ro.product.brand]: [htc]\n[ro.product.cpu.abi]: [armeabi-v7a]\n[ro.product.cpu.abi2]: [armeabi]\n[ro.product.cpu.abilist]: [armeabi-v7a,armeabi]\n[ro.product.cpu.abilist32]: [armeabi-v7a,armeabi]\n[ro.product.cpu.abilist64]: []\n[ro.product.device]: [m7]\n[ro.product.locale]: [en-US]\n[ro.product.manufacturer]: [HTC]\n[ro.product.model]: [One]\n[ro.product.name]: [lineage_m7]\n[ro.product.odm.brand]: [htc]\n[ro.product.odm.device]: [m7]\n[ro.product.odm.manufacturer]: [HTC]\n[ro.product.odm.model]: [One]\n[ro.product.odm.name]: [lineage_m7]\n[ro.product.system.brand]: [htc]\n[ro.product.system.device]: [m7]\n[ro.product.system.manufacturer]: [HTC]\n[ro.product.system.model]: [One]\n[ro.product.system.name]: [lineage_m7]\n[ro.product.vendor.brand]: [htc]\n[ro.product.vendor.device]: [m7]\n[ro.product.vendor.manufacturer]: [HTC]\n[ro.product.vendor.model]: [One]\n[ro.product.vendor.name]: [lineage_m7]\n[ro.property_service.version]: [2]\n[ro.qc.sdk.audio.fluencetype]: [fluence]\n[ro.revision]: [0]\n[ro.ril.svdo]: [false]\n[ro.ril.svlte1x]: [false]\n[ro.secure]: [1]\n[ro.serialno]: [HT36TW903516]\n[ro.sf.lcd_density]: [480]\n[ro.storage_manager.enabled]: [true]\n[ro.system.build.date]: [Sun Aug  9 14:38:36 CST 2020]\n[ro.system.build.date.utc]: [1596955116]\n[ro.system.build.fingerprint]: [htc/m7_google/m7:5.1/LMY47O.H18/666675:user/release-keys]\n[ro.system.build.id]: [QQ3A.200805.001]\n[ro.system.build.tags]: [test-keys]\n[ro.system.build.type]: [userdebug]\n[ro.system.build.version.incremental]: [eng.tark.20200809.143929]\n[ro.system.build.version.release]: [10]\n[ro.system.build.version.sdk]: [29]\n[ro.telephony.call_ring.multiple]: [0]\n[ro.telephony.default_network]: [22]\n[ro.treble.enabled]: [false]\n[ro.vendor.audio.sdk.fluencetype]: [fluence]\n[ro.vendor.build.date]: [Sun Aug  9 14:38:36 CST 2020]\n[ro.vendor.build.date.utc]: [1596955116]\n[ro.vendor.build.fingerprint]: [htc/m7_google/m7:5.1/LMY47O.H18/666675:user/release-keys]\n[ro.vendor.build.id]: [QQ3A.200805.001]\n[ro.vendor.build.security_patch]: []\n[ro.vendor.build.tags]: [test-keys]\n[ro.vendor.build.type]: [userdebug]\n[ro.vendor.build.version.incremental]: [eng.tark.20200809.143929]\n[ro.vendor.build.version.release]: [10]\n[ro.vendor.build.version.sdk]: [29]\n[ro.vendor.extension_library]: [/system/vendor/lib/libqti-perfd-client.so]\n[ro.vendor.product.cpu.abilist]: [armeabi-v7a,armeabi]\n[ro.vendor.product.cpu.abilist32]: [armeabi-v7a,armeabi]\n[ro.vendor.product.cpu.abilist64]: []\n[ro.vendor.qti.sys.fw.bservice_enable]: [true]\n[ro.vndk.lite]: [true]\n[ro.vndk.version]: [29]\n[ro.wifi.channels]: []\n[ro.zygote]: [zygote32]\n[security.perf_harden]: [1]\n[selinux.restorecon_recursive]: [/data/misc_ce/0]\n[service.bootanim.exit]: [1]\n[service.sf.present_timestamp]: [0]\n[sys.boot.reason]: [reboot]\n[sys.boot.reason.last]: [reboot]\n[sys.boot_completed]: [1]\n[sys.io.scheduler]: [bfq]\n[sys.isolated_storage_snapshot]: [true]\n[sys.lineage_settings_secure_version]: [1]\n[sys.logbootcomplete]: [1]\n[sys.rescue_boot_count]: [1]\n[sys.retaildemo.enabled]: [0]\n[sys.sysctl.extra_free_kbytes]: [24300]\n[sys.sysctl.tcp_def_init_rwnd]: [60]\n[sys.system_server.start_count]: [1]\n[sys.system_server.start_elapsed]: [26904]\n[sys.system_server.start_uptime]: [26904]\n[sys.usb.config]: [mtp,adb]\n[sys.usb.ffs.aio_compat]: [1]\n[sys.usb.ffs.ready]: [1]\n[sys.usb.state]: [mtp,adb]\n[sys.use_memfd]: [false]\n[sys.user.0.ce_available]: [true]\n[sys.wifitracing.started]: [1]\n[telephony.lteOnGsmDevice]: [1]\n[tombstoned.max_tombstone_count]: [50]\n[use.dedicated.device.for.voip]: [true]\n[use.voice.path.for.pcm.voip]: [true]\n[vold.has_adoptable]: [0]\n[vold.has_quota]: [0]\n[vold.has_reserved]: [0]\n[vold.post_fs_data_done]: [1]",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_root_verification",
+          "verdict": "SKIP",
+          "duration_s": 0.0,
+          "detail": "--allow-unrooted-phone requested",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_network_profile",
+          "verdict": "FAIL",
+          "duration_s": 0.04104711697436869,
+          "detail": "Diagnosed: Profile mismatch",
+          "error": "Android device is not on expected subnet 192.168.200.0/24; found ['none']",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:20:12.265496+00:00",
+      "finished": "2026-04-10T13:20:12.832343+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T13:20:12.272631+00:00",
+      "step": "target_profile",
+      "pattern": "embedded\\ null\\ byte",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    },
+    {
+      "timestamp": "2026-04-10T13:20:12.832309+00:00",
+      "step": "android_network_profile",
+      "pattern": "Profile\\ mismatch",
+      "diagnosis": "Profile mismatch",
+      "remediation": "none",
+      "success": false,
+      "focus": "device-profile"
+    }
+  ],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 0.4,
+      "phase_success_rate": 0.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.4
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "coverage-expansion",
+    "top_diagnoses": [
+      {
+        "diagnosis": "Profile mismatch",
+        "count": 1
+      },
+      {
+        "diagnosis": "unknown",
+        "count": 1
+      }
+    ],
+    "focus_histogram": {
+      "coverage-expansion": 1,
+      "device-profile": 1
+    },
+    "applied_remediations": [],
+    "knowledge_entries": 2
+  },
+  "total_duration_s": 0.5668658840004355
+}

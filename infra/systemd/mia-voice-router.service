@@ -1,0 +1,23 @@
+[Unit]
+Description=MIA Voice Command Router (intent to API action)
+After=mia-stt.service mia-api.service
+Requires=mia-api.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/voice_command_router.py'
+Restart=always
+RestartSec=5
+WatchdogSec=0
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_TRANSCRIPT_PORT=5560
+Environment=ZMQ_PUB_PORT=5561
+Environment=API_BASE_URL=http://localhost:8000
+
+[Install]
+WantedBy=multi-user.target

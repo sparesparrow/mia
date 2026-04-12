@@ -276,11 +276,11 @@ phase_repository() {
         cd "$PROJECT_ROOT"
     fi
 
-    # Verify repository integrity
-    if [[ -f "core/paths.py" ]] && [[ -f "config/paths.json" ]]; then
+    # Verify repository integrity against the current monorepo layout
+    if [[ -f "apps/rpi-backend/py-api/api/main.py" ]] && [[ -f "infra/systemd/mia-api.service" ]] && [[ -f "config/paths.json" ]]; then
         log_success "Repository structure verified"
     else
-        log_error "Repository structure incomplete"
+        log_error "Repository structure incomplete for the current MIA layout"
         exit 1
     fi
 
@@ -516,17 +516,34 @@ except Exception as e:
 phase_services() {
     log_phase "Phase 5: MIA Services Deployment"
 
+    local py_api_target="$INSTALL_DIR/apps/rpi-backend/py-api"
+    local shared_target="$INSTALL_DIR/apps/rpi-backend/shared"
+    local systemd_source_dir="$PROJECT_ROOT/infra/systemd"
+
     # Create installation directories
-    run_cmd "mkdir -p $INSTALL_DIR/bin $INSTALL_DIR/lib $CONFIG_DIR $LOG_DIR" "Creating installation directories"
+    run_cmd "mkdir -p '$INSTALL_DIR/bin' '$INSTALL_DIR/lib' '$CONFIG_DIR' '$LOG_DIR' '$INSTALL_DIR/apps/rpi-backend' '$py_api_target' '$shared_target' '$INSTALL_DIR/infra' '$INSTALL_DIR/Mia' '$INSTALL_DIR/scripts'" "Creating installation directories"
     run_cmd "chown -R $MIA_USER:$MIA_USER $INSTALL_DIR $LOG_DIR" "Setting directory ownership"
 
-    # Copy MIA code
-    run_cmd "cp -r $PROJECT_ROOT/rpi $INSTALL_DIR/" "Copying MIA Python code"
-    run_cmd "cp -r $PROJECT_ROOT/core $INSTALL_DIR/" "Copying MIA core modules"
-    run_cmd "cp -r $PROJECT_ROOT/config $INSTALL_DIR/" "Copying MIA configuration"
-    run_cmd "cp -r $PROJECT_ROOT/modules $INSTALL_DIR/" "Copying MIA modules"
-    run_cmd "cp -r $PROJECT_ROOT/agents $INSTALL_DIR/" "Copying MIA agents"
-    run_cmd "cp -r $PROJECT_ROOT/hardware $INSTALL_DIR/" "Copying MIA hardware modules"
+    # Copy the current Raspberry Pi runtime layout
+    run_cmd "cp -r '$PROJECT_ROOT/apps/rpi-backend/py-api/.' '$py_api_target/'" "Copying Raspberry Pi API"
+
+    if [[ -d "$PROJECT_ROOT/apps/rpi-backend/shared" ]]; then
+        run_cmd "cp -r '$PROJECT_ROOT/apps/rpi-backend/shared/.' '$shared_target/'" "Copying shared runtime modules"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/infra" ]]; then
+        run_cmd "cp -r '$PROJECT_ROOT/infra/.' '$INSTALL_DIR/infra/'" "Copying deployment assets"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/Mia" ]]; then
+        run_cmd "cp -r '$PROJECT_ROOT/Mia/.' '$INSTALL_DIR/Mia/'" "Copying generated Mia bindings"
+    fi
+
+    if [[ -d "$PROJECT_ROOT/scripts" ]]; then
+        run_cmd "cp -r '$PROJECT_ROOT/scripts/.' '$INSTALL_DIR/scripts/'" "Copying operational scripts"
+    fi
+
+    run_cmd "cp -r '$PROJECT_ROOT/config/.' '$INSTALL_DIR/config/'" "Copying MIA configuration"
 
     # Set permissions
     run_cmd "chown -R $MIA_USER:$MIA_USER $INSTALL_DIR" "Setting MIA installation ownership"
@@ -561,7 +578,7 @@ EOF
 
     # Copy systemd service files
     local services=(
-        "mia-broker.service"
+        "zmq-broker.service"
         "mia-api.service"
         "mia-gpio-worker.service"
         "mia-serial-bridge.service"
@@ -572,28 +589,17 @@ EOF
     )
 
     for service in "${services[@]}"; do
-        if [[ -f "$PROJECT_ROOT/rpi/services/$service" ]]; then
-            run_cmd "cp $PROJECT_ROOT/rpi/services/$service /etc/systemd/system/" "Installing $service"
-        elif [[ -f "$PROJECT_ROOT/services/$service" ]]; then
-            run_cmd "cp $PROJECT_ROOT/services/$service /etc/systemd/system/" "Installing $service"
+        if [[ -f "$systemd_source_dir/$service" ]]; then
+            run_cmd "cp '$systemd_source_dir/$service' /etc/systemd/system/" "Installing $service"
         fi
     done
-
-    # Copy BLE service files
-    if [[ -f "$PROJECT_ROOT/rpi/services/ble_obd_service.py" ]]; then
-        run_cmd "cp $PROJECT_ROOT/rpi/services/ble_obd_service.py $RPI_DIR/services/" "Installing BLE OBD service"
-    fi
-
-    if [[ -f "$PROJECT_ROOT/rpi/services/ble_advertiser.py" ]]; then
-        run_cmd "cp $PROJECT_ROOT/rpi/services/ble_advertiser.py $RPI_DIR/services/" "Installing BLE advertiser service"
-    fi
 
     # Reload systemd
     run_cmd "systemctl daemon-reload" "Reloading systemd daemon"
 
     # Enable services
     local enable_services=(
-        "mia-broker.service"
+        "zmq-broker.service"
         "mia-api.service"
     )
 
@@ -670,7 +676,7 @@ except Exception as e:
     # Test 3: Service file syntax
     log_info "Testing systemd service files..."
     local service_files=(
-        "mia-broker.service"
+        "zmq-broker.service"
         "mia-api.service"
         "mia-gpio-worker.service"
         "mia-ble-obd.service"
@@ -715,10 +721,10 @@ except Exception as e:
 
     # Test 6: Service startup (dry run)
     log_info "Testing service startup capability..."
-    if [[ -f "/etc/systemd/system/mia-broker.service" ]]; then
-        if timeout 10s systemctl start mia-broker 2>/dev/null; then
+    if [[ -f "/etc/systemd/system/zmq-broker.service" ]]; then
+        if timeout 10s systemctl start zmq-broker 2>/dev/null; then
             log_success "Service startup test passed"
-            systemctl stop mia-broker 2>/dev/null || true
+            systemctl stop zmq-broker 2>/dev/null || true
         else
             log_warning "Service startup test failed (may be expected)"
         fi
@@ -768,7 +774,7 @@ echo "Timestamp: \$(date)"
 echo
 
 echo "=== Service Status ==="
-services=("mia-broker" "mia-api" "mia-gpio-worker" "mia-ble-obd")
+services=("zmq-broker" "mia-api" "mia-gpio-worker" "mia-ble-obd")
 for service in "\${services[@]}"; do
     if systemctl is-active --quiet \$service 2>/dev/null; then
         echo "✅ \$service: RUNNING"

@@ -39,6 +39,11 @@ ENVIRONMENTS=(
     "full:all:Complete environment with all services"
 )
 
+DEV_COMPOSE_FILE="$PROJECT_ROOT/infra/docker/docker-compose.dev.yml"
+PROD_COMPOSE_FILE="$PROJECT_ROOT/infra/docker/docker-compose.yml"
+MONITORING_COMPOSE_FILE="$PROJECT_ROOT/infra/docker/docker-compose.monitoring.yml"
+PI_SIM_COMPOSE_FILE="$PROJECT_ROOT/docker-compose.pi-simulation.yml"
+
 # Show usage
 show_usage() {
     echo "AI-Servis Development Environment Manager"
@@ -71,6 +76,7 @@ show_usage() {
     echo "  --no-deps      Don't start dependent services"
     echo "  --detach       Run in background (default)"
     echo "  --follow       Follow logs output"
+    echo "  --profile=NAME Enable an optional Compose profile"
     echo ""
     echo "Examples:"
     echo "  $0 up dev                    # Start development environment"
@@ -87,19 +93,19 @@ get_compose_files() {
     
     case "$env" in
         "dev")
-            files=("-f" "docker-compose.dev.yml")
+            files=("-f" "$DEV_COMPOSE_FILE")
             ;;
         "prod")
-            files=("-f" "docker-compose.yml")
+            files=("-f" "$PROD_COMPOSE_FILE")
             ;;
         "pi-sim")
-            files=("-f" "docker-compose.pi-simulation.yml")
+            files=("-f" "$PI_SIM_COMPOSE_FILE")
             ;;
         "monitoring")
-            files=("-f" "docker-compose.monitoring.yml")
+            files=("-f" "$MONITORING_COMPOSE_FILE")
             ;;
         "full")
-            files=("-f" "docker-compose.dev.yml" "-f" "docker-compose.pi-simulation.yml" "-f" "docker-compose.monitoring.yml")
+            files=("-f" "$DEV_COMPOSE_FILE" "-f" "$PI_SIM_COMPOSE_FILE" "-f" "$MONITORING_COMPOSE_FILE")
             ;;
         *)
             error "Unknown environment: $env"
@@ -114,7 +120,7 @@ get_compose_files() {
 check_prerequisites() {
     local missing_tools=()
     
-    for tool in docker docker-compose jq curl; do
+    for tool in docker jq curl; do
         if ! command -v "$tool" >/dev/null 2>&1; then
             missing_tools+=("$tool")
         fi
@@ -129,6 +135,11 @@ check_prerequisites() {
     # Check Docker daemon
     if ! docker info >/dev/null 2>&1; then
         error "Docker daemon is not running"
+        return 1
+    fi
+
+    if ! docker compose version >/dev/null 2>&1; then
+        error "Docker Compose plugin is not available"
         return 1
     fi
     
@@ -192,6 +203,7 @@ start_environment() {
     local pull_flag=""
     local no_deps_flag=""
     local detach_flag="-d"
+    local profile_args=()
     
     for option in "${options[@]}"; do
         case "$option" in
@@ -207,13 +219,17 @@ start_environment() {
             "--no-detach")
                 detach_flag=""
                 ;;
+            --profile=*)
+                profile_args+=("--profile" "${option#--profile=}")
+                ;;
         esac
     done
     
     # Execute docker-compose up
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
+    cmd+=("${profile_args[@]}")
     cmd+=(up $detach_flag $build_flag $pull_flag $no_deps_flag)
     
     log "Executing: ${cmd[*]}"
@@ -246,7 +262,7 @@ stop_environment() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(down)
@@ -280,7 +296,7 @@ show_status() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(ps)
@@ -299,7 +315,7 @@ show_logs() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(logs)
@@ -326,7 +342,7 @@ build_containers() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(build --no-cache)
@@ -360,7 +376,7 @@ clean_environment() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(down -v --rmi all)
@@ -400,7 +416,7 @@ open_shell() {
         return 1
     fi
     
-    local cmd=(docker-compose)
+    local cmd=(docker compose)
     read -ra compose_files_array <<< "$compose_files"
     cmd+=("${compose_files_array[@]}")
     cmd+=(exec "$service" bash)
@@ -469,10 +485,9 @@ show_environment_info() {
     if [[ "$env" == "pi-sim" || "$env" == "full" ]]; then
         echo ""
         echo "🔧 Pi Simulation:"
-        echo "  - Pi Gateway:           http://localhost:8084"
-        echo "  - GPIO Simulator:       http://localhost:9000"
-        echo "  - Hardware Monitor:     http://localhost:8087"
-        echo "  - Simulation Control:   http://localhost:8088"
+        echo "  - MQTT Broker:          localhost:1884"
+        echo "  - Redis State Store:    localhost:6380"
+        echo "  - Legacy simulator containers are opt-in via --profile=legacy-sim"
     fi
     
     echo ""

@@ -1,0 +1,79 @@
+{
+  "run_id": "20260410_151959",
+  "host": "192.168.200.134",
+  "device": "",
+  "phases": [
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "PASS",
+          "duration_s": 1.1391819760028739,
+          "detail": "api_start_time, cpu, devices_connected, memory, status, telemetry_sources",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "PASS",
+          "duration_s": 0.004269199998816475,
+          "detail": "count, devices, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "PASS",
+          "duration_s": 0.0036392580077517778,
+          "detail": "telemetry, timestamp",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "PASS",
+          "duration_s": 0.0070267059782054275,
+          "detail": "features catalog not deployed (OK \u2014 optional)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "PASS",
+          "duration_s": 0.39710383300553076,
+          "detail": "ZMQ broker not running (non-fatal \u2014 API works standalone)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_service_snapshot",
+          "verdict": "PASS",
+          "duration_s": 0.7761549460119568,
+          "detail": "tests/integration/artifacts/20260410_151959/smoke_services_target_snapshot.txt",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:19:59.620792+00:00",
+      "finished": "2026-04-10T13:20:01.948304+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 1.0,
+      "phase_success_rate": 1.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.0
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "coverage-expansion",
+    "top_diagnoses": [],
+    "focus_histogram": {},
+    "applied_remediations": [],
+    "knowledge_entries": 0
+  },
+  "total_duration_s": 2.327551611990202
+}

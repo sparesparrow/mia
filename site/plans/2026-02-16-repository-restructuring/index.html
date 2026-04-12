@@ -1,0 +1,2299 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/plans/2026-02-16-repository-restructuring/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>MIA Repository Restructuring Implementation Plan - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mia-repository-restructuring-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MIA Repository Restructuring Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../wiring/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Wiring & Power
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Install
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Phone Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pro Edition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    API & Contracts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Automotive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Privacy
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DPIA Template
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-create-skeleton-document-target-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: Create Skeleton &amp; Document Target State
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Create Skeleton &amp; Document Target State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-11-create-directory-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 1.1: Create directory skeleton
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-a-new-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building a New Feature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-move-platform-specific-code-into-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Move Platform-Specific Code into apps/
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Move Platform-Specific Code into apps/">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-21-move-android-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 2.1: Move Android app
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-22-move-esp32-firmware" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 2.2: Move ESP32 firmware
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-23-move-and-restructure-rpi-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 2.3: Move and restructure RPi backend
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-move-orchestration-mcp-into-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Move Orchestration &amp; MCP into orchestration/
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Move Orchestration &amp; MCP into orchestration/">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-31-move-mcp-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 3.1: Move MCP modules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-32-move-mcp-prompts-and-agents-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 3.2: Move MCP prompts and agents config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-move-infrastructure-into-infra" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Move Infrastructure into infra/
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Move Infrastructure into infra/">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-41-move-docker-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 4.1: Move Docker &amp; containers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-42-move-deployment-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 4.2: Move deployment scripts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-43-move-systemd-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 4.3: Move systemd services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-44-move-conan-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 4.4: Move Conan configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-5-reorganize-tests-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: Reorganize Tests &amp; Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5: Reorganize Tests &amp; Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-51-consolidate-tests-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 5.1: Consolidate tests structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-52-move-development-tools-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 5.2: Move development tools &amp; scripts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-6-update-cicd-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 6: Update CI/CD &amp; Documentation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 6: Update CI/CD &amp; Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-61-consolidate-github-actions-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 6.1: Consolidate GitHub Actions workflows
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-62-update-root-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 6.2: Update root documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run All Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-android-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build Android App
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-flash-esp32" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build &amp; Flash ESP32
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rpi-c-audio-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      RPi C++ Audio Module
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lint-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lint &amp; Format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-63-verify-nothing-broke" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 6.3: Verify nothing broke
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-7-cleanup-archive" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 7: Cleanup &amp; Archive
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7: Cleanup &amp; Archive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-71-remove-old-directories-if-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 7.1: Remove old directories (if safe)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-72-final-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Task 7.2: Final cleanup
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollback-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rollback Strategy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Success Criteria
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/plans/2026-02-16-repository-restructuring.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mia-repository-restructuring-implementation-plan">MIA Repository Restructuring Implementation Plan</h1>
+<blockquote>
+<p><strong>For Claude:</strong> REQUIRED SUB-SKILL: Use superpowers:executing-plans or superpowers:subagent-driven-development to implement this plan task-by-task.</p>
+</blockquote>
+<p><strong>Goal:</strong> Reorganize the MIA monorepo from a scattered 40+ top-level directories layout into a clear domain-based structure (apps/orchestration/infra/tests/tools) that scales with the multi-platform, multi-agent architecture.</p>
+<p><strong>Architecture:</strong>
+- Phase 1 creates the target directory skeleton and updates ARCHITECTURE.md
+- Phase 2 moves platform-specific code (Android, RPi, ESP32) into <code>apps/</code>
+- Phase 3 consolidates orchestration/MCP into <code>orchestration/</code>
+- Phase 4 moves infrastructure (Docker, deploy, systemd) into <code>infra/</code>
+- Phase 5 reorganizes tests and tools
+- Phase 6 updates CI/CD pipelines and validates everything still works</p>
+<p><strong>Tech Stack:</strong> Bash/git, Python 3.12, pytest, GitHub Actions</p>
+<p><strong>Current State Pain Points:</strong>
+- 40+ top-level directories (android, rpi, esp32, modules, docker, deploy, ci, web, platforms, clients, devices, edge-compat, external, firmware, etc.)
+- Unclear separation between runtime apps vs. orchestration vs. infrastructure
+- CI paths scattered across multiple locations
+- Makes onboarding new developers difficult
+- Blocks future expansion (desktop client, new devices, etc.)</p>
+<hr />
+<h2 id="phase-1-create-skeleton-document-target-state">Phase 1: Create Skeleton &amp; Document Target State</h2>
+<h3 id="task-11-create-directory-skeleton">Task 1.1: Create directory skeleton</h3>
+<p><strong>Files:</strong>
+- Create: <code>apps/</code> (empty)
+- Create: <code>apps/android/</code> (empty)
+- Create: <code>apps/rpi-backend/</code> (empty)
+- Create: <code>apps/rpi-backend/cpp-audio/</code> (empty)
+- Create: <code>apps/rpi-backend/py-api/</code> (empty)
+- Create: <code>apps/esp32/</code> (empty)
+- Create: <code>orchestration/</code> (empty)
+- Create: <code>orchestration/mia-agents/</code> (empty)
+- Create: <code>orchestration/mcp/</code> (empty)
+- Create: <code>orchestration/mcp/prompts/</code> (empty)
+- Create: <code>infra/</code> (empty)
+- Create: <code>infra/docker/</code> (empty)
+- Create: <code>infra/systemd/</code> (empty)
+- Create: <code>infra/conan/</code> (empty)
+- Create: <code>infra/deploy/</code> (empty)
+- Create: <code>tests/integration/</code> (empty)
+- Create: <code>tests/integration/scenarios/</code> (empty)
+- Create: <code>tests/integration/fixtures/</code> (empty)
+- Create: <code>tools/ci/</code> (empty)
+- Create: <code>tools/local-dev/</code> (empty)</p>
+<p><strong>Step 1: Create all directories</strong></p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>apps/android<span class="w"> </span>apps/rpi-backend/cpp-audio<span class="w"> </span>apps/rpi-backend/py-api<span class="w"> </span>apps/esp32
+mkdir<span class="w"> </span>-p<span class="w"> </span>orchestration/mia-agents<span class="w"> </span>orchestration/mcp/prompts
+mkdir<span class="w"> </span>-p<span class="w"> </span>infra/docker<span class="w"> </span>infra/systemd<span class="w"> </span>infra/conan<span class="w"> </span>infra/deploy
+mkdir<span class="w"> </span>-p<span class="w"> </span>tests/integration/<span class="o">{</span>scenarios,fixtures<span class="o">}</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>tools/<span class="o">{</span>ci,local-dev<span class="o">}</span>
+</code></pre></div>
+<p><strong>Step 2: Add .gitkeep files to preserve empty directories</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>dir<span class="w"> </span><span class="k">in</span><span class="w"> </span>apps<span class="w"> </span>apps/android<span class="w"> </span>apps/rpi-backend<span class="w"> </span>apps/rpi-backend/cpp-audio<span class="w"> </span>apps/rpi-backend/py-api<span class="w"> </span>apps/esp32<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>orchestration<span class="w"> </span>orchestration/mia-agents<span class="w"> </span>orchestration/mcp<span class="w"> </span>orchestration/mcp/prompts<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>infra<span class="w"> </span>infra/docker<span class="w"> </span>infra/systemd<span class="w"> </span>infra/conan<span class="w"> </span>infra/deploy<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>tests/integration<span class="w"> </span>tests/integration/scenarios<span class="w"> </span>tests/integration/fixtures<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>tools<span class="w"> </span>tools/ci<span class="w"> </span>tools/local-dev<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>touch<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dir</span><span class="s2">/.gitkeep&quot;</span>
+<span class="k">done</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 3: Create ARCHITECTURE.md describing target state</strong></p>
+<p>Create <code>/home/sparrow/projects/embedded/mia/ARCHITECTURE.md</code> with:</p>
+<p><div class="highlight"><pre><span></span><code><span class="gh"># MIA Architecture &amp; Repository Structure</span>
+
+<span class="gu">## Repository Organization</span>
+
+MIA is a distributed vehicle telemetry and IoT control system with four key organizational layers:
+
+<span class="gu">### 1. Applications (`apps/`)</span>
+
+Runtime applications targeting specific platforms:
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**`apps/android/`**</span> - Android companion app (Kotlin + Jetpack Compose, Hilt DI, Room, WebSocket)
+<span class="k">-</span><span class="w"> </span><span class="gs">**`apps/rpi-backend/py-api/`**</span> - Python FastAPI server on Raspberry Pi 4B (ZeroMQ broker, REST/WebSocket, MCP bridge)
+<span class="k">-</span><span class="w"> </span><span class="gs">**`apps/rpi-backend/cpp-audio/`**</span> - C++ audio processing for beat detection, FFT optimization, DSP
+<span class="k">-</span><span class="w"> </span><span class="gs">**`apps/esp32/`**</span> - ESP32 firmware (PlatformIO, sensor drivers, BLE, OBD-II emulation)
+
+<span class="gu">### 2. Orchestration (`orchestration/`)</span>
+
+Multi-agent orchestration and MCP microservices:
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**`orchestration/mia-agents/`**</span> - AI agents configuration, agent definitions, skill orchestration
+<span class="k">-</span><span class="w"> </span><span class="gs">**`orchestration/mcp/`**</span> - MCP server definitions, microservice configurations, framework code
+<span class="k">-</span><span class="w"> </span><span class="gs">**`orchestration/mcp/prompts/`**</span> - MIA-specific prompts for voice commands, workflows, domain knowledge
+
+Includes:
+<span class="k">-</span><span class="w"> </span>Core orchestrator (routes user commands to specialized agents)
+<span class="k">-</span><span class="w"> </span>Service discovery (health checks, registry)
+<span class="k">-</span><span class="w"> </span>AI audio assistant (Whisper STT, ElevenLabs TTS, Spotify)
+<span class="k">-</span><span class="w"> </span>Automotive bridge (OBD-II, Citroën C4 PSA PIDs)
+<span class="k">-</span><span class="w"> </span>Hardware bridge (GPIO abstraction)
+<span class="k">-</span><span class="w"> </span>Security scanners and platform controllers
+
+<span class="gu">### 3. Infrastructure (`infra/`)</span>
+
+Deployment, containerization, and runtime configuration:
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**`infra/docker/`**</span> - Docker Compose (dev/prod), Dockerfiles for each service
+<span class="k">-</span><span class="w"> </span><span class="gs">**`infra/systemd/`**</span> - Systemd service files for RPi deployment
+<span class="k">-</span><span class="w"> </span><span class="gs">**`infra/conan/`**</span> - Conan profiles, cross-compilation, package recipes
+<span class="k">-</span><span class="w"> </span><span class="gs">**`infra/deploy/`**</span> - Deployment scripts (RPi, ESP32, AWS/K8s), SSH/SCP/Ansible configs
+
+<span class="gu">### 4. Tests &amp; Tools (`tests/`, `tools/`)</span>
+
+Cross-cutting concerns:
+
+<span class="k">-</span><span class="w"> </span><span class="gs">**`tests/unit/`**</span> - Unit tests per platform (Android, RPi, ESP32)
+<span class="k">-</span><span class="w"> </span><span class="gs">**`tests/integration/`**</span> - Integration test scenarios and fixtures (voice→LED, OBD telemetry, etc.)
+<span class="k">-</span><span class="w"> </span><span class="gs">**`tools/ci/`**</span> - CI helper scripts, linting, validation
+<span class="k">-</span><span class="w"> </span><span class="gs">**`tools/local-dev/`**</span> - Developer scripts (build all, sync assets, flash firmware, start stack)
+
+<span class="gu">## Data Flow</span>
+</code></pre></div>
+┌─────────────────────────────────────────────────────────────┐
+│ Android App (apps/android/)                                 │
+│ • User speaks voice command                                  │
+│ • Sends intent via REST/WebSocket                           │
+└──────────────────────┬──────────────────────────────────────┘
+                       │ HTTP/WebSocket (8000)
+┌──────────────────────▼──────────────────────────────────────┐
+│ RPi Python API (apps/rpi-backend/py-api/)                   │
+│ • FastAPI server + ZeroMQ ROUTER broker (5555)             │
+│ • Routes commands to MCP modules                            │
+│ • Real-time telemetry via PUB/SUB (5556)                   │
+└──────┬──────────┬──────────────┬──────────┬─────────────────┘
+       │          │              │          │
+   ┌───▼─┐ ┌─────▼─┐ ┌──────────▼──┐ ┌────▼────┐
+   │GPIO │ │Serial │ │OBD Worker   │ │Orchestr │
+   │     │ │Bridge │ │(Citroen C4) │ │ (MCP)   │
+   └─────┘ └───┬───┘ └─────────────┘ └────┬────┘
+               │                          │
+        ┌──────▼─────┐              ┌─────▼──────────┐
+        │ ESP32/MCU  │              │ AI Agents      │
+        │ Sensors    │              │ (orchestr/     │
+        │ BLE        │              │  mia-agents/)  │
+        └────────────┘              └────────────────┘
+<div class="highlight"><pre><span></span><code>## Key Patterns
+
+### Messaging Layer
+- **Broker**: ZeroMQ ROUTER-DEALER on port 5555 (workers register as DEALER)
+- **Pub/Sub**: ZeroMQ PUB/SUB on port 5556 (real-time telemetry to subscribers)
+- **MCP Modules**: Microservices under `orchestration/mcp/` handle domain logic
+
+### Testing Strategy
+- **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/`
+- **Integration tests**: Named by business flow (e.g., `voice_command_led_brightness/`), located in `tests/integration/scenarios/`
+- **Markers**: `@pytest.mark.hardware`, `.integration`, `.slow` for selective execution
+
+### CI/CD
+- **Workflows**: Separate files per platform in `.github/workflows/`
+- **Path-based triggers**: Each workflow only runs on changes to its platform
+- **Artifact storage**: Test reports, coverage, build logs in `.artifacts/` (gitignored)
+
+## Development Workflow
+
+### Local Setup
+```bash
+# From repo root:
+./tools/local-dev/start-dev-stack.sh      # Docker + RPi backend
+./tools/ci/lint-all.sh                     # Pre-commit checks
+pytest tests/ -m &quot;not hardware&quot;            # Run non-hardware tests
+</code></pre></div></p>
+<h3 id="building-a-new-feature">Building a New Feature</h3>
+<ol>
+<li>Create feature branch: <code>git checkout -b feature/xyz</code></li>
+<li>Make changes in relevant <code>apps/</code>, <code>orchestration/</code>, or <code>infra/</code> subdirectory</li>
+<li>Write tests in corresponding <code>tests/</code> location</li>
+<li>Run local validation: <code>./tools/ci/lint-all.sh &amp;&amp; pytest tests/</code></li>
+<li>Push and create PR targeting <code>main</code></li>
+<li>CI runs platform-specific jobs based on changed paths</li>
+</ol>
+<h3 id="deployment">Deployment</h3>
+<ul>
+<li><strong>Development</strong>: <code>docker compose -f infra/docker/docker-compose.dev.yml up</code></li>
+<li><strong>Production RPi</strong>: <code>./infra/deploy/rpi/deploy.sh</code> (copies to <code>/opt/mia/</code>, starts systemd services)</li>
+<li><strong>ESP32</strong>: <code>./infra/deploy/esp32/flash.sh</code> (uses platformio to upload firmware)</li>
+</ul>
+<h2 id="migration-notes">Migration Notes</h2>
+<p>This structure was established to support:
+- Clear separation of concerns (runtime vs. orchestration vs. infrastructure)
+- Scalability (easy to add new platforms, devices, or regions)
+- CI/CD path-based triggering (changes in <code>apps/android/</code> don't trigger full C++ rebuild)
+- Multi-team development (frontend, backend, embedded, infrastructure teams each own clear domains)</p>
+<p>Legacy files still being consolidated:
+- Old <code>core/</code>, <code>services/</code>, <code>rpi/</code> directories being merged into <code>apps/rpi-backend/</code>
+- Old <code>platforms/cpp/</code> moving to <code>apps/rpi-backend/cpp-audio/</code>
+- Old <code>docker/</code>, <code>deploy/</code> being consolidated under <code>infra/</code>
+- <code>modules/</code> becoming <code>orchestration/mcp/</code> (preserving hyphenated module names)
+<div class="highlight"><pre><span></span><code>**Step 4: Commit**
+
+```bash
+cd /home/sparrow/projects/embedded/mia
+git add -A
+git commit -m &quot;chore: add target repository skeleton and ARCHITECTURE.md&quot;
+</code></pre></div></p>
+<p><strong>Step 5: Verify</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Verify directory structure matches plan</span>
+find<span class="w"> </span>.<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">3</span><span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-name<span class="w"> </span><span class="s1">&#39;.gitkeep&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+<span class="c1"># Should be ~20+ .gitkeep files</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-2-move-platform-specific-code-into-apps">Phase 2: Move Platform-Specific Code into <code>apps/</code></h2>
+<h3 id="task-21-move-android-app">Task 2.1: Move Android app</h3>
+<p><strong>Files:</strong>
+- Move: <code>android/</code> → <code>apps/android/</code>
+- Update: <code>apps/android/.gitignore</code>, <code>build.gradle.kts</code>
+- Verify: GitHub Actions Android CI still works</p>
+<p><strong>Step 1: Move Android directory</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>android<span class="w"> </span>apps/android
+<span class="nb">cd</span><span class="w"> </span>apps/android
+<span class="c1"># Verify all files present</span>
+ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+<span class="nb">cd</span><span class="w"> </span>../../
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 2: Update CI paths</strong></p>
+<p>Edit <code>.github/workflows/android-ci.yml</code> (if exists):
+- Change <code>paths: ["android/**"]</code> → <code>paths: ["apps/android/**"]</code></p>
+<p>If CI file references <code>android/</code> directory, update all paths.</p>
+<p><strong>Step 3: Update any build scripts</strong></p>
+<p>Search for hardcoded <code>android/</code> paths:</p>
+<div class="highlight"><pre><span></span><code>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;android/&quot;</span><span class="w"> </span>.<span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.gradle.kts&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.md&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span><span class="w"> </span>--exclude-dir<span class="o">=</span>.git<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;apps/android&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+</code></pre></div>
+<p>Update any found references to <code>apps/android/</code>.</p>
+<p><strong>Step 4: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move Android app to apps/android/&quot;</span>
+</code></pre></div>
+<h3 id="task-22-move-esp32-firmware">Task 2.2: Move ESP32 firmware</h3>
+<p><strong>Files:</strong>
+- Move: <code>esp32/</code> → <code>apps/esp32/</code>
+- Update: CI paths, platformio scripts</p>
+<p><strong>Step 1: Move ESP32 directory</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>esp32<span class="w"> </span>apps/esp32
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 2: Update CI paths</strong></p>
+<p>Edit <code>.github/workflows/esp32-ci.yml</code>:
+- Change <code>paths: ["esp32/**"]</code> → <code>paths: ["apps/esp32/**"]</code></p>
+<p><strong>Step 3: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move ESP32 firmware to apps/esp32/&quot;</span>
+</code></pre></div>
+<h3 id="task-23-move-and-restructure-rpi-backend">Task 2.3: Move and restructure RPi backend</h3>
+<p><strong>Files:</strong>
+- Move: <code>rpi/</code> → <code>apps/rpi-backend/py-api/</code>
+- Move: <code>platforms/cpp/</code> → <code>apps/rpi-backend/cpp-audio/</code>
+- Move: <code>api/</code> → <code>apps/rpi-backend/py-api/</code> (if separate)
+- Move: <code>core/</code> → <code>apps/rpi-backend/shared/</code> (shared utilities)</p>
+<p><strong>Step 1: Create RPi backend structure</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Structure already created in Phase 1</span>
+<span class="c1"># Now populate it</span>
+
+<span class="c1"># Move Python API</span>
+git<span class="w"> </span>mv<span class="w"> </span>rpi<span class="w"> </span>apps/rpi-backend/py-api
+git<span class="w"> </span>mv<span class="w"> </span>api<span class="w"> </span>apps/rpi-backend/py-api/<span class="w">  </span><span class="c1"># if separate dir</span>
+
+<span class="c1"># Move C++ audio</span>
+git<span class="w"> </span>mv<span class="w"> </span>platforms/cpp<span class="w"> </span>apps/rpi-backend/cpp-audio
+
+<span class="c1"># Move core utilities (might be shared by py-api and cpp-audio)</span>
+git<span class="w"> </span>mv<span class="w"> </span>core<span class="w"> </span>apps/rpi-backend/shared/
+</code></pre></div>
+<p><strong>Step 2: Update imports in Python code</strong></p>
+<p>Example: If <code>rpi/services/obd_worker.py</code> imports from <code>core/messaging/broker.py</code>, update to relative import:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before:</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.messaging.broker</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZMQBroker</span>
+
+<span class="c1"># After (adjust path based on file location):</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="o">/../</span><span class="n">shared</span><span class="o">.</span><span class="n">messaging</span><span class="o">.</span><span class="n">broker</span> <span class="kn">import</span><span class="w"> </span><span class="nn">ZMQBroker</span>
+<span class="c1"># or</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;/opt/mia/shared&#39;</span><span class="p">)</span>  <span class="c1"># if using absolute deployment path</span>
+</code></pre></div>
+<p><strong>Step 3: Update CI paths</strong></p>
+<p>Edit <code>.github/workflows/rpi-backend-ci.yml</code>:
+<div class="highlight"><pre><span></span><code><span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;apps/rpi-backend/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;requirements.txt&quot;</span><span class="w">  </span><span class="c1"># if at root</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;requirements-dev.txt&quot;</span>
+</code></pre></div></p>
+<p><strong>Step 4: Commit in logical chunks</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># First commit: move directories</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move RPi backend (Python API, C++ audio) to apps/rpi-backend/&quot;</span>
+
+<span class="c1"># Second commit: update imports</span>
+git<span class="w"> </span>add<span class="w"> </span>apps/rpi-backend/
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;refactor: update imports in RPi backend after restructuring&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-3-move-orchestration-mcp-into-orchestration">Phase 3: Move Orchestration &amp; MCP into <code>orchestration/</code></h2>
+<h3 id="task-31-move-mcp-modules">Task 3.1: Move MCP modules</h3>
+<p><strong>Files:</strong>
+- Move: <code>modules/</code> → <code>orchestration/mcp/</code>
+- Move: <code>services/</code> (non-RPi-specific) → <code>orchestration/mcp/</code> or keep and reference
+- Keep: Hyphenated module names (valid for runtime import via <code>importlib.util</code>)</p>
+<p><strong>Step 1: Move modules</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Save current modules structure for reference</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>orchestration/mcp/modules
+<span class="c1"># Copy preserving structure - OR use git mv if moving everything</span>
+git<span class="w"> </span>mv<span class="w"> </span>modules/*<span class="w"> </span>orchestration/mcp/
+
+<span class="c1"># The shared framework goes to both old and new location for now (dual-location period)</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 2: Update Python path imports for tests</strong></p>
+<p>Tests that import from <code>modules/</code> need updating. If a test currently does:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># tests/unit/test_orchestrator.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modules.core_orchestrator.orchestrator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Orchestrator</span>
+</code></pre></div>
+<p>Change to:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">orchestration.mcp.core_orchestrator.orchestrator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Orchestrator</span>
+</code></pre></div>
+<p>Or use <code>sys.path.insert(0, ...)</code> at test start for backward compatibility period.</p>
+<p><strong>Step 3: Update CI imports</strong></p>
+<p>Edit <code>.github/workflows/integration-tests.yml</code>:
+- Update any <code>PYTHONPATH</code> exports referencing <code>modules/</code></p>
+<p><strong>Step 4: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move MCP modules to orchestration/mcp/&quot;</span>
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;refactor: update imports after orchestration/ restructuring&quot;</span>
+</code></pre></div>
+<h3 id="task-32-move-mcp-prompts-and-agents-config">Task 3.2: Move MCP prompts and agents config</h3>
+<p><strong>Files:</strong>
+- Move: <code>prompts/</code> → <code>orchestration/mcp/prompts/</code>
+- Move: <code>agents/</code> or <code>agents.json</code> → <code>orchestration/mia-agents/</code></p>
+<p><strong>Step 1: Move prompts</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>prompts<span class="w"> </span>orchestration/mcp/prompts
+</code></pre></div>
+<p><strong>Step 2: Move agents config</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;agents&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>agents<span class="w"> </span>orchestration/mia-agents/
+<span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;agents.json&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>mkdir<span class="w"> </span>-p<span class="w"> </span>orchestration/mia-agents/
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>agents.json<span class="w"> </span>orchestration/mia-agents/agents.json
+<span class="k">fi</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 3: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move prompts and agents config to orchestration/&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-4-move-infrastructure-into-infra">Phase 4: Move Infrastructure into <code>infra/</code></h2>
+<h3 id="task-41-move-docker-containers">Task 4.1: Move Docker &amp; containers</h3>
+<p><strong>Files:</strong>
+- Move: <code>docker/</code> → <code>infra/docker/</code>
+- Move: <code>containers/</code> → <code>infra/docker/containers/</code>
+- Move: <code>docker-compose*.yml</code> → <code>infra/docker/</code></p>
+<p><strong>Step 1: Move Docker files</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>docker<span class="w"> </span>infra/docker
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;containers&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>containers<span class="w"> </span>infra/docker/containers
+<span class="k">fi</span>
+
+<span class="c1"># If docker-compose.yml is in root, move it</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;docker-compose.yml&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>docker-compose.yml<span class="w"> </span>infra/docker/
+<span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;docker-compose.dev.yml&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>docker-compose.dev.yml<span class="w"> </span>infra/docker/
+<span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;docker-compose.prod.yml&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>docker-compose.prod.yml<span class="w"> </span>infra/docker/
+<span class="k">fi</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 2: Update root README &amp; scripts to reference new paths</strong></p>
+<p>Example in root Makefile or script:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before:</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>docker-compose.dev.yml<span class="w"> </span>up
+
+<span class="c1"># After:</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/docker-compose.dev.yml<span class="w"> </span>up
+</code></pre></div>
+<p><strong>Step 3: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move Docker configs to infra/docker/&quot;</span>
+</code></pre></div>
+<h3 id="task-42-move-deployment-scripts">Task 4.2: Move deployment scripts</h3>
+<p><strong>Files:</strong>
+- Move: <code>deploy/</code> → <code>infra/deploy/</code>
+- Create: <code>infra/deploy/rpi/</code>, <code>infra/deploy/esp32/</code>, <code>infra/deploy/aws/</code></p>
+<p><strong>Step 1: Move deploy directory</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>deploy<span class="w"> </span>infra/deploy
+<span class="c1"># Verify structure:</span>
+ls<span class="w"> </span>-la<span class="w"> </span>infra/deploy/
+</code></pre></div>
+<p><strong>Step 2: Create platform-specific subdirs</strong></p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>infra/deploy/<span class="o">{</span>rpi,esp32,aws<span class="o">}</span>
+<span class="c1"># If deploy already has subdirs, verify they match</span>
+
+<span class="c1"># If scripts are loose in deploy/, organize them:</span>
+<span class="c1"># e.g., mv deploy/deploy-rpi.sh infra/deploy/rpi/deploy.sh</span>
+</code></pre></div>
+<p><strong>Step 3: Update paths in deployment scripts</strong></p>
+<p>If <code>infra/deploy/rpi/deploy.sh</code> references systemd files, update:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before:</span>
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>/home/mia/services/mia-api.service
+
+<span class="c1"># After:</span>
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>/home/mia/infra/systemd/mia-api.service
+</code></pre></div>
+<p><strong>Step 4: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move deployment scripts to infra/deploy/&quot;</span>
+</code></pre></div>
+<h3 id="task-43-move-systemd-services">Task 4.3: Move systemd services</h3>
+<p><strong>Files:</strong>
+- Move: systemd <code>.service</code> files → <code>infra/systemd/</code></p>
+<p><strong>Step 1: Find and move systemd files</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Find .service files</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.service&quot;</span><span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;.git&quot;</span>
+
+<span class="c1"># Example:</span>
+git<span class="w"> </span>mv<span class="w"> </span>services/*.service<span class="w"> </span>infra/systemd/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<p><strong>Step 2: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move systemd services to infra/systemd/&quot;</span>
+</code></pre></div>
+<h3 id="task-44-move-conan-configuration">Task 4.4: Move Conan configuration</h3>
+<p><strong>Files:</strong>
+- Move: <code>conanfile.py</code>, <code>conan-recipes/</code>, <code>profiles/</code> → <code>infra/conan/</code></p>
+<p><strong>Step 1: Move Conan files</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>mv<span class="w"> </span>conanfile.py<span class="w"> </span>infra/conan/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>mv<span class="w"> </span>conan-recipes<span class="w"> </span>infra/conan/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>mv<span class="w"> </span>profiles<span class="w"> </span>infra/conan/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+</code></pre></div>
+<p><strong>Step 2: Update CI references</strong></p>
+<p>Update <code>.github/workflows/</code> to reference <code>infra/conan/conanfile.py</code> if needed.</p>
+<p><strong>Step 3: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move Conan config to infra/conan/&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-5-reorganize-tests-tools">Phase 5: Reorganize Tests &amp; Tools</h2>
+<h3 id="task-51-consolidate-tests-structure">Task 5.1: Consolidate tests structure</h3>
+<p><strong>Files:</strong>
+- Move: <code>tests/</code> → review and organize by platform/type
+- Create: <code>tests/integration/scenarios/</code> for business flow tests</p>
+<p><strong>Step 1: Audit current tests</strong></p>
+<div class="highlight"><pre><span></span><code>find<span class="w"> </span>tests/<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;test_*.py&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+ls<span class="w"> </span>-la<span class="w"> </span>tests/
+</code></pre></div>
+<p><strong>Step 2: Reorganize tests</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># If tests are scattered, consolidate:</span>
+<span class="c1"># tests/unit/ → tests/unit/ (stays)</span>
+<span class="c1"># tests/integration/ → tests/integration/ (stays)</span>
+<span class="c1"># tests/e2e/ → tests/integration/scenarios/ (rename for clarity)</span>
+
+<span class="c1"># Create empty scenario dirs</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>tests/integration/scenarios/<span class="o">{</span>voice_commands,obd_telemetry,gpio_control<span class="o">}</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>tests/integration/fixtures/<span class="o">{</span>mqtt,http,zmq<span class="o">}</span>
+
+<span class="c1"># If scenario tests exist, move them:</span>
+<span class="c1"># git mv tests/e2e/test_voice_command.py tests/integration/scenarios/voice_commands/</span>
+</code></pre></div>
+<p><strong>Step 3: Add pytest conftest for new structure</strong></p>
+<p>Create <code>tests/integration/conftest.py</code> if not exists:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scenario_dir</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return path to scenarios directory&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;scenarios&quot;</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fixtures_dir</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return path to fixtures directory&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;fixtures&quot;</span>
+</code></pre></div>
+<p><strong>Step 4: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: reorganize tests structure with integration scenarios&quot;</span>
+</code></pre></div>
+<h3 id="task-52-move-development-tools-scripts">Task 5.2: Move development tools &amp; scripts</h3>
+<p><strong>Files:</strong>
+- Move: <code>scripts/</code>, <code>bin/</code>, development scripts → <code>tools/</code></p>
+<p><strong>Step 1: Move development scripts</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Capture what&#39;s in scripts/</span>
+ls<span class="w"> </span>-la<span class="w"> </span>scripts/
+
+<span class="c1"># Move to appropriate location:</span>
+git<span class="w"> </span>mv<span class="w"> </span>scripts/*<span class="w"> </span>tools/local-dev/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>mv<span class="w"> </span>bin/*<span class="w"> </span>tools/ci/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span><span class="w">  </span><span class="c1"># or local-dev, depending on purpose</span>
+
+<span class="c1"># Remove empty dirs</span>
+rmdir<span class="w"> </span>scripts/<span class="w"> </span>bin/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<p><strong>Step 2: Organize by purpose</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># tools/ci/ - build, lint, test helpers</span>
+<span class="c1"># tools/local-dev/ - start dev stack, sync assets, flash firmware</span>
+
+<span class="c1"># Examples:</span>
+<span class="c1"># tools/ci/lint-all.sh</span>
+<span class="c1"># tools/ci/run-tests.sh</span>
+<span class="c1"># tools/local-dev/start-dev-stack.sh</span>
+<span class="c1"># tools/local-dev/flash-esp32.sh</span>
+</code></pre></div>
+<p><strong>Step 3: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: move development scripts and tools to tools/&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-6-update-cicd-documentation">Phase 6: Update CI/CD &amp; Documentation</h2>
+<h3 id="task-61-consolidate-github-actions-workflows">Task 6.1: Consolidate GitHub Actions workflows</h3>
+<p><strong>Files:</strong>
+- Update: <code>.github/workflows/*.yml</code> with new paths
+- Create: <code>.github/workflows/integration-tests.yml</code> if not exists</p>
+<p><strong>Step 1: Update existing workflow files</strong></p>
+<p>For each <code>.github/workflows/</code> file, update:
+- <code>paths:</code> triggers to reference new directory structure
+- <code>working-directory:</code> if set
+- Any <code>run:</code> commands that reference old paths</p>
+<p>Example <code>.github/workflows/android-ci.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Android CI</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;apps/android/**&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.github/workflows/android-ci.yml&quot;</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;apps/android/**&quot;</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build Android</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">cd apps/android</span>
+<span class="w">          </span><span class="no">./gradlew assembleDebug</span>
+</code></pre></div>
+<p><strong>Step 2: Update all workflow files</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List all workflows</span>
+ls<span class="w"> </span>-la<span class="w"> </span>.github/workflows/
+
+<span class="c1"># For each file, update paths and directories</span>
+</code></pre></div>
+<p><strong>Step 3: Add new integration test workflow (optional)</strong></p>
+<p>Create <code>.github/workflows/integration-tests.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Integration Tests</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;tests/integration/**&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;apps/rpi-backend/**&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;orchestration/**&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;.github/workflows/integration-tests.yml&quot;</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;tests/integration/**&quot;</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">integration-tests</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">services</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">mqtt</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eclipse-mosquitto:latest</span>
+<span class="w">      </span><span class="nt">zmq</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># Note: ZMQ requires custom setup; this is placeholder</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu:latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v4</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.11&#39;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pip install -r requirements-dev.txt</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run integration tests</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pytest tests/integration/ -v -m integration</span>
+</code></pre></div>
+<p><strong>Step 4: Commit</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>.github/
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: update CI/CD workflows for new repository structure&quot;</span>
+</code></pre></div>
+<h3 id="task-62-update-root-documentation">Task 6.2: Update root documentation</h3>
+<p><strong>Files:</strong>
+- Update: <code>README.md</code> with new structure references
+- Update: Any deployment guides to reference <code>infra/deploy/</code>
+- Create: <code>docs/DEVELOPMENT.md</code> with local dev instructions</p>
+<p><strong>Step 1: Update README.md</strong></p>
+<p>Update the "Build &amp; Test Commands" and "Architecture" sections to reference:
+- <code>apps/android</code>, <code>apps/rpi-backend</code>, <code>apps/esp32</code>
+- <code>orchestration/mcp</code>
+- <code>infra/docker</code>, <code>infra/systemd</code>, <code>infra/deploy</code>
+- <code>tools/ci</code>, <code>tools/local-dev</code></p>
+<p><strong>Step 2: Create or update <code>docs/DEVELOPMENT.md</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="gh"># Development Guide</span>
+
+<span class="gu">## Local Setup</span>
+
+<span class="gu">### Start Development Stack</span>
+
+```bash
+./tools/local-dev/start-dev-stack.sh
+</code></pre></div>
+<p>This starts:
+- Docker containers (infra/docker/docker-compose.dev.yml)
+- ZMQ broker on port 5555
+- FastAPI on port 8000
+- MQTT on port 1883</p>
+<h3 id="run-all-tests">Run All Tests</h3>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;not hardware&quot;</span>
+</code></pre></div>
+<h3 id="build-android-app">Build Android App</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/android
+./gradlew<span class="w"> </span>assembleDebug
+</code></pre></div>
+<h3 id="build-flash-esp32">Build &amp; Flash ESP32</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/esp32
+platformio<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>upload
+</code></pre></div>
+<h3 id="rpi-c-audio-module">RPi C++ Audio Module</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>apps/rpi-backend/cpp-audio
+cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>--build<span class="w"> </span>build
+</code></pre></div>
+<h3 id="lint-format">Lint &amp; Format</h3>
+<p><div class="highlight"><pre><span></span><code>./tools/ci/lint-all.sh
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>**Step 3: Commit**
+
+```bash
+git add README.md docs/
+git commit -m &quot;docs: update documentation for new repository structure&quot;
+</code></pre></div></p>
+<h3 id="task-63-verify-nothing-broke">Task 6.3: Verify nothing broke</h3>
+<p><strong>Files:</strong>
+- Test: All CI workflows still trigger correctly
+- Test: Local builds still work
+- Test: Imports still resolve</p>
+<p><strong>Step 1: Test local builds</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># From repo root:</span>
+<span class="nb">cd</span><span class="w"> </span>apps/android<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./gradlew<span class="w"> </span>check<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../..
+<span class="nb">cd</span><span class="w"> </span>apps/esp32<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>platformio<span class="w"> </span>check<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../..
+<span class="nb">cd</span><span class="w"> </span>apps/rpi-backend/py-api<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;not hardware&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../../../..
+<span class="nb">cd</span><span class="w"> </span>apps/rpi-backend/cpp-audio<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../../../..
+</code></pre></div>
+<p><strong>Step 2: Test Docker build</strong></p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker/docker-compose.dev.yml<span class="w"> </span>build<span class="w"> </span>--no-cache
+</code></pre></div>
+<p><strong>Step 3: Test import paths</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Python: verify modules can be imported</span>
+<span class="nb">cd</span><span class="w"> </span>/tmp
+python3<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<span class="s">import sys</span>
+<span class="s">sys.path.insert(0, &#39;/home/sparrow/projects/embedded/mia/orchestration/mcp&#39;)</span>
+<span class="s"># Try importing a core module</span>
+<span class="s">try:</span>
+<span class="s">    # from core_orchestrator.orchestrator import Orchestrator</span>
+<span class="s">    print(&quot;✓ Import path works&quot;)</span>
+<span class="s">except ImportError as e:</span>
+<span class="s">    print(f&quot;✗ Import failed: {e}&quot;)</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p><strong>Step 4: Commit success verification</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create .github/workflows/verify-structure.yml</span>
+<span class="c1"># This workflow runs sanity checks after restructuring</span>
+</code></pre></div>
+<hr />
+<h2 id="phase-7-cleanup-archive">Phase 7: Cleanup &amp; Archive</h2>
+<h3 id="task-71-remove-old-directories-if-safe">Task 7.1: Remove old directories (if safe)</h3>
+<p><strong>Files:</strong>
+- Delete: Legacy <code>android/</code>, <code>esp32/</code>, <code>rpi/</code>, <code>platforms/</code>, <code>modules/</code>, <code>docker/</code>, <code>deploy/</code>, <code>services/</code>, <code>core/</code> (only after verified moved)</p>
+<p><strong>Step 1: Identify directories to remove</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List directories that should be gone:</span>
+ls<span class="w"> </span>-d<span class="w"> </span>android<span class="w"> </span>esp32<span class="w"> </span>rpi<span class="w"> </span>platforms<span class="w"> </span>modules<span class="w"> </span>docker<span class="w"> </span>deploy<span class="w"> </span>services<span class="w"> </span>core<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</code></pre></div>
+<p><strong>Step 2: Verify they're fully moved</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before removing, check if anything references old locations</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;from android\|from esp32\|from rpi\|from modules\|from core\|from docker&quot;</span><span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--include<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.md&quot;</span><span class="w"> </span>--exclude-dir<span class="o">=</span>.git<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</code></pre></div>
+<p><strong>Step 3: Remove old directories</strong></p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>android<span class="w"> </span>esp32<span class="w"> </span>rpi<span class="w"> </span>platforms<span class="w"> </span>modules<span class="w"> </span>docker<span class="w"> </span>deploy<span class="w"> </span>services<span class="w"> </span>core<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: remove legacy directories after successful migration&quot;</span>
+</code></pre></div>
+<h3 id="task-72-final-cleanup">Task 7.2: Final cleanup</h3>
+<p><strong>Files:</strong>
+- Remove: unused top-level directories (<code>web/</code>, <code>clients/</code>, <code>firmware/</code>, <code>devices/</code>, <code>external/</code>, etc.)
+- Archive: Old documentation in <code>docs/legacy/</code> if needed</p>
+<p><strong>Step 1: Assess cleanup candidates</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Directories that might be legacy:</span>
+ls<span class="w"> </span>-d<span class="w"> </span>web<span class="w"> </span>clients<span class="w"> </span>firmware<span class="w"> </span>devices<span class="w"> </span>external<span class="w"> </span>edge-compat<span class="w"> </span>platform<span class="w"> </span>monitoring<span class="w"> </span>site<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</code></pre></div>
+<p><strong>Step 2: Archive if needed</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Only remove/archive if confirmed as truly unused</span>
+<span class="c1"># Example:</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;web&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;web/README.md&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>mkdir<span class="w"> </span>-p<span class="w"> </span>docs/legacy/
+<span class="w">  </span>git<span class="w"> </span>mv<span class="w"> </span>web<span class="w"> </span>docs/legacy/web<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<span class="k">fi</span>
+git<span class="w"> </span>add<span class="w"> </span>-A
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;chore: archive legacy directories to docs/legacy/&quot;</span>
+</code></pre></div>
+<p><strong>Step 3: Final verification</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Verify root structure is clean</span>
+ls<span class="w"> </span>-d<span class="w"> </span>*/<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort
+<span class="c1"># Should be: apps/ docs/ orchestration/ infra/ tests/ tools/ .github/ + hidden dirs</span>
+</code></pre></div>
+<hr />
+<h2 id="rollback-strategy">Rollback Strategy</h2>
+<p>If something breaks:</p>
+<ol>
+<li><strong>Immediate:</strong> <code>git reset --hard HEAD~N</code> (go back N commits)</li>
+<li><strong>Partial:</strong> <code>git revert &lt;commit-hash&gt;</code> (revert specific commit)</li>
+<li><strong>Emergency:</strong> On remote, force-push to previous good state (⚠️ only if no one pulled yet)</li>
+</ol>
+<p>All changes use <code>git mv</code> (not copy/delete), so git history is preserved.</p>
+<hr />
+<h2 id="success-criteria">Success Criteria</h2>
+<p>✓ All top-level directories fit into: <code>apps/</code>, <code>orchestration/</code>, <code>infra/</code>, <code>tests/</code>, <code>tools/</code>, <code>docs/</code>, <code>.github/</code>
+✓ Android, RPi, ESP32 builds all pass
+✓ Python imports resolve (from <code>orchestration/mcp/</code>, etc.)
+✓ CI workflows trigger on correct paths
+✓ Docker Compose still starts dev stack
+✓ All tests pass (<code>pytest tests/ -m "not hardware"</code>)
+✓ README &amp; ARCHITECTURE.md reflect new structure
+✓ New developers can understand structure from directory names alone</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

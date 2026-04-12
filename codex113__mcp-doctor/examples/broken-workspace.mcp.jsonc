@@ -1,0 +1,18 @@
+{
+  // broken on purpose for demo and verification
+  "mcpServers": {
+    "filesystem": {
+      "command": "python3",
+      "args": [
+        "missing/server.py"
+      ],
+      "env": {
+        "API_KEY": "YOUR_API_KEY"
+      }
+    },
+    "ghost": {
+      "command": "definitely-not-a-real-binary",
+      "args": [],
+    }
+  },
+}

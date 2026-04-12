@@ -1,0 +1,12 @@
+Android network profile check failed: ---
+/system/bin/sh: su: inaccessible or not found
+RTNETLINK answers: Network is unreachable
+Traceback (most recent call last):
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 731, in _run_step
+    detail = fn()
+             ^^^^
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 930, in _preflight_android_network_profile
+    raise RuntimeError(f"Android network profile check failed: {result.stdout}{result.stderr}".strip())
+RuntimeError: Android network profile check failed: ---
+/system/bin/sh: su: inaccessible or not found
+RTNETLINK answers: Network is unreachable

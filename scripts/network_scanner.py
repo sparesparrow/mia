@@ -5,10 +5,12 @@ Scans local network to find ESP32, Android, and Raspberry Pi devices
 """
 
 import asyncio
+import json
+import logging
 import socket
 import subprocess
-from dataclasses import dataclass
-from typing import Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 from pathlib import Path
 
 try:
@@ -17,21 +19,16 @@ except ImportError:
     aiohttp = None
 
 
+logger = logging.getLogger(__name__)
+
+
 @dataclass
 class MIAScanResult:
-    esp32_devices: List[Dict[str, any]] = None
-    android_devices: List[Dict[str, any]] = None
-    rpi_devices: List[Dict[str, any]] = None
+    esp32_devices: List[Dict[str, Any]] = field(default_factory=list)
+    android_devices: List[Dict[str, Any]] = field(default_factory=list)
+    rpi_devices: List[Dict[str, Any]] = field(default_factory=list)
     scan_duration: float = 0.0
     devices_scanned: int = 0
-
-    def __post_init__(self):
-        if self.esp32_devices is None:
-            self.esp32_devices = []
-        if self.android_devices is None:
-            self.android_devices = []
-        if self.rpi_devices is None:
-            self.rpi_devices = []
 
     def total_devices(self) -> int:
         return len(self.esp32_devices) + len(self.android_devices) + len(self.rpi_devices)
@@ -59,6 +56,21 @@ class MIANetworkScanner:
     def __init__(self, timeout: float = 0.5):
         self.timeout = timeout
 
+    @staticmethod
+    def _parse_json_payload(payload: str, source: str) -> Optional[Dict[str, Any]]:
+        """Parse a JSON payload and log malformed responses at debug level."""
+        try:
+            parsed = json.loads(payload)
+        except json.JSONDecodeError as exc:
+            logger.debug("Invalid JSON from %s: %s", source, exc)
+            return None
+
+        if isinstance(parsed, dict):
+            return parsed
+
+        logger.debug("Ignoring non-object JSON payload from %s", source)
+        return None
+
     def get_local_subnet(self) -> Optional[str]:
         """Get local subnet from network interfaces"""
         try:
@@ -73,8 +85,8 @@ class MIANetworkScanner:
                 match = re.search(r'src\s+(\d+\.\d+\.\d+)\.\d+', result.stdout)
                 if match:
                     return match.group(1)
-        except Exception:
-            pass
+        except (FileNotFoundError, subprocess.SubprocessError, OSError) as exc:
+            logger.debug("Falling back to default subnet detection: %s", exc)
 
         # Fallback: common subnets
         return "192.168.1"
@@ -129,19 +141,17 @@ class MIANetworkScanner:
                     f"http://{ip}:{port}/api/v1/system/health"
                 ) as resp:
                     if resp.status == 200:
-                        try:
-                            data = await resp.json()
-                            # Verify it's an ESP32 by checking response structure
-                            if any(key in data for key in ["status", "uptime", "heap", "free_heap"]):
-                                return {
-                                    "type": "esp32",
-                                    "ip": ip,
-                                    "port": port,
-                                    "endpoints": [f"http://{ip}:{port}/api/v1/system/health"],
-                                    "device_info": data
-                                }
-                        except:
-                            pass
+                        payload = await resp.text()
+                        data = self._parse_json_payload(payload, f"http://{ip}:{port}/api/v1/system/health")
+                        # Verify it's an ESP32 by checking response structure
+                        if data and any(key in data for key in ["status", "uptime", "heap", "free_heap"]):
+                            return {
+                                "type": "esp32",
+                                "ip": ip,
+                                "port": port,
+                                "endpoints": [f"http://{ip}:{port}/api/v1/system/health"],
+                                "device_info": data
+                            }
 
                 # Test basic web interface
                 async with session.get(f"http://{ip}:{port}/") as resp:
@@ -156,7 +166,11 @@ class MIANetworkScanner:
                                 "web_interface": True
                             }
 
-            except:
+            except (asyncio.TimeoutError, OSError) as exc:
+                logger.debug("ESP32 probe failed for %s:%s: %s", ip, port, exc)
+                continue
+            except Exception as exc:
+                logger.debug("Unexpected ESP32 probe error for %s:%s: %s", ip, port, exc)
                 continue
 
         # Test Raspberry Pi SSH and HTTP
@@ -187,8 +201,10 @@ class MIANetworkScanner:
                             "service": "ssh",
                             "connection_type": "ssh"
                         }
-                except:
-                    pass
+                except (asyncio.TimeoutError, OSError) as exc:
+                    logger.debug("SSH probe failed for %s:%s: %s", ip, port, exc)
+                except Exception as exc:
+                    logger.debug("Unexpected SSH probe error for %s:%s: %s", ip, port, exc)
 
             elif port in [80, 8080]:  # HTTP
                 try:
@@ -204,8 +220,10 @@ class MIANetworkScanner:
                                     "connection_type": "http",
                                     "web_interface": True
                                 }
-                except:
-                    pass
+                except (asyncio.TimeoutError, OSError) as exc:
+                    logger.debug("RPi HTTP probe failed for %s:%s: %s", ip, port, exc)
+                except Exception as exc:
+                    logger.debug("Unexpected RPi HTTP probe error for %s:%s: %s", ip, port, exc)
 
         return None
 
@@ -227,21 +245,22 @@ class MIANetworkScanner:
                     req = urllib.request.Request(url, method='GET')
                     with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                         if resp.status == 200:
-                            try:
-                                import json
-                                data = json.loads(resp.read().decode())
-                                if any(key in data for key in ["status", "uptime", "heap"]):
-                                    result.esp32_devices.append({
-                                        "type": "esp32",
-                                        "ip": ip,
-                                        "port": port,
-                                        "endpoints": [url],
-                                        "device_info": data
-                                    })
-                                    break
-                            except:
-                                pass
-                except:
+                            payload = resp.read().decode()
+                            data = self._parse_json_payload(payload, url)
+                            if data and any(key in data for key in ["status", "uptime", "heap"]):
+                                result.esp32_devices.append({
+                                    "type": "esp32",
+                                    "ip": ip,
+                                    "port": port,
+                                    "endpoints": [url],
+                                    "device_info": data
+                                })
+                                break
+                except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                    logger.debug("Sync probe failed for %s:%s: %s", ip, port, exc)
+                    continue
+                except Exception as exc:
+                    logger.debug("Unexpected sync probe error for %s:%s: %s", ip, port, exc)
                     continue
 
         return result
@@ -249,6 +268,7 @@ class MIANetworkScanner:
     def scan_known_ip(self, ip: str) -> MIAScanResult:
         """Test a known IP address directly"""
         result = MIAScanResult()
+        result.devices_scanned = 1
 
         # Test ESP32 endpoints
         for port in self.ESP32_PORTS:
@@ -258,8 +278,11 @@ class MIANetworkScanner:
                 req = urllib.request.Request(url, method='GET')
                 with urllib.request.urlopen(req, timeout=5) as resp:
                     if resp.status == 200:
-                        import json
-                        data = json.loads(resp.read().decode())
+                        payload = resp.read().decode()
+                        data = self._parse_json_payload(payload, url)
+                        if data is None:
+                            continue
+
                         result.esp32_devices.append({
                             "type": "esp32",
                             "ip": ip,
@@ -268,11 +291,12 @@ class MIANetworkScanner:
                             "device_info": data
                         })
                         break
-            except:
+            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                logger.debug("Known IP probe failed for %s:%s: %s", ip, port, exc)
                 continue
-
-        if not result.esp32_devices:
-            result.devices_scanned = 1
+            except Exception as exc:
+                logger.debug("Unexpected known IP probe error for %s:%s: %s", ip, port, exc)
+                continue
 
         return result
 

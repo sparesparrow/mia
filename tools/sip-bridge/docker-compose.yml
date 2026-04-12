@@ -1,0 +1,30 @@
+services:
+  asterisk:
+    image: andrius/asterisk:latest
+    container_name: mia-asterisk
+    network_mode: host          # SIP/RTP needs host networking for NAT traversal
+    restart: unless-stopped
+    environment:
+      - STUDIO_LAN_IP=192.168.200.23
+      - ELEVENLABS_SIP_DOMAIN=${ELEVENLABS_SIP_DOMAIN:-sip.elevenlabs.io}
+      - SIP_TRUNK_USERNAME=${SIP_TRUNK_USERNAME:-mia-studio}
+      - SIP_TRUNK_PASSWORD=${SIP_TRUNK_PASSWORD}
+      - MIA_WS_URL=ws://192.168.200.23:8000/ws
+    volumes:
+      - ./asterisk/pjsip.conf:/etc/asterisk/pjsip.conf:ro
+      - ./asterisk/extensions.conf:/etc/asterisk/extensions.conf:ro
+      - ./asterisk/mia_voice_bridge.py:/var/lib/asterisk/agi-bin/mia_voice_bridge.py:ro
+      - asterisk-logs:/var/log/asterisk
+    ports:
+      # Expose for visibility — host networking already binds these
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "10000-10100:10000-10100/udp"
+    healthcheck:
+      test: ["CMD", "asterisk", "-rx", "core show uptime"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  asterisk-logs:

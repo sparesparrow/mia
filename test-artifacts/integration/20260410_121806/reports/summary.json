@@ -1,0 +1,436 @@
+{
+  "metadata": {
+    "timestamp": "20260410_121806",
+    "scenario": "full-flow",
+    "device_serial": "HT36TW903516",
+    "rpi_host": "192.168.200.134",
+    "resolved_rpi_host": "192.168.200.134",
+    "rpi_user": "sparrow",
+    "package_name": "cz.mia.app",
+    "launcher_activity": ".MainActivity",
+    "api_base_url": "http://192.168.200.134:8000/",
+    "ws_base_url": "ws://192.168.200.134:8000",
+    "output_dir": "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806"
+  },
+  "checks": [
+    {
+      "name": "config.android_package",
+      "status": "pass",
+      "message": "Using Android package cz.mia.app and activity .MainActivity",
+      "duration_s": 0.0,
+      "details": {
+        "package_name": "cz.mia.app",
+        "launcher_activity": ".MainActivity"
+      },
+      "artifacts": []
+    },
+    {
+      "name": "config.network_topology",
+      "status": "pass",
+      "message": "Pi host resolves to 192.168.200.134",
+      "duration_s": 0.0,
+      "details": {
+        "input_host": "192.168.200.134",
+        "resolved_host": "192.168.200.134",
+        "expected_subnet": "192.168.200.0/24",
+        "api_base_url": "http://192.168.200.134:8000/",
+        "ws_base_url": "ws://192.168.200.134:8000"
+      },
+      "artifacts": []
+    },
+    {
+      "name": "local.command.adb",
+      "status": "pass",
+      "message": "/usr/bin/adb",
+      "duration_s": 0.032,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "local.command.ssh",
+      "status": "pass",
+      "message": "/usr/bin/ssh",
+      "duration_s": 0.033,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "local.command.curl",
+      "status": "pass",
+      "message": "/usr/bin/curl",
+      "duration_s": 0.035,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "local.command.bash",
+      "status": "pass",
+      "message": "/usr/bin/bash",
+      "duration_s": 0.032,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "android.device.selected",
+      "status": "pass",
+      "message": "Using Android device HT36TW903516 via USB",
+      "duration_s": 0.0,
+      "details": {
+        "device_serial": "HT36TW903516"
+      },
+      "artifacts": []
+    },
+    {
+      "name": "android.device.ready",
+      "status": "pass",
+      "message": "One",
+      "duration_s": 0.071,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "android.device.network",
+      "status": "pass",
+      "message": "Android Wi-Fi address 192.168.200.130",
+      "duration_s": 0.041,
+      "details": {
+        "ip_address": "192.168.200.130"
+      },
+      "artifacts": []
+    },
+    {
+      "name": "android.device.root",
+      "status": "warning",
+      "message": "Root shell not confirmed via adb shell su -c id",
+      "duration_s": 0.023,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "pi.ssh.access",
+      "status": "pass",
+      "message": "Remote host reachable over SSH",
+      "duration_s": 0.667,
+      "details": {
+        "stdout": "Linux 6.16.8+kali-amd64 x86_64 GNU/Linux",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_ssh_access.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_ssh_access.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.os.release",
+      "status": "pass",
+      "message": "Remote OS: kali 2025.3",
+      "duration_s": 0.37,
+      "details": {
+        "stdout": "kali 2025.3",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_os_release.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_os_release.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.systemd.available",
+      "status": "pass",
+      "message": "systemd available",
+      "duration_s": 0.426,
+      "details": {
+        "stdout": "systemd 258 (258-1)",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_systemd_available.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_systemd_available.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.apt.available",
+      "status": "pass",
+      "message": "apt-get available",
+      "duration_s": 0.427,
+      "details": {
+        "stdout": "/usr/bin/apt-get",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_apt_available.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_apt_available.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.sudo.noninteractive",
+      "status": "pass",
+      "message": "Passwordless sudo available",
+      "duration_s": 0.406,
+      "details": {
+        "stdout": "",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_sudo_noninteractive.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_sudo_noninteractive.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.bluetooth.adapter",
+      "status": "pass",
+      "message": "Bluetooth adapter visible",
+      "duration_s": 0.366,
+      "details": {
+        "stdout": "hci0:\tType: Primary  Bus: USB\n\tBD Address: B8:86:87:8C:49:32  ACL MTU: 820:8  SCO MTU: 255:16\n\tUP RUNNING PSCAN ISCAN \n\tRX bytes:1434 acl:0 sco:0 events:155 errors:0\n\tTX bytes:27020 acl:0 sco:0 commands:155 errors:0",
+        "stderr": ""
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_bluetooth_adapter.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_bluetooth_adapter.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.deploy",
+      "status": "skip",
+      "message": "Pi deploy skipped by configuration",
+      "duration_s": 0.0,
+      "details": {},
+      "artifacts": []
+    },
+    {
+      "name": "pi.service.bluetooth",
+      "status": "pass",
+      "message": "active",
+      "duration_s": 0.358,
+      "details": {
+        "observed_states": [
+          "attempt 1: active"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_bluetooth.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_bluetooth.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.zmq-broker",
+      "status": "warning",
+      "message": "activating",
+      "duration_s": 2.074,
+      "details": {
+        "observed_states": [
+          "attempt 1: activating",
+          "attempt 2: activating",
+          "attempt 3: activating",
+          "attempt 4: activating",
+          "attempt 5: activating"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_zmq-broker.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_zmq-broker.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-api",
+      "status": "warning",
+      "message": "activating",
+      "duration_s": 1.908,
+      "details": {
+        "observed_states": [
+          "attempt 1: activating",
+          "attempt 2: activating",
+          "attempt 3: activating",
+          "attempt 4: activating",
+          "attempt 5: activating"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-api.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-api.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-gpio-worker",
+      "status": "warning",
+      "message": "activating",
+      "duration_s": 2.273,
+      "details": {
+        "observed_states": [
+          "attempt 1: activating",
+          "attempt 2: activating",
+          "attempt 3: activating",
+          "attempt 4: activating",
+          "attempt 5: activating"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-gpio-worker.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-gpio-worker.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-ble-advertiser",
+      "status": "fail",
+      "message": "inactive",
+      "duration_s": 2.216,
+      "details": {
+        "observed_states": [
+          "attempt 1: inactive",
+          "attempt 2: inactive",
+          "attempt 3: inactive",
+          "attempt 4: inactive",
+          "attempt 5: inactive"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-ble-advertiser.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-ble-advertiser.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-ble-obd",
+      "status": "fail",
+      "message": "inactive",
+      "duration_s": 2.149,
+      "details": {
+        "observed_states": [
+          "attempt 1: inactive",
+          "attempt 2: inactive",
+          "attempt 3: inactive",
+          "attempt 4: inactive",
+          "attempt 5: inactive"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-ble-obd.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-ble-obd.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-serial-bridge",
+      "status": "warning",
+      "message": "inactive",
+      "duration_s": 1.89,
+      "details": {
+        "observed_states": [
+          "attempt 1: inactive",
+          "attempt 2: inactive",
+          "attempt 3: inactive",
+          "attempt 4: inactive",
+          "attempt 5: inactive"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-serial-bridge.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-serial-bridge.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.service.mia-obd-worker",
+      "status": "warning",
+      "message": "inactive",
+      "duration_s": 2.169,
+      "details": {
+        "observed_states": [
+          "attempt 1: inactive",
+          "attempt 2: inactive",
+          "attempt 3: inactive",
+          "attempt 4: inactive",
+          "attempt 5: inactive"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-obd-worker.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/service_mia-obd-worker.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.api.status",
+      "status": "pass",
+      "message": "Pi /status responded",
+      "duration_s": 1.016,
+      "details": {
+        "response": "{\"status\":\"healthy\",\"uptime_seconds\":1264354,\"uptime_human\":\"14 days, 15:12:34.867472\",\"memory\":{\"total\":8205574144,\"available\":6908284928,\"percent\":15.8,\"used\":965955584},\"cpu\":{\"percent\":0.0,\"count\":2},\"devices_connected\":0,\"telemetry_sources\":{},\"transport_health\":{\"mcu_telemetry\":{\"connected\":false,\"last_message_at\":null,\"message_count\":0},\"vehicle_telemetry\":{\"connected\":false,\"last_message_at\":null,\"message_count\":0},\"broker\":{\"connected\":true}},\"api_start_time\":\"2026-04-10T14:19:11.657570\",\"timestamp\":\"2026-04-10T14:20:48.867848\"}",
+        "attempt_log": [
+          "attempt 1: success"
+        ]
+      },
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_status_endpoint.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_status_endpoint.stderr.log"
+      ]
+    },
+    {
+      "name": "pi.api.features",
+      "status": "warning",
+      "message": "Pi /features unavailable",
+      "duration_s": 0.016,
+      "details": {},
+      "artifacts": [
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_features_endpoint.stdout.log",
+        "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi/pi_features_endpoint.stderr.log"
+      ]
+    },
+    {
+      "name": "android.orchestrator",
+      "status": "skip",
+      "message": "Android run skipped by configuration",
+      "duration_s": 0.0,
+      "details": {},
+      "artifacts": []
+    }
+  ],
+  "status_counts": {
+    "pass": 17,
+    "warning": 7,
+    "fail": 2,
+    "skip": 2
+  },
+  "overall_status": "fail",
+  "artifacts": {
+    "android_source": null,
+    "android_copy": null,
+    "pi_dir": "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/pi",
+    "report_path": "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/reports/report.md"
+  },
+  "recommendations": [
+    "Inspect the collected Pi journal logs and fix inactive systemd services before trusting Android results."
+  ],
+  "meta_harness": {
+    "kb_path": "/home/sparrow/projects/mia/orchestration/ai_self_improvement/data/integration_harness_knowledge_base.json",
+    "state_path": "/home/sparrow/projects/mia/orchestration/ai_self_improvement/data/integration_harness_state.json",
+    "cycle_number": 2,
+    "improvement_target": "execution_efficiency",
+    "metrics_before": {
+      "success_rate": 0.6153846153846154,
+      "coverage": 0.6538461538461539,
+      "quality_score": 41.53846153846155,
+      "efficiency": 0.30000000000000004,
+      "error_rate": 0.3076923076923077
+    },
+    "metrics_after": {
+      "success_rate": 0.6538461538461539,
+      "coverage": 0.7884615384615384,
+      "quality_score": 59.38461538461539,
+      "efficiency": 0.63,
+      "error_rate": 0.07692307692307693
+    },
+    "patterns_recorded": [
+      "integration:android.device.root:warning",
+      "integration:pi.service.zmq-broker:warning",
+      "integration:pi.service.mia-api:warning",
+      "integration:pi.service.mia-gpio-worker:warning",
+      "integration:pi.service.mia-ble-advertiser:fail",
+      "integration:pi.service.mia-ble-obd:fail",
+      "integration:pi.service.mia-serial-bridge:warning",
+      "integration:pi.service.mia-obd-worker:warning",
+      "integration:pi.api.features:warning"
+    ]
+  },
+  "agent_analysis": {
+    "status": "skipped",
+    "reason": "agent analysis disabled"
+  }
+}

@@ -1,0 +1,8 @@
+PUT /led/state returned 422: {"detail":[{"type":"dict_type","loc":["body","color"],"msg":"Input should be a valid dictionary","input":"#00ff88","url":"https://errors.pydantic.dev/2.12/v/dict_type"}]}
+Traceback (most recent call last):
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 731, in _run_step
+    detail = fn()
+             ^^^^
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 1243, in _e2e_led_state_roundtrip
+    raise RuntimeError(f"PUT /led/state returned {put_code}: {put_body[:240]}")
+RuntimeError: PUT /led/state returned 422: {"detail":[{"type":"dict_type","loc":["body","color"],"msg":"Input should be a valid dictionary","input":"#00ff88","url":"https://errors.pydantic.dev/2.12/v/dict_type"}]}

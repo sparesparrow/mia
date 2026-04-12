@@ -1,0 +1,222 @@
+{
+  "run_id": "20260410_141552",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "deploy",
+      "steps": [
+        {
+          "name": "ssh_connectivity",
+          "verdict": "PASS",
+          "duration_s": 0.403708491998259,
+          "detail": "uid=1000(sparrow) gid=1000(sparrow) groups=1000(sparrow),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),103(scanner),116(bluetooth),120(lpadmin),124(wireshark),134(kaboxer),135(docker),996(input)\nLinux studijko 6.16.8+kali-amd64 #1 SMP PREEMPT_DYNAMIC Kali 6.16.8-1kali1 (2025-09-24) x86_64 GNU/Linux",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "create_target_dirs",
+          "verdict": "PASS",
+          "duration_s": 0.42207072701421566,
+          "detail": "dirs created",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "sync_backend_code",
+          "verdict": "PASS",
+          "duration_s": 0.45359143399400637,
+          "detail": "backend synced",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "sync_schemas",
+          "verdict": "PASS",
+          "duration_s": 2.1752004160080105,
+          "detail": "schemas + config synced",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "create_venv",
+          "verdict": "PASS",
+          "duration_s": 0.5327541930018924,
+          "detail": "EXISTS",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "install_pip_deps",
+          "verdict": "PASS",
+          "duration_s": 3.9902347229945008,
+          "detail": "deps OK",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "deploy_systemd_units",
+          "verdict": "PASS",
+          "duration_s": 14.782690641994122,
+          "detail": "17 units deployed",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "start_services",
+          "verdict": "PASS",
+          "duration_s": 14.631900530977873,
+          "detail": "zmq-broker=activating\ninactive, mia-api=activating\ninactive, mia-gpio-worker=activating\ninactive, direct-api=down",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:15:52.312973+00:00",
+      "finished": "2026-04-10T12:16:29.705264+00:00"
+    },
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "FAIL",
+          "duration_s": 0.00477497698739171,
+          "detail": "Diagnosed: API not listening",
+          "error": "GET /status returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "FAIL",
+          "duration_s": 0.0029211260261945426,
+          "detail": "Diagnosed: API not listening",
+          "error": "GET /devices returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "FAIL",
+          "duration_s": 0.0022336630208883435,
+          "detail": "Diagnosed: API not listening",
+          "error": "GET /telemetry returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "FAIL",
+          "duration_s": 0.004315367987146601,
+          "detail": "Diagnosed: API not listening",
+          "error": "GET /features returned 0: <urlopen error [Errno 111] Connection refused>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "FAIL",
+          "duration_s": 0.41590953699778765,
+          "detail": "Diagnosed: unknown",
+          "error": "ZMQ broker not listening on :5555",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_selftest",
+          "verdict": "PASS",
+          "duration_s": 0.45651475799968466,
+          "detail": "SELFTEST_NOT_DEPLOYED",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T12:16:29.705505+00:00",
+      "finished": "2026-04-10T12:16:59.177454+00:00"
+    }
+  ],
+  "learnings_applied": [
+    "remediate_api_not_started",
+    "remediate_api_not_started",
+    "remediate_api_not_started",
+    "remediate_api_not_started"
+  ],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T12:16:36.924088+00:00",
+      "step": "api_status",
+      "pattern": "GET\\ /status\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:36.924131+00:00",
+      "step": "api_status",
+      "pattern": "GET\\ /status\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:44.038548+00:00",
+      "step": "api_devices",
+      "pattern": "GET\\ /devices\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:44.038602+00:00",
+      "step": "api_devices",
+      "pattern": "GET\\ /devices\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:51.191895+00:00",
+      "step": "api_telemetry",
+      "pattern": "GET\\ /telemetry\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:51.191956+00:00",
+      "step": "api_telemetry",
+      "pattern": "GET\\ /telemetry\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:58.299288+00:00",
+      "step": "api_features",
+      "pattern": "GET\\ /features\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:58.299345+00:00",
+      "step": "api_features",
+      "pattern": "GET\\ /features\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 111\\]\\ Connection\\ refused>",
+      "diagnosis": "API not listening",
+      "remediation": "remediate_api_not_started",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:58.720850+00:00",
+      "step": "zmq_broker_port",
+      "pattern": "ZMQ\\ broker\\ not\\ listening\\ on\\ :5555",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    },
+    {
+      "timestamp": "2026-04-10T12:16:58.720899+00:00",
+      "step": "zmq_broker_port",
+      "pattern": "ZMQ\\ broker\\ not\\ listening\\ on\\ :5555",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false
+    }
+  ],
+  "total_duration_s": 66.86493684002198
+}

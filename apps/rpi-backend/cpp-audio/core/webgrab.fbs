@@ -459,8 +459,8 @@ union Response {
 }
 
 table Message {
-  request:Request (id: 0);
-  response:Response (id: 1);
+  request:Request (id: 1);
+  response:Response (id: 3);
 }
 
 // System Status Messages

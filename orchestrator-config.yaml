@@ -246,7 +246,7 @@ deployment:
           
     development:
       type: docker-compose
-      file: docker-compose.dev.yml
+      file: infra/docker/docker-compose.dev.yml
       
     edge:
       type: systemd

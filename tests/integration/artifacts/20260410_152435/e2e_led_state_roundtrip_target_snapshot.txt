@@ -1,0 +1,156 @@
+### zmq-broker
+● zmq-broker.service - MIA ZeroMQ Message Broker
+     Loaded: loaded (/etc/systemd/system/zmq-broker.service; disabled; preset: disabled)
+     Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-10 15:24:40 CEST; 1s ago
+ Invocation: 5ba173a8b85b4b56b8499bd7b90e3952
+    Process: 85145 ExecStart=/bin/bash -c exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" /opt/mia/apps/rpi-backend/shared/messaging/broker.py (code=exited, status=217/USER)
+   Main PID: 85145 (code=exited, status=217/USER)
+   Mem peak: 2M
+        CPU: 6ms
+
+Apr 10 15:24:40 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:40 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+
+Apr 10 15:24:19 studijko systemd[1]: zmq-broker.service: Scheduled restart job immediately on client request, restart counter is at 762.
+Apr 10 15:24:19 studijko systemd[1]: Started zmq-broker.service - MIA ZeroMQ Message Broker.
+Apr 10 15:24:19 studijko (bash)[85101]: zmq-broker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:19 studijko (bash)[85101]: zmq-broker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:19 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:19 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+Apr 10 15:24:22 studijko systemd[1]: zmq-broker.service: Scheduled restart job immediately on client request, restart counter is at 763.
+Apr 10 15:24:22 studijko systemd[1]: Started zmq-broker.service - MIA ZeroMQ Message Broker.
+Apr 10 15:24:22 studijko (bash)[85103]: zmq-broker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:22 studijko (bash)[85103]: zmq-broker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:22 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:22 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+Apr 10 15:24:30 studijko systemd[1]: zmq-broker.service: Scheduled restart job immediately on client request, restart counter is at 764.
+Apr 10 15:24:30 studijko systemd[1]: Started zmq-broker.service - MIA ZeroMQ Message Broker.
+Apr 10 15:24:30 studijko (bash)[85141]: zmq-broker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:30 studijko (bash)[85141]: zmq-broker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:30 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:30 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+Apr 10 15:24:33 studijko systemd[1]: zmq-broker.service: Scheduled restart job immediately on client request, restart counter is at 765.
+Apr 10 15:24:33 studijko systemd[1]: Started zmq-broker.service - MIA ZeroMQ Message Broker.
+Apr 10 15:24:33 studijko (bash)[85143]: zmq-broker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:33 studijko (bash)[85143]: zmq-broker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:33 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:33 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+Apr 10 15:24:40 studijko systemd[1]: zmq-broker.service: Scheduled restart job immediately on client request, restart counter is at 766.
+Apr 10 15:24:40 studijko systemd[1]: Started zmq-broker.service - MIA ZeroMQ Message Broker.
+Apr 10 15:24:40 studijko (bash)[85145]: zmq-broker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:40 studijko (bash)[85145]: zmq-broker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:40 studijko systemd[1]: zmq-broker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:40 studijko systemd[1]: zmq-broker.service: Failed with result 'exit-code'.
+
+### mia-api
+● mia-api.service - MIA FastAPI Server for Raspberry Pi
+     Loaded: loaded (/etc/systemd/system/mia-api.service; disabled; preset: disabled)
+     Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-10 15:24:40 CEST; 1s ago
+ Invocation: d0551088515142d39fd38b07fd05279f
+    Process: 85146 ExecStart=/bin/bash -c exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" -m uvicorn api.main:app --host 0.0.0.0 --port 8000 (code=exited, status=217/USER)
+   Main PID: 85146 (code=exited, status=217/USER)
+   Mem peak: 1.7M
+        CPU: 5ms
+
+Apr 10 15:23:59 studijko systemd[1]: mia-api.service: Scheduled restart job, restart counter is at 380.
+Apr 10 15:23:59 studijko systemd[1]: Started mia-api.service - MIA FastAPI Server for Raspberry Pi.
+Apr 10 15:23:59 studijko (bash)[85094]: mia-api.service: Failed to determine user credentials: No such process
+Apr 10 15:23:59 studijko (bash)[85094]: mia-api.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:23:59 studijko systemd[1]: mia-api.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:23:59 studijko systemd[1]: mia-api.service: Failed with result 'exit-code'.
+Apr 10 15:24:09 studijko systemd[1]: mia-api.service: Scheduled restart job, restart counter is at 381.
+Apr 10 15:24:09 studijko systemd[1]: Started mia-api.service - MIA FastAPI Server for Raspberry Pi.
+Apr 10 15:24:09 studijko (bash)[85098]: mia-api.service: Failed to determine user credentials: No such process
+Apr 10 15:24:09 studijko (bash)[85098]: mia-api.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:09 studijko systemd[1]: mia-api.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:09 studijko systemd[1]: mia-api.service: Failed with result 'exit-code'.
+Apr 10 15:24:19 studijko systemd[1]: mia-api.service: Scheduled restart job, restart counter is at 382.
+Apr 10 15:24:19 studijko systemd[1]: Started mia-api.service - MIA FastAPI Server for Raspberry Pi.
+Apr 10 15:24:19 studijko (bash)[85102]: mia-api.service: Failed to determine user credentials: No such process
+Apr 10 15:24:19 studijko (bash)[85102]: mia-api.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:19 studijko systemd[1]: mia-api.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:19 studijko systemd[1]: mia-api.service: Failed with result 'exit-code'.
+Apr 10 15:24:30 studijko systemd[1]: mia-api.service: Scheduled restart job, restart counter is at 383.
+Apr 10 15:24:30 studijko systemd[1]: Started mia-api.service - MIA FastAPI Server for Raspberry Pi.
+Apr 10 15:24:30 studijko (bash)[85142]: mia-api.service: Failed to determine user credentials: No such process
+Apr 10 15:24:30 studijko (bash)[85142]: mia-api.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:30 studijko systemd[1]: mia-api.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:30 studijko systemd[1]: mia-api.service: Failed with result 'exit-code'.
+Apr 10 15:24:40 studijko systemd[1]: mia-api.service: Scheduled restart job, restart counter is at 384.
+Apr 10 15:24:40 studijko systemd[1]: Started mia-api.service - MIA FastAPI Server for Raspberry Pi.
+Apr 10 15:24:40 studijko (bash)[85146]: mia-api.service: Failed to determine user credentials: No such process
+Apr 10 15:24:40 studijko (bash)[85146]: mia-api.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:40 studijko systemd[1]: mia-api.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:40 studijko systemd[1]: mia-api.service: Failed with result 'exit-code'.
+
+### mia-gpio-worker
+● mia-gpio-worker.service - MIA GPIO Worker
+     Loaded: loaded (/etc/systemd/system/mia-gpio-worker.service; disabled; preset: disabled)
+     Active: activating (auto-restart) (Result: exit-code) since Fri 2026-04-10 15:24:33 CEST; 9s ago
+ Invocation: 2ee01728e4094249a8d8b59328a487c5
+    Process: 85144 ExecStart=/bin/bash -c exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" hardware/gpio_worker.py (code=exited, status=217/USER)
+   Main PID: 85144 (code=exited, status=217/USER)
+   Mem peak: 1.7M
+        CPU: 5ms
+
+Apr 10 15:23:52 studijko systemd[1]: mia-gpio-worker.service: Scheduled restart job, restart counter is at 379.
+Apr 10 15:23:52 studijko systemd[1]: Started mia-gpio-worker.service - MIA GPIO Worker.
+Apr 10 15:23:52 studijko (bash)[85092]: mia-gpio-worker.service: Failed to determine user credentials: No such process
+Apr 10 15:23:52 studijko (bash)[85092]: mia-gpio-worker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:23:52 studijko systemd[1]: mia-gpio-worker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:23:52 studijko systemd[1]: mia-gpio-worker.service: Failed with result 'exit-code'.
+Apr 10 15:24:02 studijko systemd[1]: mia-gpio-worker.service: Scheduled restart job, restart counter is at 380.
+Apr 10 15:24:02 studijko systemd[1]: Started mia-gpio-worker.service - MIA GPIO Worker.
+Apr 10 15:24:02 studijko (bash)[85096]: mia-gpio-worker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:02 studijko (bash)[85096]: mia-gpio-worker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:02 studijko systemd[1]: mia-gpio-worker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:02 studijko systemd[1]: mia-gpio-worker.service: Failed with result 'exit-code'.
+Apr 10 15:24:12 studijko systemd[1]: mia-gpio-worker.service: Scheduled restart job, restart counter is at 381.
+Apr 10 15:24:12 studijko systemd[1]: Started mia-gpio-worker.service - MIA GPIO Worker.
+Apr 10 15:24:12 studijko (bash)[85100]: mia-gpio-worker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:12 studijko (bash)[85100]: mia-gpio-worker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:12 studijko systemd[1]: mia-gpio-worker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:12 studijko systemd[1]: mia-gpio-worker.service: Failed with result 'exit-code'.
+Apr 10 15:24:22 studijko systemd[1]: mia-gpio-worker.service: Scheduled restart job, restart counter is at 382.
+Apr 10 15:24:22 studijko systemd[1]: Started mia-gpio-worker.service - MIA GPIO Worker.
+Apr 10 15:24:22 studijko (bash)[85104]: mia-gpio-worker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:22 studijko (bash)[85104]: mia-gpio-worker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:22 studijko systemd[1]: mia-gpio-worker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:22 studijko systemd[1]: mia-gpio-worker.service: Failed with result 'exit-code'.
+Apr 10 15:24:33 studijko systemd[1]: mia-gpio-worker.service: Scheduled restart job, restart counter is at 383.
+Apr 10 15:24:33 studijko systemd[1]: Started mia-gpio-worker.service - MIA GPIO Worker.
+Apr 10 15:24:33 studijko (bash)[85144]: mia-gpio-worker.service: Failed to determine user credentials: No such process
+Apr 10 15:24:33 studijko (bash)[85144]: mia-gpio-worker.service: Failed at step USER spawning /bin/bash: No such process
+Apr 10 15:24:33 studijko systemd[1]: mia-gpio-worker.service: Main process exited, code=exited, status=217/USER
+Apr 10 15:24:33 studijko systemd[1]: mia-gpio-worker.service: Failed with result 'exit-code'.
+
+### mia-serial-bridge
+○ mia-serial-bridge.service - MIA Serial Bridge - ESP32/Arduino to ZeroMQ
+     Loaded: loaded (/etc/systemd/system/mia-serial-bridge.service; disabled; preset: disabled)
+     Active: inactive (dead)
+
+-- No entries --
+
+### mia-obd-worker
+○ mia-obd-worker.service - MIA OBD Worker - ELM327 Simulator Service
+     Loaded: loaded (/etc/systemd/system/mia-obd-worker.service; disabled; preset: disabled)
+     Active: inactive (dead)
+
+-- No entries --
+
+### mia-ble-advertiser
+○ mia-ble-advertiser.service - MIA BLE Advertiser Service - Makes RPi discoverable as OBD-II adapter
+     Loaded: loaded (/etc/systemd/system/mia-ble-advertiser.service; disabled; preset: disabled)
+     Active: inactive (dead)
+
+-- No entries --
+
+### mia-ble-obd
+○ mia-ble-obd.service - MIA BLE OBD Service - BLE GATT Server for OBD-II Communication
+     Loaded: loaded (/etc/systemd/system/mia-ble-obd.service; disabled; preset: disabled)
+     Active: inactive (dead)
+
+-- No entries --
+
+### ports
+LISTEN 0      2048         0.0.0.0:8000       0.0.0.0:*    users:(("python3",pid=82820,fd=24))   

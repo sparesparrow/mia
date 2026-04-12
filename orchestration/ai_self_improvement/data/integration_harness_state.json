@@ -1,0 +1,19 @@
+{
+  "cycle_number": 2,
+  "target_index": 3,
+  "current_metrics": {
+    "success_rate": 0.6538461538461539,
+    "coverage": 0.7884615384615384,
+    "quality_score": 59.38461538461539,
+    "efficiency": 0.63,
+    "error_rate": 0.07692307692307693
+  },
+  "completed_cycles": [
+    {
+      "cycle_number": 2,
+      "summary_path": "/home/sparrow/projects/mia/test-artifacts/integration/20260410_121806/reports/summary.json",
+      "overall_status": "fail",
+      "recorded_at": "2026-04-10T12:20:48.919219+00:00"
+    }
+  ]
+}

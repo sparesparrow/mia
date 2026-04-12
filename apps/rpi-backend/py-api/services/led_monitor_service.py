@@ -276,19 +276,22 @@ class LEDMonitorService:
         self._update_vehicle_state(data)
 
     def _handle_obd_telemetry(self, data: Dict[str, Any]):
-        """Handle OBD telemetry data"""
+        """Handle OBD telemetry data (accepts both legacy and normalized field names)"""
         updated = False
 
-        if 'rpm' in data and data['rpm'] != self.last_obd_data["rpm"]:
-            self.last_obd_data["rpm"] = int(data['rpm'])
+        rpm = data.get('engine_rpm') or data.get('rpm')
+        if rpm is not None and int(rpm) != self.last_obd_data["rpm"]:
+            self.last_obd_data["rpm"] = int(rpm)
             updated = True
 
-        if 'speed' in data and data['speed'] != self.last_obd_data["speed"]:
-            self.last_obd_data["speed"] = int(data['speed'])
+        speed = data.get('speed_kmh') or data.get('speed')
+        if speed is not None and int(speed) != self.last_obd_data["speed"]:
+            self.last_obd_data["speed"] = int(speed)
             updated = True
 
-        if 'coolant_temp' in data and data['coolant_temp'] != self.last_obd_data["temp"]:
-            self.last_obd_data["temp"] = int(data['coolant_temp'])
+        temp = data.get('coolant_temp_c') or data.get('coolant_temp')
+        if temp is not None and int(temp) != self.last_obd_data["temp"]:
+            self.last_obd_data["temp"] = int(temp)
             updated = True
 
         if 'load' in data and data['load'] != self.last_obd_data["load"]:

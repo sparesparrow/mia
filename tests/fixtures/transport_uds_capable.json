@@ -1,0 +1,104 @@
+[
+  {
+    "_description": "UDS-capable adapter with VIN read via DID F190",
+    "device_id": "obdlink_sx_0",
+    "speed_kmh": 0,
+    "engine_rpm": 780,
+    "coolant_temp_c": 85,
+    "fuel_level_percent": 72.0,
+    "battery_voltage": 12.4,
+    "vin": "WAUZZZ8V0FA012345",
+    "did_values": {
+      "F190": "WAUZZZ8V0FA012345"
+    },
+    "adapter_capabilities": {
+      "capability_class": "uds_read_only",
+      "capability_source": "verified",
+      "adapter_kind": "obdlink",
+      "transport": "usb_serial",
+      "device_path_or_address": "/dev/ttyUSB0",
+      "connection_state": "connected",
+      "active_protocol": "ISO 15765-4 CAN 11-bit 500k",
+      "supports_uds": true
+    }
+  },
+  {
+    "_description": "UDS adapter reports DTC codes via service 0x19",
+    "device_id": "obdlink_sx_0",
+    "speed_kmh": 0,
+    "engine_rpm": 0,
+    "coolant_temp_c": 22,
+    "battery_voltage": 12.5,
+    "dtc_codes": ["P0420", "U0100"],
+    "adapter_capabilities": {
+      "capability_class": "uds_read_only",
+      "capability_source": "verified",
+      "adapter_kind": "obdlink",
+      "transport": "usb_serial",
+      "connection_state": "connected",
+      "supports_uds": true
+    }
+  },
+  {
+    "_description": "UDS adapter reports VIN and additional DID values",
+    "device_id": "obdlink_mx_0",
+    "speed_kmh": 48,
+    "engine_rpm": 1650,
+    "coolant_temp_c": 91,
+    "fuel_level_percent": 44.0,
+    "battery_voltage": 14.2,
+    "vin": "WAUZZZ8V0FA098765",
+    "did_values": {
+      "F190": "WAUZZZ8V0FA098765",
+      "F19E": "MQB A3 8V",
+      "F187": "8V0906259A"
+    },
+    "adapter_capabilities": {
+      "capability_class": "uds_read_only",
+      "capability_source": "verified",
+      "adapter_kind": "obdlink",
+      "transport": "usb_serial",
+      "device_path_or_address": "/dev/obd2",
+      "connection_state": "connected",
+      "active_protocol": "ISO 15765-4 CAN 11-bit 500k",
+      "supports_uds": true
+    }
+  },
+  {
+    "_description": "BLE transport adapter with functional UDS",
+    "device_id": "obdlink_mx_ble_0",
+    "speed_kmh": 0,
+    "engine_rpm": 820,
+    "coolant_temp_c": 88,
+    "battery_voltage": 12.3,
+    "vin": "WAUZZZ8V7GA054321",
+    "did_values": {
+      "F190": "WAUZZZ8V7GA054321"
+    },
+    "adapter_capabilities": {
+      "capability_class": "uds_read_only",
+      "capability_source": "probed",
+      "adapter_kind": "obdlink",
+      "transport": "ble",
+      "device_path_or_address": "AA:BB:CC:DD:EE:FF",
+      "connection_state": "connected",
+      "active_protocol": "ISO 15765-4 CAN 11-bit 500k",
+      "supports_uds": true
+    }
+  },
+  {
+    "_description": "UDS negative response from gateway for a blocked DID",
+    "device_id": "obdlink_sx_0",
+    "adapter_capabilities": {
+      "capability_class": "uds_read_only",
+      "capability_source": "verified",
+      "adapter_kind": "obdlink",
+      "transport": "usb_serial",
+      "connection_state": "connected",
+      "last_nrc": "0x31",
+      "last_error": "requestOutOfRange for DID F1A0",
+      "last_uds_service": "22",
+      "last_uds_identifier": "F1A0"
+    }
+  }
+]

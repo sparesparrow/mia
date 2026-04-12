@@ -95,7 +95,7 @@ class GPIOWorker:
             "capabilities": ["GPIO_CONFIGURE", "GPIO_SET", "GPIO_GET", "GPIO_STATUS"],
             "timestamp": datetime.now().isoformat()
         }
-        self.socket.send_json(message)
+        self.socket.send_multipart([b"", json.dumps(message).encode()])
     
     def _message_loop(self):
         """Main message processing loop"""
@@ -107,7 +107,8 @@ class GPIOWorker:
                 socks = dict(poller.poll(1000))  # 1 second timeout
                 
                 if self.socket in socks and socks[self.socket] == zmq.POLLIN:
-                    message = self.socket.recv_json()
+                    parts = self.socket.recv_multipart()
+                    message = json.loads(parts[-1])
                     self._handle_message(message)
             except zmq.ZMQError as e:
                 if self.running:
@@ -174,7 +175,7 @@ class GPIOWorker:
                 "timestamp": datetime.now().isoformat(),
                 "request_id": request_id,
             }
-            self.socket.send_json(response)
+            self.socket.send_multipart([b"", json.dumps(response).encode()])
             logger.info(f"Configured GPIO pin {pin} as {direction}")
         except Exception as e:
             logger.error(f"Error configuring pin {pin}: {e}")
@@ -211,7 +212,7 @@ class GPIOWorker:
                 "timestamp": datetime.now().isoformat(),
                 "request_id": request_id,
             }
-            self.socket.send_json(response)
+            self.socket.send_multipart([b"", json.dumps(response).encode()])
             logger.info(f"Set GPIO pin {pin} to {value}")
         except Exception as e:
             logger.error(f"Error setting pin {pin}: {e}")
@@ -246,7 +247,7 @@ class GPIOWorker:
                 "timestamp": datetime.now().isoformat(),
                 "request_id": request_id,
             }
-            self.socket.send_json(response)
+            self.socket.send_multipart([b"", json.dumps(response).encode()])
         except Exception as e:
             logger.error(f"Error getting pin {pin}: {e}")
             self._send_error(f"Failed to get pin {pin}: {e}")
@@ -269,8 +270,8 @@ class GPIOWorker:
             "timestamp": datetime.now().isoformat(),
             "request_id": request_id,
         }
-        self.socket.send_json(response)
-    
+        self.socket.send_multipart([b"", json.dumps(response).encode()])
+
     def _send_error(self, error: str):
         """Send error response"""
         # Try to include request id if currently processing a request
@@ -281,7 +282,7 @@ class GPIOWorker:
             "timestamp": datetime.now().isoformat(),
             "request_id": request_id,
         }
-        self.socket.send_json(response)
+        self.socket.send_multipart([b"", json.dumps(response).encode()])
 
 
 def main():

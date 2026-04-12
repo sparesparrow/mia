@@ -1,0 +1,88 @@
+{
+  "run_id": "20260410_152133",
+  "host": "192.168.200.134",
+  "device": "HT36TW903516",
+  "phases": [
+    {
+      "phase": "preflight",
+      "steps": [
+        {
+          "name": "target_profile",
+          "verdict": "PASS",
+          "duration_s": 0.3798593640094623,
+          "detail": "os=Kali GNU/Linux Rolling, arch=x86_64, model=not-reported",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_network_profile",
+          "verdict": "PASS",
+          "duration_s": 0.38939074901281856,
+          "detail": "target_ip=192.168.200.134, remote_ips=['192.168.200.134', '172.18.0.1', '172.17.0.1'], subnet=192.168.200.0/24",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_usb_transport",
+          "verdict": "PASS",
+          "duration_s": 0.10832253700937144,
+          "detail": "serial=HT36TW903516, devpath=usb:2-1.3, usb_state=mtp,adb",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_root_verification",
+          "verdict": "SKIP",
+          "duration_s": 0.0,
+          "detail": "--allow-unrooted-phone requested",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "android_network_profile",
+          "verdict": "FAIL",
+          "duration_s": 0.04481120500713587,
+          "detail": "Diagnosed: Profile mismatch",
+          "error": "Android device is not on expected subnet 192.168.200.0/24; found ['none']",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-04-10T13:21:33.954236+00:00",
+      "finished": "2026-04-10T13:21:34.883124+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-04-10T13:21:34.883091+00:00",
+      "step": "android_network_profile",
+      "pattern": "Profile\\ mismatch",
+      "diagnosis": "Profile mismatch",
+      "remediation": "none",
+      "success": false,
+      "focus": "device-profile"
+    }
+  ],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 0.6,
+      "phase_success_rate": 0.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.2
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "device-profile",
+    "top_diagnoses": [
+      {
+        "diagnosis": "Profile mismatch",
+        "count": 2
+      }
+    ],
+    "focus_histogram": {
+      "device-profile": 2
+    },
+    "applied_remediations": [],
+    "knowledge_entries": 2
+  },
+  "total_duration_s": 0.928908635978587
+}

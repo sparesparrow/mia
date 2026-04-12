@@ -1,0 +1,23 @@
+[Unit]
+Description=MIA Audio Capture (microphone to ZMQ)
+After=network.target zmq-broker.service
+Wants=zmq-broker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/mia/apps/rpi-backend/py-api
+EnvironmentFile=-/etc/mia/environment
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" services/audio_capture.py'
+Restart=always
+RestartSec=5
+WatchdogSec=0
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+Environment=ZMQ_PUB_PORT=5558
+# SupplementaryGroups=audio for ALSA access
+SupplementaryGroups=audio
+
+[Install]
+WantedBy=multi-user.target

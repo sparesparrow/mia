@@ -8,9 +8,9 @@
 
 // Ensure the included flatbuffers.h is the same version as when this file was
 // generated, otherwise it may not be compatible.
-static_assert(FLATBUFFERS_VERSION_MAJOR == 24 &&
-              FLATBUFFERS_VERSION_MINOR == 3 &&
-              FLATBUFFERS_VERSION_REVISION == 25,
+static_assert(FLATBUFFERS_VERSION_MAJOR == 2 &&
+              FLATBUFFERS_VERSION_MINOR == 0 &&
+              FLATBUFFERS_VERSION_REVISION == 8,
              "Non-compatible flatbuffers version included");
 
 namespace Mia {
@@ -283,87 +283,87 @@ struct LockResponseBuilder;
 struct UnlockRequest;
 struct UnlockRequestBuilder;
 
-enum Request : uint8_t {
-  Request_NONE = 0,
-  Request_DownloadRequest = 1,
-  Request_DownloadStatusRequest = 2,
-  Request_DownloadAbortRequest = 3,
-  Request_ShutdownRequest = 4,
-  Request_GPIOConfigureRequest = 5,
-  Request_GPIOSetRequest = 6,
-  Request_GPIOGetRequest = 7,
-  Request_GPIOStatusRequest = 8,
-  Request_SystemStatusRequest = 9,
-  Request_DeviceDiscoveryRequest = 10,
-  Request_TelemetryRequest = 11,
-  Request_CommandAckRequest = 12,
-  Request_HealthCheckRequest = 13,
-  Request_VoiceCommandRequest = 14,
-  Request_AudioProcessRequest = 15,
-  Request_AudioStreamStart = 16,
-  Request_VideoStreamStart = 17,
-  Request_VideoStreamConfig = 18,
-  Request_AIAgentRequest = 19,
-  Request_AIContextUpdate = 20,
-  Request_AIMemoryQuery = 21,
-  Request_MCPToolCall = 22,
-  Request_HardwareConfig = 23,
-  Request_ServiceQuery = 24,
-  Request_AuthenticationRequest = 25,
-  Request_AuthorizationRequest = 26,
-  Request_PluginLoadRequest = 27,
-  Request_PluginUnloadRequest = 28,
-  Request_ConfigurationUpdate = 29,
-  Request_EventSubscription = 30,
-  Request_WorkflowStartRequest = 31,
-  Request_WorkflowControlRequest = 32,
-  Request_ModelLoadRequest = 33,
-  Request_InferenceRequest = 34,
-  Request_LockRequest = 35,
-  Request_UnlockRequest = 36,
-  Request_MIN = Request_NONE,
-  Request_MAX = Request_UnlockRequest
+enum class Request : uint8_t {
+  NONE = 0,
+  DownloadRequest = 1,
+  DownloadStatusRequest = 2,
+  DownloadAbortRequest = 3,
+  ShutdownRequest = 4,
+  GPIOConfigureRequest = 5,
+  GPIOSetRequest = 6,
+  GPIOGetRequest = 7,
+  GPIOStatusRequest = 8,
+  SystemStatusRequest = 9,
+  DeviceDiscoveryRequest = 10,
+  TelemetryRequest = 11,
+  CommandAckRequest = 12,
+  HealthCheckRequest = 13,
+  VoiceCommandRequest = 14,
+  AudioProcessRequest = 15,
+  AudioStreamStart = 16,
+  VideoStreamStart = 17,
+  VideoStreamConfig = 18,
+  AIAgentRequest = 19,
+  AIContextUpdate = 20,
+  AIMemoryQuery = 21,
+  MCPToolCall = 22,
+  HardwareConfig = 23,
+  ServiceQuery = 24,
+  AuthenticationRequest = 25,
+  AuthorizationRequest = 26,
+  PluginLoadRequest = 27,
+  PluginUnloadRequest = 28,
+  ConfigurationUpdate = 29,
+  EventSubscription = 30,
+  WorkflowStartRequest = 31,
+  WorkflowControlRequest = 32,
+  ModelLoadRequest = 33,
+  InferenceRequest = 34,
+  LockRequest = 35,
+  UnlockRequest = 36,
+  MIN = NONE,
+  MAX = UnlockRequest
 };
 
 inline const Request (&EnumValuesRequest())[37] {
   static const Request values[] = {
-    Request_NONE,
-    Request_DownloadRequest,
-    Request_DownloadStatusRequest,
-    Request_DownloadAbortRequest,
-    Request_ShutdownRequest,
-    Request_GPIOConfigureRequest,
-    Request_GPIOSetRequest,
-    Request_GPIOGetRequest,
-    Request_GPIOStatusRequest,
-    Request_SystemStatusRequest,
-    Request_DeviceDiscoveryRequest,
-    Request_TelemetryRequest,
-    Request_CommandAckRequest,
-    Request_HealthCheckRequest,
-    Request_VoiceCommandRequest,
-    Request_AudioProcessRequest,
-    Request_AudioStreamStart,
-    Request_VideoStreamStart,
-    Request_VideoStreamConfig,
-    Request_AIAgentRequest,
-    Request_AIContextUpdate,
-    Request_AIMemoryQuery,
-    Request_MCPToolCall,
-    Request_HardwareConfig,
-    Request_ServiceQuery,
-    Request_AuthenticationRequest,
-    Request_AuthorizationRequest,
-    Request_PluginLoadRequest,
-    Request_PluginUnloadRequest,
-    Request_ConfigurationUpdate,
-    Request_EventSubscription,
-    Request_WorkflowStartRequest,
-    Request_WorkflowControlRequest,
-    Request_ModelLoadRequest,
-    Request_InferenceRequest,
-    Request_LockRequest,
-    Request_UnlockRequest
+    Request::NONE,
+    Request::DownloadRequest,
+    Request::DownloadStatusRequest,
+    Request::DownloadAbortRequest,
+    Request::ShutdownRequest,
+    Request::GPIOConfigureRequest,
+    Request::GPIOSetRequest,
+    Request::GPIOGetRequest,
+    Request::GPIOStatusRequest,
+    Request::SystemStatusRequest,
+    Request::DeviceDiscoveryRequest,
+    Request::TelemetryRequest,
+    Request::CommandAckRequest,
+    Request::HealthCheckRequest,
+    Request::VoiceCommandRequest,
+    Request::AudioProcessRequest,
+    Request::AudioStreamStart,
+    Request::VideoStreamStart,
+    Request::VideoStreamConfig,
+    Request::AIAgentRequest,
+    Request::AIContextUpdate,
+    Request::AIMemoryQuery,
+    Request::MCPToolCall,
+    Request::HardwareConfig,
+    Request::ServiceQuery,
+    Request::AuthenticationRequest,
+    Request::AuthorizationRequest,
+    Request::PluginLoadRequest,
+    Request::PluginUnloadRequest,
+    Request::ConfigurationUpdate,
+    Request::EventSubscription,
+    Request::WorkflowStartRequest,
+    Request::WorkflowControlRequest,
+    Request::ModelLoadRequest,
+    Request::InferenceRequest,
+    Request::LockRequest,
+    Request::UnlockRequest
   };
   return values;
 }
@@ -413,237 +413,237 @@ inline const char * const *EnumNamesRequest() {
 }
 
 inline const char *EnumNameRequest(Request e) {
-  if (::flatbuffers::IsOutRange(e, Request_NONE, Request_UnlockRequest)) return "";
+  if (flatbuffers::IsOutRange(e, Request::NONE, Request::UnlockRequest)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesRequest()[index];
 }
 
 template<typename T> struct RequestTraits {
-  static const Request enum_value = Request_NONE;
+  static const Request enum_value = Request::NONE;
 };
 
 template<> struct RequestTraits<Mia::Protocol::DownloadRequest> {
-  static const Request enum_value = Request_DownloadRequest;
+  static const Request enum_value = Request::DownloadRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::DownloadStatusRequest> {
-  static const Request enum_value = Request_DownloadStatusRequest;
+  static const Request enum_value = Request::DownloadStatusRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::DownloadAbortRequest> {
-  static const Request enum_value = Request_DownloadAbortRequest;
+  static const Request enum_value = Request::DownloadAbortRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::ShutdownRequest> {
-  static const Request enum_value = Request_ShutdownRequest;
+  static const Request enum_value = Request::ShutdownRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::GPIOConfigureRequest> {
-  static const Request enum_value = Request_GPIOConfigureRequest;
+  static const Request enum_value = Request::GPIOConfigureRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::GPIOSetRequest> {
-  static const Request enum_value = Request_GPIOSetRequest;
+  static const Request enum_value = Request::GPIOSetRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::GPIOGetRequest> {
-  static const Request enum_value = Request_GPIOGetRequest;
+  static const Request enum_value = Request::GPIOGetRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::GPIOStatusRequest> {
-  static const Request enum_value = Request_GPIOStatusRequest;
+  static const Request enum_value = Request::GPIOStatusRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::SystemStatusRequest> {
-  static const Request enum_value = Request_SystemStatusRequest;
+  static const Request enum_value = Request::SystemStatusRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::DeviceDiscoveryRequest> {
-  static const Request enum_value = Request_DeviceDiscoveryRequest;
+  static const Request enum_value = Request::DeviceDiscoveryRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::TelemetryRequest> {
-  static const Request enum_value = Request_TelemetryRequest;
+  static const Request enum_value = Request::TelemetryRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::CommandAckRequest> {
-  static const Request enum_value = Request_CommandAckRequest;
+  static const Request enum_value = Request::CommandAckRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::HealthCheckRequest> {
-  static const Request enum_value = Request_HealthCheckRequest;
+  static const Request enum_value = Request::HealthCheckRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::VoiceCommandRequest> {
-  static const Request enum_value = Request_VoiceCommandRequest;
+  static const Request enum_value = Request::VoiceCommandRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AudioProcessRequest> {
-  static const Request enum_value = Request_AudioProcessRequest;
+  static const Request enum_value = Request::AudioProcessRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AudioStreamStart> {
-  static const Request enum_value = Request_AudioStreamStart;
+  static const Request enum_value = Request::AudioStreamStart;
 };
 
 template<> struct RequestTraits<Mia::Protocol::VideoStreamStart> {
-  static const Request enum_value = Request_VideoStreamStart;
+  static const Request enum_value = Request::VideoStreamStart;
 };
 
 template<> struct RequestTraits<Mia::Protocol::VideoStreamConfig> {
-  static const Request enum_value = Request_VideoStreamConfig;
+  static const Request enum_value = Request::VideoStreamConfig;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AIAgentRequest> {
-  static const Request enum_value = Request_AIAgentRequest;
+  static const Request enum_value = Request::AIAgentRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AIContextUpdate> {
-  static const Request enum_value = Request_AIContextUpdate;
+  static const Request enum_value = Request::AIContextUpdate;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AIMemoryQuery> {
-  static const Request enum_value = Request_AIMemoryQuery;
+  static const Request enum_value = Request::AIMemoryQuery;
 };
 
 template<> struct RequestTraits<Mia::Protocol::MCPToolCall> {
-  static const Request enum_value = Request_MCPToolCall;
+  static const Request enum_value = Request::MCPToolCall;
 };
 
 template<> struct RequestTraits<Mia::Protocol::HardwareConfig> {
-  static const Request enum_value = Request_HardwareConfig;
+  static const Request enum_value = Request::HardwareConfig;
 };
 
 template<> struct RequestTraits<Mia::Protocol::ServiceQuery> {
-  static const Request enum_value = Request_ServiceQuery;
+  static const Request enum_value = Request::ServiceQuery;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AuthenticationRequest> {
-  static const Request enum_value = Request_AuthenticationRequest;
+  static const Request enum_value = Request::AuthenticationRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::AuthorizationRequest> {
-  static const Request enum_value = Request_AuthorizationRequest;
+  static const Request enum_value = Request::AuthorizationRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::PluginLoadRequest> {
-  static const Request enum_value = Request_PluginLoadRequest;
+  static const Request enum_value = Request::PluginLoadRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::PluginUnloadRequest> {
-  static const Request enum_value = Request_PluginUnloadRequest;
+  static const Request enum_value = Request::PluginUnloadRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::ConfigurationUpdate> {
-  static const Request enum_value = Request_ConfigurationUpdate;
+  static const Request enum_value = Request::ConfigurationUpdate;
 };
 
 template<> struct RequestTraits<Mia::Protocol::EventSubscription> {
-  static const Request enum_value = Request_EventSubscription;
+  static const Request enum_value = Request::EventSubscription;
 };
 
 template<> struct RequestTraits<Mia::Protocol::WorkflowStartRequest> {
-  static const Request enum_value = Request_WorkflowStartRequest;
+  static const Request enum_value = Request::WorkflowStartRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::WorkflowControlRequest> {
-  static const Request enum_value = Request_WorkflowControlRequest;
+  static const Request enum_value = Request::WorkflowControlRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::ModelLoadRequest> {
-  static const Request enum_value = Request_ModelLoadRequest;
+  static const Request enum_value = Request::ModelLoadRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::InferenceRequest> {
-  static const Request enum_value = Request_InferenceRequest;
+  static const Request enum_value = Request::InferenceRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::LockRequest> {
-  static const Request enum_value = Request_LockRequest;
+  static const Request enum_value = Request::LockRequest;
 };
 
 template<> struct RequestTraits<Mia::Protocol::UnlockRequest> {
-  static const Request enum_value = Request_UnlockRequest;
+  static const Request enum_value = Request::UnlockRequest;
 };
 
-bool VerifyRequest(::flatbuffers::Verifier &verifier, const void *obj, Request type);
-bool VerifyRequestVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
+bool VerifyRequest(flatbuffers::Verifier &verifier, const void *obj, Request type);
+bool VerifyRequestVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<Request> *types);
 
-enum Response : uint8_t {
-  Response_NONE = 0,
-  Response_DownloadResponse = 1,
-  Response_DownloadStatusResponse = 2,
-  Response_ErrorResponse = 3,
-  Response_GPIOConfigureResponse = 4,
-  Response_GPIOSetResponse = 5,
-  Response_GPIOGetResponse = 6,
-  Response_GPIOStatusResponse = 7,
-  Response_SystemStatusResponse = 8,
-  Response_DeviceDiscoveryResponse = 9,
-  Response_TelemetryResponse = 10,
-  Response_CommandAckResponse = 11,
-  Response_HealthCheckResponse = 12,
-  Response_VoiceCommandResponse = 13,
-  Response_AudioProcessResponse = 14,
-  Response_AudioStreamStop = 15,
-  Response_VideoStreamStop = 16,
-  Response_VideoStreamStatus = 17,
-  Response_AIAgentResponse = 18,
-  Response_AIMemoryResult = 19,
-  Response_MCPToolResult = 20,
-  Response_HardwareEvent = 21,
-  Response_ServiceList = 22,
-  Response_AuthenticationResponse = 23,
-  Response_AuthorizationResponse = 24,
-  Response_PluginLoadResponse = 25,
-  Response_ConfigurationSnapshot = 26,
-  Response_MetricReport = 27,
-  Response_HealthReport = 28,
-  Response_EventAcknowledgment = 29,
-  Response_WorkflowStatusResponse = 30,
-  Response_ModelLoadResponse = 31,
-  Response_InferenceResponse = 32,
-  Response_LockResponse = 33,
-  Response_MIN = Response_NONE,
-  Response_MAX = Response_LockResponse
+enum class Response : uint8_t {
+  NONE = 0,
+  DownloadResponse = 1,
+  DownloadStatusResponse = 2,
+  ErrorResponse = 3,
+  GPIOConfigureResponse = 4,
+  GPIOSetResponse = 5,
+  GPIOGetResponse = 6,
+  GPIOStatusResponse = 7,
+  SystemStatusResponse = 8,
+  DeviceDiscoveryResponse = 9,
+  TelemetryResponse = 10,
+  CommandAckResponse = 11,
+  HealthCheckResponse = 12,
+  VoiceCommandResponse = 13,
+  AudioProcessResponse = 14,
+  AudioStreamStop = 15,
+  VideoStreamStop = 16,
+  VideoStreamStatus = 17,
+  AIAgentResponse = 18,
+  AIMemoryResult = 19,
+  MCPToolResult = 20,
+  HardwareEvent = 21,
+  ServiceList = 22,
+  AuthenticationResponse = 23,
+  AuthorizationResponse = 24,
+  PluginLoadResponse = 25,
+  ConfigurationSnapshot = 26,
+  MetricReport = 27,
+  HealthReport = 28,
+  EventAcknowledgment = 29,
+  WorkflowStatusResponse = 30,
+  ModelLoadResponse = 31,
+  InferenceResponse = 32,
+  LockResponse = 33,
+  MIN = NONE,
+  MAX = LockResponse
 };
 
 inline const Response (&EnumValuesResponse())[34] {
   static const Response values[] = {
-    Response_NONE,
-    Response_DownloadResponse,
-    Response_DownloadStatusResponse,
-    Response_ErrorResponse,
-    Response_GPIOConfigureResponse,
-    Response_GPIOSetResponse,
-    Response_GPIOGetResponse,
-    Response_GPIOStatusResponse,
-    Response_SystemStatusResponse,
-    Response_DeviceDiscoveryResponse,
-    Response_TelemetryResponse,
-    Response_CommandAckResponse,
-    Response_HealthCheckResponse,
-    Response_VoiceCommandResponse,
-    Response_AudioProcessResponse,
-    Response_AudioStreamStop,
-    Response_VideoStreamStop,
-    Response_VideoStreamStatus,
-    Response_AIAgentResponse,
-    Response_AIMemoryResult,
-    Response_MCPToolResult,
-    Response_HardwareEvent,
-    Response_ServiceList,
-    Response_AuthenticationResponse,
-    Response_AuthorizationResponse,
-    Response_PluginLoadResponse,
-    Response_ConfigurationSnapshot,
-    Response_MetricReport,
-    Response_HealthReport,
-    Response_EventAcknowledgment,
-    Response_WorkflowStatusResponse,
-    Response_ModelLoadResponse,
-    Response_InferenceResponse,
-    Response_LockResponse
+    Response::NONE,
+    Response::DownloadResponse,
+    Response::DownloadStatusResponse,
+    Response::ErrorResponse,
+    Response::GPIOConfigureResponse,
+    Response::GPIOSetResponse,
+    Response::GPIOGetResponse,
+    Response::GPIOStatusResponse,
+    Response::SystemStatusResponse,
+    Response::DeviceDiscoveryResponse,
+    Response::TelemetryResponse,
+    Response::CommandAckResponse,
+    Response::HealthCheckResponse,
+    Response::VoiceCommandResponse,
+    Response::AudioProcessResponse,
+    Response::AudioStreamStop,
+    Response::VideoStreamStop,
+    Response::VideoStreamStatus,
+    Response::AIAgentResponse,
+    Response::AIMemoryResult,
+    Response::MCPToolResult,
+    Response::HardwareEvent,
+    Response::ServiceList,
+    Response::AuthenticationResponse,
+    Response::AuthorizationResponse,
+    Response::PluginLoadResponse,
+    Response::ConfigurationSnapshot,
+    Response::MetricReport,
+    Response::HealthReport,
+    Response::EventAcknowledgment,
+    Response::WorkflowStatusResponse,
+    Response::ModelLoadResponse,
+    Response::InferenceResponse,
+    Response::LockResponse
   };
   return values;
 }
@@ -690,159 +690,162 @@ inline const char * const *EnumNamesResponse() {
 }
 
 inline const char *EnumNameResponse(Response e) {
-  if (::flatbuffers::IsOutRange(e, Response_NONE, Response_LockResponse)) return "";
+  if (flatbuffers::IsOutRange(e, Response::NONE, Response::LockResponse)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesResponse()[index];
 }
 
 template<typename T> struct ResponseTraits {
-  static const Response enum_value = Response_NONE;
+  static const Response enum_value = Response::NONE;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::DownloadResponse> {
-  static const Response enum_value = Response_DownloadResponse;
+  static const Response enum_value = Response::DownloadResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::DownloadStatusResponse> {
-  static const Response enum_value = Response_DownloadStatusResponse;
+  static const Response enum_value = Response::DownloadStatusResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::ErrorResponse> {
-  static const Response enum_value = Response_ErrorResponse;
+  static const Response enum_value = Response::ErrorResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::GPIOConfigureResponse> {
-  static const Response enum_value = Response_GPIOConfigureResponse;
+  static const Response enum_value = Response::GPIOConfigureResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::GPIOSetResponse> {
-  static const Response enum_value = Response_GPIOSetResponse;
+  static const Response enum_value = Response::GPIOSetResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::GPIOGetResponse> {
-  static const Response enum_value = Response_GPIOGetResponse;
+  static const Response enum_value = Response::GPIOGetResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::GPIOStatusResponse> {
-  static const Response enum_value = Response_GPIOStatusResponse;
+  static const Response enum_value = Response::GPIOStatusResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::SystemStatusResponse> {
-  static const Response enum_value = Response_SystemStatusResponse;
+  static const Response enum_value = Response::SystemStatusResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::DeviceDiscoveryResponse> {
-  static const Response enum_value = Response_DeviceDiscoveryResponse;
+  static const Response enum_value = Response::DeviceDiscoveryResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::TelemetryResponse> {
-  static const Response enum_value = Response_TelemetryResponse;
+  static const Response enum_value = Response::TelemetryResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::CommandAckResponse> {
-  static const Response enum_value = Response_CommandAckResponse;
+  static const Response enum_value = Response::CommandAckResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::HealthCheckResponse> {
-  static const Response enum_value = Response_HealthCheckResponse;
+  static const Response enum_value = Response::HealthCheckResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::VoiceCommandResponse> {
-  static const Response enum_value = Response_VoiceCommandResponse;
+  static const Response enum_value = Response::VoiceCommandResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AudioProcessResponse> {
-  static const Response enum_value = Response_AudioProcessResponse;
+  static const Response enum_value = Response::AudioProcessResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AudioStreamStop> {
-  static const Response enum_value = Response_AudioStreamStop;
+  static const Response enum_value = Response::AudioStreamStop;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::VideoStreamStop> {
-  static const Response enum_value = Response_VideoStreamStop;
+  static const Response enum_value = Response::VideoStreamStop;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::VideoStreamStatus> {
-  static const Response enum_value = Response_VideoStreamStatus;
+  static const Response enum_value = Response::VideoStreamStatus;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AIAgentResponse> {
-  static const Response enum_value = Response_AIAgentResponse;
+  static const Response enum_value = Response::AIAgentResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AIMemoryResult> {
-  static const Response enum_value = Response_AIMemoryResult;
+  static const Response enum_value = Response::AIMemoryResult;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::MCPToolResult> {
-  static const Response enum_value = Response_MCPToolResult;
+  static const Response enum_value = Response::MCPToolResult;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::HardwareEvent> {
-  static const Response enum_value = Response_HardwareEvent;
+  static const Response enum_value = Response::HardwareEvent;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::ServiceList> {
-  static const Response enum_value = Response_ServiceList;
+  static const Response enum_value = Response::ServiceList;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AuthenticationResponse> {
-  static const Response enum_value = Response_AuthenticationResponse;
+  static const Response enum_value = Response::AuthenticationResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::AuthorizationResponse> {
-  static const Response enum_value = Response_AuthorizationResponse;
+  static const Response enum_value = Response::AuthorizationResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::PluginLoadResponse> {
-  static const Response enum_value = Response_PluginLoadResponse;
+  static const Response enum_value = Response::PluginLoadResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::ConfigurationSnapshot> {
-  static const Response enum_value = Response_ConfigurationSnapshot;
+  static const Response enum_value = Response::ConfigurationSnapshot;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::MetricReport> {
-  static const Response enum_value = Response_MetricReport;
+  static const Response enum_value = Response::MetricReport;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::HealthReport> {
-  static const Response enum_value = Response_HealthReport;
+  static const Response enum_value = Response::HealthReport;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::EventAcknowledgment> {
-  static const Response enum_value = Response_EventAcknowledgment;
+  static const Response enum_value = Response::EventAcknowledgment;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::WorkflowStatusResponse> {
-  static const Response enum_value = Response_WorkflowStatusResponse;
+  static const Response enum_value = Response::WorkflowStatusResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::ModelLoadResponse> {
-  static const Response enum_value = Response_ModelLoadResponse;
+  static const Response enum_value = Response::ModelLoadResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::InferenceResponse> {
-  static const Response enum_value = Response_InferenceResponse;
+  static const Response enum_value = Response::InferenceResponse;
 };
 
 template<> struct ResponseTraits<Mia::Protocol::LockResponse> {
-  static const Response enum_value = Response_LockResponse;
+  static const Response enum_value = Response::LockResponse;
 };
 
-bool VerifyResponse(::flatbuffers::Verifier &verifier, const void *obj, Response type);
-bool VerifyResponseVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types);
+bool VerifyResponse(flatbuffers::Verifier &verifier, const void *obj, Response type);
+bool VerifyResponseVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<Response> *types);
 
-struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DownloadRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_URL = 4
   };
-  const ::flatbuffers::String *url() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_URL);
+  const flatbuffers::String *url() const {
+    return GetPointer<const flatbuffers::String *>(VT_URL);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_url() {
+    return GetPointer<flatbuffers::String *>(VT_URL);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_URL) &&
            verifier.VerifyString(url()) &&
@@ -852,32 +855,32 @@ struct DownloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct DownloadRequestBuilder {
   typedef DownloadRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_url(::flatbuffers::Offset<::flatbuffers::String> url) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_url(flatbuffers::Offset<flatbuffers::String> url) {
     fbb_.AddOffset(DownloadRequest::VT_URL, url);
   }
-  explicit DownloadRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DownloadRequest> Finish() {
+  flatbuffers::Offset<DownloadRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DownloadRequest>(end);
+    auto o = flatbuffers::Offset<DownloadRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DownloadRequest> CreateDownloadRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> url = 0) {
+inline flatbuffers::Offset<DownloadRequest> CreateDownloadRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> url = 0) {
   DownloadRequestBuilder builder_(_fbb);
   builder_.add_url(url);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *url = nullptr) {
   auto url__ = url ? _fbb.CreateString(url) : 0;
   return Mia::Protocol::CreateDownloadRequest(
@@ -885,7 +888,7 @@ inline ::flatbuffers::Offset<DownloadRequest> CreateDownloadRequestDirect(
       url__);
 }
 
-struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DownloadResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4
@@ -893,7 +896,10 @@ struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint32_t session_id() const {
     return GetField<uint32_t>(VT_SESSION_ID, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_session_id(uint32_t _session_id = 0) {
+    return SetField<uint32_t>(VT_SESSION_ID, _session_id, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSION_ID, 4) &&
            verifier.EndTable();
@@ -902,31 +908,31 @@ struct DownloadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct DownloadResponseBuilder {
   typedef DownloadResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_session_id(uint32_t session_id) {
     fbb_.AddElement<uint32_t>(DownloadResponse::VT_SESSION_ID, session_id, 0);
   }
-  explicit DownloadResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DownloadResponse> Finish() {
+  flatbuffers::Offset<DownloadResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DownloadResponse>(end);
+    auto o = flatbuffers::Offset<DownloadResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DownloadResponse> CreateDownloadResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DownloadResponse> CreateDownloadResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t session_id = 0) {
   DownloadResponseBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   return builder_.Finish();
 }
 
-struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DownloadStatusRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4
@@ -934,7 +940,10 @@ struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
   uint32_t session_id() const {
     return GetField<uint32_t>(VT_SESSION_ID, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_session_id(uint32_t _session_id = 0) {
+    return SetField<uint32_t>(VT_SESSION_ID, _session_id, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSION_ID, 4) &&
            verifier.EndTable();
@@ -943,39 +952,42 @@ struct DownloadStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
 
 struct DownloadStatusRequestBuilder {
   typedef DownloadStatusRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_session_id(uint32_t session_id) {
     fbb_.AddElement<uint32_t>(DownloadStatusRequest::VT_SESSION_ID, session_id, 0);
   }
-  explicit DownloadStatusRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadStatusRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DownloadStatusRequest> Finish() {
+  flatbuffers::Offset<DownloadStatusRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DownloadStatusRequest>(end);
+    auto o = flatbuffers::Offset<DownloadStatusRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DownloadStatusRequest> CreateDownloadStatusRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DownloadStatusRequest> CreateDownloadStatusRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t session_id = 0) {
   DownloadStatusRequestBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   return builder_.Finish();
 }
 
-struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DownloadStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_STATUS = 4
   };
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_STATUS) &&
            verifier.VerifyString(status()) &&
@@ -985,32 +997,32 @@ struct DownloadStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
 
 struct DownloadStatusResponseBuilder {
   typedef DownloadStatusResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(DownloadStatusResponse::VT_STATUS, status);
   }
-  explicit DownloadStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DownloadStatusResponse> Finish() {
+  flatbuffers::Offset<DownloadStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DownloadStatusResponse>(end);
+    auto o = flatbuffers::Offset<DownloadStatusResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0) {
+inline flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> status = 0) {
   DownloadStatusResponseBuilder builder_(_fbb);
   builder_.add_status(status);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *status = nullptr) {
   auto status__ = status ? _fbb.CreateString(status) : 0;
   return Mia::Protocol::CreateDownloadStatusResponse(
@@ -1018,7 +1030,7 @@ inline ::flatbuffers::Offset<DownloadStatusResponse> CreateDownloadStatusRespons
       status__);
 }
 
-struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DownloadAbortRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4
@@ -1026,7 +1038,10 @@ struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
   uint32_t session_id() const {
     return GetField<uint32_t>(VT_SESSION_ID, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_session_id(uint32_t _session_id = 0) {
+    return SetField<uint32_t>(VT_SESSION_ID, _session_id, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint32_t>(verifier, VT_SESSION_ID, 4) &&
            verifier.EndTable();
@@ -1035,33 +1050,33 @@ struct DownloadAbortRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct DownloadAbortRequestBuilder {
   typedef DownloadAbortRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_session_id(uint32_t session_id) {
     fbb_.AddElement<uint32_t>(DownloadAbortRequest::VT_SESSION_ID, session_id, 0);
   }
-  explicit DownloadAbortRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DownloadAbortRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DownloadAbortRequest> Finish() {
+  flatbuffers::Offset<DownloadAbortRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DownloadAbortRequest>(end);
+    auto o = flatbuffers::Offset<DownloadAbortRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DownloadAbortRequest> CreateDownloadAbortRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DownloadAbortRequest> CreateDownloadAbortRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
     uint32_t session_id = 0) {
   DownloadAbortRequestBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   return builder_.Finish();
 }
 
-struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ShutdownRequestBuilder Builder;
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
   }
@@ -1069,26 +1084,26 @@ struct ShutdownRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ShutdownRequestBuilder {
   typedef ShutdownRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  explicit ShutdownRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit ShutdownRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ShutdownRequest> Finish() {
+  flatbuffers::Offset<ShutdownRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ShutdownRequest>(end);
+    auto o = flatbuffers::Offset<ShutdownRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ShutdownRequest> CreateShutdownRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+inline flatbuffers::Offset<ShutdownRequest> CreateShutdownRequest(
+    flatbuffers::FlatBufferBuilder &_fbb) {
   ShutdownRequestBuilder builder_(_fbb);
   return builder_.Finish();
 }
 
-struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOConfigureRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1097,10 +1112,16 @@ struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  const ::flatbuffers::String *direction() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *direction() const {
+    return GetPointer<const flatbuffers::String *>(VT_DIRECTION);
+  }
+  flatbuffers::String *mutable_direction() {
+    return GetPointer<flatbuffers::String *>(VT_DIRECTION);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyOffset(verifier, VT_DIRECTION) &&
@@ -1111,37 +1132,37 @@ struct GPIOConfigureRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct GPIOConfigureRequestBuilder {
   typedef GPIOConfigureRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOConfigureRequest::VT_PIN, pin, 0);
   }
-  void add_direction(::flatbuffers::Offset<::flatbuffers::String> direction) {
+  void add_direction(flatbuffers::Offset<flatbuffers::String> direction) {
     fbb_.AddOffset(GPIOConfigureRequest::VT_DIRECTION, direction);
   }
-  explicit GPIOConfigureRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOConfigureRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOConfigureRequest> Finish() {
+  flatbuffers::Offset<GPIOConfigureRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOConfigureRequest>(end);
+    auto o = flatbuffers::Offset<GPIOConfigureRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> direction = 0) {
+    flatbuffers::Offset<flatbuffers::String> direction = 0) {
   GPIOConfigureRequestBuilder builder_(_fbb);
   builder_.add_direction(direction);
   builder_.add_pin(pin);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     const char *direction = nullptr) {
   auto direction__ = direction ? _fbb.CreateString(direction) : 0;
@@ -1151,7 +1172,7 @@ inline ::flatbuffers::Offset<GPIOConfigureRequest> CreateGPIOConfigureRequestDir
       direction__);
 }
 
-struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOSetRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1160,10 +1181,16 @@ struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_value(bool _value = 0) {
+    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_VALUE, 1) &&
@@ -1173,27 +1200,27 @@ struct GPIOSetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct GPIOSetRequestBuilder {
   typedef GPIOSetRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOSetRequest::VT_PIN, pin, 0);
   }
   void add_value(bool value) {
     fbb_.AddElement<uint8_t>(GPIOSetRequest::VT_VALUE, static_cast<uint8_t>(value), 0);
   }
-  explicit GPIOSetRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOSetRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOSetRequest> Finish() {
+  flatbuffers::Offset<GPIOSetRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOSetRequest>(end);
+    auto o = flatbuffers::Offset<GPIOSetRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool value = false) {
   GPIOSetRequestBuilder builder_(_fbb);
@@ -1202,7 +1229,7 @@ inline ::flatbuffers::Offset<GPIOSetRequest> CreateGPIOSetRequest(
   return builder_.Finish();
 }
 
-struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOGetRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4
@@ -1210,7 +1237,10 @@ struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            verifier.EndTable();
@@ -1219,33 +1249,33 @@ struct GPIOGetRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct GPIOGetRequestBuilder {
   typedef GPIOGetRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOGetRequest::VT_PIN, pin, 0);
   }
-  explicit GPIOGetRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOGetRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOGetRequest> Finish() {
+  flatbuffers::Offset<GPIOGetRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOGetRequest>(end);
+    auto o = flatbuffers::Offset<GPIOGetRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOGetRequest> CreateGPIOGetRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOGetRequest> CreateGPIOGetRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0) {
   GPIOGetRequestBuilder builder_(_fbb);
   builder_.add_pin(pin);
   return builder_.Finish();
 }
 
-struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOStatusRequestBuilder Builder;
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
   }
@@ -1253,26 +1283,26 @@ struct GPIOStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct GPIOStatusRequestBuilder {
   typedef GPIOStatusRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  explicit GPIOStatusRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit GPIOStatusRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOStatusRequest> Finish() {
+  flatbuffers::Offset<GPIOStatusRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOStatusRequest>(end);
+    auto o = flatbuffers::Offset<GPIOStatusRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOStatusRequest> CreateGPIOStatusRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+inline flatbuffers::Offset<GPIOStatusRequest> CreateGPIOStatusRequest(
+    flatbuffers::FlatBufferBuilder &_fbb) {
   GPIOStatusRequestBuilder builder_(_fbb);
   return builder_.Finish();
 }
 
-struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOConfigureResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1281,10 +1311,16 @@ struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS, 1) &&
@@ -1294,27 +1330,27 @@ struct GPIOConfigureResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
 
 struct GPIOConfigureResponseBuilder {
   typedef GPIOConfigureResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOConfigureResponse::VT_PIN, pin, 0);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOConfigureResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOConfigureResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOConfigureResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOConfigureResponse> Finish() {
+  flatbuffers::Offset<GPIOConfigureResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOConfigureResponse>(end);
+    auto o = flatbuffers::Offset<GPIOConfigureResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool success = false) {
   GPIOConfigureResponseBuilder builder_(_fbb);
@@ -1323,7 +1359,7 @@ inline ::flatbuffers::Offset<GPIOConfigureResponse> CreateGPIOConfigureResponse(
   return builder_.Finish();
 }
 
-struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOSetResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1332,10 +1368,16 @@ struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS, 1) &&
@@ -1345,27 +1387,27 @@ struct GPIOSetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct GPIOSetResponseBuilder {
   typedef GPIOSetResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOSetResponse::VT_PIN, pin, 0);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOSetResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOSetResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOSetResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOSetResponse> Finish() {
+  flatbuffers::Offset<GPIOSetResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOSetResponse>(end);
+    auto o = flatbuffers::Offset<GPIOSetResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool success = false) {
   GPIOSetResponseBuilder builder_(_fbb);
@@ -1374,7 +1416,7 @@ inline ::flatbuffers::Offset<GPIOSetResponse> CreateGPIOSetResponse(
   return builder_.Finish();
 }
 
-struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOGetResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1384,13 +1426,22 @@ struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
+  }
+  bool mutate_value(bool _value = 0) {
+    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyField<uint8_t>(verifier, VT_VALUE, 1) &&
@@ -1401,8 +1452,8 @@ struct GPIOGetResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct GPIOGetResponseBuilder {
   typedef GPIOGetResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOGetResponse::VT_PIN, pin, 0);
   }
@@ -1412,19 +1463,19 @@ struct GPIOGetResponseBuilder {
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(GPIOGetResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit GPIOGetResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOGetResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOGetResponse> Finish() {
+  flatbuffers::Offset<GPIOGetResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOGetResponse>(end);
+    auto o = flatbuffers::Offset<GPIOGetResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     bool value = false,
     bool success = false) {
@@ -1435,15 +1486,18 @@ inline ::flatbuffers::Offset<GPIOGetResponse> CreateGPIOGetResponse(
   return builder_.Finish();
 }
 
-struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PINS = 4
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *pins() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *>(VT_PINS);
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *pins() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *>(VT_PINS);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *mutable_pins() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *>(VT_PINS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PINS) &&
            verifier.VerifyVector(pins()) &&
@@ -1454,40 +1508,40 @@ struct GPIOStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 
 struct GPIOStatusResponseBuilder {
   typedef GPIOStatusResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_pins(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>> pins) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_pins(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>> pins) {
     fbb_.AddOffset(GPIOStatusResponse::VT_PINS, pins);
   }
-  explicit GPIOStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOStatusResponse> Finish() {
+  flatbuffers::Offset<GPIOStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOStatusResponse>(end);
+    auto o = flatbuffers::Offset<GPIOStatusResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>> pins = 0) {
+inline flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>> pins = 0) {
   GPIOStatusResponseBuilder builder_(_fbb);
   builder_.add_pins(pins);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *pins = nullptr) {
-  auto pins__ = pins ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>(*pins) : 0;
+inline flatbuffers::Offset<GPIOStatusResponse> CreateGPIOStatusResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>> *pins = nullptr) {
+  auto pins__ = pins ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::GPIOPinStatus>>(*pins) : 0;
   return Mia::Protocol::CreateGPIOStatusResponse(
       _fbb,
       pins__);
 }
 
-struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GPIOPinStatusBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PIN = 4,
@@ -1497,13 +1551,22 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   int32_t pin() const {
     return GetField<int32_t>(VT_PIN, 0);
   }
-  const ::flatbuffers::String *direction() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DIRECTION);
+  bool mutate_pin(int32_t _pin = 0) {
+    return SetField<int32_t>(VT_PIN, _pin, 0);
+  }
+  const flatbuffers::String *direction() const {
+    return GetPointer<const flatbuffers::String *>(VT_DIRECTION);
+  }
+  flatbuffers::String *mutable_direction() {
+    return GetPointer<flatbuffers::String *>(VT_DIRECTION);
   }
   bool value() const {
     return GetField<uint8_t>(VT_VALUE, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_value(bool _value = 0) {
+    return SetField<uint8_t>(VT_VALUE, static_cast<uint8_t>(_value), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_PIN, 4) &&
            VerifyOffset(verifier, VT_DIRECTION) &&
@@ -1515,32 +1578,32 @@ struct GPIOPinStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct GPIOPinStatusBuilder {
   typedef GPIOPinStatus Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_pin(int32_t pin) {
     fbb_.AddElement<int32_t>(GPIOPinStatus::VT_PIN, pin, 0);
   }
-  void add_direction(::flatbuffers::Offset<::flatbuffers::String> direction) {
+  void add_direction(flatbuffers::Offset<flatbuffers::String> direction) {
     fbb_.AddOffset(GPIOPinStatus::VT_DIRECTION, direction);
   }
   void add_value(bool value) {
     fbb_.AddElement<uint8_t>(GPIOPinStatus::VT_VALUE, static_cast<uint8_t>(value), 0);
   }
-  explicit GPIOPinStatusBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit GPIOPinStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<GPIOPinStatus> Finish() {
+  flatbuffers::Offset<GPIOPinStatus> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<GPIOPinStatus>(end);
+    auto o = flatbuffers::Offset<GPIOPinStatus>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> direction = 0,
+    flatbuffers::Offset<flatbuffers::String> direction = 0,
     bool value = false) {
   GPIOPinStatusBuilder builder_(_fbb);
   builder_.add_direction(direction);
@@ -1549,8 +1612,8 @@ inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatus(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     int32_t pin = 0,
     const char *direction = nullptr,
     bool value = false) {
@@ -1562,7 +1625,7 @@ inline ::flatbuffers::Offset<GPIOPinStatus> CreateGPIOPinStatusDirect(
       value);
 }
 
-struct VoiceCommandRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VoiceCommandRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VoiceCommandRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMMAND = 4,
@@ -1570,19 +1633,31 @@ struct VoiceCommandRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
     VT_LANGUAGE = 8,
     VT_SESSION_ID = 10
   };
-  const ::flatbuffers::String *command() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMMAND);
+  const flatbuffers::String *command() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMMAND);
+  }
+  flatbuffers::String *mutable_command() {
+    return GetPointer<flatbuffers::String *>(VT_COMMAND);
   }
   float confidence() const {
     return GetField<float>(VT_CONFIDENCE, 0.0f);
   }
-  const ::flatbuffers::String *language() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LANGUAGE);
+  bool mutate_confidence(float _confidence = 0.0f) {
+    return SetField<float>(VT_CONFIDENCE, _confidence, 0.0f);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *language() const {
+    return GetPointer<const flatbuffers::String *>(VT_LANGUAGE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_language() {
+    return GetPointer<flatbuffers::String *>(VT_LANGUAGE);
+  }
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMMAND) &&
            verifier.VerifyString(command()) &&
@@ -1597,37 +1672,37 @@ struct VoiceCommandRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct VoiceCommandRequestBuilder {
   typedef VoiceCommandRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_command(::flatbuffers::Offset<::flatbuffers::String> command) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_command(flatbuffers::Offset<flatbuffers::String> command) {
     fbb_.AddOffset(VoiceCommandRequest::VT_COMMAND, command);
   }
   void add_confidence(float confidence) {
     fbb_.AddElement<float>(VoiceCommandRequest::VT_CONFIDENCE, confidence, 0.0f);
   }
-  void add_language(::flatbuffers::Offset<::flatbuffers::String> language) {
+  void add_language(flatbuffers::Offset<flatbuffers::String> language) {
     fbb_.AddOffset(VoiceCommandRequest::VT_LANGUAGE, language);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VoiceCommandRequest::VT_SESSION_ID, session_id);
   }
-  explicit VoiceCommandRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VoiceCommandRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VoiceCommandRequest> Finish() {
+  flatbuffers::Offset<VoiceCommandRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VoiceCommandRequest>(end);
+    auto o = flatbuffers::Offset<VoiceCommandRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> command = 0,
+inline flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> command = 0,
     float confidence = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> language = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0) {
+    flatbuffers::Offset<flatbuffers::String> language = 0,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0) {
   VoiceCommandRequestBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   builder_.add_language(language);
@@ -1636,8 +1711,8 @@ inline ::flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *command = nullptr,
     float confidence = 0.0f,
     const char *language = nullptr,
@@ -1653,7 +1728,7 @@ inline ::flatbuffers::Offset<VoiceCommandRequest> CreateVoiceCommandRequestDirec
       session_id__);
 }
 
-struct VoiceCommandResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VoiceCommandResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VoiceCommandResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_RESPONSE_TEXT = 4,
@@ -1661,19 +1736,31 @@ struct VoiceCommandResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
     VT_SESSION_ID = 8,
     VT_STATUS = 10
   };
-  const ::flatbuffers::String *response_text() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_RESPONSE_TEXT);
+  const flatbuffers::String *response_text() const {
+    return GetPointer<const flatbuffers::String *>(VT_RESPONSE_TEXT);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>> *actions() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>> *>(VT_ACTIONS);
+  flatbuffers::String *mutable_response_text() {
+    return GetPointer<flatbuffers::String *>(VT_RESPONSE_TEXT);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>> *actions() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>> *>(VT_ACTIONS);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>> *mutable_actions() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>> *>(VT_ACTIONS);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_RESPONSE_TEXT) &&
            verifier.VerifyString(response_text()) &&
@@ -1690,37 +1777,37 @@ struct VoiceCommandResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct VoiceCommandResponseBuilder {
   typedef VoiceCommandResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_response_text(::flatbuffers::Offset<::flatbuffers::String> response_text) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_response_text(flatbuffers::Offset<flatbuffers::String> response_text) {
     fbb_.AddOffset(VoiceCommandResponse::VT_RESPONSE_TEXT, response_text);
   }
-  void add_actions(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>>> actions) {
+  void add_actions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>>> actions) {
     fbb_.AddOffset(VoiceCommandResponse::VT_ACTIONS, actions);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VoiceCommandResponse::VT_SESSION_ID, session_id);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(VoiceCommandResponse::VT_STATUS, status);
   }
-  explicit VoiceCommandResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VoiceCommandResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VoiceCommandResponse> Finish() {
+  flatbuffers::Offset<VoiceCommandResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VoiceCommandResponse>(end);
+    auto o = flatbuffers::Offset<VoiceCommandResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> response_text = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>>> actions = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0) {
+inline flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> response_text = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>>> actions = 0,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0) {
   VoiceCommandResponseBuilder builder_(_fbb);
   builder_.add_status(status);
   builder_.add_session_id(session_id);
@@ -1729,14 +1816,14 @@ inline ::flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *response_text = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>> *actions = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::VoiceAction>> *actions = nullptr,
     const char *session_id = nullptr,
     const char *status = nullptr) {
   auto response_text__ = response_text ? _fbb.CreateString(response_text) : 0;
-  auto actions__ = actions ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::VoiceAction>>(*actions) : 0;
+  auto actions__ = actions ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::VoiceAction>>(*actions) : 0;
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
   auto status__ = status ? _fbb.CreateString(status) : 0;
   return Mia::Protocol::CreateVoiceCommandResponse(
@@ -1747,23 +1834,32 @@ inline ::flatbuffers::Offset<VoiceCommandResponse> CreateVoiceCommandResponseDir
       status__);
 }
 
-struct VoiceAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VoiceAction FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VoiceActionBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ACTION_TYPE = 4,
     VT_TARGET = 6,
     VT_PARAMETERS = 8
   };
-  const ::flatbuffers::String *action_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ACTION_TYPE);
+  const flatbuffers::String *action_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_ACTION_TYPE);
   }
-  const ::flatbuffers::String *target() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TARGET);
+  flatbuffers::String *mutable_action_type() {
+    return GetPointer<flatbuffers::String *>(VT_ACTION_TYPE);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  const flatbuffers::String *target() const {
+    return GetPointer<const flatbuffers::String *>(VT_TARGET);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_target() {
+    return GetPointer<flatbuffers::String *>(VT_TARGET);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_parameters() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ACTION_TYPE) &&
            verifier.VerifyString(action_type()) &&
@@ -1778,33 +1874,33 @@ struct VoiceAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct VoiceActionBuilder {
   typedef VoiceAction Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_action_type(::flatbuffers::Offset<::flatbuffers::String> action_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_action_type(flatbuffers::Offset<flatbuffers::String> action_type) {
     fbb_.AddOffset(VoiceAction::VT_ACTION_TYPE, action_type);
   }
-  void add_target(::flatbuffers::Offset<::flatbuffers::String> target) {
+  void add_target(flatbuffers::Offset<flatbuffers::String> target) {
     fbb_.AddOffset(VoiceAction::VT_TARGET, target);
   }
-  void add_parameters(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
+  void add_parameters(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
     fbb_.AddOffset(VoiceAction::VT_PARAMETERS, parameters);
   }
-  explicit VoiceActionBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VoiceActionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VoiceAction> Finish() {
+  flatbuffers::Offset<VoiceAction> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VoiceAction>(end);
+    auto o = flatbuffers::Offset<VoiceAction>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VoiceAction> CreateVoiceAction(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> action_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> target = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0) {
+inline flatbuffers::Offset<VoiceAction> CreateVoiceAction(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> action_type = 0,
+    flatbuffers::Offset<flatbuffers::String> target = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0) {
   VoiceActionBuilder builder_(_fbb);
   builder_.add_parameters(parameters);
   builder_.add_target(target);
@@ -1812,14 +1908,14 @@ inline ::flatbuffers::Offset<VoiceAction> CreateVoiceAction(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VoiceAction> CreateVoiceActionDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VoiceAction> CreateVoiceActionDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *action_type = nullptr,
     const char *target = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr) {
   auto action_type__ = action_type ? _fbb.CreateString(action_type) : 0;
   auto target__ = target ? _fbb.CreateString(target) : 0;
-  auto parameters__ = parameters ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
+  auto parameters__ = parameters ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
   return Mia::Protocol::CreateVoiceAction(
       _fbb,
       action_type__,
@@ -1827,19 +1923,25 @@ inline ::flatbuffers::Offset<VoiceAction> CreateVoiceActionDirect(
       parameters__);
 }
 
-struct KeyValue FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct KeyValue FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef KeyValueBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_KEY = 4,
     VT_VALUE = 6
   };
-  const ::flatbuffers::String *key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_KEY);
+  const flatbuffers::String *key() const {
+    return GetPointer<const flatbuffers::String *>(VT_KEY);
   }
-  const ::flatbuffers::String *value() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  flatbuffers::String *mutable_key() {
+    return GetPointer<flatbuffers::String *>(VT_KEY);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *value() const {
+    return GetPointer<const flatbuffers::String *>(VT_VALUE);
+  }
+  flatbuffers::String *mutable_value() {
+    return GetPointer<flatbuffers::String *>(VT_VALUE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_KEY) &&
            verifier.VerifyString(key()) &&
@@ -1851,37 +1953,37 @@ struct KeyValue FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct KeyValueBuilder {
   typedef KeyValue Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_key(::flatbuffers::Offset<::flatbuffers::String> key) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_key(flatbuffers::Offset<flatbuffers::String> key) {
     fbb_.AddOffset(KeyValue::VT_KEY, key);
   }
-  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+  void add_value(flatbuffers::Offset<flatbuffers::String> value) {
     fbb_.AddOffset(KeyValue::VT_VALUE, value);
   }
-  explicit KeyValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit KeyValueBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<KeyValue> Finish() {
+  flatbuffers::Offset<KeyValue> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<KeyValue>(end);
+    auto o = flatbuffers::Offset<KeyValue>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<KeyValue> CreateKeyValue(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> key = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
+inline flatbuffers::Offset<KeyValue> CreateKeyValue(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> key = 0,
+    flatbuffers::Offset<flatbuffers::String> value = 0) {
   KeyValueBuilder builder_(_fbb);
   builder_.add_value(value);
   builder_.add_key(key);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<KeyValue> CreateKeyValueDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<KeyValue> CreateKeyValueDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *key = nullptr,
     const char *value = nullptr) {
   auto key__ = key ? _fbb.CreateString(key) : 0;
@@ -1892,23 +1994,32 @@ inline ::flatbuffers::Offset<KeyValue> CreateKeyValueDirect(
       value__);
 }
 
-struct WakeWordDetected FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct WakeWordDetected FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef WakeWordDetectedBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_WAKE_WORD = 4,
     VT_CONFIDENCE = 6,
     VT_TIMESTAMP = 8
   };
-  const ::flatbuffers::String *wake_word() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_WAKE_WORD);
+  const flatbuffers::String *wake_word() const {
+    return GetPointer<const flatbuffers::String *>(VT_WAKE_WORD);
+  }
+  flatbuffers::String *mutable_wake_word() {
+    return GetPointer<flatbuffers::String *>(VT_WAKE_WORD);
   }
   float confidence() const {
     return GetField<float>(VT_CONFIDENCE, 0.0f);
   }
+  bool mutate_confidence(float _confidence = 0.0f) {
+    return SetField<float>(VT_CONFIDENCE, _confidence, 0.0f);
+  }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_WAKE_WORD) &&
            verifier.VerifyString(wake_word()) &&
@@ -1920,9 +2031,9 @@ struct WakeWordDetected FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct WakeWordDetectedBuilder {
   typedef WakeWordDetected Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_wake_word(::flatbuffers::Offset<::flatbuffers::String> wake_word) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_wake_word(flatbuffers::Offset<flatbuffers::String> wake_word) {
     fbb_.AddOffset(WakeWordDetected::VT_WAKE_WORD, wake_word);
   }
   void add_confidence(float confidence) {
@@ -1931,20 +2042,20 @@ struct WakeWordDetectedBuilder {
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(WakeWordDetected::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit WakeWordDetectedBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit WakeWordDetectedBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<WakeWordDetected> Finish() {
+  flatbuffers::Offset<WakeWordDetected> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<WakeWordDetected>(end);
+    auto o = flatbuffers::Offset<WakeWordDetected>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetected(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> wake_word = 0,
+inline flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetected(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> wake_word = 0,
     float confidence = 0.0f,
     uint64_t timestamp = 0) {
   WakeWordDetectedBuilder builder_(_fbb);
@@ -1954,8 +2065,8 @@ inline ::flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetected(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetectedDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetectedDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *wake_word = nullptr,
     float confidence = 0.0f,
     uint64_t timestamp = 0) {
@@ -1967,7 +2078,7 @@ inline ::flatbuffers::Offset<WakeWordDetected> CreateWakeWordDetectedDirect(
       timestamp);
 }
 
-struct AudioProcessRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AudioProcessRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AudioProcessRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_AUDIO_DATA = 4,
@@ -1976,22 +2087,37 @@ struct AudioProcessRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
     VT_CHANNELS = 10,
     VT_SESSION_ID = 12
   };
-  const ::flatbuffers::Vector<uint8_t> *audio_data() const {
-    return GetPointer<const ::flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
+  const flatbuffers::Vector<uint8_t> *audio_data() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
   }
-  const ::flatbuffers::String *format() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_FORMAT);
+  flatbuffers::Vector<uint8_t> *mutable_audio_data() {
+    return GetPointer<flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
+  }
+  const flatbuffers::String *format() const {
+    return GetPointer<const flatbuffers::String *>(VT_FORMAT);
+  }
+  flatbuffers::String *mutable_format() {
+    return GetPointer<flatbuffers::String *>(VT_FORMAT);
   }
   uint32_t sample_rate() const {
     return GetField<uint32_t>(VT_SAMPLE_RATE, 0);
   }
+  bool mutate_sample_rate(uint32_t _sample_rate = 0) {
+    return SetField<uint32_t>(VT_SAMPLE_RATE, _sample_rate, 0);
+  }
   uint8_t channels() const {
     return GetField<uint8_t>(VT_CHANNELS, 0);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  bool mutate_channels(uint8_t _channels = 0) {
+    return SetField<uint8_t>(VT_CHANNELS, _channels, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_AUDIO_DATA) &&
            verifier.VerifyVector(audio_data()) &&
@@ -2007,12 +2133,12 @@ struct AudioProcessRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct AudioProcessRequestBuilder {
   typedef AudioProcessRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_audio_data(::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> audio_data) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_audio_data(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> audio_data) {
     fbb_.AddOffset(AudioProcessRequest::VT_AUDIO_DATA, audio_data);
   }
-  void add_format(::flatbuffers::Offset<::flatbuffers::String> format) {
+  void add_format(flatbuffers::Offset<flatbuffers::String> format) {
     fbb_.AddOffset(AudioProcessRequest::VT_FORMAT, format);
   }
   void add_sample_rate(uint32_t sample_rate) {
@@ -2021,27 +2147,27 @@ struct AudioProcessRequestBuilder {
   void add_channels(uint8_t channels) {
     fbb_.AddElement<uint8_t>(AudioProcessRequest::VT_CHANNELS, channels, 0);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AudioProcessRequest::VT_SESSION_ID, session_id);
   }
-  explicit AudioProcessRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AudioProcessRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AudioProcessRequest> Finish() {
+  flatbuffers::Offset<AudioProcessRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AudioProcessRequest>(end);
+    auto o = flatbuffers::Offset<AudioProcessRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> audio_data = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> format = 0,
+inline flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> audio_data = 0,
+    flatbuffers::Offset<flatbuffers::String> format = 0,
     uint32_t sample_rate = 0,
     uint8_t channels = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0) {
+    flatbuffers::Offset<flatbuffers::String> session_id = 0) {
   AudioProcessRequestBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   builder_.add_sample_rate(sample_rate);
@@ -2051,8 +2177,8 @@ inline ::flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<uint8_t> *audio_data = nullptr,
     const char *format = nullptr,
     uint32_t sample_rate = 0,
@@ -2070,7 +2196,7 @@ inline ::flatbuffers::Offset<AudioProcessRequest> CreateAudioProcessRequestDirec
       session_id__);
 }
 
-struct AudioProcessResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AudioProcessResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AudioProcessResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TRANSCRIPTION = 4,
@@ -2079,22 +2205,37 @@ struct AudioProcessResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
     VT_SESSION_ID = 10,
     VT_STATUS = 12
   };
-  const ::flatbuffers::String *transcription() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TRANSCRIPTION);
+  const flatbuffers::String *transcription() const {
+    return GetPointer<const flatbuffers::String *>(VT_TRANSCRIPTION);
+  }
+  flatbuffers::String *mutable_transcription() {
+    return GetPointer<flatbuffers::String *>(VT_TRANSCRIPTION);
   }
   float confidence() const {
     return GetField<float>(VT_CONFIDENCE, 0.0f);
   }
-  const ::flatbuffers::String *language() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LANGUAGE);
+  bool mutate_confidence(float _confidence = 0.0f) {
+    return SetField<float>(VT_CONFIDENCE, _confidence, 0.0f);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *language() const {
+    return GetPointer<const flatbuffers::String *>(VT_LANGUAGE);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_language() {
+    return GetPointer<flatbuffers::String *>(VT_LANGUAGE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_TRANSCRIPTION) &&
            verifier.VerifyString(transcription()) &&
@@ -2111,41 +2252,41 @@ struct AudioProcessResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct AudioProcessResponseBuilder {
   typedef AudioProcessResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_transcription(::flatbuffers::Offset<::flatbuffers::String> transcription) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_transcription(flatbuffers::Offset<flatbuffers::String> transcription) {
     fbb_.AddOffset(AudioProcessResponse::VT_TRANSCRIPTION, transcription);
   }
   void add_confidence(float confidence) {
     fbb_.AddElement<float>(AudioProcessResponse::VT_CONFIDENCE, confidence, 0.0f);
   }
-  void add_language(::flatbuffers::Offset<::flatbuffers::String> language) {
+  void add_language(flatbuffers::Offset<flatbuffers::String> language) {
     fbb_.AddOffset(AudioProcessResponse::VT_LANGUAGE, language);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AudioProcessResponse::VT_SESSION_ID, session_id);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(AudioProcessResponse::VT_STATUS, status);
   }
-  explicit AudioProcessResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AudioProcessResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AudioProcessResponse> Finish() {
+  flatbuffers::Offset<AudioProcessResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AudioProcessResponse>(end);
+    auto o = flatbuffers::Offset<AudioProcessResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> transcription = 0,
+inline flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> transcription = 0,
     float confidence = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> language = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0) {
+    flatbuffers::Offset<flatbuffers::String> language = 0,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0) {
   AudioProcessResponseBuilder builder_(_fbb);
   builder_.add_status(status);
   builder_.add_session_id(session_id);
@@ -2155,8 +2296,8 @@ inline ::flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *transcription = nullptr,
     float confidence = 0.0f,
     const char *language = nullptr,
@@ -2175,7 +2316,7 @@ inline ::flatbuffers::Offset<AudioProcessResponse> CreateAudioProcessResponseDir
       status__);
 }
 
-struct AIAgentRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIAgentRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIAgentRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_AGENT_ID = 4,
@@ -2184,22 +2325,37 @@ struct AIAgentRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_PARAMETERS = 10,
     VT_SESSION_ID = 12
   };
-  const ::flatbuffers::String *agent_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_AGENT_ID);
+  const flatbuffers::String *agent_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_AGENT_ID);
   }
-  const ::flatbuffers::String *query() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_QUERY);
+  flatbuffers::String *mutable_agent_id() {
+    return GetPointer<flatbuffers::String *>(VT_AGENT_ID);
   }
-  const ::flatbuffers::String *context() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONTEXT);
+  const flatbuffers::String *query() const {
+    return GetPointer<const flatbuffers::String *>(VT_QUERY);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  flatbuffers::String *mutable_query() {
+    return GetPointer<flatbuffers::String *>(VT_QUERY);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *context() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONTEXT);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_context() {
+    return GetPointer<flatbuffers::String *>(VT_CONTEXT);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_parameters() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_AGENT_ID) &&
            verifier.VerifyString(agent_id()) &&
@@ -2218,41 +2374,41 @@ struct AIAgentRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIAgentRequestBuilder {
   typedef AIAgentRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_agent_id(::flatbuffers::Offset<::flatbuffers::String> agent_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_agent_id(flatbuffers::Offset<flatbuffers::String> agent_id) {
     fbb_.AddOffset(AIAgentRequest::VT_AGENT_ID, agent_id);
   }
-  void add_query(::flatbuffers::Offset<::flatbuffers::String> query) {
+  void add_query(flatbuffers::Offset<flatbuffers::String> query) {
     fbb_.AddOffset(AIAgentRequest::VT_QUERY, query);
   }
-  void add_context(::flatbuffers::Offset<::flatbuffers::String> context) {
+  void add_context(flatbuffers::Offset<flatbuffers::String> context) {
     fbb_.AddOffset(AIAgentRequest::VT_CONTEXT, context);
   }
-  void add_parameters(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
+  void add_parameters(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
     fbb_.AddOffset(AIAgentRequest::VT_PARAMETERS, parameters);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AIAgentRequest::VT_SESSION_ID, session_id);
   }
-  explicit AIAgentRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIAgentRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIAgentRequest> Finish() {
+  flatbuffers::Offset<AIAgentRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIAgentRequest>(end);
+    auto o = flatbuffers::Offset<AIAgentRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> agent_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> query = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> context = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0) {
+inline flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> agent_id = 0,
+    flatbuffers::Offset<flatbuffers::String> query = 0,
+    flatbuffers::Offset<flatbuffers::String> context = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0) {
   AIAgentRequestBuilder builder_(_fbb);
   builder_.add_session_id(session_id);
   builder_.add_parameters(parameters);
@@ -2262,17 +2418,17 @@ inline ::flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *agent_id = nullptr,
     const char *query = nullptr,
     const char *context = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
     const char *session_id = nullptr) {
   auto agent_id__ = agent_id ? _fbb.CreateString(agent_id) : 0;
   auto query__ = query ? _fbb.CreateString(query) : 0;
   auto context__ = context ? _fbb.CreateString(context) : 0;
-  auto parameters__ = parameters ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
+  auto parameters__ = parameters ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
   return Mia::Protocol::CreateAIAgentRequest(
       _fbb,
@@ -2283,7 +2439,7 @@ inline ::flatbuffers::Offset<AIAgentRequest> CreateAIAgentRequestDirect(
       session_id__);
 }
 
-struct AIAgentResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIAgentResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIAgentResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_AGENT_ID = 4,
@@ -2293,25 +2449,43 @@ struct AIAgentResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_SESSION_ID = 12,
     VT_STATUS = 14
   };
-  const ::flatbuffers::String *agent_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_AGENT_ID);
+  const flatbuffers::String *agent_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_AGENT_ID);
   }
-  const ::flatbuffers::String *response() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_RESPONSE);
+  flatbuffers::String *mutable_agent_id() {
+    return GetPointer<flatbuffers::String *>(VT_AGENT_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *actions() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *>(VT_ACTIONS);
+  const flatbuffers::String *response() const {
+    return GetPointer<const flatbuffers::String *>(VT_RESPONSE);
+  }
+  flatbuffers::String *mutable_response() {
+    return GetPointer<flatbuffers::String *>(VT_RESPONSE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *actions() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *>(VT_ACTIONS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *mutable_actions() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *>(VT_ACTIONS);
   }
   float confidence() const {
     return GetField<float>(VT_CONFIDENCE, 0.0f);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  bool mutate_confidence(float _confidence = 0.0f) {
+    return SetField<float>(VT_CONFIDENCE, _confidence, 0.0f);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_AGENT_ID) &&
            verifier.VerifyString(agent_id()) &&
@@ -2331,45 +2505,45 @@ struct AIAgentResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIAgentResponseBuilder {
   typedef AIAgentResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_agent_id(::flatbuffers::Offset<::flatbuffers::String> agent_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_agent_id(flatbuffers::Offset<flatbuffers::String> agent_id) {
     fbb_.AddOffset(AIAgentResponse::VT_AGENT_ID, agent_id);
   }
-  void add_response(::flatbuffers::Offset<::flatbuffers::String> response) {
+  void add_response(flatbuffers::Offset<flatbuffers::String> response) {
     fbb_.AddOffset(AIAgentResponse::VT_RESPONSE, response);
   }
-  void add_actions(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>>> actions) {
+  void add_actions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>>> actions) {
     fbb_.AddOffset(AIAgentResponse::VT_ACTIONS, actions);
   }
   void add_confidence(float confidence) {
     fbb_.AddElement<float>(AIAgentResponse::VT_CONFIDENCE, confidence, 0.0f);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AIAgentResponse::VT_SESSION_ID, session_id);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(AIAgentResponse::VT_STATUS, status);
   }
-  explicit AIAgentResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIAgentResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIAgentResponse> Finish() {
+  flatbuffers::Offset<AIAgentResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIAgentResponse>(end);
+    auto o = flatbuffers::Offset<AIAgentResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> agent_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> response = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>>> actions = 0,
+inline flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> agent_id = 0,
+    flatbuffers::Offset<flatbuffers::String> response = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>>> actions = 0,
     float confidence = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0) {
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0) {
   AIAgentResponseBuilder builder_(_fbb);
   builder_.add_status(status);
   builder_.add_session_id(session_id);
@@ -2380,17 +2554,17 @@ inline ::flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *agent_id = nullptr,
     const char *response = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *actions = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>> *actions = nullptr,
     float confidence = 0.0f,
     const char *session_id = nullptr,
     const char *status = nullptr) {
   auto agent_id__ = agent_id ? _fbb.CreateString(agent_id) : 0;
   auto response__ = response ? _fbb.CreateString(response) : 0;
-  auto actions__ = actions ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::AIAgentAction>>(*actions) : 0;
+  auto actions__ = actions ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::AIAgentAction>>(*actions) : 0;
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
   auto status__ = status ? _fbb.CreateString(status) : 0;
   return Mia::Protocol::CreateAIAgentResponse(
@@ -2403,7 +2577,7 @@ inline ::flatbuffers::Offset<AIAgentResponse> CreateAIAgentResponseDirect(
       status__);
 }
 
-struct AIAgentAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIAgentAction FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIAgentActionBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ACTION_TYPE = 4,
@@ -2411,19 +2585,31 @@ struct AIAgentAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_PARAMETERS = 8,
     VT_TIMEOUT_MS = 10
   };
-  const ::flatbuffers::String *action_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ACTION_TYPE);
+  const flatbuffers::String *action_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_ACTION_TYPE);
+  }
+  flatbuffers::String *mutable_action_type() {
+    return GetPointer<flatbuffers::String *>(VT_ACTION_TYPE);
   }
   int8_t priority() const {
     return GetField<int8_t>(VT_PRIORITY, 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  bool mutate_priority(int8_t _priority = 0) {
+    return SetField<int8_t>(VT_PRIORITY, _priority, 0);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_parameters() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
   }
   uint32_t timeout_ms() const {
     return GetField<uint32_t>(VT_TIMEOUT_MS, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timeout_ms(uint32_t _timeout_ms = 0) {
+    return SetField<uint32_t>(VT_TIMEOUT_MS, _timeout_ms, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ACTION_TYPE) &&
            verifier.VerifyString(action_type()) &&
@@ -2438,36 +2624,36 @@ struct AIAgentAction FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIAgentActionBuilder {
   typedef AIAgentAction Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_action_type(::flatbuffers::Offset<::flatbuffers::String> action_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_action_type(flatbuffers::Offset<flatbuffers::String> action_type) {
     fbb_.AddOffset(AIAgentAction::VT_ACTION_TYPE, action_type);
   }
   void add_priority(int8_t priority) {
     fbb_.AddElement<int8_t>(AIAgentAction::VT_PRIORITY, priority, 0);
   }
-  void add_parameters(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
+  void add_parameters(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
     fbb_.AddOffset(AIAgentAction::VT_PARAMETERS, parameters);
   }
   void add_timeout_ms(uint32_t timeout_ms) {
     fbb_.AddElement<uint32_t>(AIAgentAction::VT_TIMEOUT_MS, timeout_ms, 0);
   }
-  explicit AIAgentActionBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIAgentActionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIAgentAction> Finish() {
+  flatbuffers::Offset<AIAgentAction> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIAgentAction>(end);
+    auto o = flatbuffers::Offset<AIAgentAction>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIAgentAction> CreateAIAgentAction(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> action_type = 0,
+inline flatbuffers::Offset<AIAgentAction> CreateAIAgentAction(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> action_type = 0,
     int8_t priority = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
     uint32_t timeout_ms = 0) {
   AIAgentActionBuilder builder_(_fbb);
   builder_.add_timeout_ms(timeout_ms);
@@ -2477,14 +2663,14 @@ inline ::flatbuffers::Offset<AIAgentAction> CreateAIAgentAction(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIAgentAction> CreateAIAgentActionDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIAgentAction> CreateAIAgentActionDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *action_type = nullptr,
     int8_t priority = 0,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
     uint32_t timeout_ms = 0) {
   auto action_type__ = action_type ? _fbb.CreateString(action_type) : 0;
-  auto parameters__ = parameters ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
+  auto parameters__ = parameters ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
   return Mia::Protocol::CreateAIAgentAction(
       _fbb,
       action_type__,
@@ -2493,23 +2679,32 @@ inline ::flatbuffers::Offset<AIAgentAction> CreateAIAgentActionDirect(
       timeout_ms);
 }
 
-struct MCPToolCall FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MCPToolCall FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MCPToolCallBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TOOL_NAME = 4,
     VT_ARGUMENTS = 6,
     VT_CALL_ID = 8
   };
-  const ::flatbuffers::String *tool_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TOOL_NAME);
+  const flatbuffers::String *tool_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_TOOL_NAME);
   }
-  const ::flatbuffers::String *arguments() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ARGUMENTS);
+  flatbuffers::String *mutable_tool_name() {
+    return GetPointer<flatbuffers::String *>(VT_TOOL_NAME);
   }
-  const ::flatbuffers::String *call_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CALL_ID);
+  const flatbuffers::String *arguments() const {
+    return GetPointer<const flatbuffers::String *>(VT_ARGUMENTS);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_arguments() {
+    return GetPointer<flatbuffers::String *>(VT_ARGUMENTS);
+  }
+  const flatbuffers::String *call_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_CALL_ID);
+  }
+  flatbuffers::String *mutable_call_id() {
+    return GetPointer<flatbuffers::String *>(VT_CALL_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_TOOL_NAME) &&
            verifier.VerifyString(tool_name()) &&
@@ -2523,33 +2718,33 @@ struct MCPToolCall FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MCPToolCallBuilder {
   typedef MCPToolCall Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_tool_name(::flatbuffers::Offset<::flatbuffers::String> tool_name) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_tool_name(flatbuffers::Offset<flatbuffers::String> tool_name) {
     fbb_.AddOffset(MCPToolCall::VT_TOOL_NAME, tool_name);
   }
-  void add_arguments(::flatbuffers::Offset<::flatbuffers::String> arguments) {
+  void add_arguments(flatbuffers::Offset<flatbuffers::String> arguments) {
     fbb_.AddOffset(MCPToolCall::VT_ARGUMENTS, arguments);
   }
-  void add_call_id(::flatbuffers::Offset<::flatbuffers::String> call_id) {
+  void add_call_id(flatbuffers::Offset<flatbuffers::String> call_id) {
     fbb_.AddOffset(MCPToolCall::VT_CALL_ID, call_id);
   }
-  explicit MCPToolCallBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MCPToolCallBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MCPToolCall> Finish() {
+  flatbuffers::Offset<MCPToolCall> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MCPToolCall>(end);
+    auto o = flatbuffers::Offset<MCPToolCall>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MCPToolCall> CreateMCPToolCall(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> tool_name = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> arguments = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> call_id = 0) {
+inline flatbuffers::Offset<MCPToolCall> CreateMCPToolCall(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> tool_name = 0,
+    flatbuffers::Offset<flatbuffers::String> arguments = 0,
+    flatbuffers::Offset<flatbuffers::String> call_id = 0) {
   MCPToolCallBuilder builder_(_fbb);
   builder_.add_call_id(call_id);
   builder_.add_arguments(arguments);
@@ -2557,8 +2752,8 @@ inline ::flatbuffers::Offset<MCPToolCall> CreateMCPToolCall(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MCPToolCall> CreateMCPToolCallDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MCPToolCall> CreateMCPToolCallDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *tool_name = nullptr,
     const char *arguments = nullptr,
     const char *call_id = nullptr) {
@@ -2572,7 +2767,7 @@ inline ::flatbuffers::Offset<MCPToolCall> CreateMCPToolCallDirect(
       call_id__);
 }
 
-struct MCPToolResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MCPToolResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MCPToolResultBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_CALL_ID = 4,
@@ -2580,19 +2775,31 @@ struct MCPToolResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_ERROR = 8,
     VT_SUCCESS = 10
   };
-  const ::flatbuffers::String *call_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CALL_ID);
+  const flatbuffers::String *call_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_CALL_ID);
   }
-  const ::flatbuffers::String *result() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_RESULT);
+  flatbuffers::String *mutable_call_id() {
+    return GetPointer<flatbuffers::String *>(VT_CALL_ID);
   }
-  const ::flatbuffers::String *error() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR);
+  const flatbuffers::String *result() const {
+    return GetPointer<const flatbuffers::String *>(VT_RESULT);
+  }
+  flatbuffers::String *mutable_result() {
+    return GetPointer<flatbuffers::String *>(VT_RESULT);
+  }
+  const flatbuffers::String *error() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR);
+  }
+  flatbuffers::String *mutable_error() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_CALL_ID) &&
            verifier.VerifyString(call_id()) &&
@@ -2607,36 +2814,36 @@ struct MCPToolResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MCPToolResultBuilder {
   typedef MCPToolResult Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_call_id(::flatbuffers::Offset<::flatbuffers::String> call_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_call_id(flatbuffers::Offset<flatbuffers::String> call_id) {
     fbb_.AddOffset(MCPToolResult::VT_CALL_ID, call_id);
   }
-  void add_result(::flatbuffers::Offset<::flatbuffers::String> result) {
+  void add_result(flatbuffers::Offset<flatbuffers::String> result) {
     fbb_.AddOffset(MCPToolResult::VT_RESULT, result);
   }
-  void add_error(::flatbuffers::Offset<::flatbuffers::String> error) {
+  void add_error(flatbuffers::Offset<flatbuffers::String> error) {
     fbb_.AddOffset(MCPToolResult::VT_ERROR, error);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(MCPToolResult::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  explicit MCPToolResultBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MCPToolResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MCPToolResult> Finish() {
+  flatbuffers::Offset<MCPToolResult> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MCPToolResult>(end);
+    auto o = flatbuffers::Offset<MCPToolResult>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MCPToolResult> CreateMCPToolResult(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> call_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> result = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> error = 0,
+inline flatbuffers::Offset<MCPToolResult> CreateMCPToolResult(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> call_id = 0,
+    flatbuffers::Offset<flatbuffers::String> result = 0,
+    flatbuffers::Offset<flatbuffers::String> error = 0,
     bool success = false) {
   MCPToolResultBuilder builder_(_fbb);
   builder_.add_error(error);
@@ -2646,8 +2853,8 @@ inline ::flatbuffers::Offset<MCPToolResult> CreateMCPToolResult(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MCPToolResult> CreateMCPToolResultDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MCPToolResult> CreateMCPToolResultDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *call_id = nullptr,
     const char *result = nullptr,
     const char *error = nullptr,
@@ -2663,7 +2870,7 @@ inline ::flatbuffers::Offset<MCPToolResult> CreateMCPToolResultDirect(
       success);
 }
 
-struct MCPMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MCPMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MCPMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MESSAGE_TYPE = 4,
@@ -2671,19 +2878,31 @@ struct MCPMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_SESSION_ID = 8,
     VT_TIMESTAMP = 10
   };
-  const ::flatbuffers::String *message_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE_TYPE);
+  const flatbuffers::String *message_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_MESSAGE_TYPE);
   }
-  const ::flatbuffers::String *content() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONTENT);
+  flatbuffers::String *mutable_message_type() {
+    return GetPointer<flatbuffers::String *>(VT_MESSAGE_TYPE);
   }
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *content() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONTENT);
+  }
+  flatbuffers::String *mutable_content() {
+    return GetPointer<flatbuffers::String *>(VT_CONTENT);
+  }
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MESSAGE_TYPE) &&
            verifier.VerifyString(message_type()) &&
@@ -2698,36 +2917,36 @@ struct MCPMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MCPMessageBuilder {
   typedef MCPMessage Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_message_type(::flatbuffers::Offset<::flatbuffers::String> message_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_message_type(flatbuffers::Offset<flatbuffers::String> message_type) {
     fbb_.AddOffset(MCPMessage::VT_MESSAGE_TYPE, message_type);
   }
-  void add_content(::flatbuffers::Offset<::flatbuffers::String> content) {
+  void add_content(flatbuffers::Offset<flatbuffers::String> content) {
     fbb_.AddOffset(MCPMessage::VT_CONTENT, content);
   }
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(MCPMessage::VT_SESSION_ID, session_id);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(MCPMessage::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit MCPMessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MCPMessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MCPMessage> Finish() {
+  flatbuffers::Offset<MCPMessage> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MCPMessage>(end);
+    auto o = flatbuffers::Offset<MCPMessage>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MCPMessage> CreateMCPMessage(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> message_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> content = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
+inline flatbuffers::Offset<MCPMessage> CreateMCPMessage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> message_type = 0,
+    flatbuffers::Offset<flatbuffers::String> content = 0,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
     uint64_t timestamp = 0) {
   MCPMessageBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -2737,8 +2956,8 @@ inline ::flatbuffers::Offset<MCPMessage> CreateMCPMessage(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MCPMessage> CreateMCPMessageDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MCPMessage> CreateMCPMessageDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *message_type = nullptr,
     const char *content = nullptr,
     const char *session_id = nullptr,
@@ -2754,7 +2973,7 @@ inline ::flatbuffers::Offset<MCPMessage> CreateMCPMessageDirect(
       timestamp);
 }
 
-struct HardwareConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HardwareConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HardwareConfigBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_TYPE = 4,
@@ -2762,19 +2981,31 @@ struct HardwareConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_CONFIG = 8,
     VT_AUTO_START = 10
   };
-  const ::flatbuffers::String *device_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_TYPE);
+  const flatbuffers::String *device_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_TYPE);
   }
-  const ::flatbuffers::String *device_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_ID);
+  flatbuffers::String *mutable_device_type() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_TYPE);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  const flatbuffers::String *device_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_ID);
+  }
+  flatbuffers::String *mutable_device_id() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_ID);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_config() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
   }
   bool auto_start() const {
     return GetField<uint8_t>(VT_AUTO_START, 1) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_auto_start(bool _auto_start = 1) {
+    return SetField<uint8_t>(VT_AUTO_START, static_cast<uint8_t>(_auto_start), 1);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_TYPE) &&
            verifier.VerifyString(device_type()) &&
@@ -2790,36 +3021,36 @@ struct HardwareConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct HardwareConfigBuilder {
   typedef HardwareConfig Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_type(::flatbuffers::Offset<::flatbuffers::String> device_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_type(flatbuffers::Offset<flatbuffers::String> device_type) {
     fbb_.AddOffset(HardwareConfig::VT_DEVICE_TYPE, device_type);
   }
-  void add_device_id(::flatbuffers::Offset<::flatbuffers::String> device_id) {
+  void add_device_id(flatbuffers::Offset<flatbuffers::String> device_id) {
     fbb_.AddOffset(HardwareConfig::VT_DEVICE_ID, device_id);
   }
-  void add_config(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
+  void add_config(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
     fbb_.AddOffset(HardwareConfig::VT_CONFIG, config);
   }
   void add_auto_start(bool auto_start) {
     fbb_.AddElement<uint8_t>(HardwareConfig::VT_AUTO_START, static_cast<uint8_t>(auto_start), 1);
   }
-  explicit HardwareConfigBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HardwareConfigBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HardwareConfig> Finish() {
+  flatbuffers::Offset<HardwareConfig> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HardwareConfig>(end);
+    auto o = flatbuffers::Offset<HardwareConfig>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HardwareConfig> CreateHardwareConfig(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> device_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0,
+inline flatbuffers::Offset<HardwareConfig> CreateHardwareConfig(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_type = 0,
+    flatbuffers::Offset<flatbuffers::String> device_id = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0,
     bool auto_start = true) {
   HardwareConfigBuilder builder_(_fbb);
   builder_.add_config(config);
@@ -2829,15 +3060,15 @@ inline ::flatbuffers::Offset<HardwareConfig> CreateHardwareConfig(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HardwareConfig> CreateHardwareConfigDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<HardwareConfig> CreateHardwareConfigDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_type = nullptr,
     const char *device_id = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr,
     bool auto_start = true) {
   auto device_type__ = device_type ? _fbb.CreateString(device_type) : 0;
   auto device_id__ = device_id ? _fbb.CreateString(device_id) : 0;
-  auto config__ = config ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
+  auto config__ = config ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
   return Mia::Protocol::CreateHardwareConfig(
       _fbb,
       device_type__,
@@ -2846,7 +3077,7 @@ inline ::flatbuffers::Offset<HardwareConfig> CreateHardwareConfigDirect(
       auto_start);
 }
 
-struct HardwareEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HardwareEvent FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HardwareEventBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_ID = 4,
@@ -2855,22 +3086,37 @@ struct HardwareEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TIMESTAMP = 10,
     VT_SEQUENCE_ID = 12
   };
-  const ::flatbuffers::String *device_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_ID);
+  const flatbuffers::String *device_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::String *event_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_EVENT_TYPE);
+  flatbuffers::String *mutable_device_id() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *event_data() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_EVENT_DATA);
+  const flatbuffers::String *event_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_EVENT_TYPE);
+  }
+  flatbuffers::String *mutable_event_type() {
+    return GetPointer<flatbuffers::String *>(VT_EVENT_TYPE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *event_data() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_EVENT_DATA);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_event_data() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_EVENT_DATA);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
   uint32_t sequence_id() const {
     return GetField<uint32_t>(VT_SEQUENCE_ID, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_sequence_id(uint32_t _sequence_id = 0) {
+    return SetField<uint32_t>(VT_SEQUENCE_ID, _sequence_id, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_ID) &&
            verifier.VerifyString(device_id()) &&
@@ -2887,15 +3133,15 @@ struct HardwareEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct HardwareEventBuilder {
   typedef HardwareEvent Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_id(::flatbuffers::Offset<::flatbuffers::String> device_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_id(flatbuffers::Offset<flatbuffers::String> device_id) {
     fbb_.AddOffset(HardwareEvent::VT_DEVICE_ID, device_id);
   }
-  void add_event_type(::flatbuffers::Offset<::flatbuffers::String> event_type) {
+  void add_event_type(flatbuffers::Offset<flatbuffers::String> event_type) {
     fbb_.AddOffset(HardwareEvent::VT_EVENT_TYPE, event_type);
   }
-  void add_event_data(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> event_data) {
+  void add_event_data(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> event_data) {
     fbb_.AddOffset(HardwareEvent::VT_EVENT_DATA, event_data);
   }
   void add_timestamp(uint64_t timestamp) {
@@ -2904,22 +3150,22 @@ struct HardwareEventBuilder {
   void add_sequence_id(uint32_t sequence_id) {
     fbb_.AddElement<uint32_t>(HardwareEvent::VT_SEQUENCE_ID, sequence_id, 0);
   }
-  explicit HardwareEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HardwareEventBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HardwareEvent> Finish() {
+  flatbuffers::Offset<HardwareEvent> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HardwareEvent>(end);
+    auto o = flatbuffers::Offset<HardwareEvent>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HardwareEvent> CreateHardwareEvent(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> event_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> event_data = 0,
+inline flatbuffers::Offset<HardwareEvent> CreateHardwareEvent(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_id = 0,
+    flatbuffers::Offset<flatbuffers::String> event_type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> event_data = 0,
     uint64_t timestamp = 0,
     uint32_t sequence_id = 0) {
   HardwareEventBuilder builder_(_fbb);
@@ -2931,16 +3177,16 @@ inline ::flatbuffers::Offset<HardwareEvent> CreateHardwareEvent(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HardwareEvent> CreateHardwareEventDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<HardwareEvent> CreateHardwareEventDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_id = nullptr,
     const char *event_type = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *event_data = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *event_data = nullptr,
     uint64_t timestamp = 0,
     uint32_t sequence_id = 0) {
   auto device_id__ = device_id ? _fbb.CreateString(device_id) : 0;
   auto event_type__ = event_type ? _fbb.CreateString(event_type) : 0;
-  auto event_data__ = event_data ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*event_data) : 0;
+  auto event_data__ = event_data ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*event_data) : 0;
   return Mia::Protocol::CreateHardwareEvent(
       _fbb,
       device_id__,
@@ -2950,7 +3196,7 @@ inline ::flatbuffers::Offset<HardwareEvent> CreateHardwareEventDirect(
       sequence_id);
 }
 
-struct AudioStreamStart FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AudioStreamStart FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AudioStreamStartBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -2959,22 +3205,37 @@ struct AudioStreamStart FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_CHANNELS = 10,
     VT_COMPRESSION = 12
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *format() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_FORMAT);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::String *format() const {
+    return GetPointer<const flatbuffers::String *>(VT_FORMAT);
+  }
+  flatbuffers::String *mutable_format() {
+    return GetPointer<flatbuffers::String *>(VT_FORMAT);
   }
   uint32_t sample_rate() const {
     return GetField<uint32_t>(VT_SAMPLE_RATE, 0);
   }
+  bool mutate_sample_rate(uint32_t _sample_rate = 0) {
+    return SetField<uint32_t>(VT_SAMPLE_RATE, _sample_rate, 0);
+  }
   uint8_t channels() const {
     return GetField<uint8_t>(VT_CHANNELS, 0);
   }
-  const ::flatbuffers::String *compression() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMPRESSION);
+  bool mutate_channels(uint8_t _channels = 0) {
+    return SetField<uint8_t>(VT_CHANNELS, _channels, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *compression() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMPRESSION);
+  }
+  flatbuffers::String *mutable_compression() {
+    return GetPointer<flatbuffers::String *>(VT_COMPRESSION);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -2990,12 +3251,12 @@ struct AudioStreamStart FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AudioStreamStartBuilder {
   typedef AudioStreamStart Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AudioStreamStart::VT_SESSION_ID, session_id);
   }
-  void add_format(::flatbuffers::Offset<::flatbuffers::String> format) {
+  void add_format(flatbuffers::Offset<flatbuffers::String> format) {
     fbb_.AddOffset(AudioStreamStart::VT_FORMAT, format);
   }
   void add_sample_rate(uint32_t sample_rate) {
@@ -3004,27 +3265,27 @@ struct AudioStreamStartBuilder {
   void add_channels(uint8_t channels) {
     fbb_.AddElement<uint8_t>(AudioStreamStart::VT_CHANNELS, channels, 0);
   }
-  void add_compression(::flatbuffers::Offset<::flatbuffers::String> compression) {
+  void add_compression(flatbuffers::Offset<flatbuffers::String> compression) {
     fbb_.AddOffset(AudioStreamStart::VT_COMPRESSION, compression);
   }
-  explicit AudioStreamStartBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AudioStreamStartBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AudioStreamStart> Finish() {
+  flatbuffers::Offset<AudioStreamStart> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AudioStreamStart>(end);
+    auto o = flatbuffers::Offset<AudioStreamStart>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStart(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> format = 0,
+inline flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStart(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> format = 0,
     uint32_t sample_rate = 0,
     uint8_t channels = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> compression = 0) {
+    flatbuffers::Offset<flatbuffers::String> compression = 0) {
   AudioStreamStartBuilder builder_(_fbb);
   builder_.add_compression(compression);
   builder_.add_sample_rate(sample_rate);
@@ -3034,8 +3295,8 @@ inline ::flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStart(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStartDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStartDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *format = nullptr,
     uint32_t sample_rate = 0,
@@ -3053,7 +3314,7 @@ inline ::flatbuffers::Offset<AudioStreamStart> CreateAudioStreamStartDirect(
       compression__);
 }
 
-struct AudioStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AudioStreamData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AudioStreamDataBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3062,22 +3323,37 @@ struct AudioStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TIMESTAMP = 10,
     VT_END_OF_STREAM = 12
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
   uint32_t sequence_number() const {
     return GetField<uint32_t>(VT_SEQUENCE_NUMBER, 0);
   }
-  const ::flatbuffers::Vector<uint8_t> *audio_data() const {
-    return GetPointer<const ::flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
+  bool mutate_sequence_number(uint32_t _sequence_number = 0) {
+    return SetField<uint32_t>(VT_SEQUENCE_NUMBER, _sequence_number, 0);
+  }
+  const flatbuffers::Vector<uint8_t> *audio_data() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
+  }
+  flatbuffers::Vector<uint8_t> *mutable_audio_data() {
+    return GetPointer<flatbuffers::Vector<uint8_t> *>(VT_AUDIO_DATA);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
   bool end_of_stream() const {
     return GetField<uint8_t>(VT_END_OF_STREAM, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_end_of_stream(bool _end_of_stream = 0) {
+    return SetField<uint8_t>(VT_END_OF_STREAM, static_cast<uint8_t>(_end_of_stream), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3092,15 +3368,15 @@ struct AudioStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AudioStreamDataBuilder {
   typedef AudioStreamData Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AudioStreamData::VT_SESSION_ID, session_id);
   }
   void add_sequence_number(uint32_t sequence_number) {
     fbb_.AddElement<uint32_t>(AudioStreamData::VT_SEQUENCE_NUMBER, sequence_number, 0);
   }
-  void add_audio_data(::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> audio_data) {
+  void add_audio_data(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> audio_data) {
     fbb_.AddOffset(AudioStreamData::VT_AUDIO_DATA, audio_data);
   }
   void add_timestamp(uint64_t timestamp) {
@@ -3109,22 +3385,22 @@ struct AudioStreamDataBuilder {
   void add_end_of_stream(bool end_of_stream) {
     fbb_.AddElement<uint8_t>(AudioStreamData::VT_END_OF_STREAM, static_cast<uint8_t>(end_of_stream), 0);
   }
-  explicit AudioStreamDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AudioStreamDataBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AudioStreamData> Finish() {
+  flatbuffers::Offset<AudioStreamData> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AudioStreamData>(end);
+    auto o = flatbuffers::Offset<AudioStreamData>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AudioStreamData> CreateAudioStreamData(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
+inline flatbuffers::Offset<AudioStreamData> CreateAudioStreamData(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
     uint32_t sequence_number = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> audio_data = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> audio_data = 0,
     uint64_t timestamp = 0,
     bool end_of_stream = false) {
   AudioStreamDataBuilder builder_(_fbb);
@@ -3136,8 +3412,8 @@ inline ::flatbuffers::Offset<AudioStreamData> CreateAudioStreamData(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AudioStreamData> CreateAudioStreamDataDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AudioStreamData> CreateAudioStreamDataDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     uint32_t sequence_number = 0,
     const std::vector<uint8_t> *audio_data = nullptr,
@@ -3154,19 +3430,25 @@ inline ::flatbuffers::Offset<AudioStreamData> CreateAudioStreamDataDirect(
       end_of_stream);
 }
 
-struct AudioStreamStop FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AudioStreamStop FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AudioStreamStopBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
     VT_REASON = 6
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *reason() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_REASON);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *reason() const {
+    return GetPointer<const flatbuffers::String *>(VT_REASON);
+  }
+  flatbuffers::String *mutable_reason() {
+    return GetPointer<flatbuffers::String *>(VT_REASON);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3178,37 +3460,37 @@ struct AudioStreamStop FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AudioStreamStopBuilder {
   typedef AudioStreamStop Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AudioStreamStop::VT_SESSION_ID, session_id);
   }
-  void add_reason(::flatbuffers::Offset<::flatbuffers::String> reason) {
+  void add_reason(flatbuffers::Offset<flatbuffers::String> reason) {
     fbb_.AddOffset(AudioStreamStop::VT_REASON, reason);
   }
-  explicit AudioStreamStopBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AudioStreamStopBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AudioStreamStop> Finish() {
+  flatbuffers::Offset<AudioStreamStop> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AudioStreamStop>(end);
+    auto o = flatbuffers::Offset<AudioStreamStop>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AudioStreamStop> CreateAudioStreamStop(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> reason = 0) {
+inline flatbuffers::Offset<AudioStreamStop> CreateAudioStreamStop(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> reason = 0) {
   AudioStreamStopBuilder builder_(_fbb);
   builder_.add_reason(reason);
   builder_.add_session_id(session_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AudioStreamStop> CreateAudioStreamStopDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AudioStreamStop> CreateAudioStreamStopDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *reason = nullptr) {
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
@@ -3219,7 +3501,7 @@ inline ::flatbuffers::Offset<AudioStreamStop> CreateAudioStreamStopDirect(
       reason__);
 }
 
-struct VideoStreamConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VideoStreamConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VideoStreamConfigBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3230,28 +3512,49 @@ struct VideoStreamConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     VT_BITRATE_KBPS = 14,
     VT_KEYFRAME_INTERVAL = 16
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
   uint32_t width() const {
     return GetField<uint32_t>(VT_WIDTH, 0);
   }
+  bool mutate_width(uint32_t _width = 0) {
+    return SetField<uint32_t>(VT_WIDTH, _width, 0);
+  }
   uint32_t height() const {
     return GetField<uint32_t>(VT_HEIGHT, 0);
+  }
+  bool mutate_height(uint32_t _height = 0) {
+    return SetField<uint32_t>(VT_HEIGHT, _height, 0);
   }
   uint32_t frame_rate() const {
     return GetField<uint32_t>(VT_FRAME_RATE, 0);
   }
-  const ::flatbuffers::String *codec() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CODEC);
+  bool mutate_frame_rate(uint32_t _frame_rate = 0) {
+    return SetField<uint32_t>(VT_FRAME_RATE, _frame_rate, 0);
+  }
+  const flatbuffers::String *codec() const {
+    return GetPointer<const flatbuffers::String *>(VT_CODEC);
+  }
+  flatbuffers::String *mutable_codec() {
+    return GetPointer<flatbuffers::String *>(VT_CODEC);
   }
   uint32_t bitrate_kbps() const {
     return GetField<uint32_t>(VT_BITRATE_KBPS, 0);
   }
+  bool mutate_bitrate_kbps(uint32_t _bitrate_kbps = 0) {
+    return SetField<uint32_t>(VT_BITRATE_KBPS, _bitrate_kbps, 0);
+  }
   uint32_t keyframe_interval() const {
     return GetField<uint32_t>(VT_KEYFRAME_INTERVAL, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_keyframe_interval(uint32_t _keyframe_interval = 0) {
+    return SetField<uint32_t>(VT_KEYFRAME_INTERVAL, _keyframe_interval, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3268,9 +3571,9 @@ struct VideoStreamConfig FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct VideoStreamConfigBuilder {
   typedef VideoStreamConfig Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VideoStreamConfig::VT_SESSION_ID, session_id);
   }
   void add_width(uint32_t width) {
@@ -3282,7 +3585,7 @@ struct VideoStreamConfigBuilder {
   void add_frame_rate(uint32_t frame_rate) {
     fbb_.AddElement<uint32_t>(VideoStreamConfig::VT_FRAME_RATE, frame_rate, 0);
   }
-  void add_codec(::flatbuffers::Offset<::flatbuffers::String> codec) {
+  void add_codec(flatbuffers::Offset<flatbuffers::String> codec) {
     fbb_.AddOffset(VideoStreamConfig::VT_CODEC, codec);
   }
   void add_bitrate_kbps(uint32_t bitrate_kbps) {
@@ -3291,24 +3594,24 @@ struct VideoStreamConfigBuilder {
   void add_keyframe_interval(uint32_t keyframe_interval) {
     fbb_.AddElement<uint32_t>(VideoStreamConfig::VT_KEYFRAME_INTERVAL, keyframe_interval, 0);
   }
-  explicit VideoStreamConfigBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VideoStreamConfigBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VideoStreamConfig> Finish() {
+  flatbuffers::Offset<VideoStreamConfig> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VideoStreamConfig>(end);
+    auto o = flatbuffers::Offset<VideoStreamConfig>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfig(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
+inline flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfig(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
     uint32_t width = 0,
     uint32_t height = 0,
     uint32_t frame_rate = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> codec = 0,
+    flatbuffers::Offset<flatbuffers::String> codec = 0,
     uint32_t bitrate_kbps = 0,
     uint32_t keyframe_interval = 0) {
   VideoStreamConfigBuilder builder_(_fbb);
@@ -3322,8 +3625,8 @@ inline ::flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfig(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfigDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfigDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     uint32_t width = 0,
     uint32_t height = 0,
@@ -3344,23 +3647,32 @@ inline ::flatbuffers::Offset<VideoStreamConfig> CreateVideoStreamConfigDirect(
       keyframe_interval);
 }
 
-struct VideoStreamStart FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VideoStreamStart FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VideoStreamStartBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
     VT_CONFIG = 6,
     VT_CAMERA_ID = 8
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
   const Mia::Protocol::VideoStreamConfig *config() const {
     return GetPointer<const Mia::Protocol::VideoStreamConfig *>(VT_CONFIG);
   }
-  const ::flatbuffers::String *camera_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CAMERA_ID);
+  Mia::Protocol::VideoStreamConfig *mutable_config() {
+    return GetPointer<Mia::Protocol::VideoStreamConfig *>(VT_CONFIG);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *camera_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_CAMERA_ID);
+  }
+  flatbuffers::String *mutable_camera_id() {
+    return GetPointer<flatbuffers::String *>(VT_CAMERA_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3374,33 +3686,33 @@ struct VideoStreamStart FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct VideoStreamStartBuilder {
   typedef VideoStreamStart Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VideoStreamStart::VT_SESSION_ID, session_id);
   }
-  void add_config(::flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config) {
+  void add_config(flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config) {
     fbb_.AddOffset(VideoStreamStart::VT_CONFIG, config);
   }
-  void add_camera_id(::flatbuffers::Offset<::flatbuffers::String> camera_id) {
+  void add_camera_id(flatbuffers::Offset<flatbuffers::String> camera_id) {
     fbb_.AddOffset(VideoStreamStart::VT_CAMERA_ID, camera_id);
   }
-  explicit VideoStreamStartBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VideoStreamStartBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VideoStreamStart> Finish() {
+  flatbuffers::Offset<VideoStreamStart> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VideoStreamStart>(end);
+    auto o = flatbuffers::Offset<VideoStreamStart>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStart(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> camera_id = 0) {
+inline flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStart(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config = 0,
+    flatbuffers::Offset<flatbuffers::String> camera_id = 0) {
   VideoStreamStartBuilder builder_(_fbb);
   builder_.add_camera_id(camera_id);
   builder_.add_config(config);
@@ -3408,10 +3720,10 @@ inline ::flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStart(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStartDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStartDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
-    ::flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config = 0,
+    flatbuffers::Offset<Mia::Protocol::VideoStreamConfig> config = 0,
     const char *camera_id = nullptr) {
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
   auto camera_id__ = camera_id ? _fbb.CreateString(camera_id) : 0;
@@ -3422,7 +3734,7 @@ inline ::flatbuffers::Offset<VideoStreamStart> CreateVideoStreamStartDirect(
       camera_id__);
 }
 
-struct VideoStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VideoStreamData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VideoStreamDataBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3433,28 +3745,49 @@ struct VideoStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_KEYFRAME = 14,
     VT_END_OF_STREAM = 16
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
+  }
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
   uint32_t sequence_number() const {
     return GetField<uint32_t>(VT_SEQUENCE_NUMBER, 0);
   }
+  bool mutate_sequence_number(uint32_t _sequence_number = 0) {
+    return SetField<uint32_t>(VT_SEQUENCE_NUMBER, _sequence_number, 0);
+  }
   uint32_t frame_number() const {
     return GetField<uint32_t>(VT_FRAME_NUMBER, 0);
   }
-  const ::flatbuffers::Vector<uint8_t> *video_data() const {
-    return GetPointer<const ::flatbuffers::Vector<uint8_t> *>(VT_VIDEO_DATA);
+  bool mutate_frame_number(uint32_t _frame_number = 0) {
+    return SetField<uint32_t>(VT_FRAME_NUMBER, _frame_number, 0);
+  }
+  const flatbuffers::Vector<uint8_t> *video_data() const {
+    return GetPointer<const flatbuffers::Vector<uint8_t> *>(VT_VIDEO_DATA);
+  }
+  flatbuffers::Vector<uint8_t> *mutable_video_data() {
+    return GetPointer<flatbuffers::Vector<uint8_t> *>(VT_VIDEO_DATA);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
   bool keyframe() const {
     return GetField<uint8_t>(VT_KEYFRAME, 0) != 0;
+  }
+  bool mutate_keyframe(bool _keyframe = 0) {
+    return SetField<uint8_t>(VT_KEYFRAME, static_cast<uint8_t>(_keyframe), 0);
   }
   bool end_of_stream() const {
     return GetField<uint8_t>(VT_END_OF_STREAM, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_end_of_stream(bool _end_of_stream = 0) {
+    return SetField<uint8_t>(VT_END_OF_STREAM, static_cast<uint8_t>(_end_of_stream), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3471,9 +3804,9 @@ struct VideoStreamData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct VideoStreamDataBuilder {
   typedef VideoStreamData Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VideoStreamData::VT_SESSION_ID, session_id);
   }
   void add_sequence_number(uint32_t sequence_number) {
@@ -3482,7 +3815,7 @@ struct VideoStreamDataBuilder {
   void add_frame_number(uint32_t frame_number) {
     fbb_.AddElement<uint32_t>(VideoStreamData::VT_FRAME_NUMBER, frame_number, 0);
   }
-  void add_video_data(::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> video_data) {
+  void add_video_data(flatbuffers::Offset<flatbuffers::Vector<uint8_t>> video_data) {
     fbb_.AddOffset(VideoStreamData::VT_VIDEO_DATA, video_data);
   }
   void add_timestamp(uint64_t timestamp) {
@@ -3494,23 +3827,23 @@ struct VideoStreamDataBuilder {
   void add_end_of_stream(bool end_of_stream) {
     fbb_.AddElement<uint8_t>(VideoStreamData::VT_END_OF_STREAM, static_cast<uint8_t>(end_of_stream), 0);
   }
-  explicit VideoStreamDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VideoStreamDataBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VideoStreamData> Finish() {
+  flatbuffers::Offset<VideoStreamData> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VideoStreamData>(end);
+    auto o = flatbuffers::Offset<VideoStreamData>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VideoStreamData> CreateVideoStreamData(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
+inline flatbuffers::Offset<VideoStreamData> CreateVideoStreamData(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
     uint32_t sequence_number = 0,
     uint32_t frame_number = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<uint8_t>> video_data = 0,
+    flatbuffers::Offset<flatbuffers::Vector<uint8_t>> video_data = 0,
     uint64_t timestamp = 0,
     bool keyframe = false,
     bool end_of_stream = false) {
@@ -3525,8 +3858,8 @@ inline ::flatbuffers::Offset<VideoStreamData> CreateVideoStreamData(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VideoStreamData> CreateVideoStreamDataDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VideoStreamData> CreateVideoStreamDataDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     uint32_t sequence_number = 0,
     uint32_t frame_number = 0,
@@ -3547,19 +3880,25 @@ inline ::flatbuffers::Offset<VideoStreamData> CreateVideoStreamDataDirect(
       end_of_stream);
 }
 
-struct VideoStreamStop FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VideoStreamStop FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VideoStreamStopBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
     VT_REASON = 6
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *reason() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_REASON);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *reason() const {
+    return GetPointer<const flatbuffers::String *>(VT_REASON);
+  }
+  flatbuffers::String *mutable_reason() {
+    return GetPointer<flatbuffers::String *>(VT_REASON);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3571,37 +3910,37 @@ struct VideoStreamStop FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct VideoStreamStopBuilder {
   typedef VideoStreamStop Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VideoStreamStop::VT_SESSION_ID, session_id);
   }
-  void add_reason(::flatbuffers::Offset<::flatbuffers::String> reason) {
+  void add_reason(flatbuffers::Offset<flatbuffers::String> reason) {
     fbb_.AddOffset(VideoStreamStop::VT_REASON, reason);
   }
-  explicit VideoStreamStopBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VideoStreamStopBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VideoStreamStop> Finish() {
+  flatbuffers::Offset<VideoStreamStop> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VideoStreamStop>(end);
+    auto o = flatbuffers::Offset<VideoStreamStop>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VideoStreamStop> CreateVideoStreamStop(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> reason = 0) {
+inline flatbuffers::Offset<VideoStreamStop> CreateVideoStreamStop(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> reason = 0) {
   VideoStreamStopBuilder builder_(_fbb);
   builder_.add_reason(reason);
   builder_.add_session_id(session_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VideoStreamStop> CreateVideoStreamStopDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VideoStreamStop> CreateVideoStreamStopDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *reason = nullptr) {
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
@@ -3612,7 +3951,7 @@ inline ::flatbuffers::Offset<VideoStreamStop> CreateVideoStreamStopDirect(
       reason__);
 }
 
-struct VideoStreamStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct VideoStreamStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VideoStreamStatusBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3622,25 +3961,43 @@ struct VideoStreamStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     VT_AVG_FPS = 12,
     VT_ERROR_MESSAGE = 14
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
   }
   uint32_t frames_sent() const {
     return GetField<uint32_t>(VT_FRAMES_SENT, 0);
   }
+  bool mutate_frames_sent(uint32_t _frames_sent = 0) {
+    return SetField<uint32_t>(VT_FRAMES_SENT, _frames_sent, 0);
+  }
   uint64_t bytes_sent() const {
     return GetField<uint64_t>(VT_BYTES_SENT, 0);
+  }
+  bool mutate_bytes_sent(uint64_t _bytes_sent = 0) {
+    return SetField<uint64_t>(VT_BYTES_SENT, _bytes_sent, 0);
   }
   float avg_fps() const {
     return GetField<float>(VT_AVG_FPS, 0.0f);
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_avg_fps(float _avg_fps = 0.0f) {
+    return SetField<float>(VT_AVG_FPS, _avg_fps, 0.0f);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3657,12 +4014,12 @@ struct VideoStreamStatus FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct VideoStreamStatusBuilder {
   typedef VideoStreamStatus Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(VideoStreamStatus::VT_SESSION_ID, session_id);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(VideoStreamStatus::VT_STATUS, status);
   }
   void add_frames_sent(uint32_t frames_sent) {
@@ -3674,28 +4031,28 @@ struct VideoStreamStatusBuilder {
   void add_avg_fps(float avg_fps) {
     fbb_.AddElement<float>(VideoStreamStatus::VT_AVG_FPS, avg_fps, 0.0f);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(VideoStreamStatus::VT_ERROR_MESSAGE, error_message);
   }
-  explicit VideoStreamStatusBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit VideoStreamStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<VideoStreamStatus> Finish() {
+  flatbuffers::Offset<VideoStreamStatus> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<VideoStreamStatus>(end);
+    auto o = flatbuffers::Offset<VideoStreamStatus>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatus(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
+inline flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatus(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
     uint32_t frames_sent = 0,
     uint64_t bytes_sent = 0,
     float avg_fps = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   VideoStreamStatusBuilder builder_(_fbb);
   builder_.add_bytes_sent(bytes_sent);
   builder_.add_error_message(error_message);
@@ -3706,8 +4063,8 @@ inline ::flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatus(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatusDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatusDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *status = nullptr,
     uint32_t frames_sent = 0,
@@ -3727,7 +4084,7 @@ inline ::flatbuffers::Offset<VideoStreamStatus> CreateVideoStreamStatusDirect(
       error_message__);
 }
 
-struct AIContextUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIContextUpdate FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIContextUpdateBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3735,19 +4092,31 @@ struct AIContextUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_CONTEXT_DATA = 8,
     VT_TIMESTAMP = 10
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *context_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONTEXT_TYPE);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *context_data() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONTEXT_DATA);
+  const flatbuffers::String *context_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONTEXT_TYPE);
+  }
+  flatbuffers::String *mutable_context_type() {
+    return GetPointer<flatbuffers::String *>(VT_CONTEXT_TYPE);
+  }
+  const flatbuffers::String *context_data() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONTEXT_DATA);
+  }
+  flatbuffers::String *mutable_context_data() {
+    return GetPointer<flatbuffers::String *>(VT_CONTEXT_DATA);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3762,36 +4131,36 @@ struct AIContextUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIContextUpdateBuilder {
   typedef AIContextUpdate Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AIContextUpdate::VT_SESSION_ID, session_id);
   }
-  void add_context_type(::flatbuffers::Offset<::flatbuffers::String> context_type) {
+  void add_context_type(flatbuffers::Offset<flatbuffers::String> context_type) {
     fbb_.AddOffset(AIContextUpdate::VT_CONTEXT_TYPE, context_type);
   }
-  void add_context_data(::flatbuffers::Offset<::flatbuffers::String> context_data) {
+  void add_context_data(flatbuffers::Offset<flatbuffers::String> context_data) {
     fbb_.AddOffset(AIContextUpdate::VT_CONTEXT_DATA, context_data);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(AIContextUpdate::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit AIContextUpdateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIContextUpdateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIContextUpdate> Finish() {
+  flatbuffers::Offset<AIContextUpdate> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIContextUpdate>(end);
+    auto o = flatbuffers::Offset<AIContextUpdate>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdate(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> context_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> context_data = 0,
+inline flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdate(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> context_type = 0,
+    flatbuffers::Offset<flatbuffers::String> context_data = 0,
     uint64_t timestamp = 0) {
   AIContextUpdateBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -3801,8 +4170,8 @@ inline ::flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdate(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdateDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdateDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *context_type = nullptr,
     const char *context_data = nullptr,
@@ -3818,7 +4187,7 @@ inline ::flatbuffers::Offset<AIContextUpdate> CreateAIContextUpdateDirect(
       timestamp);
 }
 
-struct AIMemoryQuery FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIMemoryQuery FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIMemoryQueryBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
@@ -3826,19 +4195,31 @@ struct AIMemoryQuery FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_QUERY = 8,
     VT_LIMIT = 10
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *query_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_QUERY_TYPE);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::String *query() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_QUERY);
+  const flatbuffers::String *query_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_QUERY_TYPE);
+  }
+  flatbuffers::String *mutable_query_type() {
+    return GetPointer<flatbuffers::String *>(VT_QUERY_TYPE);
+  }
+  const flatbuffers::String *query() const {
+    return GetPointer<const flatbuffers::String *>(VT_QUERY);
+  }
+  flatbuffers::String *mutable_query() {
+    return GetPointer<flatbuffers::String *>(VT_QUERY);
   }
   uint32_t limit() const {
     return GetField<uint32_t>(VT_LIMIT, 10);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_limit(uint32_t _limit = 10) {
+    return SetField<uint32_t>(VT_LIMIT, _limit, 10);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3853,36 +4234,36 @@ struct AIMemoryQuery FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIMemoryQueryBuilder {
   typedef AIMemoryQuery Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AIMemoryQuery::VT_SESSION_ID, session_id);
   }
-  void add_query_type(::flatbuffers::Offset<::flatbuffers::String> query_type) {
+  void add_query_type(flatbuffers::Offset<flatbuffers::String> query_type) {
     fbb_.AddOffset(AIMemoryQuery::VT_QUERY_TYPE, query_type);
   }
-  void add_query(::flatbuffers::Offset<::flatbuffers::String> query) {
+  void add_query(flatbuffers::Offset<flatbuffers::String> query) {
     fbb_.AddOffset(AIMemoryQuery::VT_QUERY, query);
   }
   void add_limit(uint32_t limit) {
     fbb_.AddElement<uint32_t>(AIMemoryQuery::VT_LIMIT, limit, 10);
   }
-  explicit AIMemoryQueryBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIMemoryQueryBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIMemoryQuery> Finish() {
+  flatbuffers::Offset<AIMemoryQuery> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIMemoryQuery>(end);
+    auto o = flatbuffers::Offset<AIMemoryQuery>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQuery(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> query_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> query = 0,
+inline flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQuery(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::String> query_type = 0,
+    flatbuffers::Offset<flatbuffers::String> query = 0,
     uint32_t limit = 10) {
   AIMemoryQueryBuilder builder_(_fbb);
   builder_.add_limit(limit);
@@ -3892,8 +4273,8 @@ inline ::flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQuery(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQueryDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQueryDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
     const char *query_type = nullptr,
     const char *query = nullptr,
@@ -3909,23 +4290,32 @@ inline ::flatbuffers::Offset<AIMemoryQuery> CreateAIMemoryQueryDirect(
       limit);
 }
 
-struct AIMemoryResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AIMemoryResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AIMemoryResultBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SESSION_ID = 4,
     VT_RESULTS = 6,
     VT_TOTAL_COUNT = 8
   };
-  const ::flatbuffers::String *session_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SESSION_ID);
+  const flatbuffers::String *session_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SESSION_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>> *results() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>> *>(VT_RESULTS);
+  flatbuffers::String *mutable_session_id() {
+    return GetPointer<flatbuffers::String *>(VT_SESSION_ID);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>> *results() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>> *>(VT_RESULTS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>> *mutable_results() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>> *>(VT_RESULTS);
   }
   uint32_t total_count() const {
     return GetField<uint32_t>(VT_TOTAL_COUNT, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_total_count(uint32_t _total_count = 0) {
+    return SetField<uint32_t>(VT_TOTAL_COUNT, _total_count, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SESSION_ID) &&
            verifier.VerifyString(session_id()) &&
@@ -3939,32 +4329,32 @@ struct AIMemoryResult FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct AIMemoryResultBuilder {
   typedef AIMemoryResult Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_session_id(::flatbuffers::Offset<::flatbuffers::String> session_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_session_id(flatbuffers::Offset<flatbuffers::String> session_id) {
     fbb_.AddOffset(AIMemoryResult::VT_SESSION_ID, session_id);
   }
-  void add_results(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>>> results) {
+  void add_results(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>>> results) {
     fbb_.AddOffset(AIMemoryResult::VT_RESULTS, results);
   }
   void add_total_count(uint32_t total_count) {
     fbb_.AddElement<uint32_t>(AIMemoryResult::VT_TOTAL_COUNT, total_count, 0);
   }
-  explicit AIMemoryResultBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AIMemoryResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AIMemoryResult> Finish() {
+  flatbuffers::Offset<AIMemoryResult> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AIMemoryResult>(end);
+    auto o = flatbuffers::Offset<AIMemoryResult>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResult(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> session_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>>> results = 0,
+inline flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResult(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> session_id = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>>> results = 0,
     uint32_t total_count = 0) {
   AIMemoryResultBuilder builder_(_fbb);
   builder_.add_total_count(total_count);
@@ -3973,13 +4363,13 @@ inline ::flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResult(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResultDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResultDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *session_id = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>> *results = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::MemoryItem>> *results = nullptr,
     uint32_t total_count = 0) {
   auto session_id__ = session_id ? _fbb.CreateString(session_id) : 0;
-  auto results__ = results ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::MemoryItem>>(*results) : 0;
+  auto results__ = results ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::MemoryItem>>(*results) : 0;
   return Mia::Protocol::CreateAIMemoryResult(
       _fbb,
       session_id__,
@@ -3987,7 +4377,7 @@ inline ::flatbuffers::Offset<AIMemoryResult> CreateAIMemoryResultDirect(
       total_count);
 }
 
-struct MemoryItem FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MemoryItem FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MemoryItemBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ID = 4,
@@ -3996,22 +4386,37 @@ struct MemoryItem FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_RELEVANCE_SCORE = 10,
     VT_METADATA = 12
   };
-  const ::flatbuffers::String *id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ID);
+  const flatbuffers::String *id() const {
+    return GetPointer<const flatbuffers::String *>(VT_ID);
   }
-  const ::flatbuffers::String *content() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONTENT);
+  flatbuffers::String *mutable_id() {
+    return GetPointer<flatbuffers::String *>(VT_ID);
+  }
+  const flatbuffers::String *content() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONTENT);
+  }
+  flatbuffers::String *mutable_content() {
+    return GetPointer<flatbuffers::String *>(VT_CONTENT);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
   float relevance_score() const {
     return GetField<float>(VT_RELEVANCE_SCORE, 0.0f);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *metadata() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_METADATA);
+  bool mutate_relevance_score(float _relevance_score = 0.0f) {
+    return SetField<float>(VT_RELEVANCE_SCORE, _relevance_score, 0.0f);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *metadata() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_METADATA);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_metadata() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_METADATA);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ID) &&
            verifier.VerifyString(id()) &&
@@ -4028,12 +4433,12 @@ struct MemoryItem FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MemoryItemBuilder {
   typedef MemoryItem Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_id(::flatbuffers::Offset<::flatbuffers::String> id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_id(flatbuffers::Offset<flatbuffers::String> id) {
     fbb_.AddOffset(MemoryItem::VT_ID, id);
   }
-  void add_content(::flatbuffers::Offset<::flatbuffers::String> content) {
+  void add_content(flatbuffers::Offset<flatbuffers::String> content) {
     fbb_.AddOffset(MemoryItem::VT_CONTENT, content);
   }
   void add_timestamp(uint64_t timestamp) {
@@ -4042,27 +4447,27 @@ struct MemoryItemBuilder {
   void add_relevance_score(float relevance_score) {
     fbb_.AddElement<float>(MemoryItem::VT_RELEVANCE_SCORE, relevance_score, 0.0f);
   }
-  void add_metadata(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> metadata) {
+  void add_metadata(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> metadata) {
     fbb_.AddOffset(MemoryItem::VT_METADATA, metadata);
   }
-  explicit MemoryItemBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MemoryItemBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MemoryItem> Finish() {
+  flatbuffers::Offset<MemoryItem> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MemoryItem>(end);
+    auto o = flatbuffers::Offset<MemoryItem>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MemoryItem> CreateMemoryItem(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> content = 0,
+inline flatbuffers::Offset<MemoryItem> CreateMemoryItem(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> id = 0,
+    flatbuffers::Offset<flatbuffers::String> content = 0,
     uint64_t timestamp = 0,
     float relevance_score = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> metadata = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> metadata = 0) {
   MemoryItemBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
   builder_.add_metadata(metadata);
@@ -4072,16 +4477,16 @@ inline ::flatbuffers::Offset<MemoryItem> CreateMemoryItem(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MemoryItem> CreateMemoryItemDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MemoryItem> CreateMemoryItemDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *id = nullptr,
     const char *content = nullptr,
     uint64_t timestamp = 0,
     float relevance_score = 0.0f,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *metadata = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *metadata = nullptr) {
   auto id__ = id ? _fbb.CreateString(id) : 0;
   auto content__ = content ? _fbb.CreateString(content) : 0;
-  auto metadata__ = metadata ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*metadata) : 0;
+  auto metadata__ = metadata ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*metadata) : 0;
   return Mia::Protocol::CreateMemoryItem(
       _fbb,
       id__,
@@ -4091,7 +4496,7 @@ inline ::flatbuffers::Offset<MemoryItem> CreateMemoryItemDirect(
       metadata__);
 }
 
-struct ServiceAnnouncement FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ServiceAnnouncement FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ServiceAnnouncementBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICE_ID = 4,
@@ -4101,25 +4506,43 @@ struct ServiceAnnouncement FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
     VT_STATUS = 12,
     VT_LAST_HEARTBEAT = 14
   };
-  const ::flatbuffers::String *service_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SERVICE_ID);
+  const flatbuffers::String *service_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SERVICE_ID);
   }
-  const ::flatbuffers::String *service_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SERVICE_TYPE);
+  flatbuffers::String *mutable_service_id() {
+    return GetPointer<flatbuffers::String *>(VT_SERVICE_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_CAPABILITIES);
+  const flatbuffers::String *service_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_SERVICE_TYPE);
   }
-  const ::flatbuffers::String *endpoint() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ENDPOINT);
+  flatbuffers::String *mutable_service_type() {
+    return GetPointer<flatbuffers::String *>(VT_SERVICE_TYPE);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *capabilities() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_capabilities() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  const flatbuffers::String *endpoint() const {
+    return GetPointer<const flatbuffers::String *>(VT_ENDPOINT);
+  }
+  flatbuffers::String *mutable_endpoint() {
+    return GetPointer<flatbuffers::String *>(VT_ENDPOINT);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
   }
   uint64_t last_heartbeat() const {
     return GetField<uint64_t>(VT_LAST_HEARTBEAT, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_last_heartbeat(uint64_t _last_heartbeat = 0) {
+    return SetField<uint64_t>(VT_LAST_HEARTBEAT, _last_heartbeat, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICE_ID) &&
            verifier.VerifyString(service_id()) &&
@@ -4139,44 +4562,44 @@ struct ServiceAnnouncement FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct ServiceAnnouncementBuilder {
   typedef ServiceAnnouncement Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_service_id(::flatbuffers::Offset<::flatbuffers::String> service_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_service_id(flatbuffers::Offset<flatbuffers::String> service_id) {
     fbb_.AddOffset(ServiceAnnouncement::VT_SERVICE_ID, service_id);
   }
-  void add_service_type(::flatbuffers::Offset<::flatbuffers::String> service_type) {
+  void add_service_type(flatbuffers::Offset<flatbuffers::String> service_type) {
     fbb_.AddOffset(ServiceAnnouncement::VT_SERVICE_TYPE, service_type);
   }
-  void add_capabilities(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities) {
+  void add_capabilities(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities) {
     fbb_.AddOffset(ServiceAnnouncement::VT_CAPABILITIES, capabilities);
   }
-  void add_endpoint(::flatbuffers::Offset<::flatbuffers::String> endpoint) {
+  void add_endpoint(flatbuffers::Offset<flatbuffers::String> endpoint) {
     fbb_.AddOffset(ServiceAnnouncement::VT_ENDPOINT, endpoint);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(ServiceAnnouncement::VT_STATUS, status);
   }
   void add_last_heartbeat(uint64_t last_heartbeat) {
     fbb_.AddElement<uint64_t>(ServiceAnnouncement::VT_LAST_HEARTBEAT, last_heartbeat, 0);
   }
-  explicit ServiceAnnouncementBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ServiceAnnouncementBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ServiceAnnouncement> Finish() {
+  flatbuffers::Offset<ServiceAnnouncement> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServiceAnnouncement>(end);
+    auto o = flatbuffers::Offset<ServiceAnnouncement>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncement(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> service_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> service_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> endpoint = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
+inline flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncement(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> service_id = 0,
+    flatbuffers::Offset<flatbuffers::String> service_type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities = 0,
+    flatbuffers::Offset<flatbuffers::String> endpoint = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
     uint64_t last_heartbeat = 0) {
   ServiceAnnouncementBuilder builder_(_fbb);
   builder_.add_last_heartbeat(last_heartbeat);
@@ -4188,17 +4611,17 @@ inline ::flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncement(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncementDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncementDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *service_id = nullptr,
     const char *service_type = nullptr,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *capabilities = nullptr,
     const char *endpoint = nullptr,
     const char *status = nullptr,
     uint64_t last_heartbeat = 0) {
   auto service_id__ = service_id ? _fbb.CreateString(service_id) : 0;
   auto service_type__ = service_type ? _fbb.CreateString(service_type) : 0;
-  auto capabilities__ = capabilities ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*capabilities) : 0;
+  auto capabilities__ = capabilities ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*capabilities) : 0;
   auto endpoint__ = endpoint ? _fbb.CreateString(endpoint) : 0;
   auto status__ = status ? _fbb.CreateString(status) : 0;
   return Mia::Protocol::CreateServiceAnnouncement(
@@ -4211,19 +4634,25 @@ inline ::flatbuffers::Offset<ServiceAnnouncement> CreateServiceAnnouncementDirec
       last_heartbeat);
 }
 
-struct ServiceQuery FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ServiceQuery FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ServiceQueryBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICE_TYPE = 4,
     VT_CAPABILITY = 6
   };
-  const ::flatbuffers::String *service_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SERVICE_TYPE);
+  const flatbuffers::String *service_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_SERVICE_TYPE);
   }
-  const ::flatbuffers::String *capability() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CAPABILITY);
+  flatbuffers::String *mutable_service_type() {
+    return GetPointer<flatbuffers::String *>(VT_SERVICE_TYPE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *capability() const {
+    return GetPointer<const flatbuffers::String *>(VT_CAPABILITY);
+  }
+  flatbuffers::String *mutable_capability() {
+    return GetPointer<flatbuffers::String *>(VT_CAPABILITY);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICE_TYPE) &&
            verifier.VerifyString(service_type()) &&
@@ -4235,37 +4664,37 @@ struct ServiceQuery FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ServiceQueryBuilder {
   typedef ServiceQuery Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_service_type(::flatbuffers::Offset<::flatbuffers::String> service_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_service_type(flatbuffers::Offset<flatbuffers::String> service_type) {
     fbb_.AddOffset(ServiceQuery::VT_SERVICE_TYPE, service_type);
   }
-  void add_capability(::flatbuffers::Offset<::flatbuffers::String> capability) {
+  void add_capability(flatbuffers::Offset<flatbuffers::String> capability) {
     fbb_.AddOffset(ServiceQuery::VT_CAPABILITY, capability);
   }
-  explicit ServiceQueryBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ServiceQueryBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ServiceQuery> Finish() {
+  flatbuffers::Offset<ServiceQuery> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServiceQuery>(end);
+    auto o = flatbuffers::Offset<ServiceQuery>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ServiceQuery> CreateServiceQuery(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> service_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> capability = 0) {
+inline flatbuffers::Offset<ServiceQuery> CreateServiceQuery(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> service_type = 0,
+    flatbuffers::Offset<flatbuffers::String> capability = 0) {
   ServiceQueryBuilder builder_(_fbb);
   builder_.add_capability(capability);
   builder_.add_service_type(service_type);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ServiceQuery> CreateServiceQueryDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ServiceQuery> CreateServiceQueryDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *service_type = nullptr,
     const char *capability = nullptr) {
   auto service_type__ = service_type ? _fbb.CreateString(service_type) : 0;
@@ -4276,19 +4705,25 @@ inline ::flatbuffers::Offset<ServiceQuery> CreateServiceQueryDirect(
       capability__);
 }
 
-struct ServiceList FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ServiceList FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ServiceListBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICES = 4,
     VT_QUERY_TIMESTAMP = 6
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *services() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *>(VT_SERVICES);
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *services() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *>(VT_SERVICES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *mutable_services() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *>(VT_SERVICES);
   }
   uint64_t query_timestamp() const {
     return GetField<uint64_t>(VT_QUERY_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_query_timestamp(uint64_t _query_timestamp = 0) {
+    return SetField<uint64_t>(VT_QUERY_TIMESTAMP, _query_timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICES) &&
            verifier.VerifyVector(services()) &&
@@ -4300,28 +4735,28 @@ struct ServiceList FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ServiceListBuilder {
   typedef ServiceList Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_services(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>> services) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_services(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>> services) {
     fbb_.AddOffset(ServiceList::VT_SERVICES, services);
   }
   void add_query_timestamp(uint64_t query_timestamp) {
     fbb_.AddElement<uint64_t>(ServiceList::VT_QUERY_TIMESTAMP, query_timestamp, 0);
   }
-  explicit ServiceListBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ServiceListBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ServiceList> Finish() {
+  flatbuffers::Offset<ServiceList> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServiceList>(end);
+    auto o = flatbuffers::Offset<ServiceList>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ServiceList> CreateServiceList(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>> services = 0,
+inline flatbuffers::Offset<ServiceList> CreateServiceList(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>> services = 0,
     uint64_t query_timestamp = 0) {
   ServiceListBuilder builder_(_fbb);
   builder_.add_query_timestamp(query_timestamp);
@@ -4329,18 +4764,18 @@ inline ::flatbuffers::Offset<ServiceList> CreateServiceList(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ServiceList> CreateServiceListDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *services = nullptr,
+inline flatbuffers::Offset<ServiceList> CreateServiceListDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>> *services = nullptr,
     uint64_t query_timestamp = 0) {
-  auto services__ = services ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>(*services) : 0;
+  auto services__ = services ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::ServiceAnnouncement>>(*services) : 0;
   return Mia::Protocol::CreateServiceList(
       _fbb,
       services__,
       query_timestamp);
 }
 
-struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MQTTMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TOPIC = 4,
@@ -4348,19 +4783,31 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_QOS = 8,
     VT_RETAIN = 10
   };
-  const ::flatbuffers::String *topic() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TOPIC);
+  const flatbuffers::String *topic() const {
+    return GetPointer<const flatbuffers::String *>(VT_TOPIC);
   }
-  const ::flatbuffers::String *payload() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
+  flatbuffers::String *mutable_topic() {
+    return GetPointer<flatbuffers::String *>(VT_TOPIC);
+  }
+  const flatbuffers::String *payload() const {
+    return GetPointer<const flatbuffers::String *>(VT_PAYLOAD);
+  }
+  flatbuffers::String *mutable_payload() {
+    return GetPointer<flatbuffers::String *>(VT_PAYLOAD);
   }
   int32_t qos() const {
     return GetField<int32_t>(VT_QOS, 0);
   }
+  bool mutate_qos(int32_t _qos = 0) {
+    return SetField<int32_t>(VT_QOS, _qos, 0);
+  }
   bool retain() const {
     return GetField<uint8_t>(VT_RETAIN, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_retain(bool _retain = 0) {
+    return SetField<uint8_t>(VT_RETAIN, static_cast<uint8_t>(_retain), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_TOPIC) &&
            verifier.VerifyString(topic()) &&
@@ -4374,12 +4821,12 @@ struct MQTTMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MQTTMessageBuilder {
   typedef MQTTMessage Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_topic(::flatbuffers::Offset<::flatbuffers::String> topic) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_topic(flatbuffers::Offset<flatbuffers::String> topic) {
     fbb_.AddOffset(MQTTMessage::VT_TOPIC, topic);
   }
-  void add_payload(::flatbuffers::Offset<::flatbuffers::String> payload) {
+  void add_payload(flatbuffers::Offset<flatbuffers::String> payload) {
     fbb_.AddOffset(MQTTMessage::VT_PAYLOAD, payload);
   }
   void add_qos(int32_t qos) {
@@ -4388,21 +4835,21 @@ struct MQTTMessageBuilder {
   void add_retain(bool retain) {
     fbb_.AddElement<uint8_t>(MQTTMessage::VT_RETAIN, static_cast<uint8_t>(retain), 0);
   }
-  explicit MQTTMessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MQTTMessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MQTTMessage> Finish() {
+  flatbuffers::Offset<MQTTMessage> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MQTTMessage>(end);
+    auto o = flatbuffers::Offset<MQTTMessage>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> topic = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> payload = 0,
+inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> topic = 0,
+    flatbuffers::Offset<flatbuffers::String> payload = 0,
     int32_t qos = 0,
     bool retain = false) {
   MQTTMessageBuilder builder_(_fbb);
@@ -4413,8 +4860,8 @@ inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessage(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *topic = nullptr,
     const char *payload = nullptr,
     int32_t qos = 0,
@@ -4429,15 +4876,18 @@ inline ::flatbuffers::Offset<MQTTMessage> CreateMQTTMessageDirect(
       retain);
 }
 
-struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ErrorResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ERROR = 4
   };
-  const ::flatbuffers::String *error() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR);
+  const flatbuffers::String *error() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_error() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_ERROR) &&
            verifier.VerifyString(error()) &&
@@ -4447,32 +4897,32 @@ struct ErrorResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ErrorResponseBuilder {
   typedef ErrorResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_error(::flatbuffers::Offset<::flatbuffers::String> error) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_error(flatbuffers::Offset<flatbuffers::String> error) {
     fbb_.AddOffset(ErrorResponse::VT_ERROR, error);
   }
-  explicit ErrorResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ErrorResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ErrorResponse> Finish() {
+  flatbuffers::Offset<ErrorResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ErrorResponse>(end);
+    auto o = flatbuffers::Offset<ErrorResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ErrorResponse> CreateErrorResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> error = 0) {
+inline flatbuffers::Offset<ErrorResponse> CreateErrorResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> error = 0) {
   ErrorResponseBuilder builder_(_fbb);
   builder_.add_error(error);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *error = nullptr) {
   auto error__ = error ? _fbb.CreateString(error) : 0;
   return Mia::Protocol::CreateErrorResponse(
@@ -4480,7 +4930,7 @@ inline ::flatbuffers::Offset<ErrorResponse> CreateErrorResponseDirect(
       error__);
 }
 
-struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_REQUEST_TYPE = 4,
@@ -4496,112 +4946,115 @@ struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   template<typename T> const T *request_as() const;
   const Mia::Protocol::DownloadRequest *request_as_DownloadRequest() const {
-    return request_type() == Mia::Protocol::Request_DownloadRequest ? static_cast<const Mia::Protocol::DownloadRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::DownloadRequest ? static_cast<const Mia::Protocol::DownloadRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::DownloadStatusRequest *request_as_DownloadStatusRequest() const {
-    return request_type() == Mia::Protocol::Request_DownloadStatusRequest ? static_cast<const Mia::Protocol::DownloadStatusRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::DownloadStatusRequest ? static_cast<const Mia::Protocol::DownloadStatusRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::DownloadAbortRequest *request_as_DownloadAbortRequest() const {
-    return request_type() == Mia::Protocol::Request_DownloadAbortRequest ? static_cast<const Mia::Protocol::DownloadAbortRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::DownloadAbortRequest ? static_cast<const Mia::Protocol::DownloadAbortRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::ShutdownRequest *request_as_ShutdownRequest() const {
-    return request_type() == Mia::Protocol::Request_ShutdownRequest ? static_cast<const Mia::Protocol::ShutdownRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::ShutdownRequest ? static_cast<const Mia::Protocol::ShutdownRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::GPIOConfigureRequest *request_as_GPIOConfigureRequest() const {
-    return request_type() == Mia::Protocol::Request_GPIOConfigureRequest ? static_cast<const Mia::Protocol::GPIOConfigureRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::GPIOConfigureRequest ? static_cast<const Mia::Protocol::GPIOConfigureRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::GPIOSetRequest *request_as_GPIOSetRequest() const {
-    return request_type() == Mia::Protocol::Request_GPIOSetRequest ? static_cast<const Mia::Protocol::GPIOSetRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::GPIOSetRequest ? static_cast<const Mia::Protocol::GPIOSetRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::GPIOGetRequest *request_as_GPIOGetRequest() const {
-    return request_type() == Mia::Protocol::Request_GPIOGetRequest ? static_cast<const Mia::Protocol::GPIOGetRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::GPIOGetRequest ? static_cast<const Mia::Protocol::GPIOGetRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::GPIOStatusRequest *request_as_GPIOStatusRequest() const {
-    return request_type() == Mia::Protocol::Request_GPIOStatusRequest ? static_cast<const Mia::Protocol::GPIOStatusRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::GPIOStatusRequest ? static_cast<const Mia::Protocol::GPIOStatusRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::SystemStatusRequest *request_as_SystemStatusRequest() const {
-    return request_type() == Mia::Protocol::Request_SystemStatusRequest ? static_cast<const Mia::Protocol::SystemStatusRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::SystemStatusRequest ? static_cast<const Mia::Protocol::SystemStatusRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::DeviceDiscoveryRequest *request_as_DeviceDiscoveryRequest() const {
-    return request_type() == Mia::Protocol::Request_DeviceDiscoveryRequest ? static_cast<const Mia::Protocol::DeviceDiscoveryRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::DeviceDiscoveryRequest ? static_cast<const Mia::Protocol::DeviceDiscoveryRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::TelemetryRequest *request_as_TelemetryRequest() const {
-    return request_type() == Mia::Protocol::Request_TelemetryRequest ? static_cast<const Mia::Protocol::TelemetryRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::TelemetryRequest ? static_cast<const Mia::Protocol::TelemetryRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::CommandAckRequest *request_as_CommandAckRequest() const {
-    return request_type() == Mia::Protocol::Request_CommandAckRequest ? static_cast<const Mia::Protocol::CommandAckRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::CommandAckRequest ? static_cast<const Mia::Protocol::CommandAckRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::HealthCheckRequest *request_as_HealthCheckRequest() const {
-    return request_type() == Mia::Protocol::Request_HealthCheckRequest ? static_cast<const Mia::Protocol::HealthCheckRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::HealthCheckRequest ? static_cast<const Mia::Protocol::HealthCheckRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::VoiceCommandRequest *request_as_VoiceCommandRequest() const {
-    return request_type() == Mia::Protocol::Request_VoiceCommandRequest ? static_cast<const Mia::Protocol::VoiceCommandRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::VoiceCommandRequest ? static_cast<const Mia::Protocol::VoiceCommandRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::AudioProcessRequest *request_as_AudioProcessRequest() const {
-    return request_type() == Mia::Protocol::Request_AudioProcessRequest ? static_cast<const Mia::Protocol::AudioProcessRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AudioProcessRequest ? static_cast<const Mia::Protocol::AudioProcessRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::AudioStreamStart *request_as_AudioStreamStart() const {
-    return request_type() == Mia::Protocol::Request_AudioStreamStart ? static_cast<const Mia::Protocol::AudioStreamStart *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AudioStreamStart ? static_cast<const Mia::Protocol::AudioStreamStart *>(request()) : nullptr;
   }
   const Mia::Protocol::VideoStreamStart *request_as_VideoStreamStart() const {
-    return request_type() == Mia::Protocol::Request_VideoStreamStart ? static_cast<const Mia::Protocol::VideoStreamStart *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::VideoStreamStart ? static_cast<const Mia::Protocol::VideoStreamStart *>(request()) : nullptr;
   }
   const Mia::Protocol::VideoStreamConfig *request_as_VideoStreamConfig() const {
-    return request_type() == Mia::Protocol::Request_VideoStreamConfig ? static_cast<const Mia::Protocol::VideoStreamConfig *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::VideoStreamConfig ? static_cast<const Mia::Protocol::VideoStreamConfig *>(request()) : nullptr;
   }
   const Mia::Protocol::AIAgentRequest *request_as_AIAgentRequest() const {
-    return request_type() == Mia::Protocol::Request_AIAgentRequest ? static_cast<const Mia::Protocol::AIAgentRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AIAgentRequest ? static_cast<const Mia::Protocol::AIAgentRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::AIContextUpdate *request_as_AIContextUpdate() const {
-    return request_type() == Mia::Protocol::Request_AIContextUpdate ? static_cast<const Mia::Protocol::AIContextUpdate *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AIContextUpdate ? static_cast<const Mia::Protocol::AIContextUpdate *>(request()) : nullptr;
   }
   const Mia::Protocol::AIMemoryQuery *request_as_AIMemoryQuery() const {
-    return request_type() == Mia::Protocol::Request_AIMemoryQuery ? static_cast<const Mia::Protocol::AIMemoryQuery *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AIMemoryQuery ? static_cast<const Mia::Protocol::AIMemoryQuery *>(request()) : nullptr;
   }
   const Mia::Protocol::MCPToolCall *request_as_MCPToolCall() const {
-    return request_type() == Mia::Protocol::Request_MCPToolCall ? static_cast<const Mia::Protocol::MCPToolCall *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::MCPToolCall ? static_cast<const Mia::Protocol::MCPToolCall *>(request()) : nullptr;
   }
   const Mia::Protocol::HardwareConfig *request_as_HardwareConfig() const {
-    return request_type() == Mia::Protocol::Request_HardwareConfig ? static_cast<const Mia::Protocol::HardwareConfig *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::HardwareConfig ? static_cast<const Mia::Protocol::HardwareConfig *>(request()) : nullptr;
   }
   const Mia::Protocol::ServiceQuery *request_as_ServiceQuery() const {
-    return request_type() == Mia::Protocol::Request_ServiceQuery ? static_cast<const Mia::Protocol::ServiceQuery *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::ServiceQuery ? static_cast<const Mia::Protocol::ServiceQuery *>(request()) : nullptr;
   }
   const Mia::Protocol::AuthenticationRequest *request_as_AuthenticationRequest() const {
-    return request_type() == Mia::Protocol::Request_AuthenticationRequest ? static_cast<const Mia::Protocol::AuthenticationRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AuthenticationRequest ? static_cast<const Mia::Protocol::AuthenticationRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::AuthorizationRequest *request_as_AuthorizationRequest() const {
-    return request_type() == Mia::Protocol::Request_AuthorizationRequest ? static_cast<const Mia::Protocol::AuthorizationRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::AuthorizationRequest ? static_cast<const Mia::Protocol::AuthorizationRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::PluginLoadRequest *request_as_PluginLoadRequest() const {
-    return request_type() == Mia::Protocol::Request_PluginLoadRequest ? static_cast<const Mia::Protocol::PluginLoadRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::PluginLoadRequest ? static_cast<const Mia::Protocol::PluginLoadRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::PluginUnloadRequest *request_as_PluginUnloadRequest() const {
-    return request_type() == Mia::Protocol::Request_PluginUnloadRequest ? static_cast<const Mia::Protocol::PluginUnloadRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::PluginUnloadRequest ? static_cast<const Mia::Protocol::PluginUnloadRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::ConfigurationUpdate *request_as_ConfigurationUpdate() const {
-    return request_type() == Mia::Protocol::Request_ConfigurationUpdate ? static_cast<const Mia::Protocol::ConfigurationUpdate *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::ConfigurationUpdate ? static_cast<const Mia::Protocol::ConfigurationUpdate *>(request()) : nullptr;
   }
   const Mia::Protocol::EventSubscription *request_as_EventSubscription() const {
-    return request_type() == Mia::Protocol::Request_EventSubscription ? static_cast<const Mia::Protocol::EventSubscription *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::EventSubscription ? static_cast<const Mia::Protocol::EventSubscription *>(request()) : nullptr;
   }
   const Mia::Protocol::WorkflowStartRequest *request_as_WorkflowStartRequest() const {
-    return request_type() == Mia::Protocol::Request_WorkflowStartRequest ? static_cast<const Mia::Protocol::WorkflowStartRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::WorkflowStartRequest ? static_cast<const Mia::Protocol::WorkflowStartRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::WorkflowControlRequest *request_as_WorkflowControlRequest() const {
-    return request_type() == Mia::Protocol::Request_WorkflowControlRequest ? static_cast<const Mia::Protocol::WorkflowControlRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::WorkflowControlRequest ? static_cast<const Mia::Protocol::WorkflowControlRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::ModelLoadRequest *request_as_ModelLoadRequest() const {
-    return request_type() == Mia::Protocol::Request_ModelLoadRequest ? static_cast<const Mia::Protocol::ModelLoadRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::ModelLoadRequest ? static_cast<const Mia::Protocol::ModelLoadRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::InferenceRequest *request_as_InferenceRequest() const {
-    return request_type() == Mia::Protocol::Request_InferenceRequest ? static_cast<const Mia::Protocol::InferenceRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::InferenceRequest ? static_cast<const Mia::Protocol::InferenceRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::LockRequest *request_as_LockRequest() const {
-    return request_type() == Mia::Protocol::Request_LockRequest ? static_cast<const Mia::Protocol::LockRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::LockRequest ? static_cast<const Mia::Protocol::LockRequest *>(request()) : nullptr;
   }
   const Mia::Protocol::UnlockRequest *request_as_UnlockRequest() const {
-    return request_type() == Mia::Protocol::Request_UnlockRequest ? static_cast<const Mia::Protocol::UnlockRequest *>(request()) : nullptr;
+    return request_type() == Mia::Protocol::Request::UnlockRequest ? static_cast<const Mia::Protocol::UnlockRequest *>(request()) : nullptr;
+  }
+  void *mutable_request() {
+    return GetPointer<void *>(VT_REQUEST);
   }
   Mia::Protocol::Response response_type() const {
     return static_cast<Mia::Protocol::Response>(GetField<uint8_t>(VT_RESPONSE_TYPE, 0));
@@ -4611,105 +5064,108 @@ struct Message FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   }
   template<typename T> const T *response_as() const;
   const Mia::Protocol::DownloadResponse *response_as_DownloadResponse() const {
-    return response_type() == Mia::Protocol::Response_DownloadResponse ? static_cast<const Mia::Protocol::DownloadResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::DownloadResponse ? static_cast<const Mia::Protocol::DownloadResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::DownloadStatusResponse *response_as_DownloadStatusResponse() const {
-    return response_type() == Mia::Protocol::Response_DownloadStatusResponse ? static_cast<const Mia::Protocol::DownloadStatusResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::DownloadStatusResponse ? static_cast<const Mia::Protocol::DownloadStatusResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::ErrorResponse *response_as_ErrorResponse() const {
-    return response_type() == Mia::Protocol::Response_ErrorResponse ? static_cast<const Mia::Protocol::ErrorResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::ErrorResponse ? static_cast<const Mia::Protocol::ErrorResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::GPIOConfigureResponse *response_as_GPIOConfigureResponse() const {
-    return response_type() == Mia::Protocol::Response_GPIOConfigureResponse ? static_cast<const Mia::Protocol::GPIOConfigureResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::GPIOConfigureResponse ? static_cast<const Mia::Protocol::GPIOConfigureResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::GPIOSetResponse *response_as_GPIOSetResponse() const {
-    return response_type() == Mia::Protocol::Response_GPIOSetResponse ? static_cast<const Mia::Protocol::GPIOSetResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::GPIOSetResponse ? static_cast<const Mia::Protocol::GPIOSetResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::GPIOGetResponse *response_as_GPIOGetResponse() const {
-    return response_type() == Mia::Protocol::Response_GPIOGetResponse ? static_cast<const Mia::Protocol::GPIOGetResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::GPIOGetResponse ? static_cast<const Mia::Protocol::GPIOGetResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::GPIOStatusResponse *response_as_GPIOStatusResponse() const {
-    return response_type() == Mia::Protocol::Response_GPIOStatusResponse ? static_cast<const Mia::Protocol::GPIOStatusResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::GPIOStatusResponse ? static_cast<const Mia::Protocol::GPIOStatusResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::SystemStatusResponse *response_as_SystemStatusResponse() const {
-    return response_type() == Mia::Protocol::Response_SystemStatusResponse ? static_cast<const Mia::Protocol::SystemStatusResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::SystemStatusResponse ? static_cast<const Mia::Protocol::SystemStatusResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::DeviceDiscoveryResponse *response_as_DeviceDiscoveryResponse() const {
-    return response_type() == Mia::Protocol::Response_DeviceDiscoveryResponse ? static_cast<const Mia::Protocol::DeviceDiscoveryResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::DeviceDiscoveryResponse ? static_cast<const Mia::Protocol::DeviceDiscoveryResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::TelemetryResponse *response_as_TelemetryResponse() const {
-    return response_type() == Mia::Protocol::Response_TelemetryResponse ? static_cast<const Mia::Protocol::TelemetryResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::TelemetryResponse ? static_cast<const Mia::Protocol::TelemetryResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::CommandAckResponse *response_as_CommandAckResponse() const {
-    return response_type() == Mia::Protocol::Response_CommandAckResponse ? static_cast<const Mia::Protocol::CommandAckResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::CommandAckResponse ? static_cast<const Mia::Protocol::CommandAckResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::HealthCheckResponse *response_as_HealthCheckResponse() const {
-    return response_type() == Mia::Protocol::Response_HealthCheckResponse ? static_cast<const Mia::Protocol::HealthCheckResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::HealthCheckResponse ? static_cast<const Mia::Protocol::HealthCheckResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::VoiceCommandResponse *response_as_VoiceCommandResponse() const {
-    return response_type() == Mia::Protocol::Response_VoiceCommandResponse ? static_cast<const Mia::Protocol::VoiceCommandResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::VoiceCommandResponse ? static_cast<const Mia::Protocol::VoiceCommandResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::AudioProcessResponse *response_as_AudioProcessResponse() const {
-    return response_type() == Mia::Protocol::Response_AudioProcessResponse ? static_cast<const Mia::Protocol::AudioProcessResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AudioProcessResponse ? static_cast<const Mia::Protocol::AudioProcessResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::AudioStreamStop *response_as_AudioStreamStop() const {
-    return response_type() == Mia::Protocol::Response_AudioStreamStop ? static_cast<const Mia::Protocol::AudioStreamStop *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AudioStreamStop ? static_cast<const Mia::Protocol::AudioStreamStop *>(response()) : nullptr;
   }
   const Mia::Protocol::VideoStreamStop *response_as_VideoStreamStop() const {
-    return response_type() == Mia::Protocol::Response_VideoStreamStop ? static_cast<const Mia::Protocol::VideoStreamStop *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::VideoStreamStop ? static_cast<const Mia::Protocol::VideoStreamStop *>(response()) : nullptr;
   }
   const Mia::Protocol::VideoStreamStatus *response_as_VideoStreamStatus() const {
-    return response_type() == Mia::Protocol::Response_VideoStreamStatus ? static_cast<const Mia::Protocol::VideoStreamStatus *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::VideoStreamStatus ? static_cast<const Mia::Protocol::VideoStreamStatus *>(response()) : nullptr;
   }
   const Mia::Protocol::AIAgentResponse *response_as_AIAgentResponse() const {
-    return response_type() == Mia::Protocol::Response_AIAgentResponse ? static_cast<const Mia::Protocol::AIAgentResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AIAgentResponse ? static_cast<const Mia::Protocol::AIAgentResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::AIMemoryResult *response_as_AIMemoryResult() const {
-    return response_type() == Mia::Protocol::Response_AIMemoryResult ? static_cast<const Mia::Protocol::AIMemoryResult *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AIMemoryResult ? static_cast<const Mia::Protocol::AIMemoryResult *>(response()) : nullptr;
   }
   const Mia::Protocol::MCPToolResult *response_as_MCPToolResult() const {
-    return response_type() == Mia::Protocol::Response_MCPToolResult ? static_cast<const Mia::Protocol::MCPToolResult *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::MCPToolResult ? static_cast<const Mia::Protocol::MCPToolResult *>(response()) : nullptr;
   }
   const Mia::Protocol::HardwareEvent *response_as_HardwareEvent() const {
-    return response_type() == Mia::Protocol::Response_HardwareEvent ? static_cast<const Mia::Protocol::HardwareEvent *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::HardwareEvent ? static_cast<const Mia::Protocol::HardwareEvent *>(response()) : nullptr;
   }
   const Mia::Protocol::ServiceList *response_as_ServiceList() const {
-    return response_type() == Mia::Protocol::Response_ServiceList ? static_cast<const Mia::Protocol::ServiceList *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::ServiceList ? static_cast<const Mia::Protocol::ServiceList *>(response()) : nullptr;
   }
   const Mia::Protocol::AuthenticationResponse *response_as_AuthenticationResponse() const {
-    return response_type() == Mia::Protocol::Response_AuthenticationResponse ? static_cast<const Mia::Protocol::AuthenticationResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AuthenticationResponse ? static_cast<const Mia::Protocol::AuthenticationResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::AuthorizationResponse *response_as_AuthorizationResponse() const {
-    return response_type() == Mia::Protocol::Response_AuthorizationResponse ? static_cast<const Mia::Protocol::AuthorizationResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::AuthorizationResponse ? static_cast<const Mia::Protocol::AuthorizationResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::PluginLoadResponse *response_as_PluginLoadResponse() const {
-    return response_type() == Mia::Protocol::Response_PluginLoadResponse ? static_cast<const Mia::Protocol::PluginLoadResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::PluginLoadResponse ? static_cast<const Mia::Protocol::PluginLoadResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::ConfigurationSnapshot *response_as_ConfigurationSnapshot() const {
-    return response_type() == Mia::Protocol::Response_ConfigurationSnapshot ? static_cast<const Mia::Protocol::ConfigurationSnapshot *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::ConfigurationSnapshot ? static_cast<const Mia::Protocol::ConfigurationSnapshot *>(response()) : nullptr;
   }
   const Mia::Protocol::MetricReport *response_as_MetricReport() const {
-    return response_type() == Mia::Protocol::Response_MetricReport ? static_cast<const Mia::Protocol::MetricReport *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::MetricReport ? static_cast<const Mia::Protocol::MetricReport *>(response()) : nullptr;
   }
   const Mia::Protocol::HealthReport *response_as_HealthReport() const {
-    return response_type() == Mia::Protocol::Response_HealthReport ? static_cast<const Mia::Protocol::HealthReport *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::HealthReport ? static_cast<const Mia::Protocol::HealthReport *>(response()) : nullptr;
   }
   const Mia::Protocol::EventAcknowledgment *response_as_EventAcknowledgment() const {
-    return response_type() == Mia::Protocol::Response_EventAcknowledgment ? static_cast<const Mia::Protocol::EventAcknowledgment *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::EventAcknowledgment ? static_cast<const Mia::Protocol::EventAcknowledgment *>(response()) : nullptr;
   }
   const Mia::Protocol::WorkflowStatusResponse *response_as_WorkflowStatusResponse() const {
-    return response_type() == Mia::Protocol::Response_WorkflowStatusResponse ? static_cast<const Mia::Protocol::WorkflowStatusResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::WorkflowStatusResponse ? static_cast<const Mia::Protocol::WorkflowStatusResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::ModelLoadResponse *response_as_ModelLoadResponse() const {
-    return response_type() == Mia::Protocol::Response_ModelLoadResponse ? static_cast<const Mia::Protocol::ModelLoadResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::ModelLoadResponse ? static_cast<const Mia::Protocol::ModelLoadResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::InferenceResponse *response_as_InferenceResponse() const {
-    return response_type() == Mia::Protocol::Response_InferenceResponse ? static_cast<const Mia::Protocol::InferenceResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::InferenceResponse ? static_cast<const Mia::Protocol::InferenceResponse *>(response()) : nullptr;
   }
   const Mia::Protocol::LockResponse *response_as_LockResponse() const {
-    return response_type() == Mia::Protocol::Response_LockResponse ? static_cast<const Mia::Protocol::LockResponse *>(response()) : nullptr;
+    return response_type() == Mia::Protocol::Response::LockResponse ? static_cast<const Mia::Protocol::LockResponse *>(response()) : nullptr;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  void *mutable_response() {
+    return GetPointer<void *>(VT_RESPONSE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_REQUEST_TYPE, 1) &&
            VerifyOffset(verifier, VT_REQUEST) &&
@@ -4999,37 +5455,37 @@ template<> inline const Mia::Protocol::LockResponse *Message::response_as<Mia::P
 
 struct MessageBuilder {
   typedef Message Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_request_type(Mia::Protocol::Request request_type) {
     fbb_.AddElement<uint8_t>(Message::VT_REQUEST_TYPE, static_cast<uint8_t>(request_type), 0);
   }
-  void add_request(::flatbuffers::Offset<void> request) {
+  void add_request(flatbuffers::Offset<void> request) {
     fbb_.AddOffset(Message::VT_REQUEST, request);
   }
   void add_response_type(Mia::Protocol::Response response_type) {
     fbb_.AddElement<uint8_t>(Message::VT_RESPONSE_TYPE, static_cast<uint8_t>(response_type), 0);
   }
-  void add_response(::flatbuffers::Offset<void> response) {
+  void add_response(flatbuffers::Offset<void> response) {
     fbb_.AddOffset(Message::VT_RESPONSE, response);
   }
-  explicit MessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<Message> Finish() {
+  flatbuffers::Offset<Message> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<Message>(end);
+    auto o = flatbuffers::Offset<Message>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<Message> CreateMessage(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    Mia::Protocol::Request request_type = Mia::Protocol::Request_NONE,
-    ::flatbuffers::Offset<void> request = 0,
-    Mia::Protocol::Response response_type = Mia::Protocol::Response_NONE,
-    ::flatbuffers::Offset<void> response = 0) {
+inline flatbuffers::Offset<Message> CreateMessage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    Mia::Protocol::Request request_type = Mia::Protocol::Request::NONE,
+    flatbuffers::Offset<void> request = 0,
+    Mia::Protocol::Response response_type = Mia::Protocol::Response::NONE,
+    flatbuffers::Offset<void> response = 0) {
   MessageBuilder builder_(_fbb);
   builder_.add_response(response);
   builder_.add_request(request);
@@ -5038,9 +5494,9 @@ inline ::flatbuffers::Offset<Message> CreateMessage(
   return builder_.Finish();
 }
 
-struct SystemStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct SystemStatusRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef SystemStatusRequestBuilder Builder;
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            verifier.EndTable();
   }
@@ -5048,26 +5504,26 @@ struct SystemStatusRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct SystemStatusRequestBuilder {
   typedef SystemStatusRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  explicit SystemStatusRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit SystemStatusRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<SystemStatusRequest> Finish() {
+  flatbuffers::Offset<SystemStatusRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<SystemStatusRequest>(end);
+    auto o = flatbuffers::Offset<SystemStatusRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<SystemStatusRequest> CreateSystemStatusRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb) {
+inline flatbuffers::Offset<SystemStatusRequest> CreateSystemStatusRequest(
+    flatbuffers::FlatBufferBuilder &_fbb) {
   SystemStatusRequestBuilder builder_(_fbb);
   return builder_.Finish();
 }
 
-struct SystemStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct SystemStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef SystemStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_UPTIME_SECONDS = 4,
@@ -5080,22 +5536,40 @@ struct SystemStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
   uint64_t uptime_seconds() const {
     return GetField<uint64_t>(VT_UPTIME_SECONDS, 0);
   }
+  bool mutate_uptime_seconds(uint64_t _uptime_seconds = 0) {
+    return SetField<uint64_t>(VT_UPTIME_SECONDS, _uptime_seconds, 0);
+  }
   uint32_t memory_used_mb() const {
     return GetField<uint32_t>(VT_MEMORY_USED_MB, 0);
+  }
+  bool mutate_memory_used_mb(uint32_t _memory_used_mb = 0) {
+    return SetField<uint32_t>(VT_MEMORY_USED_MB, _memory_used_mb, 0);
   }
   uint32_t memory_total_mb() const {
     return GetField<uint32_t>(VT_MEMORY_TOTAL_MB, 0);
   }
+  bool mutate_memory_total_mb(uint32_t _memory_total_mb = 0) {
+    return SetField<uint32_t>(VT_MEMORY_TOTAL_MB, _memory_total_mb, 0);
+  }
   float cpu_usage_percent() const {
     return GetField<float>(VT_CPU_USAGE_PERCENT, 0.0f);
+  }
+  bool mutate_cpu_usage_percent(float _cpu_usage_percent = 0.0f) {
+    return SetField<float>(VT_CPU_USAGE_PERCENT, _cpu_usage_percent, 0.0f);
   }
   uint32_t active_devices() const {
     return GetField<uint32_t>(VT_ACTIVE_DEVICES, 0);
   }
+  bool mutate_active_devices(uint32_t _active_devices = 0) {
+    return SetField<uint32_t>(VT_ACTIVE_DEVICES, _active_devices, 0);
+  }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint64_t>(verifier, VT_UPTIME_SECONDS, 8) &&
            VerifyField<uint32_t>(verifier, VT_MEMORY_USED_MB, 4) &&
@@ -5109,8 +5583,8 @@ struct SystemStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct SystemStatusResponseBuilder {
   typedef SystemStatusResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_uptime_seconds(uint64_t uptime_seconds) {
     fbb_.AddElement<uint64_t>(SystemStatusResponse::VT_UPTIME_SECONDS, uptime_seconds, 0);
   }
@@ -5129,19 +5603,19 @@ struct SystemStatusResponseBuilder {
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(SystemStatusResponse::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit SystemStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit SystemStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<SystemStatusResponse> Finish() {
+  flatbuffers::Offset<SystemStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<SystemStatusResponse>(end);
+    auto o = flatbuffers::Offset<SystemStatusResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<SystemStatusResponse> CreateSystemStatusResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<SystemStatusResponse> CreateSystemStatusResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     uint64_t uptime_seconds = 0,
     uint32_t memory_used_mb = 0,
     uint32_t memory_total_mb = 0,
@@ -5158,15 +5632,18 @@ inline ::flatbuffers::Offset<SystemStatusResponse> CreateSystemStatusResponse(
   return builder_.Finish();
 }
 
-struct DeviceDiscoveryRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DeviceDiscoveryRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DeviceDiscoveryRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_TYPE = 4
   };
-  const ::flatbuffers::String *device_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_TYPE);
+  const flatbuffers::String *device_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_TYPE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_device_type() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_TYPE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_TYPE) &&
            verifier.VerifyString(device_type()) &&
@@ -5176,32 +5653,32 @@ struct DeviceDiscoveryRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
 
 struct DeviceDiscoveryRequestBuilder {
   typedef DeviceDiscoveryRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_type(::flatbuffers::Offset<::flatbuffers::String> device_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_type(flatbuffers::Offset<flatbuffers::String> device_type) {
     fbb_.AddOffset(DeviceDiscoveryRequest::VT_DEVICE_TYPE, device_type);
   }
-  explicit DeviceDiscoveryRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DeviceDiscoveryRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DeviceDiscoveryRequest> Finish() {
+  flatbuffers::Offset<DeviceDiscoveryRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DeviceDiscoveryRequest>(end);
+    auto o = flatbuffers::Offset<DeviceDiscoveryRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DeviceDiscoveryRequest> CreateDeviceDiscoveryRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_type = 0) {
+inline flatbuffers::Offset<DeviceDiscoveryRequest> CreateDeviceDiscoveryRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_type = 0) {
   DeviceDiscoveryRequestBuilder builder_(_fbb);
   builder_.add_device_type(device_type);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DeviceDiscoveryRequest> CreateDeviceDiscoveryRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DeviceDiscoveryRequest> CreateDeviceDiscoveryRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_type = nullptr) {
   auto device_type__ = device_type ? _fbb.CreateString(device_type) : 0;
   return Mia::Protocol::CreateDeviceDiscoveryRequest(
@@ -5209,7 +5686,7 @@ inline ::flatbuffers::Offset<DeviceDiscoveryRequest> CreateDeviceDiscoveryReques
       device_type__);
 }
 
-struct DeviceInfo FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DeviceInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DeviceInfoBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_ID = 4,
@@ -5219,25 +5696,43 @@ struct DeviceInfo FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LAST_SEEN = 12,
     VT_METADATA = 14
   };
-  const ::flatbuffers::String *device_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_ID);
+  const flatbuffers::String *device_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::String *device_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_TYPE);
+  flatbuffers::String *mutable_device_id() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_CAPABILITIES);
+  const flatbuffers::String *device_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_TYPE);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_device_type() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_TYPE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *capabilities() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_capabilities() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
   }
   uint64_t last_seen() const {
     return GetField<uint64_t>(VT_LAST_SEEN, 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  bool mutate_last_seen(uint64_t _last_seen = 0) {
+    return SetField<uint64_t>(VT_LAST_SEEN, _last_seen, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *mutable_metadata() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_ID) &&
            verifier.VerifyString(device_id()) &&
@@ -5258,45 +5753,45 @@ struct DeviceInfo FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct DeviceInfoBuilder {
   typedef DeviceInfo Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_id(::flatbuffers::Offset<::flatbuffers::String> device_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_id(flatbuffers::Offset<flatbuffers::String> device_id) {
     fbb_.AddOffset(DeviceInfo::VT_DEVICE_ID, device_id);
   }
-  void add_device_type(::flatbuffers::Offset<::flatbuffers::String> device_type) {
+  void add_device_type(flatbuffers::Offset<flatbuffers::String> device_type) {
     fbb_.AddOffset(DeviceInfo::VT_DEVICE_TYPE, device_type);
   }
-  void add_capabilities(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities) {
+  void add_capabilities(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities) {
     fbb_.AddOffset(DeviceInfo::VT_CAPABILITIES, capabilities);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(DeviceInfo::VT_STATUS, status);
   }
   void add_last_seen(uint64_t last_seen) {
     fbb_.AddElement<uint64_t>(DeviceInfo::VT_LAST_SEEN, last_seen, 0);
   }
-  void add_metadata(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata) {
+  void add_metadata(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata) {
     fbb_.AddOffset(DeviceInfo::VT_METADATA, metadata);
   }
-  explicit DeviceInfoBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DeviceInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DeviceInfo> Finish() {
+  flatbuffers::Offset<DeviceInfo> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DeviceInfo>(end);
+    auto o = flatbuffers::Offset<DeviceInfo>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DeviceInfo> CreateDeviceInfo(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> device_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
+inline flatbuffers::Offset<DeviceInfo> CreateDeviceInfo(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_id = 0,
+    flatbuffers::Offset<flatbuffers::String> device_type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
     uint64_t last_seen = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata = 0) {
   DeviceInfoBuilder builder_(_fbb);
   builder_.add_last_seen(last_seen);
   builder_.add_metadata(metadata);
@@ -5307,19 +5802,19 @@ inline ::flatbuffers::Offset<DeviceInfo> CreateDeviceInfo(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DeviceInfo> CreateDeviceInfoDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DeviceInfo> CreateDeviceInfoDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_id = nullptr,
     const char *device_type = nullptr,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *capabilities = nullptr,
     const char *status = nullptr,
     uint64_t last_seen = 0,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata = nullptr) {
   auto device_id__ = device_id ? _fbb.CreateString(device_id) : 0;
   auto device_type__ = device_type ? _fbb.CreateString(device_type) : 0;
-  auto capabilities__ = capabilities ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*capabilities) : 0;
+  auto capabilities__ = capabilities ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*capabilities) : 0;
   auto status__ = status ? _fbb.CreateString(status) : 0;
-  auto metadata__ = metadata ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>(*metadata) : 0;
+  auto metadata__ = metadata ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>(*metadata) : 0;
   return Mia::Protocol::CreateDeviceInfo(
       _fbb,
       device_id__,
@@ -5330,19 +5825,25 @@ inline ::flatbuffers::Offset<DeviceInfo> CreateDeviceInfoDirect(
       metadata__);
 }
 
-struct DeviceMetadata FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DeviceMetadata FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DeviceMetadataBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_KEY = 4,
     VT_VALUE = 6
   };
-  const ::flatbuffers::String *key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_KEY);
+  const flatbuffers::String *key() const {
+    return GetPointer<const flatbuffers::String *>(VT_KEY);
   }
-  const ::flatbuffers::String *value() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  flatbuffers::String *mutable_key() {
+    return GetPointer<flatbuffers::String *>(VT_KEY);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *value() const {
+    return GetPointer<const flatbuffers::String *>(VT_VALUE);
+  }
+  flatbuffers::String *mutable_value() {
+    return GetPointer<flatbuffers::String *>(VT_VALUE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_KEY) &&
            verifier.VerifyString(key()) &&
@@ -5354,37 +5855,37 @@ struct DeviceMetadata FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct DeviceMetadataBuilder {
   typedef DeviceMetadata Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_key(::flatbuffers::Offset<::flatbuffers::String> key) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_key(flatbuffers::Offset<flatbuffers::String> key) {
     fbb_.AddOffset(DeviceMetadata::VT_KEY, key);
   }
-  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+  void add_value(flatbuffers::Offset<flatbuffers::String> value) {
     fbb_.AddOffset(DeviceMetadata::VT_VALUE, value);
   }
-  explicit DeviceMetadataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DeviceMetadataBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DeviceMetadata> Finish() {
+  flatbuffers::Offset<DeviceMetadata> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DeviceMetadata>(end);
+    auto o = flatbuffers::Offset<DeviceMetadata>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DeviceMetadata> CreateDeviceMetadata(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> key = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
+inline flatbuffers::Offset<DeviceMetadata> CreateDeviceMetadata(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> key = 0,
+    flatbuffers::Offset<flatbuffers::String> value = 0) {
   DeviceMetadataBuilder builder_(_fbb);
   builder_.add_value(value);
   builder_.add_key(key);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DeviceMetadata> CreateDeviceMetadataDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<DeviceMetadata> CreateDeviceMetadataDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *key = nullptr,
     const char *value = nullptr) {
   auto key__ = key ? _fbb.CreateString(key) : 0;
@@ -5395,15 +5896,18 @@ inline ::flatbuffers::Offset<DeviceMetadata> CreateDeviceMetadataDirect(
       value__);
 }
 
-struct DeviceDiscoveryResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct DeviceDiscoveryResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DeviceDiscoveryResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICES = 4
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *devices() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *>(VT_DEVICES);
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *devices() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *>(VT_DEVICES);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *mutable_devices() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *>(VT_DEVICES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICES) &&
            verifier.VerifyVector(devices()) &&
@@ -5414,52 +5918,58 @@ struct DeviceDiscoveryResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::
 
 struct DeviceDiscoveryResponseBuilder {
   typedef DeviceDiscoveryResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_devices(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>>> devices) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_devices(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>>> devices) {
     fbb_.AddOffset(DeviceDiscoveryResponse::VT_DEVICES, devices);
   }
-  explicit DeviceDiscoveryResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit DeviceDiscoveryResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<DeviceDiscoveryResponse> Finish() {
+  flatbuffers::Offset<DeviceDiscoveryResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<DeviceDiscoveryResponse>(end);
+    auto o = flatbuffers::Offset<DeviceDiscoveryResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<DeviceDiscoveryResponse> CreateDeviceDiscoveryResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>>> devices = 0) {
+inline flatbuffers::Offset<DeviceDiscoveryResponse> CreateDeviceDiscoveryResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>>> devices = 0) {
   DeviceDiscoveryResponseBuilder builder_(_fbb);
   builder_.add_devices(devices);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<DeviceDiscoveryResponse> CreateDeviceDiscoveryResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *devices = nullptr) {
-  auto devices__ = devices ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::DeviceInfo>>(*devices) : 0;
+inline flatbuffers::Offset<DeviceDiscoveryResponse> CreateDeviceDiscoveryResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>> *devices = nullptr) {
+  auto devices__ = devices ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::DeviceInfo>>(*devices) : 0;
   return Mia::Protocol::CreateDeviceDiscoveryResponse(
       _fbb,
       devices__);
 }
 
-struct TelemetryRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct TelemetryRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef TelemetryRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_ID = 4,
     VT_SENSOR_TYPE = 6
   };
-  const ::flatbuffers::String *device_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_ID);
+  const flatbuffers::String *device_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::String *sensor_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SENSOR_TYPE);
+  flatbuffers::String *mutable_device_id() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *sensor_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_SENSOR_TYPE);
+  }
+  flatbuffers::String *mutable_sensor_type() {
+    return GetPointer<flatbuffers::String *>(VT_SENSOR_TYPE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_ID) &&
            verifier.VerifyString(device_id()) &&
@@ -5471,37 +5981,37 @@ struct TelemetryRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct TelemetryRequestBuilder {
   typedef TelemetryRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_id(::flatbuffers::Offset<::flatbuffers::String> device_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_id(flatbuffers::Offset<flatbuffers::String> device_id) {
     fbb_.AddOffset(TelemetryRequest::VT_DEVICE_ID, device_id);
   }
-  void add_sensor_type(::flatbuffers::Offset<::flatbuffers::String> sensor_type) {
+  void add_sensor_type(flatbuffers::Offset<flatbuffers::String> sensor_type) {
     fbb_.AddOffset(TelemetryRequest::VT_SENSOR_TYPE, sensor_type);
   }
-  explicit TelemetryRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit TelemetryRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<TelemetryRequest> Finish() {
+  flatbuffers::Offset<TelemetryRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<TelemetryRequest>(end);
+    auto o = flatbuffers::Offset<TelemetryRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<TelemetryRequest> CreateTelemetryRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> sensor_type = 0) {
+inline flatbuffers::Offset<TelemetryRequest> CreateTelemetryRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_id = 0,
+    flatbuffers::Offset<flatbuffers::String> sensor_type = 0) {
   TelemetryRequestBuilder builder_(_fbb);
   builder_.add_sensor_type(sensor_type);
   builder_.add_device_id(device_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<TelemetryRequest> CreateTelemetryRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<TelemetryRequest> CreateTelemetryRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_id = nullptr,
     const char *sensor_type = nullptr) {
   auto device_id__ = device_id ? _fbb.CreateString(device_id) : 0;
@@ -5512,7 +6022,7 @@ inline ::flatbuffers::Offset<TelemetryRequest> CreateTelemetryRequestDirect(
       sensor_type__);
 }
 
-struct SensorReading FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct SensorReading FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef SensorReadingBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SENSOR_ID = 4,
@@ -5522,25 +6032,43 @@ struct SensorReading FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TIMESTAMP = 12,
     VT_METADATA = 14
   };
-  const ::flatbuffers::String *sensor_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SENSOR_ID);
+  const flatbuffers::String *sensor_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SENSOR_ID);
   }
-  const ::flatbuffers::String *sensor_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SENSOR_TYPE);
+  flatbuffers::String *mutable_sensor_id() {
+    return GetPointer<flatbuffers::String *>(VT_SENSOR_ID);
+  }
+  const flatbuffers::String *sensor_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_SENSOR_TYPE);
+  }
+  flatbuffers::String *mutable_sensor_type() {
+    return GetPointer<flatbuffers::String *>(VT_SENSOR_TYPE);
   }
   float value() const {
     return GetField<float>(VT_VALUE, 0.0f);
   }
-  const ::flatbuffers::String *unit() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_UNIT);
+  bool mutate_value(float _value = 0.0f) {
+    return SetField<float>(VT_VALUE, _value, 0.0f);
+  }
+  const flatbuffers::String *unit() const {
+    return GetPointer<const flatbuffers::String *>(VT_UNIT);
+  }
+  flatbuffers::String *mutable_unit() {
+    return GetPointer<flatbuffers::String *>(VT_UNIT);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *mutable_metadata() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *>(VT_METADATA);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SENSOR_ID) &&
            verifier.VerifyString(sensor_id()) &&
@@ -5559,45 +6087,45 @@ struct SensorReading FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct SensorReadingBuilder {
   typedef SensorReading Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_sensor_id(::flatbuffers::Offset<::flatbuffers::String> sensor_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_sensor_id(flatbuffers::Offset<flatbuffers::String> sensor_id) {
     fbb_.AddOffset(SensorReading::VT_SENSOR_ID, sensor_id);
   }
-  void add_sensor_type(::flatbuffers::Offset<::flatbuffers::String> sensor_type) {
+  void add_sensor_type(flatbuffers::Offset<flatbuffers::String> sensor_type) {
     fbb_.AddOffset(SensorReading::VT_SENSOR_TYPE, sensor_type);
   }
   void add_value(float value) {
     fbb_.AddElement<float>(SensorReading::VT_VALUE, value, 0.0f);
   }
-  void add_unit(::flatbuffers::Offset<::flatbuffers::String> unit) {
+  void add_unit(flatbuffers::Offset<flatbuffers::String> unit) {
     fbb_.AddOffset(SensorReading::VT_UNIT, unit);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(SensorReading::VT_TIMESTAMP, timestamp, 0);
   }
-  void add_metadata(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata) {
+  void add_metadata(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata) {
     fbb_.AddOffset(SensorReading::VT_METADATA, metadata);
   }
-  explicit SensorReadingBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit SensorReadingBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<SensorReading> Finish() {
+  flatbuffers::Offset<SensorReading> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<SensorReading>(end);
+    auto o = flatbuffers::Offset<SensorReading>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<SensorReading> CreateSensorReading(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> sensor_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> sensor_type = 0,
+inline flatbuffers::Offset<SensorReading> CreateSensorReading(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> sensor_id = 0,
+    flatbuffers::Offset<flatbuffers::String> sensor_type = 0,
     float value = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> unit = 0,
+    flatbuffers::Offset<flatbuffers::String> unit = 0,
     uint64_t timestamp = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>> metadata = 0) {
   SensorReadingBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
   builder_.add_metadata(metadata);
@@ -5608,18 +6136,18 @@ inline ::flatbuffers::Offset<SensorReading> CreateSensorReading(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<SensorReading> CreateSensorReadingDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<SensorReading> CreateSensorReadingDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *sensor_id = nullptr,
     const char *sensor_type = nullptr,
     float value = 0.0f,
     const char *unit = nullptr,
     uint64_t timestamp = 0,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>> *metadata = nullptr) {
   auto sensor_id__ = sensor_id ? _fbb.CreateString(sensor_id) : 0;
   auto sensor_type__ = sensor_type ? _fbb.CreateString(sensor_type) : 0;
   auto unit__ = unit ? _fbb.CreateString(unit) : 0;
-  auto metadata__ = metadata ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>(*metadata) : 0;
+  auto metadata__ = metadata ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::DeviceMetadata>>(*metadata) : 0;
   return Mia::Protocol::CreateSensorReading(
       _fbb,
       sensor_id__,
@@ -5630,19 +6158,25 @@ inline ::flatbuffers::Offset<SensorReading> CreateSensorReadingDirect(
       metadata__);
 }
 
-struct TelemetryResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct TelemetryResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef TelemetryResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DEVICE_ID = 4,
     VT_READINGS = 6
   };
-  const ::flatbuffers::String *device_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DEVICE_ID);
+  const flatbuffers::String *device_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_DEVICE_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::SensorReading>> *readings() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::SensorReading>> *>(VT_READINGS);
+  flatbuffers::String *mutable_device_id() {
+    return GetPointer<flatbuffers::String *>(VT_DEVICE_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>> *readings() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>> *>(VT_READINGS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>> *mutable_readings() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>> *>(VT_READINGS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DEVICE_ID) &&
            verifier.VerifyString(device_id()) &&
@@ -5655,56 +6189,59 @@ struct TelemetryResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct TelemetryResponseBuilder {
   typedef TelemetryResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_device_id(::flatbuffers::Offset<::flatbuffers::String> device_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_device_id(flatbuffers::Offset<flatbuffers::String> device_id) {
     fbb_.AddOffset(TelemetryResponse::VT_DEVICE_ID, device_id);
   }
-  void add_readings(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::SensorReading>>> readings) {
+  void add_readings(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>>> readings) {
     fbb_.AddOffset(TelemetryResponse::VT_READINGS, readings);
   }
-  explicit TelemetryResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit TelemetryResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<TelemetryResponse> Finish() {
+  flatbuffers::Offset<TelemetryResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<TelemetryResponse>(end);
+    auto o = flatbuffers::Offset<TelemetryResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<TelemetryResponse> CreateTelemetryResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> device_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::SensorReading>>> readings = 0) {
+inline flatbuffers::Offset<TelemetryResponse> CreateTelemetryResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> device_id = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::SensorReading>>> readings = 0) {
   TelemetryResponseBuilder builder_(_fbb);
   builder_.add_readings(readings);
   builder_.add_device_id(device_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<TelemetryResponse> CreateTelemetryResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<TelemetryResponse> CreateTelemetryResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *device_id = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::SensorReading>> *readings = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::SensorReading>> *readings = nullptr) {
   auto device_id__ = device_id ? _fbb.CreateString(device_id) : 0;
-  auto readings__ = readings ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::SensorReading>>(*readings) : 0;
+  auto readings__ = readings ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::SensorReading>>(*readings) : 0;
   return Mia::Protocol::CreateTelemetryResponse(
       _fbb,
       device_id__,
       readings__);
 }
 
-struct CommandAckRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct CommandAckRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef CommandAckRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMMAND_ID = 4
   };
-  const ::flatbuffers::String *command_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMMAND_ID);
+  const flatbuffers::String *command_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMMAND_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_command_id() {
+    return GetPointer<flatbuffers::String *>(VT_COMMAND_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMMAND_ID) &&
            verifier.VerifyString(command_id()) &&
@@ -5714,32 +6251,32 @@ struct CommandAckRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct CommandAckRequestBuilder {
   typedef CommandAckRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_command_id(::flatbuffers::Offset<::flatbuffers::String> command_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_command_id(flatbuffers::Offset<flatbuffers::String> command_id) {
     fbb_.AddOffset(CommandAckRequest::VT_COMMAND_ID, command_id);
   }
-  explicit CommandAckRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit CommandAckRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<CommandAckRequest> Finish() {
+  flatbuffers::Offset<CommandAckRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<CommandAckRequest>(end);
+    auto o = flatbuffers::Offset<CommandAckRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<CommandAckRequest> CreateCommandAckRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> command_id = 0) {
+inline flatbuffers::Offset<CommandAckRequest> CreateCommandAckRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> command_id = 0) {
   CommandAckRequestBuilder builder_(_fbb);
   builder_.add_command_id(command_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<CommandAckRequest> CreateCommandAckRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<CommandAckRequest> CreateCommandAckRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *command_id = nullptr) {
   auto command_id__ = command_id ? _fbb.CreateString(command_id) : 0;
   return Mia::Protocol::CreateCommandAckRequest(
@@ -5747,7 +6284,7 @@ inline ::flatbuffers::Offset<CommandAckRequest> CreateCommandAckRequestDirect(
       command_id__);
 }
 
-struct CommandAckResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct CommandAckResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef CommandAckResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMMAND_ID = 4,
@@ -5755,19 +6292,31 @@ struct CommandAckResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_MESSAGE = 8,
     VT_TIMESTAMP = 10
   };
-  const ::flatbuffers::String *command_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMMAND_ID);
+  const flatbuffers::String *command_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMMAND_ID);
+  }
+  flatbuffers::String *mutable_command_id() {
+    return GetPointer<flatbuffers::String *>(VT_COMMAND_ID);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  const ::flatbuffers::String *message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE);
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  const flatbuffers::String *message() const {
+    return GetPointer<const flatbuffers::String *>(VT_MESSAGE);
+  }
+  flatbuffers::String *mutable_message() {
+    return GetPointer<flatbuffers::String *>(VT_MESSAGE);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMMAND_ID) &&
            verifier.VerifyString(command_id()) &&
@@ -5781,36 +6330,36 @@ struct CommandAckResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 
 struct CommandAckResponseBuilder {
   typedef CommandAckResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_command_id(::flatbuffers::Offset<::flatbuffers::String> command_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_command_id(flatbuffers::Offset<flatbuffers::String> command_id) {
     fbb_.AddOffset(CommandAckResponse::VT_COMMAND_ID, command_id);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(CommandAckResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  void add_message(::flatbuffers::Offset<::flatbuffers::String> message) {
+  void add_message(flatbuffers::Offset<flatbuffers::String> message) {
     fbb_.AddOffset(CommandAckResponse::VT_MESSAGE, message);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(CommandAckResponse::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit CommandAckResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit CommandAckResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<CommandAckResponse> Finish() {
+  flatbuffers::Offset<CommandAckResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<CommandAckResponse>(end);
+    auto o = flatbuffers::Offset<CommandAckResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> command_id = 0,
+inline flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> command_id = 0,
     bool success = false,
-    ::flatbuffers::Offset<::flatbuffers::String> message = 0,
+    flatbuffers::Offset<flatbuffers::String> message = 0,
     uint64_t timestamp = 0) {
   CommandAckResponseBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -5820,8 +6369,8 @@ inline ::flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *command_id = nullptr,
     bool success = false,
     const char *message = nullptr,
@@ -5836,15 +6385,18 @@ inline ::flatbuffers::Offset<CommandAckResponse> CreateCommandAckResponseDirect(
       timestamp);
 }
 
-struct HealthCheckRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HealthCheckRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HealthCheckRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICE_NAME = 4
   };
-  const ::flatbuffers::String *service_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SERVICE_NAME);
+  const flatbuffers::String *service_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_SERVICE_NAME);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_service_name() {
+    return GetPointer<flatbuffers::String *>(VT_SERVICE_NAME);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICE_NAME) &&
            verifier.VerifyString(service_name()) &&
@@ -5854,32 +6406,32 @@ struct HealthCheckRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 
 struct HealthCheckRequestBuilder {
   typedef HealthCheckRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_service_name(::flatbuffers::Offset<::flatbuffers::String> service_name) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_service_name(flatbuffers::Offset<flatbuffers::String> service_name) {
     fbb_.AddOffset(HealthCheckRequest::VT_SERVICE_NAME, service_name);
   }
-  explicit HealthCheckRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HealthCheckRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HealthCheckRequest> Finish() {
+  flatbuffers::Offset<HealthCheckRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HealthCheckRequest>(end);
+    auto o = flatbuffers::Offset<HealthCheckRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HealthCheckRequest> CreateHealthCheckRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> service_name = 0) {
+inline flatbuffers::Offset<HealthCheckRequest> CreateHealthCheckRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> service_name = 0) {
   HealthCheckRequestBuilder builder_(_fbb);
   builder_.add_service_name(service_name);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HealthCheckRequest> CreateHealthCheckRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<HealthCheckRequest> CreateHealthCheckRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *service_name = nullptr) {
   auto service_name__ = service_name ? _fbb.CreateString(service_name) : 0;
   return Mia::Protocol::CreateHealthCheckRequest(
@@ -5887,7 +6439,7 @@ inline ::flatbuffers::Offset<HealthCheckRequest> CreateHealthCheckRequestDirect(
       service_name__);
 }
 
-struct ServiceHealth FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ServiceHealth FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ServiceHealthBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICE_NAME = 4,
@@ -5896,22 +6448,37 @@ struct ServiceHealth FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LAST_CHECK = 10,
     VT_ERROR_MESSAGE = 12
   };
-  const ::flatbuffers::String *service_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SERVICE_NAME);
+  const flatbuffers::String *service_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_SERVICE_NAME);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_service_name() {
+    return GetPointer<flatbuffers::String *>(VT_SERVICE_NAME);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
   }
   uint64_t uptime_seconds() const {
     return GetField<uint64_t>(VT_UPTIME_SECONDS, 0);
   }
+  bool mutate_uptime_seconds(uint64_t _uptime_seconds = 0) {
+    return SetField<uint64_t>(VT_UPTIME_SECONDS, _uptime_seconds, 0);
+  }
   uint64_t last_check() const {
     return GetField<uint64_t>(VT_LAST_CHECK, 0);
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_last_check(uint64_t _last_check = 0) {
+    return SetField<uint64_t>(VT_LAST_CHECK, _last_check, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICE_NAME) &&
            verifier.VerifyString(service_name()) &&
@@ -5927,12 +6494,12 @@ struct ServiceHealth FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ServiceHealthBuilder {
   typedef ServiceHealth Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_service_name(::flatbuffers::Offset<::flatbuffers::String> service_name) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_service_name(flatbuffers::Offset<flatbuffers::String> service_name) {
     fbb_.AddOffset(ServiceHealth::VT_SERVICE_NAME, service_name);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(ServiceHealth::VT_STATUS, status);
   }
   void add_uptime_seconds(uint64_t uptime_seconds) {
@@ -5941,27 +6508,27 @@ struct ServiceHealthBuilder {
   void add_last_check(uint64_t last_check) {
     fbb_.AddElement<uint64_t>(ServiceHealth::VT_LAST_CHECK, last_check, 0);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(ServiceHealth::VT_ERROR_MESSAGE, error_message);
   }
-  explicit ServiceHealthBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ServiceHealthBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ServiceHealth> Finish() {
+  flatbuffers::Offset<ServiceHealth> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ServiceHealth>(end);
+    auto o = flatbuffers::Offset<ServiceHealth>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ServiceHealth> CreateServiceHealth(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> service_name = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
+inline flatbuffers::Offset<ServiceHealth> CreateServiceHealth(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> service_name = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
     uint64_t uptime_seconds = 0,
     uint64_t last_check = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   ServiceHealthBuilder builder_(_fbb);
   builder_.add_last_check(last_check);
   builder_.add_uptime_seconds(uptime_seconds);
@@ -5971,8 +6538,8 @@ inline ::flatbuffers::Offset<ServiceHealth> CreateServiceHealth(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ServiceHealth> CreateServiceHealthDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ServiceHealth> CreateServiceHealthDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *service_name = nullptr,
     const char *status = nullptr,
     uint64_t uptime_seconds = 0,
@@ -5990,19 +6557,25 @@ inline ::flatbuffers::Offset<ServiceHealth> CreateServiceHealthDirect(
       error_message__);
 }
 
-struct HealthCheckResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HealthCheckResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HealthCheckResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SERVICES = 4,
     VT_OVERALL_STATUS = 6
   };
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *services() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *>(VT_SERVICES);
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *services() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *>(VT_SERVICES);
   }
-  const ::flatbuffers::String *overall_status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_OVERALL_STATUS);
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *mutable_services() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *>(VT_SERVICES);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *overall_status() const {
+    return GetPointer<const flatbuffers::String *>(VT_OVERALL_STATUS);
+  }
+  flatbuffers::String *mutable_overall_status() {
+    return GetPointer<flatbuffers::String *>(VT_OVERALL_STATUS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_SERVICES) &&
            verifier.VerifyVector(services()) &&
@@ -6015,40 +6588,40 @@ struct HealthCheckResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct HealthCheckResponseBuilder {
   typedef HealthCheckResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_services(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>>> services) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_services(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>>> services) {
     fbb_.AddOffset(HealthCheckResponse::VT_SERVICES, services);
   }
-  void add_overall_status(::flatbuffers::Offset<::flatbuffers::String> overall_status) {
+  void add_overall_status(flatbuffers::Offset<flatbuffers::String> overall_status) {
     fbb_.AddOffset(HealthCheckResponse::VT_OVERALL_STATUS, overall_status);
   }
-  explicit HealthCheckResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HealthCheckResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HealthCheckResponse> Finish() {
+  flatbuffers::Offset<HealthCheckResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HealthCheckResponse>(end);
+    auto o = flatbuffers::Offset<HealthCheckResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HealthCheckResponse> CreateHealthCheckResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>>> services = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> overall_status = 0) {
+inline flatbuffers::Offset<HealthCheckResponse> CreateHealthCheckResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>>> services = 0,
+    flatbuffers::Offset<flatbuffers::String> overall_status = 0) {
   HealthCheckResponseBuilder builder_(_fbb);
   builder_.add_overall_status(overall_status);
   builder_.add_services(services);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HealthCheckResponse> CreateHealthCheckResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *services = nullptr,
+inline flatbuffers::Offset<HealthCheckResponse> CreateHealthCheckResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>> *services = nullptr,
     const char *overall_status = nullptr) {
-  auto services__ = services ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::ServiceHealth>>(*services) : 0;
+  auto services__ = services ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::ServiceHealth>>(*services) : 0;
   auto overall_status__ = overall_status ? _fbb.CreateString(overall_status) : 0;
   return Mia::Protocol::CreateHealthCheckResponse(
       _fbb,
@@ -6056,7 +6629,7 @@ inline ::flatbuffers::Offset<HealthCheckResponse> CreateHealthCheckResponseDirec
       overall_status__);
 }
 
-struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MQTTEnvelopeBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MESSAGE_ID = 4,
@@ -6065,22 +6638,37 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TARGET = 10,
     VT_PAYLOAD = 12
   };
-  const ::flatbuffers::String *message_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE_ID);
+  const flatbuffers::String *message_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_MESSAGE_ID);
+  }
+  flatbuffers::String *mutable_message_id() {
+    return GetPointer<flatbuffers::String *>(VT_MESSAGE_ID);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  const ::flatbuffers::String *source() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SOURCE);
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
   }
-  const ::flatbuffers::String *target() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TARGET);
+  const flatbuffers::String *source() const {
+    return GetPointer<const flatbuffers::String *>(VT_SOURCE);
+  }
+  flatbuffers::String *mutable_source() {
+    return GetPointer<flatbuffers::String *>(VT_SOURCE);
+  }
+  const flatbuffers::String *target() const {
+    return GetPointer<const flatbuffers::String *>(VT_TARGET);
+  }
+  flatbuffers::String *mutable_target() {
+    return GetPointer<flatbuffers::String *>(VT_TARGET);
   }
   const Mia::Protocol::Message *payload() const {
     return GetPointer<const Mia::Protocol::Message *>(VT_PAYLOAD);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  Mia::Protocol::Message *mutable_payload() {
+    return GetPointer<Mia::Protocol::Message *>(VT_PAYLOAD);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MESSAGE_ID) &&
            verifier.VerifyString(message_id()) &&
@@ -6097,41 +6685,41 @@ struct MQTTEnvelope FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MQTTEnvelopeBuilder {
   typedef MQTTEnvelope Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_message_id(::flatbuffers::Offset<::flatbuffers::String> message_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_message_id(flatbuffers::Offset<flatbuffers::String> message_id) {
     fbb_.AddOffset(MQTTEnvelope::VT_MESSAGE_ID, message_id);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(MQTTEnvelope::VT_TIMESTAMP, timestamp, 0);
   }
-  void add_source(::flatbuffers::Offset<::flatbuffers::String> source) {
+  void add_source(flatbuffers::Offset<flatbuffers::String> source) {
     fbb_.AddOffset(MQTTEnvelope::VT_SOURCE, source);
   }
-  void add_target(::flatbuffers::Offset<::flatbuffers::String> target) {
+  void add_target(flatbuffers::Offset<flatbuffers::String> target) {
     fbb_.AddOffset(MQTTEnvelope::VT_TARGET, target);
   }
-  void add_payload(::flatbuffers::Offset<Mia::Protocol::Message> payload) {
+  void add_payload(flatbuffers::Offset<Mia::Protocol::Message> payload) {
     fbb_.AddOffset(MQTTEnvelope::VT_PAYLOAD, payload);
   }
-  explicit MQTTEnvelopeBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MQTTEnvelopeBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MQTTEnvelope> Finish() {
+  flatbuffers::Offset<MQTTEnvelope> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MQTTEnvelope>(end);
+    auto o = flatbuffers::Offset<MQTTEnvelope>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> message_id = 0,
+inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> message_id = 0,
     uint64_t timestamp = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> source = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> target = 0,
-    ::flatbuffers::Offset<Mia::Protocol::Message> payload = 0) {
+    flatbuffers::Offset<flatbuffers::String> source = 0,
+    flatbuffers::Offset<flatbuffers::String> target = 0,
+    flatbuffers::Offset<Mia::Protocol::Message> payload = 0) {
   MQTTEnvelopeBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
   builder_.add_payload(payload);
@@ -6141,13 +6729,13 @@ inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelope(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *message_id = nullptr,
     uint64_t timestamp = 0,
     const char *source = nullptr,
     const char *target = nullptr,
-    ::flatbuffers::Offset<Mia::Protocol::Message> payload = 0) {
+    flatbuffers::Offset<Mia::Protocol::Message> payload = 0) {
   auto message_id__ = message_id ? _fbb.CreateString(message_id) : 0;
   auto source__ = source ? _fbb.CreateString(source) : 0;
   auto target__ = target ? _fbb.CreateString(target) : 0;
@@ -6160,7 +6748,7 @@ inline ::flatbuffers::Offset<MQTTEnvelope> CreateMQTTEnvelopeDirect(
       payload);
 }
 
-struct AuthenticationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AuthenticationRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AuthenticationRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_USERNAME = 4,
@@ -6168,19 +6756,31 @@ struct AuthenticationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
     VT_METHOD = 8,
     VT_CLIENT_ID = 10
   };
-  const ::flatbuffers::String *username() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_USERNAME);
+  const flatbuffers::String *username() const {
+    return GetPointer<const flatbuffers::String *>(VT_USERNAME);
   }
-  const ::flatbuffers::String *password() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PASSWORD);
+  flatbuffers::String *mutable_username() {
+    return GetPointer<flatbuffers::String *>(VT_USERNAME);
   }
-  const ::flatbuffers::String *method() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_METHOD);
+  const flatbuffers::String *password() const {
+    return GetPointer<const flatbuffers::String *>(VT_PASSWORD);
   }
-  const ::flatbuffers::String *client_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CLIENT_ID);
+  flatbuffers::String *mutable_password() {
+    return GetPointer<flatbuffers::String *>(VT_PASSWORD);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *method() const {
+    return GetPointer<const flatbuffers::String *>(VT_METHOD);
+  }
+  flatbuffers::String *mutable_method() {
+    return GetPointer<flatbuffers::String *>(VT_METHOD);
+  }
+  const flatbuffers::String *client_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_CLIENT_ID);
+  }
+  flatbuffers::String *mutable_client_id() {
+    return GetPointer<flatbuffers::String *>(VT_CLIENT_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_USERNAME) &&
            verifier.VerifyString(username()) &&
@@ -6196,37 +6796,37 @@ struct AuthenticationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
 
 struct AuthenticationRequestBuilder {
   typedef AuthenticationRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_username(::flatbuffers::Offset<::flatbuffers::String> username) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_username(flatbuffers::Offset<flatbuffers::String> username) {
     fbb_.AddOffset(AuthenticationRequest::VT_USERNAME, username);
   }
-  void add_password(::flatbuffers::Offset<::flatbuffers::String> password) {
+  void add_password(flatbuffers::Offset<flatbuffers::String> password) {
     fbb_.AddOffset(AuthenticationRequest::VT_PASSWORD, password);
   }
-  void add_method(::flatbuffers::Offset<::flatbuffers::String> method) {
+  void add_method(flatbuffers::Offset<flatbuffers::String> method) {
     fbb_.AddOffset(AuthenticationRequest::VT_METHOD, method);
   }
-  void add_client_id(::flatbuffers::Offset<::flatbuffers::String> client_id) {
+  void add_client_id(flatbuffers::Offset<flatbuffers::String> client_id) {
     fbb_.AddOffset(AuthenticationRequest::VT_CLIENT_ID, client_id);
   }
-  explicit AuthenticationRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AuthenticationRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AuthenticationRequest> Finish() {
+  flatbuffers::Offset<AuthenticationRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AuthenticationRequest>(end);
+    auto o = flatbuffers::Offset<AuthenticationRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> username = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> password = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> method = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> client_id = 0) {
+inline flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> username = 0,
+    flatbuffers::Offset<flatbuffers::String> password = 0,
+    flatbuffers::Offset<flatbuffers::String> method = 0,
+    flatbuffers::Offset<flatbuffers::String> client_id = 0) {
   AuthenticationRequestBuilder builder_(_fbb);
   builder_.add_client_id(client_id);
   builder_.add_method(method);
@@ -6235,8 +6835,8 @@ inline ::flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *username = nullptr,
     const char *password = nullptr,
     const char *method = nullptr,
@@ -6253,7 +6853,7 @@ inline ::flatbuffers::Offset<AuthenticationRequest> CreateAuthenticationRequestD
       client_id__);
 }
 
-struct AuthenticationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AuthenticationResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AuthenticationResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SUCCESS = 4,
@@ -6266,22 +6866,40 @@ struct AuthenticationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  const ::flatbuffers::String *token() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TOKEN);
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
+  }
+  const flatbuffers::String *token() const {
+    return GetPointer<const flatbuffers::String *>(VT_TOKEN);
+  }
+  flatbuffers::String *mutable_token() {
+    return GetPointer<flatbuffers::String *>(VT_TOKEN);
   }
   uint64_t expires_at() const {
     return GetField<uint64_t>(VT_EXPIRES_AT, 0);
   }
-  const ::flatbuffers::String *user_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_USER_ID);
+  bool mutate_expires_at(uint64_t _expires_at = 0) {
+    return SetField<uint64_t>(VT_EXPIRES_AT, _expires_at, 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *permissions() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_PERMISSIONS);
+  const flatbuffers::String *user_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_USER_ID);
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  flatbuffers::String *mutable_user_id() {
+    return GetPointer<flatbuffers::String *>(VT_USER_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *permissions() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_PERMISSIONS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_permissions() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_PERMISSIONS);
+  }
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_SUCCESS, 1) &&
            VerifyOffset(verifier, VT_TOKEN) &&
@@ -6300,45 +6918,45 @@ struct AuthenticationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
 
 struct AuthenticationResponseBuilder {
   typedef AuthenticationResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(AuthenticationResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  void add_token(::flatbuffers::Offset<::flatbuffers::String> token) {
+  void add_token(flatbuffers::Offset<flatbuffers::String> token) {
     fbb_.AddOffset(AuthenticationResponse::VT_TOKEN, token);
   }
   void add_expires_at(uint64_t expires_at) {
     fbb_.AddElement<uint64_t>(AuthenticationResponse::VT_EXPIRES_AT, expires_at, 0);
   }
-  void add_user_id(::flatbuffers::Offset<::flatbuffers::String> user_id) {
+  void add_user_id(flatbuffers::Offset<flatbuffers::String> user_id) {
     fbb_.AddOffset(AuthenticationResponse::VT_USER_ID, user_id);
   }
-  void add_permissions(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> permissions) {
+  void add_permissions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> permissions) {
     fbb_.AddOffset(AuthenticationResponse::VT_PERMISSIONS, permissions);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(AuthenticationResponse::VT_ERROR_MESSAGE, error_message);
   }
-  explicit AuthenticationResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AuthenticationResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AuthenticationResponse> Finish() {
+  flatbuffers::Offset<AuthenticationResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AuthenticationResponse>(end);
+    auto o = flatbuffers::Offset<AuthenticationResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     bool success = false,
-    ::flatbuffers::Offset<::flatbuffers::String> token = 0,
+    flatbuffers::Offset<flatbuffers::String> token = 0,
     uint64_t expires_at = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> user_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> permissions = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> user_id = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> permissions = 0,
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   AuthenticationResponseBuilder builder_(_fbb);
   builder_.add_expires_at(expires_at);
   builder_.add_error_message(error_message);
@@ -6349,17 +6967,17 @@ inline ::flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationRespons
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     bool success = false,
     const char *token = nullptr,
     uint64_t expires_at = 0,
     const char *user_id = nullptr,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *permissions = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *permissions = nullptr,
     const char *error_message = nullptr) {
   auto token__ = token ? _fbb.CreateString(token) : 0;
   auto user_id__ = user_id ? _fbb.CreateString(user_id) : 0;
-  auto permissions__ = permissions ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*permissions) : 0;
+  auto permissions__ = permissions ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*permissions) : 0;
   auto error_message__ = error_message ? _fbb.CreateString(error_message) : 0;
   return Mia::Protocol::CreateAuthenticationResponse(
       _fbb,
@@ -6371,7 +6989,7 @@ inline ::flatbuffers::Offset<AuthenticationResponse> CreateAuthenticationRespons
       error_message__);
 }
 
-struct AuthorizationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AuthorizationRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AuthorizationRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_TOKEN = 4,
@@ -6379,19 +6997,31 @@ struct AuthorizationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
     VT_ACTION = 8,
     VT_CONTEXT = 10
   };
-  const ::flatbuffers::String *token() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_TOKEN);
+  const flatbuffers::String *token() const {
+    return GetPointer<const flatbuffers::String *>(VT_TOKEN);
   }
-  const ::flatbuffers::String *resource() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_RESOURCE);
+  flatbuffers::String *mutable_token() {
+    return GetPointer<flatbuffers::String *>(VT_TOKEN);
   }
-  const ::flatbuffers::String *action() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ACTION);
+  const flatbuffers::String *resource() const {
+    return GetPointer<const flatbuffers::String *>(VT_RESOURCE);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *context() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONTEXT);
+  flatbuffers::String *mutable_resource() {
+    return GetPointer<flatbuffers::String *>(VT_RESOURCE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *action() const {
+    return GetPointer<const flatbuffers::String *>(VT_ACTION);
+  }
+  flatbuffers::String *mutable_action() {
+    return GetPointer<flatbuffers::String *>(VT_ACTION);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *context() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONTEXT);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_context() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONTEXT);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_TOKEN) &&
            verifier.VerifyString(token()) &&
@@ -6408,37 +7038,37 @@ struct AuthorizationRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct AuthorizationRequestBuilder {
   typedef AuthorizationRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_token(::flatbuffers::Offset<::flatbuffers::String> token) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_token(flatbuffers::Offset<flatbuffers::String> token) {
     fbb_.AddOffset(AuthorizationRequest::VT_TOKEN, token);
   }
-  void add_resource(::flatbuffers::Offset<::flatbuffers::String> resource) {
+  void add_resource(flatbuffers::Offset<flatbuffers::String> resource) {
     fbb_.AddOffset(AuthorizationRequest::VT_RESOURCE, resource);
   }
-  void add_action(::flatbuffers::Offset<::flatbuffers::String> action) {
+  void add_action(flatbuffers::Offset<flatbuffers::String> action) {
     fbb_.AddOffset(AuthorizationRequest::VT_ACTION, action);
   }
-  void add_context(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> context) {
+  void add_context(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> context) {
     fbb_.AddOffset(AuthorizationRequest::VT_CONTEXT, context);
   }
-  explicit AuthorizationRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AuthorizationRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AuthorizationRequest> Finish() {
+  flatbuffers::Offset<AuthorizationRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AuthorizationRequest>(end);
+    auto o = flatbuffers::Offset<AuthorizationRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> token = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> resource = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> action = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> context = 0) {
+inline flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> token = 0,
+    flatbuffers::Offset<flatbuffers::String> resource = 0,
+    flatbuffers::Offset<flatbuffers::String> action = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> context = 0) {
   AuthorizationRequestBuilder builder_(_fbb);
   builder_.add_context(context);
   builder_.add_action(action);
@@ -6447,16 +7077,16 @@ inline ::flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *token = nullptr,
     const char *resource = nullptr,
     const char *action = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *context = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *context = nullptr) {
   auto token__ = token ? _fbb.CreateString(token) : 0;
   auto resource__ = resource ? _fbb.CreateString(resource) : 0;
   auto action__ = action ? _fbb.CreateString(action) : 0;
-  auto context__ = context ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*context) : 0;
+  auto context__ = context ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*context) : 0;
   return Mia::Protocol::CreateAuthorizationRequest(
       _fbb,
       token__,
@@ -6465,7 +7095,7 @@ inline ::flatbuffers::Offset<AuthorizationRequest> CreateAuthorizationRequestDir
       context__);
 }
 
-struct AuthorizationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct AuthorizationResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AuthorizationResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ALLOWED = 4,
@@ -6474,10 +7104,16 @@ struct AuthorizationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
   bool allowed() const {
     return GetField<uint8_t>(VT_ALLOWED, 0) != 0;
   }
-  const ::flatbuffers::String *reason() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_REASON);
+  bool mutate_allowed(bool _allowed = 0) {
+    return SetField<uint8_t>(VT_ALLOWED, static_cast<uint8_t>(_allowed), 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *reason() const {
+    return GetPointer<const flatbuffers::String *>(VT_REASON);
+  }
+  flatbuffers::String *mutable_reason() {
+    return GetPointer<flatbuffers::String *>(VT_REASON);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<uint8_t>(verifier, VT_ALLOWED, 1) &&
            VerifyOffset(verifier, VT_REASON) &&
@@ -6488,37 +7124,37 @@ struct AuthorizationResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
 
 struct AuthorizationResponseBuilder {
   typedef AuthorizationResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
   void add_allowed(bool allowed) {
     fbb_.AddElement<uint8_t>(AuthorizationResponse::VT_ALLOWED, static_cast<uint8_t>(allowed), 0);
   }
-  void add_reason(::flatbuffers::Offset<::flatbuffers::String> reason) {
+  void add_reason(flatbuffers::Offset<flatbuffers::String> reason) {
     fbb_.AddOffset(AuthorizationResponse::VT_REASON, reason);
   }
-  explicit AuthorizationResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit AuthorizationResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<AuthorizationResponse> Finish() {
+  flatbuffers::Offset<AuthorizationResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<AuthorizationResponse>(end);
+    auto o = flatbuffers::Offset<AuthorizationResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<AuthorizationResponse> CreateAuthorizationResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthorizationResponse> CreateAuthorizationResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
     bool allowed = false,
-    ::flatbuffers::Offset<::flatbuffers::String> reason = 0) {
+    flatbuffers::Offset<flatbuffers::String> reason = 0) {
   AuthorizationResponseBuilder builder_(_fbb);
   builder_.add_reason(reason);
   builder_.add_allowed(allowed);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<AuthorizationResponse> CreateAuthorizationResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<AuthorizationResponse> CreateAuthorizationResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     bool allowed = false,
     const char *reason = nullptr) {
   auto reason__ = reason ? _fbb.CreateString(reason) : 0;
@@ -6528,23 +7164,32 @@ inline ::flatbuffers::Offset<AuthorizationResponse> CreateAuthorizationResponseD
       reason__);
 }
 
-struct PluginLoadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct PluginLoadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef PluginLoadRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PLUGIN_ID = 4,
     VT_PLUGIN_VERSION = 6,
     VT_CONFIG = 8
   };
-  const ::flatbuffers::String *plugin_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PLUGIN_ID);
+  const flatbuffers::String *plugin_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_PLUGIN_ID);
   }
-  const ::flatbuffers::String *plugin_version() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PLUGIN_VERSION);
+  flatbuffers::String *mutable_plugin_id() {
+    return GetPointer<flatbuffers::String *>(VT_PLUGIN_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  const flatbuffers::String *plugin_version() const {
+    return GetPointer<const flatbuffers::String *>(VT_PLUGIN_VERSION);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_plugin_version() {
+    return GetPointer<flatbuffers::String *>(VT_PLUGIN_VERSION);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_config() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLUGIN_ID) &&
            verifier.VerifyString(plugin_id()) &&
@@ -6559,33 +7204,33 @@ struct PluginLoadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct PluginLoadRequestBuilder {
   typedef PluginLoadRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_plugin_id(::flatbuffers::Offset<::flatbuffers::String> plugin_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_plugin_id(flatbuffers::Offset<flatbuffers::String> plugin_id) {
     fbb_.AddOffset(PluginLoadRequest::VT_PLUGIN_ID, plugin_id);
   }
-  void add_plugin_version(::flatbuffers::Offset<::flatbuffers::String> plugin_version) {
+  void add_plugin_version(flatbuffers::Offset<flatbuffers::String> plugin_version) {
     fbb_.AddOffset(PluginLoadRequest::VT_PLUGIN_VERSION, plugin_version);
   }
-  void add_config(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
+  void add_config(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
     fbb_.AddOffset(PluginLoadRequest::VT_CONFIG, config);
   }
-  explicit PluginLoadRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit PluginLoadRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<PluginLoadRequest> Finish() {
+  flatbuffers::Offset<PluginLoadRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<PluginLoadRequest>(end);
+    auto o = flatbuffers::Offset<PluginLoadRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> plugin_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> plugin_version = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0) {
+inline flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> plugin_id = 0,
+    flatbuffers::Offset<flatbuffers::String> plugin_version = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0) {
   PluginLoadRequestBuilder builder_(_fbb);
   builder_.add_config(config);
   builder_.add_plugin_version(plugin_version);
@@ -6593,14 +7238,14 @@ inline ::flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *plugin_id = nullptr,
     const char *plugin_version = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr) {
   auto plugin_id__ = plugin_id ? _fbb.CreateString(plugin_id) : 0;
   auto plugin_version__ = plugin_version ? _fbb.CreateString(plugin_version) : 0;
-  auto config__ = config ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
+  auto config__ = config ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
   return Mia::Protocol::CreatePluginLoadRequest(
       _fbb,
       plugin_id__,
@@ -6608,7 +7253,7 @@ inline ::flatbuffers::Offset<PluginLoadRequest> CreatePluginLoadRequestDirect(
       config__);
 }
 
-struct PluginLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct PluginLoadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef PluginLoadResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PLUGIN_ID = 4,
@@ -6616,19 +7261,31 @@ struct PluginLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_ERROR_MESSAGE = 8,
     VT_CAPABILITIES = 10
   };
-  const ::flatbuffers::String *plugin_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PLUGIN_ID);
+  const flatbuffers::String *plugin_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_PLUGIN_ID);
+  }
+  flatbuffers::String *mutable_plugin_id() {
+    return GetPointer<flatbuffers::String *>(VT_PLUGIN_ID);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_CAPABILITIES);
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *capabilities() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_capabilities() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_CAPABILITIES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLUGIN_ID) &&
            verifier.VerifyString(plugin_id()) &&
@@ -6644,37 +7301,37 @@ struct PluginLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
 
 struct PluginLoadResponseBuilder {
   typedef PluginLoadResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_plugin_id(::flatbuffers::Offset<::flatbuffers::String> plugin_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_plugin_id(flatbuffers::Offset<flatbuffers::String> plugin_id) {
     fbb_.AddOffset(PluginLoadResponse::VT_PLUGIN_ID, plugin_id);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(PluginLoadResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(PluginLoadResponse::VT_ERROR_MESSAGE, error_message);
   }
-  void add_capabilities(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities) {
+  void add_capabilities(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities) {
     fbb_.AddOffset(PluginLoadResponse::VT_CAPABILITIES, capabilities);
   }
-  explicit PluginLoadResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit PluginLoadResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<PluginLoadResponse> Finish() {
+  flatbuffers::Offset<PluginLoadResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<PluginLoadResponse>(end);
+    auto o = flatbuffers::Offset<PluginLoadResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> plugin_id = 0,
+inline flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> plugin_id = 0,
     bool success = false,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> capabilities = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> capabilities = 0) {
   PluginLoadResponseBuilder builder_(_fbb);
   builder_.add_capabilities(capabilities);
   builder_.add_error_message(error_message);
@@ -6683,15 +7340,15 @@ inline ::flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *plugin_id = nullptr,
     bool success = false,
     const char *error_message = nullptr,
-    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *capabilities = nullptr) {
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *capabilities = nullptr) {
   auto plugin_id__ = plugin_id ? _fbb.CreateString(plugin_id) : 0;
   auto error_message__ = error_message ? _fbb.CreateString(error_message) : 0;
-  auto capabilities__ = capabilities ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*capabilities) : 0;
+  auto capabilities__ = capabilities ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*capabilities) : 0;
   return Mia::Protocol::CreatePluginLoadResponse(
       _fbb,
       plugin_id__,
@@ -6700,15 +7357,18 @@ inline ::flatbuffers::Offset<PluginLoadResponse> CreatePluginLoadResponseDirect(
       capabilities__);
 }
 
-struct PluginUnloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct PluginUnloadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef PluginUnloadRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PLUGIN_ID = 4
   };
-  const ::flatbuffers::String *plugin_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PLUGIN_ID);
+  const flatbuffers::String *plugin_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_PLUGIN_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_plugin_id() {
+    return GetPointer<flatbuffers::String *>(VT_PLUGIN_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLUGIN_ID) &&
            verifier.VerifyString(plugin_id()) &&
@@ -6718,32 +7378,32 @@ struct PluginUnloadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct PluginUnloadRequestBuilder {
   typedef PluginUnloadRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_plugin_id(::flatbuffers::Offset<::flatbuffers::String> plugin_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_plugin_id(flatbuffers::Offset<flatbuffers::String> plugin_id) {
     fbb_.AddOffset(PluginUnloadRequest::VT_PLUGIN_ID, plugin_id);
   }
-  explicit PluginUnloadRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit PluginUnloadRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<PluginUnloadRequest> Finish() {
+  flatbuffers::Offset<PluginUnloadRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<PluginUnloadRequest>(end);
+    auto o = flatbuffers::Offset<PluginUnloadRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<PluginUnloadRequest> CreatePluginUnloadRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> plugin_id = 0) {
+inline flatbuffers::Offset<PluginUnloadRequest> CreatePluginUnloadRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> plugin_id = 0) {
   PluginUnloadRequestBuilder builder_(_fbb);
   builder_.add_plugin_id(plugin_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<PluginUnloadRequest> CreatePluginUnloadRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<PluginUnloadRequest> CreatePluginUnloadRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *plugin_id = nullptr) {
   auto plugin_id__ = plugin_id ? _fbb.CreateString(plugin_id) : 0;
   return Mia::Protocol::CreatePluginUnloadRequest(
@@ -6751,23 +7411,32 @@ inline ::flatbuffers::Offset<PluginUnloadRequest> CreatePluginUnloadRequestDirec
       plugin_id__);
 }
 
-struct PluginMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct PluginMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef PluginMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PLUGIN_ID = 4,
     VT_MESSAGE_TYPE = 6,
     VT_PAYLOAD = 8
   };
-  const ::flatbuffers::String *plugin_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PLUGIN_ID);
+  const flatbuffers::String *plugin_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_PLUGIN_ID);
   }
-  const ::flatbuffers::String *message_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE_TYPE);
+  flatbuffers::String *mutable_plugin_id() {
+    return GetPointer<flatbuffers::String *>(VT_PLUGIN_ID);
   }
-  const ::flatbuffers::String *payload() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
+  const flatbuffers::String *message_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_MESSAGE_TYPE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_message_type() {
+    return GetPointer<flatbuffers::String *>(VT_MESSAGE_TYPE);
+  }
+  const flatbuffers::String *payload() const {
+    return GetPointer<const flatbuffers::String *>(VT_PAYLOAD);
+  }
+  flatbuffers::String *mutable_payload() {
+    return GetPointer<flatbuffers::String *>(VT_PAYLOAD);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PLUGIN_ID) &&
            verifier.VerifyString(plugin_id()) &&
@@ -6781,33 +7450,33 @@ struct PluginMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct PluginMessageBuilder {
   typedef PluginMessage Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_plugin_id(::flatbuffers::Offset<::flatbuffers::String> plugin_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_plugin_id(flatbuffers::Offset<flatbuffers::String> plugin_id) {
     fbb_.AddOffset(PluginMessage::VT_PLUGIN_ID, plugin_id);
   }
-  void add_message_type(::flatbuffers::Offset<::flatbuffers::String> message_type) {
+  void add_message_type(flatbuffers::Offset<flatbuffers::String> message_type) {
     fbb_.AddOffset(PluginMessage::VT_MESSAGE_TYPE, message_type);
   }
-  void add_payload(::flatbuffers::Offset<::flatbuffers::String> payload) {
+  void add_payload(flatbuffers::Offset<flatbuffers::String> payload) {
     fbb_.AddOffset(PluginMessage::VT_PAYLOAD, payload);
   }
-  explicit PluginMessageBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit PluginMessageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<PluginMessage> Finish() {
+  flatbuffers::Offset<PluginMessage> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<PluginMessage>(end);
+    auto o = flatbuffers::Offset<PluginMessage>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<PluginMessage> CreatePluginMessage(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> plugin_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> message_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> payload = 0) {
+inline flatbuffers::Offset<PluginMessage> CreatePluginMessage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> plugin_id = 0,
+    flatbuffers::Offset<flatbuffers::String> message_type = 0,
+    flatbuffers::Offset<flatbuffers::String> payload = 0) {
   PluginMessageBuilder builder_(_fbb);
   builder_.add_payload(payload);
   builder_.add_message_type(message_type);
@@ -6815,8 +7484,8 @@ inline ::flatbuffers::Offset<PluginMessage> CreatePluginMessage(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<PluginMessage> CreatePluginMessageDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<PluginMessage> CreatePluginMessageDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *plugin_id = nullptr,
     const char *message_type = nullptr,
     const char *payload = nullptr) {
@@ -6830,7 +7499,7 @@ inline ::flatbuffers::Offset<PluginMessage> CreatePluginMessageDirect(
       payload__);
 }
 
-struct ConfigurationUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ConfigurationUpdate FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ConfigurationUpdateBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMPONENT = 4,
@@ -6839,22 +7508,37 @@ struct ConfigurationUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
     VT_VALUE = 10,
     VT_VALUE_TYPE = 12
   };
-  const ::flatbuffers::String *component() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMPONENT);
+  const flatbuffers::String *component() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMPONENT);
   }
-  const ::flatbuffers::String *section() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SECTION);
+  flatbuffers::String *mutable_component() {
+    return GetPointer<flatbuffers::String *>(VT_COMPONENT);
   }
-  const ::flatbuffers::String *key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_KEY);
+  const flatbuffers::String *section() const {
+    return GetPointer<const flatbuffers::String *>(VT_SECTION);
   }
-  const ::flatbuffers::String *value() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  flatbuffers::String *mutable_section() {
+    return GetPointer<flatbuffers::String *>(VT_SECTION);
   }
-  const ::flatbuffers::String *value_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_VALUE_TYPE);
+  const flatbuffers::String *key() const {
+    return GetPointer<const flatbuffers::String *>(VT_KEY);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_key() {
+    return GetPointer<flatbuffers::String *>(VT_KEY);
+  }
+  const flatbuffers::String *value() const {
+    return GetPointer<const flatbuffers::String *>(VT_VALUE);
+  }
+  flatbuffers::String *mutable_value() {
+    return GetPointer<flatbuffers::String *>(VT_VALUE);
+  }
+  const flatbuffers::String *value_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_VALUE_TYPE);
+  }
+  flatbuffers::String *mutable_value_type() {
+    return GetPointer<flatbuffers::String *>(VT_VALUE_TYPE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMPONENT) &&
            verifier.VerifyString(component()) &&
@@ -6872,41 +7556,41 @@ struct ConfigurationUpdate FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct ConfigurationUpdateBuilder {
   typedef ConfigurationUpdate Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_component(::flatbuffers::Offset<::flatbuffers::String> component) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_component(flatbuffers::Offset<flatbuffers::String> component) {
     fbb_.AddOffset(ConfigurationUpdate::VT_COMPONENT, component);
   }
-  void add_section(::flatbuffers::Offset<::flatbuffers::String> section) {
+  void add_section(flatbuffers::Offset<flatbuffers::String> section) {
     fbb_.AddOffset(ConfigurationUpdate::VT_SECTION, section);
   }
-  void add_key(::flatbuffers::Offset<::flatbuffers::String> key) {
+  void add_key(flatbuffers::Offset<flatbuffers::String> key) {
     fbb_.AddOffset(ConfigurationUpdate::VT_KEY, key);
   }
-  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+  void add_value(flatbuffers::Offset<flatbuffers::String> value) {
     fbb_.AddOffset(ConfigurationUpdate::VT_VALUE, value);
   }
-  void add_value_type(::flatbuffers::Offset<::flatbuffers::String> value_type) {
+  void add_value_type(flatbuffers::Offset<flatbuffers::String> value_type) {
     fbb_.AddOffset(ConfigurationUpdate::VT_VALUE_TYPE, value_type);
   }
-  explicit ConfigurationUpdateBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ConfigurationUpdateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ConfigurationUpdate> Finish() {
+  flatbuffers::Offset<ConfigurationUpdate> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ConfigurationUpdate>(end);
+    auto o = flatbuffers::Offset<ConfigurationUpdate>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdate(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> component = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> section = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> key = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> value = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> value_type = 0) {
+inline flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdate(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> component = 0,
+    flatbuffers::Offset<flatbuffers::String> section = 0,
+    flatbuffers::Offset<flatbuffers::String> key = 0,
+    flatbuffers::Offset<flatbuffers::String> value = 0,
+    flatbuffers::Offset<flatbuffers::String> value_type = 0) {
   ConfigurationUpdateBuilder builder_(_fbb);
   builder_.add_value_type(value_type);
   builder_.add_value(value);
@@ -6916,8 +7600,8 @@ inline ::flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdate(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdateDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdateDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *component = nullptr,
     const char *section = nullptr,
     const char *key = nullptr,
@@ -6937,23 +7621,32 @@ inline ::flatbuffers::Offset<ConfigurationUpdate> CreateConfigurationUpdateDirec
       value_type__);
 }
 
-struct ConfigurationSnapshot FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ConfigurationSnapshot FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ConfigurationSnapshotBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMPONENT = 4,
     VT_CONFIGURATION = 6,
     VT_TIMESTAMP = 8
   };
-  const ::flatbuffers::String *component() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMPONENT);
+  const flatbuffers::String *component() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMPONENT);
   }
-  const ::flatbuffers::String *configuration() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CONFIGURATION);
+  flatbuffers::String *mutable_component() {
+    return GetPointer<flatbuffers::String *>(VT_COMPONENT);
+  }
+  const flatbuffers::String *configuration() const {
+    return GetPointer<const flatbuffers::String *>(VT_CONFIGURATION);
+  }
+  flatbuffers::String *mutable_configuration() {
+    return GetPointer<flatbuffers::String *>(VT_CONFIGURATION);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMPONENT) &&
            verifier.VerifyString(component()) &&
@@ -6966,32 +7659,32 @@ struct ConfigurationSnapshot FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
 
 struct ConfigurationSnapshotBuilder {
   typedef ConfigurationSnapshot Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_component(::flatbuffers::Offset<::flatbuffers::String> component) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_component(flatbuffers::Offset<flatbuffers::String> component) {
     fbb_.AddOffset(ConfigurationSnapshot::VT_COMPONENT, component);
   }
-  void add_configuration(::flatbuffers::Offset<::flatbuffers::String> configuration) {
+  void add_configuration(flatbuffers::Offset<flatbuffers::String> configuration) {
     fbb_.AddOffset(ConfigurationSnapshot::VT_CONFIGURATION, configuration);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(ConfigurationSnapshot::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit ConfigurationSnapshotBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ConfigurationSnapshotBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ConfigurationSnapshot> Finish() {
+  flatbuffers::Offset<ConfigurationSnapshot> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ConfigurationSnapshot>(end);
+    auto o = flatbuffers::Offset<ConfigurationSnapshot>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshot(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> component = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> configuration = 0,
+inline flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshot(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> component = 0,
+    flatbuffers::Offset<flatbuffers::String> configuration = 0,
     uint64_t timestamp = 0) {
   ConfigurationSnapshotBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -7000,8 +7693,8 @@ inline ::flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshot(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshotDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshotDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *component = nullptr,
     const char *configuration = nullptr,
     uint64_t timestamp = 0) {
@@ -7014,7 +7707,7 @@ inline ::flatbuffers::Offset<ConfigurationSnapshot> CreateConfigurationSnapshotD
       timestamp);
 }
 
-struct MetricReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct MetricReport FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef MetricReportBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_METRIC_NAME = 4,
@@ -7023,22 +7716,37 @@ struct MetricReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LABELS = 10,
     VT_TIMESTAMP = 12
   };
-  const ::flatbuffers::String *metric_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_METRIC_NAME);
+  const flatbuffers::String *metric_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_METRIC_NAME);
   }
-  const ::flatbuffers::String *metric_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_METRIC_TYPE);
+  flatbuffers::String *mutable_metric_name() {
+    return GetPointer<flatbuffers::String *>(VT_METRIC_NAME);
+  }
+  const flatbuffers::String *metric_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_METRIC_TYPE);
+  }
+  flatbuffers::String *mutable_metric_type() {
+    return GetPointer<flatbuffers::String *>(VT_METRIC_TYPE);
   }
   float value() const {
     return GetField<float>(VT_VALUE, 0.0f);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *labels() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_LABELS);
+  bool mutate_value(float _value = 0.0f) {
+    return SetField<float>(VT_VALUE, _value, 0.0f);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *labels() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_LABELS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_labels() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_LABELS);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_METRIC_NAME) &&
            verifier.VerifyString(metric_name()) &&
@@ -7055,40 +7763,40 @@ struct MetricReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct MetricReportBuilder {
   typedef MetricReport Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_metric_name(::flatbuffers::Offset<::flatbuffers::String> metric_name) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_metric_name(flatbuffers::Offset<flatbuffers::String> metric_name) {
     fbb_.AddOffset(MetricReport::VT_METRIC_NAME, metric_name);
   }
-  void add_metric_type(::flatbuffers::Offset<::flatbuffers::String> metric_type) {
+  void add_metric_type(flatbuffers::Offset<flatbuffers::String> metric_type) {
     fbb_.AddOffset(MetricReport::VT_METRIC_TYPE, metric_type);
   }
   void add_value(float value) {
     fbb_.AddElement<float>(MetricReport::VT_VALUE, value, 0.0f);
   }
-  void add_labels(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> labels) {
+  void add_labels(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> labels) {
     fbb_.AddOffset(MetricReport::VT_LABELS, labels);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(MetricReport::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit MetricReportBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit MetricReportBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MetricReport> Finish() {
+  flatbuffers::Offset<MetricReport> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MetricReport>(end);
+    auto o = flatbuffers::Offset<MetricReport>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MetricReport> CreateMetricReport(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> metric_name = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> metric_type = 0,
+inline flatbuffers::Offset<MetricReport> CreateMetricReport(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> metric_name = 0,
+    flatbuffers::Offset<flatbuffers::String> metric_type = 0,
     float value = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> labels = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> labels = 0,
     uint64_t timestamp = 0) {
   MetricReportBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -7099,16 +7807,16 @@ inline ::flatbuffers::Offset<MetricReport> CreateMetricReport(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MetricReport> CreateMetricReportDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<MetricReport> CreateMetricReportDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *metric_name = nullptr,
     const char *metric_type = nullptr,
     float value = 0.0f,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *labels = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *labels = nullptr,
     uint64_t timestamp = 0) {
   auto metric_name__ = metric_name ? _fbb.CreateString(metric_name) : 0;
   auto metric_type__ = metric_type ? _fbb.CreateString(metric_type) : 0;
-  auto labels__ = labels ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*labels) : 0;
+  auto labels__ = labels ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*labels) : 0;
   return Mia::Protocol::CreateMetricReport(
       _fbb,
       metric_name__,
@@ -7118,7 +7826,7 @@ inline ::flatbuffers::Offset<MetricReport> CreateMetricReportDirect(
       timestamp);
 }
 
-struct HealthReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HealthReport FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HealthReportBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_COMPONENT = 4,
@@ -7126,19 +7834,31 @@ struct HealthReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_CHECKS = 8,
     VT_TIMESTAMP = 10
   };
-  const ::flatbuffers::String *component() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COMPONENT);
+  const flatbuffers::String *component() const {
+    return GetPointer<const flatbuffers::String *>(VT_COMPONENT);
   }
-  const ::flatbuffers::String *health_status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_HEALTH_STATUS);
+  flatbuffers::String *mutable_component() {
+    return GetPointer<flatbuffers::String *>(VT_COMPONENT);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>> *checks() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>> *>(VT_CHECKS);
+  const flatbuffers::String *health_status() const {
+    return GetPointer<const flatbuffers::String *>(VT_HEALTH_STATUS);
+  }
+  flatbuffers::String *mutable_health_status() {
+    return GetPointer<flatbuffers::String *>(VT_HEALTH_STATUS);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>> *checks() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>> *>(VT_CHECKS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>> *mutable_checks() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>> *>(VT_CHECKS);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_COMPONENT) &&
            verifier.VerifyString(component()) &&
@@ -7154,36 +7874,36 @@ struct HealthReport FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct HealthReportBuilder {
   typedef HealthReport Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_component(::flatbuffers::Offset<::flatbuffers::String> component) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_component(flatbuffers::Offset<flatbuffers::String> component) {
     fbb_.AddOffset(HealthReport::VT_COMPONENT, component);
   }
-  void add_health_status(::flatbuffers::Offset<::flatbuffers::String> health_status) {
+  void add_health_status(flatbuffers::Offset<flatbuffers::String> health_status) {
     fbb_.AddOffset(HealthReport::VT_HEALTH_STATUS, health_status);
   }
-  void add_checks(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>>> checks) {
+  void add_checks(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>>> checks) {
     fbb_.AddOffset(HealthReport::VT_CHECKS, checks);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(HealthReport::VT_TIMESTAMP, timestamp, 0);
   }
-  explicit HealthReportBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HealthReportBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HealthReport> Finish() {
+  flatbuffers::Offset<HealthReport> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HealthReport>(end);
+    auto o = flatbuffers::Offset<HealthReport>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HealthReport> CreateHealthReport(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> component = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> health_status = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>>> checks = 0,
+inline flatbuffers::Offset<HealthReport> CreateHealthReport(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> component = 0,
+    flatbuffers::Offset<flatbuffers::String> health_status = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>>> checks = 0,
     uint64_t timestamp = 0) {
   HealthReportBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
@@ -7193,15 +7913,15 @@ inline ::flatbuffers::Offset<HealthReport> CreateHealthReport(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HealthReport> CreateHealthReportDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<HealthReport> CreateHealthReportDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *component = nullptr,
     const char *health_status = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>> *checks = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::HealthCheck>> *checks = nullptr,
     uint64_t timestamp = 0) {
   auto component__ = component ? _fbb.CreateString(component) : 0;
   auto health_status__ = health_status ? _fbb.CreateString(health_status) : 0;
-  auto checks__ = checks ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::HealthCheck>>(*checks) : 0;
+  auto checks__ = checks ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::HealthCheck>>(*checks) : 0;
   return Mia::Protocol::CreateHealthReport(
       _fbb,
       component__,
@@ -7210,7 +7930,7 @@ inline ::flatbuffers::Offset<HealthReport> CreateHealthReportDirect(
       timestamp);
 }
 
-struct HealthCheck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct HealthCheck FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef HealthCheckBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_CHECK_NAME = 4,
@@ -7218,19 +7938,31 @@ struct HealthCheck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_OUTPUT = 8,
     VT_DURATION_MS = 10
   };
-  const ::flatbuffers::String *check_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CHECK_NAME);
+  const flatbuffers::String *check_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_CHECK_NAME);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_check_name() {
+    return GetPointer<flatbuffers::String *>(VT_CHECK_NAME);
   }
-  const ::flatbuffers::String *output() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_OUTPUT);
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
+  }
+  const flatbuffers::String *output() const {
+    return GetPointer<const flatbuffers::String *>(VT_OUTPUT);
+  }
+  flatbuffers::String *mutable_output() {
+    return GetPointer<flatbuffers::String *>(VT_OUTPUT);
   }
   uint32_t duration_ms() const {
     return GetField<uint32_t>(VT_DURATION_MS, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_duration_ms(uint32_t _duration_ms = 0) {
+    return SetField<uint32_t>(VT_DURATION_MS, _duration_ms, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_CHECK_NAME) &&
            verifier.VerifyString(check_name()) &&
@@ -7245,36 +7977,36 @@ struct HealthCheck FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct HealthCheckBuilder {
   typedef HealthCheck Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_check_name(::flatbuffers::Offset<::flatbuffers::String> check_name) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_check_name(flatbuffers::Offset<flatbuffers::String> check_name) {
     fbb_.AddOffset(HealthCheck::VT_CHECK_NAME, check_name);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(HealthCheck::VT_STATUS, status);
   }
-  void add_output(::flatbuffers::Offset<::flatbuffers::String> output) {
+  void add_output(flatbuffers::Offset<flatbuffers::String> output) {
     fbb_.AddOffset(HealthCheck::VT_OUTPUT, output);
   }
   void add_duration_ms(uint32_t duration_ms) {
     fbb_.AddElement<uint32_t>(HealthCheck::VT_DURATION_MS, duration_ms, 0);
   }
-  explicit HealthCheckBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit HealthCheckBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<HealthCheck> Finish() {
+  flatbuffers::Offset<HealthCheck> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<HealthCheck>(end);
+    auto o = flatbuffers::Offset<HealthCheck>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<HealthCheck> CreateHealthCheck(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> check_name = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> output = 0,
+inline flatbuffers::Offset<HealthCheck> CreateHealthCheck(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> check_name = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
+    flatbuffers::Offset<flatbuffers::String> output = 0,
     uint32_t duration_ms = 0) {
   HealthCheckBuilder builder_(_fbb);
   builder_.add_duration_ms(duration_ms);
@@ -7284,8 +8016,8 @@ inline ::flatbuffers::Offset<HealthCheck> CreateHealthCheck(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<HealthCheck> CreateHealthCheckDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<HealthCheck> CreateHealthCheckDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *check_name = nullptr,
     const char *status = nullptr,
     const char *output = nullptr,
@@ -7301,23 +8033,32 @@ inline ::flatbuffers::Offset<HealthCheck> CreateHealthCheckDirect(
       duration_ms);
 }
 
-struct EventSubscription FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct EventSubscription FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef EventSubscriptionBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_EVENT_TYPE = 4,
     VT_FILTER = 6,
     VT_SUBSCRIPTION_ID = 8
   };
-  const ::flatbuffers::String *event_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_EVENT_TYPE);
+  const flatbuffers::String *event_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_EVENT_TYPE);
   }
-  const ::flatbuffers::String *filter() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_FILTER);
+  flatbuffers::String *mutable_event_type() {
+    return GetPointer<flatbuffers::String *>(VT_EVENT_TYPE);
   }
-  const ::flatbuffers::String *subscription_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SUBSCRIPTION_ID);
+  const flatbuffers::String *filter() const {
+    return GetPointer<const flatbuffers::String *>(VT_FILTER);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_filter() {
+    return GetPointer<flatbuffers::String *>(VT_FILTER);
+  }
+  const flatbuffers::String *subscription_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SUBSCRIPTION_ID);
+  }
+  flatbuffers::String *mutable_subscription_id() {
+    return GetPointer<flatbuffers::String *>(VT_SUBSCRIPTION_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_EVENT_TYPE) &&
            verifier.VerifyString(event_type()) &&
@@ -7331,33 +8072,33 @@ struct EventSubscription FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct EventSubscriptionBuilder {
   typedef EventSubscription Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_event_type(::flatbuffers::Offset<::flatbuffers::String> event_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_event_type(flatbuffers::Offset<flatbuffers::String> event_type) {
     fbb_.AddOffset(EventSubscription::VT_EVENT_TYPE, event_type);
   }
-  void add_filter(::flatbuffers::Offset<::flatbuffers::String> filter) {
+  void add_filter(flatbuffers::Offset<flatbuffers::String> filter) {
     fbb_.AddOffset(EventSubscription::VT_FILTER, filter);
   }
-  void add_subscription_id(::flatbuffers::Offset<::flatbuffers::String> subscription_id) {
+  void add_subscription_id(flatbuffers::Offset<flatbuffers::String> subscription_id) {
     fbb_.AddOffset(EventSubscription::VT_SUBSCRIPTION_ID, subscription_id);
   }
-  explicit EventSubscriptionBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit EventSubscriptionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<EventSubscription> Finish() {
+  flatbuffers::Offset<EventSubscription> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<EventSubscription>(end);
+    auto o = flatbuffers::Offset<EventSubscription>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<EventSubscription> CreateEventSubscription(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> event_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> filter = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> subscription_id = 0) {
+inline flatbuffers::Offset<EventSubscription> CreateEventSubscription(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> event_type = 0,
+    flatbuffers::Offset<flatbuffers::String> filter = 0,
+    flatbuffers::Offset<flatbuffers::String> subscription_id = 0) {
   EventSubscriptionBuilder builder_(_fbb);
   builder_.add_subscription_id(subscription_id);
   builder_.add_filter(filter);
@@ -7365,8 +8106,8 @@ inline ::flatbuffers::Offset<EventSubscription> CreateEventSubscription(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<EventSubscription> CreateEventSubscriptionDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<EventSubscription> CreateEventSubscriptionDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *event_type = nullptr,
     const char *filter = nullptr,
     const char *subscription_id = nullptr) {
@@ -7380,7 +8121,7 @@ inline ::flatbuffers::Offset<EventSubscription> CreateEventSubscriptionDirect(
       subscription_id__);
 }
 
-struct EventPublication FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct EventPublication FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef EventPublicationBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_EVENT_TYPE = 4,
@@ -7390,25 +8131,43 @@ struct EventPublication FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TIMESTAMP = 12,
     VT_CORRELATION_ID = 14
   };
-  const ::flatbuffers::String *event_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_EVENT_TYPE);
+  const flatbuffers::String *event_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_EVENT_TYPE);
   }
-  const ::flatbuffers::String *event_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_EVENT_ID);
+  flatbuffers::String *mutable_event_type() {
+    return GetPointer<flatbuffers::String *>(VT_EVENT_TYPE);
   }
-  const ::flatbuffers::String *payload() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PAYLOAD);
+  const flatbuffers::String *event_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_EVENT_ID);
   }
-  const ::flatbuffers::String *source() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SOURCE);
+  flatbuffers::String *mutable_event_id() {
+    return GetPointer<flatbuffers::String *>(VT_EVENT_ID);
+  }
+  const flatbuffers::String *payload() const {
+    return GetPointer<const flatbuffers::String *>(VT_PAYLOAD);
+  }
+  flatbuffers::String *mutable_payload() {
+    return GetPointer<flatbuffers::String *>(VT_PAYLOAD);
+  }
+  const flatbuffers::String *source() const {
+    return GetPointer<const flatbuffers::String *>(VT_SOURCE);
+  }
+  flatbuffers::String *mutable_source() {
+    return GetPointer<flatbuffers::String *>(VT_SOURCE);
   }
   uint64_t timestamp() const {
     return GetField<uint64_t>(VT_TIMESTAMP, 0);
   }
-  const ::flatbuffers::String *correlation_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CORRELATION_ID);
+  bool mutate_timestamp(uint64_t _timestamp = 0) {
+    return SetField<uint64_t>(VT_TIMESTAMP, _timestamp, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *correlation_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_CORRELATION_ID);
+  }
+  flatbuffers::String *mutable_correlation_id() {
+    return GetPointer<flatbuffers::String *>(VT_CORRELATION_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_EVENT_TYPE) &&
            verifier.VerifyString(event_type()) &&
@@ -7427,45 +8186,45 @@ struct EventPublication FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct EventPublicationBuilder {
   typedef EventPublication Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_event_type(::flatbuffers::Offset<::flatbuffers::String> event_type) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_event_type(flatbuffers::Offset<flatbuffers::String> event_type) {
     fbb_.AddOffset(EventPublication::VT_EVENT_TYPE, event_type);
   }
-  void add_event_id(::flatbuffers::Offset<::flatbuffers::String> event_id) {
+  void add_event_id(flatbuffers::Offset<flatbuffers::String> event_id) {
     fbb_.AddOffset(EventPublication::VT_EVENT_ID, event_id);
   }
-  void add_payload(::flatbuffers::Offset<::flatbuffers::String> payload) {
+  void add_payload(flatbuffers::Offset<flatbuffers::String> payload) {
     fbb_.AddOffset(EventPublication::VT_PAYLOAD, payload);
   }
-  void add_source(::flatbuffers::Offset<::flatbuffers::String> source) {
+  void add_source(flatbuffers::Offset<flatbuffers::String> source) {
     fbb_.AddOffset(EventPublication::VT_SOURCE, source);
   }
   void add_timestamp(uint64_t timestamp) {
     fbb_.AddElement<uint64_t>(EventPublication::VT_TIMESTAMP, timestamp, 0);
   }
-  void add_correlation_id(::flatbuffers::Offset<::flatbuffers::String> correlation_id) {
+  void add_correlation_id(flatbuffers::Offset<flatbuffers::String> correlation_id) {
     fbb_.AddOffset(EventPublication::VT_CORRELATION_ID, correlation_id);
   }
-  explicit EventPublicationBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit EventPublicationBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<EventPublication> Finish() {
+  flatbuffers::Offset<EventPublication> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<EventPublication>(end);
+    auto o = flatbuffers::Offset<EventPublication>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<EventPublication> CreateEventPublication(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> event_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> event_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> payload = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> source = 0,
+inline flatbuffers::Offset<EventPublication> CreateEventPublication(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> event_type = 0,
+    flatbuffers::Offset<flatbuffers::String> event_id = 0,
+    flatbuffers::Offset<flatbuffers::String> payload = 0,
+    flatbuffers::Offset<flatbuffers::String> source = 0,
     uint64_t timestamp = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> correlation_id = 0) {
+    flatbuffers::Offset<flatbuffers::String> correlation_id = 0) {
   EventPublicationBuilder builder_(_fbb);
   builder_.add_timestamp(timestamp);
   builder_.add_correlation_id(correlation_id);
@@ -7476,8 +8235,8 @@ inline ::flatbuffers::Offset<EventPublication> CreateEventPublication(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<EventPublication> CreateEventPublicationDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<EventPublication> CreateEventPublicationDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *event_type = nullptr,
     const char *event_id = nullptr,
     const char *payload = nullptr,
@@ -7499,7 +8258,7 @@ inline ::flatbuffers::Offset<EventPublication> CreateEventPublicationDirect(
       correlation_id__);
 }
 
-struct EventAcknowledgment FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct EventAcknowledgment FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef EventAcknowledgmentBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_EVENT_ID = 4,
@@ -7507,19 +8266,31 @@ struct EventAcknowledgment FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
     VT_SUCCESS = 8,
     VT_ERROR_MESSAGE = 10
   };
-  const ::flatbuffers::String *event_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_EVENT_ID);
+  const flatbuffers::String *event_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_EVENT_ID);
   }
-  const ::flatbuffers::String *subscription_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SUBSCRIPTION_ID);
+  flatbuffers::String *mutable_event_id() {
+    return GetPointer<flatbuffers::String *>(VT_EVENT_ID);
+  }
+  const flatbuffers::String *subscription_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_SUBSCRIPTION_ID);
+  }
+  flatbuffers::String *mutable_subscription_id() {
+    return GetPointer<flatbuffers::String *>(VT_SUBSCRIPTION_ID);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_EVENT_ID) &&
            verifier.VerifyString(event_id()) &&
@@ -7534,37 +8305,37 @@ struct EventAcknowledgment FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tabl
 
 struct EventAcknowledgmentBuilder {
   typedef EventAcknowledgment Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_event_id(::flatbuffers::Offset<::flatbuffers::String> event_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_event_id(flatbuffers::Offset<flatbuffers::String> event_id) {
     fbb_.AddOffset(EventAcknowledgment::VT_EVENT_ID, event_id);
   }
-  void add_subscription_id(::flatbuffers::Offset<::flatbuffers::String> subscription_id) {
+  void add_subscription_id(flatbuffers::Offset<flatbuffers::String> subscription_id) {
     fbb_.AddOffset(EventAcknowledgment::VT_SUBSCRIPTION_ID, subscription_id);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(EventAcknowledgment::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(EventAcknowledgment::VT_ERROR_MESSAGE, error_message);
   }
-  explicit EventAcknowledgmentBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit EventAcknowledgmentBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<EventAcknowledgment> Finish() {
+  flatbuffers::Offset<EventAcknowledgment> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<EventAcknowledgment>(end);
+    auto o = flatbuffers::Offset<EventAcknowledgment>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgment(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> event_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> subscription_id = 0,
+inline flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgment(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> event_id = 0,
+    flatbuffers::Offset<flatbuffers::String> subscription_id = 0,
     bool success = false,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   EventAcknowledgmentBuilder builder_(_fbb);
   builder_.add_error_message(error_message);
   builder_.add_subscription_id(subscription_id);
@@ -7573,8 +8344,8 @@ inline ::flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgment(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgmentDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgmentDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *event_id = nullptr,
     const char *subscription_id = nullptr,
     bool success = false,
@@ -7590,7 +8361,7 @@ inline ::flatbuffers::Offset<EventAcknowledgment> CreateEventAcknowledgmentDirec
       error_message__);
 }
 
-struct WorkflowStartRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct WorkflowStartRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef WorkflowStartRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_WORKFLOW_ID = 4,
@@ -7598,19 +8369,31 @@ struct WorkflowStartRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
     VT_PARAMETERS = 8,
     VT_PRIORITY = 10
   };
-  const ::flatbuffers::String *workflow_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_WORKFLOW_ID);
+  const flatbuffers::String *workflow_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_WORKFLOW_ID);
   }
-  const ::flatbuffers::String *workflow_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_WORKFLOW_NAME);
+  flatbuffers::String *mutable_workflow_id() {
+    return GetPointer<flatbuffers::String *>(VT_WORKFLOW_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  const flatbuffers::String *workflow_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_WORKFLOW_NAME);
+  }
+  flatbuffers::String *mutable_workflow_name() {
+    return GetPointer<flatbuffers::String *>(VT_WORKFLOW_NAME);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_parameters() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
   }
   int8_t priority() const {
     return GetField<int8_t>(VT_PRIORITY, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_priority(int8_t _priority = 0) {
+    return SetField<int8_t>(VT_PRIORITY, _priority, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_WORKFLOW_ID) &&
            verifier.VerifyString(workflow_id()) &&
@@ -7626,36 +8409,36 @@ struct WorkflowStartRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Tab
 
 struct WorkflowStartRequestBuilder {
   typedef WorkflowStartRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_workflow_id(::flatbuffers::Offset<::flatbuffers::String> workflow_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_workflow_id(flatbuffers::Offset<flatbuffers::String> workflow_id) {
     fbb_.AddOffset(WorkflowStartRequest::VT_WORKFLOW_ID, workflow_id);
   }
-  void add_workflow_name(::flatbuffers::Offset<::flatbuffers::String> workflow_name) {
+  void add_workflow_name(flatbuffers::Offset<flatbuffers::String> workflow_name) {
     fbb_.AddOffset(WorkflowStartRequest::VT_WORKFLOW_NAME, workflow_name);
   }
-  void add_parameters(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
+  void add_parameters(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
     fbb_.AddOffset(WorkflowStartRequest::VT_PARAMETERS, parameters);
   }
   void add_priority(int8_t priority) {
     fbb_.AddElement<int8_t>(WorkflowStartRequest::VT_PRIORITY, priority, 0);
   }
-  explicit WorkflowStartRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit WorkflowStartRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<WorkflowStartRequest> Finish() {
+  flatbuffers::Offset<WorkflowStartRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<WorkflowStartRequest>(end);
+    auto o = flatbuffers::Offset<WorkflowStartRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> workflow_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> workflow_name = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
+inline flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> workflow_id = 0,
+    flatbuffers::Offset<flatbuffers::String> workflow_name = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
     int8_t priority = 0) {
   WorkflowStartRequestBuilder builder_(_fbb);
   builder_.add_parameters(parameters);
@@ -7665,15 +8448,15 @@ inline ::flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *workflow_id = nullptr,
     const char *workflow_name = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
     int8_t priority = 0) {
   auto workflow_id__ = workflow_id ? _fbb.CreateString(workflow_id) : 0;
   auto workflow_name__ = workflow_name ? _fbb.CreateString(workflow_name) : 0;
-  auto parameters__ = parameters ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
+  auto parameters__ = parameters ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
   return Mia::Protocol::CreateWorkflowStartRequest(
       _fbb,
       workflow_id__,
@@ -7682,7 +8465,7 @@ inline ::flatbuffers::Offset<WorkflowStartRequest> CreateWorkflowStartRequestDir
       priority);
 }
 
-struct WorkflowStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct WorkflowStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef WorkflowStatusResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_WORKFLOW_ID = 4,
@@ -7694,31 +8477,55 @@ struct WorkflowStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
     VT_RESULT = 16,
     VT_ERROR_MESSAGE = 18
   };
-  const ::flatbuffers::String *workflow_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_WORKFLOW_ID);
+  const flatbuffers::String *workflow_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_WORKFLOW_ID);
   }
-  const ::flatbuffers::String *status() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_STATUS);
+  flatbuffers::String *mutable_workflow_id() {
+    return GetPointer<flatbuffers::String *>(VT_WORKFLOW_ID);
+  }
+  const flatbuffers::String *status() const {
+    return GetPointer<const flatbuffers::String *>(VT_STATUS);
+  }
+  flatbuffers::String *mutable_status() {
+    return GetPointer<flatbuffers::String *>(VT_STATUS);
   }
   float progress_percent() const {
     return GetField<float>(VT_PROGRESS_PERCENT, 0.0f);
   }
-  const ::flatbuffers::String *current_step() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_CURRENT_STEP);
+  bool mutate_progress_percent(float _progress_percent = 0.0f) {
+    return SetField<float>(VT_PROGRESS_PERCENT, _progress_percent, 0.0f);
+  }
+  const flatbuffers::String *current_step() const {
+    return GetPointer<const flatbuffers::String *>(VT_CURRENT_STEP);
+  }
+  flatbuffers::String *mutable_current_step() {
+    return GetPointer<flatbuffers::String *>(VT_CURRENT_STEP);
   }
   uint32_t steps_completed() const {
     return GetField<uint32_t>(VT_STEPS_COMPLETED, 0);
   }
+  bool mutate_steps_completed(uint32_t _steps_completed = 0) {
+    return SetField<uint32_t>(VT_STEPS_COMPLETED, _steps_completed, 0);
+  }
   uint32_t total_steps() const {
     return GetField<uint32_t>(VT_TOTAL_STEPS, 0);
   }
-  const ::flatbuffers::String *result() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_RESULT);
+  bool mutate_total_steps(uint32_t _total_steps = 0) {
+    return SetField<uint32_t>(VT_TOTAL_STEPS, _total_steps, 0);
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  const flatbuffers::String *result() const {
+    return GetPointer<const flatbuffers::String *>(VT_RESULT);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_result() {
+    return GetPointer<flatbuffers::String *>(VT_RESULT);
+  }
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_WORKFLOW_ID) &&
            verifier.VerifyString(workflow_id()) &&
@@ -7739,18 +8546,18 @@ struct WorkflowStatusResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
 
 struct WorkflowStatusResponseBuilder {
   typedef WorkflowStatusResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_workflow_id(::flatbuffers::Offset<::flatbuffers::String> workflow_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_workflow_id(flatbuffers::Offset<flatbuffers::String> workflow_id) {
     fbb_.AddOffset(WorkflowStatusResponse::VT_WORKFLOW_ID, workflow_id);
   }
-  void add_status(::flatbuffers::Offset<::flatbuffers::String> status) {
+  void add_status(flatbuffers::Offset<flatbuffers::String> status) {
     fbb_.AddOffset(WorkflowStatusResponse::VT_STATUS, status);
   }
   void add_progress_percent(float progress_percent) {
     fbb_.AddElement<float>(WorkflowStatusResponse::VT_PROGRESS_PERCENT, progress_percent, 0.0f);
   }
-  void add_current_step(::flatbuffers::Offset<::flatbuffers::String> current_step) {
+  void add_current_step(flatbuffers::Offset<flatbuffers::String> current_step) {
     fbb_.AddOffset(WorkflowStatusResponse::VT_CURRENT_STEP, current_step);
   }
   void add_steps_completed(uint32_t steps_completed) {
@@ -7759,33 +8566,33 @@ struct WorkflowStatusResponseBuilder {
   void add_total_steps(uint32_t total_steps) {
     fbb_.AddElement<uint32_t>(WorkflowStatusResponse::VT_TOTAL_STEPS, total_steps, 0);
   }
-  void add_result(::flatbuffers::Offset<::flatbuffers::String> result) {
+  void add_result(flatbuffers::Offset<flatbuffers::String> result) {
     fbb_.AddOffset(WorkflowStatusResponse::VT_RESULT, result);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(WorkflowStatusResponse::VT_ERROR_MESSAGE, error_message);
   }
-  explicit WorkflowStatusResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit WorkflowStatusResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<WorkflowStatusResponse> Finish() {
+  flatbuffers::Offset<WorkflowStatusResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<WorkflowStatusResponse>(end);
+    auto o = flatbuffers::Offset<WorkflowStatusResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> workflow_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> status = 0,
+inline flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> workflow_id = 0,
+    flatbuffers::Offset<flatbuffers::String> status = 0,
     float progress_percent = 0.0f,
-    ::flatbuffers::Offset<::flatbuffers::String> current_step = 0,
+    flatbuffers::Offset<flatbuffers::String> current_step = 0,
     uint32_t steps_completed = 0,
     uint32_t total_steps = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> result = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> result = 0,
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   WorkflowStatusResponseBuilder builder_(_fbb);
   builder_.add_error_message(error_message);
   builder_.add_result(result);
@@ -7798,8 +8605,8 @@ inline ::flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusRespons
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *workflow_id = nullptr,
     const char *status = nullptr,
     float progress_percent = 0.0f,
@@ -7825,19 +8632,25 @@ inline ::flatbuffers::Offset<WorkflowStatusResponse> CreateWorkflowStatusRespons
       error_message__);
 }
 
-struct WorkflowControlRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct WorkflowControlRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef WorkflowControlRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_WORKFLOW_ID = 4,
     VT_ACTION = 6
   };
-  const ::flatbuffers::String *workflow_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_WORKFLOW_ID);
+  const flatbuffers::String *workflow_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_WORKFLOW_ID);
   }
-  const ::flatbuffers::String *action() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ACTION);
+  flatbuffers::String *mutable_workflow_id() {
+    return GetPointer<flatbuffers::String *>(VT_WORKFLOW_ID);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *action() const {
+    return GetPointer<const flatbuffers::String *>(VT_ACTION);
+  }
+  flatbuffers::String *mutable_action() {
+    return GetPointer<flatbuffers::String *>(VT_ACTION);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_WORKFLOW_ID) &&
            verifier.VerifyString(workflow_id()) &&
@@ -7849,37 +8662,37 @@ struct WorkflowControlRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::T
 
 struct WorkflowControlRequestBuilder {
   typedef WorkflowControlRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_workflow_id(::flatbuffers::Offset<::flatbuffers::String> workflow_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_workflow_id(flatbuffers::Offset<flatbuffers::String> workflow_id) {
     fbb_.AddOffset(WorkflowControlRequest::VT_WORKFLOW_ID, workflow_id);
   }
-  void add_action(::flatbuffers::Offset<::flatbuffers::String> action) {
+  void add_action(flatbuffers::Offset<flatbuffers::String> action) {
     fbb_.AddOffset(WorkflowControlRequest::VT_ACTION, action);
   }
-  explicit WorkflowControlRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit WorkflowControlRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<WorkflowControlRequest> Finish() {
+  flatbuffers::Offset<WorkflowControlRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<WorkflowControlRequest>(end);
+    auto o = flatbuffers::Offset<WorkflowControlRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<WorkflowControlRequest> CreateWorkflowControlRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> workflow_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> action = 0) {
+inline flatbuffers::Offset<WorkflowControlRequest> CreateWorkflowControlRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> workflow_id = 0,
+    flatbuffers::Offset<flatbuffers::String> action = 0) {
   WorkflowControlRequestBuilder builder_(_fbb);
   builder_.add_action(action);
   builder_.add_workflow_id(workflow_id);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<WorkflowControlRequest> CreateWorkflowControlRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<WorkflowControlRequest> CreateWorkflowControlRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *workflow_id = nullptr,
     const char *action = nullptr) {
   auto workflow_id__ = workflow_id ? _fbb.CreateString(workflow_id) : 0;
@@ -7890,7 +8703,7 @@ inline ::flatbuffers::Offset<WorkflowControlRequest> CreateWorkflowControlReques
       action__);
 }
 
-struct ModelLoadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ModelLoadRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ModelLoadRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MODEL_ID = 4,
@@ -7898,19 +8711,31 @@ struct ModelLoadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_MODEL_PATH = 8,
     VT_CONFIG = 10
   };
-  const ::flatbuffers::String *model_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_ID);
+  const flatbuffers::String *model_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_ID);
   }
-  const ::flatbuffers::String *model_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_TYPE);
+  flatbuffers::String *mutable_model_id() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_ID);
   }
-  const ::flatbuffers::String *model_path() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_PATH);
+  const flatbuffers::String *model_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_TYPE);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  flatbuffers::String *mutable_model_type() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_TYPE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *model_path() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_PATH);
+  }
+  flatbuffers::String *mutable_model_path() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_PATH);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_config() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIG);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MODEL_ID) &&
            verifier.VerifyString(model_id()) &&
@@ -7927,37 +8752,37 @@ struct ModelLoadRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct ModelLoadRequestBuilder {
   typedef ModelLoadRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_model_id(::flatbuffers::Offset<::flatbuffers::String> model_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_model_id(flatbuffers::Offset<flatbuffers::String> model_id) {
     fbb_.AddOffset(ModelLoadRequest::VT_MODEL_ID, model_id);
   }
-  void add_model_type(::flatbuffers::Offset<::flatbuffers::String> model_type) {
+  void add_model_type(flatbuffers::Offset<flatbuffers::String> model_type) {
     fbb_.AddOffset(ModelLoadRequest::VT_MODEL_TYPE, model_type);
   }
-  void add_model_path(::flatbuffers::Offset<::flatbuffers::String> model_path) {
+  void add_model_path(flatbuffers::Offset<flatbuffers::String> model_path) {
     fbb_.AddOffset(ModelLoadRequest::VT_MODEL_PATH, model_path);
   }
-  void add_config(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
+  void add_config(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config) {
     fbb_.AddOffset(ModelLoadRequest::VT_CONFIG, config);
   }
-  explicit ModelLoadRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ModelLoadRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ModelLoadRequest> Finish() {
+  flatbuffers::Offset<ModelLoadRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ModelLoadRequest>(end);
+    auto o = flatbuffers::Offset<ModelLoadRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> model_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> model_type = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> model_path = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0) {
+inline flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> model_id = 0,
+    flatbuffers::Offset<flatbuffers::String> model_type = 0,
+    flatbuffers::Offset<flatbuffers::String> model_path = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> config = 0) {
   ModelLoadRequestBuilder builder_(_fbb);
   builder_.add_config(config);
   builder_.add_model_path(model_path);
@@ -7966,16 +8791,16 @@ inline ::flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *model_id = nullptr,
     const char *model_type = nullptr,
     const char *model_path = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr) {
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *config = nullptr) {
   auto model_id__ = model_id ? _fbb.CreateString(model_id) : 0;
   auto model_type__ = model_type ? _fbb.CreateString(model_type) : 0;
   auto model_path__ = model_path ? _fbb.CreateString(model_path) : 0;
-  auto config__ = config ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
+  auto config__ = config ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*config) : 0;
   return Mia::Protocol::CreateModelLoadRequest(
       _fbb,
       model_id__,
@@ -7984,7 +8809,7 @@ inline ::flatbuffers::Offset<ModelLoadRequest> CreateModelLoadRequestDirect(
       config__);
 }
 
-struct ModelLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct ModelLoadResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef ModelLoadResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MODEL_ID = 4,
@@ -7992,19 +8817,31 @@ struct ModelLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     VT_ERROR_MESSAGE = 8,
     VT_MODEL_INFO = 10
   };
-  const ::flatbuffers::String *model_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_ID);
+  const flatbuffers::String *model_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_ID);
+  }
+  flatbuffers::String *mutable_model_id() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_ID);
   }
   bool success() const {
     return GetField<uint8_t>(VT_SUCCESS, 0) != 0;
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_success(bool _success = 0) {
+    return SetField<uint8_t>(VT_SUCCESS, static_cast<uint8_t>(_success), 0);
   }
-  const ::flatbuffers::String *model_info() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_INFO);
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  const flatbuffers::String *model_info() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_INFO);
+  }
+  flatbuffers::String *mutable_model_info() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_INFO);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MODEL_ID) &&
            verifier.VerifyString(model_id()) &&
@@ -8019,37 +8856,37 @@ struct ModelLoadResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct ModelLoadResponseBuilder {
   typedef ModelLoadResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_model_id(::flatbuffers::Offset<::flatbuffers::String> model_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_model_id(flatbuffers::Offset<flatbuffers::String> model_id) {
     fbb_.AddOffset(ModelLoadResponse::VT_MODEL_ID, model_id);
   }
   void add_success(bool success) {
     fbb_.AddElement<uint8_t>(ModelLoadResponse::VT_SUCCESS, static_cast<uint8_t>(success), 0);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(ModelLoadResponse::VT_ERROR_MESSAGE, error_message);
   }
-  void add_model_info(::flatbuffers::Offset<::flatbuffers::String> model_info) {
+  void add_model_info(flatbuffers::Offset<flatbuffers::String> model_info) {
     fbb_.AddOffset(ModelLoadResponse::VT_MODEL_INFO, model_info);
   }
-  explicit ModelLoadResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit ModelLoadResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<ModelLoadResponse> Finish() {
+  flatbuffers::Offset<ModelLoadResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<ModelLoadResponse>(end);
+    auto o = flatbuffers::Offset<ModelLoadResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> model_id = 0,
+inline flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> model_id = 0,
     bool success = false,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> model_info = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0,
+    flatbuffers::Offset<flatbuffers::String> model_info = 0) {
   ModelLoadResponseBuilder builder_(_fbb);
   builder_.add_model_info(model_info);
   builder_.add_error_message(error_message);
@@ -8058,8 +8895,8 @@ inline ::flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *model_id = nullptr,
     bool success = false,
     const char *error_message = nullptr,
@@ -8075,7 +8912,7 @@ inline ::flatbuffers::Offset<ModelLoadResponse> CreateModelLoadResponseDirect(
       model_info__);
 }
 
-struct InferenceRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct InferenceRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef InferenceRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MODEL_ID = 4,
@@ -8083,19 +8920,31 @@ struct InferenceRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_PARAMETERS = 8,
     VT_ASYNC = 10
   };
-  const ::flatbuffers::String *model_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_ID);
+  const flatbuffers::String *model_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_ID);
   }
-  const ::flatbuffers::String *input_data() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_INPUT_DATA);
+  flatbuffers::String *mutable_model_id() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  const flatbuffers::String *input_data() const {
+    return GetPointer<const flatbuffers::String *>(VT_INPUT_DATA);
+  }
+  flatbuffers::String *mutable_input_data() {
+    return GetPointer<flatbuffers::String *>(VT_INPUT_DATA);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_parameters() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_PARAMETERS);
   }
   bool async() const {
     return GetField<uint8_t>(VT_ASYNC, 0) != 0;
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_async(bool _async = 0) {
+    return SetField<uint8_t>(VT_ASYNC, static_cast<uint8_t>(_async), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_MODEL_ID) &&
            verifier.VerifyString(model_id()) &&
@@ -8111,36 +8960,36 @@ struct InferenceRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct InferenceRequestBuilder {
   typedef InferenceRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_model_id(::flatbuffers::Offset<::flatbuffers::String> model_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_model_id(flatbuffers::Offset<flatbuffers::String> model_id) {
     fbb_.AddOffset(InferenceRequest::VT_MODEL_ID, model_id);
   }
-  void add_input_data(::flatbuffers::Offset<::flatbuffers::String> input_data) {
+  void add_input_data(flatbuffers::Offset<flatbuffers::String> input_data) {
     fbb_.AddOffset(InferenceRequest::VT_INPUT_DATA, input_data);
   }
-  void add_parameters(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
+  void add_parameters(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters) {
     fbb_.AddOffset(InferenceRequest::VT_PARAMETERS, parameters);
   }
   void add_async(bool async) {
     fbb_.AddElement<uint8_t>(InferenceRequest::VT_ASYNC, static_cast<uint8_t>(async), 0);
   }
-  explicit InferenceRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit InferenceRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<InferenceRequest> Finish() {
+  flatbuffers::Offset<InferenceRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<InferenceRequest>(end);
+    auto o = flatbuffers::Offset<InferenceRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<InferenceRequest> CreateInferenceRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> model_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> input_data = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
+inline flatbuffers::Offset<InferenceRequest> CreateInferenceRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> model_id = 0,
+    flatbuffers::Offset<flatbuffers::String> input_data = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> parameters = 0,
     bool async = false) {
   InferenceRequestBuilder builder_(_fbb);
   builder_.add_parameters(parameters);
@@ -8150,15 +8999,15 @@ inline ::flatbuffers::Offset<InferenceRequest> CreateInferenceRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<InferenceRequest> CreateInferenceRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<InferenceRequest> CreateInferenceRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *model_id = nullptr,
     const char *input_data = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *parameters = nullptr,
     bool async = false) {
   auto model_id__ = model_id ? _fbb.CreateString(model_id) : 0;
   auto input_data__ = input_data ? _fbb.CreateString(input_data) : 0;
-  auto parameters__ = parameters ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
+  auto parameters__ = parameters ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*parameters) : 0;
   return Mia::Protocol::CreateInferenceRequest(
       _fbb,
       model_id__,
@@ -8167,7 +9016,7 @@ inline ::flatbuffers::Offset<InferenceRequest> CreateInferenceRequestDirect(
       async);
 }
 
-struct InferenceResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct InferenceResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef InferenceResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_REQUEST_ID = 4,
@@ -8177,25 +9026,43 @@ struct InferenceResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
     VT_PROCESSING_TIME_MS = 12,
     VT_ERROR_MESSAGE = 14
   };
-  const ::flatbuffers::String *request_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_REQUEST_ID);
+  const flatbuffers::String *request_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_REQUEST_ID);
   }
-  const ::flatbuffers::String *model_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODEL_ID);
+  flatbuffers::String *mutable_request_id() {
+    return GetPointer<flatbuffers::String *>(VT_REQUEST_ID);
   }
-  const ::flatbuffers::String *output_data() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_OUTPUT_DATA);
+  const flatbuffers::String *model_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL_ID);
   }
-  const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *confidence_scores() const {
-    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIDENCE_SCORES);
+  flatbuffers::String *mutable_model_id() {
+    return GetPointer<flatbuffers::String *>(VT_MODEL_ID);
+  }
+  const flatbuffers::String *output_data() const {
+    return GetPointer<const flatbuffers::String *>(VT_OUTPUT_DATA);
+  }
+  flatbuffers::String *mutable_output_data() {
+    return GetPointer<flatbuffers::String *>(VT_OUTPUT_DATA);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *confidence_scores() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIDENCE_SCORES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *mutable_confidence_scores() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *>(VT_CONFIDENCE_SCORES);
   }
   uint32_t processing_time_ms() const {
     return GetField<uint32_t>(VT_PROCESSING_TIME_MS, 0);
   }
-  const ::flatbuffers::String *error_message() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ERROR_MESSAGE);
+  bool mutate_processing_time_ms(uint32_t _processing_time_ms = 0) {
+    return SetField<uint32_t>(VT_PROCESSING_TIME_MS, _processing_time_ms, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *error_message() const {
+    return GetPointer<const flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  flatbuffers::String *mutable_error_message() {
+    return GetPointer<flatbuffers::String *>(VT_ERROR_MESSAGE);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_REQUEST_ID) &&
            verifier.VerifyString(request_id()) &&
@@ -8215,45 +9082,45 @@ struct InferenceResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table 
 
 struct InferenceResponseBuilder {
   typedef InferenceResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_request_id(::flatbuffers::Offset<::flatbuffers::String> request_id) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_request_id(flatbuffers::Offset<flatbuffers::String> request_id) {
     fbb_.AddOffset(InferenceResponse::VT_REQUEST_ID, request_id);
   }
-  void add_model_id(::flatbuffers::Offset<::flatbuffers::String> model_id) {
+  void add_model_id(flatbuffers::Offset<flatbuffers::String> model_id) {
     fbb_.AddOffset(InferenceResponse::VT_MODEL_ID, model_id);
   }
-  void add_output_data(::flatbuffers::Offset<::flatbuffers::String> output_data) {
+  void add_output_data(flatbuffers::Offset<flatbuffers::String> output_data) {
     fbb_.AddOffset(InferenceResponse::VT_OUTPUT_DATA, output_data);
   }
-  void add_confidence_scores(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> confidence_scores) {
+  void add_confidence_scores(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> confidence_scores) {
     fbb_.AddOffset(InferenceResponse::VT_CONFIDENCE_SCORES, confidence_scores);
   }
   void add_processing_time_ms(uint32_t processing_time_ms) {
     fbb_.AddElement<uint32_t>(InferenceResponse::VT_PROCESSING_TIME_MS, processing_time_ms, 0);
   }
-  void add_error_message(::flatbuffers::Offset<::flatbuffers::String> error_message) {
+  void add_error_message(flatbuffers::Offset<flatbuffers::String> error_message) {
     fbb_.AddOffset(InferenceResponse::VT_ERROR_MESSAGE, error_message);
   }
-  explicit InferenceResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit InferenceResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<InferenceResponse> Finish() {
+  flatbuffers::Offset<InferenceResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<InferenceResponse>(end);
+    auto o = flatbuffers::Offset<InferenceResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<InferenceResponse> CreateInferenceResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> request_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> model_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> output_data = 0,
-    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>> confidence_scores = 0,
+inline flatbuffers::Offset<InferenceResponse> CreateInferenceResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> request_id = 0,
+    flatbuffers::Offset<flatbuffers::String> model_id = 0,
+    flatbuffers::Offset<flatbuffers::String> output_data = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Mia::Protocol::KeyValue>>> confidence_scores = 0,
     uint32_t processing_time_ms = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> error_message = 0) {
+    flatbuffers::Offset<flatbuffers::String> error_message = 0) {
   InferenceResponseBuilder builder_(_fbb);
   builder_.add_error_message(error_message);
   builder_.add_processing_time_ms(processing_time_ms);
@@ -8264,18 +9131,18 @@ inline ::flatbuffers::Offset<InferenceResponse> CreateInferenceResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<InferenceResponse> CreateInferenceResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<InferenceResponse> CreateInferenceResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *request_id = nullptr,
     const char *model_id = nullptr,
     const char *output_data = nullptr,
-    const std::vector<::flatbuffers::Offset<Mia::Protocol::KeyValue>> *confidence_scores = nullptr,
+    const std::vector<flatbuffers::Offset<Mia::Protocol::KeyValue>> *confidence_scores = nullptr,
     uint32_t processing_time_ms = 0,
     const char *error_message = nullptr) {
   auto request_id__ = request_id ? _fbb.CreateString(request_id) : 0;
   auto model_id__ = model_id ? _fbb.CreateString(model_id) : 0;
   auto output_data__ = output_data ? _fbb.CreateString(output_data) : 0;
-  auto confidence_scores__ = confidence_scores ? _fbb.CreateVector<::flatbuffers::Offset<Mia::Protocol::KeyValue>>(*confidence_scores) : 0;
+  auto confidence_scores__ = confidence_scores ? _fbb.CreateVector<flatbuffers::Offset<Mia::Protocol::KeyValue>>(*confidence_scores) : 0;
   auto error_message__ = error_message ? _fbb.CreateString(error_message) : 0;
   return Mia::Protocol::CreateInferenceResponse(
       _fbb,
@@ -8287,7 +9154,7 @@ inline ::flatbuffers::Offset<InferenceResponse> CreateInferenceResponseDirect(
       error_message__);
 }
 
-struct LockRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct LockRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef LockRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_LOCK_KEY = 4,
@@ -8295,19 +9162,31 @@ struct LockRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_TIMEOUT_MS = 8,
     VT_OWNER_ID = 10
   };
-  const ::flatbuffers::String *lock_key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_KEY);
+  const flatbuffers::String *lock_key() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_KEY);
   }
-  const ::flatbuffers::String *lock_type() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_TYPE);
+  flatbuffers::String *mutable_lock_key() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_KEY);
+  }
+  const flatbuffers::String *lock_type() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_TYPE);
+  }
+  flatbuffers::String *mutable_lock_type() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_TYPE);
   }
   uint32_t timeout_ms() const {
     return GetField<uint32_t>(VT_TIMEOUT_MS, 0);
   }
-  const ::flatbuffers::String *owner_id() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_OWNER_ID);
+  bool mutate_timeout_ms(uint32_t _timeout_ms = 0) {
+    return SetField<uint32_t>(VT_TIMEOUT_MS, _timeout_ms, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *owner_id() const {
+    return GetPointer<const flatbuffers::String *>(VT_OWNER_ID);
+  }
+  flatbuffers::String *mutable_owner_id() {
+    return GetPointer<flatbuffers::String *>(VT_OWNER_ID);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_LOCK_KEY) &&
            verifier.VerifyString(lock_key()) &&
@@ -8322,37 +9201,37 @@ struct LockRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct LockRequestBuilder {
   typedef LockRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_lock_key(::flatbuffers::Offset<::flatbuffers::String> lock_key) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_lock_key(flatbuffers::Offset<flatbuffers::String> lock_key) {
     fbb_.AddOffset(LockRequest::VT_LOCK_KEY, lock_key);
   }
-  void add_lock_type(::flatbuffers::Offset<::flatbuffers::String> lock_type) {
+  void add_lock_type(flatbuffers::Offset<flatbuffers::String> lock_type) {
     fbb_.AddOffset(LockRequest::VT_LOCK_TYPE, lock_type);
   }
   void add_timeout_ms(uint32_t timeout_ms) {
     fbb_.AddElement<uint32_t>(LockRequest::VT_TIMEOUT_MS, timeout_ms, 0);
   }
-  void add_owner_id(::flatbuffers::Offset<::flatbuffers::String> owner_id) {
+  void add_owner_id(flatbuffers::Offset<flatbuffers::String> owner_id) {
     fbb_.AddOffset(LockRequest::VT_OWNER_ID, owner_id);
   }
-  explicit LockRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit LockRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<LockRequest> Finish() {
+  flatbuffers::Offset<LockRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<LockRequest>(end);
+    auto o = flatbuffers::Offset<LockRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<LockRequest> CreateLockRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_key = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_type = 0,
+inline flatbuffers::Offset<LockRequest> CreateLockRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> lock_key = 0,
+    flatbuffers::Offset<flatbuffers::String> lock_type = 0,
     uint32_t timeout_ms = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> owner_id = 0) {
+    flatbuffers::Offset<flatbuffers::String> owner_id = 0) {
   LockRequestBuilder builder_(_fbb);
   builder_.add_owner_id(owner_id);
   builder_.add_timeout_ms(timeout_ms);
@@ -8361,8 +9240,8 @@ inline ::flatbuffers::Offset<LockRequest> CreateLockRequest(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<LockRequest> CreateLockRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<LockRequest> CreateLockRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *lock_key = nullptr,
     const char *lock_type = nullptr,
     uint32_t timeout_ms = 0,
@@ -8378,7 +9257,7 @@ inline ::flatbuffers::Offset<LockRequest> CreateLockRequestDirect(
       owner_id__);
 }
 
-struct LockResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct LockResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef LockResponseBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_LOCK_KEY = 4,
@@ -8386,19 +9265,31 @@ struct LockResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LOCK_TOKEN = 8,
     VT_EXPIRES_AT = 10
   };
-  const ::flatbuffers::String *lock_key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_KEY);
+  const flatbuffers::String *lock_key() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_KEY);
+  }
+  flatbuffers::String *mutable_lock_key() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_KEY);
   }
   bool acquired() const {
     return GetField<uint8_t>(VT_ACQUIRED, 0) != 0;
   }
-  const ::flatbuffers::String *lock_token() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_TOKEN);
+  bool mutate_acquired(bool _acquired = 0) {
+    return SetField<uint8_t>(VT_ACQUIRED, static_cast<uint8_t>(_acquired), 0);
+  }
+  const flatbuffers::String *lock_token() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_TOKEN);
+  }
+  flatbuffers::String *mutable_lock_token() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_TOKEN);
   }
   uint64_t expires_at() const {
     return GetField<uint64_t>(VT_EXPIRES_AT, 0);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  bool mutate_expires_at(uint64_t _expires_at = 0) {
+    return SetField<uint64_t>(VT_EXPIRES_AT, _expires_at, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_LOCK_KEY) &&
            verifier.VerifyString(lock_key()) &&
@@ -8412,36 +9303,36 @@ struct LockResponse FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct LockResponseBuilder {
   typedef LockResponse Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_lock_key(::flatbuffers::Offset<::flatbuffers::String> lock_key) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_lock_key(flatbuffers::Offset<flatbuffers::String> lock_key) {
     fbb_.AddOffset(LockResponse::VT_LOCK_KEY, lock_key);
   }
   void add_acquired(bool acquired) {
     fbb_.AddElement<uint8_t>(LockResponse::VT_ACQUIRED, static_cast<uint8_t>(acquired), 0);
   }
-  void add_lock_token(::flatbuffers::Offset<::flatbuffers::String> lock_token) {
+  void add_lock_token(flatbuffers::Offset<flatbuffers::String> lock_token) {
     fbb_.AddOffset(LockResponse::VT_LOCK_TOKEN, lock_token);
   }
   void add_expires_at(uint64_t expires_at) {
     fbb_.AddElement<uint64_t>(LockResponse::VT_EXPIRES_AT, expires_at, 0);
   }
-  explicit LockResponseBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit LockResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<LockResponse> Finish() {
+  flatbuffers::Offset<LockResponse> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<LockResponse>(end);
+    auto o = flatbuffers::Offset<LockResponse>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<LockResponse> CreateLockResponse(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_key = 0,
+inline flatbuffers::Offset<LockResponse> CreateLockResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> lock_key = 0,
     bool acquired = false,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_token = 0,
+    flatbuffers::Offset<flatbuffers::String> lock_token = 0,
     uint64_t expires_at = 0) {
   LockResponseBuilder builder_(_fbb);
   builder_.add_expires_at(expires_at);
@@ -8451,8 +9342,8 @@ inline ::flatbuffers::Offset<LockResponse> CreateLockResponse(
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<LockResponse> CreateLockResponseDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<LockResponse> CreateLockResponseDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *lock_key = nullptr,
     bool acquired = false,
     const char *lock_token = nullptr,
@@ -8467,19 +9358,25 @@ inline ::flatbuffers::Offset<LockResponse> CreateLockResponseDirect(
       expires_at);
 }
 
-struct UnlockRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+struct UnlockRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef UnlockRequestBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_LOCK_KEY = 4,
     VT_LOCK_TOKEN = 6
   };
-  const ::flatbuffers::String *lock_key() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_KEY);
+  const flatbuffers::String *lock_key() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_KEY);
   }
-  const ::flatbuffers::String *lock_token() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_LOCK_TOKEN);
+  flatbuffers::String *mutable_lock_key() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_KEY);
   }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
+  const flatbuffers::String *lock_token() const {
+    return GetPointer<const flatbuffers::String *>(VT_LOCK_TOKEN);
+  }
+  flatbuffers::String *mutable_lock_token() {
+    return GetPointer<flatbuffers::String *>(VT_LOCK_TOKEN);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_LOCK_KEY) &&
            verifier.VerifyString(lock_key()) &&
@@ -8491,37 +9388,37 @@ struct UnlockRequest FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
 
 struct UnlockRequestBuilder {
   typedef UnlockRequest Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_lock_key(::flatbuffers::Offset<::flatbuffers::String> lock_key) {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_lock_key(flatbuffers::Offset<flatbuffers::String> lock_key) {
     fbb_.AddOffset(UnlockRequest::VT_LOCK_KEY, lock_key);
   }
-  void add_lock_token(::flatbuffers::Offset<::flatbuffers::String> lock_token) {
+  void add_lock_token(flatbuffers::Offset<flatbuffers::String> lock_token) {
     fbb_.AddOffset(UnlockRequest::VT_LOCK_TOKEN, lock_token);
   }
-  explicit UnlockRequestBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  explicit UnlockRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<UnlockRequest> Finish() {
+  flatbuffers::Offset<UnlockRequest> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<UnlockRequest>(end);
+    auto o = flatbuffers::Offset<UnlockRequest>(end);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<UnlockRequest> CreateUnlockRequest(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_key = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> lock_token = 0) {
+inline flatbuffers::Offset<UnlockRequest> CreateUnlockRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> lock_key = 0,
+    flatbuffers::Offset<flatbuffers::String> lock_token = 0) {
   UnlockRequestBuilder builder_(_fbb);
   builder_.add_lock_token(lock_token);
   builder_.add_lock_key(lock_key);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<UnlockRequest> CreateUnlockRequestDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
+inline flatbuffers::Offset<UnlockRequest> CreateUnlockRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
     const char *lock_key = nullptr,
     const char *lock_token = nullptr) {
   auto lock_key__ = lock_key ? _fbb.CreateString(lock_key) : 0;
@@ -8532,152 +9429,152 @@ inline ::flatbuffers::Offset<UnlockRequest> CreateUnlockRequestDirect(
       lock_token__);
 }
 
-inline bool VerifyRequest(::flatbuffers::Verifier &verifier, const void *obj, Request type) {
+inline bool VerifyRequest(flatbuffers::Verifier &verifier, const void *obj, Request type) {
   switch (type) {
-    case Request_NONE: {
+    case Request::NONE: {
       return true;
     }
-    case Request_DownloadRequest: {
+    case Request::DownloadRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DownloadRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_DownloadStatusRequest: {
+    case Request::DownloadStatusRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DownloadStatusRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_DownloadAbortRequest: {
+    case Request::DownloadAbortRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DownloadAbortRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_ShutdownRequest: {
+    case Request::ShutdownRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ShutdownRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_GPIOConfigureRequest: {
+    case Request::GPIOConfigureRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOConfigureRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_GPIOSetRequest: {
+    case Request::GPIOSetRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOSetRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_GPIOGetRequest: {
+    case Request::GPIOGetRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOGetRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_GPIOStatusRequest: {
+    case Request::GPIOStatusRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOStatusRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_SystemStatusRequest: {
+    case Request::SystemStatusRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::SystemStatusRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_DeviceDiscoveryRequest: {
+    case Request::DeviceDiscoveryRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DeviceDiscoveryRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_TelemetryRequest: {
+    case Request::TelemetryRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::TelemetryRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_CommandAckRequest: {
+    case Request::CommandAckRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::CommandAckRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_HealthCheckRequest: {
+    case Request::HealthCheckRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::HealthCheckRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_VoiceCommandRequest: {
+    case Request::VoiceCommandRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VoiceCommandRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AudioProcessRequest: {
+    case Request::AudioProcessRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AudioProcessRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AudioStreamStart: {
+    case Request::AudioStreamStart: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AudioStreamStart *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_VideoStreamStart: {
+    case Request::VideoStreamStart: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VideoStreamStart *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_VideoStreamConfig: {
+    case Request::VideoStreamConfig: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VideoStreamConfig *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AIAgentRequest: {
+    case Request::AIAgentRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AIAgentRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AIContextUpdate: {
+    case Request::AIContextUpdate: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AIContextUpdate *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AIMemoryQuery: {
+    case Request::AIMemoryQuery: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AIMemoryQuery *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_MCPToolCall: {
+    case Request::MCPToolCall: {
       auto ptr = reinterpret_cast<const Mia::Protocol::MCPToolCall *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_HardwareConfig: {
+    case Request::HardwareConfig: {
       auto ptr = reinterpret_cast<const Mia::Protocol::HardwareConfig *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_ServiceQuery: {
+    case Request::ServiceQuery: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ServiceQuery *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AuthenticationRequest: {
+    case Request::AuthenticationRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AuthenticationRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_AuthorizationRequest: {
+    case Request::AuthorizationRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AuthorizationRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_PluginLoadRequest: {
+    case Request::PluginLoadRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::PluginLoadRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_PluginUnloadRequest: {
+    case Request::PluginUnloadRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::PluginUnloadRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_ConfigurationUpdate: {
+    case Request::ConfigurationUpdate: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ConfigurationUpdate *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_EventSubscription: {
+    case Request::EventSubscription: {
       auto ptr = reinterpret_cast<const Mia::Protocol::EventSubscription *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_WorkflowStartRequest: {
+    case Request::WorkflowStartRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::WorkflowStartRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_WorkflowControlRequest: {
+    case Request::WorkflowControlRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::WorkflowControlRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_ModelLoadRequest: {
+    case Request::ModelLoadRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ModelLoadRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_InferenceRequest: {
+    case Request::InferenceRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::InferenceRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_LockRequest: {
+    case Request::LockRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::LockRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Request_UnlockRequest: {
+    case Request::UnlockRequest: {
       auto ptr = reinterpret_cast<const Mia::Protocol::UnlockRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
@@ -8685,10 +9582,10 @@ inline bool VerifyRequest(::flatbuffers::Verifier &verifier, const void *obj, Re
   }
 }
 
-inline bool VerifyRequestVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
+inline bool VerifyRequestVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<Request> *types) {
   if (!values || !types) return !values && !types;
   if (values->size() != types->size()) return false;
-  for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
     if (!VerifyRequest(
         verifier,  values->Get(i), types->GetEnum<Request>(i))) {
       return false;
@@ -8697,140 +9594,140 @@ inline bool VerifyRequestVector(::flatbuffers::Verifier &verifier, const ::flatb
   return true;
 }
 
-inline bool VerifyResponse(::flatbuffers::Verifier &verifier, const void *obj, Response type) {
+inline bool VerifyResponse(flatbuffers::Verifier &verifier, const void *obj, Response type) {
   switch (type) {
-    case Response_NONE: {
+    case Response::NONE: {
       return true;
     }
-    case Response_DownloadResponse: {
+    case Response::DownloadResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DownloadResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_DownloadStatusResponse: {
+    case Response::DownloadStatusResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DownloadStatusResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_ErrorResponse: {
+    case Response::ErrorResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ErrorResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_GPIOConfigureResponse: {
+    case Response::GPIOConfigureResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOConfigureResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_GPIOSetResponse: {
+    case Response::GPIOSetResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOSetResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_GPIOGetResponse: {
+    case Response::GPIOGetResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOGetResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_GPIOStatusResponse: {
+    case Response::GPIOStatusResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::GPIOStatusResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_SystemStatusResponse: {
+    case Response::SystemStatusResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::SystemStatusResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_DeviceDiscoveryResponse: {
+    case Response::DeviceDiscoveryResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::DeviceDiscoveryResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_TelemetryResponse: {
+    case Response::TelemetryResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::TelemetryResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_CommandAckResponse: {
+    case Response::CommandAckResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::CommandAckResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_HealthCheckResponse: {
+    case Response::HealthCheckResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::HealthCheckResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_VoiceCommandResponse: {
+    case Response::VoiceCommandResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VoiceCommandResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AudioProcessResponse: {
+    case Response::AudioProcessResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AudioProcessResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AudioStreamStop: {
+    case Response::AudioStreamStop: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AudioStreamStop *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_VideoStreamStop: {
+    case Response::VideoStreamStop: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VideoStreamStop *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_VideoStreamStatus: {
+    case Response::VideoStreamStatus: {
       auto ptr = reinterpret_cast<const Mia::Protocol::VideoStreamStatus *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AIAgentResponse: {
+    case Response::AIAgentResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AIAgentResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AIMemoryResult: {
+    case Response::AIMemoryResult: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AIMemoryResult *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_MCPToolResult: {
+    case Response::MCPToolResult: {
       auto ptr = reinterpret_cast<const Mia::Protocol::MCPToolResult *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_HardwareEvent: {
+    case Response::HardwareEvent: {
       auto ptr = reinterpret_cast<const Mia::Protocol::HardwareEvent *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_ServiceList: {
+    case Response::ServiceList: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ServiceList *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AuthenticationResponse: {
+    case Response::AuthenticationResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AuthenticationResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_AuthorizationResponse: {
+    case Response::AuthorizationResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::AuthorizationResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_PluginLoadResponse: {
+    case Response::PluginLoadResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::PluginLoadResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_ConfigurationSnapshot: {
+    case Response::ConfigurationSnapshot: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ConfigurationSnapshot *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_MetricReport: {
+    case Response::MetricReport: {
       auto ptr = reinterpret_cast<const Mia::Protocol::MetricReport *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_HealthReport: {
+    case Response::HealthReport: {
       auto ptr = reinterpret_cast<const Mia::Protocol::HealthReport *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_EventAcknowledgment: {
+    case Response::EventAcknowledgment: {
       auto ptr = reinterpret_cast<const Mia::Protocol::EventAcknowledgment *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_WorkflowStatusResponse: {
+    case Response::WorkflowStatusResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::WorkflowStatusResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_ModelLoadResponse: {
+    case Response::ModelLoadResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::ModelLoadResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_InferenceResponse: {
+    case Response::InferenceResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::InferenceResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
-    case Response_LockResponse: {
+    case Response::LockResponse: {
       auto ptr = reinterpret_cast<const Mia::Protocol::LockResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
@@ -8838,10 +9735,10 @@ inline bool VerifyResponse(::flatbuffers::Verifier &verifier, const void *obj, R
   }
 }
 
-inline bool VerifyResponseVector(::flatbuffers::Verifier &verifier, const ::flatbuffers::Vector<::flatbuffers::Offset<void>> *values, const ::flatbuffers::Vector<uint8_t> *types) {
+inline bool VerifyResponseVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<Response> *types) {
   if (!values || !types) return !values && !types;
   if (values->size() != types->size()) return false;
-  for (::flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
     if (!VerifyResponse(
         verifier,  values->Get(i), types->GetEnum<Response>(i))) {
       return false;
@@ -8851,32 +9748,40 @@ inline bool VerifyResponseVector(::flatbuffers::Verifier &verifier, const ::flat
 }
 
 inline const Mia::Protocol::UnlockRequest *GetUnlockRequest(const void *buf) {
-  return ::flatbuffers::GetRoot<Mia::Protocol::UnlockRequest>(buf);
+  return flatbuffers::GetRoot<Mia::Protocol::UnlockRequest>(buf);
 }
 
 inline const Mia::Protocol::UnlockRequest *GetSizePrefixedUnlockRequest(const void *buf) {
-  return ::flatbuffers::GetSizePrefixedRoot<Mia::Protocol::UnlockRequest>(buf);
+  return flatbuffers::GetSizePrefixedRoot<Mia::Protocol::UnlockRequest>(buf);
+}
+
+inline UnlockRequest *GetMutableUnlockRequest(void *buf) {
+  return flatbuffers::GetMutableRoot<UnlockRequest>(buf);
+}
+
+inline Mia::Protocol::UnlockRequest *GetMutableSizePrefixedUnlockRequest(void *buf) {
+  return flatbuffers::GetMutableSizePrefixedRoot<Mia::Protocol::UnlockRequest>(buf);
 }
 
 inline bool VerifyUnlockRequestBuffer(
-    ::flatbuffers::Verifier &verifier) {
+    flatbuffers::Verifier &verifier) {
   return verifier.VerifyBuffer<Mia::Protocol::UnlockRequest>(nullptr);
 }
 
 inline bool VerifySizePrefixedUnlockRequestBuffer(
-    ::flatbuffers::Verifier &verifier) {
+    flatbuffers::Verifier &verifier) {
   return verifier.VerifySizePrefixedBuffer<Mia::Protocol::UnlockRequest>(nullptr);
 }
 
 inline void FinishUnlockRequestBuffer(
-    ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<Mia::Protocol::UnlockRequest> root) {
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<Mia::Protocol::UnlockRequest> root) {
   fbb.Finish(root);
 }
 
 inline void FinishSizePrefixedUnlockRequestBuffer(
-    ::flatbuffers::FlatBufferBuilder &fbb,
-    ::flatbuffers::Offset<Mia::Protocol::UnlockRequest> root) {
+    flatbuffers::FlatBufferBuilder &fbb,
+    flatbuffers::Offset<Mia::Protocol::UnlockRequest> root) {
   fbb.FinishSizePrefixed(root);
 }
 

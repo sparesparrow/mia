@@ -36,31 +36,31 @@ This document describes the comprehensive CI/CD pipeline and development environ
 **Triggers:**
 - Push to `main` or `develop` branches
 - Pull requests to `main`
-- Weekly security scans (Mondays 6 AM UTC)
+- Path-scoped: only runs when Python, C++, ESP32, schema, or CI-owned files change
 
 **Jobs:**
-1. **Lint and Test** - Python linting, type checking, unit tests
-2. **Build C++** - Multi-platform C++ builds (Linux, macOS, Windows)
-3. **Build Images** - Multi-platform Docker images (AMD64, ARM64)
-4. **Integration Tests** - End-to-end testing
-5. **Security Scan** - CodeQL, Trivy, Snyk, OWASP dependency check
-6. **Performance Tests** - Load testing and performance validation
-7. **Deploy Staging/Production** - Environment-specific deployments
+1. **Detect Changes** - Path-based change detection so the workflow only runs relevant platform jobs
+2. **Schema Validation** - FlatBuffers compilation checks for `schemas/`, `protos/`, and `webgrab.fbs`
+3. **Lint** - Python formatting and lint checks for maintained Python surfaces
+4. **Python Tests** - `pytest tests/ -m "not hardware"` under the bundled CPython/Conan flow
+5. **Build C++** - Native build validation for the C++ surfaces when native paths change
+6. **Build ESP32** - PlatformIO build validation when `apps/esp32` changes
 
-#### Platform-Specific Workflows
+#### Dedicated Workflows
 
-- **Android Build** (`.github/workflows/android-build.yml`)
-- **ESP32 Build** (`.github/workflows/esp32-build.yml`)
-- **C++ Build** (`.github/workflows/cpp-build.yml`)
+- **Android Tests** (`.github/workflows/android-test.yml`) - Gradle build plus emulator scenario matrix with artifact-backed pass/fail reporting
+- **Publish Web Pages** (`.github/workflows/publish-pages.yml`) - Builds MkDocs plus static web assets and publishes them to the repo’s legacy `gh-pages` branch
+- **Security** (`.github/workflows/security.yml`) - Fast PR/push checks (Trivy config, pip-audit, Bandit) with heavier CodeQL and deep Trivy scans reserved for non-PR and scheduled runs
+- **Deploy** (`.github/workflows/deploy.yml`) - Deployment asset validation, compose smoke build, and tagged releases
+- **Resolve Issue with Claude** (`.github/workflows/main.yml`) - Manually triggered issue-to-PR automation with dry-run support, path validation, and duplicate-PR protection
 
 ### Security Scanning
 
 The pipeline includes multiple security scanning tools:
 
 - **CodeQL** - Static analysis for Python, C++, JavaScript
-- **Trivy** - Vulnerability scanning for containers and filesystems
-- **Snyk** - Dependency vulnerability scanning
-- **OWASP Dependency Check** - Known vulnerability detection
+- **Trivy** - Fast config scans on PRs and pushes, plus weekly deep filesystem/config scans
+- **pip-audit** - Python dependency manifest vulnerability checks
 - **Bandit** - Python security linting
 
 ### Multi-Platform Support
@@ -85,11 +85,13 @@ Cross-platform C++ builds using Conan:
 
 | Environment | Description | Docker Compose File |
 |-------------|-------------|---------------------|
-| `dev` | Development with hot reloading | `docker-compose.dev.yml` |
-| `prod` | Production-like environment | `docker-compose.yml` |
+| `dev` | Development with hot reloading | `infra/docker/docker-compose.dev.yml` |
+| `prod` | Production-like environment | `infra/docker/docker-compose.yml` |
 | `pi-sim` | Raspberry Pi simulation | `docker-compose.pi-simulation.yml` |
-| `monitoring` | Observability stack | `docker-compose.monitoring.yml` |
+| `monitoring` | Observability stack | `infra/docker/docker-compose.monitoring.yml` |
 | `full` | All services combined | All compose files |
+
+The `pi-sim` stack keeps the real MQTT and Redis services enabled by default. The legacy simulator containers are opt-in via `--profile legacy-sim` because several of those images are no longer part of the default repo runtime.
 
 ### Development Environment Features
 

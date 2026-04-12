@@ -1,7 +1,7 @@
 """Unit tests for MCP Framework"""
 
 import pytest
-from orchestration.mcp.modules.shared.mcp_framework import MCPServer, MCPMessage, create_tool
+from orchestration.mcp.modules.shared.mcp_framework import MCPError, MCPServer, MCPMessage, WebSocketTransport, create_tool
 
 
 @pytest.mark.asyncio
@@ -54,3 +54,27 @@ async def test_mcp_server_initialization():
     assert server.version == "1.0.0"
     assert len(server.tools) == 0
     assert not server.initialized
+
+
+def test_mcp_message_invalid_json_raises_parse_error():
+    """Invalid JSON payloads should raise an MCP parse error."""
+    with pytest.raises(MCPError) as exc_info:
+        MCPMessage.from_json("{invalid")
+
+    assert exc_info.value.code == -32700
+
+
+@pytest.mark.asyncio
+async def test_websocket_transport_receive_preserves_parse_error():
+    """WebSocket transport should not wrap MCP parse errors as generic receive failures."""
+
+    class FakeWebSocket:
+        async def recv(self):
+            return "{invalid"
+
+    transport = WebSocketTransport(FakeWebSocket())
+
+    with pytest.raises(MCPError) as exc_info:
+        await transport.receive()
+
+    assert exc_info.value.code == -32700

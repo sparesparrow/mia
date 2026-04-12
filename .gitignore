@@ -201,3 +201,5 @@ automotive_test_results_*.log
 
 # Android device workspace
 /android-device-workspace/downloads/
+.venv312/
+apps/android/.gradle/

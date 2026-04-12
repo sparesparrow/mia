@@ -13,9 +13,13 @@ from typing import Any, Dict, List, Optional, Union, Callable, Awaitable
 from enum import Enum
 try:
     import websockets
+    from websockets.exceptions import ConnectionClosed as WebSocketConnectionClosed
     _WEBSOCKETS_AVAILABLE = True
 except ImportError:
     websockets = None  # type: ignore[assignment]
+    class WebSocketConnectionClosed(Exception):
+        """Fallback exception type when websockets is unavailable."""
+
     _WEBSOCKETS_AVAILABLE = False
 
 try:
@@ -110,7 +114,11 @@ class MCPMessage:
     @classmethod
     def from_json(cls, json_str: str) -> 'MCPMessage':
         """Create message from JSON string"""
-        return cls.from_dict(json.loads(json_str))
+        try:
+            return cls.from_dict(json.loads(json_str))
+        except json.JSONDecodeError as exc:
+            logger.error("Invalid MCP JSON payload: %s", exc)
+            raise MCPError(-32700, f"Parse error: {exc}") from exc
 
 
 @dataclass
@@ -216,7 +224,7 @@ class WebSocketTransport(MCPTransport):
             raise MCPError(-32000, "Connection closed")
         try:
             await self.websocket.send(message.to_json())
-        except websockets.exceptions.ConnectionClosed:
+        except WebSocketConnectionClosed:
             self.closed = True
             raise MCPError(-32000, "Connection closed during send")
         except Exception as e:
@@ -230,9 +238,11 @@ class WebSocketTransport(MCPTransport):
         try:
             data = await self.websocket.recv()
             return MCPMessage.from_json(data)
-        except websockets.exceptions.ConnectionClosed:
+        except WebSocketConnectionClosed:
             self.closed = True
             raise MCPError(-32000, "Connection closed during receive")
+        except MCPError:
+            raise
         except Exception as e:
             logger.error(f"WebSocket receive error: {e}")
             raise MCPError(-32603, f"WebSocket receive error: {str(e)}")
@@ -527,7 +537,7 @@ class MCPServer:
                             await transport.send(error_response)
                         except Exception:
                             break  # Can't send error, connection likely closed
-                except websockets.exceptions.ConnectionClosed:
+                except WebSocketConnectionClosed:
                     logger.info("WebSocket connection closed")
                     break
                 except Exception as e:
@@ -772,7 +782,7 @@ class MCPClient:
                 else:
                     consecutive_errors += 1
                     logger.error(f"MCP Error in receive loop: {e}")
-            except websockets.exceptions.ConnectionClosed as e:
+            except WebSocketConnectionClosed as e:
                 logger.warning(f"WebSocket connection closed: {e}")
                 self.connected = False
                 break

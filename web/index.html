@@ -1,229 +1,309 @@
 <!DOCTYPE html>
-<html lang="cs" id="html-root">
+<html lang="cs" class="gonzo-reality">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-SERVIS - Digitální Paranoidní Manifestí Na Kolech</title>
+    <title>AI-SERVIS: Digitální Paranoidní Manifestí Na Kolech</title>
     <meta name="description" content="Když tě sledujou, budeš sledovat je. Edge AI pro paranoiky, investigativce a rebelující duše s volantem v rukou.">
-    <link rel="stylesheet" href="journalists/styles.css">
+    <link rel="stylesheet" href="customers/journalists/gonzo-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
-<body>
-    <!-- Language Switcher -->
-    <div class="language-switcher">
-        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
-        <button onclick="switchLanguage('cs')" class="lang-btn active" data-lang="cs">CS</button>
+<body class="madness-loading">
+
+    <!-- BACKGROUND MUSIC -->
+    <audio id="background-music" loop preload="auto">
+        <source src="customers/journalists/background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- PARANOIA METER -->
+    <div id="paranoia-meter">
+        <div class="meter-label">PARANOIA LEVEL</div>
+        <div class="meter-bar">
+            <div id="paranoia-fill"></div>
+        </div>
+        <div class="meter-value">73%</div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h2>AI-SERVIS</h2>
-                <span class="tagline" data-i18n="Gonzo žurnalistika" data-i18n-ns="journalists">Gonzo žurnalistika</span>
+    <!-- GLITCH OVERLAY -->
+    <div id="glitch-overlay"></div>
+
+    <!-- NAVIGATION FROM HELL -->
+    <nav class="gonzo-nav">
+        <div class="nav-chaos">
+            <div class="logo-madness">
+                <h1>AI-SERVIS</h1>
+                <span class="subtitle-hell">DIGITÁLNÍ PARANOIA NA KOLECH</span>
             </div>
-            <div class="nav-menu">
-                <a href="#features" data-i18n="Features" data-i18n-ns="journalists">Features</a>
-                <a href="#use-cases" data-i18n="PŘÍBĚHY" data-i18n-ns="journalists">PŘÍBĚHY</a>
-                <a href="#pricing" data-i18n="Ceny" data-i18n-ns="journalists">Ceny</a>
-                <a href="#tech" data-i18n="Technology" data-i18n-ns="journalists">Technology</a>
-                <button class="cta-btn" data-i18n="Začít vyšetřovat" data-i18n-ns="journalists">Začít vyšetřovat</button>
-            </div>
-            <div class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-links-chaos">
+                <a href="#manifesto" class="nav-link-hell">MANIFESTÍ</a>
+                <a href="#weaponry" class="nav-link-hell">ARSENAL</a>
+                <a href="#stories" class="nav-link-hell">PŘÍBĚHY</a>
+                <a href="#resistance" class="nav-link-hell">ODPOR</a>
+                <button id="audio-toggle" class="audio-toggle-btn" aria-label="Toggle background music">🎵</button>
+                <button class="panic-button">NOUZOVÝ REŽIM</button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg">
-            <img src="assets/journalists/hero-image.jpg" alt="KDYŽ TĚ SLEDUJOU, BUDEŠ SLEDOVAT JE" class="hero-image">
+    <!-- HERO SECTION OF MADNESS -->
+    <section class="hero-madness">
+        <div class="glitch-bg">
+            <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/9e5a5859-a98c-49cc-8800-4e527fdae282.png" alt="Dashboard from Hell" class="hero-bg-img">
         </div>
-        <div class="container hero-content">
-            <div class="hero-text">
-                <h1 data-i18n="KDYŽ TĚ SLEDUJOU, BUDEŠ SLEDOVAT JE" data-i18n-ns="journalists">KDYŽ TĚ SLEDUJOU, BUDEŠ SLEDOVAT JE</h1>
-                <p class="hero-subtitle" data-i18n="DIGITÁLNÍ PARANOIA NA KOLECH" data-i18n-ns="journalists">DIGITÁLNÍ PARANOIA NA KOLECH</p>
-                <div class="hero-stats">
-                    
-                    <div class="stat">
-                        <span class="stat-number">300%</span>
-                        <span class="stat-label" data-i18n="Productivity" data-i18n-ns="journalists">Productivity</span>
-                    </div>
-                    
-                    <div class="stat">
-                        <span class="stat-number">24/7</span>
-                        <span class="stat-label" data-i18n="Monitoring" data-i18n-ns="journalists">Monitoring</span>
-                    </div>
-                    
-                    <div class="stat">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label" data-i18n="Hands-Free" data-i18n-ns="journalists">Hands-Free</span>
-                    </div>
-                    
+        <div class="hero-content-chaos">
+            <h2 class="hero-title-hell">
+                KDYŽ TĚ SLEDUJOU,<br>
+                <span class="highlight-madness">BUDEŠ SLEDOVAT JE</span>
+            </h2>
+            <p class="hero-text-insane">
+                Žijeme v éře digitální surveillance. Každý pohyb, každá SPZ, každé zastavení u pumpy - všechno je záznam v něčí databázi.
+                <strong>AI-SERVIS</strong> ti dává zbraň zpět do rukou. Edge AI, které nekecá, netlumí a neprodává tvoje data korporátním hyenám.
+            </p>
+            <div class="hero-stats-hell">
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">93%</span>
+                    <span class="stat-text-hell">ÚSPORA VS.<br>KORPORÁTNÍ ŠMEJDI</span>
                 </div>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" data-i18n="VSTOUPIT DO RESISTANCE" data-i18n-ns="journalists">VSTOUPIT DO RESISTANCE</button>
-                    <button class="btn btn-secondary" data-i18n="SLEDOVAT MANIFESTO" data-i18n-ns="journalists">SLEDOVAT MANIFESTO</button>
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">24/7</span>
+                    <span class="stat-text-hell">BDĚLÝ OKO<br>TECHNOLOGIE</span>
+                </div>
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">∞</span>
+                    <span class="stat-text-hell">FUCK THE<br>ESTABLISHMENT</span>
+                </div>
+            </div>
+            <div class="hero-buttons-chaos">
+                <button class="btn-madness primary">VSTOUPIT DO RESISTANCE</button>
+                <button class="btn-madness secondary">SLEDOVAT MANIFESTO</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARANOIA FEATURES -->
+    <section id="weaponry" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">ARSENAL PRO DIGITÁLNÍ GUERILLU</h2>
+
+            <div class="weapon-grid">
+                <div class="weapon-card stalker-detection">
+                    <div class="weapon-icon">👁️‍🗨️</div>
+                    <h3>ANTI-STALKER PROTOKOL</h3>
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/e41af570-b636-4bb2-968c-5d04a5ce8305.png" alt="Stalker Alert" class="weapon-img">
+                    <p class="weapon-desc">Když se noční mlha v Praze rozplyne a tvůj zadní stěrač zahlédne už pošesté to stejné číslo - AI-SERVIS konečně křičí: <strong>Bacha! Máš parazita na ocase!</strong></p>
+                    <div class="paranoia-quote">"Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro stalkovaného i toho, kdo si myslí, že je neviditelný."</div>
+                </div>
+
+                <div class="weapon-card secret-police">
+                    <div class="weapon-icon">🕵️‍♂️</div>
+                    <h3>COVERT OPS INTERFACE</h3>
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/d4ca6e09-a6b0-48f1-9a47-46391f1d4872.png" alt="Secret Police" class="weapon-img">
+                    <p class="weapon-desc">Všechny tajné služby mají rády neviditelnost. Tahle obrazovka neumí nikdo kromě tebe a temných chlapců v civilu. <strong>Opakované SPZ se ukládají pod hladinu povědomí.</strong></p>
+                    <div class="paranoia-quote">"Kdo hlídá hlídače? Hlídáme my."</div>
+                </div>
+
+                <div class="weapon-card gonzo-terminal">
+                    <div class="weapon-icon">💻</div>
+                    <h3>GONZO COMMAND CENTER</h3>
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/3d8f3615-0bfc-4203-93b8-642e48b988da.png" alt="Management Terminal" class="weapon-img">
+                    <p class="weapon-desc">Centrum řízení paranoidního vesmíru: <strong>Všechno na jednom řídícím stole.</strong> Grafy, alerty, kontrolky hoří jak kokainové ampule ve Vegas.</p>
+                    <div class="paranoia-quote">"Pokud ti něco unikne, byl to jen špatný trip."</div>
+                </div>
+
+                <div class="weapon-card live-tracking">
+                    <div class="weapon-icon">🗺️</div>
+                    <h3>MATRIX TRACKING MAP</h3>
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/7d72fc9d-21a6-4f60-90ad-010ab5e13433.png" alt="Live Tracking" class="weapon-img">
+                    <p class="weapon-desc">Bůh chrání ty, kdo mají mapu a informace. <strong>Vozidla tlačí glow na obrazovce jako šílení brouci</strong> s vlastními trajektoriemi a srdcem v útrobách města.</p>
+                    <div class="paranoia-quote">"Jeden pohyb, jedna chybná SPZ – a historie se píše online."</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Key Features -->
-    <section class="features" id="features">
-        <div class="container">
-            <h2 data-i18n="Key Features" data-i18n-ns="journalists">Key Features</h2>
-            <div class="features-grid">
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <h3 data-i18n="Voice AI Assistant" data-i18n-ns="journalists">Voice AI Assistant</h3>
-                    <p data-i18n="Advanced voice control" data-i18n-ns="journalists">Advanced voice control</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 data-i18n="Security" data-i18n-ns="journalists">Security</h3>
-                    <p data-i18n="Enterprise-grade security" data-i18n-ns="journalists">Enterprise-grade security</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-route"></i>
-                    </div>
-                    <h3 data-i18n="Smart Navigation" data-i18n-ns="journalists">Smart Navigation</h3>
-                    <p data-i18n="Intelligent routing" data-i18n-ns="journalists">Intelligent routing</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3 data-i18n="Analytics" data-i18n-ns="journalists">Analytics</h3>
-                    <p data-i18n="Advanced analytics" data-i18n-ns="journalists">Advanced analytics</p>
-                </div>
-                
-            </div>
-        </div>
-    </section>
+    <!-- GONZO STORIES -->
+    <section id="stories" class="stories-madness">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">PŘÍBĚHY Z FRONTY</h2>
 
-    <!-- Use Cases -->
-    <section class="use-cases" id="use-cases">
-        <div class="container">
-            <h2 data-i18n="PŘÍBĚHY Z FRONTY" data-i18n-ns="journalists">PŘÍBĚHY Z FRONTY</h2>
-            
-            <div class="use-case" id="primary-use-case">
-                <div class="use-case-content ">
-                    <div class="use-case-text">
-                        <h3 data-i18n="GONZO INVESTIGATOR" data-i18n-ns="journalists">GONZO INVESTIGATOR</h3>
-                        <p data-i18n="Každý report začíná otázkou: Kdo mě sleduje a proč? Mobilní redakce v autě, AI jako co-pilot, hlasové poznámky bez použití rukou. Ultimátní nástroj pro investigativní žurnalistiku." data-i18n-ns="journalists">Každý report začíná otázkou: Kdo mě sleduje a proč? Mobilní redakce v autě, AI jako co-pilot, hlasové poznámky bez použití rukou. Ultimátní nástroj pro investigativní žurnalistiku.</p>
-                        <ul>
-                            
-        </div>
-    </section>
-
-    <!-- Pricing -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <h2 data-i18n="PŘIPOJ SE K ODBOJI" data-i18n-ns="journalists">PŘIPOJ SE K ODBOJI</h2>
-            <div class="pricing-grid">
-                
-                <div class="pricing-card ">
-                    
-                    <div class="pricing-header">
-                        <h3 data-i18n="PHONE REBEL" data-i18n-ns="journalists">PHONE REBEL</h3>
-                        <p class="pricing-subtitle" data-i18n="BYOD Guerilla Mode" data-i18n-ns="journalists">BYOD Guerilla Mode</p>
-                        <div class="price">
-                            <span class="currency">Kč</span>
-                            <span class="amount">35000</span>
-                            
+            <div class="story-grid">
+                <div class="story-card journalist">
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/ab30398d-a1be-4884-9ac3-a008aa52a1c5.png" alt="Gonzo Journalist" class="story-img">
+                    <div class="story-content">
+                        <h3>GONZO INVESTIGATOR</h3>
+                        <p class="story-text">
+                            Každý report začíná otázkou: Kdo mě sleduje a proč? Mobilní redakce v autě, AI jako co-pilot,
+                            hlasové poznámky bez použití rukou. <strong>Ultimátní nástroj pro investigativní žurnalistiku.</strong>
+                        </p>
+                        <div class="story-features">
+                            <span class="feature-tag">Real-time surveillance</span>
+                            <span class="feature-tag">Voice transcription</span>
+                            <span class="feature-tag">Encrypted evidence</span>
                         </div>
                     </div>
-                    <div class="pricing-features">
+                </div>
+
+                <div class="story-card dj-madness">
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/50172e64-74c3-4865-b007-988ac5420d8c.png" alt="Mobile DJ" class="story-img">
+                    <div class="story-content">
+                        <h3>MOBILE DJ REVOLUTION</h3>
+                        <p class="story-text">
+                            Kolona na dálnici? Show must go on! RTP-MIDI připojení k vzdálenému DAW,
+                            <strong>auto jako mobilní DJ pult.</strong> Párty startuje včas, i když jsi v pekle dopravy.
+                        </p>
+                        <div class="story-features">
+                            <span class="feature-tag">RTP-MIDI sync</span>
+                            <span class="feature-tag">Live streaming</span>
+                            <span class="feature-tag">Multi-car collaboration</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESISTANCE PRICING -->
+    <section id="resistance" class="pricing-hell">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">PŘIPOJ SE K ODBOJI</h2>
+            <p class="pricing-desc-hell">Svoboda nemá cenu. Ale technologie ano. Vyber si svůj level resistance:</p>
+
+            <div class="pricing-chaos-grid">
+                <div class="price-card phone">
+                    <div class="price-header">
+                        <h3>PHONE REBEL</h3>
+                        <div class="price-amount">22K - 38K Kč</div>
+                        <p class="price-desc">BYOD Guerilla Mode</p>
+                    </div>
+                    <div class="price-features">
                         <ul>
-                            
+                            <li>ESP32 OBD-2 brain implant</li>
+                            <li>Basic ANPR na tvém telefonu</li>
+                            <li>Hlasová upozornění</li>
+                            <li>BLE underground komunikace</li>
+                        </ul>
+                    </div>
+                    <button class="btn-join-resistance">VSTOUPIT</button>
+                </div>
+
+                <div class="price-card hybrid featured">
+                    <div class="price-badge">GONZO CHOICE</div>
+                    <div class="price-header">
+                        <h3>HYBRID WARRIOR</h3>
+                        <div class="price-amount">48K - 89K Kč</div>
+                        <p class="price-desc">Phone + Mini DVR Matrix</p>
+                    </div>
+                    <div class="price-features">
+                        <ul>
+                            <li>Vše z Phone Rebel + bonus</li>
+                            <li>AI hlasový asistent s balls</li>
+                            <li>24/7 DVR surveillance</li>
+                            <li>Parking mode paranoia</li>
+                            <li>WiFi Direct podzemní síť</li>
+                        </ul>
+                    </div>
+                    <button class="btn-join-resistance featured">FULL GONZO</button>
+                </div>
+
+                <div class="price-card pro">
+                    <div class="price-header">
+                        <h3>PRO RESISTANCE</h3>
+                        <div class="price-amount">89K - 143K Kč</div>
+                        <p class="price-desc">Vehicle PC Death Machine</p>
+                    </div>
+                    <div class="price-features">
+                        <ul>
+                            <li>Vše z Hybrid + nuclear option</li>
+                            <li>Multi-kamerový surveillance</li>
+                            <li>Advanced ANPR s AI brain</li>
+                            <li>Fleet management API</li>
+                            <li>24/7 prioritní backup</li>
+                        </ul>
+                    </div>
+                    <button class="btn-join-resistance">FULL METAL</button>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Technology -->
-    <section class="technology" id="tech">
-        <div class="container">
-            <h2 data-i18n="Technology" data-i18n-ns="journalists">Technology</h2>
-            <div class="tech-grid">
-                
-                <div class="tech-card">
-                    <h3 data-i18n="Security" data-i18n-ns="journalists">Security</h3>
-                    <p data-i18n="Advanced security features" data-i18n-ns="journalists">Advanced security features</p>
+    <!-- MANIFESTO -->
+    <section id="manifesto" class="manifesto-madness">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">MANIFESTÍ DIGITÁLNÍ GUERILLY</h2>
+            <div class="manifesto-content">
+                <div class="manifesto-text">
+                    <p class="manifesto-paragraph">
+                        <strong>My, guerilla fighters digitálního věku,</strong> odmítáme být pouhými datovými body
+                        v databases korporátních hyenáček. Odmítáme být sledováni bez možnosti sledovat zpět.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong>AI-SERVIS není jen technologie.</strong> Je to Statement. Rebel yell. Digitální molotov
+                        proti surveillance state, která si myslí, že má monopol na informace.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        Každý ESP32 modul v tvém autě je malý akt revolty. Každé rozpoznané SPZ je middle finger
+                        systemu. <strong>Každá hlasová poznámka je bullets do establishment.</strong>
+                    </p>
+                    <p class="manifesto-paragraph">
+                        Připoj se k nám. Nebo zůstaň sheep in the digital slaughterhouse.
+                        <strong>Choice is yours, freedom fighter.</strong>
+                    </p>
                 </div>
-                
-                <div class="tech-card">
-                    <h3 data-i18n="API Integration" data-i18n-ns="journalists">API Integration</h3>
-                    <p data-i18n="Seamless integration" data-i18n-ns="journalists">Seamless integration</p>
-                </div>
-                
-                <div class="tech-card">
-                    <h3 data-i18n="Management" data-i18n-ns="journalists">Management</h3>
-                    <p data-i18n="Centralized management" data-i18n-ns="journalists">Centralized management</p>
-                </div>
-                
-                <div class="tech-card">
-                    <h3 data-i18n="Reliability" data-i18n-ns="journalists">Reliability</h3>
-                    <p data-i18n="24/7 reliability" data-i18n-ns="journalists">24/7 reliability</p>
-                </div>
-                
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2 data-i18n="Připraveni vyšetřovat?" data-i18n-ns="journalists">Připraveni vyšetřovat?</h2>
-                <p data-i18n="Join the AI revolution" data-i18n-ns="journalists">Join the AI revolution</p>
-                <div class="cta-buttons">
-                    <button class="btn btn-primary large" data-i18n="Začít investigativní žurnalistiku" data-i18n-ns="journalists">Začít investigativní žurnalistiku</button>
-                    <button class="btn btn-secondary large" data-i18n="Rezervovat demo sledování" data-i18n-ns="journalists">Rezervovat demo sledování</button>
+                <div class="manifesto-visual">
+                    <img src="https://user-gen-media-assets.s3.amazonaws.com/gemini_images/489f61b0-d53d-4617-a082-1cd921c6a92f.png" alt="AI Resistance" class="manifesto-img">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
+    <!-- FOOTER FROM HELL -->
+    <footer class="footer-madness">
+        <div class="container-chaos">
+            <div class="footer-chaos">
                 <div class="footer-brand">
                     <h3>AI-SERVIS</h3>
-                    <p data-i18n="DIGITÁLNÍ PARANOIA CORP. EST. 2025" data-i18n-ns="journalists">DIGITÁLNÍ PARANOIA CORP. EST. 2025</p>
+                    <p>DIGITÁLNÍ PARANOIA CORP. EST. 2025</p>
+                    <p class="footer-motto">"KDYŽ TĚ SLEDUJOU, SLEDUJ JE ZPĚT"</p>
                 </div>
-                <div class="footer-links">
-                    
-                    <div class="footer-column">
-                        <h4 data-i18n="Product" data-i18n-ns="journalists">Product</h4>
-                        <ul>
-                            
+                <div class="footer-contact">
+                    <h4>UNDERGROUND KONTAKT</h4>
+                    <p>📧 resistance@ai-servis.gonzo</p>
+                    <p>📞 +420 xxx PARANOIA</p>
+                    <p>🏢 Brno Underground, Česká Republika</p>
+                </div>
+                <div class="footer-legal">
+                    <h4>LEGAL DISCLAIMER</h4>
+                    <p>Use at your own risk. We are not responsible for:</p>
+                    <ul>
+                        <li>• Paranoid episodes</li>
+                        <li>• Government surveillance</li>
+                        <li>• Reality distortion</li>
+                        <li>• Addiction to truth</li>
+                    </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-i18n="© 2025 AI-SERVIS GONZO EDITION. ALL RIGHTS RESERVED TO FREEDOM FIGHTERS." data-i18n-ns="journalists">© 2025 AI-SERVIS GONZO EDITION. ALL RIGHTS RESERVED TO FREEDOM FIGHTERS.</p>
+                <p>© 2025 AI-SERVIS GONZO EDITION. ALL RIGHTS RESERVED TO FREEDOM FIGHTERS.</p>
+                <p class="hunter-quote">"In a world of thieves, the only final sin is stupidity." - H.S.T.</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
-    <script src="i18n-loader.js"></script>
-    <script src="app.js"></script>
+    <!-- EMERGENCY POPUP -->
+    <div id="panic-mode" class="panic-overlay hidden">
+        <div class="panic-content">
+            <h2>🚨 NOUZOVÝ REŽIM AKTIVOVÁN 🚨</h2>
+            <p>Všechna data jsou okamžitě šifrována a připravena k self-destruction.</p>
+            <div class="panic-countdown">
+                <div id="countdown">10</div>
+                <p>sekund do digital erasure</p>
+            </div>
+            <button id="cancel-panic" class="btn-madness">ZRUŠIT SAMODESTRUKCI</button>
+        </div>
+    </div>
+
+    <script src="customers/journalists/gonzo-app.js"></script>
 </body>
 </html>

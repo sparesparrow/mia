@@ -59,44 +59,24 @@ class GPIOResponse(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def GPIOResponseStart(builder):
-    builder.StartObject(5)
-
+def GPIOResponseStart(builder): builder.StartObject(5)
 def Start(builder):
-    GPIOResponseStart(builder)
-
-def GPIOResponseAddPin(builder, pin):
-    builder.PrependInt32Slot(0, pin, 0)
-
+    return GPIOResponseStart(builder)
+def GPIOResponseAddPin(builder, pin): builder.PrependInt32Slot(0, pin, 0)
 def AddPin(builder, pin):
-    GPIOResponseAddPin(builder, pin)
-
-def GPIOResponseAddSuccess(builder, success):
-    builder.PrependBoolSlot(1, success, 0)
-
+    return GPIOResponseAddPin(builder, pin)
+def GPIOResponseAddSuccess(builder, success): builder.PrependBoolSlot(1, success, 0)
 def AddSuccess(builder, success):
-    GPIOResponseAddSuccess(builder, success)
-
-def GPIOResponseAddValue(builder, value):
-    builder.PrependBoolSlot(2, value, 0)
-
+    return GPIOResponseAddSuccess(builder, success)
+def GPIOResponseAddValue(builder, value): builder.PrependBoolSlot(2, value, 0)
 def AddValue(builder, value):
-    GPIOResponseAddValue(builder, value)
-
-def GPIOResponseAddErrorMessage(builder, errorMessage):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(errorMessage), 0)
-
+    return GPIOResponseAddValue(builder, value)
+def GPIOResponseAddErrorMessage(builder, errorMessage): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(errorMessage), 0)
 def AddErrorMessage(builder, errorMessage):
-    GPIOResponseAddErrorMessage(builder, errorMessage)
-
-def GPIOResponseAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(4, timestamp, 0)
-
+    return GPIOResponseAddErrorMessage(builder, errorMessage)
+def GPIOResponseAddTimestamp(builder, timestamp): builder.PrependUint64Slot(4, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    GPIOResponseAddTimestamp(builder, timestamp)
-
-def GPIOResponseEnd(builder):
-    return builder.EndObject()
-
+    return GPIOResponseAddTimestamp(builder, timestamp)
+def GPIOResponseEnd(builder): return builder.EndObject()
 def End(builder):
     return GPIOResponseEnd(builder)

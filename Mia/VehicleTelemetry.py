@@ -122,98 +122,51 @@ class VehicleTelemetry(object):
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
-def VehicleTelemetryStart(builder):
-    builder.StartObject(14)
-
+def VehicleTelemetryStart(builder): builder.StartObject(14)
 def Start(builder):
-    VehicleTelemetryStart(builder)
-
-def VehicleTelemetryAddRpm(builder, rpm):
-    builder.PrependFloat32Slot(0, rpm, 0.0)
-
+    return VehicleTelemetryStart(builder)
+def VehicleTelemetryAddRpm(builder, rpm): builder.PrependFloat32Slot(0, rpm, 0.0)
 def AddRpm(builder, rpm):
-    VehicleTelemetryAddRpm(builder, rpm)
-
-def VehicleTelemetryAddSpeedKmh(builder, speedKmh):
-    builder.PrependFloat32Slot(1, speedKmh, 0.0)
-
+    return VehicleTelemetryAddRpm(builder, rpm)
+def VehicleTelemetryAddSpeedKmh(builder, speedKmh): builder.PrependFloat32Slot(1, speedKmh, 0.0)
 def AddSpeedKmh(builder, speedKmh):
-    VehicleTelemetryAddSpeedKmh(builder, speedKmh)
-
-def VehicleTelemetryAddCoolantTempC(builder, coolantTempC):
-    builder.PrependFloat32Slot(2, coolantTempC, 0.0)
-
+    return VehicleTelemetryAddSpeedKmh(builder, speedKmh)
+def VehicleTelemetryAddCoolantTempC(builder, coolantTempC): builder.PrependFloat32Slot(2, coolantTempC, 0.0)
 def AddCoolantTempC(builder, coolantTempC):
-    VehicleTelemetryAddCoolantTempC(builder, coolantTempC)
-
-def VehicleTelemetryAddOilTemperatureC(builder, oilTemperatureC):
-    builder.PrependFloat32Slot(3, oilTemperatureC, 0.0)
-
+    return VehicleTelemetryAddCoolantTempC(builder, coolantTempC)
+def VehicleTelemetryAddOilTemperatureC(builder, oilTemperatureC): builder.PrependFloat32Slot(3, oilTemperatureC, 0.0)
 def AddOilTemperatureC(builder, oilTemperatureC):
-    VehicleTelemetryAddOilTemperatureC(builder, oilTemperatureC)
-
-def VehicleTelemetryAddBatteryVoltage(builder, batteryVoltage):
-    builder.PrependFloat32Slot(4, batteryVoltage, 0.0)
-
+    return VehicleTelemetryAddOilTemperatureC(builder, oilTemperatureC)
+def VehicleTelemetryAddBatteryVoltage(builder, batteryVoltage): builder.PrependFloat32Slot(4, batteryVoltage, 0.0)
 def AddBatteryVoltage(builder, batteryVoltage):
-    VehicleTelemetryAddBatteryVoltage(builder, batteryVoltage)
-
-def VehicleTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent):
-    builder.PrependFloat32Slot(5, dpfSootLoadPercent, 0.0)
-
+    return VehicleTelemetryAddBatteryVoltage(builder, batteryVoltage)
+def VehicleTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent): builder.PrependFloat32Slot(5, dpfSootLoadPercent, 0.0)
 def AddDpfSootLoadPercent(builder, dpfSootLoadPercent):
-    VehicleTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent)
-
-def VehicleTelemetryAddDpfSootMassG(builder, dpfSootMassG):
-    builder.PrependFloat32Slot(6, dpfSootMassG, 0.0)
-
+    return VehicleTelemetryAddDpfSootLoadPercent(builder, dpfSootLoadPercent)
+def VehicleTelemetryAddDpfSootMassG(builder, dpfSootMassG): builder.PrependFloat32Slot(6, dpfSootMassG, 0.0)
 def AddDpfSootMassG(builder, dpfSootMassG):
-    VehicleTelemetryAddDpfSootMassG(builder, dpfSootMassG)
-
-def VehicleTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus):
-    builder.PrependInt8Slot(7, dpfRegenerationStatus, 0)
-
+    return VehicleTelemetryAddDpfSootMassG(builder, dpfSootMassG)
+def VehicleTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus): builder.PrependInt8Slot(7, dpfRegenerationStatus, 0)
 def AddDpfRegenerationStatus(builder, dpfRegenerationStatus):
-    VehicleTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus)
-
-def VehicleTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent):
-    builder.PrependFloat32Slot(8, eolysAdditiveLevelPercent, 0.0)
-
+    return VehicleTelemetryAddDpfRegenerationStatus(builder, dpfRegenerationStatus)
+def VehicleTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent): builder.PrependFloat32Slot(8, eolysAdditiveLevelPercent, 0.0)
 def AddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent):
-    VehicleTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent)
-
-def VehicleTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL):
-    builder.PrependFloat32Slot(9, eolysAdditiveLevelL, 0.0)
-
+    return VehicleTelemetryAddEolysAdditiveLevelPercent(builder, eolysAdditiveLevelPercent)
+def VehicleTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL): builder.PrependFloat32Slot(9, eolysAdditiveLevelL, 0.0)
 def AddEolysAdditiveLevelL(builder, eolysAdditiveLevelL):
-    VehicleTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL)
-
-def VehicleTelemetryAddIntakeAirTempC(builder, intakeAirTempC):
-    builder.PrependFloat32Slot(10, intakeAirTempC, 0.0)
-
+    return VehicleTelemetryAddEolysAdditiveLevelL(builder, eolysAdditiveLevelL)
+def VehicleTelemetryAddIntakeAirTempC(builder, intakeAirTempC): builder.PrependFloat32Slot(10, intakeAirTempC, 0.0)
 def AddIntakeAirTempC(builder, intakeAirTempC):
-    VehicleTelemetryAddIntakeAirTempC(builder, intakeAirTempC)
-
-def VehicleTelemetryAddFuelLevelPercent(builder, fuelLevelPercent):
-    builder.PrependFloat32Slot(11, fuelLevelPercent, 0.0)
-
+    return VehicleTelemetryAddIntakeAirTempC(builder, intakeAirTempC)
+def VehicleTelemetryAddFuelLevelPercent(builder, fuelLevelPercent): builder.PrependFloat32Slot(11, fuelLevelPercent, 0.0)
 def AddFuelLevelPercent(builder, fuelLevelPercent):
-    VehicleTelemetryAddFuelLevelPercent(builder, fuelLevelPercent)
-
-def VehicleTelemetryAddEngineLoadPercent(builder, engineLoadPercent):
-    builder.PrependFloat32Slot(12, engineLoadPercent, 0.0)
-
+    return VehicleTelemetryAddFuelLevelPercent(builder, fuelLevelPercent)
+def VehicleTelemetryAddEngineLoadPercent(builder, engineLoadPercent): builder.PrependFloat32Slot(12, engineLoadPercent, 0.0)
 def AddEngineLoadPercent(builder, engineLoadPercent):
-    VehicleTelemetryAddEngineLoadPercent(builder, engineLoadPercent)
-
-def VehicleTelemetryAddTimestamp(builder, timestamp):
-    builder.PrependUint64Slot(13, timestamp, 0)
-
+    return VehicleTelemetryAddEngineLoadPercent(builder, engineLoadPercent)
+def VehicleTelemetryAddTimestamp(builder, timestamp): builder.PrependUint64Slot(13, timestamp, 0)
 def AddTimestamp(builder, timestamp):
-    VehicleTelemetryAddTimestamp(builder, timestamp)
-
-def VehicleTelemetryEnd(builder):
-    return builder.EndObject()
-
+    return VehicleTelemetryAddTimestamp(builder, timestamp)
+def VehicleTelemetryEnd(builder): return builder.EndObject()
 def End(builder):
     return VehicleTelemetryEnd(builder)
