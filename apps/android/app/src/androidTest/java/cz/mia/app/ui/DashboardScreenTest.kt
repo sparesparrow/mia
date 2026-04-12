@@ -141,8 +141,8 @@ class DashboardScreenTest {
             DashboardGauges(latest = telemetry)
         }
         
-        // Speed should show 0
-        composeTestRule.onNodeWithText("0", substring = false, ignoreCase = false).assertExists()
+        // Speed should show 0 (multiple gauges may show 0)
+        composeTestRule.onAllNodes(hasText("0", substring = false, ignoreCase = false))[0].assertExists()
     }
 
     @Test
@@ -163,7 +163,7 @@ class DashboardScreenTest {
         
         composeTestRule.onNodeWithText("200").assertIsDisplayed() // Max speed
         composeTestRule.onNodeWithText("80").assertIsDisplayed() // Max RPM / 100
-        composeTestRule.onNodeWithText("100%").assertExists() // Fuel or load at 100%
+        composeTestRule.onAllNodes(hasText("100%"))[0].assertExists() // Fuel or load at 100%
     }
 
     @Test

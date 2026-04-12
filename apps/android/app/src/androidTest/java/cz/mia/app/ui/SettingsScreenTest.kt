@@ -21,6 +21,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -130,8 +131,8 @@ class SettingsScreenTest {
             )
         }
         
-        // Find and click the switch (it's within the "Incognito" row)
-        composeTestRule.onNodeWithText("Incognito").performClick()
+        // Find and click the switch
+        composeTestRule.onNode(isToggleable()).performClick()
         
         // The callback should be invoked
         assertTrue(toggled)

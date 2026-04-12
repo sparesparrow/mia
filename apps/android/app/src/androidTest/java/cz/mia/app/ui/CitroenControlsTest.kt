@@ -17,7 +17,7 @@ class CitroenControlsTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `citroen controls display DPF information when available`() {
+    fun citroenControlsDisplayDpfInformationWhenAvailable() {
         val telemetryWithDpf = TelemetryEntity(
             id = 1,
             ts = System.currentTimeMillis(),
@@ -48,7 +48,7 @@ class CitroenControlsTest {
     }
 
     @Test
-    fun `citroen controls show regeneration button when DPF status allows`() {
+    fun citroenControlsShowRegenerationButtonWhenDpfStatusAllows() {
         val telemetryOk = TelemetryEntity(
             id = 1,
             ts = System.currentTimeMillis(),
@@ -83,7 +83,7 @@ class CitroenControlsTest {
     }
 
     @Test
-    fun `citroen controls hide when no citroen data available`() {
+    fun citroenControlsHideWhenNoCitroenDataAvailable() {
         val basicTelemetry = TelemetryEntity(
             id = 1,
             ts = System.currentTimeMillis(),
