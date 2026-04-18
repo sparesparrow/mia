@@ -2,8 +2,11 @@ import unittest
 import sys
 import os
 
-# Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Add the mia-agents directory so `from agents import psa_decoder` resolves to
+# orchestration/mia-agents/agents/psa_decoder.py
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'orchestration', 'mia-agents')
+))
 
 from agents import psa_decoder
 
