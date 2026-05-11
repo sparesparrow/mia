@@ -6,11 +6,14 @@ This directory contains the Python-based implementation of MIA for Raspberry Pi,
 
 ## Architecture
 
-- **ZeroMQ Broker** (`core/messaging/broker.py`): Message routing using ROUTER-DEALER pattern
-- **FastAPI Server** (`api/main.py`): REST API and WebSocket endpoints
-- **GPIO Worker** (`hardware/gpio_worker.py`): Hardware control via GPIO pins
-- **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
-- **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
+> For complete architecture, data flow diagrams, and repository organization, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+Core runtime components:
+- **ZeroMQ Broker** (port 5555): ROUTER-DEALER message routing
+- **FastAPI Server** (port 8000): REST API and WebSocket endpoints
+- **GPIO Worker**: Hardware control via GPIO pins (simulation fallback)
+- **Serial Bridge**: ESP32/Arduino serial to ZeroMQ bridge (port 5556)
+- **OBD Worker**: ELM327 Digital Twin — Audi A4 B3 Cabriolet (2004) primary target
 
 ## Workspace Organization
 

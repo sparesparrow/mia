@@ -80,9 +80,41 @@ Cross-cutting concerns:
 ## Key Patterns
 
 ### Messaging Layer
-- **Broker**: ZeroMQ ROUTER-DEALER on port 5555 (workers register as DEALER)
-- **Pub/Sub**: ZeroMQ PUB/SUB on port 5556 (real-time telemetry to subscribers)
+- **Broker**: ZeroMQ ROUTER-DEALER on port 5555 (`apps/rpi-backend/shared/messaging/broker.py`)
+  - Workers (GPIO, serial bridge, OBD) register as DEALER sockets
+  - FastAPI connects as DEALER to relay HTTP/WebSocket requests
+- **Pub/Sub**: ZeroMQ PUB/SUB on port 5556 (real-time MCU telemetry from serial bridge to subscribers)
 - **MCP Modules**: Microservices under `orchestration/mcp/` handle domain logic
+  - Shared framework: `orchestration/mcp/modules/shared/mcp_framework.py`
+
+### REST/WebSocket Gateway
+- `apps/rpi-backend/py-api/api/main.py` runs FastAPI on port 8000
+- REST endpoints: `/devices`, `/command`, `/telemetry`, `/status`, `/gpio/*`
+- WebSocket: `/ws` for real-time streaming
+- API key auth in `apps/rpi-backend/py-api/api/auth/`
+
+### MCP Modules (`orchestration/mcp/modules/`)
+- **core-orchestrator** — routes user commands to appropriate modules
+- **service-discovery** — service registry with health checks
+- **ai-audio-assistant** — Whisper STT, ElevenLabs TTS, Spotify
+- **ai-platform-controllers** — system command execution
+- **automotive-mcp-bridge** / **vag-audi-bridge** — vehicle OBD-II (Audi A4 B3 primary)
+- **citroen-c4-bridge** — PSA-specific PID decoding (legacy)
+- **hardware-bridge** — GPIO abstraction
+
+### Hardware Layer
+- `apps/rpi-backend/py-api/hardware/gpio_worker.py` — GPIO control with simulation fallback
+- `apps/rpi-backend/py-api/hardware/serial_bridge.py` — USB serial to ZeroMQ bridge for ESP32/Arduino
+- `apps/rpi-backend/py-api/hardware/` — I2C/SPI sensor drivers (BME280, DHT, etc.)
+- `apps/rpi-backend/cpp-audio/` — C++ audio and hardware implementations
+
+### OBD-II Digital Twin
+`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real diagnostic tools (Torque, OBD Eleven, VCDS) with mapped engine parameters. Primary target: Audi A4 B3 Cabriolet (2004).
+
+Telemetry flow: MCU → serial bridge → ZMQ PUB → OBD worker → virtual PTY → diagnostic tool
+
+### Serialization
+FlatBuffers schemas in `schemas/` (main: `mia.fbs`) and `protos/` define message types (VehicleTelemetry, GPIOCommand, SensorTelemetry). Generated Python bindings in `Mia/`.
 
 ### Testing Strategy
 - **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/` (corresponding to `apps/` platforms)
