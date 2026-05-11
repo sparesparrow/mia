@@ -1,6 +1,27 @@
 # MIA Android Testing Guide
 
-Complete guide for building, deploying, and testing the MIA Android app using the **android-adb-test skill** with subagent orchestration.
+> **Audience**: Android developers, QA testers, CI/CD engineers
+
+The single comprehensive guide for building, deploying, and testing the MIA Android app using the **android-adb-test skill** with subagent orchestration. For a quick command cheat-sheet, see [ANDROID_QUICK_REFERENCE.md](ANDROID_QUICK_REFERENCE.md).
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Skill Location & Structure](#skill-location--structure)
+- [Usage Patterns](#usage-patterns)
+- [Test Scenarios](#test-scenarios)
+- [Subagent Orchestration](#subagent-orchestration)
+- [Integration with Coding-Agent](#integration-with-coding-agent)
+- [CI/CD Integration](#cicd-integration)
+- [Output & Artifacts](#output--artifacts)
+- [Device Check](#device-check)
+- [Troubleshooting](#troubleshooting)
+- [Reference Documentation](#reference-documentation)
+- [Advanced: Custom Scenarios](#advanced-custom-scenarios)
+- [Pro Tips](#pro-tips)
+- [Learning Path](#learning-path)
+- [Monitoring & Automation](#next-monitoring--automation)
+- [Summary](#summary)
 
 ## Quick Start
 
@@ -373,6 +394,24 @@ grep -E "FATAL|Error|timeout" apps/android/test-artifacts/*/logs/logcat.txt
 
 ---
 
+## Device Check
+
+```bash
+# List devices
+adb devices
+
+# Get device info
+adb shell getprop ro.product.model
+
+# Clear app data
+adb shell pm clear cz.mia.app
+
+# View recent logs
+adb logcat -d -s "cz.mia.app:*" | tail -20
+```
+
+---
+
 ## Troubleshooting
 
 ### Device Not Found
@@ -468,6 +507,73 @@ Then run:
 bash skills/android-adb-test/scripts/android-adb-test.sh \
   build-and-test --scenario custom-voice-command --screenshots --logs
 ```
+
+---
+
+## Pro Tips
+
+1. **Run tests in background**
+   ```bash
+   nohup bash scripts/test-orchestrator.sh HT36TW903516 full-flow 1 > test.log &
+   ```
+
+2. **Monitor live logcat**
+   ```bash
+   adb logcat -v time | grep "cz.mia.app\|BLEManager"
+   ```
+
+3. **Quick permission grant**
+   ```bash
+   adb shell pm grant cz.mia.app android.permission.CAMERA
+   ```
+
+4. **Screenshot comparison**
+   ```bash
+   adb exec-out screencap -p > before.png
+   # ... do something ...
+   adb exec-out screencap -p > after.png
+   diff <(md5sum *.png)
+   ```
+
+5. **Device screen mirror**
+   ```bash
+   scrcpy -s HT36TW903516
+   ```
+
+---
+
+## Learning Path
+
+1. **Start Simple**: Run dashboard scenario
+   ```bash
+   bash scripts/test-orchestrator.sh HT36TW903516 dashboard 1
+   ```
+
+2. **View Artifacts**: Check screenshots and logcat
+   ```bash
+   ls apps/android/test-artifacts/*/screenshots/
+   ```
+
+3. **Understand Errors**: Read logcat patterns
+   ```bash
+   cat skills/android-adb-test/references/logcat-patterns.md
+   ```
+
+4. **Manual Testing**: Use interactive mode
+   ```bash
+   bash skills/android-adb-test/scripts/android-adb-test.sh interactive \
+     --device HT36TW903516
+   ```
+
+5. **Subagent Analysis**: Spawn analyzers
+   ```bash
+   bash scripts/spawn-test-tasks.sh all apps/android/test-artifacts/latest
+   ```
+
+6. **Full Pipeline**: Run orchestrator with all phases
+   ```bash
+   bash scripts/test-orchestrator.sh HT36TW903516 full-flow 1
+   ```
 
 ---
 
