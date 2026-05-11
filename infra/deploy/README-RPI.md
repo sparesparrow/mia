@@ -126,7 +126,7 @@ python3 -m pip install --user -r modules/hardware-bridge/requirements.txt
 
 ### Custom Deployment Path
 ```bash
-export RPI_PATH="/opt/ai-servis"
+export RPI_PATH="/opt/mia"
 ./scripts/deploy-raspberry-pi-remote.sh
 ```
 
@@ -136,7 +136,7 @@ Edit `scripts/deploy-raspberry-pi-remote.sh` and comment out sections you don't 
 ### Automated Deployment with Cron
 ```bash
 # Add to crontab for daily deployment
-0 2 * * * cd /path/to/ai-servis && ./scripts/deploy-raspberry-pi-remote.sh >> /var/log/rpi-deploy.log 2>&1
+0 2 * * * cd /path/to/mia && ./scripts/deploy-raspberry-pi-remote.sh >> /var/log/rpi-deploy.log 2>&1
 ```
 
 ## Configuration Reference

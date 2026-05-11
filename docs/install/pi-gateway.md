@@ -6,13 +6,13 @@
 ### Steps
 1) Install Docker (and compose plugin):
 ```bash
-cd /home/sparrow/projects/ai-servis/edge-compat/pi-gateway/scripts
+cd /home/sparrow/projects/mia/edge-compat/pi-gateway/scripts
 ./install.sh
 ```
 
 2) Configure VIN and camera stream:
 ```bash
-cd /home/sparrow/projects/ai-servis/edge-compat/pi-gateway
+cd /home/sparrow/projects/mia/edge-compat/pi-gateway
 cp env.example .env
 # edit VIN and ANPR_RTSP_URL (and REMOTE_URL if mirroring)
 ```

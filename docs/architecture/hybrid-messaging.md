@@ -219,7 +219,7 @@ def test_hybrid_messaging():
 ```yaml
 services:
   hardware-server:
-    image: ai-servis-cpp:latest
+    image: mia-cpp:latest
     devices:
       - /dev/gpiomem
     environment:

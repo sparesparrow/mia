@@ -22,28 +22,27 @@ MIA (Modular IoT Assistant) je distribuovaný řídicí systém navržený pro R
 
 ```bash
 # Klonování repozitáře
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # Aktivace prostředí
 source tools/env.sh
 
 # Instalace závislostí
 pip install -r requirements-dev.txt
-pip install -r agents/requirements.txt
 
 # Spuštění služeb
 sudo systemctl start mia-broker
-sudo systemctl start mia-citroen-bridge
+sudo systemctl start mia-api
 ```
 
 ## Dokumentace
 
-- [Integrace Citroën](automotive/citroen-integrace.md)
-- [Architektura systému](architecture/overview.md)
+- [Integrace Audi A4 B3](../docs/automotive/raspberry-pi-audi-integration.md)
+- [Architektura systému](../ARCHITECTURE.md)
 - [API Reference](api/overview.md)
 
 ## Podpora
 
-- GitHub Issues: [ai-servis/issues](https://github.com/sparesparrow/ai-servis/issues)
-- Dokumentace: [docs/](https://github.com/sparesparrow/ai-servis/tree/main/docs)
+- GitHub Issues: [mia/issues](https://github.com/sparesparrow/mia/issues)
+- Dokumentace: [docs/](https://github.com/sparesparrow/mia/tree/main/docs)

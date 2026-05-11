@@ -1,6 +1,6 @@
 # Conan Dependency Management Setup
 
-This document describes how to use Conan for dependency management in the ai-servis project.
+This document describes how to use Conan for dependency management in the MIA project.
 
 ## Prerequisites
 
@@ -128,11 +128,11 @@ For local package development:
 
 ```bash
 # Create editable package
-conan editable add . --name=ai-servis --version=1.0
+conan editable add . --name=mia --version=1.0
 
 # Build and test
 conan build .
 
 # Remove editable
-conan editable remove ai-servis/1.0
+conan editable remove mia/1.0
 ```

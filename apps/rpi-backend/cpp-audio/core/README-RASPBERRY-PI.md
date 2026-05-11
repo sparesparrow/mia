@@ -71,8 +71,8 @@ sudo ./scripts/deploy-raspberry-pi.sh
 ### 6. Start Service
 
 ```bash
-sudo systemctl start ai-servis
-sudo systemctl enable ai-servis  # Enable on boot
+sudo systemctl start mia-api
+sudo systemctl enable mia-api  # Enable on boot
 ```
 
 ## Manual Deployment
@@ -176,22 +176,22 @@ If you encounter build errors:
 View system logs:
 ```bash
 # Systemd service logs
-sudo journalctl -u ai-servis -f
+sudo journalctl -u mia-api -f
 
 # Application logs (if running manually)
-./mia-rpi 2>&1 | tee ai-servis.log
+./mia-rpi 2>&1 | tee mia.log
 ```
 
 ## Configuration
 
 Edit configuration file:
 ```bash
-sudo nano /opt/ai-servis/config/ai-servis.conf
+sudo nano /opt/mia/config/mia.conf
 ```
 
 After changes, restart the service:
 ```bash
-sudo systemctl restart ai-servis
+sudo systemctl restart mia-api
 ```
 
 ## Development
@@ -222,6 +222,6 @@ make -j$(nproc)
 ## Support
 
 For issues and questions:
-- Check logs: `sudo journalctl -u ai-servis`
+- Check logs: `sudo journalctl -u mia-api`
 - Review GPIO permissions
 - Verify all services are running

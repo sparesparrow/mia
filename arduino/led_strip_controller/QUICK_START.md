@@ -24,7 +24,7 @@ This implementation provides a complete LED strip controller system:
 
 ```bash
 # Install Python dependencies
-cd /home/sparrow/projects/ai-servis
+cd /home/sparrow/projects/mia
 pip install -r modules/hardware-bridge/requirements.txt
 
 # Verify Arduino is connected

@@ -163,7 +163,7 @@ The LED monitor integrates with existing MIA services:
 Edit `rpi/services/mia-led-monitor.service`:
 
 ```ini
-Environment=PYTHONPATH=/home/mia/ai-servis/rpi
+Environment=PYTHONPATH=/home/mia/mia/rpi
 ExecStart=/usr/bin/python3 led_monitor_service.py \
   --broker-url tcp://localhost:5555 \
   --telemetry-url tcp://localhost:5556 \

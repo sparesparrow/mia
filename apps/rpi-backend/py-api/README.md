@@ -115,8 +115,8 @@ pip3 install -r rpi/requirements.txt
 ### 2. Copy files to installation directory
 
 ```bash
-sudo mkdir -p /opt/ai-servis/rpi
-sudo cp -r rpi/* /opt/ai-servis/rpi/
+sudo mkdir -p /opt/mia/rpi
+sudo cp -r rpi/* /opt/mia/rpi/
 ```
 
 ### 3. Install systemd services
@@ -403,7 +403,7 @@ sudo systemctl edit mia-serial-bridge
 # Add:
 # [Service]
 # ExecStart=
-# ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+# ExecStart=/usr/bin/python3 /opt/mia/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
 ```
 
 4. Test serial connection manually:

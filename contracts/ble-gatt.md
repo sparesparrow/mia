@@ -160,7 +160,7 @@ Bluetooth Low Energy (BLE) GATT services for ESP32 to Android communication in M
 {
   "command": "start_ota",
   "parameters": {
-    "firmware_url": "https://ota.ai-servis.cz/firmware.bin",
+    "firmware_url": "https://ota.mia.cz/firmware.bin",
     "firmware_size": 1048576,
     "firmware_hash": "sha256-hash",
     "firmware_version": "1.2.4"

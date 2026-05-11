@@ -1,6 +1,6 @@
 # MIA Web Pages
 
-This directory contains the static web surfaces for MIA and AI-SERVIS. Most public landing pages are generated from a shared template, while a few pages are standalone experiences maintained by hand.
+This directory contains the static web surfaces for MIA. Most public landing pages are generated from a shared template, while a few pages are standalone experiences maintained by hand.
 
 ## What Lives Here
 

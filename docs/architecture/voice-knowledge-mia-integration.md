@@ -116,7 +116,7 @@ class CoreOrchestrator(MCPServer):
     """Enhanced Core Orchestrator with voice knowledge integration"""
 
     def __init__(self):
-        super().__init__("ai-servis-core", "1.0.0")
+        super().__init__("mia-core", "1.0.0")
         self.knowledge_service = VoiceKnowledgeService()
         self.nlp_processor = EnhancedNLPProcessor()
         # ... rest of init

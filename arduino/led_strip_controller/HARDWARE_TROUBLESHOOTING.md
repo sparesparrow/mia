@@ -22,7 +22,7 @@ If the Arduino responds to commands but LEDs don't light up, this is a **hardwar
 If pin 6 doesn't work, test other pins:
 
 1. Edit `pin_test.ino` and change `#define TEST_PIN 6` to another pin (e.g., `#define TEST_PIN 3`)
-2. Upload the sketch: `cd ai-servis/arduino/led_strip_controller && arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno .`
+2. Upload the sketch: `cd mia/arduino/led_strip_controller && arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno .`
 3. Watch for LEDs lighting up
 4. If LEDs work, update `led_strip_controller.ino` with the correct pin
 
@@ -55,7 +55,7 @@ Upload `pin_test.ino` to verify hardware works independently of serial commands.
 
 ```bash
 # Test hardware test command (should cycle colors)
-cd /home/mia/ai-servis
+cd /home/mia/mia
 python3 -c "import serial; import time; ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=2); time.sleep(2); ser.write(b'{\"command\":\"hardware_test\"}\n'); ser.flush(); time.sleep(4); ser.close()"
 
 # Test maximum brightness and white

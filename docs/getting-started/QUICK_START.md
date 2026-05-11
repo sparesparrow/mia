@@ -242,7 +242,7 @@ ls -la docs/
 ### Key Directories
 
 ```
-ai-servis/
+mia/
 ├── modules/              # Python modules (MCP servers)
 │   ├── core-orchestrator/
 │   ├── ai-audio-assistant/
@@ -276,7 +276,7 @@ ai-servis/
 docker compose -f infra/docker/docker-compose.dev.yml up -d
 
 # Check logs
-docker compose -f infra/docker/docker-compose.dev.yml logs -f ai-servis-core
+docker compose -f infra/docker/docker-compose.dev.yml logs -f mia-core
 
 # Stop services
 docker compose -f infra/docker/docker-compose.dev.yml down
@@ -353,7 +353,7 @@ pip install -r requirements.txt
 **Solution**:
 ```bash
 # Make sure you're in the project root
-cd /path/to/ai-servis
+cd /path/to/mia
 
 # Verify file exists
 ls orchestrator-config.yaml
@@ -366,7 +366,7 @@ ls orchestrator-config.yaml
 **Solution**:
 ```bash
 # Run from project root
-cd /path/to/ai-servis
+cd /path/to/mia
 
 # Use python3 -m
 python3 -m test_orchestrator_simple

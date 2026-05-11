@@ -205,7 +205,7 @@ To enable verbose logging:
 For additional help:
 - **Documentation**: [Full Documentation](../README.md)
 - **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)
-- **Email**: info@ai-servis.cz
+- **Email**: info@mia.cz
 
 ## Next Steps
 

@@ -113,7 +113,7 @@ The application follows a clean architecture pattern with the following layers:
 ### Clone and Open
 
 ```bash
-git clone https://github.com/your-org/ai-servis.git
+git clone https://github.com/sparesparrow/mia.git
 cd mia/android
 ```
 

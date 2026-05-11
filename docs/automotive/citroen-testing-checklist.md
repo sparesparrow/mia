@@ -1,4 +1,6 @@
-# Citroën Testing Checklist
+# Citroën Testing Checklist (Legacy)
+
+> **Status**: Legacy/secondary support. Primary development target is **Audi A4 B3 Cabriolet (2004)**.
 
 ## Pre-Test Setup
 - [ ] ELM327 adapter connected to OBD-II port

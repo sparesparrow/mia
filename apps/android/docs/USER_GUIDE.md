@@ -1,6 +1,6 @@
-# AI-Servis Android App User Guide
+# MIA Android App User Guide
 
-Welcome to the AI-Servis Android application! This guide will help you get started with the app and make the most of its features.
+Welcome to the MIA Android application! This guide will help you get started with the app and make the most of its features.
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@ Welcome to the AI-Servis Android application! This guide will help you get start
 ## Initial Setup
 
 ### First Launch
-1. Open the AI-Servis app
+1. Open the MIA app
 2. Grant the following permissions when prompted:
    - **Bluetooth permissions** (Android 12+: BLUETOOTH_SCAN, BLUETOOTH_CONNECT)
    - **Location permission** (required for BLE scanning)
@@ -173,7 +173,7 @@ Access historical telemetry through the API:
 - Check if the adapter is compatible
 
 #### "Missing permissions"
-- Go to Settings > Apps > AI-Servis > Permissions
+- Go to Settings > Apps > MIA > Permissions
 - Enable all required permissions
 - Restart the app
 
@@ -197,7 +197,7 @@ Access historical telemetry through the API:
 ### App Crashes
 
 1. Clear app data:
-   - Settings > Apps > AI-Servis > Storage > Clear Data
+   - Settings > Apps > MIA > Storage > Clear Data
 2. Reinstall the app
 3. Report the issue with logs
 
@@ -248,7 +248,7 @@ All data transmission can be controlled through app settings.
 ## Support
 
 For additional help:
-- Check the [GitHub Issues](https://github.com/your-repo/ai-servis/issues)
+- Check the [GitHub Issues](https://github.com/sparesparrow/mia/issues)
 - Contact support at support@example.com
 - Join our community forum
 

@@ -436,7 +436,7 @@ sudo systemctl edit mia-serial-bridge
 # Add:
 # [Service]
 # ExecStart=
-# ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+# ExecStart=/usr/bin/python3 /opt/mia/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
 ```
 
 4. Test serial connection manually:

@@ -1,10 +1,10 @@
-# 🖥️ AI-Servis VM Testing Guide
+# 🖥️ MIA VM Testing Guide
 
-This guide provides comprehensive instructions for testing the AI-Servis CI/CD infrastructure in virtual machine environments.
+This guide provides comprehensive instructions for testing the MIA CI/CD infrastructure in virtual machine environments.
 
 ## 🎯 Overview
 
-The VM testing suite validates the complete AI-Servis development and deployment infrastructure in a clean, isolated environment. This ensures that the setup works correctly across different systems and configurations.
+The VM testing suite validates the complete MIA development and deployment infrastructure in a clean, isolated environment. This ensures that the setup works correctly across different systems and configurations.
 
 ## 📋 VM Requirements
 
@@ -33,11 +33,11 @@ The VM testing suite validates the complete AI-Servis development and deployment
 
 ```bash
 # In your VM, download the test script
-curl -O https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+curl -O https://raw.githubusercontent.com/sparesparrow/mia/main/scripts/vm-test-setup.sh
 chmod +x vm-test-setup.sh
 
 # Or if you have the repository
-git clone https://github.com/ai-servis/ai-servis.git
+git clone https://github.com/sparesparrow/mia.git
 cd mia
 ./scripts/vm-test-setup.sh
 ```
@@ -59,10 +59,10 @@ cd mia
 
 ```bash
 # Test results are saved to:
-cat /tmp/ai-servis-test-results/vm-test-report.md
+cat /tmp/mia-test-results/vm-test-report.md
 
 # View detailed logs:
-cat /tmp/ai-servis-vm-test.log
+cat /tmp/mia-vm-test.log
 ```
 
 ## 🧪 Test Phases
@@ -213,7 +213,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl wget git build-essential python3-pip
 
 # 5. Run VM test
-curl -O https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+curl -O https://raw.githubusercontent.com/sparesparrow/mia/main/scripts/vm-test-setup.sh
 chmod +x vm-test-setup.sh
 ./vm-test-setup.sh
 ```
@@ -272,7 +272,7 @@ sudo /mnt/VBoxLinuxAdditions.run
 ssh -i your-key.pem ubuntu@your-instance-ip
 
 # 3. Run VM test:
-curl -O https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+curl -O https://raw.githubusercontent.com/sparesparrow/mia/main/scripts/vm-test-setup.sh
 chmod +x vm-test-setup.sh
 ./vm-test-setup.sh
 ```
@@ -282,7 +282,7 @@ chmod +x vm-test-setup.sh
 ### Successful Test Output
 
 ```
-[2024-12-XX XX:XX:XX] Starting AI-Servis VM Test Suite...
+[2024-12-XX XX:XX:XX] Starting MIA VM Test Suite...
 [2024-12-XX XX:XX:XX] === Running test phase: system_requirements ===
 [SUCCESS] Memory check passed: 16GB
 [SUCCESS] Disk space check passed: 85GB available
@@ -305,7 +305,7 @@ chmod +x vm-test-setup.sh
 [2024-12-XX XX:XX:XX] Passed: 8
 [2024-12-XX XX:XX:XX] Failed: 0
 [2024-12-XX XX:XX:XX] Success Rate: 100%
-[SUCCESS] 🎉 All VM tests passed! AI-Servis is ready for deployment.
+[SUCCESS] 🎉 All VM tests passed! MIA is ready for deployment.
 ```
 
 ### Performance Benchmarks
@@ -373,8 +373,8 @@ curl -I https://github.com
 # Solution: Check service logs
 
 # View container logs:
-docker logs ai-servis-core-dev
-docker logs ai-servis-discovery-dev
+docker logs mia-core-dev
+docker logs mia-discovery-dev
 
 # Check resource usage:
 docker stats
@@ -448,7 +448,7 @@ The VM test suite generates comprehensive reports:
 
 ```bash
 # Test report location:
-/tmp/ai-servis-test-results/vm-test-report.md
+/tmp/mia-test-results/vm-test-report.md
 
 # Report includes:
 # - System information
@@ -546,7 +546,7 @@ Pre-configured VM templates are available:
 
 ## 🎉 Conclusion
 
-The AI-Servis VM testing suite provides comprehensive validation of the entire CI/CD infrastructure in isolated environments. This ensures reliable deployment across different systems and configurations.
+The MIA VM testing suite provides comprehensive validation of the entire CI/CD infrastructure in isolated environments. This ensures reliable deployment across different systems and configurations.
 
 **Next Steps:**
 1. Run the VM test suite in your environment

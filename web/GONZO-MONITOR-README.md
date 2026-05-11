@@ -1,6 +1,6 @@
 # 🔥 Gonzo Web Monitor 🔥
 
-Real-time monitoring system for the journalists/gonzo variant of AI-SERVIS web pages. Automatically pulls changes from git, rebuilds the web pages, and refreshes the browser every 10 minutes.
+Real-time monitoring system for the journalists/gonzo variant of MIA web pages. Automatically pulls changes from git, rebuilds the web pages, and refreshes the browser every 10 minutes.
 
 ## Features
 
@@ -223,7 +223,7 @@ To extend the monitoring system:
 
 ## License
 
-Part of the AI-SERVIS project. See main project license.
+Part of the MIA project. See main project license.
 
 ---
 

@@ -1,6 +1,6 @@
-# AI-Servis CI/CD & Development Environment
+# MIA CI/CD & Development Environment
 
-This document describes the comprehensive CI/CD pipeline and development environment setup for the AI-Servis project.
+This document describes the comprehensive CI/CD pipeline and development environment setup for the MIA project.
 
 ## 🚀 Quick Start
 
@@ -127,7 +127,7 @@ The development container includes:
 - **Service Health** - Endpoint availability and response times
 - **Resource Usage** - CPU, memory, disk utilization
 - **Container Metrics** - Docker container performance
-- **Custom Metrics** - AI-Servis specific metrics (MQTT, MCP, ESP32)
+- **Custom Metrics** - MIA-specific metrics (MQTT, MCP, ESP32)
 
 ### Alerting
 

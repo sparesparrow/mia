@@ -561,16 +561,16 @@ flowchart TD
 graph TB
     subgraph "🐳 Docker Compose Stack"
         subgraph "Core Services"
-            CoreContainer[ai-servis-core<br/>Orchestrator]
-            DiscoveryContainer[ai-servis-discovery<br/>Service Registry]
+            CoreContainer[mia-core<br/>Orchestrator]
+            DiscoveryContainer[mia-discovery<br/>Service Registry]
             MQTTContainer[eclipse-mosquitto<br/>Message Broker]
         end
         
         subgraph "AI Modules"
-            AudioContainer[ai-servis-audio<br/>Audio Assistant]
-            PlatformContainer[ai-servis-platform<br/>Platform Controller]
-            HomeContainer[ai-servis-home<br/>Home Automation]
-            SecurityContainer[ai-servis-security<br/>Security & ANPR]
+            AudioContainer[mia-audio<br/>Audio Assistant]
+            PlatformContainer[mia-platform<br/>Platform Controller]
+            HomeContainer[mia-home<br/>Home Automation]
+            SecurityContainer[mia-security<br/>Security & ANPR]
         end
         
         subgraph "Support Services"
