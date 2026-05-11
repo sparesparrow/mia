@@ -58,7 +58,8 @@ graph TB
         DISC[Service Discovery]
         AI_AUDIO[AI Audio Assistant]
         AUTO_BRIDGE[Automotive Bridge]
-        C4_BRIDGE[Citroën C4 Bridge]
+        VAG_BRIDGE[VAG Audi Bridge]
+        C4_BRIDGE[Citroën C4 Bridge<br/>legacy]
     end
 
     A_MQTT -->|:1883| BROKER
@@ -81,6 +82,7 @@ graph TB
     CORE_MCP --> DISC
     CORE_MCP --> AI_AUDIO
     CORE_MCP --> AUTO_BRIDGE
+    AUTO_BRIDGE --> VAG_BRIDGE
     AUTO_BRIDGE --> C4_BRIDGE
 
     style RPi fill:#2d5016,stroke:#4a8c23

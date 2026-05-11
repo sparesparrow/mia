@@ -1,5 +1,7 @@
 # MIA Architecture & Repository Structure
 
+> **Audience**: Developers, architects, AI agents
+
 ## Repository Organization
 
 MIA is a distributed vehicle telemetry and IoT control system with four key organizational layers:
@@ -25,7 +27,7 @@ Includes:
 - Core orchestrator (routes user commands to specialized agents)
 - Service discovery (health checks, registry)
 - AI audio assistant (Whisper STT, ElevenLabs TTS, Spotify)
-- Automotive bridge (OBD-II, Citroën C4 PSA PIDs)
+- Automotive bridge (OBD-II, Audi A4 B3 Cabriolet primary prototype; Citroën C4 PSA legacy)
 - Hardware bridge (GPIO abstraction)
 - Security scanners and platform controllers
 
@@ -65,7 +67,7 @@ Cross-cutting concerns:
        │          │              │          │
    ┌───▼─┐ ┌─────▼─┐ ┌──────────▼──┐ ┌────▼────┐
    │GPIO │ │Serial │ │OBD Worker   │ │Orchestr │
-   │     │ │Bridge │ │(Citroen C4) │ │ (MCP)   │
+   │     │ │Bridge │ │(Audi A4 B3) │ │ (MCP)   │
    └─────┘ └───┬───┘ └─────────────┘ └────┬────┘
                │                          │
         ┌──────▼─────┐              ┌─────▼──────────┐

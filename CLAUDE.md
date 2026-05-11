@@ -1,10 +1,12 @@
 # CLAUDE.md
 
+> **Audience**: AI agents (Claude Code, GitHub Copilot) working with this repository
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-MIA is a distributed vehicle telemetry and IoT control system targeting Raspberry Pi 4B, with ESP32/Arduino microcontrollers and an Android companion app. Core capabilities: OBD-II vehicle telemetry (Citroën C4 PSA-specific PIDs), GPIO/sensor control, AI voice assistant, and a mobile interface with BLE/ANPR/DVR.
+MIA is a distributed vehicle telemetry and IoT control system targeting Raspberry Pi 4B, with ESP32/Arduino microcontrollers and an Android companion app. Primary prototype vehicle: Audi A4 B3 Cabriolet (2004). Core capabilities: OBD-II vehicle telemetry (standard PIDs + VAG/Audi read-only UDS), GPIO/sensor control, AI voice assistant, and a mobile interface with BLE/ANPR/DVR. Legacy Citroën C4 PSA bridge is maintained but secondary.
 
 ## Build & Test Commands
 
@@ -76,7 +78,7 @@ Each subdirectory is an MCP (Model Context Protocol) microservice:
 - **service-discovery** - Service registry with health checks
 - **ai-audio-assistant** - Whisper STT, ElevenLabs TTS, Spotify integration
 - **ai-platform-controllers** - System command execution
-- **automotive-mcp-bridge** / **citroen-c4-bridge** - Vehicle OBD-II interface
+- **automotive-mcp-bridge** / **vag-audi-bridge** - Vehicle OBD-II interface (Audi A4 B3 primary; Citroën C4 bridge legacy)
 - **hardware-bridge** - Hardware abstraction
 
 The shared MCP framework lives in `orchestration/mcp/modules/shared/mcp_framework.py`. Note: copies still exist in individual module directories (known duplication being consolidated).
@@ -90,7 +92,7 @@ The shared MCP framework lives in `orchestration/mcp/modules/shared/mcp_framewor
 
 ### OBD-II Digital Twin
 
-`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real OBD-II diagnostic tools with mapped engine parameters. Telemetry flows: MCU -> serial bridge -> ZMQ PUB -> OBD worker -> virtual PTY -> diagnostic tool.
+`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real diagnostic tools (Torque, OBD Eleven, VCDS) with mapped engine parameters. Primary target: Audi A4 B3 Cabriolet (2004). Telemetry flows: MCU -> serial bridge -> ZMQ PUB -> OBD worker -> virtual PTY -> diagnostic tool.
 
 ### Android App (`apps/android/`)
 
@@ -110,7 +112,7 @@ FlatBuffers schemas in `schemas/` (main: `mia.fbs`) and `protos/` define message
 
 ## Deployment
 
-Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `infra/systemd/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, mia-citroen-bridge, etc.). Deploy with `infra/deploy/rpi/deploy.sh`. The ZMQ broker must start before other services.
+Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `infra/systemd/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, etc.). Deploy with `infra/deploy/rpi/deploy.sh`. The ZMQ broker must start before other services.
 
 ## Conventions
 

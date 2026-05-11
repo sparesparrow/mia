@@ -1,8 +1,12 @@
-# AI-Servis Automotive Integration - Quick Start Guide
+# MIA Automotive Integration - Quick Start Guide
+
+> **Audience**: End users, vehicle integrators, mechanics
 
 ## Overview
 
-AI-Servis Automotive Integration enables real-time vehicle diagnostics through Bluetooth Low Energy (BLE) communication between your Android device and a Raspberry Pi-based OBD-II adapter.
+MIA Automotive Integration enables real-time vehicle diagnostics through Bluetooth Low Energy (BLE) communication between your Android device and a Raspberry Pi-based OBD-II adapter.
+
+**Primary prototype vehicle**: Audi A4 B3 Cabriolet (2004)
 
 ## System Components
 
@@ -12,9 +16,9 @@ AI-Servis Automotive Integration enables real-time vehicle diagnostics through B
 
 ## Quick Start
 
-### 1. Install AI-Servis App
+### 1. Install MIA App
 
-1. Download AI-Servis app from Google Play Store (or install APK from GitHub Releases)
+1. Download MIA app from Google Play Store (or install APK from GitHub Releases)
 2. Open the app and grant Bluetooth permissions when prompted
 3. Navigate to the OBD screen
 
@@ -35,9 +39,9 @@ sudo systemctl start mia-ble-obd
 sudo systemctl start mia-ble-advertiser
 ```
 
-### 3. Connect Android Device to Raspberry Pi
+### 1. Install MIA App
 
-1. Open AI-Servis app on Android device
+1. Open MIA app on Android device
 2. Navigate to OBD screen
 3. Tap "Scan" button
 4. Wait for "MIA OBD-II Adapter" to appear in the device list
@@ -55,8 +59,9 @@ Once connected, the app will automatically start monitoring:
 
 ## Supported Vehicles
 
-- **Citroën C4**: Full PSA protocol support
+- **Audi A4 B3 Cabriolet (2004)**: Primary prototype — full VAG read-only diagnostics
 - **Generic OBD-II**: Any vehicle with ELM327-compatible OBD-II adapter
+- **Citroën C4 (PSA)**: Legacy support via dedicated bridge module
 - **Protocols**: ISO 15765-4 (CAN), ISO 14230-4 (KWP2000), ISO 9141-2
 
 ## Troubleshooting
@@ -137,7 +142,7 @@ Once connected, the app will automatically start monitoring:
 
 To change the advertised device name:
 
-1. Edit `/opt/ai-servis/rpi/services/ble_advertiser.py`:
+1. Edit `/opt/mia/rpi/services/ble_advertiser.py`:
    ```python
    DEVICE_NAME = "Your Custom Name"
    ```

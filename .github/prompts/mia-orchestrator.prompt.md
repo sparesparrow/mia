@@ -22,7 +22,7 @@ graph TB
 
     subgraph Domain["Domain Workers"]
         VOX["🎤 voice-chat<br/>STT/TTS, command parse, Spotify"]
-        CAR["🚗 automotive<br/>OBD-II, Citroën C4, Digital Twin"]
+        CAR["🚗 automotive<br/>OBD-II, Audi A4 B3 Cabriolet, Digital Twin"]
     end
 
     subgraph Infra["Infrastructure Workers"]

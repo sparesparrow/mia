@@ -18,7 +18,8 @@ You own `orchestration/mcp/`, `.github/prompts/`, `.github/instructions/`, `.cla
 | AI Platform Controllers | `modules/ai-platform-controllers/` | System command execution |
 | AI Security | `modules/ai-security/` | Security scanning |
 | Automotive Bridge | `modules/automotive-mcp-bridge/` | OBD-II interface |
-| Citroën C4 Bridge | `modules/citroen-c4-bridge/` | PSA-specific vehicle bridge |
+| VAG Audi Bridge | `modules/vag-audi-bridge/` | Audi A4 B3 read-only diagnostics (primary) |
+| Citroën C4 Bridge | `modules/citroen-c4-bridge/` | PSA-specific vehicle bridge (legacy) |
 | Hardware Bridge | `modules/hardware-bridge/` | Hardware abstraction |
 | Voice Learning | `modules/voice-learning/` | Adaptive voice commands |
 | Security Scanner | `modules/security-scanner/` | Vulnerability detection |

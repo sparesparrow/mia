@@ -1,0 +1,14 @@
+docs: rewrite automotive examples for Audi A4 B3 Cabriolet 2004 prototype
+
+- Update primary vehicle from Citroën C4 to Audi A4 B3 Cabriolet (2004) across
+  all documentation, agent configs, and AI prompts
+- Demote Citroën C4 PSA bridge to secondary/legacy status
+- Update TODO.md validation targets from A3 8V MQB to A4 B3 Cabriolet
+- Add audience markers (AI agents, developers, vehicle integrators, etc.) to
+  key docs: CLAUDE.md, ARCHITECTURE.md, README.md, TODO.md, AUTOMOTIVE_QUICK_START.md
+- Update .claude/agents.json automotive-obd agent for Audi primary focus
+- Update .github/prompts/ (mia-automotive, mia-orchestrator, mia-architecture,
+  mia-agent-developer) for Audi A4 B3 as primary prototype
+- Fix stale ai-servis references in AUTOMOTIVE_QUICK_START.md
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>

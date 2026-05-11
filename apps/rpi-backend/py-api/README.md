@@ -49,29 +49,27 @@ This directory contains the Python-based implementation of MIA for Raspberry Pi,
 - Runs ELM327 emulator with dynamic PID responses based on real-time hardware input
 - Maps MCU potentiometer values to engine parameters (RPM, speed, coolant temp)
 
-### Citroën OBD-II Bridge
+### Vehicle OBD-II Integration
 
-The Citroën bridge connects to PSA vehicles via ELM327 OBD-II adapter.
+**Primary prototype: Audi A4 B3 Cabriolet (2004)**
+
+MIA connects to vehicles via ELM327 OBD-II adapter for read-only telemetry and diagnostics.
 
 #### Quick Start
 ```bash
-# Deploy service
-sudo cp rpi/services/mia-citroen-bridge.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable mia-citroen-bridge
+# Start core OBD services
+sudo systemctl start zmq-broker mia-serial-bridge mia-obd-worker
 
-# Test with mock mode
-ELM_MOCK=1 python3 agents/citroen_bridge.py
-
-# Start real service
-sudo systemctl start mia-citroen-bridge
+# Test with mock mode (no vehicle needed)
+ELM_MOCK=1 python3 -m pytest tests/ -m automotive
 ```
 
 #### Supported PIDs
-- Standard: RPM, Speed, Coolant Temp
-- PSA-specific: DPF Soot, Oil Temp, Eolys Level
+- Standard OBD-II: RPM, Speed, Coolant Temp, Fuel Level, Engine Load
+- VAG/Audi read-only: VIN (DID F190), DTC summary (service 0x19)
+- PSA-specific (legacy Citroën bridge): DPF Soot, Oil Temp, Eolys Level
 
-See [docs/automotive/citroen-integration.md](../docs/automotive/citroen-integration.md) for full documentation.
+See [docs/automotive/raspberry-pi-audi-integration.md](../../../docs/automotive/raspberry-pi-audi-integration.md) for Audi integration.
 ## Installation
 
 ### Dependencies

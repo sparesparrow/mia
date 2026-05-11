@@ -1,6 +1,19 @@
 # Raspberry Pi and Audi Integration
 
+> **Audience**: Vehicle integrators, backend developers working on OBD-II
+
 This document explains how MIA integrates an Audi vehicle through a Raspberry Pi gateway, what is already implemented in the repository, and where the current limits are.
+
+## Primary Prototype Vehicle
+
+**Audi A4 B3 Cabriolet (2004)** — this is the primary development and validation target for all automotive work in MIA.
+
+Key characteristics:
+- VAG platform with KWP2000 / early CAN-based UDS diagnostics
+- CAN bus at 500 kbps, simpler topology than modern MQB/MLB (no central gateway module)
+- Common engine variants: 1.8T (AMB/BFB), 2.4 V6 (BDV), 3.0 V6 (ASN/BBJ)
+- Standard OBD-II PIDs fully supported
+- Read-only UDS diagnostics achievable without complex gateway negotiation
 
 ## Integration Goal
 
@@ -18,7 +31,8 @@ The current Audi strategy is intentionally conservative: generic OBD where possi
 Audi vehicles fit under the wider VAG family, so the integration model is different from a simple SAE J1979-only adapter.
 
 - Generic OBD PIDs cover baseline signals such as RPM, speed, coolant temperature, and fuel level.
-- Deeper Audi diagnostics usually move into UDS over CAN and depend on module-specific identifiers, gateway routing, and ISO-TP behavior.
+- Deeper Audi diagnostics usually move into UDS over CAN and depend on module-specific identifiers.
+- The 2004 A4 B3 Cabriolet has a simpler CAN topology than newer VAG platforms — no central gateway module blocking diagnostic access, which makes it a good prototype target.
 - Many cheap ELM327 clones are good enough for standard PIDs but unreliable for sustained UDS work.
 - Operations such as coding, adaptation, security access, routine control, and ECU resets should stay out of scope for MIA unless there is a dedicated safety and validation program.
 
@@ -26,13 +40,19 @@ That is why the repository currently treats Audi as a read-only integration prob
 
 ## Recommended Starter Platform
 
-The best first validation target is Audi A3 8V on MQB, roughly model years 2015 to 2019.
+The primary validation target is **Audi A4 B3 Cabriolet (2004)**.
 
 Reasons:
 
-- widespread platform with strong community tooling and known UDS behavior
-- modern enough to exercise VAG gateway realities without jumping to newer security constraints everywhere
+- simpler CAN bus topology makes initial integration straightforward
+- no central gateway module to negotiate (unlike MQB/MLB Evo platforms)
+- standard OBD-II and basic VAG UDS diagnostics are accessible with common adapters
 - realistic overlap with the generic telemetry already present in MIA
+- available as the physical development vehicle
+
+Future expansion targets (after A4 B3 is stable):
+- Audi A3 8V on MQB (2015–2019) — widespread platform with strong community tooling
+- Other VAG family vehicles sharing common diagnostic protocols
 
 ## Raspberry Pi Runtime Topology
 
@@ -164,6 +184,8 @@ curl http://localhost:8000/status
 
 ### 3. In-Vehicle Passive Monitoring
 
+Using the Audi A4 B3 Cabriolet prototype:
+
 - start with ignition on and passive telemetry only
 - verify that speed, RPM, coolant, fuel, and voltage are stable
 - confirm that no write, session, or security operations are attempted
@@ -175,7 +197,7 @@ Only after passive transport is stable:
 - enable UDS polling explicitly
 - start with VIN DID `F190`
 - add DTC summary reads through `0x19`
-- add more DIDs only after confirming module and gateway behavior on the target platform
+- add more DIDs only after confirming module and gateway behavior on the A4 B3 platform
 
 ## Design Boundaries
 
@@ -197,4 +219,4 @@ The current implementation is intentionally incomplete in a few places.
 
 ## Practical Next Step
 
-The next useful engineering step is not more documentation. It is wiring a real Pi transport source into the VAG Audi bridge in read-only mode, validating VIN and DTC access on one known-good Audi A3 8V target, and only then widening the identifier set.
+The next useful engineering step is not more documentation. It is wiring a real Pi transport source into the VAG Audi bridge in read-only mode, validating VIN and DTC access on the Audi A4 B3 Cabriolet prototype, and only then widening the identifier set or expanding to newer VAG platforms like A3 8V MQB.
