@@ -80,6 +80,55 @@ class TestSystemdDependencyOrdering(unittest.TestCase):
                 f"{name}.service missing Restart=always or on-failure",
             )
 
+    def test_vag_audi_bridge_depends_on_broker(self):
+        unit = self._get_unit("mia-vag-audi-bridge")
+        after = " ".join(unit.get("Unit", {}).get("After", []))
+        self.assertIn("zmq-broker", after)
+
+    def test_vag_audi_bridge_has_restart_policy(self):
+        unit = self._get_unit("mia-vag-audi-bridge")
+        restart = unit.get("Service", {}).get("Restart", [])
+        self.assertTrue(
+            any(v in ("always", "on-failure") for v in restart),
+            "mia-vag-audi-bridge.service missing Restart=always or on-failure",
+        )
+
+    def test_vag_audi_bridge_uds_disabled_by_default(self):
+        """Safety check: UDS polling must be disabled in the service unit."""
+        unit = self._get_unit("mia-vag-audi-bridge")
+        envs = unit.get("Service", {}).get("Environment", [])
+        env_str = " ".join(envs)
+        self.assertIn("VAG_ENABLE_UDS_POLLING=false", env_str)
+
+    def test_no_service_uses_watchdog(self):
+        """All core services should have WatchdogSec=0 (disabled) to avoid
+        spurious restarts during heavy telemetry processing."""
+        for name in ("zmq-broker", "mia-api", "mia-serial-bridge",
+                     "mia-obd-worker", "mia-vag-audi-bridge"):
+            path = SYSTEMD_DIR / f"{name}.service"
+            if not path.exists():
+                continue
+            unit = self._parse_unit(path)
+            watchdog = unit.get("Service", {}).get("WatchdogSec", ["0"])
+            self.assertTrue(
+                all(v == "0" for v in watchdog),
+                f"{name}.service has WatchdogSec != 0",
+            )
+
+    def test_all_services_set_syslog_identifier(self):
+        """Every service should have a unique SyslogIdentifier for journalctl filtering."""
+        identifiers = set()
+        for path in sorted(SYSTEMD_DIR.glob("*.service")):
+            unit = self._parse_unit(path)
+            syslog_ids = unit.get("Service", {}).get("SyslogIdentifier", [])
+            if syslog_ids:
+                for sid in syslog_ids:
+                    self.assertNotIn(
+                        sid, identifiers,
+                        f"Duplicate SyslogIdentifier '{sid}' in {path.name}",
+                    )
+                    identifiers.add(sid)
+
 
 class TestBrokerAPISmoke(unittest.IsolatedAsyncioTestCase):
     """Validate broker ↔ API ↔ telemetry flow on ephemeral ports."""

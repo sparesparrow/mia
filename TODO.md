@@ -79,9 +79,9 @@ Recommendations applied in this revision:
 
 ### P0.1 ARM64 C++ and Conan
 
-- [ ] Update Conan host profiles so ARM64 builds do not inherit x86_64-only flags such as `-m64`
-- [ ] Fix Conan/CMake dependency discovery issues on Raspberry Pi builds, including `jsoncpp`
-- [ ] Resolve `libgpiod` API compatibility for the target Raspberry Pi distro
+- [x] Update Conan host profiles so ARM64 builds do not inherit x86_64-only flags such as `-m64` (added `compiler.cppstd=17` to `linux-arm64` profile)
+- [x] Fix Conan/CMake dependency discovery issues on Raspberry Pi builds, including `jsoncpp` (CMake falls back to Conan targets, then pkg-config)
+- [x] Resolve `libgpiod` API compatibility for the target Raspberry Pi distro (v2.x confirmed, header doc corrected)
 - [ ] Verify `conan create . --build=missing` succeeds on the supported ARM64 target
 - [ ] Verify `cd platforms/cpp && cmake -B build && cmake --build build` succeeds on the supported ARM64 target
 - [ ] Document one confirmed ARM64 build recipe in [docs/ARM64_BUILD_REQUIREMENTS.md](docs/ARM64_BUILD_REQUIREMENTS.md) or [docs/conan-setup.md](docs/conan-setup.md)
@@ -89,8 +89,8 @@ Recommendations applied in this revision:
 ### P0.2 Android Build Health
 
 - [x] Restore a successful `cd apps/android && ./gradlew assembleDebug`
-- [ ] Align Android CI workflow inputs, outputs, and environment assumptions with the current Gradle project
-- [ ] Capture the minimum supported JDK, Android SDK, and toolchain versions for contributors and CI
+- [x] Align Android CI workflow inputs, outputs, and environment assumptions with the current Gradle project (lint + unit test steps, contracts trigger, Hilt/Compose BOM aligned)
+- [x] Capture the minimum supported JDK, Android SDK, and toolchain versions for contributors and CI (documented in `apps/android/README.md` Build Toolchain table)
 
 ### P0.3 Deployment Wiring
 
@@ -108,9 +108,9 @@ Recommendations applied in this revision:
 
 ### P1.2 Schema Discipline
 
-- [ ] Regenerate `Mia/` whenever `schemas/` changes instead of hand-editing generated bindings
-- [ ] Add contract checks for consumers affected by automotive telemetry changes
-- [ ] Keep schema changes and runtime protocol changes coordinated, not split across unrelated commits
+- [x] Regenerate `Mia/` whenever `schemas/` changes instead of hand-editing generated bindings (CI drift detection + pre-commit hook added)
+- [x] Add contract checks for consumers affected by automotive telemetry changes (schema drift detection in `ci.yml`)
+- [x] Keep schema changes and runtime protocol changes coordinated, not split across unrelated commits (CI warns on PRs with schema changes but no contract changes)
 
 ### P1.3 Status and Observability Surfaces
 
@@ -138,8 +138,8 @@ Recommendations applied in this revision:
 
 ### Next Steps
 
-- [ ] Choose one known-good adapter for the first Raspberry Pi trial and document why it was selected
-- [ ] Decide the primary Pi transport path for Audi work: `mia-serial-bridge`, `mia-obd-worker`, or a dedicated transport agent
+- [x] Choose one known-good adapter for the first Raspberry Pi trial and document why it was selected (OBDLink SX — USB, reliable ISO-TP)
+- [x] Decide the primary Pi transport path for Audi work: `mia-serial-bridge`, `mia-obd-worker`, or a dedicated transport agent (`mia-serial-bridge` chosen — documented in Audi integration guide)
 - [x] Add transport capability reporting so the Pi can distinguish `generic_pid_only` from `uds_read_only`
 - [x] Verify end-to-end generic telemetry flow into the ZeroMQ telemetry path on port `5556` and then into the Audi bridge
 - [ ] Validate VIN reading via DID `F190` on one Audi A3 8V MQB target
@@ -166,16 +166,16 @@ Recommendations applied in this revision:
 ## Priority 2: Testing and QA
 
 - [x] Establish a non-hardware regression suite that must pass in CI
-- [ ] Define hardware-marked acceptance checks for Pi GPIO, serial bridge, OBD, and Android device scenarios
-- [ ] Add targeted security scanning and secret hygiene for workflows and deployment assets
-- [ ] Add regression coverage for startup-order and runtime-contract drift
+- [x] Define hardware-marked acceptance checks for Pi GPIO, serial bridge, OBD, and Android device scenarios (`tests/integration/test_hardware_acceptance.py`)
+- [x] Add targeted security scanning and secret hygiene for workflows and deployment assets (secret scanning added to `security.yml`)
+- [x] Add regression coverage for startup-order and runtime-contract drift (extended `test_pi_stack_smoke.py` with VAG bridge, watchdog, syslog tests)
 
 ## Priority 3: Operations and Documentation
 
 - [ ] Keep `/opt/mia` deployment, bundled Python bootstrap, and systemd assets aligned
-- [ ] Refresh docs that still describe obsolete repo structure or stale runtime assumptions
+- [x] Refresh docs that still describe obsolete repo structure or stale runtime assumptions (`docs/WORKSPACE_ORGANIZATION.md` updated)
 - [ ] Remove obsolete architecture and TODO documents only after confirming the replacement docs are current
-- [ ] Make site and documentation rebuild steps explicit so generated output is updated deliberately, not accidentally
+- [x] Make site and documentation rebuild steps explicit so generated output is updated deliberately, not accidentally (publish-pages.yml triggers on docs/, mkdocs.yml, web/ changes; `mkdocs build --strict` + workflow_dispatch)
 
 ## Recently Landed and Verified
 

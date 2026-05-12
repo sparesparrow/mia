@@ -49,3 +49,13 @@ repos:
       - id: bandit
         args: ["-ll", "-i"]
         exclude: ^(tests/|\.backups/|exported-assets/)
+
+  # Schema drift detection
+  - repo: local
+    hooks:
+      - id: schema-drift
+        name: FlatBuffers schema drift check
+        entry: python schemas/generate.py --dry-run
+        language: system
+        files: ^(schemas/.*\.fbs|protos/.*\.fbs|Mia/.*\.py)$
+        pass_filenames: false

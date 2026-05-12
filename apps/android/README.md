@@ -78,10 +78,22 @@ The application follows a clean architecture pattern with the following layers:
 
 ## 📱 Requirements
 
-- Android 7.0 (API 24) or higher
+- Android 5.1 (API 22) or higher
 - Bluetooth LE support
 - Camera (for ANPR and DVR)
 - Microphone (for DVR audio)
+
+### Build Toolchain
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| JDK | 17 (Temurin) | `sourceCompatibility` / `targetCompatibility` |
+| Android SDK | 34 | `compileSdk` and `targetSdk` |
+| Gradle | 8.4 | via wrapper (`gradle-wrapper.properties`) |
+| AGP | 8.2.2 | Android Gradle Plugin |
+| Kotlin | 1.9.22 | Kotlin compiler |
+| Compose Compiler | 1.5.8 | Jetpack Compose |
+| minSdk | 22 | Android 5.1 Lollipop |
 
 ### Permissions Required
 

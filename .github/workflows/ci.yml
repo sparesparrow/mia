@@ -131,6 +131,37 @@ jobs:
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/mia.fbs
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs protos/vehicle.fbs
           flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
+      - name: Detect schema drift
+        run: |
+          mkdir -p /tmp/fb-drift
+          flatc --python -o /tmp/fb-drift schemas/vehicle_telemetry.fbs schemas/mia.fbs
+          drifted=0
+          for gen in /tmp/fb-drift/Mia/*.py; do
+            fname=$(basename "$gen")
+            committed="Mia/$fname"
+            if [ -f "$committed" ]; then
+              if ! diff -q "$gen" "$committed" > /dev/null 2>&1; then
+                echo "DRIFT: $committed differs from regenerated output"
+                diff --unified "$committed" "$gen" || true
+                drifted=1
+              fi
+            else
+              echo "NEW: $fname generated but not committed"
+              drifted=1
+            fi
+          done
+          if [ "$drifted" -eq 1 ]; then
+            echo "::warning::Schema drift detected — run 'python schemas/generate.py --all' and commit the result"
+          fi
+      - name: Check schema and contract coordination
+        if: github.event_name == 'pull_request'
+        run: |
+          # If schemas changed, check that contracts are also updated (or at least reviewed)
+          schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ protos/ Mia/ | wc -l)
+          contract_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- contracts/ | wc -l)
+          if [ "$schema_changed" -gt 0 ] && [ "$contract_changed" -eq 0 ]; then
+            echo "::warning::Schema files changed but contracts/ was not updated. Verify that contracts/events.md and contracts/topics.md still match."
+          fi
 
   lint:
     if: needs.changes.outputs.python == 'true'
