@@ -4,12 +4,12 @@
 
 ## URGENT
 
-- [ ] **[FIX]** `sensors_i2c.py` hard-fails on `ImportError` for smbus2 instead of degrading to simulation — source: simulation gap scan, blocks CI on non-RPi
-- [ ] **[FIX]** `serial_bridge.py` has no simulation/fallback mode — source: simulation gap scan, blocks CI on non-RPi
+- [x] ~~**[FIX]** `sensors_i2c.py` hard-fails on `ImportError` for smbus2 instead of degrading to simulation~~ — DONE 2026-05-11
+- [x] ~~**[FIX]** `serial_bridge.py` has no simulation/fallback mode~~ — DONE 2026-05-12
 
 ## HIGH
 
-- [ ] **[TEST]** `arduino.py` needs simulation fallback for CI — source: simulation gap scan; ArduinoController requires physical serial ports
+- [x] ~~**[TEST]** `arduino.py` needs simulation fallback for CI~~ — DONE 2026-05-12
 - [ ] **[TEST]** `gpio.py` (messaging client variant) needs graceful degradation when hardware server is unavailable — source: simulation gap scan
 - [ ] **[BUILD]** Android MCP bridge TODOs: DPF status, DPF regen, AdBlue, full diagnostics, DTC reading (5 stubs in MainActivity.kt) — source: TODO scan
 - [ ] **[BUILD]** C++ audio worker stubs: whisper STT, piper TTS integration, model loading (3 TODOs in cpp-audio/) — source: TODO scan
