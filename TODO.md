@@ -90,7 +90,7 @@ Recommendations applied in this revision:
 
 - [x] Restore a successful `cd apps/android && ./gradlew assembleDebug`
 - [ ] Align Android CI workflow inputs, outputs, and environment assumptions with the current Gradle project
-- [ ] Capture the minimum supported JDK, Android SDK, and toolchain versions for contributors and CI
+- [x] Capture the minimum supported JDK, Android SDK, and toolchain versions for contributors and CI
 
 ### P0.3 Deployment Wiring
 
@@ -109,7 +109,7 @@ Recommendations applied in this revision:
 ### P1.2 Schema Discipline
 
 - [ ] Regenerate `Mia/` whenever `schemas/` changes instead of hand-editing generated bindings
-- [ ] Add contract checks for consumers affected by automotive telemetry changes
+- [x] Add contract checks for consumers affected by automotive telemetry changes
 - [ ] Keep schema changes and runtime protocol changes coordinated, not split across unrelated commits
 
 ### P1.3 Status and Observability Surfaces
@@ -168,12 +168,12 @@ Recommendations applied in this revision:
 - [x] Establish a non-hardware regression suite that must pass in CI
 - [ ] Define hardware-marked acceptance checks for Pi GPIO, serial bridge, OBD, and Android device scenarios
 - [ ] Add targeted security scanning and secret hygiene for workflows and deployment assets
-- [ ] Add regression coverage for startup-order and runtime-contract drift
+- [x] Add regression coverage for startup-order and runtime-contract drift
 
 ## Priority 3: Operations and Documentation
 
 - [ ] Keep `/opt/mia` deployment, bundled Python bootstrap, and systemd assets aligned
-- [ ] Refresh docs that still describe obsolete repo structure or stale runtime assumptions
+- [x] Refresh docs that still describe obsolete repo structure or stale runtime assumptions
 - [ ] Remove obsolete architecture and TODO documents only after confirming the replacement docs are current
 - [ ] Make site and documentation rebuild steps explicit so generated output is updated deliberately, not accidentally
 

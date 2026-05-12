@@ -110,11 +110,29 @@ The application follows a clean architecture pattern with the following layers:
 - JDK 17
 - Android SDK 34
 
+### Toolchain Versions
+
+These are the authoritative versions pinned in the build files. CI and contributors should match these:
+
+| Component | Version | Source |
+|-----------|---------|--------|
+| JDK | 17 | `app/build.gradle` (compileOptions) |
+| Kotlin | 1.9.22 | `gradle/libs.versions.toml` |
+| Android Gradle Plugin | 8.2.2 | `gradle/libs.versions.toml` |
+| Gradle Distribution | 8.4 | `gradle/wrapper/gradle-wrapper.properties` |
+| compileSdk | 34 | `app/build.gradle` |
+| targetSdk | 34 | `app/build.gradle` |
+| minSdk | 22 | `app/build.gradle` |
+| Compose BOM | 2024.06.00 | `gradle/libs.versions.toml` |
+| Compose Compiler | 1.5.8 | `app/build.gradle` (kotlinOptions) |
+| Hilt | 2.48.1 | `app/build.gradle` |
+| Room | 2.6.1 | `app/build.gradle` |
+
 ### Clone and Open
 
 ```bash
-git clone https://github.com/your-org/ai-servis.git
-cd mia/android
+git clone https://github.com/sparesparrow/mia.git
+cd mia/apps/android
 ```
 
 Open the `android` folder in Android Studio.
