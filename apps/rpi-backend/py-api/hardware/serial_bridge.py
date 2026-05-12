@@ -2,23 +2,84 @@ import zmq
 import serial
 import serial.tools.list_ports
 import json
+import math
+import random
 import time
 import os
 import signal
 import logging
+from datetime import datetime, timezone
 from typing import Optional
 
 logger = logging.getLogger("mia.serial_bridge")
 
 
+class SimulationSerialSource:
+    """Generates synthetic MCU telemetry when no physical serial device is available.
+
+    Produces realistic OBD-style payloads at roughly 1 Hz so downstream
+    consumers (OBD worker, Audi bridge, WebSocket clients) can be developed
+    and tested without hardware.
+    """
+
+    def __init__(self, interval: float = 1.0):
+        self._interval = interval
+        self._tick = 0
+        self._base_rpm = 820.0
+        self._base_speed = 0.0
+        self._base_coolant = 42.0
+
+    def readline(self) -> bytes:
+        """Return one JSON-encoded telemetry line, sleeping to simulate baud rate timing."""
+        time.sleep(self._interval)
+        self._tick += 1
+
+        # Slowly-varying values that look like a parked engine idling
+        rpm = self._base_rpm + 30 * math.sin(self._tick * 0.1) + random.uniform(-5, 5)
+        speed = max(0.0, self._base_speed + random.uniform(-0.5, 0.5))
+        coolant = self._base_coolant + 0.05 * min(self._tick, 600) + random.uniform(-0.2, 0.2)
+        fuel = max(0, min(100, 68.5 - 0.001 * self._tick + random.uniform(-0.1, 0.1)))
+        voltage = 12.3 + 0.2 * math.sin(self._tick * 0.05) + random.uniform(-0.05, 0.05)
+
+        payload = {
+            "device_id": "simulation_0",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "speed_kmh": round(speed, 1),
+            "engine_rpm": round(rpm, 0),
+            "coolant_temp_c": round(coolant, 1),
+            "fuel_level_percent": round(fuel, 1),
+            "battery_voltage": round(voltage, 2),
+        }
+        return (json.dumps(payload) + "\n").encode()
+
+    @property
+    def is_open(self) -> bool:
+        return True
+
+    def close(self):
+        pass
+
+
 class SerialBridge:
-    def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=115200, zmq_endpoint="tcp://*:5556"):
+    def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=115200, zmq_endpoint="tcp://*:5556",
+                 simulation=None):
+        """
+        Args:
+            simulation: Tri-state control.
+                ``None``  (default) – auto-detect: use hardware if available, else simulate.
+                ``True``  – force simulation mode regardless of hardware.
+                ``False`` – disable simulation; fail if no hardware found.
+        """
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         self.zmq_endpoint = zmq_endpoint
         self.context = zmq.Context()
         self.pub_socket = self.context.socket(zmq.PUB)
         self.running = True
+
+        # Simulation control
+        self._simulation_requested = simulation
+        self.simulation_mode = False
 
         # Reconnect state
         self._backoff_sec = 1.0
@@ -74,9 +135,21 @@ class SerialBridge:
             self._serial = None
 
     def _connect_serial(self) -> Optional[serial.Serial]:
-        """Attempt to open the serial port with backoff on failure."""
+        """Attempt to open the serial port with backoff on failure.
+
+        When simulation is allowed (``simulation=None`` or ``True``), returns a
+        :class:`SimulationSerialSource` instead of ``None`` when no physical
+        device is found.
+        """
+        # Force simulation mode
+        if self._simulation_requested is True:
+            return self._enter_simulation()
+
         device = self._find_serial_device()
         if not device:
+            # Auto-detect: fall back to simulation when no hardware found
+            if self._simulation_requested is None:
+                return self._enter_simulation()
             return None
 
         try:
@@ -86,6 +159,7 @@ class SerialBridge:
             self._consecutive_errors = 0
             self._device_path = device
             self._adapter_kind = self._detect_adapter_kind(device)
+            self.simulation_mode = False
 
             # Publish connection event
             self.pub_socket.send_multipart([
@@ -96,7 +170,23 @@ class SerialBridge:
 
         except serial.SerialException as e:
             logger.warning(f"Cannot open {device}: {e}")
+            if self._simulation_requested is None:
+                return self._enter_simulation()
             return None
+
+    def _enter_simulation(self):
+        """Switch to simulation mode and return a synthetic serial source."""
+        if not self.simulation_mode:
+            logger.warning("No serial device available. Running in simulation mode.")
+        self.simulation_mode = True
+        self._adapter_kind = "simulation"
+        self._device_path = "simulation"
+
+        self.pub_socket.send_multipart([
+            b"mcu/status",
+            json.dumps({"event": "connected", "device": "simulation", "simulation": True}).encode()
+        ])
+        return SimulationSerialSource()
 
     def _backoff_wait(self):
         """Exponential backoff between reconnect attempts."""
@@ -111,7 +201,11 @@ class SerialBridge:
         self._backoff_sec = min(self._backoff_sec * 2, self._max_backoff_sec)
 
     def run(self):
-        """Main loop with automatic reconnection."""
+        """Main loop with automatic reconnection.
+
+        When running in simulation mode the read loop uses
+        :class:`SimulationSerialSource` instead of a physical serial port.
+        """
         self.pub_socket.bind(self.zmq_endpoint)
         logger.info(f"Bound ZMQ PUB to {self.zmq_endpoint}")
 
@@ -187,9 +281,10 @@ class SerialBridge:
 
     def _build_adapter_metadata(self) -> dict:
         """Build a lightweight adapter capability block for the telemetry payload."""
+        transport = "simulation" if self.simulation_mode else "usb_serial"
         return {
             "adapter_kind": self._adapter_kind,
-            "transport": "usb_serial",
+            "transport": transport,
             "device_path_or_address": self._device_path,
             "connection_state": "connected",
         }
@@ -211,7 +306,9 @@ class SerialBridge:
 
 
 def run_bridge():
-    bridge = SerialBridge()
+    sim_env = os.environ.get("MIA_SERIAL_SIMULATION", "").lower()
+    simulation = True if sim_env in ("1", "true", "yes") else None
+    bridge = SerialBridge(simulation=simulation)
     bridge.run()
 
 
