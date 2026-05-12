@@ -7,6 +7,9 @@ This module provides high-level hardware management that integrates:
 - GPIO controller for pin management
 - Sensor manager for sensor readings
 - Arduino controller for serial devices
+
+Each subsystem initializes independently and degrades gracefully to simulation
+mode when hardware is unavailable, so the manager can always start.
 """
 
 import asyncio
@@ -46,23 +49,29 @@ class HardwareManager:
         readings = await manager.read_all_sensors()
     """
 
-    def __init__(self, broker_url: str = "tcp://localhost:5555"):
+    def __init__(self, broker_url: str = "tcp://localhost:5555", simulation: Optional[bool] = None):
         """
         Initialize hardware manager.
 
         Args:
             broker_url: ZeroMQ broker URL for hardware communication
+            simulation: Tri-state simulation control passed to sub-components.
+                ``None`` (default) – auto-detect per component.
+                ``True`` – force all components into simulation mode.
+                ``False`` – require hardware, no fallback.
         """
         self.broker_url = broker_url
+        self._simulation_requested = simulation
 
-        # Core components
+        # Core components — pass simulation flag down
         self.registry = DeviceRegistry()
-        self.gpio_controller = GPIOController(broker_url)
+        self.gpio_controller = GPIOController(broker_url, simulation=simulation)
         self.sensor_manager = SensorManager(self.gpio_controller)
-        self.arduino_controller = ArduinoController()
+        self.arduino_controller = ArduinoController(simulation=simulation)
 
         # Initialization state
         self._initialized = False
+        self._component_status: Dict[str, str] = {}
 
         # Event callbacks
         self._on_device_online: List[Callable] = []
@@ -71,36 +80,70 @@ class HardwareManager:
 
     async def initialize(self) -> bool:
         """
-        Initialize all hardware subsystems.
+        Initialize all hardware subsystems independently.
+
+        Each component is initialized in isolation so a single failure does not
+        block the others. Components that fail to initialize are logged and
+        reported in :attr:`_component_status`.
 
         Returns:
-            True if initialization successful
+            True if at least one component initialized (manager is usable)
         """
+        logger.info("Initializing hardware manager...")
+        success_count = 0
+
+        # Device registry (in-memory, always succeeds)
         try:
-            logger.info("Initializing hardware manager...")
-
-            # Start device registry
             self.registry.start()
-
-            # Connect GPIO controller
-            await self.gpio_controller.connect()
-
-            # Initialize sensor manager
-            # Note: Sensors are initialized when registered
-
-            # Start Arduino controller
-            await self.arduino_controller.start()
-
-            # Setup event handlers
-            self._setup_event_handlers()
-
-            self._initialized = True
-            logger.info("Hardware manager initialized successfully")
-            return True
-
+            self._component_status["registry"] = "ok"
+            success_count += 1
         except Exception as e:
-            logger.error(f"Failed to initialize hardware manager: {e}")
-            return False
+            self._component_status["registry"] = f"failed: {e}"
+            logger.error(f"Device registry failed to start: {e}")
+
+        # GPIO controller — may enter simulation mode
+        try:
+            await self.gpio_controller.connect()
+            mode = "simulation" if self.gpio_controller.simulation_mode else "hardware"
+            self._component_status["gpio"] = mode
+            success_count += 1
+            logger.info(f"GPIO controller initialized ({mode})")
+        except Exception as e:
+            self._component_status["gpio"] = f"failed: {e}"
+            logger.warning(f"GPIO controller unavailable: {e}")
+
+        # Arduino controller — may enter simulation mode
+        try:
+            await self.arduino_controller.start()
+            mode = "simulation" if self.arduino_controller.simulation_mode else "hardware"
+            self._component_status["arduino"] = mode
+            success_count += 1
+            logger.info(f"Arduino controller initialized ({mode})")
+        except Exception as e:
+            self._component_status["arduino"] = f"failed: {e}"
+            logger.warning(f"Arduino controller unavailable: {e}")
+
+        # Setup event handlers if registry is available
+        if self._component_status.get("registry") == "ok":
+            try:
+                self._setup_event_handlers()
+            except Exception as e:
+                logger.warning(f"Event handler setup failed: {e}")
+
+        self._initialized = success_count > 0
+
+        if self._initialized:
+            sim_components = [k for k, v in self._component_status.items() if v == "simulation"]
+            if sim_components:
+                logger.warning(
+                    f"Hardware manager initialized with simulation fallback for: {', '.join(sim_components)}"
+                )
+            else:
+                logger.info("Hardware manager initialized — all components on hardware")
+        else:
+            logger.error("Hardware manager failed to initialize any component")
+
+        return self._initialized
 
     async def shutdown(self) -> None:
         """Shutdown all hardware subsystems."""
@@ -411,6 +454,7 @@ class HardwareManager:
             "gpio": self.gpio_controller.get_configured_pins(),
             "sensors": self.get_sensor_status(),
             "arduinos": len(self.arduino_controller.get_connected_devices()),
+            "component_status": self._component_status,
             "timestamp": datetime.now().isoformat(),
             "initialized": self._initialized
         }
