@@ -9,9 +9,21 @@ find_package(Threads REQUIRED)
 
 # FSM implemented without external dependencies
 
-# Find JSON library using pkg-config (since Conan jsoncpp has library declaration issues)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+# Find JSON library — prefer Conan-generated CMake config, fall back to pkg-config
+find_package(jsoncpp QUIET)
+if(NOT jsoncpp_FOUND)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+    set(JSONCPP_TARGET_NAME "")
+else()
+    if(TARGET jsoncpp_lib)
+        set(JSONCPP_TARGET_NAME jsoncpp_lib)
+    elseif(TARGET JsonCpp::JsonCpp)
+        set(JSONCPP_TARGET_NAME JsonCpp::JsonCpp)
+    else()
+        set(JSONCPP_TARGET_NAME "")
+    endif()
+endif()
 
 # Find ALSA for audio I/O
 pkg_check_modules(ALSA alsa)
@@ -55,12 +67,16 @@ target_link_libraries(webgrab_lib
     ${FLATBUFFERS_LIBRARY}
     CURL::libcurl
     Threads::Threads
-    ${JSONCPP_LIBRARIES}
     ${ALSA_LIBRARIES}
 )
 
-# Use pkg-config variables for jsoncpp includes
-target_include_directories(webgrab_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
+# Link jsoncpp via Conan target or pkg-config
+if(JSONCPP_TARGET_NAME)
+    target_link_libraries(webgrab_lib ${JSONCPP_TARGET_NAME})
+else()
+    target_link_libraries(webgrab_lib ${JSONCPP_LIBRARIES})
+    target_include_directories(webgrab_lib PRIVATE ${JSONCPP_INCLUDE_DIRS})
+endif()
 
 add_executable(webgrab-client main_client.cpp)
 target_link_libraries(webgrab-client webgrab_lib)
@@ -96,12 +112,15 @@ target_link_libraries(hardware-server
     webgrab_lib
     ${GPIOD_LIBRARIES}
     ${MOSQUITTO_LIBRARIES}
-    ${JSONCPP_LIBRARIES}
 )
+if(JSONCPP_TARGET_NAME)
+    target_link_libraries(hardware-server ${JSONCPP_TARGET_NAME})
+else()
+    target_link_libraries(hardware-server ${JSONCPP_LIBRARIES})
+endif()
 target_include_directories(hardware-server PRIVATE 
     ${GPIOD_INCLUDE_DIRS}
     ${MOSQUITTO_INCLUDE_DIRS}
-    ${JSONCPP_INCLUDE_DIRS}
 )
 
 # Optional: Windows DLL (placeholder for MinGW)
@@ -114,12 +133,15 @@ endif()
 add_executable(mia-rpi main_raspberry_pi.cpp HardwareControlServer.cpp)
 target_link_libraries(mia-rpi
     webgrab_lib
-    ${JSONCPP_LIBRARIES}
     ${GPIOD_LIBRARIES}
     ${MOSQUITTO_LIBRARIES}
 )
+if(JSONCPP_TARGET_NAME)
+    target_link_libraries(mia-rpi ${JSONCPP_TARGET_NAME})
+else()
+    target_link_libraries(mia-rpi ${JSONCPP_LIBRARIES})
+endif()
 target_include_directories(mia-rpi PRIVATE
-    ${JSONCPP_INCLUDE_DIRS}
     ${GPIOD_INCLUDE_DIRS}
     ${MOSQUITTO_INCLUDE_DIRS}
 )

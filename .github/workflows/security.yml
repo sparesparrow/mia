@@ -216,3 +216,33 @@ jobs:
           else
             echo "No Bandit targets found"
           fi
+
+  secret-scan:
+    if: github.event_name != 'schedule'
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for secrets and credentials
+        run: |
+          # Check for common secret patterns in tracked files
+          echo "Scanning for hardcoded secrets..."
+          patterns=(
+            'AKIA[0-9A-Z]{16}'                # AWS Access Key
+            'password\s*=\s*["\x27][^"\x27]+'  # password assignments
+            'api[_-]?key\s*=\s*["\x27][^"\x27]+'
+            'BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY'
+          )
+          found=0
+          for pattern in "${patterns[@]}"; do
+            if git grep -lnEI "$pattern" -- ':!*.md' ':!*.yml' ':!*.yaml' ':!.pre-commit*' ':!tests/' 2>/dev/null; then
+              echo "::warning::Potential secret matching pattern: $pattern"
+              found=1
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "No secrets detected"
+          fi
