@@ -4,6 +4,10 @@ Serial communication with Arduino devices.
 
 This module provides serial communication capabilities for Arduino devices,
 supporting the FlatBuffers-based message protocol defined in the Arduino sketches.
+
+When no physical Arduino devices are available the controller can operate in
+simulation mode, providing a virtual device that responds to commands so
+downstream code (hardware manager, tests, CI) can run without hardware.
 """
 
 import asyncio
@@ -41,6 +45,52 @@ class ArduinoInfo:
         self.last_seen = time.time()
 
 
+class SimulationSerial:
+    """Virtual serial connection that echoes MIA protocol responses for testing."""
+
+    def __init__(self, port: str = "simulation"):
+        self.port = port
+        self.is_open = True
+        self._response_queue: List[bytes] = []
+
+    @property
+    def in_waiting(self) -> int:
+        return sum(len(r) for r in self._response_queue)
+
+    def write(self, data: bytes) -> int:
+        cmd = data.decode(errors="replace").strip()
+        if cmd == "MIA_HANDSHAKE":
+            self._response_queue.append(b"MIA_READY\n")
+        elif cmd == "MIA_PING":
+            self._response_queue.append(b"MIA_PONG\n")
+        else:
+            self._response_queue.append(f"OK:{cmd}\n".encode())
+        return len(data)
+
+    def flush(self):
+        pass
+
+    def read(self, size: int = 1) -> bytes:
+        if self._response_queue:
+            resp = self._response_queue[0]
+            chunk = resp[:size]
+            remaining = resp[size:]
+            if remaining:
+                self._response_queue[0] = remaining
+            else:
+                self._response_queue.pop(0)
+            return chunk
+        return b""
+
+    def readline(self) -> bytes:
+        if self._response_queue:
+            return self._response_queue.pop(0)
+        return b""
+
+    def close(self):
+        self.is_open = False
+
+
 class ArduinoController:
     """
     Arduino Controller for serial communication.
@@ -51,6 +101,7 @@ class ArduinoController:
     - Device health monitoring
     - Async operation support
     - Error handling and reconnection
+    - Simulation mode for CI and non-hardware environments
 
     Usage:
         controller = ArduinoController()
@@ -62,19 +113,25 @@ class ArduinoController:
             # Send commands, receive data
     """
 
-    def __init__(self, baudrate: int = 115200, timeout: float = 1.0):
+    def __init__(self, baudrate: int = 115200, timeout: float = 1.0, simulation: Optional[bool] = None):
         """
         Initialize Arduino controller.
 
         Args:
             baudrate: Serial communication baud rate
             timeout: Serial read timeout in seconds
+            simulation: Tri-state control.
+                ``None``  (default) – auto-detect: use hardware if available, else simulate.
+                ``True``  – force simulation mode.
+                ``False`` – hardware only, no fallback.
         """
         self.baudrate = baudrate
         self.timeout = timeout
+        self._simulation_requested = simulation
+        self.simulation_mode = simulation is True
 
         self.devices: Dict[str, ArduinoInfo] = {}
-        self.connections: Dict[str, serial.Serial] = {}
+        self.connections: Dict[str, Any] = {}
         self._running = False
         self._monitor_task: Optional[asyncio.Task] = None
 
@@ -118,22 +175,26 @@ class ArduinoController:
         """
         Discover available Arduino devices.
 
+        Falls back to a single simulated device when no hardware is found
+        and simulation is allowed.
+
         Returns:
             List of discovered Arduino devices
         """
+        if self._simulation_requested is True:
+            return self._discover_simulated()
+
         devices = []
 
         try:
-            # Get all serial ports
             ports = serial.tools.list_ports.comports()
 
             for port in ports:
-                # Check if it's an Arduino (basic heuristics)
                 if self._is_arduino_port(port):
                     arduino_info = ArduinoInfo(
                         port=port.device,
                         board_type=port.description or "Unknown Arduino",
-                        capabilities=["gpio", "analog"]  # Basic capabilities
+                        capabilities=["gpio", "analog"]
                     )
                     devices.append(arduino_info)
                     self.devices[port.device] = arduino_info
@@ -141,8 +202,25 @@ class ArduinoController:
         except Exception as e:
             logger.error(f"Error discovering Arduino devices: {e}")
 
+        if not devices and self._simulation_requested is None:
+            return self._discover_simulated()
+
         logger.info(f"Discovered {len(devices)} Arduino devices")
         return devices
+
+    def _discover_simulated(self) -> List[ArduinoInfo]:
+        """Return a single simulated Arduino device."""
+        if not self.simulation_mode:
+            logger.warning("No Arduino devices found. Running in simulation mode.")
+        self.simulation_mode = True
+        sim = ArduinoInfo(
+            port="simulation",
+            board_type="Simulated Arduino",
+            firmware_version="sim-1.0",
+            capabilities=["gpio", "analog", "simulation"],
+        )
+        self.devices["simulation"] = sim
+        return [sim]
 
     def _is_arduino_port(self, port) -> bool:
         """
@@ -165,8 +243,10 @@ class ArduinoController:
         """
         Connect to an Arduino device.
 
+        Uses :class:`SimulationSerial` for the ``simulation`` port.
+
         Args:
-            port: Serial port path (e.g., "/dev/ttyACM0")
+            port: Serial port path (e.g., "/dev/ttyACM0" or "simulation")
 
         Returns:
             True if connection successful
@@ -176,6 +256,15 @@ class ArduinoController:
             if port in self.connections:
                 self.connections[port].close()
                 del self.connections[port]
+
+            # Use simulation serial for the virtual device
+            if port == "simulation" or self.simulation_mode:
+                ser = SimulationSerial(port)
+                self.connections[port] = ser
+                if port in self.devices:
+                    self.devices[port].last_seen = time.time()
+                logger.info(f"Connected to simulated Arduino on {port}")
+                return True
 
             # Open new connection
             ser = serial.Serial(
