@@ -12,8 +12,14 @@
 
 'use strict';
 
-const WS_URL      = 'ws://localhost:8000/ws/voice';
-const WS_FALLBACK = 'ws://localhost:8000/ws';
+// Derive WS URLs from window.location when served from the Pi,
+// fall back to localhost for local development.
+const _wsHost   = (window.MIA_CONFIG && window.MIA_CONFIG.wsHost)
+                || window.location.host
+                || 'localhost:8000';
+const _wsProto  = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL      = `${_wsProto}//${_wsHost}/ws/voice`;
+const WS_FALLBACK = `${_wsProto}//${_wsHost}/ws`;
 
 const VoiceState = Object.freeze({
   IDLE: 'idle', LISTENING: 'listening', PROCESSING: 'processing', SPEAKING: 'speaking',

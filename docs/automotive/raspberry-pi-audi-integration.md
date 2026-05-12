@@ -135,6 +135,50 @@ Operational order still matters:
 
 The repo does not currently ship a dedicated `mia-vag-audi-bridge.service`. The Audi bridge exists as a module-level integration point and can also be started directly for development or test harness use.
 
+> **Update 2026-05-12**: A systemd service unit is now available at
+> `infra/systemd/mia-vag-audi-bridge.service`. It subscribes to the
+> ZeroMQ PUB/SUB telemetry path on port 5556 and starts with UDS
+> polling disabled by default. Enable via
+> `sudo systemctl enable --now mia-vag-audi-bridge`.
+
+## Adapter Selection Decision
+
+The first Raspberry Pi trial should use an **OBDLink SX** (USB) adapter.
+
+**Why this adapter:**
+
+| Criterion | OBDLink SX | Generic ELM327 v2.1 clone |
+| --- | --- | --- |
+| ISO-TP reliability | Proven, sustained | Drops frames under load |
+| CAN throughput | 500 kbps sustained | Often limited or buffered |
+| Multi-frame UDS | Handled natively | Frequently fails |
+| Community validation | Widely tested with VCDS/OBDeleven | Limited UDS confirmation |
+| Price | Moderate (~$30–40 USD) | Cheap (~$5–15 USD) |
+| Interface | USB (deterministic enumeration) | Often BLE (adds pairing overhead) |
+
+The OBDLink SX connects as a standard serial device (`/dev/ttyUSB0`) with no additional drivers on Raspberry Pi OS Bookworm. This aligns directly with the existing `mia-serial-bridge` path.
+
+Once passive telemetry is confirmed, the OBDLink MX+ (wireless) can be evaluated as a secondary convenience adapter.
+
+## Transport Path Decision
+
+The primary transport path for Audi work is the existing **`mia-serial-bridge`** → ZeroMQ PUB/SUB pipeline.
+
+**Why serial bridge over alternatives:**
+
+| Option | Status | Verdict |
+| --- | --- | --- |
+| `mia-serial-bridge` | Operational, simulation fallback exists, already publishes to `:5556` | **Primary path** |
+| `mia-obd-worker` | Focuses on ELM327 emulation (virtual PTY for diagnostic tools to connect) | Secondary — useful for tool validation, not for Audi bridge ingestion |
+| Dedicated transport agent | Not yet needed | Defer until serial bridge proves insufficient for sustained UDS over CAN |
+
+```
+OBDLink SX (USB) → /dev/ttyUSB0 → mia-serial-bridge → ZMQ PUB :5556
+  → mia-vag-audi-bridge (subscribes) → automotive-mcp-bridge → FastAPI/Android
+```
+
+The serial bridge already handles adapter detection, normalization, and simulation fallback. Adding a dedicated agent would duplicate plumbing for no current benefit.
+
 ## Recommended Validation Sequence
 
 ### 1. Bench Validation Without a Car
@@ -192,7 +236,9 @@ The current implementation is intentionally incomplete in a few places.
 
 - No live Audi-specific UDS transport is connected yet.
 - Only coarse capability classification exists today; there is still no per-platform negotiation for different Audi or VW variants.
-- No dedicated Pi deployment asset exists yet for running the Audi bridge as its own service.
+- ~~No dedicated Pi deployment asset exists yet for running the Audi bridge as its own service.~~ → `infra/systemd/mia-vag-audi-bridge.service` landed.
+- ~~Adapter selection not documented~~ → OBDLink SX chosen; see Adapter Selection Decision above.
+- ~~Transport path not decided~~ → `mia-serial-bridge` is the primary path; see Transport Path Decision above.
 - Cloud-backed Audi Connect style integrations are not part of this path and should be treated as a separate data source if added later.
 
 ## Practical Next Step

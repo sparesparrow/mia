@@ -4,6 +4,9 @@ Python abstraction for GPIO operations using the C++ hardware server.
 
 This module provides a clean Python interface for GPIO control that communicates
 with the C++ hardware server via ZeroMQ messaging.
+
+When the hardware server is unreachable, the controller falls back to simulation
+mode that tracks pin state in-memory so CI and development flows are not blocked.
 """
 
 import asyncio
@@ -11,15 +14,60 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 
-from ..core.messaging.client import MessagingClient
-
 logger = logging.getLogger(__name__)
+
+# Try to import the real messaging client; degrade gracefully if unavailable
+try:
+    from ..core.messaging.client import MessagingClient
+    MESSAGING_AVAILABLE = True
+except (ImportError, SystemError):
+    MessagingClient = None  # type: ignore[assignment,misc]
+    MESSAGING_AVAILABLE = False
+    logger.warning("MessagingClient not available. GPIO controller can only run in simulation mode.")
 
 
 class GPIOMode(Enum):
     """GPIO pin modes."""
     INPUT = "input"
     OUTPUT = "output"
+
+
+class SimulationGPIOClient:
+    """In-memory GPIO client for testing when the C++ hardware server is unavailable.
+
+    Tracks pin configuration and values locally so the full GPIOController
+    API works without a broker or hardware server.
+    """
+
+    def __init__(self):
+        self._pin_configs: Dict[int, str] = {}
+        self._pin_values: Dict[int, bool] = {}
+
+    async def connect(self):
+        logger.info("SimulationGPIOClient connected (no-op)")
+
+    async def disconnect(self):
+        logger.info("SimulationGPIOClient disconnected (no-op)")
+
+    async def send_gpio_configure_request(self, pin: int, mode: str) -> dict:
+        self._pin_configs[pin] = mode
+        self._pin_values.setdefault(pin, False)
+        return {"success": True, "pin": pin, "mode": mode}
+
+    async def send_gpio_set_request(self, pin: int, value: bool) -> dict:
+        self._pin_values[pin] = value
+        return {"success": True, "pin": pin, "value": value}
+
+    async def send_gpio_get_request(self, pin: int) -> dict:
+        value = self._pin_values.get(pin, False)
+        return {"success": True, "pin": pin, "value": value}
+
+    async def send_gpio_status_request(self) -> dict:
+        pins = [
+            {"pin": p, "mode": self._pin_configs.get(p, "unknown"), "value": self._pin_values.get(p, False)}
+            for p in sorted(self._pin_configs)
+        ]
+        return {"pins": pins}
 
 
 class GPIOController:
@@ -40,15 +88,21 @@ class GPIOController:
             value = await gpio.get_pin(18)
     """
 
-    def __init__(self, broker_url: str = "tcp://localhost:5555"):
+    def __init__(self, broker_url: str = "tcp://localhost:5555", simulation: Optional[bool] = None):
         """
         Initialize GPIO controller.
 
         Args:
             broker_url: ZeroMQ broker URL for hardware server communication
+            simulation: Tri-state control.
+                ``None``  (default) – try hardware server, fall back to simulation on failure.
+                ``True``  – force simulation mode.
+                ``False`` – hardware only, raise on failure.
         """
         self.broker_url = broker_url
-        self._client: Optional[MessagingClient] = None
+        self._simulation_requested = simulation
+        self.simulation_mode = simulation is True
+        self._client = None
         self._configured_pins: Dict[int, GPIOMode] = {}
 
     async def __aenter__(self):
@@ -61,10 +115,26 @@ class GPIOController:
         await self.disconnect()
 
     async def connect(self):
-        """Connect to the hardware server via ZeroMQ."""
-        self._client = MessagingClient(self.broker_url)
-        await self._client.connect()
-        logger.info("GPIO controller connected to hardware server")
+        """Connect to the hardware server via ZeroMQ, or enter simulation mode."""
+        if self._simulation_requested is True or not MESSAGING_AVAILABLE:
+            self._client = SimulationGPIOClient()
+            await self._client.connect()
+            self.simulation_mode = True
+            logger.warning("GPIO controller running in simulation mode")
+            return
+
+        try:
+            self._client = MessagingClient(self.broker_url)
+            await self._client.connect()
+            logger.info("GPIO controller connected to hardware server")
+        except Exception as e:
+            if self._simulation_requested is None:
+                logger.warning(f"Hardware server unavailable ({e}). Falling back to simulation mode.")
+                self._client = SimulationGPIOClient()
+                await self._client.connect()
+                self.simulation_mode = True
+            else:
+                raise
 
     async def disconnect(self):
         """Disconnect from the hardware server."""

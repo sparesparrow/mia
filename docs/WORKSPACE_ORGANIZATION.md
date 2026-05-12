@@ -1,65 +1,80 @@
 # Workspace Organization
 
+> Last refreshed: 2026-05-12
+
 This document describes the workspace organization and directory structure for the MIA project.
 
 ## Directory Structure
 
-### Development Environment (`~/projects/mia/`)
-
-The development repository contains the complete source code, documentation, and build tools:
+### Repository Layout
 
 ```
-~/projects/mia/
-├── config/
-│   └── paths.json          # Configurable path definitions
-├── core/
-│   └── paths.py            # Python path resolution utilities
-├── docs/                   # Documentation
-├── scripts/                # Build and deployment scripts
-├── platforms/              # Platform-specific implementations
-├── modules/                # Python modules
-├── services/               # Systemd service definitions
-├── rpi/                    # Raspberry Pi specific code
-├── hardware/               # Hardware interfaces
-├── arduino/                # Arduino sketches and tools
-└── android/                # Android application
+mia/
+├── apps/
+│   ├── android/              # Kotlin/Jetpack Compose Android app
+│   ├── esp32/                # ESP32 firmware (PlatformIO)
+│   └── rpi-backend/
+│       ├── py-api/           # FastAPI + ZMQ workers + hardware drivers
+│       ├── shared/           # Shared messaging, telemetry, broker
+│       └── cpp-audio/        # C++ audio/hardware server
+├── orchestration/
+│   └── mcp/modules/          # MCP microservices (core-orchestrator, ai-audio, automotive, etc.)
+├── schemas/                  # FlatBuffers source schemas (mia.fbs, vehicle_telemetry.fbs)
+├── protos/                   # Wire-format wrappers (vehicle.fbs with file_identifier)
+├── Mia/                      # Auto-generated Python FlatBuffers bindings (do not hand-edit)
+├── contracts/                # MQTT topics, events, BLE GATT, config schemas
+├── infra/
+│   ├── conan/                # Conan profiles, recipes, conanfile.py
+│   ├── docker/               # Docker Compose files (dev, prod, simulation)
+│   ├── systemd/              # Systemd service units for RPi deployment
+│   └── deploy/               # Deployment scripts (RPi, AWS, K8s)
+├── platforms/cpp/             # Cross-platform C++ (CMake)
+├── mcp-cpp-bridge/           # C++ MCP SDK bridge
+├── web/                      # Static web pages, voice-chat UI
+├── tests/                    # pytest suite (unit, integration, hardware)
+├── scripts/                  # Build, deploy, test, and utility scripts
+├── agents/                   # AI agent definitions
+├── arduino/                  # Arduino sketches and protocol library
+├── docs/                     # Project documentation
+├── monitoring/               # Grafana, Prometheus configs
+└── containers/               # Container build contexts
 ```
 
 ### Installation Environment (`/opt/mia/`)
 
-The installation directory contains the deployed code for production use:
+The installation directory mirrors the repo layout on Raspberry Pi:
 
 ```
 /opt/mia/
-├── config/                 # Configuration files
-├── core/                   # Core Python modules
-├── rpi/                    # Raspberry Pi implementation
-├── modules/                # Hardware and service modules
-├── services/               # Runtime services
-├── agents/                 # AI and automation agents
-└── arduino/                # Arduino support files
+├── apps/rpi-backend/         # Python services and hardware drivers
+├── orchestration/            # MCP modules
+├── schemas/                  # FlatBuffers schemas
+├── Mia/                      # Generated bindings
+├── contracts/                # Runtime contracts
+└── infra/                    # Deployment assets
 ```
 
 ### System Integration
 
-System-wide components are installed in standard Linux locations:
+Systemd services are installed from `infra/systemd/`:
 
 ```
 /etc/systemd/system/
-├── mia-broker.service
-├── mia-api.service
-├── mia-gpio-worker.service
-├── mia-obd-worker.service
-└── mia-citroen-bridge.service
+├── zmq-broker.service          # ZMQ ROUTER:5555 + PUB:5556 (starts first)
+├── mia-api.service             # FastAPI :8000 (after broker)
+├── mia-serial-bridge.service   # ESP32/Arduino serial→ZMQ
+├── mia-obd-worker.service      # ELM327 emulator (after serial-bridge)
+├── mia-gpio-worker.service     # GPIO control via libgpiod
+├── mia-citroen-bridge.service  # PSA Citroën OBD telemetry
+├── mia-vag-audi-bridge.service # VAG/Audi read-only OBD (UDS disabled by default)
+└── ...                         # BLE, STT, TTS, wake-word, camera, power, LED
 
 /etc/mia/
-└── config/                 # System configuration
+└── environment                 # Runtime env vars (MIA_PYTHON, ports, etc.)
 
 /var/lib/mia/
-├── logs/                   # Application logs
-└── data/                   # Persistent data
-
-/var/log/mia/               # System logs
+├── broker_messages.db          # ZMQ message persistence (SQLite)
+└── data/                       # Persistent runtime data
 ```
 
 ## Path Configuration
@@ -89,46 +104,36 @@ install_path = config.resolve_path('/opt/mia')
 ## Development Workflow
 
 ### Local Development
-1. Clone repository to `~/projects/mia/`
-2. Create symlink: `sudo ln -sf ~/projects/mia /opt/mia`
-3. Use relative paths in code for environment independence
-4. Run services with development paths
+1. Clone the repository
+2. Install Python dependencies: `pip3 install -r requirements-dev.txt`
+3. Run tests: `pytest tests/ -m "not hardware"`
+4. For RPi simulation: `docker compose -f infra/docker/docker-compose.dev.yml up`
 
-### Deployment
-1. Copy code to `/opt/mia/` (or create symlink for development)
-2. Install systemd services
-3. Configure system paths in `/etc/mia/`
-4. Enable and start services
+### Deployment to Raspberry Pi
+1. Run `infra/deploy/rpi/deploy.sh` to sync code to `/opt/mia/`
+2. Systemd services are enabled via `infra/systemd/*.service`
+3. Startup order: `zmq-broker` → `mia-api` → workers → orchestration
+4. Verify: `curl http://localhost:8000/status`
 
-### Testing
-1. Use relative paths in test files
-2. Configure test environments with path overrides
-3. Validate path resolution across different environments
+### Android Development
+1. Open `apps/android/` in Android Studio
+2. JDK 17, Android SDK 34, Gradle 8.4
+3. Build: `cd apps/android && ./gradlew assembleDebug`
 
 ## Environment Variables
 
-Services use environment variables for configuration:
+Services use environment variables from `/etc/mia/environment`:
 
-- `PYTHONPATH`: Python module search path
-- `WORKING_DIRECTORY`: Service working directory
-- `RPI_PATH`: Deployment path (defaults to `/opt/mia`)
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MIA_PYTHON` | `/usr/local/bin/mia-python` | Bundled Python interpreter |
+| `ZMQ_BROKER_URL` | `tcp://localhost:5555` | ZMQ broker address |
+| `PYTHONPATH` | `/opt/mia/apps/rpi-backend/py-api:/opt/mia` | Module search |
 
-## Migration Notes
+## Key Conventions
 
-This workspace organization replaces the previous structure where development and installation used the same paths. Key changes:
-
-- **Before**: Code in `~/ai-servis/` used for both development and deployment
-- **After**: Development in `~/projects/mia/`, deployment to `/opt/mia/`
-
-### Benefits
-- Clean separation of development and production environments
-- Environment-independent code using relative paths
-- Proper system integration with standard Linux directories
-- Simplified deployment and rollback procedures
-
-### Migration Steps
-1. Consolidate repositories (see consolidation plan)
-2. Update hardcoded paths to use configurable paths
-3. Create symlink for development environment
-4. Update documentation and deployment scripts
-5. Test in both development and deployment scenarios
+- **Schema changes** flow through `schemas/` → `python schemas/generate.py --all` → `Mia/`
+- **Never hand-edit** files under `Mia/` — they are auto-generated
+- **Systemd services** are the source of truth for startup ordering
+- **Contracts** (`contracts/events.md`, `contracts/topics.md`) define MQTT/event shapes
+- See [ARCHITECTURE.md](../ARCHITECTURE.md) and [CLAUDE.md](../CLAUDE.md) for full details

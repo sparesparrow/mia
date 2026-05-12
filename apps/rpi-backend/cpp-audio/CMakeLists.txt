@@ -13,9 +13,22 @@ find_package(ZLIB REQUIRED)
 find_package(Threads REQUIRED)
 # FSM implemented without Boost dependency
 
-# Find jsoncpp via pkg-config (needed for some executables)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+# Find jsoncpp — prefer Conan-generated CMake config, fall back to pkg-config
+find_package(jsoncpp QUIET)
+if(NOT jsoncpp_FOUND)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(JSONCPP REQUIRED jsoncpp)
+    set(JSONCPP_TARGET_NAME "")
+else()
+    # Conan-generated target: jsoncpp_lib or JsonCpp::JsonCpp
+    if(TARGET jsoncpp_lib)
+        set(JSONCPP_TARGET_NAME jsoncpp_lib)
+    elseif(TARGET JsonCpp::JsonCpp)
+        set(JSONCPP_TARGET_NAME JsonCpp::JsonCpp)
+    else()
+        set(JSONCPP_TARGET_NAME "")
+    endif()
+endif()
 
 # Find system libraries
 if(UNIX AND NOT APPLE)
@@ -106,8 +119,13 @@ if(WITH_HARDWARE)
         libgpiod::libgpiod
         mosquitto::mosquitto
     )
-    # Add jsoncpp includes for hardware-server
-    target_include_directories(hardware-server PRIVATE ${JSONCPP_INCLUDE_DIRS})
+    # Add jsoncpp via target or pkg-config variables
+    if(JSONCPP_TARGET_NAME)
+        target_link_libraries(hardware-server ${JSONCPP_TARGET_NAME})
+    else()
+        target_include_directories(hardware-server PRIVATE ${JSONCPP_INCLUDE_DIRS})
+        target_link_libraries(hardware-server ${JSONCPP_LIBRARIES})
+    endif()
 endif()
 
 # Voice Control Server

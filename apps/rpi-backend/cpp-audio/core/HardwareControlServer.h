@@ -33,7 +33,7 @@ struct GPIOLineInfo {
  * @brief Hardware Control Server for GPIO operations
  *
  * This server provides GPIO control capabilities for Raspberry Pi
- * via hybrid TCP + MQTT communication using the libgpiod 1.x line API.
+ * via hybrid TCP + MQTT communication using the libgpiod 2.x line API.
  */
 class HardwareControlServer {
 public:
