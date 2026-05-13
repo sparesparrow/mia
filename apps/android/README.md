@@ -78,22 +78,10 @@ The application follows a clean architecture pattern with the following layers:
 
 ## 📱 Requirements
 
-- Android 5.1 (API 22) or higher
+- Android 7.0 (API 24) or higher
 - Bluetooth LE support
 - Camera (for ANPR and DVR)
 - Microphone (for DVR audio)
-
-### Build Toolchain
-
-| Component | Version | Notes |
-|-----------|---------|-------|
-| JDK | 17 (Temurin) | `sourceCompatibility` / `targetCompatibility` |
-| Android SDK | 34 | `compileSdk` and `targetSdk` |
-| Gradle | 8.4 | via wrapper (`gradle-wrapper.properties`) |
-| AGP | 8.2.2 | Android Gradle Plugin |
-| Kotlin | 1.9.22 | Kotlin compiler |
-| Compose Compiler | 1.5.8 | Jetpack Compose |
-| minSdk | 22 | Android 5.1 Lollipop |
 
 ### Permissions Required
 
@@ -125,7 +113,7 @@ The application follows a clean architecture pattern with the following layers:
 ### Clone and Open
 
 ```bash
-git clone https://github.com/your-org/ai-servis.git
+git clone https://github.com/sparesparrow/mia.git
 cd mia/android
 ```
 
@@ -222,7 +210,7 @@ android/
 ├── app/
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/cz/aiservis/app/
+│   │   │   ├── java/cz/mia/app/
 │   │   │   │   ├── core/
 │   │   │   │   │   ├── background/     # Service managers
 │   │   │   │   │   │   ├── BLEManager.kt
@@ -383,27 +371,6 @@ python3 tools/bootstrap-obd.py --demo 60
 # Use bundled CPython (recommended)
 python3 tools/bootstrap-obd.py --device "Test OBD"
 ```
-
-### Bundled CPython
-
-The `tools/lib/cpython_bootstrap.py` module provides bundled CPython 3.12.7 for cross-platform tool development:
-
-```python
-from lib.cpython_bootstrap import CPythonBootstrap
-
-# Ensure Python is available
-with CPythonBootstrap() as python_path:
-    subprocess.run([python_path, "my_script.py"])
-
-# Or use CLI
-python3 tools/lib/cpython_bootstrap.py --info
-python3 tools/lib/cpython_bootstrap.py script.py [args...]
-```
-
-Supported platforms:
-- Linux (x86_64, aarch64)
-- macOS (x86_64, arm64)
-- Windows (x86_64)
 
 ### APK Deployment
 
