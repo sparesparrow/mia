@@ -1,4 +1,7 @@
-# Citroën OBD-II Integration Guide
+# Citroën OBD-II Integration Guide (Legacy)
+
+> **Status**: Legacy/secondary support. Primary development target is **Audi A4 B3 Cabriolet (2004)**.
+> See [raspberry-pi-audi-integration.md](raspberry-pi-audi-integration.md) for the primary vehicle integration.
 
 ## Overview
 This guide covers integration of Citroën/PSA vehicles with the MIA platform using an ELM327 OBD-II adapter.
