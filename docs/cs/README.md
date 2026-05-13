@@ -1,12 +1,14 @@
 # MIA Universal - Inteligentní Osobní Asistent
 
+> **Audience**: Czech-speaking users and contributors
+
 ## Přehled
 
 MIA (Modular IoT Assistant) je distribuovaný řídicí systém navržený pro Raspberry Pi 4B jako hlavní výpočetní uzel, integrující Arduino/ESP32 mikrokontroléry pro ovládání hardwaru a Android smartphony pro vzdálené uživatelské rozhraní.
 
 ## Klíčové Funkce
 
-- **Automobilová Telemetrie**: OBD-II diagnostika pro Citroën/PSA vozidla
+- **Automobilóvá Telemetrie**: OBD-II diagnostika — primárně pro Audi A4 B3 Cabriolet (2004)
 - **Chytrá Domácnost**: Ovládání GPIO, senzory, osvětlení
 - **Hlasové Ovládání**: Integrace s AI asistenty
 - **Vzdálený Přístup**: Android aplikace pro monitoring
@@ -21,29 +23,25 @@ MIA (Modular IoT Assistant) je distribuovaný řídicí systém navržený pro R
 ### Instalace
 
 ```bash
-# Klonování repozitáře
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
-
-# Aktivace prostředí
-source tools/env.sh
+# Klonovní repozitáře
+git clone https://github.com/sparesparrow/mia.git
+cd mia
 
 # Instalace závislostí
 pip install -r requirements-dev.txt
-pip install -r agents/requirements.txt
 
 # Spuštění služeb
-sudo systemctl start mia-broker
-sudo systemctl start mia-citroen-bridge
+sudo systemctl start zmq-broker
+sudo systemctl start mia-api
 ```
 
 ## Dokumentace
 
-- [Integrace Citroën](automotive/citroen-integrace.md)
-- [Architektura systému](architecture/overview.md)
-- [API Reference](api/overview.md)
+- [Integrace Audi A4 B3](../docs/automotive/raspberry-pi-audi-integration.md)
+- [Architektura systému](../ARCHITECTURE.md)
+- [README](../README.md)
 
 ## Podpora
 
-- GitHub Issues: [ai-servis/issues](https://github.com/sparesparrow/ai-servis/issues)
-- Dokumentace: [docs/](https://github.com/sparesparrow/ai-servis/tree/main/docs)
+- GitHub Issues: [mia/issues](https://github.com/sparesparrow/mia/issues)
+- Dokumentace: [docs/](https://github.com/sparesparrow/mia/tree/main/docs)
