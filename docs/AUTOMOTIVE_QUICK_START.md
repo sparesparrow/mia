@@ -1,8 +1,12 @@
-# AI-Servis Automotive Integration - Quick Start Guide
+# MIA Automotive Integration - Quick Start Guide
+
+> **Audience**: End users, vehicle integrators, mechanics
 
 ## Overview
 
-AI-Servis Automotive Integration enables real-time vehicle diagnostics through Bluetooth Low Energy (BLE) communication between your Android device and a Raspberry Pi-based OBD-II adapter.
+MIA Automotive Integration enables real-time vehicle diagnostics through Bluetooth Low Energy (BLE) communication between your Android device and a Raspberry Pi-based OBD-II adapter.
+
+**Primary prototype vehicle**: Audi A4 B3 Cabriolet (2004)
 
 ## System Components
 
@@ -12,9 +16,9 @@ AI-Servis Automotive Integration enables real-time vehicle diagnostics through B
 
 ## Quick Start
 
-### 1. Install AI-Servis App
+### 1. Install MIA App
 
-1. Download AI-Servis app from Google Play Store (or install APK from GitHub Releases)
+1. Download MIA app from Google Play Store (or install APK from GitHub Releases)
 2. Open the app and grant Bluetooth permissions when prompted
 3. Navigate to the OBD screen
 
@@ -35,9 +39,9 @@ sudo systemctl start mia-ble-obd
 sudo systemctl start mia-ble-advertiser
 ```
 
-### 3. Connect Android Device to Raspberry Pi
+### 3. Connect Android App
 
-1. Open AI-Servis app on Android device
+1. Open MIA app on Android device
 2. Navigate to OBD screen
 3. Tap "Scan" button
 4. Wait for "MIA OBD-II Adapter" to appear in the device list
@@ -55,8 +59,9 @@ Once connected, the app will automatically start monitoring:
 
 ## Supported Vehicles
 
-- **Citroën C4**: Full PSA protocol support
+- **Audi A4 B3 Cabriolet (2004)**: Primary prototype — full VAG read-only diagnostics
 - **Generic OBD-II**: Any vehicle with ELM327-compatible OBD-II adapter
+- **Citroën C4 (PSA)**: Legacy support via dedicated bridge module
 - **Protocols**: ISO 15765-4 (CAN), ISO 14230-4 (KWP2000), ISO 9141-2
 
 ## Troubleshooting
@@ -121,86 +126,12 @@ Once connected, the app will automatically start monitoring:
    sudo journalctl -u mia-obd-worker -f
    ```
 
-### Bluetooth Range Issues
-
-**Problem**: Connection drops or unstable
-
-**Solutions**:
-1. Ensure devices are within 10 meters of each other
-2. Avoid physical obstructions between devices
-3. Check for interference from other Bluetooth devices
-4. Verify Raspberry Pi has adequate power supply (use official power adapter)
-
-## Advanced Configuration
-
-### Change Device Name
-
-To change the advertised device name:
-
-1. Edit `/opt/ai-servis/rpi/services/ble_advertiser.py`:
-   ```python
-   DEVICE_NAME = "Your Custom Name"
-   ```
-
-2. Restart service:
-   ```bash
-   sudo systemctl restart mia-ble-advertiser
-   ```
-
-### Adjust OBD Polling Rate
-
-The Android app supports three sampling modes:
-- **Normal**: 500ms intervals (default)
-- **Reduced**: 2000ms intervals
-- **Minimal**: 10000ms intervals
-
-Change mode in the app's OBD settings screen.
-
-### Enable Debug Logging
-
-To enable verbose logging:
-
-1. Edit service files to change log level:
-   ```python
-   logging.basicConfig(level=logging.DEBUG)
-   ```
-
-2. Restart services:
-   ```bash
-   sudo systemctl restart mia-ble-obd
-   sudo systemctl restart mia-ble-advertiser
-   ```
-
-3. View logs:
-   ```bash
-   sudo journalctl -u mia-ble-obd -f
-   ```
-
-## System Requirements
-
-### Raspberry Pi
-- Raspberry Pi 4B (recommended) or Pi 3B+
-- Bluetooth 4.0+ (BLE support)
-- Raspberry Pi OS (Bullseye or later)
-- Python 3.8+
-- Root access for Bluetooth configuration
-
-### Android Device
-- Android 5.0 (API 22) or later
-- Bluetooth 4.0+ (BLE support)
-- Location permission (required for BLE scanning on Android 6.0+)
-
-### Vehicle
-- OBD-II compliant vehicle (1996+ in USA, 2001+ in Europe)
-- OBD-II port accessible
-- Vehicle ignition ON for diagnostics
-
 ## Support
 
 For additional help:
 - **Documentation**: [Full Documentation](../README.md)
 - **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)
-- **Email**: info@ai-servis.cz
+- **Email**: info@mia.cz
 
 ## Next Steps
 

@@ -1,6 +1,8 @@
-# AI-Servis Android App User Guide
+# MIA Android App User Guide
 
-Welcome to the AI-Servis Android application! This guide will help you get started with the app and make the most of its features.
+> **Audience**: End users, vehicle owners
+
+Welcome to the MIA Android application! This guide will help you get started with the app and make the most of its features.
 
 ## Table of Contents
 
@@ -32,7 +34,7 @@ Welcome to the AI-Servis Android application! This guide will help you get start
 ## Initial Setup
 
 ### First Launch
-1. Open the AI-Servis app
+1. Open the MIA app
 2. Grant the following permissions when prompted:
    - **Bluetooth permissions** (Android 12+: BLUETOOTH_SCAN, BLUETOOTH_CONNECT)
    - **Location permission** (required for BLE scanning)
@@ -42,7 +44,7 @@ Welcome to the AI-Servis Android application! This guide will help you get start
 ### Permissions Explained
 
 | Permission | Purpose |
-|------------|---------|
+|------------|--------|
 | Bluetooth Scan | Discover nearby OBD-II devices |
 | Bluetooth Connect | Connect to and communicate with devices |
 | Location | Required by Android for BLE scanning |
@@ -83,54 +85,11 @@ Welcome to the AI-Servis Android application! This guide will help you get start
 | Connected | ✅ Check | Successfully connected |
 | Error | ❌ | Connection failed |
 
-### Signal Strength
-
-The signal strength indicator shows the RSSI (Received Signal Strength Indicator):
-
-| Signal | RSSI Range | Quality |
-|--------|------------|---------|
-| Excellent | > -50 dBm | Very strong |
-| Good | -50 to -60 dBm | Strong |
-| Fair | -60 to -70 dBm | Moderate |
-| Weak | < -70 dBm | Poor |
-
-### Disconnecting
-
-1. Tap on the connected device card
-2. Tap **Disconnect** button
-3. Or navigate away from the screen
-
-## API Configuration
-
-### Default Configuration
-
-The app is configured to connect to:
-- **API URL**: `http://192.168.1.100:8000/`
-- **WebSocket URL**: `ws://192.168.1.100:8000`
-
-### Changing API Endpoints
-
-To connect to a different server:
-
-1. Build the app with custom `BuildConfig` values:
-   ```groovy
-   buildConfigField 'String', 'API_BASE_URL', '"http://your-server:port/"'
-   buildConfigField 'String', 'WS_BASE_URL', '"ws://your-server:port"'
-   ```
-
-2. Or modify the values in `android/app/build.gradle`
-
-### Network Requirements
-
-- The device must be on the same network as the server
-- Port 8000 (or configured port) must be accessible
-- For secure connections, use HTTPS/WSS
-
 ## Telemetry Viewing
 
 ### Real-time Data
 
-The app can display live telemetry from connected devices:
+The app displays live telemetry from connected devices:
 
 - **Speed** (km/h or mph)
 - **RPM** (engine revolutions)
@@ -138,15 +97,7 @@ The app can display live telemetry from connected devices:
 - **Fuel level**
 - **Battery voltage**
 
-### Historical Data
-
-Access historical telemetry through the API:
-
-1. Navigate to the Dashboard
-2. Select a time range
-3. View charts and statistics
-
-### Supported Sensors
+### Supported OBD-II PIDs
 
 | Sensor | OBD Command | Description |
 |--------|-------------|-------------|
@@ -161,49 +112,18 @@ Access historical telemetry through the API:
 
 ### BLE Connection Issues
 
-#### "Device not found"
-- Ensure Bluetooth is enabled
-- Check that location services are on
-- Make sure the OBD adapter is powered on
-- Try moving closer to the device
-
-#### "Service discovery failed"
-- The device may not support the expected UART service
-- Try resetting the OBD adapter
-- Check if the adapter is compatible
-
-#### "Missing permissions"
-- Go to Settings > Apps > AI-Servis > Permissions
-- Enable all required permissions
-- Restart the app
-
-#### Connection drops frequently
-- Move closer to the OBD adapter
-- Check for interference from other Bluetooth devices
-- Ensure the adapter has sufficient power
+- "Device not found": Ensure Bluetooth is on and location services enabled
+- "Service discovery failed": Try resetting the OBD adapter (remove from OBD port 30s)
+- "Missing permissions": Go to Settings > Apps > MIA > Permissions
+- Connection drops: Move closer to the OBD adapter, check for BT interference
 
 ### API Connection Issues
 
-#### "Network error"
-- Check Wi-Fi connection
-- Verify the server is running
-- Ensure correct API URL is configured
-- Check firewall settings
-
-#### "Authentication failed"
-- Verify API credentials
-- Check if the server requires authentication
-
-### App Crashes
-
-1. Clear app data:
-   - Settings > Apps > AI-Servis > Storage > Clear Data
-2. Reinstall the app
-3. Report the issue with logs
+- "Network error": Verify Wi-Fi connection and server is running
+- "Authentication failed": Verify API credentials in build config
 
 ### Getting Logs
 
-Enable USB debugging and run:
 ```bash
 adb logcat -s BLEManager TelemetryWebSocket DeviceRepository
 ```
@@ -211,53 +131,18 @@ adb logcat -s BLEManager TelemetryWebSocket DeviceRepository
 ## FAQ
 
 ### Q: Which OBD-II adapters are supported?
-**A:** The app supports Bluetooth Low Energy (BLE) OBD-II adapters that use the Nordic UART Service (NUS) or similar UART-over-BLE protocols. Common compatible adapters include:
-- Veepeak BLE OBD2
-- BAFX Bluetooth 4.0 OBD2
-- Vgate iCar Pro BLE
+**A:** BLE OBD-II adapters using Nordic UART Service (NUS). Compatible: Veepeak BLE OBD2, BAFX Bluetooth 4.0 OBD2, Vgate iCar Pro BLE.
 
 ### Q: Why does the app need location permission?
-**A:** Android requires location permission for Bluetooth scanning because BLE beacons can be used for location tracking. This is a platform requirement, and the app does not track your location.
+**A:** Android requires location permission for BLE scanning. The app does not track your location.
 
-### Q: Can I use the app without an internet connection?
-**A:** Yes, for BLE device communication and local OBD queries. API features (remote telemetry, device management) require internet connectivity.
-
-### Q: How do I pair my OBD adapter?
-**A:** The app handles pairing automatically. Simply scan for devices and tap to connect. No manual pairing in Android settings is required for BLE devices.
-
-### Q: Why is scanning taking so long?
-**A:** The default scan duration is 10 seconds to ensure all nearby devices are discovered. You can stop scanning early by tapping the Bluetooth icon again.
-
-### Q: Can I connect to multiple devices?
-**A:** Currently, the app supports one active BLE connection at a time. Future versions may support multiple connections.
-
-### Q: How do I reset the OBD adapter?
-**A:** The app sends an ATZ (reset) command automatically upon connection. For a hard reset, disconnect the adapter from the OBD port for 30 seconds.
+### Q: Can I use the app without internet?
+**A:** Yes for BLE/OBD. API features (remote telemetry, device management) require internet.
 
 ### Q: What data is sent to the server?
-**A:** The app can send:
-- Device telemetry readings
-- Connection status
-- Vehicle data (speed, RPM, etc.)
-
-All data transmission can be controlled through app settings.
-
-### Q: Is my data secure?
-**A:** For production use, configure HTTPS for API connections and WSS for WebSocket connections. BLE communication uses standard Android security.
+**A:** Device telemetry readings, connection status, vehicle data (speed, RPM, etc.). All transmission controllable via app settings.
 
 ## Support
 
-For additional help:
-- Check the [GitHub Issues](https://github.com/your-repo/ai-servis/issues)
-- Contact support at support@example.com
-- Join our community forum
-
-## Version History
-
-### v1.0.0
-- Initial release
-- BLE device scanning and connection
-- OBD-II command support
-- REST API integration
-- WebSocket telemetry streaming
-- ANPR camera integration
+- GitHub Issues: https://github.com/sparesparrow/mia/issues
+- See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details
