@@ -132,7 +132,7 @@ These are the authoritative versions pinned in the build files. CI and contribut
 
 ```bash
 git clone https://github.com/sparesparrow/mia.git
-cd mia/apps/android
+cd mia/android
 ```
 
 Open the `android` folder in Android Studio.
@@ -228,7 +228,7 @@ android/
 ├── app/
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/cz/aiservis/app/
+│   │   │   ├── java/cz/mia/app/
 │   │   │   │   ├── core/
 │   │   │   │   │   ├── background/     # Service managers
 │   │   │   │   │   │   ├── BLEManager.kt
@@ -389,27 +389,6 @@ python3 tools/bootstrap-obd.py --demo 60
 # Use bundled CPython (recommended)
 python3 tools/bootstrap-obd.py --device "Test OBD"
 ```
-
-### Bundled CPython
-
-The `tools/lib/cpython_bootstrap.py` module provides bundled CPython 3.12.7 for cross-platform tool development:
-
-```python
-from lib.cpython_bootstrap import CPythonBootstrap
-
-# Ensure Python is available
-with CPythonBootstrap() as python_path:
-    subprocess.run([python_path, "my_script.py"])
-
-# Or use CLI
-python3 tools/lib/cpython_bootstrap.py --info
-python3 tools/lib/cpython_bootstrap.py script.py [args...]
-```
-
-Supported platforms:
-- Linux (x86_64, aarch64)
-- macOS (x86_64, arm64)
-- Windows (x86_64)
 
 ### APK Deployment
 

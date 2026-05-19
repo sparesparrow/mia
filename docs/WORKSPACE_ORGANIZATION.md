@@ -32,11 +32,10 @@ The installation directory contains the deployed code for production use:
 ```
 /opt/mia/
 ├── config/                 # Configuration files
-├── core/                   # Core Python modules
-├── rpi/                    # Raspberry Pi implementation
-├── modules/                # Hardware and service modules
-├── services/               # Runtime services
-├── agents/                 # AI and automation agents
+├── apps/rpi-backend/       # Raspberry Pi backend (API, workers, shared)
+├── orchestration/          # MCP modules and agents
+├── schemas/                # FlatBuffers schema definitions
+├── infra/                  # Deployment and systemd assets
 └── arduino/                # Arduino support files
 ```
 
@@ -117,7 +116,7 @@ Services use environment variables for configuration:
 
 This workspace organization replaces the previous structure where development and installation used the same paths. Key changes:
 
-- **Before**: Code in `~/ai-servis/` used for both development and deployment
+- **Before**: Code in `~/projects/mia/` used for both development and deployment
 - **After**: Development in `~/projects/mia/`, deployment to `/opt/mia/`
 
 ### Benefits

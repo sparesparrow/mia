@@ -1,0 +1,35 @@
+[Unit]
+Description=MIA VAG/Audi Read-Only OBD-II Bridge
+Documentation=https://github.com/sparesparrow/ai-servis/docs/automotive/raspberry-pi-audi-integration.md
+After=network.target zmq-broker.service mia-serial-bridge.service
+Wants=zmq-broker.service
+Requires=zmq-broker.service
+
+[Service]
+Type=simple
+User=mia
+Group=dialout
+WorkingDirectory=/opt/mia/orchestration/mcp/modules/vag-audi-bridge
+EnvironmentFile=-/etc/mia/environment
+Environment=ZMQ_BROKER_URL=tcp://localhost:5555
+Environment=ZMQ_TELEMETRY_SUB=tcp://localhost:5556
+Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api:/opt/mia
+# Safety: UDS polling is disabled by default; enable only after bench validation
+Environment=VAG_ENABLE_UDS_POLLING=false
+Environment=VAG_ALLOWED_READ_SERVICES=19,22
+Environment=VAG_DEFAULT_IDENTIFIERS=F190
+ExecStart=/bin/bash -c 'exec "${MIA_PYTHON:-/usr/local/bin/mia-python}" /opt/mia/orchestration/mcp/modules/vag-audi-bridge/main.py'
+Restart=on-failure
+RestartSec=10
+WatchdogSec=0
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mia-vag-audi-bridge
+MemoryMax=256M
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

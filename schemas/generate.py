@@ -17,6 +17,7 @@ Options:
     --all-schemas   Process all .fbs files in schemas/ and protos/
     --output-dir    Output directory (default: project root)
     --schema        Single schema file to process (default: mia.fbs)
+    --dry-run       Show expected outputs and detect drift (exit 0=clean, 2=drift)
     --help          Show this help message
 """
 
@@ -195,6 +196,90 @@ def generate_all(project_root, gen_python=True, gen_cpp=True):
     return success
 
 
+def _dry_run(schema_dir, project_root, gen_python, gen_cpp):
+    """Report schema sources, expected output paths, and detect drift."""
+    import re
+
+    print("DRY-RUN: Schema drift detection")
+    print("=" * 60)
+
+    # Collect schema sources
+    schemas_found = list(schema_dir.glob("*.fbs"))
+    protos_dir = project_root / "protos"
+    if protos_dir.is_dir():
+        schemas_found.extend(protos_dir.glob("*.fbs"))
+    webgrab = project_root / "apps" / "rpi-backend" / "cpp-audio" / "core" / "webgrab.fbs"
+    if webgrab.exists():
+        schemas_found.append(webgrab)
+
+    print(f"\nSchema sources ({len(schemas_found)}):")
+    for s in sorted(schemas_found):
+        print(f"  {s.relative_to(project_root)}")
+
+    # Parse tables/structs from schemas to predict output file names
+    expected_python = set()
+    expected_cpp = set()
+    table_pattern = re.compile(r"^\s*(?:table|struct|enum|union)\s+(\w+)", re.MULTILINE)
+
+    for schema_path in schemas_found:
+        content = schema_path.read_text(encoding="utf-8", errors="replace")
+        # extract namespace
+        ns_match = re.search(r"^\s*namespace\s+([\w.]+)\s*;", content, re.MULTILINE)
+        namespace = ns_match.group(1) if ns_match else ""
+        ns_parts = namespace.split(".") if namespace else []
+
+        for match in table_pattern.finditer(content):
+            name = match.group(1)
+            if gen_python:
+                py_path = project_root / Path(*ns_parts) / f"{name}.py"
+                expected_python.add(py_path)
+            if gen_cpp:
+                expected_cpp.add(name)
+
+    # Check existing bindings
+    mia_dir = project_root / "Mia"
+    existing_python = set(mia_dir.glob("*.py")) if mia_dir.is_dir() else set()
+
+    drift_issues = []
+
+    if gen_python:
+        print(f"\nPython bindings (expected dir: Mia/):")
+        print(f"  Expected types: {len(expected_python)}")
+        print(f"  Existing files: {len(existing_python)}")
+
+        # Check for orphaned files (exist but no longer in schema)
+        expected_names = {p.name for p in expected_python}
+        existing_names = {p.name for p in existing_python if p.name != "__init__.py"}
+        orphaned = existing_names - expected_names
+        missing = expected_names - existing_names
+
+        if orphaned:
+            drift_issues.append(f"Orphaned Python bindings (no schema source): {sorted(orphaned)}")
+            print(f"  [!] Orphaned: {sorted(orphaned)}")
+        if missing:
+            drift_issues.append(f"Missing Python bindings (need regeneration): {sorted(missing)}")
+            print(f"  [!] Missing: {sorted(missing)}")
+        if not orphaned and not missing:
+            print("  [ok] No drift detected")
+
+    if gen_cpp:
+        cpp_dir = project_root / "platforms" / "cpp" / "core"
+        existing_cpp = set(cpp_dir.glob("*_generated.h")) if cpp_dir.is_dir() else set()
+        print(f"\nC++ bindings (expected dir: platforms/cpp/core/):")
+        print(f"  Expected types: {len(expected_cpp)}")
+        print(f"  Existing headers: {len(existing_cpp)}")
+
+    print("\n" + "=" * 60)
+    if drift_issues:
+        print("DRIFT DETECTED:")
+        for issue in drift_issues:
+            print(f"  - {issue}")
+        sys.exit(2)
+    else:
+        print("[ok] No schema drift detected.")
+        sys.exit(0)
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate FlatBuffers bindings')
     parser.add_argument('--python', action='store_true', default=None,
@@ -211,14 +296,20 @@ def main():
                        help='Output directory relative to schemas/ (default: ..)')
     parser.add_argument('--schema', default='mia.fbs',
                        help='Schema file to process when not using --all (default: mia.fbs)')
+    parser.add_argument('--dry-run', action='store_true', default=False,
+                       help='Show what would be generated and detect drift without running flatc')
 
     args = parser.parse_args()
 
     gen_python = not args.no_python
     gen_cpp = not args.no_cpp
 
-    script_dir = Path(__file__).parent.absolute()
-    project_root = (script_dir / args.output_dir).absolute()
+    script_dir = Path(__file__).parent.resolve()
+    project_root = (script_dir / args.output_dir).resolve()
+
+    # --dry-run: report schemas, expected outputs, and drift without invoking flatc
+    if args.dry_run:
+        return _dry_run(script_dir, project_root, gen_python, gen_cpp)
 
     print(f"FlatBuffers Schema Generation")
     print(f"Project root: {project_root}")
