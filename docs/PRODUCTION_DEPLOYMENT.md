@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-This guide covers deploying the complete AI-Servis Automotive Integration system to a production Raspberry Pi.
+This guide covers deploying the complete MIA vehicle telemetry and IoT system to a production Raspberry Pi.
 
 ## Prerequisites
 
@@ -149,7 +149,7 @@ hciconfig hci0
 
 ### Change Device Name
 
-Edit `/opt/ai-servis/rpi/services/ble_advertiser.py`:
+Edit `/opt/mia/apps/rpi-backend/py-api/services/ble_advertiser.py`:
 
 ```python
 DEVICE_NAME = "Your Custom Name"
@@ -162,7 +162,7 @@ sudo systemctl restart mia-ble-advertiser
 
 ### Adjust OBD Polling Rate
 
-Edit `/opt/ai-servis/rpi/services/obd_worker.py`:
+Edit `/opt/mia/apps/rpi-backend/py-api/services/obd_worker.py`:
 
 ```python
 self.telemetry_interval = 0.1  # 10Hz (100ms)
@@ -175,7 +175,7 @@ sudo systemctl restart mia-obd-worker
 
 ### Configure API Port
 
-Edit `/opt/ai-servis/rpi/api/main.py`:
+Edit `/opt/mia/apps/rpi-backend/py-api/api/main.py`:
 
 ```python
 uvicorn.run(app, host="0.0.0.0", port=8000)
@@ -241,12 +241,13 @@ Create a health check script:
 
 ```bash
 #!/bin/bash
-# /opt/ai-servis/scripts/health-check.sh
+# /opt/mia/scripts/health-check.sh
 
 services=(
     "zmq-broker"
     "mia-api"
     "mia-gpio-worker"
+    "mia-serial-bridge"
     "mia-obd-worker"
     "mia-ble-obd"
     "mia-ble-advertiser"
@@ -265,7 +266,7 @@ done
 Run as cron job:
 ```bash
 # Add to crontab
-*/5 * * * * /opt/ai-servis/scripts/health-check.sh >> /var/log/ai-servis/health-check.log 2>&1
+*/5 * * * * /opt/mia/scripts/health-check.sh >> /var/log/mia/health-check.log 2>&1
 ```
 
 ## Troubleshooting
@@ -325,7 +326,7 @@ Run as cron job:
 
 3. Test OBD worker directly:
    ```bash
-   sudo -u mia python3 /opt/ai-servis/rpi/services/obd_worker.py
+   sudo -u mia python3 /opt/mia/apps/rpi-backend/py-api/services/obd_worker.py
    ```
 
 ## Backup and Recovery
@@ -336,7 +337,7 @@ Run as cron job:
 # Backup service files
 sudo tar -czf /home/mia/backup-services-$(date +%Y%m%d).tar.gz \
     /etc/systemd/system/mia-*.service \
-    /opt/ai-servis/rpi
+    /opt/mia/apps/rpi-backend
 ```
 
 ### Restore from Backup
@@ -403,7 +404,7 @@ sudo systemctl restart sshd
 sudo apt update && sudo apt upgrade -y
 
 # Update Python packages
-sudo pip3 install --upgrade -r /opt/ai-servis/rpi/requirements.txt
+sudo pip3 install --upgrade -r /opt/mia/requirements.txt
 ```
 
 ## Performance Optimization
@@ -426,6 +427,5 @@ Nice=10  # Lower priority (higher number = lower priority)
 ## Support
 
 For issues or questions:
-- **Documentation**: See [Quick Start Guide](./AUTOMOTIVE_QUICK_START.md)
+- **Documentation**: See [Raspberry Pi Setup](./RASPBERRY_PI_SETUP.md)
 - **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)
-- **Email**: info@ai-servis.cz
