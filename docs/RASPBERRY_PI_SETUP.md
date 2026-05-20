@@ -147,7 +147,7 @@ Use a specific Conan profile:
 After setup:
 
 ```
-ai-servis/
+mia/
 ├── .buildenv/              # Build environment (gitignored)
 │   ├── venv/               # Python virtual environment
 │   ├── conan/              # Conan home directory

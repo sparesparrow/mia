@@ -111,10 +111,10 @@ When modifying schemas:
 
 The schemas integrate with:
 
-- **API Layer** (`api/main.py`) - REST endpoints and WebSocket streaming
-- **Hardware Workers** (`hardware/gpio_worker.py`, `services/obd_worker.py`) - Device communication
-- **Message Broker** (`core/messaging/broker.py`) - Inter-process communication
-- **Vehicle telemetry PUB/SUB path** (`orchestration/mia-agents/agents/citroen_bridge.py` -> `apps/rpi-backend/py-api/api/main.py`) - Live `VehicleTelemetry` transport with `CTEL` file identifier and legacy-key compatibility in `Mia/vehicle_codec.py`
+- **API Layer** (`apps/rpi-backend/py-api/api/main.py`) - REST endpoints and WebSocket streaming
+- **Hardware Workers** (`apps/rpi-backend/py-api/hardware/gpio_worker.py`, `apps/rpi-backend/py-api/services/obd_worker.py`) - Device communication
+- **Message Broker** (`apps/rpi-backend/shared/messaging/broker.py`) - Inter-process communication
+- **Vehicle telemetry PUB/SUB path** — live `VehicleTelemetry` transport with `CTEL` file identifier and legacy-key compatibility in `Mia/vehicle_codec.py`
 
 Keep `schemas/vehicle_telemetry.fbs` as the single source of truth for live vehicle telemetry fields. Android consumes the JSON/MQTT surface instead of these FlatBuffers directly.
 
