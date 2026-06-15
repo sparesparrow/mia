@@ -1,0 +1,99 @@
+{
+  "cs": {
+    "common": {
+      "back": "Zpět",
+      "close": "Zavřít",
+      "save": "Uložit",
+      "cancel": "Zrušit",
+      "loading": "Načítám…",
+      "error": "Nastala chyba. Zkuste to prosím znovu."
+    },
+    "auth": {
+      "login": {
+        "title": "Přihlášení",
+        "email": "E-mail",
+        "password": "Heslo",
+        "submit": "Přihlásit se",
+        "forgotPassword": "Zapomenuté heslo?",
+        "noAccount": "Nemáte účet? Zaregistrujte se"
+      },
+      "register": {
+        "title": "Registrace",
+        "submit": "Vytvořit účet"
+      }
+    },
+    "verify": {
+      "title": "Ověřte svůj e-mail",
+      "body": "Poslali jsme ověřovací odkaz na adresu {{email}}. Zkontrolujte svoji schránku.",
+      "resend": "Odeslat znovu",
+      "verified": "E-mail ověřen"
+    },
+    "success": {
+      "title": "Gratulujeme!",
+      "body": "Váš účet byl úspěšně ověřen. Vítejte v komunitě Libertin.",
+      "continue": "Pokračovat"
+    },
+    "onboarding": {
+      "step1": { "title": "Kdo jste?", "body": "Vyberte si, jak se chcete představit komunitě." },
+      "step2": { "title": "Vaše zájmy", "body": "Vyberte komunity, které vás zajímají." },
+      "step3": { "title": "Diskrétnost na prvním místě", "body": "Nastavte, co o sobě sdílíte a s kým." },
+      "next": "Další",
+      "skip": "Přeskočit",
+      "finish": "Dokončit"
+    },
+    "home": {
+      "hero": { "title": "Vaše komunita, vaše pravidla", "subtitle": "Diskrétní sociální síť pro dospělé.", "cta": "Vstoupit" },
+      "categories": { "naturists": "Naturisté", "swingers": "Swingeři", "bdsm": "BDSM", "shibari": "Šibari" }
+    },
+    "feed": { "title": "Nástěnka", "empty": "Zatím zde nic není. Sledujte více členů.", "loadMore": "Načíst další" },
+    "messages": { "title": "Zprávy", "empty": "Žádné zprávy. Začněte konverzaci.", "send": "Odeslat", "placeholder": "Napište zprávu…" },
+    "profile": { "title": "Profil", "edit": "Upravit profil", "logout": "Odhlásit se" },
+    "footer": { "about": "O nás", "contact": "Kontakt", "privacy": "Ochrana soukromí", "terms": "Podmínky použití", "age": "Pouze pro osoby starší 18 let" },
+    "categories": { "naturists": "Naturisté", "swingers": "Swingeři", "bdsm": "BDSM", "shibari": "Šibari" }
+  },
+  "en": {
+    "common": {
+      "back": "Back",
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading…",
+      "error": "Something went wrong. Please try again."
+    },
+    "auth": {
+      "login": {
+        "title": "Sign in",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Sign in",
+        "forgotPassword": "Forgot password?",
+        "noAccount": "No account? Sign up"
+      },
+      "register": { "title": "Create account", "submit": "Create account" }
+    },
+    "verify": {
+      "title": "Verify your email",
+      "body": "We sent a verification link to {{email}}. Check your inbox.",
+      "resend": "Resend",
+      "verified": "Email verified"
+    },
+    "success": { "title": "Congratulations!", "body": "Your account has been verified. Welcome to the Libertin community.", "continue": "Continue" },
+    "onboarding": {
+      "step1": { "title": "Who are you?", "body": "Choose how you want to introduce yourself to the community." },
+      "step2": { "title": "Your interests", "body": "Select the communities that interest you." },
+      "step3": { "title": "Discretion first", "body": "Set what you share and with whom." },
+      "next": "Next",
+      "skip": "Skip",
+      "finish": "Finish"
+    },
+    "home": {
+      "hero": { "title": "Your community, your rules", "subtitle": "A discreet social network for adults.", "cta": "Enter" },
+      "categories": { "naturists": "Naturists", "swingers": "Swingers", "bdsm": "BDSM", "shibari": "Shibari" }
+    },
+    "feed": { "title": "Feed", "empty": "Nothing here yet. Follow more members.", "loadMore": "Load more" },
+    "messages": { "title": "Messages", "empty": "No messages. Start a conversation.", "send": "Send", "placeholder": "Write a message…" },
+    "profile": { "title": "Profile", "edit": "Edit profile", "logout": "Sign out" },
+    "footer": { "about": "About", "contact": "Contact", "privacy": "Privacy policy", "terms": "Terms of use", "age": "For adults 18+ only" },
+    "categories": { "naturists": "Naturists", "swingers": "Swingers", "bdsm": "BDSM", "shibari": "Shibari" }
+  }
+}

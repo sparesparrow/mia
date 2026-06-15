@@ -1,0 +1,16 @@
+{
+  "name": "@libertin/i18n",
+  "version": "0.0.1",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./locales.json": "./locales.json"
+  },
+  "dependencies": {
+    "i18next": "^24.2.0",
+    "react-i18next": "^15.2.0"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

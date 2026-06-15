@@ -1,0 +1,12 @@
+{
+  "name": "@libertin/theme",
+  "version": "0.0.1",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./tokens.css": "./tokens.css"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}
