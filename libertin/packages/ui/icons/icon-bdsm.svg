@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-label="BDSM">
+  <circle cx="12" cy="12" r="10" fill="#F20B49" opacity="0.12"/>
+  <circle cx="12" cy="12" r="10" stroke="#F20B49" stroke-width="1.5"/>
+  <text x="12" y="16" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#F20B49">B</text>
+</svg>

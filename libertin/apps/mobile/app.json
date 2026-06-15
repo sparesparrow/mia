@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Libertin",
+    "slug": "libertin",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"],
+    "sdkVersion": "52.0.0",
+    "splash": { "backgroundColor": "#F20B49" }
+  }
+}

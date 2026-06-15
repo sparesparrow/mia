@@ -1,0 +1,227 @@
+openapi: 3.1.0
+info:
+  title: Libertin API
+  version: 0.1.0
+  description: Snapshot of the Libertin (swingerslife.cz) backend API.
+x-snapshot-date: "2026-06-15"
+x-snapshot-note: >
+  Frozen contract. Run /contract-check to detect drift.
+  Never call the API without going through packages/api/src/client.ts.
+
+servers:
+  - url: https://api.libertin.cz/v1
+    description: Production (requires credentials)
+  - url: http://localhost:3001/v1
+    description: Local MSW mock
+
+paths:
+  /auth/login:
+    post:
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/register:
+    post:
+      operationId: authRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /auth/verify:
+    post:
+      operationId: authVerify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VerifyRequest' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VerifyResponse' }
+
+  /feed:
+    get:
+      operationId: getFeed
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: limit, in: query, schema: { type: integer, default: 20, maximum: 100 } }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedResponse' }
+
+  /messages:
+    get:
+      operationId: getMessages
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessagesResponse' }
+
+  /profile:
+    get:
+      operationId: getProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+    patch:
+      operationId: updateProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateProfileRequest' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+
+    RegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+
+    VerifyRequest:
+      type: object
+      required: [token]
+      properties:
+        token: { type: string }
+
+    VerifyResponse:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean }
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user: { $ref: '#/components/schemas/User' }
+
+    User:
+      type: object
+      required: [id, email, verified]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        verified: { type: boolean }
+        displayName: { type: string }
+        avatar: { type: string, format: uri, nullable: true }
+
+    Profile:
+      type: object
+      required: [id, email, displayName]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        displayName: { type: string }
+        avatar: { type: string, format: uri, nullable: true }
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        displayName: { type: string }
+        avatar: { type: string, format: uri }
+
+    FeedItem:
+      type: object
+      required: [id, type, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [post, photo, event] }
+        content: { type: string, nullable: true }
+        author: { $ref: '#/components/schemas/User' }
+        createdAt: { type: string, format: date-time }
+
+    FeedResponse:
+      type: object
+      required: [items, total]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/FeedItem' } }
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+
+    Conversation:
+      type: object
+      required: [id, participant, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        participant: { $ref: '#/components/schemas/User' }
+        lastMessage: { type: string, nullable: true }
+        updatedAt: { type: string, format: date-time }
+        unreadCount: { type: integer }
+
+    MessagesResponse:
+      type: object
+      required: [conversations]
+      properties:
+        conversations: { type: array, items: { $ref: '#/components/schemas/Conversation' } }
+
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+        code: { type: string }

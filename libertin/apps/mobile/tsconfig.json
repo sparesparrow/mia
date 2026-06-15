@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "lib": ["ES2022"], "jsx": "react-native", "moduleResolution": "bundler" },
+  "include": ["src/**/*", "app.json"]
+}
