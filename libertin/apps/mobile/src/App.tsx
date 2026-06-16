@@ -1,18 +1,38 @@
+import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { initI18n } from '@libertin/i18n';
+import { AuthFlow } from './AuthFlow';
+import { server } from './mocks/native';
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Boot offline against MSW mocks in development.
+    if (__DEV__) {
+      server.listen({ onUnhandledRequest: 'bypass' });
+    }
+    let active = true;
+    void initI18n('cs').then(() => {
+      if (active) setReady(true);
+    });
+    return () => {
+      active = false;
+      if (__DEV__) server.close();
+    };
+  }, []);
+
+  if (!ready) return null;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Libertin</Text>
-      <Text style={styles.sub}>Phase 1 — skeleton OK</Text>
-      <StatusBar style="light" />
-    </View>
+    <SafeAreaView style={styles.root}>
+      <AuthFlow />
+      <StatusBar style="dark" />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAF9', alignItems: 'center', justifyContent: 'center' },
-  heading: { fontSize: 32, fontWeight: '700', color: '#F20B49' },
-  sub: { fontSize: 16, color: '#1E1B1B', marginTop: 8 },
+  root: { flex: 1, backgroundColor: '#FAFAF9' },
 });

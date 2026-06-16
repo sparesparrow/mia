@@ -4,9 +4,8 @@
   "main": "./index.ts",
   "exports": {
     ".": "./index.ts",
+    "./native": "./native.ts",
     "./tokens.css": "./tokens.css"
   },
-  "devDependencies": {
-    "typescript": "*"
-  }
+  "devDependencies": { "typescript": "*" }
 }

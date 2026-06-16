@@ -2,7 +2,11 @@
   "name": "@libertin/api",
   "version": "0.0.1",
   "main": "./src/index.ts",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./handlers": "./src/mocks/handlers.ts"
+  },
   "dependencies": { "msw": "^2.6.4" },
   "devDependencies": { "typescript": "*" }
 }

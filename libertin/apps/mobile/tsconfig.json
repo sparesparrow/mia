@@ -1,5 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": { "lib": ["ES2022"], "jsx": "react-native", "moduleResolution": "bundler" },
-  "include": ["src/**/*", "app.json"]
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "types": ["react-native", "expo"]
+  },
+  "include": ["src/**/*", "index.js", "app.json"]
 }
