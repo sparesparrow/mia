@@ -412,24 +412,9 @@ customers.forEach(customer => {
         }
     });
 
-    // Copy shared assets from web/assets to dist/customer/
-    const sharedAssetsDir = path.join(__dirname, '..', 'assets');
+    // Copy per-customer assets from web/assets/<customer>/ to dist/<customer>/assets/
     const destAssetsDir = path.join(distDir, `${customer.name}`, 'assets');
-
     const custAssetsDir = path.join(__dirname, '..', 'assets', `${customer.name}`);
-    if (fs.existsSync(custAssetsDir)) {
-        // Ensure destination directory exists
-        fs.mkdirSync(destAssetsDir, { recursive: true });
-        fs.readdirSync(custAssetsDir).forEach(assetFile => {
-            const assetSourcePath = path.join(custAssetsDir, assetFile);
-            const assetDestPath = path.join(destAssetsDir, assetFile);
-            if (fs.statSync(assetSourcePath).isFile()) {
-                fs.copyFileSync(assetSourcePath, assetDestPath);
-                console.log(`✓ Copied shared asset ${assetFile} to ${customer.name}/assets/`);
-            }
-        });
-    }
-
     if (fs.existsSync(custAssetsDir)) {
         // Ensure destination directory exists
         fs.mkdirSync(destAssetsDir, { recursive: true });

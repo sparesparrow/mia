@@ -190,6 +190,8 @@
                 window.I18nLoader.init({
                     defaultLanguage: savedLang,
                     i18nDataPath: '../i18n/common.yaml',
+                }).catch(function (error) {
+                    console.warn('Failed to initialize i18n', error);
                 });
             }
 
