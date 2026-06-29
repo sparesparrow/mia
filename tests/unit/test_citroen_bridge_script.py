@@ -25,6 +25,21 @@ def test_decode_hex_measurement_parses_valid_payload():
     assert rpm == 2000.0
 
 
+def test_parse_hex_val_strips_variable_length_prefix():
+    """The low-level parser should strip the exact prefix length, not a fixed byte count."""
+    module = load_citroen_bridge_module()
+
+    assert module.parse_hex_val("41 0D 3C", "41") == "0D3C"
+    assert module.parse_hex_val("41 0D 3C", "410D") == "3C"
+
+
+def test_default_zmq_pub_port_matches_telemetry_pubsub():
+    """Legacy bridge should publish on the canonical telemetry PUB/SUB port by default."""
+    module = load_citroen_bridge_module()
+
+    assert module.DEFAULT_ZMQ_PUB_PORT == 5556
+
+
 def test_decode_hex_measurement_returns_zero_on_invalid_hex(caplog):
     """Malformed payloads should return the existing zero default and emit a warning."""
     module = load_citroen_bridge_module()
