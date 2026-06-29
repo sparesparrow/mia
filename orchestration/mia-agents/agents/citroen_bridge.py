@@ -2,13 +2,28 @@ import logging
 import os
 import sys
 import time
-from typing import Callable, Optional
+import importlib.util
+from pathlib import Path
+from typing import Any, Callable, Optional
 
-import serial
-import zmq
+try:
+    import serial
+except ImportError:  # pragma: no cover - exercised in lean CI environments
+    serial = None
 
-# Add project root to sys.path to allow importing 'Mia' package
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+try:
+    import zmq
+except ImportError:  # pragma: no cover - exercised in lean CI environments
+    zmq = None
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MIA_AGENTS_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_ZMQ_PUB_PORT = 5556
+
+for import_root in (PROJECT_ROOT, MIA_AGENTS_ROOT):
+    import_root_str = str(import_root)
+    if import_root_str not in sys.path:
+        sys.path.insert(0, import_root_str)
 
 # Attempt to import generated FlatBuffers classes
 # In a real setup, these would be generated into a known python path
@@ -17,7 +32,24 @@ try:
 except ImportError:
     build_citroen_telemetry = None
 
-from agents import psa_decoder
+
+def _load_local_psa_decoder() -> Any:
+    """Load the sibling PSA decoder without depending on the ambiguous root agents package."""
+    decoder_path = Path(__file__).with_name("psa_decoder.py")
+    spec = importlib.util.spec_from_file_location("mia_agents_psa_decoder", decoder_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load PSA decoder from {decoder_path}")
+
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+try:
+    from . import psa_decoder
+except ImportError:
+    psa_decoder = _load_local_psa_decoder()
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +59,7 @@ def parse_hex_val(resp: str, prefix: str = '41') -> str:
     clean = resp.replace(" ", "").replace(">", "").strip()
     if prefix and prefix in clean:
         idx = clean.find(prefix)
-        return clean[idx + 4:]
+        return clean[idx + len(prefix):]
     return clean
 
 
@@ -53,7 +85,8 @@ def decode_hex_measurement(
         )
         return 0.0
 
-def main():
+
+def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s'
@@ -62,7 +95,14 @@ def main():
     # Configuration
     serial_port = os.environ.get('ELM_SERIAL_PORT', '/dev/ttyUSB0')
     baud_rate = int(os.environ.get('ELM_BAUD_RATE', 38400))
-    zmq_pub_port = int(os.environ.get('ZMQ_PUB_PORT', 5557))
+    zmq_pub_port = int(os.environ.get('ZMQ_PUB_PORT', DEFAULT_ZMQ_PUB_PORT))
+
+    if zmq is None:
+        logging.error(
+            "pyzmq is required to publish telemetry; install "
+            "orchestration/mia-agents/agents/requirements.txt"
+        )
+        return
 
     # Setup ZMQ
     context = zmq.Context()
@@ -71,10 +111,17 @@ def main():
     logging.info(f"ZMQ Publisher bound to tcp://*:{zmq_pub_port}")
 
     # Setup Serial
-    ser: Optional[serial.Serial] = None
+    ser: Optional[Any] = None
     if os.environ.get('ELM_MOCK', '0') == '1':
         logging.info("Starting in MOCK mode")
     else:
+        if serial is None:
+            logging.error(
+                "pyserial is required unless ELM_MOCK=1; install "
+                "orchestration/mia-agents/agents/requirements.txt"
+            )
+            return
+
         try:
             ser = serial.Serial(serial_port, baud_rate, timeout=1)
             logging.info(f"Connected to {serial_port} at {baud_rate} baud")

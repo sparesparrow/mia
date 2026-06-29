@@ -1,11 +1,27 @@
 import unittest
+import importlib.util
 import sys
-import os
+from pathlib import Path
 
-# Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from agents import psa_decoder
+def load_psa_decoder_module():
+    """Import the legacy PSA decoder from its current mia-agents location."""
+    module_path = (
+        Path(__file__).resolve().parents[1]
+        / "orchestration"
+        / "mia-agents"
+        / "agents"
+        / "psa_decoder.py"
+    )
+    spec = importlib.util.spec_from_file_location("mia_agents_psa_decoder", module_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+psa_decoder = load_psa_decoder_module()
 
 
 class TestPsaDecoder(unittest.TestCase):
