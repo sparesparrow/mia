@@ -106,7 +106,7 @@
 <div class="transcript" id="transcript">
   <div class="line">
     <span class="role sys">SYS</span>
-    <span class="text sys">Čekám na připojení k ws://localhost:8432 …</span>
+    <span class="text sys" id="bootMsg">Čekám na připojení …</span>
   </div>
 </div>
 
@@ -118,7 +118,23 @@
 </footer>
 
 <script>
-const WS_URL = 'ws://localhost:8432/ws';
+// Derive WebSocket URL from current location so the page works in any deployment.
+// Override at runtime by setting window.MIA_CHATKA_WS_URL before this script runs,
+// or via the ?ws= query parameter (e.g. ?ws=ws://demo.local:8432/ws).
+const WS_URL = (function () {
+  const override = (typeof window !== 'undefined') && (
+    new URLSearchParams(window.location.search).get('ws') ||
+    window.MIA_CHATKA_WS_URL
+  );
+  if (override) return override;
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  // Default port matches the chatka simulator (python server.py listens on 8432).
+  const host = window.location.hostname || 'localhost';
+  const port = window.location.port || '8432';
+  return `${proto}//${host}:${port}/ws`;
+})();
+const bootMsgEl = document.getElementById('bootMsg');
+if (bootMsgEl) bootMsgEl.textContent = `Čekám na připojení k ${WS_URL} …`;
 let ws, callerN = 0, targetN = 0, running = false;
 
 function connect() {
