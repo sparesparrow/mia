@@ -28,17 +28,21 @@
                 <h1>AI-SERVIS</h1>
                 <span class="subtitle">Agent Team</span>
             </div>
-            <nav class="header-nav">
+            <nav class="header-nav" aria-label="Agent portal navigation">
                 <a href="../team/" class="nav-link">
                     <i class="fas fa-arrow-left"></i> Team Portal
                 </a>
                 <a href="../../" class="nav-link">Home</a>
                 <!-- Language switcher -->
-                <button class="btn-lang" data-lang="en" title="English">EN</button>
-                <button class="btn-lang" data-lang="cs" title="Česky">CS</button>
+                <button class="btn-lang" type="button" data-lang="en" title="English" aria-label="Switch language to English">EN</button>
+                <button class="btn-lang" type="button" data-lang="cs" title="Česky" aria-label="Přepnout jazyk na češtinu">CS</button>
             </nav>
             <div class="header-actions">
-                <button class="btn-icon" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">
+                <button class="btn-icon btn-tone" id="toneBtn" type="button" aria-label="Use professional tone" aria-pressed="false">
+                    <i class="fas fa-user-tie"></i>
+                    <span data-i18n-path="agents.tone.professional_short">Pro</span>
+                </button>
+                <button class="btn-icon" id="themeBtn" type="button" title="Toggle theme" aria-label="Switch to light theme" aria-pressed="false" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
             </div>
@@ -49,15 +53,110 @@
     <main class="agents-main">
 
         <div class="section-header">
-            <h2 data-i18n="agents.title">Your Agent Team</h2>
-            <p data-i18n="agents.subtitle">Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
+            <h2 data-i18n-path="agents.title">Your Agent Team</h2>
+            <p data-i18n-path="agents.subtitle">Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
         </div>
+
+        <!-- Workflow Rail -->
+        <section class="workflow-rail" aria-label="Agent workflow stages">
+            <div class="workflow-step active" data-workflow-stage="define">
+                <strong data-i18n-path="agents.workflow.define.title">Define</strong>
+                <span data-i18n-path="agents.workflow.define.body">Frame the goal</span>
+            </div>
+            <div class="workflow-step" data-workflow-stage="review">
+                <strong data-i18n-path="agents.workflow.review.title">Review</strong>
+                <span data-i18n-path="agents.workflow.review.body">Check risks</span>
+            </div>
+            <div class="workflow-step" data-workflow-stage="execute">
+                <strong data-i18n-path="agents.workflow.execute.title">Execute</strong>
+                <span data-i18n-path="agents.workflow.execute.body">Apply the fix</span>
+            </div>
+            <div class="workflow-step" data-workflow-stage="verify">
+                <strong data-i18n-path="agents.workflow.verify.title">Verify</strong>
+                <span data-i18n-path="agents.workflow.verify.body">Confirm done</span>
+            </div>
+        </section>
+
+        <!-- System Status -->
+        <section class="system-status" aria-live="polite" aria-label="Agent system status">
+            <div class="status-pill" id="statusApi">
+                <i class="fas fa-server"></i>
+                <span data-i18n-path="agents.system.api_checking">API checking...</span>
+            </div>
+            <div class="status-pill" id="statusConfig">
+                <i class="fas fa-id-card"></i>
+                <span data-i18n-path="agents.system.config_loading">Agent config loading...</span>
+            </div>
+            <button class="status-details-btn" type="button" id="diagnosticsToggle" aria-expanded="false" aria-controls="diagnosticsPanel">
+                <i class="fas fa-stethoscope"></i>
+                <span data-i18n-path="agents.system.diagnostics">Diagnostics</span>
+            </button>
+        </section>
+
+        <section class="diagnostics-panel" id="diagnosticsPanel" hidden>
+            <div class="diagnostics-grid">
+                <div><strong data-i18n-path="agents.system.api">API</strong><span id="diagApi">—</span></div>
+                <div><strong>Orchestrator</strong><span id="diag-orchestrator">—</span></div>
+                <div><strong>Evaluator</strong><span id="diag-evaluator">—</span></div>
+                <div><strong>Executor</strong><span id="diag-executor">—</span></div>
+            </div>
+            <div class="diagnostics-message" id="diagMessage" role="status">
+                <strong data-i18n-path="agents.diagnostics.action_title">Recommended action</strong>
+                <span data-i18n-path="agents.diagnostics.checking">Checking agent services...</span>
+            </div>
+            <details class="dev-panel" id="agentIdPanel">
+                <summary data-i18n-path="agents.id_manager.title">Local agent ID manager</summary>
+                <p data-i18n-path="agents.id_manager.description">Store development agent IDs locally. Nothing is sent to telemetry.</p>
+                <div class="id-manager-grid">
+                    <label><span>Orchestrator</span><input id="agentIdInput-orchestrator" type="text" autocomplete="off" spellcheck="false" placeholder="agent_..."></label>
+                    <label><span>Evaluator</span><input id="agentIdInput-evaluator" type="text" autocomplete="off" spellcheck="false" placeholder="agent_..."></label>
+                    <label><span>Executor</span><input id="agentIdInput-executor" type="text" autocomplete="off" spellcheck="false" placeholder="agent_..."></label>
+                </div>
+                <div class="dev-actions">
+                    <button class="btn-chat" type="button" id="saveAgentIds"><span data-i18n-path="agents.id_manager.save">Save local IDs</span></button>
+                    <button class="btn-chat" type="button" id="clearAgentIds"><span data-i18n-path="agents.id_manager.clear">Clear local IDs</span></button>
+                </div>
+            </details>
+            <details class="dev-panel" id="qaLogPanel">
+                <summary data-i18n-path="agents.qa_log.title">Local QA interaction log</summary>
+                <p data-i18n-path="agents.qa_log.description">Telemetry-free log stored only in this browser for local QA.</p>
+                <ol class="qa-log-list" id="qaLogList"></ol>
+                <div class="dev-actions">
+                    <button class="btn-chat" type="button" id="copyQaLog"><span data-i18n-path="agents.qa_log.copy">Copy log</span></button>
+                    <button class="btn-chat" type="button" id="clearQaLog"><span data-i18n-path="agents.qa_log.clear">Clear log</span></button>
+                </div>
+            </details>
+        </section>
+
+        <!-- Task Mode Selector -->
+        <section class="task-modes" aria-label="Choose task mode">
+            <button class="mode-chip active" type="button" data-mode="plan" aria-pressed="true">
+                <i class="fas fa-diagram-project"></i>
+                <span data-i18n-path="agents.modes.plan">Plan a task</span>
+            </button>
+            <button class="mode-chip" type="button" data-mode="review" aria-pressed="false">
+                <i class="fas fa-magnifying-glass-chart"></i>
+                <span data-i18n-path="agents.modes.review">Review quality</span>
+            </button>
+            <button class="mode-chip" type="button" data-mode="execute" aria-pressed="false">
+                <i class="fas fa-screwdriver-wrench"></i>
+                <span data-i18n-path="agents.modes.execute">Execute / fix</span>
+            </button>
+            <button class="mode-chip" type="button" data-mode="diagnose" aria-pressed="false">
+                <i class="fas fa-bug"></i>
+                <span data-i18n-path="agents.modes.diagnose">Diagnose issue</span>
+            </button>
+        </section>
+
+        <p class="mode-helper" id="modeHelper" data-i18n-path="agents.modes.plan_helper">
+            Start with Orchestrator to frame goals, dependencies, and a clean execution plan.
+        </p>
 
         <!-- Agent Cards -->
         <section class="agents-grid" id="agentsGrid">
 
             <!-- ORCHESTRATOR -->
-            <div class="agent-card" data-agent="orchestrator" id="card-orchestrator">
+            <div class="agent-card" data-agent="orchestrator" id="card-orchestrator" role="group" tabindex="-1" aria-labelledby="name-orchestrator" aria-describedby="role-orchestrator status-orchestrator">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -68,27 +167,33 @@
                     <div class="agent-status-dot idle" id="dot-orchestrator"></div>
                 </div>
 
-                <div class="agent-name">ORCHESTRATOR</div>
+                <div class="agent-name" id="name-orchestrator">ORCHESTRATOR</div>
                 <div class="agent-title">The Feral Maestro</div>
-                <div class="agent-role" data-i18n="agents.orchestrator.role">Planning · Coordination · Creative Chaos</div>
+                <div class="agent-role" id="role-orchestrator" data-i18n-path="agents.orchestrator.role">Planning · Coordination · Creative Chaos</div>
 
-                <div class="agent-status-line" id="status-orchestrator">
+                <ul class="best-for">
+                    <li data-i18n-path="agents.orchestrator.best1">Ambiguous goals</li>
+                    <li data-i18n-path="agents.orchestrator.best2">Dependency planning</li>
+                    <li data-i18n-path="agents.orchestrator.best3">Agent handoffs</li>
+                </ul>
+
+                <div class="agent-status-line" id="status-orchestrator" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('orchestrator')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('orchestrator')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('orchestrator')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('orchestrator')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
             <!-- EVALUATOR -->
-            <div class="agent-card" data-agent="evaluator" id="card-evaluator">
+            <div class="agent-card" data-agent="evaluator" id="card-evaluator" role="group" tabindex="-1" aria-labelledby="name-evaluator" aria-describedby="role-evaluator status-evaluator">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -99,27 +204,33 @@
                     <div class="agent-status-dot idle" id="dot-evaluator"></div>
                 </div>
 
-                <div class="agent-name">EVALUATOR</div>
+                <div class="agent-name" id="name-evaluator">EVALUATOR</div>
                 <div class="agent-title">The Unhinged Analyst</div>
-                <div class="agent-role" data-i18n="agents.evaluator.role">Code Review · Metrics · Clinical Devastation</div>
+                <div class="agent-role" id="role-evaluator" data-i18n-path="agents.evaluator.role">Code Review · Metrics · Clinical Devastation</div>
 
-                <div class="agent-status-line" id="status-evaluator">
+                <ul class="best-for">
+                    <li data-i18n-path="agents.evaluator.best1">Risk review</li>
+                    <li data-i18n-path="agents.evaluator.best2">Quality gates</li>
+                    <li data-i18n-path="agents.evaluator.best3">Bug triage</li>
+                </ul>
+
+                <div class="agent-status-line" id="status-evaluator" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('evaluator')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('evaluator')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('evaluator')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('evaluator')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
             <!-- EXECUTOR -->
-            <div class="agent-card" data-agent="executor" id="card-executor">
+            <div class="agent-card" data-agent="executor" id="card-executor" role="group" tabindex="-1" aria-labelledby="name-executor" aria-describedby="role-executor status-executor">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -130,54 +241,116 @@
                     <div class="agent-status-dot idle" id="dot-executor"></div>
                 </div>
 
-                <div class="agent-name">EXECUTOR</div>
+                <div class="agent-name" id="name-executor">EXECUTOR</div>
                 <div class="agent-title">The Obsessive Closer</div>
-                <div class="agent-role" data-i18n="agents.executor.role">Execution · Deployment · Bug Hunting</div>
+                <div class="agent-role" id="role-executor" data-i18n-path="agents.executor.role">Execution · Deployment · Bug Hunting</div>
 
-                <div class="agent-status-line" id="status-executor">
+                <ul class="best-for">
+                    <li data-i18n-path="agents.executor.best1">Implementation</li>
+                    <li data-i18n-path="agents.executor.best2">Deployment steps</li>
+                    <li data-i18n-path="agents.executor.best3">Closing loops</li>
+                </ul>
+
+                <div class="agent-status-line" id="status-executor" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('executor')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('executor')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('executor')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('executor')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
         </section>
 
+        <!-- Agent handoff guidance -->
+        <section class="handoff-panel" aria-labelledby="handoffTitle">
+            <div class="handoff-copy">
+                <p class="eyebrow" data-i18n-path="agents.handoff.eyebrow">Recommended handoff</p>
+                <h3 id="handoffTitle" data-i18n-path="agents.handoff.title">Start broad, verify, then execute.</h3>
+                <p data-i18n-path="agents.handoff.description">Use the agents as a pipeline when a task needs more than a quick answer.</p>
+                <button class="btn-chat copy-packet-btn" type="button" id="copyHandoffPacket">
+                    <i class="fas fa-copy"></i>
+                    <span data-i18n-path="agents.handoff.copy_packet">Copy handoff packet</span>
+                </button>
+            </div>
+            <ol class="handoff-steps">
+                <li class="handoff-step orchestrator-step">
+                    <strong data-i18n-path="agents.handoff.orchestrator.title">1 · Orchestrator</strong>
+                    <span data-i18n-path="agents.handoff.orchestrator.body">Frames the goal, plan, and dependencies.</span>
+                </li>
+                <li class="handoff-step evaluator-step">
+                    <strong data-i18n-path="agents.handoff.evaluator.title">2 · Evaluator</strong>
+                    <span data-i18n-path="agents.handoff.evaluator.body">Reviews risk, bugs, and quality gates.</span>
+                </li>
+                <li class="handoff-step executor-step">
+                    <strong data-i18n-path="agents.handoff.executor.title">3 · Executor</strong>
+                    <span data-i18n-path="agents.handoff.executor.body">Implements, tests, and closes the loop.</span>
+                </li>
+            </ol>
+            <div class="handoff-packet" id="handoffPacket" aria-label="Structured handoff packet">
+                <div><strong data-i18n-path="agents.packet.goal">Goal</strong><span id="packetGoal">Frame the task and choose the right next agent.</span></div>
+                <div><strong data-i18n-path="agents.packet.context">Context</strong><span id="packetContext">Current page: local agent workflow console.</span></div>
+                <div><strong data-i18n-path="agents.packet.risks">Risks</strong><span id="packetRisks">Missing API configuration may block voice sessions.</span></div>
+                <div><strong data-i18n-path="agents.packet.acceptance">Acceptance</strong><span id="packetAcceptance">Next agent receives goal, context, risks, and expected output.</span></div>
+                <div><strong data-i18n-path="agents.packet.next_owner">Next owner</strong><span id="packetNextOwner">Orchestrator</span></div>
+            </div>
+        </section>
+
         <!-- Chat / Widget Container -->
-        <section class="chat-section">
+        <section class="chat-section" aria-labelledby="conversationTitle">
+            <h3 class="sr-only" id="conversationTitle">Conversation</h3>
             <div class="chat-container" id="chatContainer">
                 <div class="chat-placeholder" id="chatPlaceholder">
                     <i class="fas fa-robot"></i>
-                    <span data-i18n="agents.select_prompt">Select an agent and click <strong>Talk</strong> to begin a voice session</span>
+                    <span data-i18n-path="agents.select_prompt">Select an agent and click Talk to begin a voice session</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-light);">
-                        <span data-i18n="agents.keyboard_hint">Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select · <kbd>Esc</kbd> to end</span>
+                        <span data-i18n-path="agents.keyboard_hint">Press 1 2 3 to focus · Esc to end</span>
                     </span>
                 </div>
+                <div class="connection-timeline" id="connectionTimeline" hidden>
+                    <div class="timeline-step" data-step="config"><span data-i18n-path="agents.timeline.config">Load config</span></div>
+                    <div class="timeline-step" data-step="signed"><span data-i18n-path="agents.timeline.signed">Request signed URL</span></div>
+                    <div class="timeline-step" data-step="widget"><span data-i18n-path="agents.timeline.widget">Start widget</span></div>
+                    <div class="timeline-step" data-step="connected"><span data-i18n-path="agents.timeline.connected">Connected</span></div>
+                </div>
                 <div class="widget-wrapper" id="widgetWrapper" style="display:none;"></div>
+                <div class="text-fallback" id="textFallback">
+                    <label for="textFallbackInput" data-i18n-path="agents.text_fallback.label">Text fallback / handoff note</label>
+                    <textarea id="textFallbackInput" rows="4" data-i18n-placeholder="agents.text_fallback.placeholder" placeholder="Paste a task, bug, or handoff note here if voice is unavailable."></textarea>
+                    <div class="text-fallback-actions">
+                        <button class="btn-chat" type="button" id="copyTextFallback"><i class="fas fa-copy"></i><span data-i18n-path="agents.text_fallback.copy">Copy note</span></button>
+                        <button class="btn-chat" type="button" id="clearTextFallback"><i class="fas fa-eraser"></i><span data-i18n-path="agents.text_fallback.clear">Clear</span></button>
+                    </div>
+                </div>
+                <div class="session-summary" id="sessionSummary" hidden>
+                    <strong data-i18n-path="agents.summary.title">Next best handoff</strong>
+                    <p id="summaryText" data-i18n-path="agents.summary.default">End a session to see the recommended next agent.</p>
+                    <button class="btn-chat" type="button" id="handoffCta">
+                        <span data-i18n-path="agents.summary.start_next">Start next agent</span>
+                    </button>
+                </div>
             </div>
         </section>
 
         <!-- Keyboard shortcuts reference -->
         <div class="shortcuts-bar">
-            <div class="shortcut"><kbd>1</kbd> <span data-i18n="agents.shortcuts.orchestrator">Orchestrator</span></div>
-            <div class="shortcut"><kbd>2</kbd> <span data-i18n="agents.shortcuts.evaluator">Evaluator</span></div>
-            <div class="shortcut"><kbd>3</kbd> <span data-i18n="agents.shortcuts.executor">Executor</span></div>
-            <div class="shortcut"><kbd>Esc</kbd> <span data-i18n="agents.shortcuts.end_session">End session</span></div>
-            <div class="shortcut"><kbd>T</kbd> <span data-i18n="agents.shortcuts.toggle_theme">Toggle theme</span></div>
+            <div class="shortcut"><kbd>1</kbd> <span data-i18n-path="agents.shortcuts.orchestrator">Orchestrator</span></div>
+            <div class="shortcut"><kbd>2</kbd> <span data-i18n-path="agents.shortcuts.evaluator">Evaluator</span></div>
+            <div class="shortcut"><kbd>3</kbd> <span data-i18n-path="agents.shortcuts.executor">Executor</span></div>
+            <div class="shortcut"><kbd>Esc</kbd> <span data-i18n-path="agents.shortcuts.end_session">End session</span></div>
+            <div class="shortcut"><kbd>T</kbd> <span data-i18n-path="agents.shortcuts.toggle_theme">Toggle theme</span></div>
         </div>
 
     </main>
 
     <!-- Toast container -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
     <!-- i18n loader (reuses existing MIA infrastructure) -->
     <script src="../js/i18n-loader.js"></script>
@@ -186,8 +359,9 @@
         // The i18n-loader reads data-i18n attributes and translates them.
         (function () {
             var savedLang = localStorage.getItem('mia-lang') || 'en';
+            document.documentElement.lang = savedLang;
             if (window.I18nLoader) {
-                window.I18nLoader.init({
+                window.__I18N_READY__ = window.I18nLoader.init({
                     defaultLanguage: savedLang,
                     i18nDataPath: '../i18n/common.yaml',
                 }).catch(function (error) {
@@ -199,6 +373,7 @@
             document.querySelectorAll('.btn-lang').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var lang = btn.getAttribute('data-lang');
+                    document.documentElement.lang = lang;
                     if (window.I18nLoader) window.I18nLoader.setLanguage(lang);
                     localStorage.setItem('mia-lang', lang);
                 });

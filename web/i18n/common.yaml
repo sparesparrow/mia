@@ -350,12 +350,15 @@ agents:
   subtitle:
     en: Three unhinged, sarcastic, and genuinely excellent conversational AI agents.
     cs: Tři rozjetí, sarkastičtí a skutečně výborní konverzační AI agenti.
+  recommended:
+    en: Recommended
+    cs: Doporučeno
   select_prompt:
     en: Select an agent and click Talk to begin a voice session
     cs: Vyberte agenta a klikněte na Mluvit pro zahájení hlasové relace
   keyboard_hint:
-    en: "Press 1 2 3 to select · Esc to end"
-    cs: "Stiskněte 1 2 3 pro výběr · Esc pro ukončení"
+    en: "Press 1 2 3 to focus · Esc to end"
+    cs: "Stiskněte 1 2 3 pro zaměření · Esc pro ukončení"
   status:
     idle:
       en: Idle — click Talk to start
@@ -369,6 +372,15 @@ agents:
     error:
       en: Connection error
       cs: Chyba připojení
+    loading:
+      en: Loading agent configuration...
+      cs: Načítám konfiguraci agenta...
+    unavailable:
+      en: Unavailable — missing agent ID
+      cs: Nedostupný — chybí ID agenta
+    ready:
+      en: Ready for voice session
+      cs: Připraven k hlasové relaci
   buttons:
     talk:
       en: Talk
@@ -379,18 +391,203 @@ agents:
     focus:
       en: Focus
       cs: Zaměřit
+  toast:
+    config_unavailable:
+      en: Agent configuration unavailable. Using cached data if present.
+      cs: Konfigurace agentů není dostupná. Používám uložená data, pokud existují.
+    agent_unavailable:
+      en: This agent is not yet available. Please try again later or contact support.
+      cs: Tento agent zatím není dostupný. Zkuste to později nebo kontaktujte podporu.
+    connection_error:
+      en: Connection error
+      cs: Chyba připojení
+    signed_url_fallback:
+      en: Signed URL unavailable; using public agent ID fallback for this session.
+      cs: Podepsaná URL není dostupná; pro tuto relaci používám veřejné ID agenta.
+    handoff_error:
+      en: Could not start the next agent handoff.
+      cs: Nepodařilo se spustit předání dalšímu agentovi.
+    dismiss:
+      en: Dismiss notification
+      cs: Zavřít oznámení
+  theme:
+    switch_light:
+      en: Switch to light theme
+      cs: Přepnout na světlé téma
+    switch_dark:
+      en: Switch to dark theme
+      cs: Přepnout na tmavé téma
+  voice_consent:
+    message:
+      en: Voice sessions may use your microphone and the ElevenLabs conversational AI service. Continue?
+      cs: Hlasové relace mohou používat váš mikrofon a konverzační AI službu ElevenLabs. Pokračovat?
+  system:
+    api:
+      en: API
+      cs: API
+    api_checking:
+      en: API checking...
+      cs: Kontroluji API...
+    api_online:
+      en: API online
+      cs: API online
+    api_offline:
+      en: API offline
+      cs: API offline
+    config_loading:
+      en: Agent config loading...
+      cs: Načítám konfiguraci agentů...
+    config_ready:
+      en: Agent config ready
+      cs: Konfigurace agentů připravena
+    config_missing:
+      en: Agent config missing
+      cs: Konfigurace agentů chybí
+    diagnostics:
+      en: Diagnostics
+      cs: Diagnostika
+    configured:
+      en: Configured
+      cs: Nakonfigurováno
+    missing:
+      en: Missing
+      cs: Chybí
+  modes:
+    plan:
+      en: Plan a task
+      cs: Naplánovat úkol
+    review:
+      en: Review quality
+      cs: Zkontrolovat kvalitu
+    execute:
+      en: Execute / fix
+      cs: Provést / opravit
+    diagnose:
+      en: Diagnose issue
+      cs: Diagnostikovat problém
+    plan_helper:
+      en: Start with Orchestrator to frame goals, dependencies, and a clean execution plan.
+      cs: Začněte s Orchestrátorem pro vymezení cíle, závislostí a čistého plánu provedení.
+    review_helper:
+      en: Use Evaluator when the work needs risk review, bug triage, or quality gates.
+      cs: Použijte Hodnotitele, když práce potřebuje kontrolu rizik, triáž chyb nebo kvalitativní brány.
+    execute_helper:
+      en: Use Executor when the plan is clear and the next step is implementation or deployment.
+      cs: Použijte Exekutora, když je plán jasný a dalším krokem je implementace nebo nasazení.
+    diagnose_helper:
+      en: Use Evaluator first to isolate likely causes, then hand the fix to Executor.
+      cs: Nejprve použijte Hodnotitele pro izolaci pravděpodobných příčin, potom předejte opravu Exekutorovi.
   orchestrator:
     role:
       en: Planning · Coordination · Creative Chaos
       cs: Plánování · Koordinace · Kreativní chaos
+    best1:
+      en: Ambiguous goals
+      cs: Nejasné cíle
+    best2:
+      en: Dependency planning
+      cs: Plánování závislostí
+    best3:
+      en: Agent handoffs
+      cs: Předávání mezi agenty
   evaluator:
     role:
       en: Code Review · Metrics · Clinical Devastation
       cs: Code review · Metriky · Klinická devastace
+    best1:
+      en: Risk review
+      cs: Kontrola rizik
+    best2:
+      en: Quality gates
+      cs: Kvalitativní brány
+    best3:
+      en: Bug triage
+      cs: Triáž chyb
   executor:
     role:
       en: Execution · Deployment · Bug Hunting
       cs: Provádění · Nasazení · Lov chyb
+    best1:
+      en: Implementation
+      cs: Implementace
+    best2:
+      en: Deployment steps
+      cs: Kroky nasazení
+    best3:
+      en: Closing loops
+      cs: Uzavírání smyček
+  handoff:
+    eyebrow:
+      en: Recommended handoff
+      cs: Doporučené předání
+    title:
+      en: Start broad, verify, then execute.
+      cs: Začněte plánem, ověřte rizika, potom proveďte.
+    description:
+      en: Use the agents as a pipeline when a task needs more than a quick answer.
+      cs: Když úkol potřebuje víc než rychlou odpověď, použijte agenty jako pracovní tok.
+    orchestrator:
+      title:
+        en: 1 · Orchestrator
+        cs: 1 · Orchestrátor
+      body:
+        en: Frames the goal, plan, and dependencies.
+        cs: Vymezí cíl, plán a závislosti.
+    evaluator:
+      title:
+        en: 2 · Evaluator
+        cs: 2 · Hodnotitel
+      body:
+        en: Reviews risk, bugs, and quality gates.
+        cs: Zkontroluje rizika, chyby a kvalitativní brány.
+    executor:
+      title:
+        en: 3 · Executor
+        cs: 3 · Exekutor
+      body:
+        en: Implements, tests, and closes the loop.
+        cs: Implementuje, otestuje a uzavře smyčku.
+  timeline:
+    config:
+      en: Load config
+      cs: Načíst konfiguraci
+    signed:
+      en: Request signed URL
+      cs: Vyžádat podepsanou URL
+    widget:
+      en: Start widget
+      cs: Spustit widget
+    connected:
+      en: Connected
+      cs: Připojeno
+  summary:
+    title:
+      en: Next best handoff
+      cs: Nejlepší další předání
+    default:
+      en: End a session to see the recommended next agent.
+      cs: Ukončete relaci a zobrazí se doporučený další agent.
+    start_next:
+      en: Start next agent
+      cs: Spustit dalšího agenta
+    start_orchestrator:
+      en: Start Orchestrator
+      cs: Spustit Orchestrátora
+    start_evaluator:
+      en: Start Evaluator
+      cs: Spustit Hodnotitele
+    start_executor:
+      en: Start Executor
+      cs: Spustit Exekutora
+    after_orchestrator:
+      en: Planning complete. Review risks and quality gates with Evaluator next.
+      cs: Plánování hotovo. Pokračujte kontrolou rizik a kvalitativních bran s Hodnotitelem.
+    after_evaluator:
+      en: Review complete. Hand the clarified fix or deployment steps to Executor.
+      cs: Kontrola hotová. Předejte vyjasněnou opravu nebo kroky nasazení Exekutorovi.
+    after_executor:
+      en: Execution complete. Send results back to Evaluator for verification if needed.
+      cs: Provedení hotovo. Podle potřeby vraťte výsledky Hodnotiteli k ověření.
   shortcuts:
     orchestrator:
       en: Orchestrator
