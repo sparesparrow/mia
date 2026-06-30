@@ -369,6 +369,15 @@ agents:
     error:
       en: Connection error
       cs: Chyba připojení
+    loading:
+      en: Loading agent configuration...
+      cs: Načítám konfiguraci agenta...
+    unavailable:
+      en: Unavailable — missing agent ID
+      cs: Nedostupný — chybí ID agenta
+    ready:
+      en: Ready for voice session
+      cs: Připraven k hlasové relaci
   buttons:
     talk:
       en: Talk
@@ -379,6 +388,16 @@ agents:
     focus:
       en: Focus
       cs: Zaměřit
+  toast:
+    config_unavailable:
+      en: Agent configuration unavailable. Using cached data if present.
+      cs: Konfigurace agentů není dostupná. Používám uložená data, pokud existují.
+    agent_unavailable:
+      en: This agent is not yet available. Please try again later or contact support.
+      cs: Tento agent zatím není dostupný. Zkuste to později nebo kontaktujte podporu.
+    connection_error:
+      en: Connection error
+      cs: Chyba připojení
   orchestrator:
     role:
       en: Planning · Coordination · Creative Chaos
@@ -391,6 +410,37 @@ agents:
     role:
       en: Execution · Deployment · Bug Hunting
       cs: Provádění · Nasazení · Lov chyb
+  handoff:
+    eyebrow:
+      en: Recommended handoff
+      cs: Doporučené předání
+    title:
+      en: Start broad, verify, then execute.
+      cs: Začněte plánem, ověřte rizika, potom proveďte.
+    description:
+      en: Use the agents as a pipeline when a task needs more than a quick answer.
+      cs: Když úkol potřebuje víc než rychlou odpověď, použijte agenty jako pracovní tok.
+    orchestrator:
+      title:
+        en: 1 · Orchestrator
+        cs: 1 · Orchestrátor
+      body:
+        en: Frames the goal, plan, and dependencies.
+        cs: Vymezí cíl, plán a závislosti.
+    evaluator:
+      title:
+        en: 2 · Evaluator
+        cs: 2 · Hodnotitel
+      body:
+        en: Reviews risk, bugs, and quality gates.
+        cs: Zkontroluje rizika, chyby a kvalitativní brány.
+    executor:
+      title:
+        en: 3 · Executor
+        cs: 3 · Exekutor
+      body:
+        en: Implements, tests, and closes the loop.
+        cs: Implementuje, otestuje a uzavře smyčku.
   shortcuts:
     orchestrator:
       en: Orchestrator

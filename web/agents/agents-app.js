@@ -37,11 +37,14 @@
         : '';
 
     let activeAgent = null;
+    let configLoaded = false;
 
     // ─── Init ──────────────────────────────────────────────────────────────────
 
     document.addEventListener('DOMContentLoaded', function () {
         loadTheme();
+        setupCards();
+        setupLanguageState();
         loadAgentConfigWithRetry();
         setupKeyboardShortcuts();
     });
@@ -55,19 +58,23 @@
             if (delays[i] > 0) await sleep(delays[i]);
             const ok = await loadAgentConfig();
             if (ok) {
+                configLoaded = true;
                 setAllCardsLoading(false);
+                refreshConfigStatus();
                 return;
             }
         }
         setAllCardsLoading(false);
+        configLoaded = true;
+        refreshConfigStatus();
         // All retries exhausted — show toast but don't crash
-        showToast('Agent configuration unavailable. Using cached data if present.', 'info');
+        showToast(t('agents.toast.config_unavailable', 'Agent configuration unavailable. Using cached data if present.'), 'info');
     }
 
     async function loadAgentConfig() {
         // Try API server first, fall back to localStorage
         try {
-            const resp = await fetch(`${API_BASE}/api/agents/config`, { signal: AbortSignal.timeout(3000) });
+            const resp = await fetchWithTimeout(`${API_BASE}/api/agents/config`, {}, 3000);
             if (resp.ok) {
                 const config = await resp.json();
                 Object.keys(AGENTS).forEach(function (name) {
@@ -99,8 +106,22 @@
             if (!card) return;
             if (loading) {
                 card.classList.add('loading');
+                card.setAttribute('aria-busy', 'true');
+                setStatus(name, t('agents.status.loading', 'Loading agent configuration...'), 'thinking');
             } else {
                 card.classList.remove('loading');
+                card.removeAttribute('aria-busy');
+            }
+        });
+    }
+
+    function refreshConfigStatus() {
+        Object.keys(AGENTS).forEach(function (name) {
+            if (activeAgent === name) return;
+            if (AGENTS[name].agentId) {
+                setAgentState(name, 'idle');
+            } else {
+                setAgentState(name, 'unavailable');
             }
         });
     }
@@ -120,7 +141,8 @@
         if (!agent) return;
 
         if (!agent.agentId) {
-            showToast('This agent is not yet available. Please try again later or contact support.', 'error');
+            setAgentState(agentName, 'unavailable');
+            showToast(t('agents.toast.agent_unavailable', 'This agent is not yet available. Please try again later or contact support.'), 'error');
             return;
         }
 
@@ -140,9 +162,10 @@
         // Falls back to public agent-id if the signed-url endpoint is unavailable (e.g. local dev).
         let widget;
         try {
-            const sigResp = await fetch(
+            const sigResp = await fetchWithTimeout(
                 `${API_BASE}/api/agents/signed-url?agent=${encodeURIComponent(agentName)}`,
-                { signal: AbortSignal.timeout(5000) }
+                {},
+                5000
             );
             if (sigResp.ok) {
                 const { signed_url } = await sigResp.json();
@@ -168,7 +191,7 @@
         });
 
         widget.addEventListener('elevenlabs-convai:error', function (e) {
-            showToast('Connection error: ' + (e.detail || 'unknown'), 'error');
+            showToast(t('agents.toast.connection_error', 'Connection error') + ': ' + formatErrorDetail(e.detail), 'error');
             endCurrentSession();
         });
 
@@ -183,7 +206,9 @@
         document.querySelectorAll('.agent-card').forEach(function (c) {
             c.style.opacity = c.dataset.agent === agentName ? '1' : '0.5';
         });
-        setStatus(agentName, 'Ready for voice session');
+        if (AGENTS[agentName] && AGENTS[agentName].agentId) {
+            setStatus(agentName, t('agents.status.ready', 'Ready for voice session'));
+        }
         setTimeout(function () {
             document.querySelectorAll('.agent-card').forEach(function (c) {
                 c.style.opacity = '1';
@@ -231,22 +256,43 @@
 
         // Update status text
         const messages = {
-            idle:     'Idle — click Talk to start',
-            active:   'Connected — listening...',
-            thinking: 'Processing...',
-            error:    'Connection error',
+            idle:        t('agents.status.idle', 'Idle — click Talk to start'),
+            active:      t('agents.status.active', 'Connected — listening...'),
+            thinking:    t('agents.status.thinking', 'Processing...'),
+            error:       t('agents.status.error', 'Connection error'),
+            unavailable: t('agents.status.unavailable', 'Unavailable — missing agent ID'),
         };
         if (statusLine) {
             statusLine.className = 'agent-status-line' + (state !== 'idle' ? ' ' + state + '-text' : '');
-            statusLine.innerHTML = '<i class="fas fa-circle-dot" style="font-size:0.5rem"></i><span>' + (messages[state] || state) + '</span>';
+            setStatusText(statusLine, messages[state] || state);
         }
     }
 
-    function setStatus(agentName, text) {
+    function setStatus(agentName, text, stateClass) {
         const statusLine = document.getElementById('status-' + agentName);
         if (statusLine) {
-            statusLine.querySelector('span').textContent = text;
+            if (stateClass) {
+                statusLine.className = 'agent-status-line ' + stateClass + '-text';
+            }
+            setStatusText(statusLine, text);
         }
+    }
+
+    function setStatusText(statusLine, text) {
+        let icon = statusLine.querySelector('i');
+        if (!icon) {
+            icon = document.createElement('i');
+            icon.className = 'fas fa-circle-dot';
+            icon.style.fontSize = '0.5rem';
+            statusLine.appendChild(icon);
+        }
+
+        let span = statusLine.querySelector('span');
+        if (!span) {
+            span = document.createElement('span');
+            statusLine.appendChild(span);
+        }
+        span.textContent = text;
     }
 
     function updateTalkButton(agentName, isActive) {
@@ -254,13 +300,71 @@
         if (!card) return;
         const btn = card.querySelector('.btn-talk');
         if (!btn) return;
+        btn.textContent = '';
+        const icon = document.createElement('i');
+        const label = document.createElement('span');
         if (isActive) {
-            btn.innerHTML = '<i class="fas fa-stop"></i> End';
+            icon.className = 'fas fa-stop';
+            label.textContent = t('agents.buttons.end', 'End');
             btn.style.background = 'var(--error-color)';
         } else {
-            btn.innerHTML = '<i class="fas fa-microphone"></i> Talk';
+            icon.className = 'fas fa-microphone';
+            label.textContent = t('agents.buttons.talk', 'Talk');
             btn.style.background = '';
         }
+        btn.appendChild(icon);
+        btn.appendChild(label);
+    }
+
+    function setupCards() {
+        document.querySelectorAll('.agent-card').forEach(function (card) {
+            card.addEventListener('click', function (e) {
+                if (e.target.closest('button, a')) return;
+                focusAgent(card.dataset.agent);
+            });
+            card.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                e.preventDefault();
+                focusAgent(card.dataset.agent);
+            });
+        });
+    }
+
+    function setupLanguageState() {
+        updateLanguageButtons();
+        if (window.I18nLoader && typeof window.I18nLoader.onLanguageChange === 'function') {
+            window.I18nLoader.onLanguageChange(function () {
+                updateLanguageButtons();
+                refreshDynamicCopy();
+            });
+        }
+    }
+
+    function updateLanguageButtons() {
+        const lang = window.I18nLoader ? window.I18nLoader.getLanguage() : (localStorage.getItem('mia-lang') || 'en');
+        document.documentElement.lang = lang;
+        document.querySelectorAll('.btn-lang').forEach(function (btn) {
+            const active = btn.getAttribute('data-lang') === lang;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+    }
+
+    function refreshDynamicCopy() {
+        Object.keys(AGENTS).forEach(function (name) {
+            if (activeAgent === name) {
+                setAgentState(name, 'active');
+                updateTalkButton(name, true);
+            } else if (!configLoaded && !AGENTS[name].agentId) {
+                setStatus(name, t('agents.status.loading', 'Loading agent configuration...'));
+            } else if (AGENTS[name].agentId) {
+                setAgentState(name, 'idle');
+                updateTalkButton(name, false);
+            } else {
+                setAgentState(name, 'unavailable');
+                updateTalkButton(name, false);
+            }
+        });
     }
 
     // ─── Keyboard Shortcuts ────────────────────────────────────────────────────
@@ -271,6 +375,7 @@
         document.addEventListener('keydown', function (e) {
             // Skip if typing in an input
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
 
             if (agentKeys[e.key]) {
                 startVoiceSession(agentKeys[e.key]);
@@ -315,11 +420,17 @@
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
         toast.className = 'toast ' + (type || 'info');
+        toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
 
         const iconMap = { error: 'fa-circle-xmark', success: 'fa-circle-check', info: 'fa-circle-info' };
         const icon = iconMap[type] || iconMap.info;
 
-        toast.innerHTML = '<i class="fas ' + icon + '"></i><span>' + message + '</span>';
+        const iconEl = document.createElement('i');
+        iconEl.className = 'fas ' + icon;
+        const textEl = document.createElement('span');
+        textEl.textContent = message;
+        toast.appendChild(iconEl);
+        toast.appendChild(textEl);
         container.appendChild(toast);
 
         setTimeout(function () {
@@ -335,6 +446,43 @@
         return new Promise(function (resolve) { setTimeout(resolve, ms); });
     }
 
+    function t(path, fallback) {
+        if (!window.I18nLoader || typeof window.I18nLoader.getValue !== 'function') return fallback;
+        const value = window.I18nLoader.getValue(path);
+        if (!value) return fallback;
+        if (typeof value === 'string') return value;
+        const lang = window.I18nLoader.getLanguage ? window.I18nLoader.getLanguage() : 'en';
+        return value[lang] || value.en || value.cs || fallback;
+    }
+
+    async function fetchWithTimeout(url, options, timeoutMs) {
+        const fetchOptions = Object.assign({}, options || {});
+        if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+            fetchOptions.signal = AbortSignal.timeout(timeoutMs);
+            return fetch(url, fetchOptions);
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function () { controller.abort(); }, timeoutMs);
+        fetchOptions.signal = controller.signal;
+        try {
+            return await fetch(url, fetchOptions);
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
+
+    function formatErrorDetail(detail) {
+        if (!detail) return 'unknown';
+        if (typeof detail === 'string') return detail;
+        if (detail.message) return detail.message;
+        try {
+            return JSON.stringify(detail);
+        } catch (_) {
+            return String(detail);
+        }
+    }
+
     // Expose for potential external use (e.g. from ElevenLabs client tool callbacks)
     window.agentsApp = {
         startVoiceSession: window.startVoiceSession,
@@ -345,6 +493,8 @@
             if (AGENTS[name]) {
                 AGENTS[name].agentId = id;
                 localStorage.setItem('agent_id_' + name, id);
+                configLoaded = true;
+                refreshConfigStatus();
             }
         },
     };

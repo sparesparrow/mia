@@ -28,17 +28,17 @@
                 <h1>AI-SERVIS</h1>
                 <span class="subtitle">Agent Team</span>
             </div>
-            <nav class="header-nav">
+            <nav class="header-nav" aria-label="Agent portal navigation">
                 <a href="../team/" class="nav-link">
                     <i class="fas fa-arrow-left"></i> Team Portal
                 </a>
                 <a href="../../" class="nav-link">Home</a>
                 <!-- Language switcher -->
-                <button class="btn-lang" data-lang="en" title="English">EN</button>
-                <button class="btn-lang" data-lang="cs" title="Česky">CS</button>
+                <button class="btn-lang" type="button" data-lang="en" title="English" aria-label="Switch language to English">EN</button>
+                <button class="btn-lang" type="button" data-lang="cs" title="Česky" aria-label="Přepnout jazyk na češtinu">CS</button>
             </nav>
             <div class="header-actions">
-                <button class="btn-icon" id="themeBtn" title="Toggle theme" onclick="toggleTheme()">
+                <button class="btn-icon" id="themeBtn" type="button" title="Toggle theme" aria-label="Toggle theme" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
             </div>
@@ -49,15 +49,15 @@
     <main class="agents-main">
 
         <div class="section-header">
-            <h2 data-i18n="agents.title">Your Agent Team</h2>
-            <p data-i18n="agents.subtitle">Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
+            <h2 data-i18n-path="agents.title">Your Agent Team</h2>
+            <p data-i18n-path="agents.subtitle">Three unhinged, sarcastic, and genuinely excellent conversational AI agents.</p>
         </div>
 
         <!-- Agent Cards -->
         <section class="agents-grid" id="agentsGrid">
 
             <!-- ORCHESTRATOR -->
-            <div class="agent-card" data-agent="orchestrator" id="card-orchestrator">
+            <div class="agent-card" data-agent="orchestrator" id="card-orchestrator" role="group" tabindex="0" aria-labelledby="name-orchestrator" aria-describedby="role-orchestrator status-orchestrator">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -68,27 +68,27 @@
                     <div class="agent-status-dot idle" id="dot-orchestrator"></div>
                 </div>
 
-                <div class="agent-name">ORCHESTRATOR</div>
+                <div class="agent-name" id="name-orchestrator">ORCHESTRATOR</div>
                 <div class="agent-title">The Feral Maestro</div>
-                <div class="agent-role" data-i18n="agents.orchestrator.role">Planning · Coordination · Creative Chaos</div>
+                <div class="agent-role" id="role-orchestrator" data-i18n-path="agents.orchestrator.role">Planning · Coordination · Creative Chaos</div>
 
-                <div class="agent-status-line" id="status-orchestrator">
+                <div class="agent-status-line" id="status-orchestrator" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('orchestrator')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('orchestrator')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('orchestrator')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('orchestrator')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
             <!-- EVALUATOR -->
-            <div class="agent-card" data-agent="evaluator" id="card-evaluator">
+            <div class="agent-card" data-agent="evaluator" id="card-evaluator" role="group" tabindex="0" aria-labelledby="name-evaluator" aria-describedby="role-evaluator status-evaluator">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -99,27 +99,27 @@
                     <div class="agent-status-dot idle" id="dot-evaluator"></div>
                 </div>
 
-                <div class="agent-name">EVALUATOR</div>
+                <div class="agent-name" id="name-evaluator">EVALUATOR</div>
                 <div class="agent-title">The Unhinged Analyst</div>
-                <div class="agent-role" data-i18n="agents.evaluator.role">Code Review · Metrics · Clinical Devastation</div>
+                <div class="agent-role" id="role-evaluator" data-i18n-path="agents.evaluator.role">Code Review · Metrics · Clinical Devastation</div>
 
-                <div class="agent-status-line" id="status-evaluator">
+                <div class="agent-status-line" id="status-evaluator" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('evaluator')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('evaluator')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('evaluator')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('evaluator')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
             <!-- EXECUTOR -->
-            <div class="agent-card" data-agent="executor" id="card-executor">
+            <div class="agent-card" data-agent="executor" id="card-executor" role="group" tabindex="0" aria-labelledby="name-executor" aria-describedby="role-executor status-executor">
                 <div class="agent-avatar-wrapper">
                     <img
                         class="agent-avatar"
@@ -130,35 +130,59 @@
                     <div class="agent-status-dot idle" id="dot-executor"></div>
                 </div>
 
-                <div class="agent-name">EXECUTOR</div>
+                <div class="agent-name" id="name-executor">EXECUTOR</div>
                 <div class="agent-title">The Obsessive Closer</div>
-                <div class="agent-role" data-i18n="agents.executor.role">Execution · Deployment · Bug Hunting</div>
+                <div class="agent-role" id="role-executor" data-i18n-path="agents.executor.role">Execution · Deployment · Bug Hunting</div>
 
-                <div class="agent-status-line" id="status-executor">
+                <div class="agent-status-line" id="status-executor" aria-live="polite">
                     <i class="fas fa-circle-dot" style="font-size:0.5rem; opacity:0.4"></i>
-                    <span data-i18n="agents.status.idle">Idle — click Talk to start</span>
+                    <span data-i18n-path="agents.status.idle">Idle — click Talk to start</span>
                 </div>
 
                 <div class="agent-actions">
-                    <button class="btn-talk" onclick="startVoiceSession('executor')">
-                        <i class="fas fa-microphone"></i> <span data-i18n="agents.buttons.talk">Talk</span>
+                    <button class="btn-talk" type="button" onclick="startVoiceSession('executor')">
+                        <i class="fas fa-microphone"></i> <span data-i18n-path="agents.buttons.talk">Talk</span>
                     </button>
-                    <button class="btn-chat" onclick="focusAgent('executor')">
-                        <i class="fas fa-keyboard"></i> <span data-i18n="agents.buttons.focus">Focus</span>
+                    <button class="btn-chat" type="button" onclick="focusAgent('executor')">
+                        <i class="fas fa-keyboard"></i> <span data-i18n-path="agents.buttons.focus">Focus</span>
                     </button>
                 </div>
             </div>
 
         </section>
 
+        <!-- Agent handoff guidance -->
+        <section class="handoff-panel" aria-labelledby="handoffTitle">
+            <div class="handoff-copy">
+                <p class="eyebrow" data-i18n-path="agents.handoff.eyebrow">Recommended handoff</p>
+                <h3 id="handoffTitle" data-i18n-path="agents.handoff.title">Start broad, verify, then execute.</h3>
+                <p data-i18n-path="agents.handoff.description">Use the agents as a pipeline when a task needs more than a quick answer.</p>
+            </div>
+            <ol class="handoff-steps">
+                <li class="handoff-step orchestrator-step">
+                    <strong data-i18n-path="agents.handoff.orchestrator.title">1 · Orchestrator</strong>
+                    <span data-i18n-path="agents.handoff.orchestrator.body">Frames the goal, plan, and dependencies.</span>
+                </li>
+                <li class="handoff-step evaluator-step">
+                    <strong data-i18n-path="agents.handoff.evaluator.title">2 · Evaluator</strong>
+                    <span data-i18n-path="agents.handoff.evaluator.body">Reviews risk, bugs, and quality gates.</span>
+                </li>
+                <li class="handoff-step executor-step">
+                    <strong data-i18n-path="agents.handoff.executor.title">3 · Executor</strong>
+                    <span data-i18n-path="agents.handoff.executor.body">Implements, tests, and closes the loop.</span>
+                </li>
+            </ol>
+        </section>
+
         <!-- Chat / Widget Container -->
-        <section class="chat-section">
+        <section class="chat-section" aria-labelledby="conversationTitle">
+            <h3 class="sr-only" id="conversationTitle">Conversation</h3>
             <div class="chat-container" id="chatContainer">
                 <div class="chat-placeholder" id="chatPlaceholder">
                     <i class="fas fa-robot"></i>
-                    <span data-i18n="agents.select_prompt">Select an agent and click <strong>Talk</strong> to begin a voice session</span>
+                    <span data-i18n-path="agents.select_prompt">Select an agent and click Talk to begin a voice session</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-light);">
-                        <span data-i18n="agents.keyboard_hint">Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to select · <kbd>Esc</kbd> to end</span>
+                        <span data-i18n-path="agents.keyboard_hint">Press 1 2 3 to select · Esc to end</span>
                     </span>
                 </div>
                 <div class="widget-wrapper" id="widgetWrapper" style="display:none;"></div>
@@ -167,36 +191,93 @@
 
         <!-- Keyboard shortcuts reference -->
         <div class="shortcuts-bar">
-            <div class="shortcut"><kbd>1</kbd> <span data-i18n="agents.shortcuts.orchestrator">Orchestrator</span></div>
-            <div class="shortcut"><kbd>2</kbd> <span data-i18n="agents.shortcuts.evaluator">Evaluator</span></div>
-            <div class="shortcut"><kbd>3</kbd> <span data-i18n="agents.shortcuts.executor">Executor</span></div>
-            <div class="shortcut"><kbd>Esc</kbd> <span data-i18n="agents.shortcuts.end_session">End session</span></div>
-            <div class="shortcut"><kbd>T</kbd> <span data-i18n="agents.shortcuts.toggle_theme">Toggle theme</span></div>
+            <div class="shortcut"><kbd>1</kbd> <span data-i18n-path="agents.shortcuts.orchestrator">Orchestrator</span></div>
+            <div class="shortcut"><kbd>2</kbd> <span data-i18n-path="agents.shortcuts.evaluator">Evaluator</span></div>
+            <div class="shortcut"><kbd>3</kbd> <span data-i18n-path="agents.shortcuts.executor">Executor</span></div>
+            <div class="shortcut"><kbd>Esc</kbd> <span data-i18n-path="agents.shortcuts.end_session">End session</span></div>
+            <div class="shortcut"><kbd>T</kbd> <span data-i18n-path="agents.shortcuts.toggle_theme">Toggle theme</span></div>
         </div>
 
     </main>
 
     <!-- Toast container -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
     <!-- i18n loader (reuses existing MIA infrastructure) -->
+    <script>
+        window.__DEFAULT_LANGUAGE__ = localStorage.getItem('mia-lang') || 'en';
+        window.__I18N__ = {
+            agents: {
+                title: { en: 'Your Agent Team', cs: 'Váš tým agentů' },
+                subtitle: { en: 'Three unhinged, sarcastic, and genuinely excellent conversational AI agents.', cs: 'Tři rozjetí, sarkastičtí a skutečně výborní konverzační AI agenti.' },
+                select_prompt: { en: 'Select an agent and click Talk to begin a voice session', cs: 'Vyberte agenta a klikněte na Mluvit pro zahájení hlasové relace' },
+                keyboard_hint: { en: 'Press 1 2 3 to select · Esc to end', cs: 'Stiskněte 1 2 3 pro výběr · Esc pro ukončení' },
+                status: {
+                    idle: { en: 'Idle — click Talk to start', cs: 'Nečinný — klikněte na Mluvit' },
+                    active: { en: 'Connected — listening...', cs: 'Připojen — naslouchám...' },
+                    thinking: { en: 'Processing...', cs: 'Zpracovávám...' },
+                    error: { en: 'Connection error', cs: 'Chyba připojení' },
+                    loading: { en: 'Loading agent configuration...', cs: 'Načítám konfiguraci agenta...' },
+                    unavailable: { en: 'Unavailable — missing agent ID', cs: 'Nedostupný — chybí ID agenta' },
+                    ready: { en: 'Ready for voice session', cs: 'Připraven k hlasové relaci' }
+                },
+                buttons: {
+                    talk: { en: 'Talk', cs: 'Mluvit' },
+                    end: { en: 'End', cs: 'Ukončit' },
+                    focus: { en: 'Focus', cs: 'Zaměřit' }
+                },
+                toast: {
+                    config_unavailable: { en: 'Agent configuration unavailable. Using cached data if present.', cs: 'Konfigurace agentů není dostupná. Používám uložená data, pokud existují.' },
+                    agent_unavailable: { en: 'This agent is not yet available. Please try again later or contact support.', cs: 'Tento agent zatím není dostupný. Zkuste to později nebo kontaktujte podporu.' },
+                    connection_error: { en: 'Connection error', cs: 'Chyba připojení' }
+                },
+                orchestrator: { role: { en: 'Planning · Coordination · Creative Chaos', cs: 'Plánování · Koordinace · Kreativní chaos' } },
+                evaluator: { role: { en: 'Code Review · Metrics · Clinical Devastation', cs: 'Code review · Metriky · Klinická devastace' } },
+                executor: { role: { en: 'Execution · Deployment · Bug Hunting', cs: 'Provádění · Nasazení · Lov chyb' } },
+                handoff: {
+                    eyebrow: { en: 'Recommended handoff', cs: 'Doporučené předání' },
+                    title: { en: 'Start broad, verify, then execute.', cs: 'Začněte plánem, ověřte rizika, potom proveďte.' },
+                    description: { en: 'Use the agents as a pipeline when a task needs more than a quick answer.', cs: 'Když úkol potřebuje víc než rychlou odpověď, použijte agenty jako pracovní tok.' },
+                    orchestrator: {
+                        title: { en: '1 · Orchestrator', cs: '1 · Orchestrátor' },
+                        body: { en: 'Frames the goal, plan, and dependencies.', cs: 'Vymezí cíl, plán a závislosti.' }
+                    },
+                    evaluator: {
+                        title: { en: '2 · Evaluator', cs: '2 · Hodnotitel' },
+                        body: { en: 'Reviews risk, bugs, and quality gates.', cs: 'Zkontroluje rizika, chyby a kvalitativní brány.' }
+                    },
+                    executor: {
+                        title: { en: '3 · Executor', cs: '3 · Exekutor' },
+                        body: { en: 'Implements, tests, and closes the loop.', cs: 'Implementuje, otestuje a uzavře smyčku.' }
+                    }
+                },
+                shortcuts: {
+                    orchestrator: { en: 'Orchestrator', cs: 'Orchestrátor' },
+                    evaluator: { en: 'Evaluator', cs: 'Hodnotitel' },
+                    executor: { en: 'Executor', cs: 'Exekutor' },
+                    end_session: { en: 'End session', cs: 'Ukončit relaci' },
+                    toggle_theme: { en: 'Toggle theme', cs: 'Přepnout téma' }
+                }
+            }
+        };
+    </script>
     <script src="../js/i18n-loader.js"></script>
     <script>
-        // Bootstrap i18n with agents namespace from common.yaml
-        // The i18n-loader reads data-i18n attributes and translates them.
+        // Bootstrap i18n for this static page.
+        // The i18n-loader reads data-i18n-path attributes and translates them.
         (function () {
             var savedLang = localStorage.getItem('mia-lang') || 'en';
+            document.documentElement.lang = savedLang;
             if (window.I18nLoader) {
-                window.I18nLoader.init({
-                    defaultLanguage: savedLang,
-                    i18nDataPath: '../i18n/common.yaml',
-                });
+                window.I18nLoader.setLanguage(savedLang);
+                window.I18nLoader.translateDom();
             }
 
             // Language switcher buttons
             document.querySelectorAll('.btn-lang').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var lang = btn.getAttribute('data-lang');
+                    document.documentElement.lang = lang;
                     if (window.I18nLoader) window.I18nLoader.setLanguage(lang);
                     localStorage.setItem('mia-lang', lang);
                 });
