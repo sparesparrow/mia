@@ -1,0 +1,2905 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/archive/ANDROID_TESTING/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>MIA Android Testing Guide - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mia-android-testing-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MIA Android Testing Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../install/phone/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../deployment/" class="md-tabs__link">
+          
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../modules/ai-audio-assistant/" class="md-tabs__link">
+          
+  
+    
+  
+  Modules
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../troubleshooting/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../android-device-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android Device Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/hybrid-messaging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Messaging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/lean-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lean Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/flatbuffers-schema-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlatBuffers Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/voice-knowledge-mia-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/voice-knowledge-system-implementation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/VOICE_KNOWLEDGE_SYSTEM_README/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/phone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/hybrid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/dev-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../deployment/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/COMPLETE_DEPLOYMENT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/raspberry-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PRODUCTION_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RASPBERRY_PI_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-testing-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Testing Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBD_SIMULATOR_AUTOMATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OBD Simulator Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ZEROMQ_MESSAGE_FORMATS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZeroMQ Message Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-audio-assistant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Audio Assistant
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-android-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Android Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-ios-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI iOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-linux-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Linux Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-macos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI macOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-windows-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Windows Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-rtos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI RTOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-communications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Communications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-home-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Home Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-maps-navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Maps & Navigation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/ai-security-anpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Security & ANPR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-command-build-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      One-Command Build &amp; Test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-device-specified" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Device Specified
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skill-location-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skill Location &amp; Structure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-build-only-for-ci-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 1: Build Only (for CI verification)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-deploy-only-for-already-built-apk" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 2: Deploy Only (for already-built APK)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-interactive-testing-manual-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 3: Interactive Testing (manual debugging)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-4-test-specific-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 4: Test Specific Scenario
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-5-full-ci-build-deploy-test-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 5: Full CI Build → Deploy → Test → Analyze
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test Scenarios
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subagent-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subagent Orchestration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Subagent Orchestration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spawn-logcat-monitor-subagent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spawn Logcat Monitor Subagent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#orchestrate-build-test-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      Orchestrate Build + Test + Analyze
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-with-coding-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Coding-Agent
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integration with Coding-Agent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-code-change-auto-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Code Change → Auto Test
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-codex-reviews-pr-with-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario: Codex Reviews PR with Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Actions Workflow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-pre-commit-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      Local Pre-commit Hook
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output &amp; Artifacts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output & Artifacts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-latest-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      View Latest Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device-not-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      Device Not Found
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apk-build-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      APK Build Fails
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app-crashes-on-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      App Crashes on Launch
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-hangs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario Hangs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-custom-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced: Custom Scenarios
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-monitoring-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next: Monitoring &amp; Automation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Next: Monitoring & Automation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cron-job-for-nightly-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cron Job for Nightly Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continuous-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuous Monitoring
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/archive/ANDROID_TESTING.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mia-android-testing-guide">MIA Android Testing Guide</h1>
+<p>Complete guide for building, deploying, and testing the MIA Android app using the <strong>android-adb-test skill</strong> with subagent orchestration.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="one-command-build-test">One-Command Build &amp; Test</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/projects/embedded/mia
+bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span>--scenario<span class="w"> </span>dashboard<span class="w"> </span>--screenshots<span class="w"> </span>--logs
+</code></pre></div>
+<h3 id="with-device-specified">With Device Specified</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span>--scenario<span class="w"> </span>full-flow<span class="w"> </span>--screenshots<span class="w"> </span>--logs<span class="w"> </span>--device<span class="w"> </span>HT36TW903516
+</code></pre></div>
+<hr />
+<h2 id="skill-location-structure">Skill Location &amp; Structure</h2>
+<p><strong>In MIA Project</strong>:
+<div class="highlight"><pre><span></span><code>~/projects/embedded/mia/
+├── skills/
+│   └── android-adb-test/           # Skill root
+│       ├── SKILL.md                 # Skill definition
+│       ├── scripts/
+│       │   ├── android-adb-test.sh              # Main orchestrator
+│       │   └── spawn-logcat-monitor.sh          # Subagent spawner
+│       └── references/
+│           ├── adb-commands.md                  # ADB command reference
+│           ├── logcat-patterns.md               # Log patterns
+│           └── test-scenarios.md                # Test scenarios
+</code></pre></div></p>
+<hr />
+<h2 id="usage-patterns">Usage Patterns</h2>
+<h3 id="pattern-1-build-only-for-ci-verification">Pattern 1: Build Only (for CI verification)</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span>build
+<span class="c1"># Output: apps/android/app/build/outputs/apk/debug/app-debug.apk</span>
+</code></pre></div>
+<h3 id="pattern-2-deploy-only-for-already-built-apk">Pattern 2: Deploy Only (for already-built APK)</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span>deploy<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--device<span class="w"> </span>HT36TW903516
+</code></pre></div>
+<h3 id="pattern-3-interactive-testing-manual-debugging">Pattern 3: Interactive Testing (manual debugging)</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span>interactive<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--device<span class="w"> </span>HT36TW903516
+<span class="c1"># Commands: tap X Y | swipe X1 Y1 X2 Y2 | text &quot;str&quot; | screenshot | logcat | exit</span>
+</code></pre></div>
+<h3 id="pattern-4-test-specific-scenario">Pattern 4: Test Specific Scenario</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scenario<span class="w"> </span>ble-scan<span class="w"> </span>--screenshots<span class="w"> </span>--logs<span class="w"> </span>--device<span class="w"> </span>HT36TW903516
+</code></pre></div>
+<h3 id="pattern-5-full-ci-build-deploy-test-analyze">Pattern 5: Full CI Build → Deploy → Test → Analyze</h3>
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scenario<span class="w"> </span>full-flow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--screenshots<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--logs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--device<span class="w"> </span>HT36TW903516
+</code></pre></div>
+<hr />
+<h2 id="test-scenarios">Test Scenarios</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Purpose</th>
+<th>Commands</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dashboard</code></td>
+<td>Verify UI loads, telemetry displays</td>
+<td>Launch → screenshot</td>
+<td>~5s</td>
+</tr>
+<tr>
+<td><code>ble-scan</code></td>
+<td>Test Bluetooth device discovery</td>
+<td>Swipe → tap BLE → wait scan → screenshot</td>
+<td>~15s</td>
+</tr>
+<tr>
+<td><code>obd-pairing</code></td>
+<td>Test OBD-II pairing flow</td>
+<td>Navigate OBD tab → screenshot</td>
+<td>~5s</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>Verify settings persistence</td>
+<td>Navigate settings → toggle → screenshot</td>
+<td>~5s</td>
+</tr>
+<tr>
+<td><code>anpr</code></td>
+<td>Test license plate detection</td>
+<td>Open camera → detect → screenshot</td>
+<td>~5s</td>
+</tr>
+<tr>
+<td><code>full-flow</code></td>
+<td>End-to-end user journey</td>
+<td>Dashboard → BLE → OBD → Settings → ANPR</td>
+<td>~30s</td>
+</tr>
+<tr>
+<td><code>interactive</code></td>
+<td>Manual debugging shell</td>
+<td>Manual tap/swipe/text commands</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="subagent-orchestration">Subagent Orchestration</h2>
+<h3 id="spawn-logcat-monitor-subagent">Spawn Logcat Monitor Subagent</h3>
+<p>After running tests, analyze logs for errors/crashes:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Spawn subagent for readonly logcat analysis</span>
+sessions_spawn<span class="w"> </span>--task<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">Analyze logcat from MIA Android test run.</span>
+
+<span class="s2">Device: HT36TW903516</span>
+<span class="s2">Duration: 30 seconds of logs</span>
+
+<span class="s2">Logcat location: ~/projects/embedded/mia/apps/android/test-artifacts/20250218_084500/logs/logcat.txt</span>
+
+<span class="s2">Parse for:</span>
+<span class="s2">- Crashes (AndroidRuntime: FATAL EXCEPTION)</span>
+<span class="s2">- Permission errors</span>
+<span class="s2">- BLE connection failures</span>
+<span class="s2">- OBD protocol errors</span>
+<span class="s2">- Network/WebSocket timeouts</span>
+<span class="s2">- Memory pressure warnings</span>
+<span class="s2">- ANR (Application Not Responding)</span>
+
+<span class="s2">Return JSON report with:</span>
+<span class="s2">{</span>
+<span class="s2">  \&quot;status\&quot;: \&quot;pass|fail\&quot;,</span>
+<span class="s2">  \&quot;error_count\&quot;: &lt;int&gt;,</span>
+<span class="s2">  \&quot;crash_count\&quot;: &lt;int&gt;,</span>
+<span class="s2">  \&quot;errors\&quot;: [</span>
+<span class="s2">    {\&quot;type\&quot;: \&quot;crash|permission|ble|network|obd|memory\&quot;,</span>
+<span class="s2">     \&quot;message\&quot;: \&quot;...\&quot;,</span>
+<span class="s2">     \&quot;severity\&quot;: \&quot;error|warning\&quot;,</span>
+<span class="s2">     \&quot;line\&quot;: \&quot;...\&quot;}</span>
+<span class="s2">  ],</span>
+<span class="s2">  \&quot;recommendations\&quot;: [\&quot;action 1\&quot;, \&quot;action 2\&quot;]</span>
+<span class="s2">}</span>
+<span class="s2">&quot;</span>
+</code></pre></div>
+<h3 id="orchestrate-build-test-analyze">Orchestrate Build + Test + Analyze</h3>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1"># Full test pipeline with subagent monitoring</span>
+
+<span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;HT36TW903516&quot;</span>
+
+<span class="c1"># 1. Build &amp; deploy</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Building &amp; deploying APK...&quot;</span>
+bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scenario<span class="w"> </span>full-flow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--screenshots<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--logs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--device<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span>
+
+<span class="nv">TEST_TIMESTAMP</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d_%H%M%S<span class="k">)</span>
+<span class="nv">LOGCAT_PATH</span><span class="o">=</span><span class="s2">&quot;apps/android/test-artifacts/</span><span class="k">$(</span>ls<span class="w"> </span>-t<span class="w"> </span>apps/android/test-artifacts<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1<span class="k">)</span><span class="s2">/logs/logcat.txt&quot;</span>
+
+<span class="c1"># 2. Spawn logcat analyzer subagent (readonly)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Spawning logcat analyzer...&quot;</span>
+sessions_spawn<span class="w"> </span>--label<span class="w"> </span><span class="s2">&quot;logcat-analyzer&quot;</span><span class="w"> </span>--task<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">Analyze logcat from MIA Android test: </span><span class="nv">$LOGCAT_PATH</span>
+<span class="s2">Focus on errors, crashes, permission issues.</span>
+<span class="s2">Report JSON findings.</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># 3. Spawn ADB command evaluator (readonly)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Spawning ADB command evaluator...&quot;</span>
+sessions_spawn<span class="w"> </span>--label<span class="w"> </span><span class="s2">&quot;adb-evaluator&quot;</span><span class="w"> </span>--task<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">Verify ADB commands from test run: </span><span class="nv">$DEVICE</span>
+<span class="s2">Check connectivity, command latency, any disconnects.</span>
+<span class="s2">Report JSON status.</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># 4. Wait for results and aggregate</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Waiting for subagent results...&quot;</span>
+<span class="c1"># (Subagents complete async; main session gets notified)</span>
+</code></pre></div>
+<hr />
+<h2 id="integration-with-coding-agent">Integration with Coding-Agent</h2>
+<h3 id="scenario-code-change-auto-test">Scenario: Code Change → Auto Test</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Codex makes changes to BLEManager</span>
+bash<span class="w"> </span>skills/coding-agent/run.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;Refactor BLEManager for connection retry logic. Add exponential backoff.&quot;</span>
+
+<span class="c1"># 2. Build new APK (from updated code)</span>
+bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span>build
+
+<span class="c1"># 3. Spawn test subagent</span>
+sessions_spawn<span class="w"> </span>--task<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">After BLEManager changes:</span>
+<span class="s2">1. Deploy APK to device HT36TW903516</span>
+<span class="s2">2. Run ble-scan scenario</span>
+<span class="s2">3. Analyze logcat for connection errors</span>
+<span class="s2">4. Report: Did retry logic work? Any timeouts?</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># 4. Get report</span>
+<span class="c1"># Subagent returns: Pass/Fail + specific errors found</span>
+</code></pre></div>
+<h3 id="scenario-codex-reviews-pr-with-tests">Scenario: Codex Reviews PR with Tests</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Codex reviews PR code</span>
+bash<span class="w"> </span>skills/coding-agent/run.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;Review PR #42 for Android BLE changes. Check for thread safety, memory leaks.&quot;</span>
+
+<span class="c1"># 2. Auto-test the PR branch</span>
+sessions_spawn<span class="w"> </span>--task<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">Test MIA Android app from PR branch.</span>
+
+<span class="s2">Steps:</span>
+<span class="s2">1. Checkout PR branch</span>
+<span class="s2">2. Build APK</span>
+<span class="s2">3. Deploy to device</span>
+<span class="s2">4. Run ble-scan + obd-pairing scenarios</span>
+<span class="s2">5. Capture screenshots &amp; logcat</span>
+<span class="s2">6. Report pass/fail + any errors</span>
+
+<span class="s2">Device: HT36TW903516</span>
+<span class="s2">Scenarios: ble-scan, obd-pairing</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># 3. Post results to GitHub</span>
+gh<span class="w"> </span>pr<span class="w"> </span>comment<span class="w"> </span><span class="m">42</span><span class="w"> </span>--body<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">✅ **Android Test Results**</span>
+<span class="s2">- Build: PASS</span>
+<span class="s2">- BLE Scan: PASS</span>
+<span class="s2">- OBD Pairing: PASS</span>
+<span class="s2">- Logcat: No errors</span>
+
+<span class="s2">See artifacts: [link to test-artifacts]</span>
+<span class="s2">&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="cicd-integration">CI/CD Integration</h2>
+<h3 id="github-actions-workflow">GitHub Actions Workflow</h3>
+<p>Create <code>.github/workflows/android-test.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Android Tests</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">develop</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;apps/android/**&#39;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;.github/workflows/android-test.yml&#39;</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">develop</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;apps/android/**&#39;</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build-test</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Setup Android SDK</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">android-actions/setup-android@v2</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">api-level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">34</span>
+<span class="w">          </span><span class="nt">build-tools</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">34.0.0</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build APK</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">cd apps/android</span>
+<span class="w">          </span><span class="no">chmod +x gradlew</span>
+<span class="w">          </span><span class="no">./gradlew assembleDebug</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Start Emulator</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reactivecircus/android-emulator-runner@v2</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">api-level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">34</span>
+<span class="w">          </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">bash ../../skills/android-adb-test/scripts/android-adb-test.sh \</span>
+<span class="w">              </span><span class="no">build-and-test \</span>
+<span class="w">              </span><span class="no">--scenario full-flow \</span>
+<span class="w">              </span><span class="no">--screenshots \</span>
+<span class="w">              </span><span class="no">--logs</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Upload Artifacts</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/upload-artifact@v4</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">android-test-artifacts</span>
+<span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/android/test-artifacts/</span>
+
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Comment PR</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event_name == &#39;pull_request&#39; &amp;&amp; always()</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/github-script@v7</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">const fs = require(&#39;fs&#39;);</span>
+<span class="w">            </span><span class="no">const artifacts = fs.readdirSync(&#39;apps/android/test-artifacts&#39;);</span>
+<span class="w">            </span><span class="no">github.rest.issues.createComment({</span>
+<span class="w">              </span><span class="no">issue_number: context.issue.number,</span>
+<span class="w">              </span><span class="no">owner: context.repo.owner,</span>
+<span class="w">              </span><span class="no">repo: context.repo.repo,</span>
+<span class="w">              </span><span class="no">body: `✅ Android Tests Completed\n\nArtifacts: ${artifacts[0]}`</span>
+<span class="w">            </span><span class="no">});</span>
+</code></pre></div>
+<h3 id="local-pre-commit-hook">Local Pre-commit Hook</h3>
+<p>Create <code>scripts/pre-commit-android-test.sh</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="c1"># Run Android tests before commit on android/ changes</span>
+
+<span class="k">if</span><span class="w"> </span>git<span class="w"> </span>diff<span class="w"> </span>--cached<span class="w"> </span>--name-only<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;apps/android&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Android files changed. Running tests...&quot;</span>
+
+<span class="w">  </span>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✓ Build passed&quot;</span>
+<span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">0</span>
+<span class="w">  </span><span class="o">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✗ Build failed. Commit aborted.&quot;</span>
+<span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="k">fi</span>
+</code></pre></div>
+<p>Install hook:
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>scripts/pre-commit-android-test.sh
+ln<span class="w"> </span>-s<span class="w"> </span>../../scripts/pre-commit-android-test.sh<span class="w"> </span>.git/hooks/pre-commit
+</code></pre></div></p>
+<hr />
+<h2 id="output-artifacts">Output &amp; Artifacts</h2>
+<p>After each test run, artifacts are saved to:</p>
+<div class="highlight"><pre><span></span><code>apps/android/test-artifacts/&lt;YYYYMMDD_HHMMSS&gt;/
+├── screenshots/
+│   ├── dashboard_initial_1702345678.png      # Dashboard launch
+│   ├── dashboard_telemetry_1702345680.png    # With data
+│   ├── ble_scan_screen_1702345682.png        # BLE devices
+│   ├── obd_pairing_1702345684.png            # OBD screen
+│   ├── settings_1702345686.png               # Settings
+│   └── anpr_camera_1702345688.png            # Camera preview
+├── logs/
+│   └── logcat.txt                            # Raw logcat (30s capture)
+└── reports/
+    ├── test-report.json                      # Summary
+    └── logcat-analysis.json                  # Parsed errors (from subagent)
+</code></pre></div>
+<h3 id="view-latest-results">View Latest Results</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Open latest test artifacts</span>
+open<span class="w"> </span><span class="s2">&quot;apps/android/test-artifacts/</span><span class="k">$(</span>ls<span class="w"> </span>-t<span class="w"> </span>apps/android/test-artifacts<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># View screenshots</span>
+ls<span class="w"> </span>apps/android/test-artifacts/*/screenshots/
+
+<span class="c1"># Check logcat for errors</span>
+grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;FATAL|Error|timeout&quot;</span><span class="w"> </span>apps/android/test-artifacts/*/logs/logcat.txt
+</code></pre></div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="device-not-found">Device Not Found</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check connection</span>
+adb<span class="w"> </span>devices
+
+<span class="c1"># Accept debug prompt on device (should appear when USB connected)</span>
+<span class="c1"># Then try again</span>
+adb<span class="w"> </span>devices
+</code></pre></div>
+<h3 id="apk-build-fails">APK Build Fails</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check Gradle errors</span>
+<span class="nb">cd</span><span class="w"> </span>apps/android
+./gradlew<span class="w"> </span>assembleDebug<span class="w"> </span>--stacktrace
+
+<span class="c1"># Clear cache</span>
+./gradlew<span class="w"> </span>clean
+</code></pre></div>
+<h3 id="app-crashes-on-launch">App Crashes on Launch</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check logcat for crash</span>
+adb<span class="w"> </span>logcat<span class="w"> </span>-d<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s2">&quot;AndroidRuntime: FATAL&quot;</span>
+
+<span class="c1"># Verify permissions granted</span>
+adb<span class="w"> </span>shell<span class="w"> </span>pm<span class="w"> </span>list<span class="w"> </span>permissions<span class="w"> </span>-g<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cz.mia.app
+</code></pre></div>
+<h3 id="scenario-hangs">Scenario Hangs</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manually check app state</span>
+adb<span class="w"> </span>shell<span class="w"> </span>dumpsys<span class="w"> </span>activity<span class="w"> </span>top
+
+<span class="c1"># Kill app and restart</span>
+adb<span class="w"> </span>shell<span class="w"> </span>am<span class="w"> </span>force-stop<span class="w"> </span>cz.mia.app
+adb<span class="w"> </span>shell<span class="w"> </span>am<span class="w"> </span>start<span class="w"> </span>-n<span class="w"> </span>cz.mia.app/.MainActivity
+</code></pre></div>
+<hr />
+<h2 id="reference-documentation">Reference Documentation</h2>
+<p><strong>Inside the skill</strong> (<code>skills/android-adb-test/references/</code>):</p>
+<ul>
+<li><strong>adb-commands.md</strong> — 60+ ADB commands (device mgmt, input, logs, transfers)</li>
+<li><strong>logcat-patterns.md</strong> — Success/failure log patterns, filtering, error codes</li>
+<li><strong>test-scenarios.md</strong> — Detailed scenario flows, manual + automated examples</li>
+</ul>
+<p><strong>MIA Android App Docs</strong>:</p>
+<ul>
+<li><code>apps/android/README.md</code> — Project overview</li>
+<li><code>apps/android/DEPLOYMENT_README.md</code> — APK deployment guide</li>
+<li><code>apps/android/docs/ARCHITECTURE.md</code> — App architecture &amp; components</li>
+</ul>
+<hr />
+<h2 id="advanced-custom-scenarios">Advanced: Custom Scenarios</h2>
+<p>Add custom test flows to the skill:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create custom scenario in SKILL.md or extend scripts/android-adb-test.sh</span>
+scenario_custom_voice_command<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">  </span>log<span class="w"> </span><span class="s2">&quot;Scenario: Voice Command Flow&quot;</span>
+
+<span class="w">  </span><span class="c1"># Launch app</span>
+<span class="w">  </span>adb<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DEVICE_SERIAL</span><span class="s2">&quot;</span><span class="w"> </span>shell<span class="w"> </span>am<span class="w"> </span>start<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PACKAGE_NAME</span><span class="s2">/</span><span class="nv">$MAIN_ACTIVITY</span><span class="s2">&quot;</span>
+<span class="w">  </span>sleep<span class="w"> </span><span class="m">3</span>
+<span class="w">  </span>take_screenshot<span class="w"> </span><span class="s2">&quot;app_loaded&quot;</span>
+
+<span class="w">  </span><span class="c1"># Tap microphone button</span>
+<span class="w">  </span>adb_tap<span class="w"> </span><span class="m">540</span><span class="w"> </span><span class="m">1200</span>
+<span class="w">  </span>sleep<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>take_screenshot<span class="w"> </span><span class="s2">&quot;listening&quot;</span>
+
+<span class="w">  </span><span class="c1"># Simulate speech via text input</span>
+<span class="w">  </span>adb_text<span class="w"> </span><span class="s2">&quot;Turn on the light&quot;</span>
+<span class="w">  </span>sleep<span class="w"> </span><span class="m">2</span>
+<span class="w">  </span>take_screenshot<span class="w"> </span><span class="s2">&quot;command_sent&quot;</span>
+
+<span class="w">  </span><span class="c1"># Verify response</span>
+<span class="w">  </span>adb_swipe<span class="w"> </span><span class="m">500</span><span class="w"> </span><span class="m">1600</span><span class="w"> </span><span class="m">500</span><span class="w"> </span><span class="m">400</span><span class="w">  </span><span class="c1"># Scroll to log area</span>
+<span class="w">  </span>sleep<span class="w"> </span><span class="m">1</span>
+<span class="w">  </span>take_screenshot<span class="w"> </span><span class="s2">&quot;response_visible&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>Then run:
+<div class="highlight"><pre><span></span><code>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span>--scenario<span class="w"> </span>custom-voice-command<span class="w"> </span>--screenshots<span class="w"> </span>--logs
+</code></pre></div></p>
+<hr />
+<h2 id="next-monitoring-automation">Next: Monitoring &amp; Automation</h2>
+<h3 id="cron-job-for-nightly-tests">Cron Job for Nightly Tests</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># In HEARTBEAT.md or cron job:</span>
+<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/projects/embedded/mia<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>bash<span class="w"> </span>skills/android-adb-test/scripts/android-adb-test.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>build-and-test<span class="w"> </span>--scenario<span class="w"> </span>full-flow<span class="w"> </span>--logs<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="c1"># Post results to Slack/email</span>
+</code></pre></div>
+<h3 id="continuous-monitoring">Continuous Monitoring</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Monitor device every 30 minutes for connectivity</span>
+*/30<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>adb<span class="w"> </span>devices<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;device</span>$<span class="s2">&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>notify-send<span class="w"> </span><span class="s2">&quot;MIA: Device disconnected&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="summary">Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build APK</td>
+<td><code>bash ... build</code></td>
+<td>~60s</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td><code>bash ... deploy</code></td>
+<td>~10s</td>
+</tr>
+<tr>
+<td>Test Dashboard</td>
+<td><code>bash ... test --scenario dashboard</code></td>
+<td>~5s</td>
+</tr>
+<tr>
+<td>Full-Flow Test</td>
+<td><code>bash ... build-and-test --scenario full-flow</code></td>
+<td>~90s</td>
+</tr>
+<tr>
+<td>Interactive Debug</td>
+<td><code>bash ... interactive</code></td>
+<td>Manual</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total CI/CD cycle</strong>: ~2 minutes for full build → deploy → test → analyze.</p>
+<p><strong>Ready to integrate with coding agents, GitHub Actions, and subagent orchestration!</strong> 🚀</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

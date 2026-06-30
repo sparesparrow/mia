@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="cs" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SERVIS - Mobile DJ & Music Production AI</title>
+    <meta name="description" content="Transform your car into a mobile DJ booth and music production studio with AI-powered tools">
+    <link rel="stylesheet" href="musicians/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
+        <button onclick="switchLanguage('cs')" class="lang-btn active" data-lang="cs">CS</button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>AI-SERVIS</h2>
+                <span class="tagline" data-i18n="Mobilní hudební revoluce" data-i18n-ns="musicians">Mobilní hudební revoluce</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#features" data-i18n="Funkce" data-i18n-ns="musicians">Funkce</a>
+                <a href="#use-cases" data-i18n="Performance" data-i18n-ns="musicians">Performance</a>
+                <a href="#pricing" data-i18n="Ceny" data-i18n-ns="musicians">Ceny</a>
+                <a href="#tech" data-i18n="Technology" data-i18n-ns="musicians">Technology</a>
+                <button class="cta-btn" data-i18n="Začít tvořit" data-i18n-ns="musicians">Začít tvořit</button>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="assets/musicians/hero-image.jpg" alt="AI-SERVIS" class="hero-image">
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 data-i18n="Funkce studiové kvality" data-i18n-ns="musicians">Funkce studiové kvality</h1>
+                <p class="hero-subtitle" data-i18n="RTP-MIDI síť" data-i18n-ns="musicians">RTP-MIDI síť</p>
+                <div class="hero-stats">
+                    
+                    <div class="stat">
+                        <span class="stat-number">300%</span>
+                        <span class="stat-label" data-i18n="Productivity" data-i18n-ns="musicians">Productivity</span>
+                    </div>
+                    
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label" data-i18n="Monitoring" data-i18n-ns="musicians">Monitoring</span>
+                    </div>
+                    
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label" data-i18n="Hands-Free" data-i18n-ns="musicians">Hands-Free</span>
+                    </div>
+                    
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" data-i18n="Get Started" data-i18n-ns="musicians">Get Started</button>
+                    <button class="btn btn-secondary" data-i18n="Learn More" data-i18n-ns="musicians">Learn More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 data-i18n="Mobilní DJ revoluce" data-i18n-ns="musicians">Mobilní DJ revoluce</h2>
+            <div class="features-grid">
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3 data-i18n="Voice AI Assistant" data-i18n-ns="musicians">Voice AI Assistant</h3>
+                    <p data-i18n="Advanced voice control" data-i18n-ns="musicians">Advanced voice control</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 data-i18n="Security" data-i18n-ns="musicians">Security</h3>
+                    <p data-i18n="Enterprise-grade security" data-i18n-ns="musicians">Enterprise-grade security</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3 data-i18n="Smart Navigation" data-i18n-ns="musicians">Smart Navigation</h3>
+                    <p data-i18n="Intelligent routing" data-i18n-ns="musicians">Intelligent routing</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 data-i18n="Analytics" data-i18n-ns="musicians">Analytics</h3>
+                    <p data-i18n="Advanced analytics" data-i18n-ns="musicians">Advanced analytics</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="use-cases" id="use-cases">
+        <div class="container">
+            <h2 data-i18n="Mobilní DJ revoluce" data-i18n-ns="musicians">Mobilní DJ revoluce</h2>
+            
+            <div class="use-case" id="primary-use-case">
+                <div class="use-case-content ">
+                    <div class="use-case-text">
+                        <h3 data-i18n="Mobilní DJ revoluce" data-i18n-ns="musicians">Mobilní DJ revoluce</h3>
+                        <p data-i18n="Synchronizace vzdálených decků" data-i18n-ns="musicians">Synchronizace vzdálených decků</p>
+                        <ul>
+                            
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 data-i18n="Studio Starter" data-i18n-ns="musicians">Studio Starter</h2>
+            <div class="pricing-grid">
+                
+                <div class="pricing-card ">
+                    
+                    <div class="pricing-header">
+                        <h3 data-i18n="Studio Starter" data-i18n-ns="musicians">Studio Starter</h3>
+                        <p class="pricing-subtitle" data-i18n="Základní nahrávací nástroje" data-i18n-ns="musicians">Základní nahrávací nástroje</p>
+                        <div class="price">
+                            <span class="currency">Kč</span>
+                            <span class="amount">35000</span>
+                            
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <ul>
+                            
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology -->
+    <section class="technology" id="tech">
+        <div class="container">
+            <h2 data-i18n="Technology" data-i18n-ns="musicians">Technology</h2>
+            <div class="tech-grid">
+                
+                <div class="tech-card">
+                    <h3 data-i18n="Security" data-i18n-ns="musicians">Security</h3>
+                    <p data-i18n="Advanced security features" data-i18n-ns="musicians">Advanced security features</p>
+                </div>
+                
+                <div class="tech-card">
+                    <h3 data-i18n="API Integration" data-i18n-ns="musicians">API Integration</h3>
+                    <p data-i18n="Seamless integration" data-i18n-ns="musicians">Seamless integration</p>
+                </div>
+                
+                <div class="tech-card">
+                    <h3 data-i18n="Management" data-i18n-ns="musicians">Management</h3>
+                    <p data-i18n="Centralized management" data-i18n-ns="musicians">Centralized management</p>
+                </div>
+                
+                <div class="tech-card">
+                    <h3 data-i18n="Reliability" data-i18n-ns="musicians">Reliability</h3>
+                    <p data-i18n="24/7 reliability" data-i18n-ns="musicians">24/7 reliability</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 data-i18n="Připraveni dělat hudbu všude?" data-i18n-ns="musicians">Připraveni dělat hudbu všude?</h2>
+                <p data-i18n="Join the AI revolution" data-i18n-ns="musicians">Join the AI revolution</p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary large" data-i18n="Začít tvořit hudbu" data-i18n-ns="musicians">Začít tvořit hudbu</button>
+                    <button class="btn btn-secondary large" data-i18n="Rezervovat studio demo" data-i18n-ns="musicians">Rezervovat studio demo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>AI-SERVIS</h3>
+                    <p data-i18n="AI-SERVIS Solution" data-i18n-ns="musicians">AI-SERVIS Solution</p>
+                </div>
+                <div class="footer-links">
+                    
+                    <div class="footer-column">
+                        <h4 data-i18n="Product" data-i18n-ns="musicians">Product</h4>
+                        <ul>
+                            
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-i18n="© 2025 AI-SERVIS Music. Všechna práva vyhrazena." data-i18n-ns="musicians">© 2025 AI-SERVIS Music. Všechna práva vyhrazena.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="i18n-loader.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

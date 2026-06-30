@@ -1,0 +1,3082 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/vm-testing-guide/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>🖥️ AI-Servis VM Testing Guide - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ai-servis-vm-testing-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              🖥️ AI-Servis VM Testing Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../install/phone/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/" class="md-tabs__link">
+          
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/ai-audio-assistant/" class="md-tabs__link">
+          
+  
+    
+  
+  Modules
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../android-device-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android Device Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../architecture/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/diagrams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/hybrid-messaging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Messaging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/lean-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lean Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/flatbuffers-schema-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlatBuffers Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/voice-knowledge-mia-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/voice-knowledge-system-implementation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/VOICE_KNOWLEDGE_SYSTEM_README/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/phone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/hybrid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/pro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/pi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/dev-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/installer-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../deployment/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/COMPLETE_DEPLOYMENT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/raspberry-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRODUCTION_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RASPBERRY_PI_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-testing-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Testing Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBD_SIMULATOR_AUTOMATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OBD Simulator Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZEROMQ_MESSAGE_FORMATS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZeroMQ Message Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-audio-assistant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Audio Assistant
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-android-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Android Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-ios-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI iOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-linux-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Linux Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-macos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI macOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-windows-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Windows Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-rtos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI RTOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-communications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Communications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-home-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Home Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-maps-navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Maps & Navigation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-security-anpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Security & ANPR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 VM Requirements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📋 VM Requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#minimum-system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimum System Requirements
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-vm-platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported VM Platforms
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Quick Start
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-download-vm-test-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Download VM Test Script
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-run-complete-test-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Run Complete Test Suite
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-view-test-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. View Test Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test Phases
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Test Phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-system-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: System Requirements ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-docker-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: Docker Setup ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Project Setup ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Development Environment ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-pi-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 5: Pi Simulation ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-monitoring-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 6: Monitoring Stack ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-ci-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 7: CI Simulation ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-performance-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 8: Performance Validation ✅
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-setup-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      🖥️ VM Setup Instructions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🖥️ VM Setup Instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ubuntu-2204-lts-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ubuntu 22.04 LTS (Recommended)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vmware-workstation-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      VMware Workstation Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtualbox-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      VirtualBox Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-vm-setup-aws-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cloud VM Setup (AWS EC2)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-test-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      📊 Expected Test Results
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Expected Test Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#successful-test-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Successful Test Output
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Benchmarks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-insufficient-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Insufficient Resources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Docker Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-network-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Network Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-service-startup-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Service Startup Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-port-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Port Conflicts
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Optimization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vm-settings-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      VM Settings Optimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Optimization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-metrics-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 Test Metrics &amp; Reporting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Test Metrics & Reporting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-reporting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automated Reporting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      CI/CD Validation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 Success Criteria
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Success Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vm-test-completion-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      VM Test Completion Criteria
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ready-for-production-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ready for Production Criteria
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Additional Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Additional Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Links
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vm-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      VM Templates
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#support-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Support Channels
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎉 Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/vm-testing-guide.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="ai-servis-vm-testing-guide">🖥️ AI-Servis VM Testing Guide</h1>
+<p>This guide provides comprehensive instructions for testing the AI-Servis CI/CD infrastructure in virtual machine environments.</p>
+<h2 id="overview">🎯 Overview</h2>
+<p>The VM testing suite validates the complete AI-Servis development and deployment infrastructure in a clean, isolated environment. This ensures that the setup works correctly across different systems and configurations.</p>
+<h2 id="vm-requirements">📋 VM Requirements</h2>
+<h3 id="minimum-system-requirements">Minimum System Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Requirement</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RAM</strong></td>
+<td>8GB</td>
+<td>16GB</td>
+</tr>
+<tr>
+<td><strong>Disk Space</strong></td>
+<td>50GB free</td>
+<td>100GB free</td>
+</tr>
+<tr>
+<td><strong>CPU Cores</strong></td>
+<td>4 cores</td>
+<td>8 cores</td>
+</tr>
+<tr>
+<td><strong>OS</strong></td>
+<td>Ubuntu 20.04+</td>
+<td>Ubuntu 22.04 LTS</td>
+</tr>
+<tr>
+<td><strong>Network</strong></td>
+<td>Internet access</td>
+<td>Broadband connection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supported-vm-platforms">Supported VM Platforms</h3>
+<ul>
+<li><strong>VMware Workstation/Player</strong> - Recommended for development</li>
+<li><strong>VirtualBox</strong> - Free alternative, good performance</li>
+<li><strong>Hyper-V</strong> - Windows native virtualization</li>
+<li><strong>KVM/QEMU</strong> - Linux native virtualization</li>
+<li><strong>Parallels Desktop</strong> - macOS virtualization</li>
+<li><strong>Cloud VMs</strong> - AWS EC2, Google Cloud, Azure</li>
+</ul>
+<h2 id="quick-start">🚀 Quick Start</h2>
+<h3 id="1-download-vm-test-script">1. Download VM Test Script</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># In your VM, download the test script</span>
+curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+chmod<span class="w"> </span>+x<span class="w"> </span>vm-test-setup.sh
+
+<span class="c1"># Or if you have the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ai-servis/ai-servis.git
+<span class="nb">cd</span><span class="w"> </span>mia
+./scripts/vm-test-setup.sh
+</code></pre></div>
+<h3 id="2-run-complete-test-suite">2. Run Complete Test Suite</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run all tests (takes ~20-30 minutes)</span>
+./scripts/vm-test-setup.sh
+
+<span class="c1"># Run quick tests only (takes ~10-15 minutes)</span>
+./scripts/vm-test-setup.sh<span class="w"> </span>--quick
+
+<span class="c1"># Clean up after testing</span>
+./scripts/vm-test-setup.sh<span class="w"> </span>--cleanup
+</code></pre></div>
+<h3 id="3-view-test-results">3. View Test Results</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Test results are saved to:</span>
+cat<span class="w"> </span>/tmp/ai-servis-test-results/vm-test-report.md
+
+<span class="c1"># View detailed logs:</span>
+cat<span class="w"> </span>/tmp/ai-servis-vm-test.log
+</code></pre></div>
+<h2 id="test-phases">🧪 Test Phases</h2>
+<p>The VM test suite runs through 8 comprehensive test phases:</p>
+<h3 id="phase-1-system-requirements">Phase 1: System Requirements ✅</h3>
+<p><strong>Duration</strong>: ~2 minutes</p>
+<ul>
+<li><strong>Memory Check</strong> - Validates sufficient RAM (8GB+)</li>
+<li><strong>Disk Space Check</strong> - Validates free space (50GB+)</li>
+<li><strong>Command Availability</strong> - Checks for required tools</li>
+<li><strong>Network Connectivity</strong> - Tests internet access</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+free<span class="w"> </span>-h<span class="w">                    </span><span class="c1"># Check memory</span>
+df<span class="w"> </span>-h<span class="w">                     </span><span class="c1"># Check disk space</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://github.com<span class="w"> </span><span class="c1"># Test connectivity</span>
+</code></pre></div>
+<h3 id="phase-2-docker-setup">Phase 2: Docker Setup ✅</h3>
+<p><strong>Duration</strong>: ~5 minutes</p>
+<ul>
+<li><strong>Docker Installation</strong> - Installs Docker if missing</li>
+<li><strong>Docker Daemon</strong> - Validates Docker is running</li>
+<li><strong>Docker Compose</strong> - Tests compose functionality</li>
+<li><strong>Docker Buildx</strong> - Tests multi-platform builds</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+docker<span class="w"> </span>--version
+docker<span class="w"> </span>compose<span class="w"> </span>version
+docker<span class="w"> </span>buildx<span class="w"> </span>version
+docker<span class="w"> </span>info
+</code></pre></div>
+<h3 id="phase-3-project-setup">Phase 3: Project Setup ✅</h3>
+<p><strong>Duration</strong>: ~3 minutes</p>
+<ul>
+<li><strong>Repository Clone</strong> - Downloads/copies project</li>
+<li><strong>Dependencies</strong> - Installs Python requirements</li>
+<li><strong>Pre-commit Hooks</strong> - Sets up code quality tools</li>
+<li><strong>Script Permissions</strong> - Makes scripts executable</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+ls<span class="w"> </span>-la<span class="w"> </span>scripts/<span class="w">           </span><span class="c1"># Check script permissions</span>
+pip3<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pytest<span class="w">   </span><span class="c1"># Check Python deps</span>
+pre-commit<span class="w"> </span>--version<span class="w">      </span><span class="c1"># Check pre-commit</span>
+</code></pre></div>
+<h3 id="phase-4-development-environment">Phase 4: Development Environment ✅</h3>
+<p><strong>Duration</strong>: ~8 minutes</p>
+<ul>
+<li><strong>Environment Startup</strong> - Starts dev docker-compose</li>
+<li><strong>Service Health</strong> - Tests all service endpoints</li>
+<li><strong>Database Connectivity</strong> - PostgreSQL and Redis</li>
+<li><strong>MQTT Broker</strong> - Message broker functionality</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+./scripts/dev-environment.sh<span class="w"> </span>status<span class="w"> </span>dev
+curl<span class="w"> </span>http://localhost:8080/health
+curl<span class="w"> </span>http://localhost:8090/health
+</code></pre></div>
+<h3 id="phase-5-pi-simulation">Phase 5: Pi Simulation ✅</h3>
+<p><strong>Duration</strong>: ~6 minutes</p>
+<ul>
+<li><strong>Simulation Startup</strong> - Pi simulation environment</li>
+<li><strong>GPIO Simulator</strong> - Hardware simulation web UI</li>
+<li><strong>ESP32 Simulators</strong> - Device emulation</li>
+<li><strong>Hardware Monitor</strong> - Performance monitoring</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+./scripts/dev-environment.sh<span class="w"> </span>status<span class="w"> </span>pi-sim
+curl<span class="w"> </span>http://localhost:8084<span class="w">  </span><span class="c1"># Pi Gateway</span>
+curl<span class="w"> </span>http://localhost:9000<span class="w">  </span><span class="c1"># GPIO Simulator</span>
+</code></pre></div>
+<h3 id="phase-6-monitoring-stack">Phase 6: Monitoring Stack ✅</h3>
+<p><strong>Duration</strong>: ~8 minutes</p>
+<ul>
+<li><strong>Prometheus</strong> - Metrics collection service</li>
+<li><strong>Grafana</strong> - Visualization dashboard</li>
+<li><strong>AlertManager</strong> - Alert routing system</li>
+<li><strong>Jaeger</strong> - Distributed tracing</li>
+<li><strong>Uptime Kuma</strong> - Service monitoring</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+./scripts/dev-environment.sh<span class="w"> </span>status<span class="w"> </span>monitoring
+open<span class="w"> </span>http://localhost:3000<span class="w">   </span><span class="c1"># Grafana</span>
+open<span class="w"> </span>http://localhost:9090<span class="w">   </span><span class="c1"># Prometheus</span>
+</code></pre></div>
+<h3 id="phase-7-ci-simulation">Phase 7: CI Simulation ✅</h3>
+<p><strong>Duration</strong>: ~5 minutes</p>
+<ul>
+<li><strong>Code Linting</strong> - Python code quality checks</li>
+<li><strong>Docker Builds</strong> - Container build testing</li>
+<li><strong>Multi-platform</strong> - Cross-platform build tools</li>
+<li><strong>Security Scanning</strong> - Basic vulnerability checks</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+flake8<span class="w"> </span>--version
+docker<span class="w"> </span>build<span class="w"> </span>--help
+./scripts/docker-build-multiplatform.sh<span class="w"> </span>--help
+</code></pre></div>
+<h3 id="phase-8-performance-validation">Phase 8: Performance Validation ✅</h3>
+<p><strong>Duration</strong>: ~3 minutes</p>
+<ul>
+<li><strong>Performance Tests</strong> - Load testing validation</li>
+<li><strong>Resource Usage</strong> - CPU and memory monitoring</li>
+<li><strong>Response Times</strong> - Service performance</li>
+<li><strong>System Health</strong> - Overall system status</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Manual validation:</span>
+./scripts/performance-tests.sh
+top<span class="w">                      </span><span class="c1"># Check CPU usage</span>
+free<span class="w"> </span>-h<span class="w">                  </span><span class="c1"># Check memory usage</span>
+</code></pre></div>
+<h2 id="vm-setup-instructions">🖥️ VM Setup Instructions</h2>
+<h3 id="ubuntu-2204-lts-recommended">Ubuntu 22.04 LTS (Recommended)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Create VM with recommended specs:</span>
+<span class="c1"># - 16GB RAM, 100GB disk, 8 CPU cores</span>
+<span class="c1"># - Enable virtualization features</span>
+<span class="c1"># - Network: NAT or Bridged</span>
+
+<span class="c1"># 2. Install Ubuntu 22.04 LTS</span>
+<span class="c1"># - Use default installation</span>
+<span class="c1"># - Install OpenSSH server for remote access</span>
+<span class="c1"># - Create user account</span>
+
+<span class="c1"># 3. Update system</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+
+<span class="c1"># 4. Install basic tools</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>curl<span class="w"> </span>wget<span class="w"> </span>git<span class="w"> </span>build-essential<span class="w"> </span>python3-pip
+
+<span class="c1"># 5. Run VM test</span>
+curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+chmod<span class="w"> </span>+x<span class="w"> </span>vm-test-setup.sh
+./vm-test-setup.sh
+</code></pre></div>
+<h3 id="vmware-workstation-setup">VMware Workstation Setup</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Create new VM:</span>
+<span class="c1"># - OS: Ubuntu 64-bit</span>
+<span class="c1"># - Memory: 16GB</span>
+<span class="c1"># - Disk: 100GB (thin provisioned)</span>
+<span class="c1"># - Network: NAT</span>
+
+<span class="c1"># 2. VM Settings:</span>
+<span class="c1"># - Processors: 8 cores</span>
+<span class="c1"># - Enable virtualization engine</span>
+<span class="c1"># - USB 3.1 support</span>
+<span class="c1"># - Sound card (optional)</span>
+
+<span class="c1"># 3. Install VMware Tools:</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>open-vm-tools<span class="w"> </span>open-vm-tools-desktop
+
+<span class="c1"># 4. Enable shared folders (optional):</span>
+<span class="c1"># VM Settings &gt; Options &gt; Shared Folders</span>
+</code></pre></div>
+<h3 id="virtualbox-setup">VirtualBox Setup</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Create new VM:</span>
+<span class="c1"># - Type: Linux, Ubuntu (64-bit)</span>
+<span class="c1"># - Memory: 16GB (16384 MB)</span>
+<span class="c1"># - Disk: 100GB VDI (dynamically allocated)</span>
+
+<span class="c1"># 2. VM Settings:</span>
+<span class="c1"># - System &gt; Processor: 8 CPUs</span>
+<span class="c1"># - System &gt; Acceleration: Enable VT-x/AMD-V</span>
+<span class="c1"># - Network: NAT or Bridged</span>
+
+<span class="c1"># 3. Install Guest Additions:</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>virtualbox-guest-additions-iso
+sudo<span class="w"> </span>mount<span class="w"> </span>/dev/cdrom<span class="w"> </span>/mnt
+sudo<span class="w"> </span>/mnt/VBoxLinuxAdditions.run
+</code></pre></div>
+<h3 id="cloud-vm-setup-aws-ec2">Cloud VM Setup (AWS EC2)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Launch EC2 instance:</span>
+<span class="c1"># - AMI: Ubuntu Server 22.04 LTS</span>
+<span class="c1"># - Instance type: t3.2xlarge (8 vCPU, 32GB RAM)</span>
+<span class="c1"># - Storage: 100GB gp3</span>
+<span class="c1"># - Security group: Allow SSH (22), HTTP (80), HTTPS (443)</span>
+
+<span class="c1"># 2. Connect to instance:</span>
+ssh<span class="w"> </span>-i<span class="w"> </span>your-key.pem<span class="w"> </span>ubuntu@your-instance-ip
+
+<span class="c1"># 3. Run VM test:</span>
+curl<span class="w"> </span>-O<span class="w"> </span>https://raw.githubusercontent.com/ai-servis/ai-servis/main/scripts/vm-test-setup.sh
+chmod<span class="w"> </span>+x<span class="w"> </span>vm-test-setup.sh
+./vm-test-setup.sh
+</code></pre></div>
+<h2 id="expected-test-results">📊 Expected Test Results</h2>
+<h3 id="successful-test-output">Successful Test Output</h3>
+<div class="highlight"><pre><span></span><code>[2024-12-XX XX:XX:XX] Starting AI-Servis VM Test Suite...
+[2024-12-XX XX:XX:XX] === Running test phase: system_requirements ===
+[SUCCESS] Memory check passed: 16GB
+[SUCCESS] Disk space check passed: 85GB available
+[SUCCESS] Command available: curl
+[SUCCESS] Command available: git
+[SUCCESS] Internet connectivity verified
+[SUCCESS] ✓ System requirements test passed
+
+[2024-12-XX XX:XX:XX] === Running test phase: docker_setup ===
+[SUCCESS] Docker is running
+[SUCCESS] Docker Compose is available
+[SUCCESS] Docker Buildx is available
+[SUCCESS] Docker setup completed
+[SUCCESS] ✓ Docker setup test passed
+
+... (additional phases)
+
+[2024-12-XX XX:XX:XX] === VM Test Suite Complete ===
+[2024-12-XX XX:XX:XX] Total Tests: 8
+[2024-12-XX XX:XX:XX] Passed: 8
+[2024-12-XX XX:XX:XX] Failed: 0
+[2024-12-XX XX:XX:XX] Success Rate: 100%
+[SUCCESS] 🎉 All VM tests passed! AI-Servis is ready for deployment.
+</code></pre></div>
+<h3 id="performance-benchmarks">Performance Benchmarks</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Expected Range</th>
+<th>Good Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Test Time</strong></td>
+<td>20-30 minutes</td>
+<td>&lt; 25 minutes</td>
+</tr>
+<tr>
+<td><strong>Docker Build Time</strong></td>
+<td>3-5 minutes</td>
+<td>&lt; 4 minutes</td>
+</tr>
+<tr>
+<td><strong>Service Startup</strong></td>
+<td>30-60 seconds</td>
+<td>&lt; 45 seconds</td>
+</tr>
+<tr>
+<td><strong>Endpoint Response</strong></td>
+<td>&lt; 1 second</td>
+<td>&lt; 500ms</td>
+</tr>
+<tr>
+<td><strong>Memory Usage</strong></td>
+<td>4-8GB during tests</td>
+<td>&lt; 6GB</td>
+</tr>
+<tr>
+<td><strong>CPU Usage</strong></td>
+<td>50-80% during builds</td>
+<td>&lt; 70% average</td>
+</tr>
+</tbody>
+</table>
+<h2 id="troubleshooting">🔧 Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="1-insufficient-resources">1. Insufficient Resources</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Error: &quot;Insufficient memory: 4GB (required: 8GB)&quot;</span>
+<span class="c1"># Solution: Increase VM RAM allocation</span>
+
+<span class="c1"># Error: &quot;Insufficient disk space&quot;</span>
+<span class="c1"># Solution: Increase VM disk size or clean up space</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>autoremove
+docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a
+</code></pre></div>
+<h4 id="2-docker-issues">2. Docker Issues</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Error: &quot;Docker daemon is not running&quot;</span>
+<span class="c1"># Solution: Start Docker service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>docker
+
+<span class="c1"># Error: &quot;Permission denied&quot; for Docker</span>
+<span class="c1"># Solution: Add user to docker group</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+<span class="c1"># Log out and log back in</span>
+</code></pre></div>
+<h4 id="3-network-issues">3. Network Issues</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Error: &quot;No internet connectivity&quot;</span>
+<span class="c1"># Solution: Check VM network settings</span>
+
+<span class="c1"># For NAT networking:</span>
+<span class="c1"># VM Settings &gt; Network &gt; NAT</span>
+
+<span class="c1"># For bridged networking:</span>
+<span class="c1"># VM Settings &gt; Network &gt; Bridged Adapter</span>
+
+<span class="c1"># Test connectivity:</span>
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8
+curl<span class="w"> </span>-I<span class="w"> </span>https://github.com
+</code></pre></div>
+<h4 id="4-service-startup-issues">4. Service Startup Issues</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Error: &quot;Service endpoints not responding&quot;</span>
+<span class="c1"># Solution: Check service logs</span>
+
+<span class="c1"># View container logs:</span>
+docker<span class="w"> </span>logs<span class="w"> </span>ai-servis-core-dev
+docker<span class="w"> </span>logs<span class="w"> </span>ai-servis-discovery-dev
+
+<span class="c1"># Check resource usage:</span>
+docker<span class="w"> </span>stats
+
+<span class="c1"># Restart services:</span>
+./scripts/dev-environment.sh<span class="w"> </span>restart<span class="w"> </span>dev
+</code></pre></div>
+<h4 id="5-port-conflicts">5. Port Conflicts</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Error: &quot;Port already in use&quot;</span>
+<span class="c1"># Solution: Check for conflicting processes</span>
+
+<span class="c1"># Check port usage:</span>
+netstat<span class="w"> </span>-tulpn<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:8080
+lsof<span class="w"> </span>-i<span class="w"> </span>:8080
+
+<span class="c1"># Kill conflicting process:</span>
+sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span>&lt;PID&gt;
+
+<span class="c1"># Or use different ports:</span>
+<span class="c1"># Edit infra/docker/docker-compose.dev.yml</span>
+</code></pre></div>
+<h3 id="performance-optimization">Performance Optimization</h3>
+<h4 id="vm-settings-optimization">VM Settings Optimization</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># VMware Workstation:</span>
+<span class="c1"># - Enable hardware acceleration</span>
+<span class="c1"># - Allocate maximum recommended memory</span>
+<span class="c1"># - Use NVME/SSD storage</span>
+<span class="c1"># - Enable 3D acceleration</span>
+
+<span class="c1"># VirtualBox:</span>
+<span class="c1"># - Enable VT-x/AMD-V and Nested Paging</span>
+<span class="c1"># - Increase video memory to 256MB</span>
+<span class="c1"># - Enable 3D acceleration</span>
+<span class="c1"># - Use VDI with fixed size for better performance</span>
+</code></pre></div>
+<h4 id="system-optimization">System Optimization</h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># Disable unnecessary services:</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>snapd
+sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>bluetooth
+sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>cups
+
+<span class="c1"># Optimize Docker:</span>
+<span class="c1"># Add to /etc/docker/daemon.json:</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;storage-driver&quot;</span>:<span class="w"> </span><span class="s2">&quot;overlay2&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;log-driver&quot;</span>:<span class="w"> </span><span class="s2">&quot;json-file&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;log-opts&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;max-size&quot;</span>:<span class="w"> </span><span class="s2">&quot;10m&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;max-file&quot;</span>:<span class="w"> </span><span class="s2">&quot;3&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>docker
+</code></pre></div>
+<h2 id="test-metrics-reporting">📈 Test Metrics &amp; Reporting</h2>
+<h3 id="automated-reporting">Automated Reporting</h3>
+<p>The VM test suite generates comprehensive reports:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Test report location:</span>
+/tmp/ai-servis-test-results/vm-test-report.md
+
+<span class="c1"># Report includes:</span>
+<span class="c1"># - System information</span>
+<span class="c1"># - Test results summary  </span>
+<span class="c1"># - Performance metrics</span>
+<span class="c1"># - Detailed test logs</span>
+<span class="c1"># - Recommendations</span>
+</code></pre></div>
+<h3 id="manual-validation">Manual Validation</h3>
+<p>After automated tests, manually verify key functionality:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Check all services are running:</span>
+./scripts/dev-environment.sh<span class="w"> </span>status<span class="w"> </span>full
+
+<span class="c1"># 2. Access web interfaces:</span>
+open<span class="w"> </span>http://localhost:8080<span class="w">  </span><span class="c1"># Core Orchestrator</span>
+open<span class="w"> </span>http://localhost:3000<span class="w">  </span><span class="c1"># Grafana (admin/admin)</span>
+open<span class="w"> </span>http://localhost:9000<span class="w">  </span><span class="c1"># GPIO Simulator</span>
+
+<span class="c1"># 3. Run integration tests:</span>
+./scripts/system-tests.sh
+
+<span class="c1"># 4. Test performance:</span>
+./scripts/performance-tests.sh
+
+<span class="c1"># 5. Validate monitoring:</span>
+<span class="c1"># Check Grafana dashboards show data</span>
+<span class="c1"># Verify Prometheus targets are up</span>
+</code></pre></div>
+<h3 id="cicd-validation">CI/CD Validation</h3>
+<p>Test the CI/CD pipeline simulation:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. Test pre-commit hooks:</span>
+pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+
+<span class="c1"># 2. Test Docker builds:</span>
+./scripts/docker-build-multiplatform.sh<span class="w"> </span>--help
+
+<span class="c1"># 3. Simulate GitHub Actions:</span>
+<span class="c1"># Check .github/workflows/ files are valid</span>
+<span class="c1"># Verify all referenced scripts exist</span>
+<span class="c1"># Test environment variable substitution</span>
+</code></pre></div>
+<h2 id="success-criteria">🎯 Success Criteria</h2>
+<h3 id="vm-test-completion-criteria">VM Test Completion Criteria</h3>
+<ul>
+<li>✅ <strong>All 8 test phases pass</strong> without errors</li>
+<li>✅ <strong>Service endpoints respond</strong> within timeout</li>
+<li>✅ <strong>Resource usage</strong> stays within limits</li>
+<li>✅ <strong>No critical errors</strong> in logs</li>
+<li>✅ <strong>Performance benchmarks</strong> meet targets</li>
+</ul>
+<h3 id="ready-for-production-criteria">Ready for Production Criteria</h3>
+<ul>
+<li>✅ <strong>VM tests pass</strong> on multiple VM platforms</li>
+<li>✅ <strong>Different OS versions</strong> validated</li>
+<li>✅ <strong>Resource scaling</strong> tested (4GB to 32GB RAM)</li>
+<li>✅ <strong>Network configurations</strong> validated</li>
+<li>✅ <strong>Security scanning</strong> shows no critical issues</li>
+</ul>
+<h2 id="additional-resources">📚 Additional Resources</h2>
+<h3 id="documentation-links">Documentation Links</h3>
+<ul>
+<li><strong><a href="../ci-cd-setup/">CI/CD Setup Guide</a></strong> - Complete pipeline documentation</li>
+<li><strong><a href="development.md">Development Guide</a></strong> - Developer onboarding</li>
+<li><strong><a href="../troubleshooting/">Troubleshooting Guide</a></strong> - Common issues and solutions</li>
+<li><strong><a href="performance-tuning.md">Performance Tuning</a></strong> - Optimization guidelines</li>
+</ul>
+<h3 id="vm-templates">VM Templates</h3>
+<p>Pre-configured VM templates are available:</p>
+<ul>
+<li><strong>VMware Template</strong> - Ubuntu 22.04 with Docker pre-installed</li>
+<li><strong>VirtualBox OVA</strong> - Ready-to-use development environment</li>
+<li><strong>Cloud Images</strong> - AWS/GCP/Azure marketplace images</li>
+<li><strong>Vagrant Box</strong> - Automated VM provisioning</li>
+</ul>
+<h3 id="support-channels">Support Channels</h3>
+<ul>
+<li><strong>GitHub Issues</strong> - Bug reports and feature requests</li>
+<li><strong>Documentation Wiki</strong> - Comprehensive guides</li>
+<li><strong>Team Chat</strong> - Real-time support</li>
+<li><strong>Video Tutorials</strong> - Step-by-step walkthroughs</li>
+</ul>
+<hr />
+<h2 id="conclusion">🎉 Conclusion</h2>
+<p>The AI-Servis VM testing suite provides comprehensive validation of the entire CI/CD infrastructure in isolated environments. This ensures reliable deployment across different systems and configurations.</p>
+<p><strong>Next Steps:</strong>
+1. Run the VM test suite in your environment
+2. Review the generated test report
+3. Address any issues identified
+4. Proceed with development or deployment</p>
+<p>For questions or issues, please refer to the troubleshooting section or create a GitHub issue.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

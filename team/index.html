@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SERVIS Team Portal</title>
+    <meta name="description" content="Internal team portal for AI-SERVIS development team. Access to architecture, modules, documentation, and team resources.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="team-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>AI-SERVIS</h1>
+                    <span class="subtitle">Team Portal</span>
+                </div>
+                <nav class="team-nav">
+                    <a href="#architecture" class="nav-link active">Architecture</a>
+                    <a href="#modules" class="nav-link">Modules</a>
+                    <a href="#team" class="nav-link">Team</a>
+                    <a href="#docs" class="nav-link">Docs</a>
+                    <a href="#status" class="nav-link">Status</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-menu">
+                        <button class="user-btn" onclick="toggleUserMenu()">
+                            <i class="fas fa-user"></i>
+                            <span>sparesparrow</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="#profile">Profile</a>
+                            <a href="#settings">Settings</a>
+                            <a href="#logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- System Status Bar -->
+    <div class="status-bar">
+        <div class="container">
+            <div class="status-indicators">
+                <div class="status-item">
+                    <div class="status-dot status-healthy"></div>
+                    <span>Core Orchestrator</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot status-healthy"></div>
+                    <span>AI Audio Assistant</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot status-warning"></div>
+                    <span>AI Communications</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot status-healthy"></div>
+                    <span>Service Discovery</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot status-healthy"></div>
+                    <span>Docker Services</span>
+                </div>
+            </div>
+            <div class="status-time">
+                <span>Last updated: <span id="lastUpdate">2 minutes ago</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Architecture Overview -->
+        <section id="architecture" class="section">
+            <div class="container">
+                <h2>System Architecture</h2>
+                <div class="architecture-diagram">
+                    <div class="arch-layer client-layer">
+                        <h3>Client Applications</h3>
+                        <div class="service-cards">
+                            <div class="service-card">
+                                <div class="service-icon">🌐</div>
+                                <h4>Web Interfaces</h4>
+                                <p>Customer-facing landing pages</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">📱</div>
+                                <h4>Mobile Apps</h4>
+                                <p>Android APK builds</p>
+                                <div class="service-status status-planned">Planned</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arch-connector">↓</div>
+
+                    <div class="arch-layer api-layer">
+                        <h3>API Gateway & Services</h3>
+                        <div class="service-cards">
+                            <div class="service-card">
+                                <div class="service-icon">🔀</div>
+                                <h4>Core Orchestrator</h4>
+                                <p>Central command processor</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🔍</div>
+                                <h4>Service Discovery</h4>
+                                <p>Dynamic service registration</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arch-connector">↓</div>
+
+                    <div class="arch-layer module-layer">
+                        <h3>AI Modules</h3>
+                        <div class="service-cards">
+                            <div class="service-card">
+                                <div class="service-icon">🎵</div>
+                                <h4>AI Audio Assistant</h4>
+                                <p>Voice control & music</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🛡️</div>
+                                <h4>AI Security</h4>
+                                <p>Surveillance & protection</p>
+                                <div class="service-status status-planned">Planned</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">💬</div>
+                                <h4>AI Communications</h4>
+                                <p>Messaging & calls</p>
+                                <div class="service-status status-warning">In Development</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🖥️</div>
+                                <h4>Platform Controllers</h4>
+                                <p>System management</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arch-connector">↓</div>
+
+                    <div class="arch-layer infra-layer">
+                        <h3>Infrastructure</h3>
+                        <div class="service-cards">
+                            <div class="service-card">
+                                <div class="service-icon">🐳</div>
+                                <h4>Docker</h4>
+                                <p>Container orchestration</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">📡</div>
+                                <h4>MQTT</h4>
+                                <p>Message broker</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🗄️</div>
+                                <h4>PostgreSQL</h4>
+                                <p>Data persistence</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">⚡</div>
+                                <h4>Redis</h4>
+                                <p>Caching & sessions</p>
+                                <div class="service-status status-healthy">Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Details -->
+        <section id="modules" class="section">
+            <div class="container">
+                <h2>Module Details</h2>
+                <div class="modules-grid">
+                    <div class="module-card" data-module="core-orchestrator">
+                        <div class="module-header">
+                            <div class="module-icon">🎯</div>
+                            <h3>Core Orchestrator</h3>
+                            <div class="module-status status-healthy">Active</div>
+                        </div>
+                        <div class="module-content">
+                            <p>Central AI command processor that coordinates all modules using MCP protocol.</p>
+                            <div class="module-tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">AsyncIO</span>
+                                <span class="tech-tag">MCP</span>
+                                <span class="tech-tag">NLP</span>
+                            </div>
+                            <div class="module-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">8080</span>
+                                    <span class="metric-label">Port</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">7</span>
+                                    <span class="metric-label">Tools</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">99.9%</span>
+                                    <span class="metric-label">Uptime</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-card" data-module="ai-audio-assistant">
+                        <div class="module-header">
+                            <div class="module-icon">🎵</div>
+                            <h3>AI Audio Assistant</h3>
+                            <div class="module-status status-healthy">Active</div>
+                        </div>
+                        <div class="module-content">
+                            <p>Voice processing, music playback, and audio output management with ElevenLabs TTS.</p>
+                            <div class="module-tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">ElevenLabs</span>
+                                <span class="tech-tag">Audio</span>
+                                <span class="tech-tag">MIDI</span>
+                            </div>
+                            <div class="module-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">8082</span>
+                                    <span class="metric-label">Port</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">8</span>
+                                    <span class="metric-label">Tools</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">98.5%</span>
+                                    <span class="metric-label">Uptime</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-card" data-module="service-discovery">
+                        <div class="module-header">
+                            <div class="module-icon">🔍</div>
+                            <h3>Service Discovery</h3>
+                            <div class="module-status status-healthy">Active</div>
+                        </div>
+                        <div class="module-content">
+                            <p>Dynamic service registration and health monitoring for the microservices architecture.</p>
+                            <div class="module-tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">MQTT</span>
+                                <span class="tech-tag">Health Checks</span>
+                            </div>
+                            <div class="module-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">8090</span>
+                                    <span class="metric-label">Port</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">4</span>
+                                    <span class="metric-label">Services</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">100%</span>
+                                    <span class="metric-label">Uptime</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-card" data-module="ai-platform-controllers">
+                        <div class="module-header">
+                            <div class="module-icon">🖥️</div>
+                            <h3>Platform Controllers</h3>
+                            <div class="module-status status-healthy">Active</div>
+                        </div>
+                        <div class="module-content">
+                            <p>Cross-platform system management for Linux, Windows, and mobile environments.</p>
+                            <div class="module-tech">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">System APIs</span>
+                                <span class="tech-tag">Cross-platform</span>
+                            </div>
+                            <div class="module-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">8083</span>
+                                    <span class="metric-label">Port</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">6</span>
+                                    <span class="metric-label">Tools</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">97.2%</span>
+                                    <span class="metric-label">Uptime</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="section">
+            <div class="container">
+                <h2>Development Team</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>sparesparrow</h3>
+                            <p>Lead Developer & Architect</p>
+                            <div class="member-skills">
+                                <span>Python</span>
+                                <span>AI/ML</span>
+                                <span>System Architecture</span>
+                                <span>Docker</span>
+                            </div>
+                            <div class="member-contact">
+                                <a href="mailto:sparesparrow@protonmail.ch"><i class="fas fa-envelope"></i></a>
+                                <a href="https://github.com/sparesparrow"><i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>AI-SERVIS Core</h3>
+                            <p>Autonomous AI Assistant</p>
+                            <div class="member-skills">
+                                <span>MCP Protocol</span>
+                                <span>NLP Processing</span>
+                                <span>Voice AI</span>
+                                <span>24/7 Operations</span>
+                            </div>
+                            <div class="member-status">
+                                <div class="status-dot status-healthy"></div>
+                                <span>Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="member-info">
+                            <h3>Development Tools</h3>
+                            <p>CI/CD & Automation</p>
+                            <div class="member-skills">
+                                <span>GitHub Actions</span>
+                                <span>Docker</span>
+                                <span>Python</span>
+                                <span>Monitoring</span>
+                            </div>
+                            <div class="member-status">
+                                <div class="status-dot status-healthy"></div>
+                                <span>Automated</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation -->
+        <section id="docs" class="section">
+            <div class="container">
+                <h2>Documentation & Resources</h2>
+                <div class="docs-grid">
+                    <div class="doc-card">
+                        <div class="doc-icon">📚</div>
+                        <h3>API Documentation</h3>
+                        <p>Complete API reference for all modules and services.</p>
+                        <a href="#" class="doc-link">View Docs <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-icon">🔧</div>
+                        <h3>Setup Guide</h3>
+                        <p>Step-by-step installation and configuration instructions.</p>
+                        <a href="#" class="doc-link">Get Started <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-icon">🚀</div>
+                        <h3>Deployment</h3>
+                        <p>AWS deployment configurations and infrastructure setup.</p>
+                        <a href="#" class="doc-link">Deploy <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-icon">🧪</div>
+                        <h3>Testing</h3>
+                        <p>Unit tests, integration tests, and QA procedures.</p>
+                        <a href="#" class="doc-link">Test Suite <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Status -->
+        <section id="status" class="section">
+            <div class="container">
+                <h2>System Status</h2>
+                <div class="status-dashboard">
+                    <div class="status-overview">
+                        <div class="overview-card">
+                            <h3>System Health</h3>
+                            <div class="health-score">
+                                <div class="score-circle">
+                                    <span class="score-value">98.7%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <h3>Active Services</h3>
+                            <div class="service-count">
+                                <span class="count-value">6</span>
+                                <span class="count-label">of 8 planned</span>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <h3>Response Time</h3>
+                            <div class="response-time">
+                                <span class="time-value">45ms</span>
+                                <span class="time-label">avg latency</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="logs-section">
+                        <h3>Recent Activity</h3>
+                        <div class="logs-container">
+                            <div class="log-entry">
+                                <div class="log-time">14:32:15</div>
+                                <div class="log-level log-info">INFO</div>
+                                <div class="log-message">Core Orchestrator processed voice command successfully</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">14:31:42</div>
+                                <div class="log-level log-success">SUCCESS</div>
+                                <div class="log-message">AI Audio Assistant connected to ElevenLabs API</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">14:30:18</div>
+                                <div class="log-level log-warning">WARNING</div>
+                                <div class="log-message">AI Communications module in development mode</div>
+                            </div>
+                            <div class="log-entry">
+                                <div class="log-time">14:28:55</div>
+                                <div class="log-level log-info">INFO</div>
+                                <div class="log-message">Service Discovery registered new platform controller</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="team-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>AI-SERVIS</h3>
+                    <p>Internal Development Portal</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#architecture">Architecture</a>
+                    <a href="#modules">Modules</a>
+                    <a href="#team">Team</a>
+                    <a href="#docs">Docs</a>
+                    <a href="#status">Status</a>
+                </div>
+                <div class="footer-meta">
+                    <span>v1.0.0-beta</span>
+                    <span>Last deploy: 2025-01-28</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

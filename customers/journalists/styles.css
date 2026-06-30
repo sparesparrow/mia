@@ -1,0 +1,1105 @@
+/* GONZO CSS - DIGITAL MADNESS STYLESHEET */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+    /* COLORS FROM HELL */
+    --primary-madness: #ff0040;
+    --secondary-chaos: #00ffff;
+    --accent-hell: #ffff00;
+    --bg-darkness: #0a0a0a;
+    --bg-surface: #1a0a1a;
+    --text-scream: #ffffff;
+    --text-whisper: #cccccc;
+    --text-blood: #ff4444;
+    --border-paranoia: #333;
+    --glow-paranoia: 0 0 20px var(--primary-madness);
+    --glow-chaos: 0 0 15px var(--secondary-chaos);
+    --glow-hell: 0 0 25px var(--accent-hell);
+
+    /* FONTS OF DESTRUCTION */
+    --font-madness: 'Creepster', cursive;
+    --font-chaos: 'Bebas Neue', sans-serif;
+    --font-terminal: 'JetBrains Mono', monospace;
+    --font-body: 'JetBrains Mono', monospace;
+}
+
+/* RESET THE MATRIX */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-terminal);
+    background: var(--bg-darkness);
+    color: var(--text-scream);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+body.madness-loading {
+    cursor: crosshair;
+}
+
+/* PARANOIA METER */
+#paranoia-meter {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--primary-madness);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: var(--glow-paranoia);
+    font-family: var(--font-terminal);
+}
+
+.meter-label {
+    font-size: 10px;
+    color: var(--primary-madness);
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.meter-bar {
+    width: 100px;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+#paranoia-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+    width: 73%;
+    animation: paranoia-pulse 2s infinite;
+    transition: width 0.5s ease;
+}
+
+.meter-value {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-scream);
+    font-weight: bold;
+}
+
+/* GLITCH OVERLAY */
+#glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 0, 64, 0.03) 2px,
+            rgba(255, 0, 64, 0.03) 4px
+        );
+    animation: glitch-lines 0.1s infinite linear;
+}
+
+/* GONZO NAVIGATION */
+.gonzo-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 3px solid var(--primary-madness);
+    box-shadow: var(--glow-paranoia);
+}
+
+.nav-chaos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo-madness h1 {
+    font-family: var(--font-madness);
+    font-size: 2rem;
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    animation: logo-glitch 3s infinite;
+}
+
+.subtitle-hell {
+    font-family: var(--font-terminal);
+    font-size: 0.7rem;
+    color: var(--secondary-chaos);
+    display: block;
+    margin-top: -5px;
+    letter-spacing: 2px;
+}
+
+.nav-links-chaos {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-link-hell {
+    font-family: var(--font-chaos);
+    color: var(--text-whisper);
+    text-decoration: none;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link-hell:hover {
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    transform: translateY(-2px);
+}
+
+.nav-link-hell::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-madness);
+    transition: width 0.3s ease;
+}
+
+.nav-link-hell:hover::after {
+    width: 100%;
+    box-shadow: var(--glow-paranoia);
+}
+
+.panic-button {
+    background: linear-gradient(45deg, var(--primary-madness), #ff6666);
+    border: none;
+    padding: 12px 20px;
+    font-family: var(--font-chaos);
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: panic-pulse 2s infinite;
+    box-shadow: var(--glow-paranoia);
+}
+
+.panic-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--primary-madness);
+}
+
+.audio-toggle-btn {
+    background: linear-gradient(45deg, var(--secondary-chaos), #00cccc);
+    border: none;
+    padding: 12px 16px;
+    font-family: var(--font-chaos);
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    margin-right: 15px;
+    box-shadow: var(--glow-chaos);
+}
+
+.audio-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--secondary-chaos);
+}
+
+.audio-toggle-btn.playing {
+    background: linear-gradient(45deg, var(--accent-hell), #ffff66);
+    box-shadow: var(--glow-hell);
+    animation: audio-pulse 2s infinite;
+}
+
+@keyframes audio-pulse {
+    0%, 100% { 
+        box-shadow: 0 0 15px var(--accent-hell);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 25px var(--accent-hell), 0 0 40px rgba(255, 255, 0, 0.5);
+        transform: scale(1.05);
+    }
+}
+
+/* HERO MADNESS */
+.hero-madness {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding-top: 80px;
+}
+
+.glitch-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+    animation: bg-glitch 5s infinite;
+}
+
+.glitch-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(255, 0, 64, 0.2) 0%,
+        rgba(0, 255, 255, 0.1) 50%,
+        rgba(255, 255, 0, 0.2) 100%);
+}
+
+.hero-content-chaos {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+    z-index: 1;
+}
+
+.hero-title-hell {
+    font-family: var(--font-chaos);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    animation: title-chaos 4s infinite;
+}
+
+.highlight-madness {
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    animation: text-glitch 2s infinite;
+}
+
+.hero-text-insane {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 800px;
+    color: var(--text-whisper);
+    font-family: var(--font-terminal);
+}
+
+.hero-stats-hell {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.stat-chaos {
+    text-align: center;
+}
+
+.stat-number-hell {
+    display: block;
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: var(--font-chaos);
+    color: var(--secondary-chaos);
+    text-shadow: var(--glow-chaos);
+    animation: stat-pulse 3s infinite;
+}
+
+.stat-text-hell {
+    font-size: 0.9rem;
+    color: var(--text-whisper);
+    font-family: var(--font-terminal);
+    line-height: 1.2;
+}
+
+.hero-buttons-chaos {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* BUTTONS OF DESTRUCTION */
+.btn-madness {
+    font-family: var(--font-chaos);
+    font-weight: bold;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-madness.primary {
+    background: linear-gradient(45deg, var(--primary-madness), #ff6666);
+    color: white;
+    box-shadow: var(--glow-paranoia);
+}
+
+.btn-madness.primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 40px var(--primary-madness);
+}
+
+.btn-madness.secondary {
+    background: transparent;
+    color: var(--secondary-chaos);
+    border: 2px solid var(--secondary-chaos);
+}
+
+.btn-madness.secondary:hover {
+    background: var(--secondary-chaos);
+    color: var(--bg-darkness);
+    transform: translateY(-3px);
+    box-shadow: var(--glow-chaos);
+}
+
+/* ARSENAL SECTION */
+.arsenal-section {
+    padding: 100px 0;
+    background: var(--bg-surface);
+    position: relative;
+}
+
+.container-chaos {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+.section-title-hell {
+    font-family: var(--font-chaos);
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 60px;
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    animation: title-flicker 4s infinite;
+}
+
+.weapon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.weapon-card {
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid var(--border-paranoia);
+    border-radius: 15px;
+    padding: 30px;
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.weapon-card:hover {
+    border-color: var(--primary-madness);
+    box-shadow: var(--glow-paranoia);
+    transform: translateY(-10px) rotateX(5deg);
+}
+
+.weapon-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--primary-madness), var(--secondary-chaos), var(--accent-hell));
+    border-radius: 15px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.weapon-card:hover::before {
+    opacity: 0.3;
+    animation: border-chaos 2s infinite;
+}
+
+.weapon-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: icon-float 3s ease-in-out infinite;
+}
+
+.weapon-card h3 {
+    font-family: var(--font-chaos);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--secondary-chaos);
+    text-shadow: var(--glow-chaos);
+}
+
+.weapon-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: all 0.5s ease;
+    filter: sepia(20%) hue-rotate(300deg);
+}
+
+.weapon-card:hover .weapon-img {
+    filter: sepia(50%) hue-rotate(320deg) saturate(1.5);
+    transform: scale(1.02);
+}
+
+.weapon-desc {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--text-whisper);
+}
+
+.paranoia-quote {
+    font-style: italic;
+    color: var(--accent-hell);
+    border-left: 3px solid var(--primary-madness);
+    padding-left: 15px;
+    font-size: 0.95rem;
+    text-shadow: var(--glow-hell);
+}
+
+/* STORIES SECTION */
+.stories-madness {
+    padding: 100px 0;
+    background: var(--bg-darkness);
+}
+
+.story-grid {
+    display: grid;
+    gap: 60px;
+}
+
+.story-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    background: rgba(26, 10, 26, 0.7);
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid var(--border-paranoia);
+    transition: all 0.5s ease;
+}
+
+.story-card:hover {
+    border-color: var(--secondary-chaos);
+    box-shadow: var(--glow-chaos);
+    transform: scale(1.02);
+}
+
+.story-card.journalist:hover {
+    border-color: var(--primary-madness);
+    box-shadow: var(--glow-paranoia);
+}
+
+.story-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: all 0.5s ease;
+}
+
+.story-card:hover .story-img {
+    transform: scale(1.05) rotateZ(-1deg);
+    filter: saturate(1.3) contrast(1.2);
+}
+
+.story-content h3 {
+    font-family: var(--font-chaos);
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+}
+
+.story-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 25px;
+    color: var(--text-whisper);
+}
+
+.story-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.feature-tag {
+    background: linear-gradient(45deg, var(--primary-madness), #ff6666);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: tag-glow 3s infinite;
+}
+
+/* PRICING HELL */
+.pricing-hell {
+    padding: 100px 0;
+    background: var(--bg-surface);
+    position: relative;
+}
+
+.pricing-hell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 64, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+.pricing-desc-hell {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 60px;
+    color: var(--text-whisper);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pricing-chaos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    position: relative;
+}
+
+.price-card {
+    background: rgba(10, 10, 10, 0.95);
+    border: 2px solid var(--border-paranoia);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.price-card.featured {
+    border-color: var(--primary-madness);
+    box-shadow: var(--glow-paranoia);
+    transform: scale(1.05);
+}
+
+.price-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    border-color: var(--secondary-chaos);
+    box-shadow: var(--glow-chaos);
+}
+
+.price-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(45deg, var(--primary-madness), #ff6666);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-family: var(--font-chaos);
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    animation: badge-pulse 2s infinite;
+}
+
+.price-header h3 {
+    font-family: var(--font-chaos);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: var(--secondary-chaos);
+    text-shadow: var(--glow-chaos);
+}
+
+.price-amount {
+    font-family: var(--font-chaos);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    margin-bottom: 10px;
+}
+
+.price-desc {
+    color: var(--text-whisper);
+    font-size: 1rem;
+    margin-bottom: 30px;
+}
+
+.price-features ul {
+    list-style: none;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.price-features li {
+    padding: 10px 0;
+    color: var(--text-whisper);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    padding-left: 20px;
+}
+
+.price-features li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--primary-madness);
+    font-weight: bold;
+}
+
+.btn-join-resistance {
+    background: linear-gradient(45deg, var(--primary-madness), #ff6666);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-family: var(--font-chaos);
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.btn-join-resistance:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px var(--primary-madness);
+}
+
+.btn-join-resistance.featured {
+    background: linear-gradient(45deg, var(--accent-hell), var(--primary-madness));
+    animation: featured-pulse 2s infinite;
+}
+
+/* MANIFESTO */
+.manifesto-madness {
+    padding: 100px 0;
+    background: var(--bg-darkness);
+    position: relative;
+}
+
+.manifesto-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.manifesto-paragraph {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: var(--text-whisper);
+    text-align: justify;
+}
+
+.manifesto-paragraph strong {
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+}
+
+.manifesto-img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    border: 2px solid var(--primary-madness);
+    box-shadow: var(--glow-paranoia);
+    transition: all 0.5s ease;
+}
+
+.manifesto-img:hover {
+    transform: scale(1.05) rotate(1deg);
+    filter: saturate(1.4) contrast(1.3);
+}
+
+/* FOOTER MADNESS */
+.footer-madness {
+    background: var(--bg-surface);
+    padding: 60px 0 30px;
+    border-top: 3px solid var(--primary-madness);
+}
+
+.footer-chaos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-brand h3 {
+    font-family: var(--font-madness);
+    font-size: 2rem;
+    color: var(--primary-madness);
+    text-shadow: var(--glow-paranoia);
+    margin-bottom: 15px;
+}
+
+.footer-motto {
+    color: var(--accent-hell);
+    font-weight: bold;
+    font-style: italic;
+    text-shadow: var(--glow-hell);
+}
+
+.footer-contact h4,
+.footer-legal h4 {
+    font-family: var(--font-chaos);
+    color: var(--secondary-chaos);
+    margin-bottom: 15px;
+    text-shadow: var(--glow-chaos);
+}
+
+.footer-legal ul {
+    list-style: none;
+}
+
+.footer-legal li {
+    color: var(--text-whisper);
+    margin-bottom: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid var(--border-paranoia);
+    padding-top: 30px;
+    color: var(--text-whisper);
+}
+
+.hunter-quote {
+    color: var(--accent-hell);
+    font-style: italic;
+    margin-top: 10px;
+    text-shadow: var(--glow-hell);
+}
+
+/* PANIC MODE */
+.panic-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 0, 64, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: panic-flash 0.5s infinite;
+}
+
+.panic-overlay.hidden {
+    display: none;
+}
+
+.panic-content {
+    text-align: center;
+    background: var(--bg-darkness);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid var(--accent-hell);
+    box-shadow: 0 0 50px var(--accent-hell);
+}
+
+.panic-countdown {
+    margin: 30px 0;
+}
+
+#countdown {
+    font-size: 6rem;
+    font-family: var(--font-chaos);
+    color: var(--accent-hell);
+    text-shadow: var(--glow-hell);
+    animation: countdown-pulse 1s infinite;
+}
+
+/* ANIMATIONS FROM HELL */
+@keyframes paranoia-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; filter: brightness(1.3); }
+}
+
+@keyframes glitch-lines {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes logo-glitch {
+    0%, 90% { transform: translateX(0); }
+    92% { transform: translateX(-2px) scaleY(1.02); }
+    94% { transform: translateX(2px) scaleY(0.98); }
+    96% { transform: translateX(-1px) scaleY(1.01); }
+    98% { transform: translateX(1px) scaleY(0.99); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes panic-pulse {
+    0%, 100% { box-shadow: 0 0 10px var(--primary-madness); }
+    50% { box-shadow: 0 0 25px var(--primary-madness), 0 0 40px rgba(255, 0, 64, 0.5); }
+}
+
+@keyframes bg-glitch {
+    0%, 95% { filter: hue-rotate(0deg) saturate(1); }
+    96% { filter: hue-rotate(90deg) saturate(1.5); }
+    97% { filter: hue-rotate(-30deg) saturate(0.8); }
+    98% { filter: hue-rotate(45deg) saturate(1.2); }
+    100% { filter: hue-rotate(0deg) saturate(1); }
+}
+
+@keyframes title-chaos {
+    0%, 85% { transform: translateX(0) rotateZ(0deg); }
+    87% { transform: translateX(-3px) rotateZ(-0.5deg); }
+    89% { transform: translateX(2px) rotateZ(0.3deg); }
+    91% { transform: translateX(-1px) rotateZ(-0.2deg); }
+    93% { transform: translateX(1px) rotateZ(0.1deg); }
+    100% { transform: translateX(0) rotateZ(0deg); }
+}
+
+@keyframes text-glitch {
+    0%, 90% {
+        transform: translateX(0);
+        text-shadow: 0 0 20px var(--primary-madness);
+    }
+    92% {
+        transform: translateX(-2px);
+        text-shadow: -2px 0 var(--primary-madness), 2px 0 var(--secondary-chaos);
+    }
+    94% {
+        transform: translateX(2px);
+        text-shadow: 2px 0 var(--secondary-chaos), -2px 0 var(--primary-madness);
+    }
+    96% {
+        transform: translateX(-1px);
+        text-shadow: -1px 0 var(--accent-hell), 1px 0 var(--primary-madness);
+    }
+    100% {
+        transform: translateX(0);
+        text-shadow: 0 0 20px var(--primary-madness);
+    }
+}
+
+@keyframes stat-pulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 15px var(--secondary-chaos);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 25px var(--secondary-chaos), 0 0 40px rgba(0, 255, 255, 0.5);
+    }
+}
+
+@keyframes icon-float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes border-chaos {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes title-flicker {
+    0%, 90% { opacity: 1; }
+    92% { opacity: 0.8; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    98% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes tag-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 64, 0.5); }
+    50% { box-shadow: 0 0 15px rgba(255, 0, 64, 0.8), 0 0 25px rgba(255, 0, 64, 0.3); }
+}
+
+@keyframes badge-pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+}
+
+@keyframes featured-pulse {
+    0%, 100% {
+        background: linear-gradient(45deg, var(--accent-hell), var(--primary-madness));
+        box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+    }
+    50% {
+        background: linear-gradient(45deg, var(--primary-madness), var(--accent-hell));
+        box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+    }
+}
+
+@keyframes panic-flash {
+    0%, 100% { background: rgba(255, 0, 64, 0.95); }
+    50% { background: rgba(255, 255, 0, 0.95); }
+}
+
+@keyframes countdown-pulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 25px var(--accent-hell);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 40px var(--accent-hell), 0 0 60px rgba(255, 255, 0, 0.5);
+    }
+}
+
+/* RESPONSIVE MADNESS */
+@media (max-width: 768px) {
+    .nav-chaos {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .nav-links-chaos {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero-stats-hell {
+        justify-content: center;
+    }
+
+    .weapon-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .story-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .manifesto-content {
+        grid-template-columns: 1fr;
+    }
+
+    .pricing-chaos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #paranoia-meter {
+        top: 10px;
+        left: 10px;
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .meter-bar {
+        width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title-hell {
+        font-size: 2.5rem;
+    }
+
+    .section-title-hell {
+        font-size: 2rem;
+    }
+
+    .hero-buttons-chaos {
+        flex-direction: column;
+    }
+
+    .btn-madness {
+        width: 100%;
+    }
+}
+
+/* SPECIAL EFFECTS */
+.container-chaos:hover #paranoia-fill {
+    width: 85%;
+    animation-duration: 1s;
+}
+
+body.panic-mode {
+    cursor: not-allowed;
+}
+
+body.panic-mode * {
+    animation-duration: 0.1s !important;
+}
+
+/* CURSOR EFFECTS */
+@media (min-width: 768px) {
+    .weapon-card {
+        cursor: crosshair;
+    }
+
+    .story-card {
+        cursor: help;
+    }
+
+    .price-card {
+        cursor: pointer;
+    }
+
+    .nav-link-hell {
+        cursor: grab;
+    }
+
+    .nav-link-hell:active {
+        cursor: grabbing;
+    }
+}

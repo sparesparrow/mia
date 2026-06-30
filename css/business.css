@@ -1,0 +1,35 @@
+@import "./base.css";
+
+:root {
+  --background: #0b1120;
+  --foreground: #f8fafc;
+  --foreground-muted: rgba(226, 232, 240, 0.82);
+  --accent: #38bdf8;
+  --accent-strong: #14b8a6;
+  --card-background: rgba(15, 23, 42, 0.7);
+  --card-border: rgba(148, 163, 184, 0.35);
+  --button-background: linear-gradient(135deg, #38bdf8, #14b8a6);
+  --button-foreground: #020617;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-heading: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 12% 18%, rgba(20, 184, 166, 0.15), transparent 55%),
+    radial-gradient(circle at 80% -10%, rgba(56, 189, 248, 0.22), transparent 60%),
+    var(--background);
+}
+
+.card {
+  border-radius: 1rem;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 60%);
+  pointer-events: none;
+}

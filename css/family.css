@@ -1,0 +1,51 @@
+@import "./base.css";
+
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+:root {
+  --background: #fdf5f0;
+  --foreground: #1f2933;
+  --foreground-muted: rgba(31, 41, 51, 0.76);
+  --accent: #f97316;
+  --accent-strong: #facc15;
+  --card-background: rgba(255, 255, 255, 0.86);
+  --card-border: rgba(248, 113, 113, 0.22);
+  --button-background: linear-gradient(140deg, #f97316, #facc15);
+  --button-foreground: #1f2933;
+  --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --font-heading: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --shadow-elevated: 0 18px 40px rgba(249, 115, 22, 0.25);
+}
+
+body {
+  background: linear-gradient(180deg, rgba(253, 230, 138, 0.35), transparent 55%),
+    radial-gradient(circle at 20% 15%, rgba(249, 115, 22, 0.18), transparent 60%),
+    var(--background);
+  color: var(--foreground);
+}
+
+.hero {
+  color: var(--foreground);
+}
+
+.nav a {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.28);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  color: var(--foreground-muted);
+  box-shadow: var(--shadow-elevated);
+}
+
+.footer {
+  background: rgba(30, 41, 59, 0.92);
+  color: #f8fafc;
+}
+
+.footer__label {
+  color: rgba(248, 250, 252, 0.85);
+}

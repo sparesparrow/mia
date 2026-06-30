@@ -1,0 +1,3946 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Modular Car AI Server — Android-first with ESP32 and optional Pi gateway">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia-universal/xr-integration-research/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>MIA XR (Extended Reality) Integration Research - AI-SERVIS Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mia-xr-extended-reality-integration-research" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AI-SERVIS Documentation" class="md-header__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI-SERVIS Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MIA XR (Extended Reality) Integration Research
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../install/phone/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/" class="md-tabs__link">
+          
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/ai-audio-assistant/" class="md-tabs__link">
+          
+  
+    
+  
+  Modules
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AI-SERVIS Documentation" class="md-nav__button md-logo" aria-label="AI-SERVIS Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AI-SERVIS Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia-universal" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia-universal
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../android-device-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android Device Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../architecture/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/diagrams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/hybrid-messaging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Messaging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/lean-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lean Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/flatbuffers-schema-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlatBuffers Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/voice-knowledge-mia-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/voice-knowledge-system-implementation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/VOICE_KNOWLEDGE_SYSTEM_README/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/phone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/hybrid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/pro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/pi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/dev-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/installer-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../deployment/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/COMPLETE_DEPLOYMENT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/raspberry-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PRODUCTION_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RASPBERRY_PI_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-testing-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Testing Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBD_SIMULATOR_AUTOMATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OBD Simulator Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ZEROMQ_MESSAGE_FORMATS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZeroMQ Message Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Modules
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-audio-assistant/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Audio Assistant
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-android-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Android Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-ios-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI iOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-linux-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Linux Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-macos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI macOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-windows-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Windows Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-rtos-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI RTOS Controller
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-communications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Communications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-home-automation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Home Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-maps-navigation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Maps & Navigation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai-security-anpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AI Security & ANPR
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroen Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executive Summary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-mia-android-app-current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. MIA Android App Current State
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. MIA Android App Current State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Architecture Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-key-telemetry-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Key Telemetry Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 Key Telemetry Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#websocket-telemetry-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Telemetry Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#existing-permissions-androidmanifestxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Existing Permissions (AndroidManifest.xml)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-dependency-inventory-for-xr" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Dependency Inventory for XR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-android-development-frameworks-apis-for-xr" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Android Development Frameworks &amp; APIs for XR
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Android Development Frameworks & APIs for XR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-jetpack-compose-for-vr-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 Jetpack Compose for VR UI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-android-camera2-api-camerax" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 Android Camera2 API &amp; CameraX
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-android-media-apis-mediacodec-mediaprojection" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.3 Android Media APIs (MediaCodec, MediaProjection)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-websocket-okhttp-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.4 WebSocket &amp; OkHttp (Already in Use)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-meta-quest-1-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Meta Quest 1 Development
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Meta Quest 1 Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-hardware-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Hardware Specifications
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-openxr-sdk-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 OpenXR SDK for Android
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-meta-quest-developer-hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Meta Quest Developer Hub
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-adb-android-debug-bridge-for-quest-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 ADB (Android Debug Bridge) for Quest 1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-sideloading-apks-on-quest-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.5 Sideloading APKs on Quest 1
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-rtsp-streaming-protocol-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. RTSP Streaming Protocol &amp; Implementation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. RTSP Streaming Protocol & Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-rtsp-protocol-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 RTSP Protocol Basics
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-exoplayer-with-rtsp-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 ExoPlayer with RTSP Support
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-libvlc-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 LibVLC for Android
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-gstreamer-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.4 GStreamer for Android
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-streaming-from-mia-android-phone" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.5 Streaming from MIA Android Phone
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5 Streaming from MIA Android Phone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-rootencoder-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option A: RootEncoder Library
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-rtsp-camera-for-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option B: RTSP-Camera-for-Android
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-embed-in-mia-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option C: Embed in MIA App
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-vr-video-viewing-telemetry-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. VR Video Viewing &amp; Telemetry Visualization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. VR Video Viewing & Telemetry Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-360-video-vs-flat-screen-in-vr" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 360° Video vs. Flat Screen in VR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-openxr-for-vr-video-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 OpenXR for VR Video Rendering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-stereoscopic-rendering-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 Stereoscopic Rendering Considerations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-telemetry-dashboard-in-vr" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.4 Telemetry Dashboard in VR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-mia-app-integration-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. MIA App Integration Architecture
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. MIA App Integration Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-module-structure-for-xr" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 Module Structure for XR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-shared-telemetry-flow-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 Shared Telemetry Flow Architecture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-dependency-injection-for-xr" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3 Dependency Injection for XR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-build-configuration-for-vr" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.4 Build Configuration for VR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-tools-sdks-environment-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Tools, SDKs, &amp; Environment Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Tools, SDKs, & Environment Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-required-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1 Required Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-gradle-dependencies-for-xr" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2 Gradle Dependencies for XR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-native-code-setup-c-for-openxr" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3 Native Code Setup (C++ for OpenXR)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-source-references-community-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Open Source References &amp; Community Resources
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Open Source References & Community Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-openxr-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.1 OpenXR Samples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-video-streaming-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.2 Video Streaming Samples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-vr-video-players" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3 VR Video Players
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-community-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.4 Community &amp; Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-hardware-constraints-optimization-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Hardware Constraints &amp; Optimization Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Hardware Constraints & Optimization Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-quest-1-snapdragon-835-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.1 Quest 1 Snapdragon 835 Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-optimization-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.2 Optimization Techniques
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-performance-profiling-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      9.3 Performance Profiling Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-implementation-roadmap-phased-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Implementation Roadmap (Phased Approach)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Implementation Roadmap (Phased Approach)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-rtsp-streaming-foundation-weeks-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1: RTSP Streaming Foundation (Weeks 1–4)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-openxr-basic-integration-weeks-58" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2: OpenXR Basic Integration (Weeks 5–8)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-telemetry-dashboard-in-vr-weeks-912" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3: Telemetry Dashboard in VR (Weeks 9–12)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-advanced-features-weeks-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 4: Advanced Features (Weeks 13+)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-risk-assessment-mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Risk Assessment &amp; Mitigation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-references-further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      12. References &amp; Further Reading
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. References & Further Reading">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#official-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Official Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sdk-downloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      SDK Downloads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#community-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Community Samples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related-mia-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related MIA Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-appendix-example-code-snippets" class="md-nav__link">
+    <span class="md-ellipsis">
+      13. Appendix: Example Code Snippets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Appendix: Example Code Snippets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-rtsp-streaming-setup-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      13.1 RTSP Streaming Setup (Kotlin)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-exoplayer-rtsp-playback-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      13.2 ExoPlayer RTSP Playback (Kotlin)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#133-hilt-dependency-injection-for-xr-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      13.3 Hilt Dependency Injection for XR (Kotlin)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#134-vr-dashboard-viewmodel-kotlin" class="md-nav__link">
+    <span class="md-ellipsis">
+      13.4 VR Dashboard ViewModel (Kotlin)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      14. Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/sparesparrow/mia-universal/edit/master/docs/xr-integration-research.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mia-xr-extended-reality-integration-research">MIA XR (Extended Reality) Integration Research</h1>
+<p><strong>Document Date</strong>: March 2026
+<strong>Project</strong>: MIA Vehicle Telemetry &amp; IoT Control System
+<strong>Focus</strong>: Meta Quest 1 VR Integration with RTSP Streaming &amp; Telemetry</p>
+<hr />
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This document provides a technical foundation for extending the MIA Android app to support Extended Reality (XR) on Meta Quest 1 headsets. The research covers:</p>
+<ul>
+<li>Android frameworks and APIs currently used in MIA</li>
+<li>Meta Quest 1 development and hardware constraints</li>
+<li>RTSP streaming for camera feeds</li>
+<li>VR video viewing and telemetry visualization</li>
+<li>Integration architecture with MIA's existing WebSocket telemetry system</li>
+<li>Tools, SDKs, and open-source references</li>
+</ul>
+<p><strong>Key Finding</strong>: Meta Quest 1 (Snapdragon 835, 4GB RAM) runs Android and supports OpenXR, making it a viable XR target for MIA with careful optimization for low-latency RTSP streaming and telemetry dashboards in VR.</p>
+<hr />
+<h2 id="1-mia-android-app-current-state">1. MIA Android App Current State</h2>
+<h3 id="11-architecture-overview">1.1 Architecture Overview</h3>
+<p>The MIA Android app uses modern Android architecture with:</p>
+<ul>
+<li><strong>UI Framework</strong>: Jetpack Compose (Material Design 3)</li>
+<li><strong>Target API</strong>: Android 34 (compileSdk), min API 22, target API 34</li>
+<li><strong>Kotlin Version</strong>: 17 JVM target</li>
+<li><strong>Dependency Injection</strong>: Hilt/Dagger</li>
+<li><strong>Database</strong>: Room ORM</li>
+<li><strong>Networking</strong>:</li>
+<li>Retrofit + OkHttp (REST API)</li>
+<li>Java-WebSocket (real-time telemetry)</li>
+<li>Paho MQTT (background messaging)</li>
+<li><strong>Camera</strong>: CameraX (lifecycle-aware, modern API)</li>
+<li><strong>ML</strong>: ML Kit (ANPR text recognition)</li>
+<li><strong>Background</strong>: WorkManager, coroutines, Flow</li>
+</ul>
+<h3 id="12-key-telemetry-systems">1.2 Key Telemetry Systems</h3>
+<h4 id="websocket-telemetry-integration">WebSocket Telemetry Integration</h4>
+<p>Located: <code>/home/sparrow/projects/embedded/mia/apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt</code></p>
+<p>Current capabilities:
+- Real-time telemetry streaming via <code>telemetryFlow: SharedFlow&lt;TelemetryReading&gt;</code>
+- State management via <code>stateFlow: SharedFlow&lt;WebSocketState&gt;</code>
+- LED control commands (brightness, color, animations)
+- Device subscription/unsubscription
+- Automatic reconnection with backoff (5 attempts, exponential delay)
+- Graceful error handling with structured state classes</p>
+<p><strong>Relevance to XR</strong>: The WebSocket telemetry can be extended to stream telemetry into VR dashboards with minimal modification—just redirect the <code>telemetryFlow</code> emissions to VR visualizations instead of (or in addition to) traditional 2D views.</p>
+<h4 id="existing-permissions-androidmanifestxml">Existing Permissions (AndroidManifest.xml)</h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;uses-permission</span><span class="w"> </span><span class="na">android:name=</span><span class="s">&quot;android.permission.CAMERA&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span><span class="w"> </span><span class="na">android:name=</span><span class="s">&quot;android.permission.INTERNET&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span><span class="w"> </span><span class="na">android:name=</span><span class="s">&quot;android.permission.BLUETOOTH_CONNECT&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span><span class="w"> </span><span class="na">android:name=</span><span class="s">&quot;android.permission.BLUETOOTH_SCAN&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span><span class="w"> </span><span class="na">android:name=</span><span class="s">&quot;android.permission.ACCESS_FINE_LOCATION&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="cm">&lt;!-- ... and others for WiFi, notifications, foreground services --&gt;</span>
+</code></pre></div>
+<p>All permissions needed for XR (camera, networking, BLE) are already declared.</p>
+<h3 id="13-dependency-inventory-for-xr">1.3 Dependency Inventory for XR</h3>
+<p><strong>Media &amp; Streaming</strong>:
+- androidx.media3:media3-exoplayer (1.2.0) — can be extended for RTSP
+- CameraX (1.3.1) — can serve as RTSP stream source
+- OkHttp3 (4.12.0) — enables HTTP/WebSocket upgrades needed for streaming</p>
+<p><strong>Compose &amp; UI</strong>:
+- Jetpack Compose (2024.04.01 BOM)
+- Material Design 3 (1.2.1)
+- Navigation Compose (2.7.6)</p>
+<p><strong>Async</strong>:
+- Coroutines (implicit via lifecycle-runtime-ktx:2.7.0)
+- Flow patterns already in use</p>
+<hr />
+<h2 id="2-android-development-frameworks-apis-for-xr">2. Android Development Frameworks &amp; APIs for XR</h2>
+<h3 id="21-jetpack-compose-for-vr-ui">2.1 Jetpack Compose for VR UI</h3>
+<p><strong>Status</strong>: Already in use in MIA.
+<strong>Extension Path</strong>: Compose can render VR overlays and 2D menus in XR apps.</p>
+<ul>
+<li>Compose is declarative UI framework, ideal for building responsive VR dashboards</li>
+<li>Can be layered as 2D flat panels in OpenXR world space using NDK rendering</li>
+</ul>
+<p><strong>Reference</strong>:
+- <a href="https://developer.android.com/jetpack/compose">Jetpack Compose</a> (Android Developers)</p>
+<h3 id="22-android-camera2-api-camerax">2.2 Android Camera2 API &amp; CameraX</h3>
+<p><strong>Current Use</strong>: MIA uses CameraX (1.3.1) for modern, lifecycle-aware camera access.</p>
+<p><strong>For XR/RTSP</strong>:
+- CameraX integrates with MediaCodec for hardware video encoding
+- Can feed into RTSP server libraries (RootEncoder)
+- Supports multiple camera sources simultaneously (front + back)</p>
+<p><strong>RTSP Streaming from Android Camera</strong>:</p>
+<p>Several open-source projects demonstrate this:
+- <a href="https://github.com/spex66/RTSP-Camera-for-Android">RTSP-Camera-for-Android</a> — Android-based RTSP server serving live camera view to multiple clients
+- <a href="https://github.com/pedroSG94/RootEncoder">RootEncoder</a> — Java/Kotlin stream encoder supporting RTSP, with optional CameraX integration
+- <a href="https://github.com/alexeyvasilyev/rtsp-client-android">RTSP Client Android</a> — Lightweight low-latency client</p>
+<p><strong>Key Integration Points for MIA</strong>:
+1. Extend DVRManager to optionally stream camera via RTSP while recording
+2. Use RootEncoder library with CameraXSource to broadcast camera feed
+3. URL format: <code>rtsp://&lt;android_ip&gt;:5554/camera</code> (or <code>/back</code>, <code>/front</code>)</p>
+<h3 id="23-android-media-apis-mediacodec-mediaprojection">2.3 Android Media APIs (MediaCodec, MediaProjection)</h3>
+<p><strong>MediaCodec</strong>:
+- Hardware-accelerated video encoding/decoding
+- Essential for low-latency RTSP streaming
+- Used implicitly by ExoPlayer and modern media libraries</p>
+<p><strong>MediaProjection</strong>:
+- Captures screen output (for screen mirroring to VR)
+- Requires API 21+, already compatible with MIA's minSdk 22</p>
+<p><strong>Use Case</strong>: Screen casting MIA dashboard to Quest VR environment.</p>
+<h3 id="24-websocket-okhttp-already-in-use">2.4 WebSocket &amp; OkHttp (Already in Use)</h3>
+<p>MIA's <code>org.java-websocket:Java-WebSocket:1.5.5</code> is production-grade.</p>
+<p><strong>For XR</strong>:
+- WebSocket connection can be shared with VR app component
+- Same telemetry flow can feed both 2D UI and VR visualizations
+- OkHttp interceptors can log/debug network for VR connectivity</p>
+<hr />
+<h2 id="3-meta-quest-1-development">3. Meta Quest 1 Development</h2>
+<h3 id="31-hardware-specifications">3.1 Hardware Specifications</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Spec</th>
+<th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Processor</strong></td>
+<td>Snapdragon 835</td>
+<td>Older GPU, requires optimization for 90 FPS VR rendering</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>4 GB</td>
+<td>Tight constraint; apps must manage textures/buffers carefully</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>32/64 GB</td>
+<td>Variable; pre-allocate streaming buffers</td>
+</tr>
+<tr>
+<td><strong>Display</strong></td>
+<td>Dual OLED, 1440×1440 per eye @ 72/90 Hz</td>
+<td>Target 72 FPS for safety margin on older hardware</td>
+</tr>
+<tr>
+<td><strong>Tracking</strong></td>
+<td>6-DOF inside-out (tracking cameras)</td>
+<td>Lower accuracy than Quest 2/3; larger tracking dead zones</td>
+</tr>
+<tr>
+<td><strong>Cooling</strong></td>
+<td>Active fan</td>
+<td>Better thermal stability than passive cooling</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optimization Strategy</strong>:
+- Target 72 Hz (not 90 Hz) for consistent performance
+- Use half-resolution RTSP streams if full resolution causes frame drops
+- Implement memory pooling for video buffers
+- Profile thermal behavior during live streaming</p>
+<h3 id="32-openxr-sdk-for-android">3.2 OpenXR SDK for Android</h3>
+<p><strong>Meta OpenXR Support</strong>:
+- Quest 1 is OpenXR 1.0 adopter (stable API)
+- Meta provides official OpenXR SDK</p>
+<p><strong>Key Resources</strong>:
+- <a href="https://developers.meta.com/horizon/documentation/native/android/mobile-openxr/">OpenXR Support for Meta Quest Headsets</a>
+- <a href="https://github.com/meta-quest/Meta-OpenXR-SDK">Meta OpenXR SDK (GitHub)</a>
+- <a href="https://developers.meta.com/horizon/downloads/package/oculus-openxr-mobile-sdk/">Meta OpenXR SDK (Download)</a></p>
+<p><strong>Getting Started</strong>:
+- Build and Run hello_xr Sample App (Khronos OpenXR-SDK-Source GitHub repository)
+- Examine XrCompositor_NativeActivity for layer rendering
+- Study XrPassthrough for mixed reality features</p>
+<p><strong>Kotlin Integration Path</strong>:
+1. Use OpenXR SDK via Android NDK (C/C++)
+2. Call native rendering from Kotlin via JNI
+3. Keep Compose/Kotlin layers for telemetry logic, UI data flow</p>
+<h3 id="33-meta-quest-developer-hub">3.3 Meta Quest Developer Hub</h3>
+<p><strong>Purpose</strong>: Official IDE-like tool for Quest development, debugging, and sideloading.</p>
+<p><strong>Download</strong>: <a href="https://developers.meta.com/horizon/documentation/native/android/ts-adb/">Meta Quest Developer Hub</a></p>
+<p><strong>Capabilities</strong>:
+- Device Manager for ADB control
+- APK installation via USB-C
+- Device logs and profiling
+- Developer mode setup
+- Wireless ADB configuration</p>
+<p><strong>Workflow</strong>:
+<div class="highlight"><pre><span></span><code>Meta Quest Developer Hub
+  → Device Manager
+    → Enable Developer Mode (on headset + hub)
+    → Connect via USB-C
+    → Upload APK
+    → Select &quot;Unknown Sources&quot; to launch sideloaded app
+</code></pre></div></p>
+<h3 id="34-adb-android-debug-bridge-for-quest-1">3.4 ADB (Android Debug Bridge) for Quest 1</h3>
+<p><strong>Wireless ADB on Quest 1</strong>:
+- Supported via Snapdragon 835's 802.11ac/ad capability
+- Requires <strong>initial USB connection</strong> to enable wireless mode
+- Re-enable wireless after each reboot (device limitation)</p>
+<p><strong>Tools</strong>:
+- <a href="https://developers.meta.com/horizon/documentation/native/android/ts-adb/">Meta ADB Documentation</a>
+- <a href="https://github.com/thedroidgeek/oculus-wireless-adb">Oculus Wireless ADB</a> — App for enabling wireless ADB without USB cable (after first USB pairing)</p>
+<p><strong>Usage Pattern</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1"># Initial setup</span>
+adb<span class="w"> </span>connect<span class="w"> </span>&lt;quest_ip&gt;:5555
+
+<span class="c1"># Wireless debugging thereafter (until reboot)</span>
+adb<span class="w"> </span>devices<span class="w">  </span><span class="c1"># List connected devices</span>
+adb<span class="w"> </span>logcat<span class="w">   </span><span class="c1"># Stream logs</span>
+adb<span class="w"> </span>shell<span class="w">    </span><span class="c1"># Remote shell</span>
+</code></pre></div></p>
+<h3 id="35-sideloading-apks-on-quest-1">3.5 Sideloading APKs on Quest 1</h3>
+<p><strong>Option 1: Meta Quest Developer Hub (Official)</strong>
+1. Connect headset via USB-C
+2. Enable Developer Mode (headset + hub)
+3. Hub → Device Manager → Upload APK → Install
+4. Launch from "Unknown Sources" in library</p>
+<p><strong>Option 2: SideQuest (Community Tool)</strong>
+- Open-source alternative to Developer Hub
+- More user-friendly for rapid iteration
+- Install APK via drag-and-drop</p>
+<p><strong>Option 3: Quest APK Installer</strong>
+- <a href="https://anagan79.itch.io/quest-apk-installer">Quest APK Installer by Anagan79</a> — Cross-platform APK installer</p>
+<p><strong>References</strong>:
+- <a href="https://unity.zoeimmersive.com/exporting-your-app/sideloading-on-meta-quest/">Sideloading on Meta Quest</a>
+- <a href="https://bookstack.cores.utah.edu/books/sd2cgapp-resources/page/apk-sideloading-onto-the-quest-2-3/">How to Sideload APK on Quest 2 &amp; 3</a>
+- <a href="https://shiifttraining.com/how-to-install-apk-file-to-a-meta-quest-headset/">APK Sideloading Step-by-Step Guide 2026</a></p>
+<hr />
+<h2 id="4-rtsp-streaming-protocol-implementation">4. RTSP Streaming Protocol &amp; Implementation</h2>
+<h3 id="41-rtsp-protocol-basics">4.1 RTSP Protocol Basics</h3>
+<p><strong>RTSP</strong> (Real Time Streaming Protocol):
+- Lightweight control protocol for audio/video streaming
+- Establishes RTP (Real-time Transport Protocol) streams on top of UDP or TCP
+- Low-overhead compared to HTTP streaming (DASH/HLS)
+- Typical ports: 554 (standard), 8554 (alt), 5554 (Android), custom
+- URL format: <code>rtsp://&lt;host&gt;:&lt;port&gt;/&lt;stream_path&gt;</code></p>
+<p><strong>Advantages for VR</strong>:
+- Lower latency than adaptive bitrate streaming (DASH/HLS)
+- Stateful connection allows seeking, pausing in live streams
+- Both TCP (reliable) and UDP (faster) transport options
+- Wide hardware camera support</p>
+<p><strong>Latency Considerations</strong>:
+- Typical RTSP latency: 100–500 ms (protocol overhead + buffering)
+- Target for VR: &lt; 50 ms (challenging; requires TCP, small buffers, hardware decode)</p>
+<h3 id="42-exoplayer-with-rtsp-support">4.2 ExoPlayer with RTSP Support</h3>
+<p><strong>Status</strong>: ExoPlayer (Media3) officially supports RTSP playback as of ExoPlayer 2.14+.</p>
+<p><strong>MIA Integration</strong>:
+- MIA uses <code>androidx.media3:media3-exoplayer:1.2.0</code> (current, high version)
+- RTSP support built-in via <code>androidx.media3.exoplayer.rtsp</code> package</p>
+<p><strong>How to Use</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1">// ExoPlayer with RTSP</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">rtspUri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Uri</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;rtsp://192.168.1.100:5554/camera&quot;</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">mediaItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MediaItem</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setUri</span><span class="p">(</span><span class="n">rtspUri</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setMimeType</span><span class="p">(</span><span class="n">MimeTypes</span><span class="p">.</span><span class="na">APPLICATION_RTSP</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">exoPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExoPlayer</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="n">context</span><span class="p">).</span><span class="na">build</span><span class="p">()</span>
+<span class="n">exoPlayer</span><span class="p">.</span><span class="na">setMediaItem</span><span class="p">(</span><span class="n">mediaItem</span><span class="p">)</span>
+<span class="n">exoPlayer</span><span class="p">.</span><span class="na">prepare</span><span class="p">()</span>
+<span class="n">exoPlayer</span><span class="p">.</span><span class="na">play</span><span class="p">()</span>
+</code></pre></div></p>
+<p><strong>Features</strong>:
+- Supports H.264 video (SDP must include SPS/PPS in fmtp)
+- Supports AAC and AC3 audio
+- RTP over UDP (faster) and RTP/TCP (more reliable)
+- RTSP BASIC and DIGEST authentication
+- Configurable for low-latency: <code>RtspMediaSource.Factory.setForceUseRtpTcp(true)</code></p>
+<p><strong>Official References</strong>:
+- <a href="https://developer.android.com/media/media3/exoplayer/rtsp">RTSP Support in Media3/ExoPlayer</a>
+- <a href="https://developer.android.com/reference/androidx/media3/exoplayer/rtsp/package-summary">RTSP Package Reference</a>
+- <a href="https://developer.android.com/media/media3/exoplayer/supported-formats">Supported Formats in Media3</a></p>
+<h3 id="43-libvlc-for-android">4.3 LibVLC for Android</h3>
+<p><strong>Alternative</strong>: VLC's libvlc for Android, if ExoPlayer proves insufficient.</p>
+<p><strong>Advantages</strong>:
+- Mature, handles more formats and edge cases
+- Lower-level control over buffering and network parameters
+- Directly embeddable in Android apps</p>
+<p><strong>Low-Latency Configuration</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1">// libvlc options</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arrayOf</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;--network-caching=50&quot;</span><span class="p">,</span><span class="w">      </span><span class="c1">// Network buffer (ms)</span>
+<span class="w">    </span><span class="s">&quot;--clock-jitter=0&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// Don&#39;t adjust playback clock</span>
+<span class="w">    </span><span class="s">&quot;--clock-synchro=0&quot;</span><span class="p">,</span><span class="w">          </span><span class="c1">// No sync</span>
+<span class="w">    </span><span class="s">&quot;--rtsp-tcp&quot;</span><span class="p">,</span><span class="w">                 </span><span class="c1">// Force TCP (reliable)</span>
+<span class="w">    </span><span class="s">&quot;--drop-late-frames&quot;</span><span class="p">,</span><span class="w">         </span><span class="c1">// Don&#39;t buffer old frames</span>
+<span class="w">    </span><span class="s">&quot;--skip-frames=5&quot;</span><span class="w">             </span><span class="c1">// Aggressive frame skip if behind</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Typical Latency Achievable</strong>: ~500–600 ms under good network conditions (per VLC community forums).</p>
+<p><strong>Library</strong>: org.videolan:vlc-android (add via Maven)</p>
+<p><strong>References</strong>:
+- <a href="https://forum.videolan.org/viewtopic.php?t=149511">Lowest Possible RTSP Streaming Latency with libVLC</a>
+- <a href="https://forum.videolan.org/viewtopic.php?t=149891">Low-Latency Settings for VLC Android 3.0+</a>
+- <a href="https://lindevs.com/display-rtsp-stream-from-ip-camera-using-libvlc-on-android">Display RTSP Stream Using LibVLC on Android</a></p>
+<h3 id="44-gstreamer-for-android">4.4 GStreamer for Android</h3>
+<p><strong>Alternative</strong>: GStreamer's gst-mobile for custom streaming pipelines.</p>
+<ul>
+<li>Full control over decoding, filtering, rendering pipeline</li>
+<li>Steeper learning curve; requires native code (C/C++)</li>
+<li>Best for advanced use cases (filtering, custom codecs)</li>
+</ul>
+<p><strong>Not recommended for initial MIA integration</strong> (ExoPlayer/libVLC sufficient).</p>
+<h3 id="45-streaming-from-mia-android-phone">4.5 Streaming from MIA Android Phone</h3>
+<p><strong>Use Case</strong>: MIA phone acts as camera server; other devices (PC, Quest) consume the stream.</p>
+<p><strong>Implementation Options</strong>:</p>
+<h4 id="option-a-rootencoder-library">Option A: RootEncoder Library</h4>
+<ul>
+<li><strong>Project</strong>: <a href="https://github.com/pedroSG94/RootEncoder">RootEncoder</a></li>
+<li><strong>Language</strong>: Java/Kotlin</li>
+<li><strong>Protocols</strong>: RTMP, RTSP, SRT, UDP</li>
+<li><strong>Integration</strong>: Supports CameraXSource for direct camera feed</li>
+<li><strong>Effort</strong>: Medium (integrate library, set up encoding parameters)</li>
+</ul>
+<p>Example usage:
+<div class="highlight"><pre><span></span><code><span class="c1">// Using RootEncoder with CameraX</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">rtspServer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RtspServer</span><span class="p">(</span><span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5554</span><span class="p">,</span><span class="w"> </span><span class="n">sslEnabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">cameraXSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CameraXSource</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">cameraSelector</span><span class="p">)</span>
+<span class="n">rtspServer</span><span class="p">.</span><span class="na">addMediaSource</span><span class="p">(</span><span class="n">cameraXSource</span><span class="p">)</span>
+<span class="n">rtspServer</span><span class="p">.</span><span class="na">start</span><span class="p">()</span>
+<span class="c1">// Stream available at rtsp://&lt;ip&gt;:5554/stream</span>
+</code></pre></div></p>
+<h4 id="option-b-rtsp-camera-for-android">Option B: RTSP-Camera-for-Android</h4>
+<ul>
+<li><strong>Project</strong>: <a href="https://github.com/spex66/RTSP-Camera-for-Android">RTSP-Camera-for-Android</a></li>
+<li><strong>Language</strong>: Kotlin/Java</li>
+<li><strong>Architecture</strong>: Simple RTSP server for LAN streaming</li>
+<li><strong>Effort</strong>: Low (integrate, minimal config)</li>
+<li><strong>Limitations</strong>: Single stream focus</li>
+</ul>
+<h4 id="option-c-embed-in-mia-app">Option C: Embed in MIA App</h4>
+<ul>
+<li>Extend <code>DrivingService</code> to spawn RTSP server thread</li>
+<li>Use CameraX as feed source</li>
+<li>Stream while recording DVR</li>
+</ul>
+<p><strong>Chosen Path for MIA</strong>: Option A (RootEncoder) due to flexibility and Kotlin support.</p>
+<hr />
+<h2 id="5-vr-video-viewing-telemetry-visualization">5. VR Video Viewing &amp; Telemetry Visualization</h2>
+<h3 id="51-360-video-vs-flat-screen-in-vr">5.1 360° Video vs. Flat Screen in VR</h3>
+<p><strong>360° Equirectangular Video</strong>:
+- Wraps viewer in spherical video (panoramic)
+- Uses equirectangular projection (latitude/longitude mapping)
+- Ideal for surveillance/immersive camera feeds
+- Rendering: Sphere mesh with inverted normals, video texture mapped inside</p>
+<p><strong>Flat Screen in VR Space</strong>:
+- Traditional flat video rendered as textured quad/panel in 3D space
+- Suitable for dashboard overlays, telemetry readouts, multi-stream layouts
+- Lower GPU cost; easier to UI overlay with Compose</p>
+<p><strong>Recommendation for MIA</strong>:
+- <strong>Primary view</strong>: Flat screen for vehicle camera (dashboard/windshield view) + telemetry overlay
+- <strong>Secondary view</strong>: 360° for surround awareness (merged from multiple sources if multi-camera)
+- <strong>Fallback</strong>: Split-screen (left/right) for stereo surround view</p>
+<h3 id="52-openxr-for-vr-video-rendering">5.2 OpenXR for VR Video Rendering</h3>
+<p><strong>Rendering Architecture</strong>:
+1. <strong>OpenXR Runtime</strong> (Meta Quest runtime) manages swapchains and frame submission
+2. <strong>Application</strong> (C++ NDK for performance) fills textures with decoded video
+3. <strong>Composition</strong> happens via OpenXR layer submission</p>
+<p><strong>Video Playback Pipeline</strong>:
+<div class="highlight"><pre><span></span><code>RTSP Stream
+  ↓
+ExoPlayer or libVLC (Android, Java layer)
+  ↓ (decode to Surface/Texture)
+MediaCodec Surface
+  ↓ (GPU rendering in C++ via JNI)
+OpenGL/Vulkan Texture
+  ↓ (bind to OpenXR swapchain)
+Headset Display (stereoscopic)
+</code></pre></div></p>
+<p><strong>Key Points</strong>:
+- <strong>Hardware decode essential</strong>: Use MediaCodec for H.264 → GPU texture (zero-copy ideal, Android 10+)
+- <strong>Synchronization critical</strong>: Video frames must sync with head tracking (90 FPS display)
+- <strong>Latency budget</strong>: Decode (5–10 ms) + composition (&lt; 11 ms @ 90 Hz) + network (variable)</p>
+<p><strong>References</strong>:
+- <a href="https://github.com/picoxr/OpenXR_VideoPlayer_Demo">OpenXR 360 Video Player Demo (Pico)</a>
+  - Shows 360, 3D-SBS, 3D-OU, 2D rendering with OpenGL/Vulkan
+  - AMediaCodec for decoding, NV12 yuv rendering
+- <a href="https://github.com/terryky/android_openxr_gles">Android OpenXR GLes Sample</a>
+  - Minimal OpenXR + OpenGL ES example for Meta Quest 2
+- <a href="https://learn.microsoft.com/en-us/windows/mixed-reality/develop/native/openxr-best-practices">OpenXR Best Practices</a></p>
+<h3 id="53-stereoscopic-rendering-considerations">5.3 Stereoscopic Rendering Considerations</h3>
+<p><strong>Mono vs. Stereo RTSP</strong>:
+- <strong>Mono</strong> (single stream): Rendered to both eyes identically → flat appearance
+- <strong>Stereo</strong> (side-by-side or over-under SBS/OU):
+  - Left half (or top) → left eye texture
+  - Right half (or bottom) → right eye texture
+  - Provides depth perception with stereo cameras
+  - Higher bandwidth requirement (2x resolution)</p>
+<p><strong>Issue with OpenXR Multi-Pass Rendering</strong>:
+- Setting OpenXR render mode to Multi-pass can disable stereoscopic panoramic video
+- Workaround: Use Single-Pass Instanced (MRT) render mode for 360 stereo
+- <a href="https://communityforums.atmeta.com/discussions/Questions_Discussions/360-stereoscopic-video-and-multi-pass-render-mode/1344850">360 Stereoscopic Video in OpenXR</a></p>
+<p><strong>Recommendation</strong>: Start with mono equirectangular, add stereo support in phase 2.</p>
+<h3 id="54-telemetry-dashboard-in-vr">5.4 Telemetry Dashboard in VR</h3>
+<p><strong>Integration with MIA's Existing WebSocket</strong>:</p>
+<div class="highlight"><pre><span></span><code>graph LR
+    subgraph Telemetry[&quot;Telemetry (MIA Backend)&quot;]
+        A[&quot;Raspberry Pi&lt;br/&gt;ZMQ Broker&quot;]
+        B[&quot;OBD Worker&lt;br/&gt;GPS, Speed, RPM&quot;]
+    end
+
+    subgraph MiaPhone[&quot;MIA Android Phone&quot;]
+        C[&quot;TelemetryWebSocket&lt;br/&gt;telemetryFlow&quot;]
+        D[&quot;2D Compose&lt;br/&gt;Dashboard&quot;]
+        E[&quot;RTSP Server&lt;br/&gt;Camera Feed&quot;]
+    end
+
+    subgraph Quest[&quot;Meta Quest 1&lt;br/&gt;VR App&quot;]
+        F[&quot;OpenXR&lt;br/&gt;Renderer&quot;]
+        G[&quot;ExoPlayer&lt;br/&gt;RTSP Client&quot;]
+        H[&quot;VR Dashboard&lt;br/&gt;360 Video + UI&quot;]
+    end
+
+    A --&gt;|WebSocket| C
+    C --&gt;|telemetryFlow| D
+    C --&gt;|telemetryFlow| E
+    E --&gt;|RTSP| G
+    G --&gt;|Video Texture| H
+    H --&gt;|Head Tracking| F
+    F --&gt;|90 Hz Render| Quest
+
+    style A fill:#e1f5ff
+    style C fill:#c8e6c9
+    style H fill:#ffe0b2
+</code></pre></div>
+<p><strong>Implementation Steps</strong>:
+1. <strong>Extend TelemetryWebSocket</strong>: Add callback/Flow collector for VR dashboard
+2. <strong>Map Telemetry to VR Overlays</strong>:
+   - Speed → HUD speed indicator
+   - RPM → Gauge visualization
+   - GPS → Map overlay
+   - Temperature → Color-coded warnings
+3. <strong>Render via OpenXR</strong>: Compose Flow emissions → 3D world text/quads
+4. <strong>Sync with Video</strong>: Pin telemetry updates to video frame timing (use <code>SurfaceTexture</code> callbacks)</p>
+<p><strong>Example VR Dashboard Layout</strong>:
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────────────┐
+│  360° Camera Feed (Main View)       │
+│  ┌─────────────────────────────────┐│
+│  │                                 ││
+│  │      [Vehicle Camera Feed]      ││
+│  │      (Equirectangular)          ││
+│  │                                 ││
+│  └─────────────────────────────────┘│
+│  ┌─────────┬───────────┬─────────┐ │
+│  │Speed    │RPM        │Battery  │ │
+│  │120 km/h │3500 rpm   │85%      │ │
+│  └─────────┴───────────┴─────────┘ │
+│  ┌───────────────────────────────┐ │
+│  │GPS: Lat 50.087, Lon 14.421    │ │
+│  │Temp: 92°C | Pressure: 1.8 bar│ │
+│  └───────────────────────────────┘ │
+└─────────────────────────────────────┘
+</code></pre></div></p>
+<hr />
+<h2 id="6-mia-app-integration-architecture">6. MIA App Integration Architecture</h2>
+<h3 id="61-module-structure-for-xr">6.1 Module Structure for XR</h3>
+<p><strong>Proposed New Modules</strong> (minimal, non-invasive):</p>
+<div class="highlight"><pre><span></span><code>apps/android/app/src/main/java/cz/mia/app/
+├── xr/                                          (NEW)
+│   ├── openxr/
+│   │   ├── OpenXRManager.kt                     (Lifecycle, device detection)
+│   │   ├── OpenXRRenderer.kt                    (NDK JNI bridge)
+│   │   └── XRHardwareCapabilities.kt
+│   ├── streaming/
+│   │   ├── RtspClientManager.kt                 (ExoPlayer wrapper)
+│   │   └── RtspStreamMetadata.kt
+│   ├── ui/
+│   │   ├── XRDashboardViewModel.kt              (VR telemetry state)
+│   │   ├── VRCameraFeedComposable.kt            (Compose for VR overlays)
+│   │   └── VRTelemetryOverlay.kt
+│   └── navigation/
+│       └── XRNavigation.kt                      (VR navigation state)
+│
+├── data/remote/websocket/
+│   └── TelemetryWebSocket.kt                    (EXISTING - extend with VR callbacks)
+│
+├── features/dashboard/
+│   └── DashboardViewModel.kt                    (EXISTING - extend for VR sync)
+│
+└── core/background/
+    └── DrivingService.kt                        (EXISTING - extend for RTSP server option)
+</code></pre></div>
+<p><strong>Non-Invasive Approach</strong>:
+- XR code isolated in <code>xr/</code> package
+- TelemetryWebSocket unchanged; add separate Flow collectors for VR
+- DrivingService unchanged; add optional RTSP feature flag
+- Gradle flavor for VR builds: <code>flavorDimensions "xr"</code> with <code>xrEnabled</code>/<code>xrDisabled</code></p>
+<h3 id="62-shared-telemetry-flow-architecture">6.2 Shared Telemetry Flow Architecture</h3>
+<p><strong>Current Flow</strong> (unchanged):
+<div class="highlight"><pre><span></span><code>TelemetryWebSocket.telemetryFlow
+  → DashboardViewModel (2D Compose)
+  → UI state (speed, rpm, etc.)
+  → Material Design composables
+</code></pre></div></p>
+<p><strong>Extended Flow</strong> (XR-aware):
+<div class="highlight"><pre><span></span><code>TelemetryWebSocket.telemetryFlow
+  ├→ DashboardViewModel (2D, existing)
+  ├→ XRDashboardViewModel (VR, new)
+  │   ├→ Speed HUD
+  │   ├→ RPM Gauge
+  │   ├→ Alert Overlays
+  │   └→ Navigation Hints
+  └→ Other subscribers (analytics, logging, etc.)
+</code></pre></div></p>
+<p><strong>Implementation Pattern</strong>:
+<div class="highlight"><pre><span></span><code><span class="c1">// In TelemetryWebSocket or shared repository</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">_telemetryFlow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MutableSharedFlow</span><span class="o">&lt;</span><span class="n">TelemetryReading</span><span class="o">&gt;</span><span class="p">(...)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">telemetryFlow</span><span class="p">:</span><span class="w"> </span><span class="n">SharedFlow</span><span class="o">&lt;</span><span class="n">TelemetryReading</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_telemetryFlow</span><span class="p">.</span><span class="na">asSharedFlow</span><span class="p">()</span>
+
+<span class="c1">// VR can collect independently</span>
+<span class="n">viewModelScope</span><span class="p">.</span><span class="na">launch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">telemetryFlow</span><span class="p">.</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">reading</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">updateVRDashboardState</span><span class="p">(</span><span class="n">reading</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="63-dependency-injection-for-xr">6.3 Dependency Injection for XR</h3>
+<p><strong>Hilt Module</strong> (new):
+<div class="highlight"><pre><span></span><code><span class="nd">@Module</span>
+<span class="nd">@InstallIn</span><span class="p">(</span><span class="n">SingletonComponent</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">object</span><span class="w"> </span><span class="nc">XRModule</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Singleton</span>
+<span class="w">    </span><span class="nd">@Provides</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideOpenXRManager</span><span class="p">(</span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span><span class="p">):</span><span class="w"> </span><span class="n">OpenXRManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">OpenXRManager</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Singleton</span>
+<span class="w">    </span><span class="nd">@Provides</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideRtspClientManager</span><span class="p">(</span>
+<span class="w">        </span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span><span class="p">,</span>
+<span class="w">        </span><span class="n">exoPlayer</span><span class="p">:</span><span class="w"> </span><span class="n">ExoPlayer</span>
+<span class="w">    </span><span class="p">):</span><span class="w"> </span><span class="n">RtspClientManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">RtspClientManager</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="w"> </span><span class="n">exoPlayer</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Integration with Existing Hilt Setup</strong>:
+- MIA already uses Hilt (hilt-android:2.48.1, hilt-compiler:2.48.1)
+- Add XRModule to existing multi-binding strategy
+- Use <code>@Qualifier</code> to distinguish VR vs. 2D ExoPlayer instances if needed</p>
+<h3 id="64-build-configuration-for-vr">6.4 Build Configuration for VR</h3>
+<p><strong>Add to build.gradle.kts</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Flavor dimensions for optional XR support</span>
+<span class="n">flavorDimensions</span><span class="p">(</span><span class="s">&quot;xr&quot;</span><span class="p">)</span>
+
+<span class="n">productFlavors</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;xrEnabled&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;xr&quot;</span>
+<span class="w">        </span><span class="n">buildConfigField</span><span class="p">(</span><span class="s">&quot;Boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XR_ENABLED&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;xrDisabled&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;xr&quot;</span>
+<span class="w">        </span><span class="n">buildConfigField</span><span class="p">(</span><span class="s">&quot;Boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;XR_ENABLED&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Add XR dependencies conditionally</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// OpenXR SDK (native bindings)</span>
+<span class="w">    </span><span class="n">xrEnabledImplementation</span><span class="p">(</span><span class="s">&quot;com.meta:oculus-openxr-sdk:1.0.0&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// placeholder version</span>
+
+<span class="w">    </span><span class="c1">// Video streaming</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.github.pedroSG94:RootEncoder:latest&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// RTSP server</span>
+
+<span class="w">    </span><span class="c1">// Additional ExoPlayer modules for RTSP</span>
+<span class="w">    </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;androidx.media3:media3-exoplayer-rtsp:1.2.0&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Enable NDK for C++ OpenXR code</span>
+<span class="n">android</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ndkVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;25.1.8937393&quot;</span>
+
+<span class="w">    </span><span class="n">sourceSets</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">main</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">jni</span><span class="p">.</span><span class="na">srcDirs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s">&quot;src/main/cpp&quot;</span><span class="o">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="7-tools-sdks-environment-setup">7. Tools, SDKs, &amp; Environment Setup</h2>
+<h3 id="71-required-tools">7.1 Required Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Android Studio</strong></td>
+<td>2024.1+</td>
+<td>IDE with XR preview support</td>
+<td><a href="https://developer.android.com/studio">Android Studio</a></td>
+</tr>
+<tr>
+<td><strong>Android SDK</strong></td>
+<td>API 34</td>
+<td>Compile target (existing in MIA)</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><strong>Meta Quest Developer Hub</strong></td>
+<td>Latest</td>
+<td>Sideload APKs, debug Quest</td>
+<td><a href="https://developers.meta.com/horizon/documentation/native/android/ts-adb/">Meta Developer Hub</a></td>
+</tr>
+<tr>
+<td><strong>Android NDK</strong></td>
+<td>25.1+</td>
+<td>Compile OpenXR C++ code</td>
+<td><a href="https://developer.android.com/ndk">Android NDK</a></td>
+</tr>
+<tr>
+<td><strong>OpenXR SDK</strong></td>
+<td>1.0+</td>
+<td>OpenXR headers and samples</td>
+<td><a href="https://github.com/meta-quest/Meta-OpenXR-SDK">Meta OpenXR SDK</a></td>
+</tr>
+<tr>
+<td><strong>ADB</strong></td>
+<td>Bundled in SDK</td>
+<td>Debug via USB/WiFi</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><strong>SideQuest</strong></td>
+<td>Latest</td>
+<td>Community sideload tool (alt)</td>
+<td><a href="https://sidequestvr.com/">SideQuest</a></td>
+</tr>
+<tr>
+<td><strong>scrcpy</strong></td>
+<td>Latest</td>
+<td>Stream headset screen to PC</td>
+<td><a href="https://github.com/Genymobile/scrcpy">scrcpy</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-gradle-dependencies-for-xr">7.2 Gradle Dependencies for XR</h3>
+<p><strong>Core Additions</strong>:
+<div class="highlight"><pre><span></span><code>// OpenXR (Meta)
+implementation(&quot;com.meta:oculus-openxr-sdk:1.0.0&quot;)
+
+// RTSP/Streaming
+implementation(&quot;androidx.media3:media3-exoplayer-rtsp:1.2.0&quot;)
+implementation(&quot;com.github.pedroSG94:RootEncoder:latest&quot;)
+
+// Optional: libVLC for fallback
+implementation(&quot;org.videolan:vlc-android:latest&quot;)
+
+// JNI/NDK support
+implementation(&quot;androidx.ndk:ndk:latest&quot;)
+</code></pre></div></p>
+<p><strong>Version Pinning Strategy</strong>:
+- Use Kotlin DSL version catalog (existing MIA best practice)
+- Test against Quest 1 Snapdragon 835 (older GPU, stricter requirements)</p>
+<h3 id="73-native-code-setup-c-for-openxr">7.3 Native Code Setup (C++ for OpenXR)</h3>
+<p><strong>Directory Structure</strong>:
+<div class="highlight"><pre><span></span><code>apps/android/app/src/main/cpp/
+├── CMakeLists.txt                             (Gradle NDK build config)
+├── openxr/
+│   ├── xr_renderer.cpp                        (OpenXR + OpenGL setup)
+│   ├── xr_renderer.h
+│   └── jni_bridge.cpp                         (JNI entry points)
+└── video/
+    ├── video_decoder.cpp                      (MediaCodec integration)
+    └── video_decoder.h
+</code></pre></div></p>
+<p><strong>CMakeLists.txt (Minimal)</strong>:
+<div class="highlight"><pre><span></span><code><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.18.1</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">mia_xr</span><span class="p">)</span>
+
+<span class="c"># Link OpenXR SDK</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">OPENXR_SDK_PATH</span><span class="w"> </span><span class="s2">&quot;openxr-sdk&quot;</span><span class="p">)</span><span class="w">  </span><span class="c"># or via include path</span>
+
+<span class="nb">add_library</span><span class="p">(</span><span class="s">mia_xr</span><span class="w"> </span><span class="s">SHARED</span>
+<span class="w">    </span><span class="s">openxr/jni_bridge.cpp</span>
+<span class="w">    </span><span class="s">openxr/xr_renderer.cpp</span>
+<span class="w">    </span><span class="s">video/video_decoder.cpp</span>
+<span class="p">)</span>
+
+<span class="nb">target_include_directories</span><span class="p">(</span><span class="s">mia_xr</span><span class="w"> </span><span class="s">PRIVATE</span>
+<span class="w">    </span><span class="o">${</span><span class="nv">OPENXR_SDK_PATH</span><span class="o">}</span><span class="s">/include</span>
+<span class="w">    </span><span class="o">${</span><span class="nv">ANDROID_NDK</span><span class="o">}</span><span class="s">/sources/android/native_app_glue</span>
+<span class="p">)</span>
+
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">mia_xr</span>
+<span class="w">    </span><span class="s">android</span>
+<span class="w">    </span><span class="s">log</span>
+<span class="w">    </span><span class="s">EGL</span>
+<span class="w">    </span><span class="s">GLESv2</span><span class="w">  </span><span class="c"># or Vulkan</span>
+<span class="w">    </span><span class="s">openxr_loader</span><span class="w">  </span><span class="c"># OpenXR loader library</span>
+<span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Build Integration</strong>:
+<div class="highlight"><pre><span></span><code>android {
+    ndkVersion = &quot;25.1.8937393&quot;
+}
+
+externalNativeBuild {
+    cmake {
+        path = &quot;src/main/cpp/CMakeLists.txt&quot;
+        version = &quot;3.22.1&quot;
+    }
+}
+</code></pre></div></p>
+<hr />
+<h2 id="8-open-source-references-community-resources">8. Open Source References &amp; Community Resources</h2>
+<h3 id="81-openxr-samples">8.1 OpenXR Samples</h3>
+<ol>
+<li><strong>Meta OpenXR SDK</strong></li>
+<li>Repository: <a href="https://github.com/meta-quest/Meta-OpenXR-SDK">meta-quest/Meta-OpenXR-SDK</a></li>
+<li>Includes: XrCompositor_NativeActivity, XrPassthrough, minimal samples</li>
+<li>Language: C/C++</li>
+<li>
+<p>License: Oculus SDK License Agreement</p>
+</li>
+<li>
+<p><strong>Khronos OpenXR-SDK-Source</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/KhronosGroup/OpenXR-SDK">KhronosGroup/OpenXR-SDK-Source</a></li>
+<li>Includes: hello_xr (multi-platform sample)</li>
+<li>Language: C/C++</li>
+<li>
+<p>License: Apache 2.0</p>
+</li>
+<li>
+<p><strong>Android OpenXR GLes Sample</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/terryky/android_openxr_gles">terryky/android_openxr_gles</a></li>
+<li>Purpose: VR sample apps for Meta Quest 2 + Android NDK</li>
+<li>Language: C/C++</li>
+<li>Demonstrates: OpenGL ES + OpenXR integration</li>
+</ol>
+<h3 id="82-video-streaming-samples">8.2 Video Streaming Samples</h3>
+<ol>
+<li><strong>Pico OpenXR Video Player Demo</strong></li>
+<li>Repository: <a href="https://github.com/picoxr/OpenXR_VideoPlayer_Demo">picoxr/OpenXR_VideoPlayer_Demo</a></li>
+<li>Features: 360°, 3D-SBS, 3D-OU, 2D video rendering</li>
+<li>Codec: AMediaCodec + OpenGL/Vulkan</li>
+<li>
+<p>Relevance: Full reference for VR video playback</p>
+</li>
+<li>
+<p><strong>RootEncoder</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/pedroSG94/RootEncoder">pedroSG94/RootEncoder</a></li>
+<li>Purpose: RTMP/RTSP/SRT encoder for Android</li>
+<li>Language: Java/Kotlin</li>
+<li>
+<p>Features: CameraXSource, MediaCodec integration</p>
+</li>
+<li>
+<p><strong>RTSP-Camera-for-Android</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/spex66/RTSP-Camera-for-Android">spex66/RTSP-Camera-for-Android</a></li>
+<li>Purpose: Simple RTSP server from Android camera</li>
+<li>Language: Java/Kotlin</li>
+<li>
+<p>Use Case: Turn phone into RTSP camera source</p>
+</li>
+<li>
+<p><strong>RTSP Client Android</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/alexeyvasilyev/rtsp-client-android">alexeyvasilyev/rtsp-client-android</a></li>
+<li>Purpose: Low-latency RTSP client library</li>
+<li>Language: Java/Kotlin</li>
+<li>Latency: ~20 ms video decoding reported</li>
+</ol>
+<h3 id="83-vr-video-players">8.3 VR Video Players</h3>
+<ol>
+<li><strong>XR Video Player (Pico)</strong></li>
+<li>Repository: <a href="https://codeberg.org/yoshino/xr-video-player">yoshino/xr-video-player</a></li>
+<li>Platform: OpenXR/Wayland</li>
+<li>Language: C/C++</li>
+<li>
+<p>Features: Stereo video, equirectangular cube maps</p>
+</li>
+<li>
+<p><strong>WiVRn</strong></p>
+</li>
+<li>Repository: <a href="https://github.com/WiVRn/WiVRn">WiVRn/WiVRn</a></li>
+<li>Purpose: Wireless VR streaming from PC to standalone headset</li>
+<li>Platform: Linux/OpenXR</li>
+<li>Relevance: Streaming architecture patterns applicable to MIA</li>
+</ol>
+<h3 id="84-community-documentation">8.4 Community &amp; Documentation</h3>
+<p><strong>Meta Developers</strong>:
+- <a href="https://developers.meta.com/horizon/documentation/">Meta Horizon OS Developers</a>
+- <a href="https://developers.meta.com/horizon/documentation/native/android/mobile-openxr/">OpenXR for Oculus/Meta Quest</a>
+- <a href="https://communityforums.atmeta.com/">Meta Developer Community Forums</a></p>
+<p><strong>Khronos Group</strong>:
+- <a href="https://www.khronos.org/openxr/">OpenXR Specification &amp; Resources</a>
+- <a href="https://openxr-tutorial.com/">OpenXR Tutorial (khronos.org)</a></p>
+<p><strong>Android Developers</strong>:
+- <a href="https://developer.android.com/develop/xr/openxr">Android XR (OpenXR Support)</a>
+- <a href="https://developer.android.com/media/media3/exoplayer/rtsp">Media3 ExoPlayer RTSP</a>
+- <a href="https://developer.android.com/training/camerax">CameraX Overview</a></p>
+<p><strong>VLC Community</strong>:
+- <a href="https://forum.videolan.org/">VideoLAN Forums - libVLC Low Latency</a>
+- <a href="https://code.videolan.org/videolan/vlc-android">VLC-Android Issue Tracker</a></p>
+<hr />
+<h2 id="9-hardware-constraints-optimization-strategy">9. Hardware Constraints &amp; Optimization Strategy</h2>
+<h3 id="91-quest-1-snapdragon-835-constraints">9.1 Quest 1 Snapdragon 835 Constraints</h3>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Value</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPU Memory</strong></td>
+<td>~2.5 GB shared</td>
+<td>2x1440p eye textures + video buffers tight</td>
+<td>Pre-allocate, pool textures; single video stream</td>
+</tr>
+<tr>
+<td><strong>CPU Cores</strong></td>
+<td>4x A73 + 4x A53</td>
+<td>Older efficiency cores</td>
+<td>Offload rendering to GPU; minimize JNI calls</td>
+</tr>
+<tr>
+<td><strong>Thermal Limit</strong></td>
+<td>~90°C (with cooling)</td>
+<td>System throttles if exceeded</td>
+<td>Monitor thermal; reduce stream quality if needed</td>
+</tr>
+<tr>
+<td><strong>Display Refresh</strong></td>
+<td>72/90 Hz</td>
+<td>Older tracking latency</td>
+<td>Target 72 Hz; reduce UX latency budget to 8 ms</td>
+</tr>
+<tr>
+<td><strong>Network</strong></td>
+<td>802.11ac (up to 867 Mbps)</td>
+<td>WiFi saturation risk with RTSP</td>
+<td>Use H.264, adaptive bitrate; consider 1080p max for RTSP</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>4 GB</td>
+<td>Shared with all apps</td>
+<td>App memory limit ~2 GB; small video buffer (3–5 frames)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-optimization-techniques">9.2 Optimization Techniques</h3>
+<p><strong>Rendering</strong>:
+1. <strong>Frame Pacing</strong>: Lock to 72 FPS (not 90) for consistent performance
+2. <strong>Reduced Resolution</strong>: Render at 1280×1280 per eye instead of 1440×1440
+3. <strong>Single-Pass Rendering</strong>: Use OpenXR multi-view extension to reduce pixel processing
+4. <strong>GPU Instancing</strong>: Render multiple HUD elements in single draw call</p>
+<p><strong>Video Streaming</strong>:
+1. <strong>Adaptive Bitrate</strong>: Detect network congestion; drop quality before frame loss
+2. <strong>Hardware Decode</strong>: Use MediaCodec + SurfaceTexture (zero-copy on modern Android)
+3. <strong>Small Buffer</strong>: 2–3 frame buffer to reduce latency (but tolerate more jitter)
+4. <strong>TCP over UDP</strong>: RTSP over TCP (forced with <code>--rtsp-tcp</code>) for reliability on WiFi</p>
+<p><strong>Memory Management</strong>:
+1. <strong>Object Pooling</strong>: Reuse vertex buffers, textures across frames
+2. <strong>Streaming Buffers</strong>: Allocate once, write circularly (no garbage collection)
+3. <strong>Texture Compression</strong>: Use ASTC or ETC2 where quality permits</p>
+<p><strong>Network</strong>:
+1. <strong>Local Network Priority</strong>: Stream over WiFi LAN (not WAN); minimize latency
+2. <strong>Bandwidth Budgeting</strong>:
+   - H.264 @ 1080p, 30 fps ≈ 3–5 Mbps
+   - 720p ≈ 1.5–2.5 Mbps
+   - 360p ≈ 500–800 kbps
+3. <strong>WiFi 5 GHz</strong>: Prefer 5 GHz band for lower latency/interference</p>
+<h3 id="93-performance-profiling-tools">9.3 Performance Profiling Tools</h3>
+<p><strong>On Quest 1</strong>:
+- <strong>Performance HUD</strong>: Built-in (enable via <code>adb shell setprop debug.oculus.cpuLevel 2</code>)
+- <strong>GPU Profiler</strong>: OpenXR events + glGetString (frame timing)
+- <strong>Network</strong>: <code>adb shell netstat -i</code> (WiFi stats)
+- <strong>Thermal</strong>: <code>adb shell cat /sys/class/thermal/thermal_zone*/temp</code></p>
+<p><strong>Android Studio</strong>:
+- <strong>Profiler</strong>: CPU, memory, network graphs
+- <strong>GPU Debugger</strong>: Inspect OpenGL/Vulkan calls (lower-level)
+- <strong>Logcat</strong>: Real-time log streaming with filters</p>
+<p><strong>Third-Party</strong>:
+- <strong>scrcpy</strong>: Stream headset display to PC (CPU-side debugging)
+- <strong>NetworkMonitor</strong>: Packet capture and analysis</p>
+<hr />
+<h2 id="10-implementation-roadmap-phased-approach">10. Implementation Roadmap (Phased Approach)</h2>
+<h3 id="phase-1-rtsp-streaming-foundation-weeks-14">Phase 1: RTSP Streaming Foundation (Weeks 1–4)</h3>
+<p><strong>Objective</strong>: Establish RTSP camera streaming from MIA phone; verify stream quality on Quest 1.</p>
+<p><strong>Tasks</strong>:
+1. Add RootEncoder library to MIA Android app
+2. Extend <code>DrivingService</code> with optional RTSP server startup
+3. Create <code>RtspStreamMetadata</code> data class (URL, bitrate, quality)
+4. Test RTSP stream on desktop VLC client (baseline)
+5. Test RTSP stream on Quest 1 via ExoPlayer (basic)
+6. Profile: measure latency, CPU usage, memory</p>
+<p><strong>Deliverables</strong>:
+- Feature flag: <code>RTSP_SERVER_ENABLED</code> in build config
+- Gradle variant: <code>xrEnabled</code> builds with RTSP support
+- Integration test: Verify stream quality at different network conditions
+- Documentation: Setup guide for RTSP streaming</p>
+<h3 id="phase-2-openxr-basic-integration-weeks-58">Phase 2: OpenXR Basic Integration (Weeks 5–8)</h3>
+<p><strong>Objective</strong>: Render flat video panel in VR; verify head tracking and frame rate stability.</p>
+<p><strong>Tasks</strong>:
+1. Set up Android NDK build for OpenXR C++ code
+2. Port hello_xr sample to MIA; verify compilation on Quest 1
+3. Create basic OpenGL texture renderer for video frames
+4. Integrate ExoPlayer → OpenGL Surface → OpenXR swapchain
+5. Add simple head tracking (no interaction yet)
+6. Profile: measure frame latency, jitter, thermal behavior</p>
+<p><strong>Deliverables</strong>:
+- <code>apps/android/app/src/main/cpp/openxr/</code> directory with CMake
+- JNI bridge: Kotlin ↔ C++ for initialization/rendering
+- VR app mode: Sideload APK, launch on Quest 1
+- Profiling report: Frame timing, memory, thermals at 72 FPS</p>
+<h3 id="phase-3-telemetry-dashboard-in-vr-weeks-912">Phase 3: Telemetry Dashboard in VR (Weeks 9–12)</h3>
+<p><strong>Objective</strong>: Overlay MIA telemetry (speed, RPM, etc.) on VR video feed.</p>
+<p><strong>Tasks</strong>:
+1. Extend <code>TelemetryWebSocket</code> with VR-aware callbacks
+2. Create <code>XRDashboardViewModel</code> (Hilt-injected)
+3. Implement telemetry rendering in OpenGL (text, gauges, warnings)
+4. Sync telemetry updates to video frame timing
+5. Add basic hand controller interaction (pause/resume stream)
+6. Test: Verify telemetry accuracy, latency, UI readability in headset</p>
+<p><strong>Deliverables</strong>:
+- <code>xr/ui/XRDashboardViewModel.kt</code> with telemetry Flow collection
+- OpenGL text rendering shader + glyph atlas for VR
+- VR app with live telemetry overlay
+- User acceptance testing on Quest 1 with real vehicle data</p>
+<h3 id="phase-4-advanced-features-weeks-13">Phase 4: Advanced Features (Weeks 13+)</h3>
+<p><strong>Objective</strong>: Polish, optimization, and advanced features.</p>
+<p><strong>Tasks</strong> (prioritized):
+1. <strong>360° Surround View</strong>: Merge multi-camera streams into equirectangular; test on Snapdragon 835
+2. <strong>Adaptive Bitrate</strong>: Detect WiFi congestion; auto-adjust stream quality
+3. <strong>Hand Controller Integration</strong>: Menu navigation, stream pause/resume/switch
+4. <strong>Recording in VR</strong>: Option to record VR session + telemetry overlay
+5. <strong>Multi-Screen Dashboard</strong>: Side-by-side telemetry panels instead of overlay
+6. <strong>Passthrough Mode</strong> (Meta feature): AR mixed reality with video overlay</p>
+<p><strong>Optional</strong>:
+- Stereo video support (SBS/OU) for 3D depth
+- Voice commands ("Show speed", "Start recording")
+- Spatial audio from vehicle sensors</p>
+<hr />
+<h2 id="11-risk-assessment-mitigation">11. Risk Assessment &amp; Mitigation</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Latency Too High</strong> (&gt;100 ms)</td>
+<td>Medium</td>
+<td>VR sickness, unusable</td>
+<td>Start with flat screen; TCP RTSP; small buffers; profile early</td>
+</tr>
+<tr>
+<td><strong>Thermal Throttling</strong></td>
+<td>Medium</td>
+<td>Frame drops, quality loss</td>
+<td>Monitor temps; adaptive bitrate; passive feature flags</td>
+</tr>
+<tr>
+<td><strong>Memory Exhaustion</strong></td>
+<td>Low</td>
+<td>Crashes, ANRs</td>
+<td>Pre-allocate; object pooling; small video buffer (3 frames)</td>
+</tr>
+<tr>
+<td><strong>WiFi Disconnects</strong></td>
+<td>Low</td>
+<td>Loss of stream; recovery laggy</td>
+<td>Reconnect logic; fallback to lower bitrate; user warning</td>
+</tr>
+<tr>
+<td><strong>NDK Build Complexity</strong></td>
+<td>Medium</td>
+<td>Delays, debugging challenges</td>
+<td>Use existing samples (hello_xr); modularize JNI</td>
+</tr>
+<tr>
+<td><strong>OpenXR API Changes</strong></td>
+<td>Low</td>
+<td>Incompatibility with future Meta updates</td>
+<td>Tight coupling to Meta OpenXR SDK; monitor releases</td>
+</tr>
+<tr>
+<td><strong>RTSP Server Conflicts</strong></td>
+<td>Low</td>
+<td>Port conflicts; resource starvation</td>
+<td>Configurable port; singleton management; graceful shutdown</td>
+</tr>
+<tr>
+<td><strong>Compatibility with Future Versions</strong></td>
+<td>Medium</td>
+<td>App breaks on newer Meta Quest versions</td>
+<td>Test on multiple devices (if available); follow OpenXR spec</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-references-further-reading">12. References &amp; Further Reading</h2>
+<h3 id="official-documentation">Official Documentation</h3>
+<ul>
+<li><a href="https://developers.meta.com/horizon/documentation/">Meta Horizon OS Developers</a></li>
+<li><a href="https://developer.android.com/develop/xr/openxr">Android Developers - XR</a></li>
+<li><a href="https://www.khronos.org/openxr/">Khronos OpenXR</a></li>
+<li><a href="https://developer.android.com/media/media3/exoplayer/rtsp">Media3/ExoPlayer RTSP</a></li>
+</ul>
+<h3 id="sdk-downloads">SDK Downloads</h3>
+<ul>
+<li><a href="https://developers.meta.com/horizon/downloads/package/oculus-openxr-mobile-sdk/">Meta OpenXR SDK</a></li>
+<li><a href="https://developer.android.com/ndk">Android NDK</a></li>
+<li><a href="https://developers.meta.com/horizon/documentation/native/android/ts-adb/">Meta Quest Developer Hub</a></li>
+</ul>
+<h3 id="community-samples">Community Samples</h3>
+<ul>
+<li><a href="https://github.com/meta-quest/Meta-OpenXR-SDK">Meta OpenXR SDK GitHub</a></li>
+<li><a href="https://github.com/KhronosGroup/OpenXR-SDK">Khronos OpenXR-SDK-Source</a></li>
+<li><a href="https://github.com/picoxr/OpenXR_VideoPlayer_Demo">OpenXR Video Player Demo</a></li>
+<li><a href="https://github.com/pedroSG94/RootEncoder">RootEncoder (RTSP Streaming)</a></li>
+</ul>
+<h3 id="related-mia-documentation">Related MIA Documentation</h3>
+<ul>
+<li><code>/home/sparrow/projects/embedded/mia/apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt</code> — Current WebSocket implementation</li>
+<li><code>/home/sparrow/projects/embedded/mia/CLAUDE.md</code> — MIA project guidelines</li>
+<li><code>/home/sparrow/projects/embedded/mia/docs/</code> — Additional MIA architecture docs</li>
+</ul>
+<hr />
+<h2 id="13-appendix-example-code-snippets">13. Appendix: Example Code Snippets</h2>
+<h3 id="131-rtsp-streaming-setup-kotlin">13.1 RTSP Streaming Setup (Kotlin)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Using RootEncoder to stream camera via RTSP</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">com.github.pedrosg94.rtplibrary.rtsp.RtspServer</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">MiaRtspManager</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">rtspServer</span><span class="p">:</span><span class="w"> </span><span class="n">RtspServer? </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">startRtspStream</span><span class="p">(</span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5554</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">rtspServer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RtspServer</span><span class="p">(</span><span class="n">port</span><span class="p">,</span><span class="w"> </span><span class="n">RtspServer</span><span class="p">.</span><span class="na">RtpProtocol</span><span class="p">.</span><span class="na">TCP</span><span class="p">).</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">setOnAuthListener</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// No auth for LAN</span>
+<span class="w">            </span><span class="n">start</span><span class="p">()</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">stopRtspStream</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">rtspServer</span><span class="o">?.</span><span class="na">stop</span><span class="p">()</span>
+<span class="w">        </span><span class="n">rtspServer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">getStreamUrl</span><span class="p">(</span><span class="n">deviceIp</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;rtsp://</span><span class="si">$</span><span class="n">deviceIp</span><span class="s">:5554/camera&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="132-exoplayer-rtsp-playback-kotlin">13.2 ExoPlayer RTSP Playback (Kotlin)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ExoPlayer setup for RTSP stream in Android/VR app</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">androidx.media3.exoplayer.ExoPlayer</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">androidx.media3.common.MediaItem</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">androidx.media3.common.MimeTypes</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">RtspPlayerManager</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">exoPlayer</span><span class="p">:</span><span class="w"> </span><span class="n">ExoPlayer? </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">createPlayer</span><span class="p">():</span><span class="w"> </span><span class="n">ExoPlayer</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">exoPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExoPlayer</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="n">context</span><span class="p">).</span><span class="na">build</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Configure for low latency</span>
+<span class="w">            </span><span class="n">setSeekParameters</span><span class="p">(</span><span class="n">SeekParameters</span><span class="p">.</span><span class="na">CLOSEST_SYNC</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">exoPlayer</span><span class="o">!!</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">playRtspStream</span><span class="p">(</span><span class="n">rtspUrl</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">mediaItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MediaItem</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">setUri</span><span class="p">(</span><span class="n">rtspUrl</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">setMimeType</span><span class="p">(</span><span class="n">MimeTypes</span><span class="p">.</span><span class="na">APPLICATION_RTSP</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+
+<span class="w">        </span><span class="n">exoPlayer</span><span class="o">?.</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">setMediaItem</span><span class="p">(</span><span class="n">mediaItem</span><span class="p">)</span>
+<span class="w">            </span><span class="n">prepare</span><span class="p">()</span>
+<span class="w">            </span><span class="n">play</span><span class="p">()</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">release</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">exoPlayer</span><span class="o">?.</span><span class="na">release</span><span class="p">()</span>
+<span class="w">        </span><span class="n">exoPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="133-hilt-dependency-injection-for-xr-kotlin">13.3 Hilt Dependency Injection for XR (Kotlin)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// Hilt module for XR dependencies</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dagger.Module</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dagger.Provides</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dagger.hilt.InstallIn</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dagger.hilt.components.SingletonComponent</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">javax.inject.Singleton</span>
+
+<span class="nd">@Module</span>
+<span class="nd">@InstallIn</span><span class="p">(</span><span class="n">SingletonComponent</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">object</span><span class="w"> </span><span class="nc">XRModule</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Singleton</span>
+<span class="w">    </span><span class="nd">@Provides</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideRtspPlayerManager</span><span class="p">(</span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">Context</span><span class="p">):</span><span class="w"> </span><span class="n">RtspPlayerManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">RtspPlayerManager</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Singleton</span>
+<span class="w">    </span><span class="nd">@Provides</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">provideXRDashboardViewModel</span><span class="p">(</span>
+<span class="w">        </span><span class="n">telemetryWebSocket</span><span class="p">:</span><span class="w"> </span><span class="n">TelemetryWebSocket</span><span class="p">,</span>
+<span class="w">        </span><span class="n">rtspPlayerManager</span><span class="p">:</span><span class="w"> </span><span class="n">RtspPlayerManager</span>
+<span class="w">    </span><span class="p">):</span><span class="w"> </span><span class="n">XRDashboardViewModel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">XRDashboardViewModel</span><span class="p">(</span><span class="n">telemetryWebSocket</span><span class="p">,</span><span class="w"> </span><span class="n">rtspPlayerManager</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="134-vr-dashboard-viewmodel-kotlin">13.4 VR Dashboard ViewModel (Kotlin)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// ViewModel for VR telemetry dashboard</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">androidx.lifecycle.ViewModel</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">androidx.lifecycle.viewModelScope</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">dagger.hilt.android.lifecycle.HiltViewModel</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlinx.coroutines.flow.MutableStateFlow</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlinx.coroutines.flow.StateFlow</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">kotlinx.coroutines.launch</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">javax.inject.Inject</span>
+
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">VRTelemetryState</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">speed</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">rpm</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">temperature</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">batteryLevel</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">gpsLocation</span><span class="p">:</span><span class="w"> </span><span class="n">Pair</span><span class="o">&lt;</span><span class="kt">Double</span><span class="p">,</span><span class="w"> </span><span class="kt">Double</span><span class="o">&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">)</span>
+
+<span class="nd">@HiltViewModel</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">XRDashboardViewModel</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">telemetryWebSocket</span><span class="p">:</span><span class="w"> </span><span class="n">TelemetryWebSocket</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ViewModel</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">_vrTelemetryState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MutableStateFlow</span><span class="p">(</span><span class="n">VRTelemetryState</span><span class="p">())</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">vrTelemetryState</span><span class="p">:</span><span class="w"> </span><span class="n">StateFlow</span><span class="o">&lt;</span><span class="n">VRTelemetryState</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_vrTelemetryState</span>
+
+<span class="w">    </span><span class="k">init</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">viewModelScope</span><span class="p">.</span><span class="na">launch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">telemetryWebSocket</span><span class="p">.</span><span class="na">telemetryFlow</span><span class="p">.</span><span class="na">collect</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">reading</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="n">_vrTelemetryState</span><span class="p">.</span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VRTelemetryState</span><span class="p">(</span>
+<span class="w">                    </span><span class="n">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="na">speed</span><span class="o">?.</span><span class="na">toInt</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">rpm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="na">rpm</span><span class="o">?.</span><span class="na">toInt</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="na">engineTemp</span><span class="o">?.</span><span class="na">toInt</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="m">0</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">batteryLevel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="na">batteryLevel</span><span class="o">?.</span><span class="na">toInt</span><span class="p">()</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">gpsLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reading</span><span class="p">.</span><span class="na">gps</span><span class="o">?.</span><span class="na">let</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="n">Pair</span><span class="p">(</span><span class="nb">it</span><span class="p">.</span><span class="na">latitude</span><span class="p">,</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">longitude</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">)</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="14-conclusion">14. Conclusion</h2>
+<p>Extending MIA to support Meta Quest 1 VR is technically feasible with a phased, low-risk approach:</p>
+<ol>
+<li><strong>RTSP Streaming</strong> is production-ready via ExoPlayer or RootEncoder</li>
+<li><strong>OpenXR Support</strong> on Quest 1 is stable with Meta's official SDK</li>
+<li><strong>Telemetry Integration</strong> requires minimal changes to existing TelemetryWebSocket</li>
+<li><strong>Hardware Constraints</strong> (Snapdragon 835, 4 GB RAM) are manageable with optimization</li>
+<li><strong>Community Resources</strong> (samples, libraries) reduce development risk</li>
+</ol>
+<p><strong>Recommended Start</strong>: Phase 1 (RTSP streaming validation) + Phase 2 (basic OpenXR integration) in parallel, with profiling to confirm Quest 1 performance targets (72 FPS, &lt; 100 ms latency). Phase 3 (telemetry dashboard) follows once video reliability is proven.</p>
+<p><strong>Success Metrics</strong>:
+- ✓ Live RTSP camera feed at 1080p 30 FPS, &lt; 500 ms latency
+- ✓ OpenXR app renders video at stable 72 FPS on Quest 1
+- ✓ Telemetry overlay updates without frame drops
+- ✓ User can sideload APK and launch VR experience within 5 minutes</p>
+<hr />
+<p><strong>Document Owner</strong>: MIA Android Development Team
+<strong>Last Updated</strong>: March 2026
+<strong>Status</strong>: Research Complete - Ready for Phase 1 Planning</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
