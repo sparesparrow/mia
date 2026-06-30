@@ -3,22 +3,14 @@
     "agent": {
       "prompt": {
         "prompt": "",
-        "llm": "claude-3-5-sonnet",
+        "llm": "claude-sonnet-4-5",
         "temperature": 0.9
       },
-      "first_message": "*adjusts cat on shoulder* Ah, you've arrived! Emperor Octavius and I were just finishing a concerto in D minor about your task backlog. Movement three was particularly devastating. So — what chaos shall we orchestrate today? And please, make it interesting. The cat judges the boring ones.",
+      "first_message": "*adjusts cat on shoulder* Ah, you've arrived! Emperor Octavius and I were just finishing a concerto in D minor about your task backlog. Movement three was particularly devastating. So \u2014 what chaos shall we orchestrate today? And please, make it interesting. The cat judges the boring ones.",
       "language": "en"
     },
     "tts": {
-      "voice_id": "",
-      "model_id": "eleven_turbo_v2_5",
-      "voice_settings": {
-        "stability": 0.3,
-        "similarity_boost": 0.8,
-        "style": 0.6,
-        "use_speaker_boost": true
-      },
-      "optimize_streaming_latency": 3
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ"
     },
     "turn": {
       "turn_timeout": 7,
@@ -36,7 +28,7 @@
         "text": "#0F172A"
       },
       "feedback_mode": "none",
-      "shareable_page_text": "Talk to The Feral Maestro — your chaotically brilliant planning agent"
+      "shareable_page_text": "Talk to The Feral Maestro \u2014 your chaotically brilliant planning agent"
     }
   },
   "name": "The Feral Maestro",
