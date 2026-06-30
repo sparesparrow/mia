@@ -1,5 +1,5 @@
 [requires]
-sparetools-protocols/1.0.0
+sparetools-protocols/1.0.1
 sparetools-embedded/1.0.0
 
 [generators]
