@@ -205,7 +205,10 @@ def load_enhanced_orchestrator_module():
 @pytest.mark.asyncio
 async def test_enhanced_orchestrator_force_routes_voice_command_through_bridge(tmp_path, monkeypatch):
     module = load_enhanced_orchestrator_module()
-    orchestrator = module.EnhancedCoreOrchestrator(data_dir=str(tmp_path))
+    # EnhancedCoreOrchestrator.__init__ takes no args; per-instance state lives
+    # on its ContextManager (which does accept data_dir). tmp_path is retained
+    # in the signature for future fixtures that persist analytics/context to disk.
+    orchestrator = module.EnhancedCoreOrchestrator()
     bridge = FakeBridge()
     orchestrator.claudepy_bridge = bridge
 
