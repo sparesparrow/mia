@@ -3,6 +3,29 @@
 This module is intentionally import-light at module load time.  The real
 claudepy objects are imported lazily in :meth:`ClaudepyBridge.initialize` so
 MIA can still start in environments where the AI backend is not installed.
+
+Routing a MIA voice path through this bridge
+--------------------------------------------
+The live voice entry point is
+``orchestration/mcp/modules/core-orchestrator/enhanced_orchestrator.py``,
+in ``EnhancedOrchestrator.handle_enhanced_voice_command(text, ...)``, which
+today parses intent with a keyword NLP and dispatches via
+``_route_enhanced_command(intent_result, session_context, context)``.
+
+To route that path through claudepy (follow-up PR — core-orchestrator is
+deliberately NOT modified here), ``_route_enhanced_command`` (or the
+``question_answer`` / low-confidence branch of ``handle_enhanced_voice_command``)
+would delegate to::
+
+    result = await self.claudepy_bridge.process_voice_command(
+        text,
+        context={"session_id": session_id, "intent": intent_result.intent,
+                 **(context or {})},
+    )
+    response = result.response
+
+``ClaudepyBridge`` degrades to a keyword fallback when claudepy is unavailable,
+so the orchestrator keeps working even without the AI backend installed.
 """
 
 from __future__ import annotations
@@ -211,6 +234,11 @@ class ClaudepyBridge:
         return "\n\n".join(parts)
 
     async def _run_orchestrator(self, task: str) -> Any:
+        # The real claudepy Orchestrator exposes execute(task, sub_tasks=None);
+        # prefer it so the bridge actually reaches claudepy in production. run()/
+        # generate() are kept as forward-compatible fallbacks for alternate shims.
+        if hasattr(self._orchestrator, "execute"):
+            return await self._orchestrator.execute(task)
         if hasattr(self._orchestrator, "run"):
             return await self._orchestrator.run(task=task, provider_type=None)
         if hasattr(self._orchestrator, "generate"):

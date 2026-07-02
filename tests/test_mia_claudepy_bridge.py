@@ -66,6 +66,23 @@ class FakeOrchestrator:
         return FakeResponse(content="Turning on the office lights.", usage=FakeUsage())
 
 
+class FakeExecuteOrchestrator:
+    """Mirrors the real ``claudepy.agents.Orchestrator`` surface: ``execute(task)``.
+
+    ``FakeOrchestrator`` above exercises a ``run(...)`` method that the real
+    claudepy Orchestrator does not expose. This fake guards against the bridge
+    only ever working against an imagined API and silently falling back once it
+    is wired to the real orchestrator in production.
+    """
+
+    def __init__(self):
+        self.tasks = []
+
+    async def execute(self, task, sub_tasks=None):
+        self.tasks.append(task)
+        return FakeResponse(content="Navigating to the office.", usage=FakeUsage(total_tokens=7))
+
+
 @pytest.mark.unit
 class TestInMemoryVoiceRAG:
     @pytest.mark.asyncio
@@ -124,3 +141,27 @@ class TestClaudepyBridge:
         assert result.provider_used == "fallback"
         assert result.intent == "communication"
         assert "message" in result.response.lower()
+
+    @pytest.mark.asyncio
+    async def test_voice_command_routes_through_real_execute_interface(self):
+        # Regression guard: the real claudepy Orchestrator exposes execute(),
+        # not run()/generate(). If the bridge cannot drive execute(), it silently
+        # falls back and never actually reaches claudepy in production.
+        orchestrator = FakeExecuteOrchestrator()
+        bridge = ClaudepyBridge(orchestrator=orchestrator, mcp_prompts=FakePromptClient())
+
+        result = await bridge.process_voice_command("navigate to the office")
+
+        assert result.provider_used == "kimi"  # not "fallback"
+        assert result.response == "Navigating to the office."
+        assert result.tokens_used == 7
+        assert orchestrator.tasks, "orchestrator.execute() was never called"
+        assert "Voice command: navigate to the office" in orchestrator.tasks[0]
+
+    def test_real_claudepy_orchestrator_exposes_execute(self):
+        # Ties the FakeExecuteOrchestrator contract to the real API. Skips when
+        # claudepy is not installed in this environment.
+        pytest.importorskip("claudepy.agents")
+        from claudepy.agents import Orchestrator
+
+        assert hasattr(Orchestrator, "execute")
