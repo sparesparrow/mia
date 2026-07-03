@@ -22,6 +22,8 @@ Usage:
 import asyncio
 import json
 import logging
+import re
+from pathlib import Path
 from typing import Any, Dict, Optional
 from datetime import datetime
 
@@ -54,6 +56,8 @@ class VoiceLearningServer(MCPServer):
         llm_client: Optional[Any] = None,
         context_manager: Optional[Any] = None,
         schemas_path: str = "schemas.json",
+        mcp_prompts_client: Optional[Any] = None,
+        mcp_prompts_dir: Optional[str] = None,
     ):
         """
         Initialize Voice Learning MCP Server
@@ -64,12 +68,22 @@ class VoiceLearningServer(MCPServer):
             llm_client: LLM client for prompt processing (optional)
             context_manager: Context manager for storing/retrieving patterns
             schemas_path: Path to JSON schemas file
+            mcp_prompts_client: Optional client with call_tool(name, args) for mcp-prompts
+            mcp_prompts_dir: Base mcp-prompts prompt directory; defaults to env or local checkout
         """
         super().__init__(name, version)
 
         self.llm_client = llm_client
         self.context_manager = context_manager
         self.schemas_path = schemas_path
+        self.mcp_prompts_client = mcp_prompts_client
+        self.mcp_prompts_dir = Path(
+            mcp_prompts_dir
+            or os.getenv("MIA_MCP_PROMPTS_DIR")
+            or "/home/sparrow/projects/mcp/ai-mcp-monorepo/packages/mcp-prompts/data/prompts"
+        )
+        self.staging_dir = self.mcp_prompts_dir / "staging"
+        self.staging_log_path = self.staging_dir / "review-log.jsonl"
 
         # Initialize tool registry
         self.tool_registry = VoiceLearningToolRegistry(llm_client, schemas_path)
@@ -80,6 +94,7 @@ class VoiceLearningServer(MCPServer):
             "errors": 0,
             "last_call": None,
             "call_times": {},  # Per-tool timing
+            "published_prompts": 0,
         }
 
         # Register all tools
@@ -286,6 +301,133 @@ class VoiceLearningServer(MCPServer):
 
         return None
 
+    @staticmethod
+    def _slugify(value: str, fallback: str = "learned-pattern") -> str:
+        """Create a stable filesystem-safe slug for staged prompt IDs."""
+        slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+        return slug[:80] or fallback
+
+    @staticmethod
+    def _pattern_content(pattern: Dict[str, Any]) -> str:
+        """Extract human-reviewable prompt content from a learned pattern."""
+        for key in ("content", "prompt", "pattern", "summary", "recommendation"):
+            value = pattern.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+        return json.dumps(pattern, indent=2, sort_keys=True)
+
+    def _build_staged_prompt(
+        self,
+        pattern: Dict[str, Any],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Build an mcp-prompts-compatible prompt document for review staging."""
+        metadata = metadata or {}
+        now = datetime.now().isoformat()
+        intent = str(metadata.get("intent") or pattern.get("intent") or "voice-learning")
+        source = str(metadata.get("source") or "mia-voice-learning")
+        name_seed = str(pattern.get("name") or pattern.get("title") or f"MIA learned pattern: {intent}")
+        slug_seed = f"mia-learned-{intent}-{name_seed}"
+        prompt_id = self._slugify(slug_seed)
+
+        tags = list(dict.fromkeys([
+            "mia",
+            "voice-learning",
+            "auto-generated",
+            "staged",
+            "#learned",
+            intent,
+            *[str(tag) for tag in metadata.get("tags", [])],
+        ]))
+
+        return {
+            "id": prompt_id,
+            "name": name_seed,
+            "description": metadata.get(
+                "description",
+                "Auto-generated MIA voice-learning pattern staged for human review.",
+            ),
+            "content": self._pattern_content(pattern),
+            "isTemplate": bool(metadata.get("isTemplate", False)),
+            "variables": metadata.get("variables", []),
+            "tags": tags,
+            "category": "staging",
+            "createdAt": now,
+            "updatedAt": now,
+            "version": 1,
+            "metadata": {
+                "source": source,
+                "reviewStatus": "staged",
+                "reviewInstruction": "Review weekly; promote to data/prompts/ or delete.",
+                "origin": "MIA voice-learning feedback loop",
+                **{k: v for k, v in metadata.items() if k not in {"tags", "variables", "description", "isTemplate"}},
+            },
+        }
+
+    async def _call_mcp_prompts_create_prompt(self, prompt: Dict[str, Any]) -> Optional[Any]:
+        """Best-effort create_prompt call for injected mcp-prompts clients."""
+        if not self.mcp_prompts_client:
+            return None
+
+        payload = {
+            "name": prompt["name"],
+            "content": prompt["content"],
+            "category": prompt["category"],
+            "tags": prompt["tags"],
+            "isTemplate": prompt["isTemplate"],
+            "variables": prompt["variables"],
+        }
+        client = self.mcp_prompts_client
+        if hasattr(client, "__aenter__"):
+            async with client as active_client:
+                return await active_client.call_tool("create_prompt", payload)
+        return await client.call_tool("create_prompt", payload)
+
+    async def publish_learned_prompt(
+        self,
+        pattern: Dict[str, Any],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Publish a learned voice pattern into mcp-prompts staging.
+
+        The staged file is the durable handoff for weekly human review. If an
+        mcp-prompts client is injected, the method also calls create_prompt via
+        that client; failures are logged but do not block local staging.
+        """
+        prompt = self._build_staged_prompt(pattern, metadata)
+        self.staging_dir.mkdir(parents=True, exist_ok=True)
+        prompt_path = self.staging_dir / f"{prompt['id']}.json"
+
+        if prompt_path.exists():
+            timestamp_suffix = datetime.now().strftime("%Y%m%d%H%M%S")
+            prompt["id"] = f"{prompt['id']}-{timestamp_suffix}"
+            prompt_path = self.staging_dir / f"{prompt['id']}.json"
+
+        prompt_path.write_text(json.dumps(prompt, indent=2, ensure_ascii=False) + "\n")
+
+        mcp_result = None
+        mcp_error = None
+        try:
+            mcp_result = await self._call_mcp_prompts_create_prompt(prompt)
+        except Exception as exc:
+            mcp_error = str(exc)
+            logger.warning("mcp-prompts create_prompt call failed; staged file kept: %s", exc)
+
+        review_record = {
+            "timestamp": datetime.now().isoformat(),
+            "prompt_id": prompt["id"],
+            "path": str(prompt_path),
+            "status": "staged",
+            "mcp_create_prompt": "ok" if mcp_result is not None else "skipped" if mcp_error is None else "failed",
+            "mcp_error": mcp_error,
+        }
+        with self.staging_log_path.open("a", encoding="utf-8") as log_file:
+            log_file.write(json.dumps(review_record, ensure_ascii=False) + "\n")
+
+        self.stats["published_prompts"] += 1
+        logger.info("Published learned prompt to staging: %s", prompt_path)
+        return {**review_record, "prompt": prompt, "mcp_result": mcp_result}
+
     async def run_learning_cycle(
         self,
         interactions: list,
@@ -323,6 +465,7 @@ class VoiceLearningServer(MCPServer):
             "context_results": {},
             "synthesis_results": {},
             "stored_patterns": 0,
+            "published_prompts": [],
             "errors": [],
         }
 
@@ -450,6 +593,19 @@ class VoiceLearningServer(MCPServer):
                 await self.store_pattern("knowledge", results["synthesis_results"])
                 results["stored_patterns"] += 1
 
+                # Stage learned knowledge for weekly mcp-prompts review (Option C).
+                published = await self.publish_learned_prompt(
+                    results["synthesis_results"],
+                    metadata={
+                        "intent": "knowledge-synthesis",
+                        "source": "mia_synthesize_knowledge",
+                        "user_id": user_id,
+                        "interaction_count": len(interactions),
+                        "tags": ["knowledge-synthesis", "weekly-review"],
+                    },
+                )
+                results["published_prompts"].append(published)
+
             except Exception as e:
                 logger.error(f"Knowledge synthesis failed: {e}")
                 results["errors"].append(f"Knowledge synthesis: {str(e)}")
@@ -481,6 +637,8 @@ class VoiceLearningServer(MCPServer):
             "tools_called": self.stats["tools_called"],
             "errors": self.stats["errors"],
             "last_call": self.stats["last_call"],
+            "published_prompts": self.stats["published_prompts"],
+            "staging_dir": str(self.staging_dir),
             "average_call_times": avg_call_time,
         }
 
