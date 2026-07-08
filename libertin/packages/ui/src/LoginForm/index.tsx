@@ -55,7 +55,7 @@ export function LoginForm({
         autoComplete="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="vas@email.cz"
+        placeholder={t('auth.login.emailPlaceholder')}
         required
       />
       <Input

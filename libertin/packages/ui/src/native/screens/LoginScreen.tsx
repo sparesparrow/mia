@@ -30,7 +30,7 @@ export function LoginScreen({ onSubmit, onForgotPassword, onRegister, loading, e
         autoCapitalize="none"
         keyboardType="email-address"
         textContentType="emailAddress"
-        placeholder="vas@email.cz"
+        placeholder={translate('auth.login.emailPlaceholder')}
       />
       <Input
         label={translate('auth.login.password')}

@@ -23,6 +23,7 @@
       "login": {
         "title": "Přihlášení",
         "email": "E-mail",
+        "emailPlaceholder": "jmeno@example.com",
         "password": "Heslo",
         "submit": "Přihlásit se",
         "forgotPassword": "Zapomenuté heslo?",
@@ -35,7 +36,7 @@
     },
     "verify": {
       "title": "Ověřte svůj e-mail",
-      "body": "Poslali jsme ověřovací odkaz na adresu {{email}}. Zkontrolujte svoji schránku.",
+      "body": "Poslali jsme ověřovací odkaz na adresu {{email}}. Zkontrolujte svou schránku.",
       "resend": "Odeslat znovu",
       "verified": "E-mail ověřen"
     },
@@ -131,6 +132,7 @@
       "login": {
         "title": "Sign in",
         "email": "Email",
+        "emailPlaceholder": "name@example.com",
         "password": "Password",
         "submit": "Sign in",
         "forgotPassword": "Forgot password?",

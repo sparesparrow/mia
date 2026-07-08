@@ -54,7 +54,7 @@ export function Button({
   return (
     <button
       {...props}
-      disabled={disabled ?? loading}
+      disabled={disabled || loading}
       style={{ ...baseStyle, ...variantStyle, ...style }}
     >
       {loading ? '…' : i18nKey ? t(i18nKey) : children}
