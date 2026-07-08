@@ -12,7 +12,7 @@ export interface Conversation { id: string; participant: User; lastMessage?: str
 export interface MessagesResponse { conversations: Conversation[]; }
 export interface ErrorResponse { message: string; code?: string; }
 
-type RequestOptions = { token?: string };
+type RequestOptions = { token?: string | undefined };
 
 async function request<T>(baseURL: string, path: string, init: RequestInit, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = {

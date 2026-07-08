@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "msw:init": "msw init public/ --save"
   },
   "dependencies": {
     "@libertin/api": "workspace:*",
@@ -23,6 +24,12 @@
     "@types/node": "^22",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "msw": "^2.6.4",
     "typescript": "*"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

@@ -11,7 +11,7 @@ export interface LoginScreenProps {
   onForgotPassword?: () => void;
   onRegister?: () => void;
   loading?: boolean;
-  error?: string;
+  error?: string | undefined;
 }
 
 export function LoginScreen({ onSubmit, onForgotPassword, onRegister, loading, error }: LoginScreenProps) {

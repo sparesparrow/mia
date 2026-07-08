@@ -4,6 +4,7 @@
   "main": "./index.ts",
   "exports": {
     ".": "./index.ts",
+    "./dict": "./dict.ts",
     "./locales.json": "./locales.json"
   },
   "dependencies": {

@@ -7,16 +7,16 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  loading?: boolean;
-  disabled?: boolean;
+  variant?: ButtonVariant | undefined;
+  size?: ButtonSize | undefined;
+  loading?: boolean | undefined;
+  disabled?: boolean | undefined;
   /** i18next key resolved at render. Takes precedence over `title`. */
-  i18nKey?: string;
-  title?: string;
-  onPress?: () => void;
-  style?: ViewStyle;
-  accessibilityLabel?: string;
+  i18nKey?: string | undefined;
+  title?: string | undefined;
+  onPress?: (() => void) | undefined;
+  style?: ViewStyle | undefined;
+  accessibilityLabel?: string | undefined;
 }
 
 const sizePadding: Record<ButtonSize, ViewStyle> = {

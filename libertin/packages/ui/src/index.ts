@@ -2,3 +2,8 @@ export * from './Button';
 export * from './Input';
 export * from './Card';
 export * from './Avatar';
+export * from './Hero';
+export * from './CategoryCard';
+export * from './SiteFooter';
+export * from './AgeGate';
+export * from './LoginForm';

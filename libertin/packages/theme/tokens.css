@@ -3,6 +3,7 @@
   /* Colors */
   --color-primary: #F20B49;
   --color-primary-text: #C40A3C;   /* AA on white */
+  --color-on-primary: #FFFFFF;
   --color-bg: #FAFAF9;
   --color-surface: #FFFFFF;
   --color-surface-dark: #222222;

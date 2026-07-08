@@ -1,18 +1,20 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import locales from './locales.json';
+import { dicts } from './dict';
 
 export const defaultNS = 'common';
 
-export const resources = {
-  cs: locales.cs,
-  en: locales.en,
-} as const;
+export const resources = dicts;
 
-export type Locale = keyof typeof resources;
+export type { Locale, Dict } from './dict';
+export { getDict, dicts } from './dict';
+
 export type Namespace = keyof typeof resources.cs;
 
-export function initI18n(lng: Locale = 'cs') {
+export function initI18n(lng: keyof typeof resources = 'cs') {
+  if (i18n.isInitialized) {
+    return i18n.changeLanguage(lng);
+  }
   return i18n.use(initReactI18next).init({
     lng,
     fallbackLng: 'en',

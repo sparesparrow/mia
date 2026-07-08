@@ -14,7 +14,7 @@ export function Avatar({ src, alt = '', size = 'md', initials }: AvatarProps) {
   const baseStyle: React.CSSProperties = {
     width: px, height: px, borderRadius: '50%', overflow: 'hidden',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'var(--color-primary)', color: '#fff',
+    backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)',
     fontWeight: 600, fontSize: Math.round(px * 0.35), flexShrink: 0,
   };
   if (src) return <img src={src} alt={alt} style={{ ...baseStyle, objectFit: 'cover' }} />;

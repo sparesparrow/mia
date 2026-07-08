@@ -5,7 +5,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
-    "./handlers": "./src/mocks/handlers.ts"
+    "./handlers": "./src/mocks/handlers.ts",
+    "./browser": "./src/mocks/browser.ts",
+    "./server": "./src/mocks/server.ts"
   },
   "dependencies": { "msw": "^2.6.4" },
   "devDependencies": { "typescript": "*" }

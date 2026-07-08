@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +46,7 @@ export function Button({
 
   const variantStyle: React.CSSProperties =
     variant === 'primary'
-      ? { backgroundColor: 'var(--color-primary)', color: '#fff' }
+      ? { backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }
       : variant === 'secondary'
         ? { backgroundColor: 'transparent', border: '1.5px solid var(--color-primary)', color: 'var(--color-primary-text)' }
         : { backgroundColor: 'transparent', color: 'var(--color-primary-text)', textDecoration: 'underline' };

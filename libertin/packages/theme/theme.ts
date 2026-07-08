@@ -2,6 +2,7 @@ export const theme = {
   colors: {
     primary: 'var(--color-primary)',
     primaryText: 'var(--color-primary-text)',
+    onPrimary: 'var(--color-on-primary)',
     bg: 'var(--color-bg)',
     surface: 'var(--color-surface)',
     surfaceDark: 'var(--color-surface-dark)',
