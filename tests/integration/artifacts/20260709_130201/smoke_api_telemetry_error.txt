@@ -1,0 +1,8 @@
+/telemetry returned 0: <urlopen error [Errno 113] No route to host>
+Traceback (most recent call last):
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 731, in _run_step
+    detail = fn()
+             ^^^^
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 1024, in _smoke_api_telemetry
+    raise RuntimeError(f"/telemetry returned {code}: {body[:240]}")
+RuntimeError: /telemetry returned 0: <urlopen error [Errno 113] No route to host>

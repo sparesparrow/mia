@@ -1,0 +1,8 @@
+/status returned 0: <urlopen error [Errno 113] No route to host>
+Traceback (most recent call last):
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 731, in _run_step
+    detail = fn()
+             ^^^^
+  File "/home/sparrow/projects/mia/tests/integration/test_android_pi_e2e.py", line 1012, in _smoke_api_status
+    raise RuntimeError(f"/status returned {code}: {body[:240]}")
+RuntimeError: /status returned 0: <urlopen error [Errno 113] No route to host>
