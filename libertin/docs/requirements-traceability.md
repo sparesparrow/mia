@@ -35,7 +35,7 @@ počítá (Phase 4); přesun/mirror je třeba naplánovat.
 
 | Požadavek | Stav | Poznámka |
 |---|---|---|
-| Vzhled a rozsah definován Figma hand-off návrhem | ⚠️ | Figma export zatím nemáme v repu; obrazovky Phase 2/3 stavěny dle CLAUDE.md popisu. Jakmile bude Figma k dispozici, srovnat. |
+| Vzhled a rozsah definován Figma hand-off návrhem | 🔜 | Hand-off dodán: [Figma — Libertin](https://www.figma.com/design/BF3X0FKBKEbt5uTcrO4jkk/Libertin?node-id=3786-159470). Zbývá srovnat implementované obrazovky (Phase 2/3) s mockupy. |
 | Průběžné konzultace, písemné dotazy na nejasnosti | — | procesní; nejasnosti evidovat v PR/issues |
 
 ## A. Hardware / prostředí
@@ -73,7 +73,7 @@ počítá (Phase 4); přesun/mirror je třeba naplánovat.
 
 | # | Požadavek | Stav | Poznámka |
 |---|---|---|---|
-| C1 | UI odpovídá Figma mockupům | ⚠️ | viz výše — potřebujeme Figma export |
+| C1 | UI odpovídá Figma mockupům | 🔜 | hand-off dodán (viz Zadání výše); provést design-parity průchod |
 | C2 | Minimalizace externích služeb, maximum on-premise | 🏗️ | ovlivní volbu analytiky, map (self-host tiles?), push |
 | C3 | Cloud-ready: kontejnery per komponenta, S3 úložiště (ne POSIX), CDN-ready statika, minimalizace requestů, Redis, datové vrstvy | 🏗️ | klient už dnes: Next.js bundluje a dělí kód (91 kB First Load vs 607 kB legacy) |
 | C4 | Docker kontejnery + Docker Compose | 🏗️ | přidat Dockerfile pro web už teď je levné 🔜 |
@@ -103,5 +103,5 @@ se backend přepisoval.
 2. **Přepínač denního/nočního režimu** (B6) — tokeny existují, chybí UI toggle.
 3. **Testy klienta** (C11) — unit/component testy k Phase 4 CI.
 4. **Dockerfile pro web** (C4) — levný krok směrem k infra požadavkům.
-5. **Figma hand-off** (C1) — vyžádat od objednatele, srovnat hotové obrazovky.
+5. **Figma hand-off** (C1) — ✅ dodán; srovnat hotové obrazovky s mockupy (design-parity průchod).
 6. **GitLab** (C10) — rozhodnutí o mirroru/přesunu.
