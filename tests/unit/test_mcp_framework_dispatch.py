@@ -235,7 +235,8 @@ class TestServerRegistration:
         s = MCPServer("s")
         p = create_prompt("greet", "d")
         s.add_prompt(p)
-        assert s.prompts["greet"] is p
+        # Prompts are stored as an ordered list; look up by name attribute.
+        assert any(getattr(pr, "name", None) == "greet" and pr is p for pr in s.prompts)
 
 
 class TestServerDispatch:
