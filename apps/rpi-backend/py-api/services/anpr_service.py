@@ -3,6 +3,8 @@ ANPR (Automatic Number Plate Recognition) Service
 Processes vehicle license plate images and detects plate text
 """
 
+from __future__ import annotations
+
 import logging
 import base64
 import io

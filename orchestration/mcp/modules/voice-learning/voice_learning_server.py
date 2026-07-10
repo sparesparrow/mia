@@ -30,7 +30,9 @@ from datetime import datetime
 # Assuming mcp_framework is available at parent level
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_MODULES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, _MODULES_DIR)
+sys.path.insert(0, os.path.join(_MODULES_DIR, "shared"))
 
 from mcp_framework import MCPServer, Tool, MessageType
 
