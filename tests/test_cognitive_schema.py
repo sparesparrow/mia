@@ -164,15 +164,31 @@ class TestMiaSchemaFieldIds(unittest.TestCase):
         self._check_field_ids(schema_path)
 
     def test_esp32_structs_in_mia_fbs(self):
-        """Verify AudioFeatures and BeatEvent structs exist in mia.fbs."""
-        schema_path = os.path.join(
+        """Verify the ESP32 ESP-NOW BPM structs are preserved in the schema baseline.
+
+        The ``AudioFeatures``/``BeatEvent`` structs were extracted out of the
+        active ``schemas/mia.fbs`` when ``VehicleTelemetry`` was modularized into
+        ``vehicle_telemetry.fbs``. They intentionally no longer live in the active
+        RPi schema: every ``table``/``enum``/``struct`` declared there must have a
+        matching generated ``Mia/*.py`` binding (see
+        ``tests/unit/test_schema_contract.py``), and these fixed-layout ESP-NOW
+        structs deliberately have none. Their definitions are retained in the
+        frozen ``schemas/baseline/mia.fbs`` reference snapshot, so guard them
+        there and assert they stay out of the active schema.
+        """
+        schema_root = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "schemas", "mia.fbs",
+            "schemas",
         )
-        with open(schema_path) as f:
-            content = f.read()
-        self.assertIn("struct AudioFeatures", content)
-        self.assertIn("struct BeatEvent", content)
+        with open(os.path.join(schema_root, "baseline", "mia.fbs")) as f:
+            baseline_content = f.read()
+        self.assertIn("struct AudioFeatures", baseline_content)
+        self.assertIn("struct BeatEvent", baseline_content)
+
+        with open(os.path.join(schema_root, "mia.fbs")) as f:
+            active_content = f.read()
+        self.assertNotIn("struct AudioFeatures", active_content)
+        self.assertNotIn("struct BeatEvent", active_content)
 
 
 if __name__ == "__main__":
