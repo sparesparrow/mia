@@ -1,0 +1,326 @@
+[
+  {
+    "pkg": "black",
+    "installed": "23.12.1",
+    "id": "GHSA-3936-cmfr-pm3m",
+    "cves": [
+      "CVE-2026-32274"
+    ],
+    "severity": "HIGH",
+    "cvss": null,
+    "fixed": [
+      "26.3.1"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "Black: Arbitrary file writes from unsanitized user input in cache file name",
+    "withdrawn": false
+  },
+  {
+    "pkg": "orjson",
+    "installed": "3.9.15",
+    "id": "GHSA-hx9q-6w63-j58v",
+    "cves": [
+      "CVE-2025-67221"
+    ],
+    "severity": "HIGH",
+    "cvss": null,
+    "fixed": [
+      "3.11.6"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "orjson does not limit recursion for deeply nested JSON documents",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "GHSA-752w-5fwx-jx9f",
+    "cves": [
+      "CVE-2026-32597"
+    ],
+    "severity": "HIGH",
+    "cvss": null,
+    "fixed": [
+      "2.12.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "PyJWT accepts unknown `crit` header extensions",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "GHSA-xgmm-8j9v-c9wx",
+    "cves": [
+      "CVE-2026-48526"
+    ],
+    "severity": "HIGH",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "PyJWT: Public-key JWK accepted as HMAC secret enables forged HS256 tokens when mixed families are allowed",
+    "withdrawn": false
+  },
+  {
+    "pkg": "black",
+    "installed": "23.12.1",
+    "id": "GHSA-fj7x-q9j7-g6q6",
+    "cves": [
+      "CVE-2024-21503"
+    ],
+    "severity": "MODERATE",
+    "cvss": null,
+    "fixed": [
+      "24.3.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "Black vulnerable to Regular Expression Denial of Service (ReDoS)",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "GHSA-993g-76c3-p5m4",
+    "cves": [
+      "CVE-2026-48522"
+    ],
+    "severity": "MODERATE",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "PyJWKClient: missing scheme allowlist enables CVE-2024-21643-class SSRF + token forgery via file://, ftp://, data: schemes",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "GHSA-w7vc-732c-9m39",
+    "cves": [
+      "CVE-2026-48525"
+    ],
+    "severity": "MODERATE",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "2.8.0"
+    ],
+    "summary": "PyJWT: Unauthenticated DoS via unbounded Base64URL decoding of unused payload segment in b64=false detached JWS",
+    "withdrawn": false
+  },
+  {
+    "pkg": "python-dotenv",
+    "installed": "1.0.0",
+    "id": "GHSA-mf9w-mj56-hr94",
+    "cves": [
+      "CVE-2026-28684"
+    ],
+    "severity": "MODERATE",
+    "cvss": null,
+    "fixed": [
+      "1.2.2"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "python-dotenv: Symlink following in set_key allows arbitrary file overwrite via cross-device rename fallback",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "GHSA-fhv5-28vv-h8m8",
+    "cves": [
+      "CVE-2026-48524"
+    ],
+    "severity": "LOW",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "PyJWKClient unbounded JWKS endpoint requests via attacker-controlled kid values (DoS)",
+    "withdrawn": false
+  },
+  {
+    "pkg": "black",
+    "installed": "23.12.1",
+    "id": "PYSEC-2024-48",
+    "cves": [
+      "CVE-2024-21503"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "24.3.0",
+      "f00093672628d212b8965a8993cee8bedf5fe9b8"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "fastapi",
+    "installed": "0.108.0",
+    "id": "PYSEC-2024-38",
+    "cves": [
+      "CVE-2024-24762"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "0.109.1",
+      "9d34ad0ee8a0dfbbcce06f76c2d5d851085024fc"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "orjson",
+    "installed": "3.9.15",
+    "id": "PYSEC-2026-107",
+    "cves": [
+      "CVE-2025-67221"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "3.11.5"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2025-183",
+    "cves": [
+      "CVE-2025-45768"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2026-120",
+    "cves": [
+      "CVE-2026-32597"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "2.12.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2026-175",
+    "cves": [
+      "CVE-2026-48522"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2026-177",
+    "cves": [
+      "CVE-2026-48524"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2026-178",
+    "cves": [
+      "CVE-2026-48525"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "2.8.0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  },
+  {
+    "pkg": "pyjwt",
+    "installed": "2.8.0",
+    "id": "PYSEC-2026-179",
+    "cves": [
+      "CVE-2026-48526"
+    ],
+    "severity": "UNKNOWN",
+    "cvss": null,
+    "fixed": [
+      "2.13.0"
+    ],
+    "introduced": [
+      "0"
+    ],
+    "summary": "",
+    "withdrawn": false
+  }
+]

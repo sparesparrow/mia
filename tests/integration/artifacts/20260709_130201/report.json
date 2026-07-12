@@ -1,0 +1,128 @@
+{
+  "run_id": "20260709_130201",
+  "host": "192.168.200.134",
+  "device": "",
+  "phases": [
+    {
+      "phase": "smoke",
+      "steps": [
+        {
+          "name": "api_status",
+          "verdict": "FAIL",
+          "duration_s": 3.0987562160007656,
+          "detail": "",
+          "error": "/status returned 0: <urlopen error [Errno 113] No route to host>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_devices",
+          "verdict": "FAIL",
+          "duration_s": 3.0684414749994176,
+          "detail": "",
+          "error": "/devices returned 0: <urlopen error [Errno 113] No route to host>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_telemetry",
+          "verdict": "FAIL",
+          "duration_s": 3.0703428130073007,
+          "detail": "",
+          "error": "/telemetry returned 0: <urlopen error [Errno 113] No route to host>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "api_features",
+          "verdict": "FAIL",
+          "duration_s": 3.057630349008832,
+          "detail": "",
+          "error": "/features returned 0: <urlopen error [Errno 113] No route to host>",
+          "remediation_applied": ""
+        },
+        {
+          "name": "zmq_broker_port",
+          "verdict": "PASS",
+          "duration_s": 3.071831639012089,
+          "detail": "ZMQ broker not running (non-fatal \u2014 API works standalone)",
+          "error": "",
+          "remediation_applied": ""
+        },
+        {
+          "name": "target_service_snapshot",
+          "verdict": "PASS",
+          "duration_s": 3.072188878999441,
+          "detail": "tests/integration/artifacts/20260709_130201/smoke_services_target_snapshot.txt",
+          "error": "",
+          "remediation_applied": ""
+        }
+      ],
+      "started": "2026-07-09T11:02:01.239814+00:00",
+      "finished": "2026-07-09T11:02:31.988085+00:00"
+    }
+  ],
+  "learnings_applied": [],
+  "new_learnings": [
+    {
+      "timestamp": "2026-07-09T11:02:07.414234+00:00",
+      "step": "api_status",
+      "pattern": "/status\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    },
+    {
+      "timestamp": "2026-07-09T11:02:13.556262+00:00",
+      "step": "api_devices",
+      "pattern": "/devices\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    },
+    {
+      "timestamp": "2026-07-09T11:02:19.712971+00:00",
+      "step": "api_telemetry",
+      "pattern": "/telemetry\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    },
+    {
+      "timestamp": "2026-07-09T11:02:25.843991+00:00",
+      "step": "api_features",
+      "pattern": "/features\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+      "diagnosis": "unknown",
+      "remediation": "none",
+      "success": false,
+      "focus": "coverage-expansion"
+    }
+  ],
+  "meta_summary": {
+    "metrics": {
+      "step_pass_rate": 0.333,
+      "phase_success_rate": 0.0,
+      "execution_efficiency": 1.0,
+      "error_rate": 0.667
+    },
+    "remediation_success_rate": 0.0,
+    "next_focus": "coverage-expansion",
+    "top_diagnoses": [
+      {
+        "diagnosis": "unknown",
+        "count": 4
+      },
+      {
+        "diagnosis": "Profile mismatch",
+        "count": 1
+      }
+    ],
+    "focus_histogram": {
+      "coverage-expansion": 4,
+      "device-profile": 1
+    },
+    "applied_remediations": [],
+    "knowledge_entries": 5
+  },
+  "total_duration_s": 30.74830302198825
+}

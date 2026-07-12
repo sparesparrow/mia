@@ -7,5 +7,41 @@
     "remediation": "none",
     "success": false,
     "focus": "device-profile"
+  },
+  {
+    "timestamp": "2026-07-09T11:02:07.414234+00:00",
+    "step": "api_status",
+    "pattern": "/status\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+    "diagnosis": "unknown",
+    "remediation": "none",
+    "success": false,
+    "focus": "coverage-expansion"
+  },
+  {
+    "timestamp": "2026-07-09T11:02:13.556262+00:00",
+    "step": "api_devices",
+    "pattern": "/devices\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+    "diagnosis": "unknown",
+    "remediation": "none",
+    "success": false,
+    "focus": "coverage-expansion"
+  },
+  {
+    "timestamp": "2026-07-09T11:02:19.712971+00:00",
+    "step": "api_telemetry",
+    "pattern": "/telemetry\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+    "diagnosis": "unknown",
+    "remediation": "none",
+    "success": false,
+    "focus": "coverage-expansion"
+  },
+  {
+    "timestamp": "2026-07-09T11:02:25.843991+00:00",
+    "step": "api_features",
+    "pattern": "/features\\ returned\\ 0:\\ <urlopen\\ error\\ \\[Errno\\ 113\\]\\ No\\ route\\ to\\ host>",
+    "diagnosis": "unknown",
+    "remediation": "none",
+    "success": false,
+    "focus": "coverage-expansion"
   }
 ]

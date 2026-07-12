@@ -60,6 +60,7 @@ session_manager = SessionManager()
 # ── Routers ───────────────────────────────────────────────────────────────
 from api.routers.ota import router as ota_router
 from api.routers.logs import router as logs_router
+from api.routers.anpr import router as anpr_router
 
 # ZeroMQ context and socket for messaging
 zmq_context = zmq.Context()
@@ -151,6 +152,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0", lifespan=lifespan)
 app.include_router(ota_router)
 app.include_router(logs_router)
+app.include_router(anpr_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

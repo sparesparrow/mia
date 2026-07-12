@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        compose_version = '1.5.14'
+        compose_version = '1.5.8'
         jacoco_version = '0.8.8'
     }
     dependencies {

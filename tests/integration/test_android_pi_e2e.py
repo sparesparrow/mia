@@ -1407,14 +1407,32 @@ if __name__ == "__main__":
 try:
     import pytest
 
+    def _require_live_target(host: str, port: int) -> None:
+        """Skip on hosts without the integration lab attached.
+
+        These meta-harness tests drive a real Raspberry Pi/Kali target over SSH
+        and (for e2e) a USB-tethered Android device. CI runners have neither the
+        ``adb`` binary nor a reachable target, so the ``skipif`` below skips them
+        there. On a dev box that happens to have ``adb`` installed but no lab
+        hardware, this runtime guard skips cleanly instead of failing on an
+        unreachable target.
+        """
+        try:
+            with socket.create_connection((host, port), timeout=3):
+                return
+        except OSError:
+            pytest.skip(f"integration target {host}:{port} not reachable")
+
     @pytest.mark.integration
     @pytest.mark.meta_harness
     @pytest.mark.slow
+    @pytest.mark.skipif(shutil.which("adb") is None, reason="requires adb")
     def test_meta_harness_smoke():
         """Run smoke phase against the target and assert all steps pass."""
         host = os.getenv("MIA_TARGET_HOST", DEFAULT_HOST)
         user = os.getenv("MIA_TARGET_USER", DEFAULT_USER)
         port = int(os.getenv("MIA_TARGET_PORT", str(DEFAULT_PORT)))
+        _require_live_target(host, port)
 
         remote = Remote(host, user, port)
         profile = PrototypeProfile(require_pi_hardware=False, require_rooted_phone=False)
@@ -1430,18 +1448,23 @@ try:
     @pytest.mark.integration
     @pytest.mark.meta_harness
     @pytest.mark.slow
+    @pytest.mark.skipif(shutil.which("adb") is None, reason="requires adb")
     def test_meta_harness_e2e():
         """Run preflight+smoke+e2e phases with an Android device."""
         host = os.getenv("MIA_TARGET_HOST", DEFAULT_HOST)
         user = os.getenv("MIA_TARGET_USER", DEFAULT_USER)
         port = int(os.getenv("MIA_TARGET_PORT", str(DEFAULT_PORT)))
         device = os.getenv("MIA_ADB_SERIAL", "")
+        _require_live_target(host, port)
 
         remote = Remote(host, user, port)
         profile = PrototypeProfile(require_pi_hardware=False, require_rooted_phone=False)
         engine = SelfImprovementEngine(remote, prototype_services=profile.prototype_services)
         if not device:
-            device = pick_adb_device()
+            try:
+                device = pick_adb_device()
+            except RuntimeError as exc:
+                pytest.skip(str(exc))
         harness = IntegrationHarness(
             remote=remote, profile=profile, engine=engine,
             device_serial=device, install_path=DEFAULT_INSTALL_PATH,
