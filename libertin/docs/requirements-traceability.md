@@ -35,7 +35,7 @@ počítá (Phase 4); přesun/mirror je třeba naplánovat.
 
 | Požadavek | Stav | Poznámka |
 |---|---|---|
-| Vzhled a rozsah definován Figma hand-off návrhem | 🔜 | Hand-off dodán: [Figma — Libertin](https://www.figma.com/design/BF3X0FKBKEbt5uTcrO4jkk/Libertin?node-id=3786-159470). Zbývá srovnat implementované obrazovky (Phase 2/3) s mockupy. |
+| Vzhled a rozsah definován Figma hand-off návrhem | ⚠️ | Hand-off dodán: [Figma — Libertin](https://www.figma.com/design/BF3X0FKBKEbt5uTcrO4jkk/Libertin?node-id=3786-159470), node `3786:159470`. **Blokováno přístupem**: účet má na souboru jen seat „View" (starter tier), Figma MCP vyžaduje editor access → design-parity průchod ani extrakci tokenů/inventury obrazovek zatím nelze provést. Potřeba editor invite od vlastníka souboru, nebo export mockupů (PNG/PDF) do repa. |
 | Průběžné konzultace, písemné dotazy na nejasnosti | — | procesní; nejasnosti evidovat v PR/issues |
 
 ## A. Hardware / prostředí
@@ -103,5 +103,5 @@ se backend přepisoval.
 2. **Přepínač denního/nočního režimu** (B6) — tokeny existují, chybí UI toggle.
 3. **Testy klienta** (C11) — unit/component testy k Phase 4 CI.
 4. **Dockerfile pro web** (C4) — levný krok směrem k infra požadavkům.
-5. **Figma hand-off** (C1) — ✅ dodán; srovnat hotové obrazovky s mockupy (design-parity průchod).
+5. **Figma hand-off** (C1) — odkaz dodán, ale **čeká na editor access** (viz Zadání). Do té doby nelze ověřit soulad UI s mockupy ani zjistit skutečný počet obrazovek k implementaci — tj. rozsah díla zůstává neznámý.
 6. **GitLab** (C10) — rozhodnutí o mirroru/přesunu.
