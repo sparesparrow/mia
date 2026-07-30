@@ -1,0 +1,593 @@
+# Libertin — strukturovaný backlog odvozený ze zadávací dokumentace
+# Zdroj požadavků: příloha smlouvy o dílo (mimo repo). Mapování na požadavky:
+# docs/requirements-traceability.md. Kódy req: A1-A4, B1-B14, C1-C13.
+#
+# Tento soubor je JEDINÝ zdroj pravdy o rozsahu a stavu práce. Loop i agenti
+# z něj čtou, co je na řadě, a po dokončení sem zapisují stav.
+#
+# status:   todo | in_progress | review | done | blocked
+# scope:    client-web | client-mobile | shared-ui | backend | infra | qa | docs | decision
+# role:     který tým/role vlastní (viz .claude/agents/)
+# blocked_by: seznam id, které musí být done, nebo důvod blokace v `blocker`
+
+meta:
+  contract_scope: full-system   # rozhodnuto objednatelem: celý systém dle smlouvy,
+                                # ne pouze klientská vrstva nad legacy API
+  legacy_platform: swingerslife.cz   # Laravel; viz docs/live-audit.md
+  acceptance_response_budget_ms: 1500   # C12.1 — tvrdý akceptační limit
+  languages: [cs, en]                   # B13 — plná dodávka
+  vcs_target: gitlab                    # C10 — dnes GitHub, viz D-002
+
+# ---------------------------------------------------------------------------
+# ROZHODNUTÍ, která blokují velké bloky práce (vlastník: objednatel)
+# ---------------------------------------------------------------------------
+decisions:
+  - id: D-001
+    title: Editor access do Figma hand-off souboru
+    req: [C1, A3]
+    status: blocked
+    blocker: >
+      Účet má na souboru pouze seat "View" (starter tier); Figma MCP vyžaduje
+      editor access. Bez něj nelze provést design-parity, extrahovat design
+      tokens ani zjistit skutečný počet obrazovek = neznámý rozsah díla.
+    unblock_options:
+      - Editor invite pro dallheimal@gmail.com na soubor BF3X0FKBKEbt5uTcrO4jkk
+      - Export všech mockupů (PNG/PDF) do repa
+  - id: D-002
+    title: GitLab vs GitHub pro hosting a CI/CD
+    req: [C10, C11]
+    status: blocked
+    blocker: Smlouva vyžaduje GitLab; vývoj běží na GitHubu. Mirror nebo přesun?
+  - id: D-003
+    title: Backend stack — rozšířit legacy Laravel, nebo psát nově?
+    req: [A3, C3, C6]
+    status: blocked
+    blocker: >
+      Smlouva říká "vyvíjen od nuly", ale legacy je Laravel s daty k migraci
+      (C13). Volba určuje E9 i migrační strategii. Podklad: RES-001.
+  - id: D-004
+    title: Hosting a poskytovatel cloudu
+    req: [A1, C2, C5]
+    status: blocked
+    blocker: >
+      Smlouva jmenuje DigitalOcean/AWS a zároveň žádá maximum on-premise (C2).
+      Nutno sladit s rozpočtem a požadavkem na HA.
+  - id: D-005
+    title: AI-asistovaná moderace obsahu — mimo smlouvu, navrženo
+    req: [C2]
+    status: blocked
+    blocker: >
+      Adult platforma prakticky potřebuje moderaci nahrávaného obsahu, smlouva
+      ji ale nezmiňuje a C2 nařizuje minimalizaci externích služeb. Vyžaduje
+      výslovné schválení (rozsah, cena, právní rámec) i volbu on-prem vs API.
+
+# ---------------------------------------------------------------------------
+epics:
+
+  - id: E0
+    title: Základ monorepa (hotovo)
+    req: [C6]
+    tasks:
+      - id: E0-T1
+        title: pnpm + Turborepo monorepo, theme tokens, i18n cs/en, UI komponenty, MSW mocky
+        scope: shared-ui
+        role: architect
+        status: done
+      - id: E0-T2
+        title: Audit legacy webu swingerslife.cz
+        scope: docs
+        role: architect
+        status: done
+      - id: E0-T3
+        title: Traceabilita požadavků ze smlouvy
+        scope: docs
+        role: architect
+        status: done
+
+  - id: E1
+    title: Design parity a autoritativní design tokens z Figmy
+    req: [C1, A3]
+    tasks:
+      - id: E1-T1
+        title: Inventura všech obrazovek v hand-off souboru → doplnit rozsah do backlogu
+        scope: decision
+        role: architect
+        status: blocked
+        blocked_by: [D-001]
+      - id: E1-T2
+        title: Extrahovat Figma variables → srovnat s packages/theme
+        scope: shared-ui
+        role: frontend-web
+        status: blocked
+        blocked_by: [D-001]
+      - id: E1-T3
+        title: Design-parity průchod implementovaných obrazovek (Phase 2/3)
+        scope: shared-ui
+        role: reviewer
+        status: blocked
+        blocked_by: [D-001]
+
+  - id: E2
+    title: Identita, autentizace a oprávnění
+    req: [B1, B4.2, B14]
+    tasks:
+      - id: E2-T1
+        title: Návrh 2FA architektury (SMS + TOTP + passkey/WebAuthn) napříč web i RN
+        scope: decision
+        role: security
+        status: todo
+        acceptance: >
+          ADR s volbou knihoven, tokovými diagramy, dopady na API kontrakt a
+          recovery scénáři (ztráta zařízení). Podklad: RES-002.
+      - id: E2-T2
+        title: Rozšířit openapi.snapshot.yaml o 2FA endpointy a role
+        scope: backend
+        role: architect
+        status: todo
+        blocked_by: [E2-T1]
+      - id: E2-T3
+        title: TOTP enrollment + verifikace — obrazovky web i mobile
+        scope: shared-ui
+        role: frontend-mobile
+        status: todo
+        blocked_by: [E2-T2]
+      - id: E2-T4
+        title: SMS jako druhý faktor (integrace brány)
+        scope: backend
+        role: backend
+        status: todo
+        blocked_by: [E2-T2, E5-T3]
+      - id: E2-T5
+        title: Passkey / WebAuthn registrace a přihlášení
+        scope: shared-ui
+        role: security
+        status: todo
+        blocked_by: [E2-T2]
+      - id: E2-T6
+        title: Model rolí a oprávnění (admin, editor obsahu, registrovaný, host)
+        scope: backend
+        role: backend
+        status: todo
+        acceptance: Per-role matice funkcí a dostupnosti dat; enforcement na API.
+      - id: E2-T7
+        title: Role-aware UI (skrývání/zpřístupnění funkcí dle role)
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E2-T6]
+      - id: E2-T8
+        title: Registrace + reset hesla end-to-end (nad reálným API)
+        scope: shared-ui
+        role: frontend-mobile
+        status: todo
+        blocked_by: [E2-T2]
+
+  - id: E3
+    title: Jádro sociální sítě
+    req: [A3, B1]
+    tasks:
+      - id: E3-T1
+        title: Profily uživatelů — zobrazení, editace, nastavení diskrétnosti
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+      - id: E3-T2
+        title: Příspěvky — tvorba, editace, mazání, feed s řazením
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+      - id: E3-T3
+        title: Nahrávání a galerie fotografií
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        blocked_by: [E9-T4]
+      - id: E3-T4
+        title: Nahrávání a přehrávání videí (transkódování, náhledy)
+        scope: backend
+        role: backend
+        status: todo
+        blocked_by: [E9-T4]
+      - id: E3-T5
+        title: Přímé zprávy a chat (realtime)
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        blocked_by: [E9-T5]
+      - id: E3-T6
+        title: Audio a video hovory
+        scope: backend
+        role: architect
+        status: todo
+        acceptance: >
+          ADR volby technologie (WebRTC + self-hosted SFU vs. služba) s ohledem
+          na C2 (on-premise) a na soukromí. Podklad: RES-003.
+      - id: E3-T7
+        title: Události a akce — kalendář, detail, přihlašování (i neregistrovaní)
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        acceptance: >
+          Přihlášení neregistrovaných na akce musí existovat — je to explicitní
+          součást migrace dat (C13).
+      - id: E3-T8
+        title: Vyhledávání partnerů a filtrování profilů
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+      - id: E3-T9
+        title: Informační/obsahové stránky (redakční obsah komunity)
+        scope: client-web
+        role: frontend-web
+        status: todo
+
+  - id: E4
+    title: Geolokace a mapy (opt-in)
+    req: [B7, B8]
+    tasks:
+      - id: E4-T1
+        title: ADR — mapová vrstva s ohledem na on-premise a soukromí
+        scope: decision
+        role: architect
+        status: todo
+        acceptance: >
+          Self-hosted tiles vs. externí služba; opt-in model přesnosti polohy
+          (fuzzing/okruh), nikdy ne přesná poloha bez souhlasu. Podklad: RES-004.
+      - id: E4-T2
+        title: Embedded mapa u obsahu a v profilu
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        blocked_by: [E4-T1]
+      - id: E4-T3
+        title: Geo-omezení přístupu k modulům dle IP
+        scope: backend
+        role: backend
+        status: todo
+
+  - id: E5
+    title: Notifikace a komunikační kanály
+    req: [B9, B14, A4]
+    tasks:
+      - id: E5-T1
+        title: Push notifikace — mobile (Expo) i web (Web Push)
+        scope: shared-ui
+        role: frontend-mobile
+        status: todo
+      - id: E5-T2
+        title: Mailserver — instantní odesílání, certifikáty, šablony
+        scope: infra
+        role: devops
+        status: todo
+      - id: E5-T3
+        title: Integrace SMS brány
+        scope: backend
+        role: backend
+        status: todo
+      - id: E5-T4
+        title: Uživatelské předvolby notifikací
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        blocked_by: [E5-T1]
+
+  - id: E6
+    title: Administrace, moderace a auditní log
+    req: [B1, B2, B3, B10, B5]
+    tasks:
+      - id: E6-T1
+        title: Auditní log — konfigurovatelná podrobnost i retence
+        scope: backend
+        role: backend
+        status: todo
+      - id: E6-T2
+        title: Systémový dashboard (stav záloh, anomálie v logu, výpis logů)
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E6-T1, E10-T5]
+      - id: E6-T3
+        title: Administrace obsahu a uživatelů (role editor/admin)
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E2-T6]
+      - id: E6-T4
+        title: Hromadné nahrávání dat (uživatelé, stránky, jazyky)
+        scope: backend
+        role: backend
+        status: todo
+      - id: E6-T5
+        title: UI pro náhled historických verzí obsahu a selektivní obnovu
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E10-T5]
+
+  - id: E7
+    title: On-premise analytika
+    req: [B12, C2]
+    tasks:
+      - id: E7-T1
+        title: ADR — volba self-hosted analytiky (per-objekt granularita)
+        scope: decision
+        role: architect
+        status: todo
+        acceptance: >
+          Musí umět návštěvnost jednotlivých objektů (fotka, video, příspěvek),
+          unikátní návštěvníky a trendy, bez externí služby. Podklad: RES-005.
+      - id: E7-T2
+        title: Nasazení analytiky + sběr eventů z klientů
+        scope: infra
+        role: devops
+        status: todo
+        blocked_by: [E7-T1]
+      - id: E7-T3
+        title: Analytický dashboard s grafy a filtry
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E7-T2]
+
+  - id: E8
+    title: Monetizace
+    req: [A3]
+    tasks:
+      - id: E8-T1
+        title: ADR — platební brána a model předplatného
+        scope: decision
+        role: architect
+        status: todo
+      - id: E8-T2
+        title: Placené členství — nákup, stav, expirace
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        blocked_by: [E8-T1]
+      - id: E8-T3
+        title: Reklamní prostor a jeho správa
+        scope: client-web
+        role: frontend-web
+        status: todo
+
+  - id: E9
+    title: Backendová platforma
+    req: [A3, C3, B4.3]
+    tasks:
+      - id: E9-T1
+        title: ADR — backend stack a struktura služeb
+        scope: decision
+        role: architect
+        status: blocked
+        blocked_by: [D-003]
+      - id: E9-T2
+        title: Datový model a schéma databáze
+        scope: backend
+        role: backend
+        status: todo
+        blocked_by: [E9-T1]
+      - id: E9-T3
+        title: API dle kontraktu — implementace a udržení snapshotu
+        scope: backend
+        role: backend
+        status: todo
+        blocked_by: [E9-T2]
+      - id: E9-T4
+        title: S3-kompatibilní objektové úložiště pro média (žádný POSIX FS)
+        scope: infra
+        role: devops
+        status: todo
+      - id: E9-T5
+        title: Redis — cache, streamy, message broker
+        scope: infra
+        role: devops
+        status: todo
+      - id: E9-T6
+        title: Šifrování dat at-rest (disky, DB, objekty, zálohy)
+        scope: infra
+        role: security
+        status: todo
+      - id: E9-T7
+        title: Správa a záloha šifrovacích klíčů + obslužné UI
+        scope: infra
+        role: security
+        status: todo
+        blocked_by: [E9-T6]
+
+  - id: E10
+    title: Infrastruktura, IaC a provoz
+    req: [A1, A2, C3, C4, C5, C9, B5]
+    tasks:
+      - id: E10-T1
+        title: Dockerfile pro web + mobile build pipeline
+        scope: infra
+        role: devops
+        status: todo
+      - id: E10-T2
+        title: Docker Compose — propojení a závislosti všech kontejnerů
+        scope: infra
+        role: devops
+        status: todo
+        blocked_by: [E10-T1]
+      - id: E10-T3
+        title: Ansible IaC — nasazení celého systému ze zdrojového textu
+        scope: infra
+        role: devops
+        status: todo
+        blocked_by: [E10-T2, D-004]
+      - id: E10-T4
+        title: HA a škálování — load balancer, multi-node DB, rolling restarty
+        scope: infra
+        role: devops
+        status: todo
+        blocked_by: [E10-T3]
+      - id: E10-T5
+        title: Zálohy a verzování obsahu (plán, retence, selektivní i plná obnova)
+        scope: infra
+        role: devops
+        status: todo
+        blocked_by: [E10-T3]
+      - id: E10-T6
+        title: CDN-ready distribuce statiky
+        scope: infra
+        role: devops
+        status: todo
+
+  - id: E11
+    title: Kvalita, testy a CI/CD
+    req: [C11, C12]
+    tasks:
+      - id: E11-T1
+        title: Testovací harness klienta (unit + komponentové testy)
+        scope: qa
+        role: qa
+        status: todo
+        acceptance: Vitest + Testing Library, běží v CI, pokrývá existující komponenty.
+      - id: E11-T2
+        title: CI pipeline — contract → lint → test → build
+        scope: qa
+        role: devops
+        status: todo
+        blocked_by: [E11-T1]
+      - id: E11-T3
+        title: Automatizovaný contract-check proti živému API
+        scope: qa
+        role: qa
+        status: todo
+      - id: E11-T4
+        title: k6 zátěžové testy s budgetem ≤ 1,5 s
+        scope: qa
+        role: qa
+        status: todo
+        blocked_by: [E9-T3]
+      - id: E11-T5
+        title: E2E testy hlavních toků (Playwright)
+        scope: qa
+        role: qa
+        status: todo
+        blocked_by: [E11-T2]
+      - id: E11-T6
+        title: Pokrytí "většiny funkcí systému" — měření a report
+        scope: qa
+        role: qa
+        status: todo
+        blocked_by: [E11-T5]
+
+  - id: E12
+    title: Dokumentace a předatelnost
+    req: [C7, C8]
+    tasks:
+      - id: E12-T1
+        title: Architektonická dokumentace + ADR index
+        scope: docs
+        role: docs
+        status: todo
+      - id: E12-T2
+        title: Provozní a administrátorská dokumentace
+        scope: docs
+        role: docs
+        status: todo
+        blocked_by: [E10-T3]
+      - id: E12-T3
+        title: Manuály — vývojář, operátor, administrátor, uživatel
+        scope: docs
+        role: docs
+        status: todo
+      - id: E12-T4
+        title: In-app nápověda pro uživatele i administrátory
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+      - id: E12-T5
+        title: Ověření předatelnosti externímu subjektu (čistý onboarding)
+        scope: docs
+        role: docs
+        status: todo
+        blocked_by: [E12-T2, E12-T3]
+
+  - id: E13
+    title: Migrace dat z legacy platformy
+    req: [C13]
+    tasks:
+      - id: E13-T1
+        title: Reverse-engineering legacy datového modelu
+        scope: backend
+        role: backend
+        status: blocked
+        blocker: Potřebuje přístup k databázi/exportu swingerslife.cz.
+      - id: E13-T2
+        title: Migrační skripty vč. neregistrovaných přihlášek na akce
+        scope: backend
+        role: backend
+        status: todo
+        blocked_by: [E13-T1, E9-T2]
+      - id: E13-T3
+        title: Zkušební migrace a validace integrity dat
+        scope: qa
+        role: qa
+        status: todo
+        blocked_by: [E13-T2]
+
+  - id: E14
+    title: Soukromí, právní rámec a diskrétnost
+    req: [B4.1, B7]
+    tasks:
+      - id: E14-T1
+        title: Age gate 18+ a security headers
+        scope: client-web
+        role: frontend-web
+        status: done
+      - id: E14-T2
+        title: GDPR — export a smazání dat, souhlasy, zpracovatelské záznamy
+        scope: backend
+        role: security
+        status: todo
+      - id: E14-T3
+        title: Podmínky použití a zásady ochrany soukromí (obsah stránek)
+        scope: docs
+        role: docs
+        status: todo
+      - id: E14-T4
+        title: Privacy review celého UI — "diskrétnost jako feature"
+        scope: qa
+        role: reviewer
+        status: todo
+        acceptance: >
+          Kontrola, že žádná funkce neprozrazuje uživatele (referrer, mapy,
+          notifikace na zamčené obrazovce, náhledy odkazů, metadata fotek/EXIF).
+
+# ---------------------------------------------------------------------------
+# Výzkumné otázky pro /deep-research (výstup → ADR v docs/adr/)
+# ---------------------------------------------------------------------------
+research:
+  - id: RES-001
+    question: >
+      Rozšířit stávající Laravel monolit, nebo psát backend nově? Kritéria:
+      migrace dat, cloud-ready kontejnerizace, HA, rychlost dodání, udržitelnost
+      externím subjektem.
+    feeds: [D-003, E9-T1]
+    status: todo
+  - id: RES-002
+    question: >
+      Passkey/WebAuthn + TOTP + SMS 2FA napříč Next.js a React Native/Expo —
+      knihovny, úložiště credentials, recovery při ztrátě zařízení, UX.
+    feeds: [E2-T1]
+    status: todo
+  - id: RES-003
+    question: >
+      Self-hosted realtime audio/video (WebRTC SFU — LiveKit, Janus, mediasoup)
+      pro malý tým: náročnost provozu, škálování, náklady vs. hostovaná služba.
+    feeds: [E3-T6]
+    status: todo
+  - id: RES-004
+    question: >
+      On-premise mapové tiles a privacy-preserving geolokace pro adult komunitu
+      (fuzzing polohy, opt-in granularita).
+    feeds: [E4-T1]
+    status: todo
+  - id: RES-005
+    question: >
+      Self-hosted analytika s per-objekt granularitou (Matomo, Plausible,
+      Umami) — schopnosti, provozní náročnost, GDPR.
+    feeds: [E7-T1]
+    status: todo

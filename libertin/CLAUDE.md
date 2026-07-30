@@ -1,21 +1,42 @@
-# CLAUDE.md — Libertin client
+# CLAUDE.md — Libertin
 
-Context and working agreement for Claude Code. Read this fully before scaffolding.
+Working agreement for Claude Code. Read this fully before starting work.
 
 ## What we're building
 
-Modernized **client layer** for an existing CZ/SK adult social community
-(rebrand: `swingerslife.cz` → **Libertin**). We are NOT rewriting the backend.
-We build a new **web app (Next.js + TS)** and **mobile app (React Native + TS,
-Expo)** that talk to the existing API.
+A CZ/SK adult social community platform (rebrand: `swingerslife.cz` →
+**Libertin**), delivered as **contract work**. Web app (Next.js + TS) and mobile
+app (React Native + TS, Expo), plus the backend and infrastructure the platform
+runs on.
 
 Audience: adults (naturist / swingers / BDSM / shibari), CZ + EN primary.
-Design driver: **discretion as a feature** — privacy UX is a conversion lever,
-not a compliance checkbox.
+Design driver: **discretion as a feature** — members risk real-world harm from
+being outed, so privacy UX is a product requirement, not a compliance checkbox.
 
-## The one rule that matters most
+## Scope: the contract is the spec
 
-**The API is not ours. Treat its contract as untrusted external input.**
+The owner decided the delivery follows the signed technical specification — the
+**whole system**, not only a client layer over the legacy API.
+
+- `docs/backlog.yaml` — **single source of truth** for scope and status
+  (15 epics, ~72 tasks, all traced to contract codes).
+- `docs/requirements-traceability.md` — every contract requirement (A1–A4,
+  B1–B14, C1–C13) mapped to current state.
+- `docs/team-workflow.md` — how the agent team iterates without colliding.
+- `.claude/agents/*.md` — the roles that do the work.
+- `docs/adr/` — decisions, with honest trade-offs.
+
+Never invent scope, never silently drop a contracted requirement. Blocking
+decisions belong to the owner — record them under `decisions` in the backlog.
+
+Hard acceptance gates from the contract: **UI response ≤ 1,5 s under peak load**
+(C12.1), full **CS+EN** delivery (B13), **2FA with SMS + TOTP + passkey**
+(B4.2), on-premise maximum (C2), containerised components (C3), **Ansible IaC**
+(C11.2), GitLab CI/CD (C10), and handover to an **external operator** (C8).
+
+## The rule that matters most for clients
+
+**Treat the API contract as frozen, untrusted external input.**
 - Capture the live API as an OpenAPI/HAR snapshot, commit it as
   `contracts/openapi.snapshot.yaml`.
 - Generate the typed client from that snapshot (`openapi-typescript`).
@@ -70,30 +91,35 @@ authenticated area.
 - Never hardcode PII (the old verify screen leaked a real email/phone — keep
   them as `{email}` / `{phone}` interpolations).
 
-## Open decisions to confirm with the human before building far
+## Blocking decisions (owner-owned)
 
-1. **API access** — OpenAPI/Swagger available, or do we mock from the snapshot?
-2. **Locales** — cs+en only (funded), or all 12 from the footer? i18n currently ships cs+en.
-3. **MVP surface** — which screens first? Default order: Auth → Feed → Messages → Profile.
+Tracked as `decisions` in `docs/backlog.yaml`. Dependent tasks stay `blocked`
+until resolved — do not work around them with an assumption:
 
-## Build order (phased)
+- **D-001** Figma editor access — the hand-off defines the contracted UI scope
+  (C1), and the account only holds a View seat, so design parity, token
+  extraction and the real screen count are all unknown.
+- **D-002** GitLab vs GitHub — contract mandates GitLab (C10).
+- **D-003** Backend stack — extend the legacy Laravel or build fresh (C13 data
+  migration depends on it).
+- **D-004** Hosting / cloud provider (A1 vs C2 on-premise tension).
+- **D-005** AI-assisted moderation — not in the contract, needs approval.
 
-**Phase 1 — skeleton (boots on mocks)**
-- Scaffold the monorepo above. Wire theme + i18n + a Button/Input/Card/Avatar in `ui` with Storybook.
-- Stand up `packages/api`: commit a starter `openapi.snapshot.yaml`, generate the client, wire MSW mocks.
+## Delivered so far
 
-**Phase 2 — auth flow (mobile first)**
-- Screens from the Figma exports: Login → "Verify your email" → "Congratulations" (verified) → onboarding (3 steps) → Feed (mock).
-- Use `verify.*`, `success.*`, `onboarding.*` keys.
+Phases 1–3 are done and verified: monorepo (pnpm + Turborepo), theme tokens
+(web + native), i18n cs/en, UI components with Storybook, typed API client with
+MSW mocks, mobile auth flow (login → verify → success → onboarding → feed), web
+landing + login parity, age gate, security headers, robots/sitemap.
 
-**Phase 3 — web landing + core**
-- Next.js landing (hero + Naturisté/Swingeři/BDSM/Šibari cards + footer) using `categories.*`, `home.*`, `footer.*`.
-- Login parity with mobile.
+Everything boots offline against MSW mocks. `pnpm type-check` is green in all
+six workspaces and `next build` passes.
 
-**Phase 4 — live + CI**
-- Swap MSW for the live client (credentials). GitLab CI stages: contract → lint → test → build → perf (k6 ≤1.5s, Lighthouse) → e2e. See `docs/dev-orchestration.md`.
+## Definition of done
 
-## Definition of done per screen
+For a screen or component: renders from tokens + i18n keys (no hardcoded colour
+or copy), has a Storybook entry, passes `pnpm type-check` and `next build`, and
+works against MSW mocks offline.
 
-Renders from tokens + i18n keys (no hardcoded color/copy), has a Storybook
-entry, passes `tsc --noEmit` + eslint, and works against MSW mocks offline.
+For any task: verified with real command output, backlog status updated,
+committed and pushed. **Never report done without running the verification.**
