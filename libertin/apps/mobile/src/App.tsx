@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet } from 'react-native';
+import { nativeTheme } from '@libertin/theme/native';
 import { initI18n } from '@libertin/i18n';
 import { AuthFlow } from './AuthFlow';
 import { server } from './mocks/native';
@@ -34,5 +35,5 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FAFAF9' },
+  root: { flex: 1, backgroundColor: nativeTheme.colors.bg },
 });

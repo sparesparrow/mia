@@ -52,6 +52,15 @@ decisions:
     blocker: >
       Smlouva jmenuje DigitalOcean/AWS a zároveň žádá maximum on-premise (C2).
       Nutno sladit s rozpočtem a požadavkem na HA.
+  - id: D-006
+    title: Smí být SMS jediným aktivním druhým faktorem člena?
+    req: [B4.2, B14]
+    status: blocked
+    blocker: >
+      security doporučuje ne (nejdřív TOTP nebo passkey) kvůli SIM swapu;
+      doslovné čtení B4.2 lze ale vyložit tak, že SMS samotná stačí. Obě
+      varianty i návrh fallbacku jsou v ADR 0001 §15. Blokuje E2-T4.
+
   - id: D-005
     title: AI-asistovaná moderace obsahu — mimo smlouvu, navrženo
     req: [C2]
@@ -115,7 +124,11 @@ epics:
         title: Návrh 2FA architektury (SMS + TOTP + passkey/WebAuthn) napříč web i RN
         scope: decision
         role: security
-        status: todo
+        status: done
+        note: >
+          ADR docs/adr/0001-2fa-architecture.md. Review opravil sloučený rate-limit
+          bucket TOTP+záložních kódů (útočník mohl vyčerpáním pokusů zablokovat i cestu
+          zpět) a chyby v češtině. Otevírá D-006.
         acceptance: >
           ADR s volbou knihoven, tokovými diagramy, dopady na API kontrakt a
           recovery scénáři (ztráta zařízení). Podklad: RES-002.
@@ -402,7 +415,10 @@ epics:
         title: Dockerfile pro web + mobile build pipeline
         scope: infra
         role: devops
-        status: todo
+        status: done
+        note: >
+          Web hotov a ověřen skutečným buildem image + během kontejneru.
+          Mobilní build pipeline z názvu tasku NENÍ hotová — viz E10-T7.
       - id: E10-T2
         title: Docker Compose — propojení a závislosti všech kontejnerů
         scope: infra
@@ -427,6 +443,16 @@ epics:
         role: devops
         status: todo
         blocked_by: [E10-T3]
+      - id: E10-T7
+        title: Build pipeline pro mobilní aplikaci (EAS / dev client)
+        scope: infra
+        role: devops
+        status: blocked
+        blocked_by: [D-002, D-004]
+        note: >
+          Vyčleněno z E10-T1. Passkeys nefungují v Expo Go (E2-T5 potřebuje dev
+          client), iOS build navíc vyžaduje macOS runner — volba CI to určuje.
+
       - id: E10-T6
         title: CDN-ready distribuce statiky
         scope: infra
@@ -441,7 +467,10 @@ epics:
         title: Testovací harness klienta (unit + komponentové testy)
         scope: qa
         role: qa
-        status: todo
+        status: done
+        note: >
+          79 testů (packages/ui 54, packages/i18n 25), ověřeno i mutačně.
+          Akceptace "běží v CI" bude splněná až s E11-T2 — CI zatím v repu není.
         acceptance: Vitest + Testing Library, běží v CI, pokrývá existující komponenty.
       - id: E11-T2
         title: CI pipeline — contract → lint → test → build
@@ -449,6 +478,15 @@ epics:
         role: devops
         status: todo
         blocked_by: [E11-T1]
+      - id: E11-T7
+        title: Test parity tokenů — tokens.css vs. native.ts
+        scope: qa
+        role: qa
+        status: todo
+        note: >
+          native.ts je ručně udržovaná kopie hodnot z tokens.css; rozejití se
+          dnes projeví až vizuálně na zařízení.
+
       - id: E11-T3
         title: Automatizovaný contract-check proti živému API
         scope: qa
@@ -481,7 +519,9 @@ epics:
         title: Architektonická dokumentace + ADR index
         scope: docs
         role: docs
-        status: todo
+        status: done
+        note: >
+          docs/architecture.md + docs/adr/README.md, s tvrdou hranicí stav-dnes / plán.
       - id: E12-T2
         title: Provozní a administrátorská dokumentace
         scope: docs
@@ -537,6 +577,31 @@ epics:
         scope: client-web
         role: frontend-web
         status: done
+      - id: E14-T5
+        title: Age gate serverovou cestou (cookie) + focus trap
+        scope: client-web
+        role: frontend-web
+        status: todo
+        note: >
+          Z privacy review P3: aria-modal je dnes tvrzení, které implementace
+          nedodržuje, a obsah se posílá do HTML ještě před rozhodnutím brány.
+
+      - id: E14-T6
+        title: Odstranění EXIF/GPS z nahrávaných fotografií
+        scope: shared-ui
+        role: security
+        status: todo
+        blocked_by: [E9-T4]
+
+      - id: E14-T7
+        title: Cachovací pravidla pro autentizované odpovědi (no-store) + CDN pravidla
+        scope: infra
+        role: devops
+        status: todo
+        note: >
+          Z review E10-T1: kontejner dnes servíruje HTML s roční sdílenou cache,
+          což odporuje vlastní CDN dokumentaci a je citlivé na soukromí.
+
       - id: E14-T2
         title: GDPR — export a smazání dat, souhlasy, zpracovatelské záznamy
         scope: backend
@@ -551,7 +616,11 @@ epics:
         title: Privacy review celého UI — "diskrétnost jako feature"
         scope: qa
         role: reviewer
-        status: todo
+        status: done
+        note: >
+          docs/privacy-review.md. P1 (únik e-mailů členů přes /feed a /messages)
+          opraven hned rozdělením User -> PublicUser v kontraktu; P2 (titulek stránky)
+          také. Zbytek veden jako E14-T5..T7.
         acceptance: >
           Kontrola, že žádná funkce neprozrazuje uživatele (referrer, mapy,
           notifikace na zamčené obrazovce, náhledy odkazů, metadata fotek/EXIF).
@@ -572,7 +641,7 @@ research:
       Passkey/WebAuthn + TOTP + SMS 2FA napříč Next.js a React Native/Expo —
       knihovny, úložiště credentials, recovery při ztrátě zařízení, UX.
     feeds: [E2-T1]
-    status: todo
+    status: done   # zpracováno v ADR 0001
   - id: RES-003
     question: >
       Self-hosted realtime audio/video (WebRTC SFU — LiveKit, Janus, mediasoup)

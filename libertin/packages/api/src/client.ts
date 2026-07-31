@@ -2,13 +2,17 @@ export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest { email: string; password: string; }
 export interface VerifyRequest { token: string; }
 export interface VerifyResponse { success: boolean; }
+// Another member, as returned to any authenticated client. Carries NO email —
+// see the PublicUser note in contracts/openapi.snapshot.yaml.
+export interface PublicUser { id: string; displayName: string; avatar?: string | null; }
+// The authenticated member themselves; only ever returned for the caller.
 export interface User { id: string; email: string; verified: boolean; displayName?: string; avatar?: string | null; }
 export interface AuthResponse { token: string; user: User; }
 export interface Profile { id: string; email: string; displayName: string; avatar?: string | null; }
 export interface UpdateProfileRequest { displayName?: string; avatar?: string; }
-export interface FeedItem { id: string; type: 'post' | 'photo' | 'event'; content?: string | null; author?: User; createdAt: string; }
+export interface FeedItem { id: string; type: 'post' | 'photo' | 'event'; content?: string | null; author?: PublicUser; createdAt: string; }
 export interface FeedResponse { items: FeedItem[]; total: number; page?: number; limit?: number; }
-export interface Conversation { id: string; participant: User; lastMessage?: string | null; updatedAt: string; unreadCount?: number; }
+export interface Conversation { id: string; participant: PublicUser; lastMessage?: string | null; updatedAt: string; unreadCount?: number; }
 export interface MessagesResponse { conversations: Conversation[]; }
 export interface ErrorResponse { message: string; code?: string; }
 

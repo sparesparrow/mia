@@ -7,5 +7,10 @@
     "./native": "./native.ts",
     "./tokens.css": "./tokens.css"
   },
-  "devDependencies": { "typescript": "*" }
+  "devDependencies": {
+    "typescript": "*"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  }
 }

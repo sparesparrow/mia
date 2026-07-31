@@ -9,31 +9,41 @@
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@libertin/theme": "workspace:*",
     "@libertin/i18n": "workspace:*",
+    "@libertin/theme": "workspace:*",
     "react": "^18.3.1",
     "react-i18next": "^15.2.0"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.4.7",
     "@storybook/addon-essentials": "^8.4.7",
-    "@storybook/react-vite": "^8.4.7",
     "@storybook/react": "^8.4.7",
+    "@storybook/react-vite": "^8.4.7",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.12",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^25.0.1",
     "react-native": "0.76.3",
     "react-native-web": "^0.19.13",
     "storybook": "^8.4.7",
     "typescript": "*",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "vitest": "^3.2.7"
   },
   "peerDependencies": {
     "react": "^18",
     "react-native": ">=0.76"
   },
   "peerDependenciesMeta": {
-    "react-native": { "optional": true }
+    "react-native": {
+      "optional": true
+    }
   }
 }

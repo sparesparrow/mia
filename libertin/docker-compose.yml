@@ -1,0 +1,119 @@
+# Libertin — container topology (C3.1 separate containers, C4 Docker Compose).
+#
+# Current state: the web front-end only. The backend stack is not decided yet
+# (backlog D-003) and hosting is open (D-004), so the DB / cache / object
+# storage / mail services are marked as extension points below instead of being
+# guessed at. Wiring them up is E10-T2.
+#
+# Usage (from the repository root):
+#   docker compose build web
+#   docker compose up -d web
+#   docker compose config          # validate this file
+# Variables come from a gitignored ./.env — see docs/deployment.md for the list.
+# Never inline a secret here: this repository is public.
+
+name: libertin
+
+services:
+  # -------------------------------------------------------------------------
+  # web — Next.js front-end. Stateless by design: no volumes, nothing to back
+  # up, so it can be scaled or replaced freely (C5, C9).
+  # -------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # Inlined into the client bundle at build time -> the image is
+        # environment-specific. See docs/deployment.md.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://libertin.cz}
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+    image: ${WEB_IMAGE:-libertin/web}:${WEB_TAG:-local}
+    restart: unless-stopped
+    # Optional runtime overrides. Kept non-required so the stack also validates
+    # and boots on a fresh checkout without an .env file.
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      TZ: ${TZ:-Europe/Prague}
+    # Published directly only until the reverse proxy / load balancer lands
+    # (E10-T4). After that, drop this and expose the proxy instead.
+    # Loopback only: without the TLS proxy (E10-T4) this would otherwise serve
+    # member traffic as plaintext HTTP on the public interface, and browsers
+    # ignore the app's own HSTS header over http://.
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    networks:
+      - edge
+      # - internal   # add when the backend service exists (E10-T2)
+    # Container-level hardening. The image already runs as the unprivileged
+    # `node` user; `read_only` needs a writable ISR / image-optimisation cache,
+    # hence the tmpfs. Docker creates tmpfs mounts root-owned 0755, so uid/gid
+    # 1000 (the `node` user) must be set explicitly or the server gets EACCES.
+    read_only: true
+    tmpfs:
+      - /tmp:uid=1000,gid=1000,mode=1777,size=32m
+      - /app/apps/web/.next/cache:uid=1000,gid=1000,mode=0700,size=128m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Discretion is a feature: request logs identify members. Keep them local,
+    # rotated and small — never forward them to a third-party SaaS (C2).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    # HEALTHCHECK is defined in apps/web/Dockerfile so it also applies outside
+    # Compose (Swarm, Ansible-driven `docker run`, k8s probes).
+    #
+    # Rolling updates (C9): Compose alone cannot do zero-downtime. It needs a
+    # load balancer in front and >1 replica — that is E10-T4. The `deploy`
+    # block below is what Swarm would use; it is inert under `docker compose`.
+    # deploy:
+    #   replicas: 2
+    #   update_config:
+    #     order: start-first
+    #     parallelism: 1
+    #     delay: 10s
+    #   rollback_config:
+    #     order: start-first
+
+  # -------------------------------------------------------------------------
+  # EXTENSION POINTS — E10-T2. Deliberately not guessed at; each one lands with
+  # its own task, image pin, healthcheck, backup policy and documented volumes.
+  #
+  #   api        backend API (stack blocked on D-003)                    C3.1
+  #   postgres   primary database, encrypted at rest              B4.3, C3.1
+  #   redis      cache + streams + message broker                       C3.5
+  #   minio      S3-compatible object storage (no POSIX data path)      C3.2
+  #   mail       SMTP with valid certificates                             A4
+  #   proxy      reverse proxy / load balancer + TLS termination      C5, C9
+  #   backup     backup agent shipping to a separate server               B5
+  #
+  # Rules for whoever adds them:
+  #   * stateful services go on `internal` only — never publish their ports;
+  #   * every service declares a healthcheck and a restart policy;
+  #   * credentials come from ./.env or a secret store, never from this file;
+  #   * every named volume gets a backup + retention note in
+  #     docs/deployment.md before it holds real data.
+  # -------------------------------------------------------------------------
+
+networks:
+  # Public-facing segment: web and (later) the reverse proxy.
+  edge:
+    driver: bridge
+  # No route to the outside world — for the database, cache, object storage and
+  # anything else that must never be reachable from the internet.
+  internal:
+    driver: bridge
+    internal: true
+
+# Named volumes for the stateful services above are declared here as they land.
+# The web container is intentionally volume-free.
+volumes: {}

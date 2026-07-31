@@ -39,7 +39,9 @@ Hard acceptance gates from the contract: **UI response ≤ 1,5 s under peak load
 **Treat the API contract as frozen, untrusted external input.**
 - Capture the live API as an OpenAPI/HAR snapshot, commit it as
   `contracts/openapi.snapshot.yaml`.
-- Generate the typed client from that snapshot (`openapi-typescript`).
+- The typed client in `packages/api` is currently **hand-written** against the
+  snapshot — there is no codegen yet (E11-T3). Agreement therefore rests on
+  discipline plus the contract-check task, not on a generator.
 - CI fails loudly when the live shape drifts from the snapshot.
 - This is the same pattern as freezing a FlatBuffers ICD — never call raw
   `fetch`; always go through the generated, snapshot-locked client.
@@ -112,8 +114,8 @@ Phases 1–3 are done and verified: monorepo (pnpm + Turborepo), theme tokens
 MSW mocks, mobile auth flow (login → verify → success → onboarding → feed), web
 landing + login parity, age gate, security headers, robots/sitemap.
 
-Everything boots offline against MSW mocks. `pnpm type-check` is green in all
-six workspaces and `next build` passes.
+Everything boots offline against MSW mocks; `pnpm type-check` and `pnpm test`
+pass, and `next build` succeeds.
 
 ## Definition of done
 

@@ -13,6 +13,11 @@ const mockUser = {
 
 const mockToken = 'mock-jwt-token-libertin-dev';
 
+// How another member appears to any authenticated client: no email. Mirrors the
+// PublicUser schema in the contract — mocks must not model a shape the real API
+// is forbidden to return, or clients get built against a leak.
+const publicUser = (id: string, displayName: string) => ({ id, displayName, avatar: null });
+
 export const handlers = [
   http.post(`${BASE}/auth/login`, async () => {
     const body: AuthResponse = { token: mockToken, user: mockUser };
@@ -27,15 +32,15 @@ export const handlers = [
   http.get(`${BASE}/feed`, () => {
     const body: FeedResponse = {
       items: [
-        { id: 'feed-item-1', type: 'post', content: 'Vítejte v komunitě Libertin.', author: mockUser, createdAt: new Date().toISOString() },
-        { id: 'feed-item-2', type: 'event', content: null, author: { ...mockUser, id: 'a1b2c3d4-0000-0000-0000-000000000002', displayName: 'Eva Nováková' }, createdAt: new Date(Date.now() - 3600_000).toISOString() },
+        { id: 'feed-item-1', type: 'post', content: 'Vítejte v komunitě Libertin.', author: publicUser(mockUser.id, 'Jan Novák'), createdAt: new Date().toISOString() },
+        { id: 'feed-item-2', type: 'event', content: null, author: publicUser('a1b2c3d4-0000-0000-0000-000000000002', 'Eva Nováková'), createdAt: new Date(Date.now() - 3600_000).toISOString() },
       ],
       total: 2, page: 1, limit: 20,
     };
     return HttpResponse.json(body);
   }),
   http.get(`${BASE}/messages`, () => {
-    return HttpResponse.json({ conversations: [{ id: 'conv-1', participant: { ...mockUser, id: 'a1b2c3d4-0000-0000-0000-000000000003', displayName: 'Petr K.' }, lastMessage: null, updatedAt: new Date().toISOString(), unreadCount: 0 }] } satisfies MessagesResponse);
+    return HttpResponse.json({ conversations: [{ id: 'conv-1', participant: publicUser('a1b2c3d4-0000-0000-0000-000000000003', 'Petr K.'), lastMessage: null, updatedAt: new Date().toISOString(), unreadCount: 0 }] } satisfies MessagesResponse);
   }),
   http.get(`${BASE}/profile`, () => {
     return HttpResponse.json({ id: mockUser.id, email: mockUser.email, displayName: mockUser.displayName ?? 'Anonym', avatar: null } satisfies Profile);

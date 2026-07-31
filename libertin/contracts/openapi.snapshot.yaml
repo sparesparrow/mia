@@ -159,6 +159,21 @@ components:
         token: { type: string }
         user: { $ref: '#/components/schemas/User' }
 
+    # Another member as seen by any authenticated client. Deliberately carries
+    # NO email: feed authors and conversation participants are third parties, and
+    # an email address identifies a real person outside this platform. Discretion
+    # is a product requirement here, so contact data never rides along with
+    # ordinary content responses.
+    PublicUser:
+      type: object
+      required: [id, displayName]
+      properties:
+        id: { type: string, format: uuid }
+        displayName: { type: string }
+        avatar: { type: string, format: uri, nullable: true }
+
+    # The authenticated member themselves. Only ever returned for the caller
+    # (AuthResponse), never for a third party.
     User:
       type: object
       required: [id, email, verified]
@@ -191,7 +206,7 @@ components:
         id: { type: string, format: uuid }
         type: { type: string, enum: [post, photo, event] }
         content: { type: string, nullable: true }
-        author: { $ref: '#/components/schemas/User' }
+        author: { $ref: '#/components/schemas/PublicUser' }
         createdAt: { type: string, format: date-time }
 
     FeedResponse:
@@ -208,7 +223,7 @@ components:
       required: [id, participant, updatedAt]
       properties:
         id: { type: string, format: uuid }
-        participant: { $ref: '#/components/schemas/User' }
+        participant: { $ref: '#/components/schemas/PublicUser' }
         lastMessage: { type: string, nullable: true }
         updatedAt: { type: string, format: date-time }
         unreadCount: { type: integer }

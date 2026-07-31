@@ -7,11 +7,17 @@
     "./dict": "./dict.ts",
     "./locales.json": "./locales.json"
   },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "i18next": "^24.2.0",
     "react-i18next": "^15.2.0"
   },
   "devDependencies": {
-    "typescript": "*"
+    "typescript": "*",
+    "vitest": "^3.2.7"
   }
 }
