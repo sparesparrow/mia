@@ -228,6 +228,15 @@ epics:
         scope: shared-ui
         role: frontend-web
         status: todo
+      - id: E3-T10
+        title: Přepínač denního a nočního režimu
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        note: >
+          B6. Tokeny pro noční režim existují ([data-theme="private"] v
+          tokens.css), chybí jen ovládání a perzistence volby.
+
       - id: E3-T9
         title: Informační/obsahové stránky (redakční obsah komunity)
         scope: client-web
