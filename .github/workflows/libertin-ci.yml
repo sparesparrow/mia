@@ -1,0 +1,123 @@
+# Libertin CI — install → type-check → test → build.
+# Stage contract and local reproduction: libertin/docs/ci.md
+# GitLab translation of the same four stages: libertin/.gitlab-ci.yml
+name: Libertin CI
+
+# Scope: this workflow belongs to the Libertin monorepo, which lives in the
+# `libertin/` subdirectory of this repository. The rest of the repository is the
+# unrelated MIA project, so every trigger is filtered on `libertin/**` and this
+# workflow file itself. Do not widen the paths filter.
+on:
+  pull_request:
+    paths:
+      - 'libertin/**'
+      - '.github/workflows/libertin-ci.yml'
+  push:
+    branches:
+      - 'claude/libertin-monorepo-setup-VxRLF'
+    paths:
+      - 'libertin/**'
+      - '.github/workflows/libertin-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: libertin-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    # The pnpm workspace root is `libertin/`, not the git root.
+    working-directory: libertin
+
+env:
+  CI: 'true'
+  NEXT_TELEMETRY_DISABLED: '1'
+  TURBO_TELEMETRY_DISABLED: '1'
+  DO_NOT_TRACK: '1'
+
+jobs:
+  # Stage 1 — install. Validates the committed lockfile and warms the pnpm
+  # content-addressable store cache that every later stage restores.
+  install:
+    name: install
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          # No root package.json exists at the git root; read the pinned
+          # packageManager field from the workspace root instead.
+          package_json_file: libertin/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: libertin/pnpm-lock.yaml
+      - name: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
+
+  # Stage 2 — type-check. `turbo run type-check` across all 6 workspaces.
+  type-check:
+    name: type-check
+    needs: install
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: libertin/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: libertin/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: pnpm type-check
+        run: pnpm type-check
+
+  # Stage 3 — test. Root vitest run: it picks up every workspace project, so a
+  # package that forgets to wire its own `test` script is still covered.
+  test:
+    name: test
+    needs: type-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: libertin/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: libertin/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: pnpm test:all
+        run: pnpm test:all
+
+  # Stage 4 — build. `turbo run build`; today that is the Next.js production
+  # build of apps/web (next lint + tsc run inside it).
+  build:
+    name: build
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: libertin/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: libertin/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: pnpm build
+        run: pnpm build

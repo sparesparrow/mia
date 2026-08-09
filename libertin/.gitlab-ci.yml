@@ -1,0 +1,98 @@
+# Libertin CI — GitLab translation of .github/workflows/libertin-ci.yml.
+#
+# Status: NOT EXECUTED. The project lives on GitHub today (backlog D-002, the
+# contract mandates GitLab per C10/C11.1). This file is kept faithful to the
+# GitHub pipeline so the move is a translation, not a rewrite — but nobody has
+# run it on a GitLab runner yet. Treat it as reviewed-but-unverified until a
+# runner has actually gone green. See docs/ci.md.
+#
+# Assumption to re-check on first real run: this file is written for a
+# repository whose root IS the pnpm workspace root. In the current GitHub repo
+# the workspace root is the `libertin/` subdirectory; if that layout is carried
+# over to GitLab, set `default.before_script` to `cd libertin` first (or set
+# GIT_CLONE_PATH / a `workspace` variable) instead of assuming the root.
+
+stages:
+  - install
+  - type-check
+  - test
+  - build
+
+variables:
+  CI: 'true'
+  NEXT_TELEMETRY_DISABLED: '1'
+  TURBO_TELEMETRY_DISABLED: '1'
+  DO_NOT_TRACK: '1'
+  # pnpm content-addressable store, kept inside the build dir so GitLab can cache it.
+  PNPM_STORE: '$CI_PROJECT_DIR/.pnpm-store'
+
+default:
+  image: node:22-bookworm-slim
+  before_script:
+    - corepack enable
+    - corepack prepare --activate
+    - pnpm config set store-dir "$PNPM_STORE"
+
+# Cached pnpm store, keyed on the lockfile — the GitLab counterpart of
+# actions/setup-node's `cache: pnpm`.
+.pnpm_cache: &pnpm_cache
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store
+    - node_modules
+    - apps/*/node_modules
+    - packages/*/node_modules
+
+# Merge requests, branch pipelines and manual runs. The GitHub `paths:` filter
+# on `libertin/**` has no counterpart here because on GitLab the whole project
+# IS Libertin — if the subdirectory layout is carried over instead, add a
+# `changes: [libertin/**/*]` clause to these rules.
+.libertin_rules: &libertin_rules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'web'
+
+install:
+  stage: install
+  <<: *libertin_rules
+  cache:
+    <<: *pnpm_cache
+    policy: pull-push
+  script:
+    - pnpm install --frozen-lockfile
+
+type-check:
+  stage: type-check
+  <<: *libertin_rules
+  cache:
+    <<: *pnpm_cache
+    policy: pull
+  script:
+    - pnpm install --frozen-lockfile --prefer-offline
+    - pnpm type-check
+
+test:
+  stage: test
+  <<: *libertin_rules
+  cache:
+    <<: *pnpm_cache
+    policy: pull
+  script:
+    - pnpm install --frozen-lockfile --prefer-offline
+    - pnpm test:all
+
+build:
+  stage: build
+  <<: *libertin_rules
+  cache:
+    <<: *pnpm_cache
+    policy: pull
+  script:
+    - pnpm install --frozen-lockfile --prefer-offline
+    - pnpm build
+  # No artifacts are exported on purpose: nothing downstream consumes the build
+  # output yet, and build output is not something we want lying around in job
+  # storage. Add artifacts when a deploy stage actually needs them.

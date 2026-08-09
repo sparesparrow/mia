@@ -1,12 +1,83 @@
+# =============================================================================
+# PROVENANCE — read this before "fixing" any drift report
+# =============================================================================
+# This file mixes two kinds of endpoint, and they must not be treated the same
+# way. Every operation carries an `x-provenance` field saying which it is.
+#
+#   x-provenance: observed
+#     Captured from the live platform. This is frozen, untrusted external input:
+#     the shape is whatever the server actually does, not what we would prefer.
+#     If /contract-check reports drift here, the SERVER changed — investigate,
+#     then update the snapshot deliberately and say so in the commit.
+#
+#   x-provenance: designed
+#     Specified by us, from an accepted ADR, ahead of any backend. No server
+#     implements these yet, so /contract-check WILL legitimately report them as
+#     missing/unimplemented. That is the expected state, not a defect.
+#     >>> Do NOT "fix" that report by deleting these paths. <<<
+#     They are the contract the backend must satisfy once D-003 (backend stack)
+#     is decided. Deleting them silently drops a signed requirement (B4.2).
+#
+# The whole 2FA surface (/auth/2fa/*, /auth/passkey/*, /auth/recovery/*,
+# /auth/sessions*) and the `role` field are `designed`, sourced from
+# docs/adr/0001-2fa-architecture.md §9. The one observed endpoint whose shape
+# this change *widens* is POST /auth/login, whose 200 becomes a oneOf: the
+# AuthResponse branch is the observed behaviour and stays byte-compatible; the
+# TwoFactorChallenge branch is designed and cannot occur until a backend exists.
+#
+# Contract codes advanced here: B4.2 (SMS + TOTP + passkey 2FA), B4.1, B4.4,
+# B1 (roles), B2 (audit-relevant events), B14 (SMS gateway).
+# =============================================================================
+
 openapi: 3.1.0
 info:
   title: Libertin API
-  version: 0.1.0
-  description: Snapshot of the Libertin (swingerslife.cz) backend API.
-x-snapshot-date: "2026-06-15"
+  version: 0.2.0
+  description: >
+    Snapshot of the Libertin (swingerslife.cz) backend API, plus the 2FA and
+    role surface designed in ADR 0001. See the PROVENANCE header at the top of
+    this file: `x-provenance` on each operation says whether it was observed on
+    the live platform or designed ahead of the backend.
+x-snapshot-date: "2026-08-09"
 x-snapshot-note: >
   Frozen contract. Run /contract-check to detect drift.
   Never call the API without going through packages/api/src/client.ts.
+  Operations marked `x-provenance: designed` have no backend yet (D-003) and are
+  expected to be reported as unimplemented — do not delete them to silence it.
+x-provenance-summary:
+  observed:
+    - POST /auth/login
+    - POST /auth/register
+    - POST /auth/verify
+    - GET /feed
+    - GET /messages
+    - GET /profile
+    - PATCH /profile
+  designed:
+    source: docs/adr/0001-2fa-architecture.md §9
+    blocked_by: D-003
+    paths:
+      - POST /auth/2fa/challenge
+      - POST /auth/2fa/verify
+      - POST /auth/2fa/recovery-code
+      - POST /auth/passkey/options
+      - POST /auth/passkey/login
+      - GET /auth/2fa/factors
+      - DELETE /auth/2fa/factors/{factorId}
+      - POST /auth/2fa/totp/enroll
+      - POST /auth/2fa/totp/activate
+      - POST /auth/2fa/sms/enroll
+      - POST /auth/2fa/sms/activate
+      - POST /auth/2fa/passkey/register/options
+      - POST /auth/2fa/passkey/register
+      - POST /auth/2fa/recovery-codes/regenerate
+      - GET /auth/2fa/recovery-codes/status
+      - POST /auth/recovery/request
+      - GET /auth/recovery/status
+      - POST /auth/recovery/cancel
+      - GET /auth/sessions
+      - DELETE /auth/sessions
+      - DELETE /auth/sessions/{id}
 
 servers:
   - url: https://api.libertin.cz/v1
@@ -14,10 +85,30 @@ servers:
   - url: http://localhost:3001/v1
     description: Local MSW mock
 
+tags:
+  - name: auth
+    description: Observed authentication endpoints.
+  - name: 2fa
+    description: >
+      Designed second-factor surface (ADR 0001). No backend implements these yet.
+
 paths:
+  # ---------------------------------------------------------------------------
+  # OBSERVED
+  # ---------------------------------------------------------------------------
   /auth/login:
     post:
       operationId: authLogin
+      tags: [auth]
+      x-provenance: observed
+      description: >
+        Password step. The 200 body is a discriminated union: AuthResponse when
+        no second factor is required (observed behaviour, unchanged), or
+        TwoFactorChallenge when 2FA is enabled (designed, ADR 0001 §9.1).
+        Clients must discriminate on the presence of `status: mfa_required` and
+        never assume `token` is present.
+        Anti-enumeration (ADR §8): an unknown e-mail and a wrong password return
+        an identical body, status and comparable timing.
       requestBody:
         required: true
         content:
@@ -25,14 +116,21 @@ paths:
             schema: { $ref: '#/components/schemas/LoginRequest' }
       responses:
         '200':
+          description: Authenticated, or a second factor is required.
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/AuthResponse' }
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthResponse'
+                  - $ref: '#/components/schemas/TwoFactorChallenge'
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
 
   /auth/register:
     post:
       operationId: authRegister
+      tags: [auth]
+      x-provenance: observed
       requestBody:
         required: true
         content:
@@ -40,6 +138,7 @@ paths:
             schema: { $ref: '#/components/schemas/RegisterRequest' }
       responses:
         '201':
+          description: Account created.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/AuthResponse' }
@@ -48,6 +147,9 @@ paths:
   /auth/verify:
     post:
       operationId: authVerify
+      tags: [auth]
+      x-provenance: observed
+      description: E-mail verification. Unrelated to the second factor.
       requestBody:
         required: true
         content:
@@ -55,6 +157,7 @@ paths:
             schema: { $ref: '#/components/schemas/VerifyRequest' }
       responses:
         '200':
+          description: Verification result.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/VerifyResponse' }
@@ -62,6 +165,7 @@ paths:
   /feed:
     get:
       operationId: getFeed
+      x-provenance: observed
       security:
         - bearerAuth: []
       parameters:
@@ -69,6 +173,7 @@ paths:
         - { name: limit, in: query, schema: { type: integer, default: 20, maximum: 100 } }
       responses:
         '200':
+          description: Feed page.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/FeedResponse' }
@@ -76,10 +181,12 @@ paths:
   /messages:
     get:
       operationId: getMessages
+      x-provenance: observed
       security:
         - bearerAuth: []
       responses:
         '200':
+          description: Conversation list.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/MessagesResponse' }
@@ -87,15 +194,18 @@ paths:
   /profile:
     get:
       operationId: getProfile
+      x-provenance: observed
       security:
         - bearerAuth: []
       responses:
         '200':
+          description: The caller's own profile.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Profile' }
     patch:
       operationId: updateProfile
+      x-provenance: observed
       security:
         - bearerAuth: []
       requestBody:
@@ -105,9 +215,429 @@ paths:
             schema: { $ref: '#/components/schemas/UpdateProfileRequest' }
       responses:
         '200':
+          description: Updated profile.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Profile' }
+
+  # ---------------------------------------------------------------------------
+  # DESIGNED — ADR 0001 §9.2, login flow. No backend yet (D-003).
+  # ---------------------------------------------------------------------------
+  /auth/2fa/challenge:
+    post:
+      operationId: twoFactorChallenge
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Ask for the chosen factor to be challenged. Authorised by `mfaToken`
+        only — never by a session bearer token. `sms` sends a code, `passkey`
+        returns assertion options, `totp` needs nothing but acknowledges.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TwoFactorChallengeRequest' }
+      responses:
+        '200':
+          description: Challenge issued.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TwoFactorChallengeResult' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/2fa/verify:
+    post:
+      operationId: twoFactorVerify
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Complete the second factor and exchange the one-time `mfaToken` for a
+        session. `deviceTrustToken` is returned only when the member opted in
+        and the role permits it — never for admin/editor (ADR §7.3, B1).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TwoFactorVerifyRequest' }
+      responses:
+        '200':
+          description: Authenticated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TwoFactorAuthResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/2fa/recovery-code:
+    post:
+      operationId: twoFactorRecoveryCode
+      tags: [2fa]
+      x-provenance: designed
+      description: Redeem one single-use recovery code instead of a factor (ADR §5.2a).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecoveryCodeRequest' }
+      responses:
+        '200':
+          description: Authenticated; `remainingCodes` drives the regenerate prompt.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryCodeAuthResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/passkey/options:
+    post:
+      operationId: passkeyLoginOptions
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Assertion options for passwordless / conditional-UI passkey login. Takes
+        no identifier on purpose — asking for one would be an enumeration oracle
+        (ADR §8, A2).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: false }
+      responses:
+        '200':
+          description: WebAuthn assertion options.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicKeyCredentialRequestOptions' }
+
+  /auth/passkey/login:
+    post:
+      operationId: passkeyLogin
+      tags: [2fa]
+      x-provenance: designed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PasskeyLoginRequest' }
+      responses:
+        '200':
+          description: Authenticated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ---------------------------------------------------------------------------
+  # DESIGNED — ADR 0001 §9.3, factor management (session + step-up).
+  # ---------------------------------------------------------------------------
+  /auth/2fa/factors:
+    get:
+      operationId: listTwoFactorFactors
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        The caller's own factors. Never contains phone digits — not even masked
+        — unless a step-up happened (ADR §4.3). SMS labels must not be derived
+        from the number.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Factor list.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TwoFactorFactorsResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/factors/{factorId}:
+    delete:
+      operationId: deleteTwoFactorFactor
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Requires step-up. Rejected with `MFA_LAST_FACTOR` when it would leave
+        the account with zero factors and no unused recovery codes.
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: factorId, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Factor removed. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /auth/2fa/totp/enroll:
+    post:
+      operationId: totpEnroll
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Starts TOTP enrolment. The seed is returned exactly once, here. The
+        `otpauthUri` label is neutral by default (ADR risk R-1) — it must not be
+        forced to contain the brand.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Enrolment material.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TotpEnrollResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /auth/2fa/totp/activate:
+    post:
+      operationId: totpActivate
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Confirms possession. `recoveryCodes` are returned only when this is the
+        account's first activated factor, and only once (ADR §5.2a).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FactorActivateRequest' }
+      responses:
+        '200':
+          description: Factor activated.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FactorActivateResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/2fa/sms/enroll:
+    post:
+      operationId: smsEnroll
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Never auto-enabled and never a default (S-1). Sends a code to the given
+        number. The number is stored encrypted with a blind index and is never
+        echoed back.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SmsEnrollRequest' }
+      responses:
+        '200':
+          description: Enrolment started; a code was sent.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SmsEnrollResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/2fa/sms/activate:
+    post:
+      operationId: smsActivate
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        `usableFrom` implements S-4: a newly bound number only becomes usable
+        after a 24 h delay, so a SIM swap cannot immediately rewrite the factor.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FactorActivateRequest' }
+      responses:
+        '200':
+          description: Factor activated, possibly with a delay.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SmsActivateResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/2fa/passkey/register/options:
+    post:
+      operationId: passkeyRegisterOptions
+      tags: [2fa]
+      x-provenance: designed
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: WebAuthn creation options.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicKeyCredentialCreationOptions' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/passkey/register:
+    post:
+      operationId: passkeyRegister
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        `label` is member-supplied and shown in the device list. It must not be
+        auto-filled with anything identifying.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PasskeyRegisterRequest' }
+      responses:
+        '200':
+          description: Passkey registered.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PasskeyRegisterResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/recovery-codes/regenerate:
+    post:
+      operationId: regenerateRecoveryCodes
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Requires step-up. Invalidates every previous code. This is the only
+        response in the contract that carries plaintext codes.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A fresh set of single-use codes.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryCodesResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/2fa/recovery-codes/status:
+    get:
+      operationId: recoveryCodesStatus
+      tags: [2fa]
+      x-provenance: designed
+      description: Counts only. Never returns the codes themselves.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: How many codes remain.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryCodesStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  # ---------------------------------------------------------------------------
+  # DESIGNED — ADR 0001 §9.4, delayed self-service recovery and sessions.
+  # ---------------------------------------------------------------------------
+  /auth/recovery/request:
+    post:
+      operationId: recoveryRequest
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Last-resort reset when every factor is lost. Schedules the reset 72 h
+        out, notifies every active session, and can be cancelled by anyone who
+        still holds a factor (ADR §5.2c). At most one pending request per
+        account. The response is deliberately identical whether or not the
+        account exists.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecoveryRequest' }
+      responses:
+        '202':
+          description: Accepted if the account exists — deliberately non-committal.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryStatus' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+
+  /auth/recovery/status:
+    get:
+      operationId: recoveryStatus
+      tags: [2fa]
+      x-provenance: designed
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Pending-reset state for the caller's account.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/recovery/cancel:
+    post:
+      operationId: recoveryCancel
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Cancels a pending reset. The `cancelToken` comes from the notification,
+        so this works unauthenticated — that is the point: whoever still
+        controls the account must be able to stop a hostile reset.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RecoveryCancelRequest' }
+      responses:
+        '200':
+          description: Reset cancelled.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RecoveryStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/sessions:
+    get:
+      operationId: listSessions
+      tags: [2fa]
+      x-provenance: designed
+      description: >
+        Device list. Carries a coarse location at city granularity at most —
+        never a precise one — and a member-facing device label, never a raw
+        user agent string.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Active sessions.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionsResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    delete:
+      operationId: revokeAllSessions
+      tags: [2fa]
+      x-provenance: designed
+      description: Revokes every session and device-trust token except the caller's.
+      security:
+        - bearerAuth: []
+      responses:
+        '204': { description: Sessions revoked. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/sessions/{id}:
+    delete:
+      operationId: revokeSession
+      tags: [2fa]
+      x-provenance: designed
+      security:
+        - bearerAuth: []
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Session revoked. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
 
 components:
   securitySchemes:
@@ -115,7 +645,7 @@ components:
 
   responses:
     Unauthorized:
-      description: Authentication required
+      description: Authentication required, or the credential/code was rejected.
       content:
         application/json:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
@@ -124,8 +654,39 @@ components:
       content:
         application/json:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Conflict:
+      description: >
+        The request conflicts with account state — e.g. `MFA_FACTOR_EXISTS`,
+        `MFA_LAST_FACTOR`, `RECOVERY_PENDING`, `PHONE_COOLDOWN`.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    RateLimited:
+      description: >
+        Rate limited (ADR §8). We lock the factor challenge, not the account, so
+        an attacker cannot lock a specific person out on purpose.
+      headers:
+        Retry-After:
+          schema: { type: integer }
+          description: Seconds until the next attempt is accepted.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
 
   schemas:
+    # --- roles (B1) ----------------------------------------------------------
+    # Authorisation role, assigned by the operator. It appears on the caller's
+    # OWN representations only (User, Profile) — never on PublicUser, and never
+    # in UpdateProfileRequest: a member must not be able to grant themselves a
+    # role by PATCHing their profile.
+    UserRole:
+      type: string
+      enum: [admin, editor, member, guest]
+      description: >
+        admin — full operator access; editor — moderation and content;
+        member — ordinary verified member; guest — registered but not yet
+        verified / limited access.
+
     LoginRequest:
       type: object
       required: [email, password]
@@ -156,14 +717,374 @@ components:
       type: object
       required: [token, user]
       properties:
-        token: { type: string }
+        token:
+          type: string
+          description: >
+            Short-lived access token (ADR §7.1, 10 min). Clients keep it in
+            memory only — never localStorage, AsyncStorage or a URL.
+        expiresIn: { type: integer, description: Access token lifetime in seconds. }
         user: { $ref: '#/components/schemas/User' }
 
+    # --- 2FA login flow ------------------------------------------------------
+    TwoFactorChallenge:
+      type: object
+      description: >
+        Returned by POST /auth/login instead of AuthResponse when a second
+        factor is required. Carries no session: `mfaToken` is single-use, TTL
+        300 s, audience `mfa`, and no resource endpoint may accept it.
+      required: [status, mfaToken, expiresIn, methods]
+      properties:
+        status: { type: string, const: mfa_required }
+        mfaToken: { type: string }
+        expiresIn: { type: integer, description: Seconds until mfaToken expires. }
+        methods:
+          type: array
+          items: { $ref: '#/components/schemas/TwoFactorMethodRef' }
+
+    TwoFactorMethodRef:
+      type: object
+      required: [type, factorId]
+      properties:
+        type: { type: string, enum: [totp, sms, passkey] }
+        factorId: { type: string }
+        default: { type: boolean }
+        label:
+          type: string
+          description: >
+            Member-chosen label, passkey only. NEVER phone digits, not even
+            masked — the challenge screen is reachable with the password alone.
+
+    TwoFactorChallengeRequest:
+      type: object
+      required: [mfaToken, method]
+      properties:
+        mfaToken: { type: string }
+        method: { type: string, enum: [totp, sms, passkey] }
+        factorId: { type: string }
+
+    TwoFactorChallengeResult:
+      description: Shape depends on the method challenged.
+      oneOf:
+        - $ref: '#/components/schemas/SmsChallengeResult'
+        - $ref: '#/components/schemas/PasskeyChallengeResult'
+        - $ref: '#/components/schemas/TotpChallengeResult'
+
+    SmsChallengeResult:
+      type: object
+      required: [sent]
+      properties:
+        sent: { type: boolean }
+        retryAfter: { type: integer, description: Seconds before another SMS may be requested. }
+
+    PasskeyChallengeResult:
+      type: object
+      required: [publicKey]
+      properties:
+        publicKey: { $ref: '#/components/schemas/PublicKeyCredentialRequestOptions' }
+
+    TotpChallengeResult:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+
+    TwoFactorVerifyRequest:
+      type: object
+      required: [mfaToken, method]
+      properties:
+        mfaToken: { type: string }
+        method: { type: string, enum: [totp, sms, passkey] }
+        factorId: { type: string }
+        code: { type: string, description: 6-digit code for totp/sms. }
+        assertionResponse: { $ref: '#/components/schemas/AuthenticatorAssertion' }
+        rememberDevice:
+          type: boolean
+          description: >
+            Opt-in only, never pre-checked, never offered on a first login from
+            a device, and ignored for admin/editor roles (ADR §7.3).
+
+    TwoFactorAuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/AuthResponse'
+        - type: object
+          properties:
+            deviceTrustToken: { type: string }
+            deviceTrustExpiresAt: { type: string, format: date-time }
+
+    RecoveryCodeRequest:
+      type: object
+      required: [mfaToken, code]
+      properties:
+        mfaToken: { type: string }
+        code: { type: string }
+
+    RecoveryCodeAuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/AuthResponse'
+        - type: object
+          required: [remainingCodes]
+          properties:
+            remainingCodes: { type: integer }
+
+    PasskeyLoginRequest:
+      type: object
+      required: [assertionResponse]
+      properties:
+        assertionResponse: { $ref: '#/components/schemas/AuthenticatorAssertion' }
+
+    # --- factor management ---------------------------------------------------
+    TwoFactorFactor:
+      type: object
+      required: [factorId, type, status, createdAt]
+      properties:
+        factorId: { type: string }
+        type: { type: string, enum: [totp, sms, passkey] }
+        label: { type: string, description: Member-chosen. Never phone digits. }
+        status: { type: string, enum: [pending, active, disabled] }
+        default: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        lastUsedAt: { type: string, format: date-time, nullable: true }
+        usableFrom:
+          type: string
+          format: date-time
+          nullable: true
+          description: SMS only — S-4 24 h delay after (re)binding a number.
+
+    TwoFactorFactorsResponse:
+      type: object
+      required: [factors]
+      properties:
+        factors:
+          type: array
+          items: { $ref: '#/components/schemas/TwoFactorFactor' }
+        recoveryCodesRemaining: { type: integer }
+
+    TotpEnrollResponse:
+      type: object
+      required: [factorId, otpauthUri, secretBase32, digits, period, algorithm]
+      properties:
+        factorId: { type: string }
+        otpauthUri: { type: string }
+        secretBase32: { type: string }
+        digits: { type: integer, default: 6 }
+        period: { type: integer, default: 30 }
+        algorithm: { type: string, enum: [SHA1, SHA256, SHA512] }
+
+    FactorActivateRequest:
+      type: object
+      required: [factorId, code]
+      properties:
+        factorId: { type: string }
+        code: { type: string }
+
+    FactorActivateResponse:
+      type: object
+      required: [activated]
+      properties:
+        activated: { type: boolean }
+        recoveryCodes:
+          type: array
+          items: { type: string }
+          description: Present only when this is the first activated factor. Shown once.
+
+    SmsEnrollRequest:
+      type: object
+      required: [phone]
+      properties:
+        phone: { type: string, description: E.164. Stored encrypted, never echoed back. }
+
+    SmsEnrollResponse:
+      type: object
+      required: [factorId]
+      properties:
+        factorId: { type: string }
+        retryAfter: { type: integer }
+
+    SmsActivateResponse:
+      allOf:
+        - $ref: '#/components/schemas/FactorActivateResponse'
+        - type: object
+          properties:
+            usableFrom: { type: string, format: date-time, description: S-4 delay. }
+
+    PasskeyRegisterRequest:
+      type: object
+      required: [attestationResponse, label]
+      properties:
+        attestationResponse: { $ref: '#/components/schemas/AuthenticatorAttestation' }
+        label: { type: string }
+
+    PasskeyRegisterResponse:
+      type: object
+      required: [factorId]
+      properties:
+        factorId: { type: string }
+        label: { type: string }
+        recoveryCodes:
+          type: array
+          items: { type: string }
+          description: Present only when this is the first activated factor.
+
+    RecoveryCodesResponse:
+      type: object
+      required: [codes, generatedAt]
+      properties:
+        codes: { type: array, items: { type: string } }
+        generatedAt: { type: string, format: date-time }
+
+    RecoveryCodesStatus:
+      type: object
+      required: [remaining]
+      properties:
+        remaining: { type: integer }
+        generatedAt: { type: string, format: date-time, nullable: true }
+
+    # --- recovery and sessions ----------------------------------------------
+    RecoveryRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    RecoveryStatus:
+      type: object
+      required: [state]
+      properties:
+        state: { type: string, enum: [none, pending, cancelled, completed] }
+        scheduledFor: { type: string, format: date-time, nullable: true }
+        requestedAt: { type: string, format: date-time, nullable: true }
+
+    RecoveryCancelRequest:
+      type: object
+      required: [cancelToken]
+      properties:
+        cancelToken: { type: string }
+
+    Session:
+      type: object
+      required: [id, createdAt, lastSeenAt, current]
+      properties:
+        id: { type: string }
+        deviceLabel: { type: string, description: Friendly label. Never a raw user agent. }
+        platform: { type: string, enum: [web, ios, android, unknown] }
+        approximateLocation:
+          type: string
+          nullable: true
+          description: City granularity at most. Never coordinates.
+        createdAt: { type: string, format: date-time }
+        lastSeenAt: { type: string, format: date-time }
+        current: { type: boolean }
+        deviceTrusted: { type: boolean }
+
+    SessionsResponse:
+      type: object
+      required: [sessions]
+      properties:
+        sessions: { type: array, items: { $ref: '#/components/schemas/Session' } }
+
+    # --- WebAuthn transport shapes (base64url strings, JSON-safe) -------------
+    PublicKeyCredentialRequestOptions:
+      type: object
+      required: [challenge]
+      properties:
+        challenge: { type: string }
+        rpId: { type: string }
+        timeout: { type: integer }
+        userVerification: { type: string, enum: [required, preferred, discouraged] }
+        allowCredentials:
+          type: array
+          items: { $ref: '#/components/schemas/PublicKeyCredentialDescriptor' }
+
+    PublicKeyCredentialCreationOptions:
+      type: object
+      required: [challenge, rp, user, pubKeyCredParams]
+      properties:
+        challenge: { type: string }
+        rp:
+          type: object
+          required: [name]
+          properties:
+            id: { type: string }
+            name: { type: string }
+        user:
+          type: object
+          required: [id, name, displayName]
+          description: >
+            `name` is deliberately neutral (ADR risk R-1) — an OS passkey manager
+            shows it to anyone holding the unlocked device, so it must not read
+            as an e-mail address or anything that outs membership.
+          properties:
+            id: { type: string }
+            name: { type: string }
+            displayName: { type: string }
+        pubKeyCredParams:
+          type: array
+          items:
+            type: object
+            required: [type, alg]
+            properties:
+              type: { type: string, const: public-key }
+              alg: { type: integer }
+        timeout: { type: integer }
+        attestation: { type: string, enum: [none, indirect, direct, enterprise] }
+        authenticatorSelection:
+          type: object
+          properties:
+            authenticatorAttachment: { type: string, enum: [platform, cross-platform] }
+            residentKey: { type: string, enum: [discouraged, preferred, required] }
+            userVerification: { type: string, enum: [required, preferred, discouraged] }
+        excludeCredentials:
+          type: array
+          items: { $ref: '#/components/schemas/PublicKeyCredentialDescriptor' }
+
+    PublicKeyCredentialDescriptor:
+      type: object
+      required: [type, id]
+      properties:
+        type: { type: string, const: public-key }
+        id: { type: string }
+        transports: { type: array, items: { type: string } }
+
+    AuthenticatorAssertion:
+      type: object
+      required: [id, rawId, type, response]
+      properties:
+        id: { type: string }
+        rawId: { type: string }
+        type: { type: string, const: public-key }
+        response:
+          type: object
+          required: [clientDataJSON, authenticatorData, signature]
+          properties:
+            clientDataJSON: { type: string }
+            authenticatorData: { type: string }
+            signature: { type: string }
+            userHandle: { type: string, nullable: true }
+
+    AuthenticatorAttestation:
+      type: object
+      required: [id, rawId, type, response]
+      properties:
+        id: { type: string }
+        rawId: { type: string }
+        type: { type: string, const: public-key }
+        response:
+          type: object
+          required: [clientDataJSON, attestationObject]
+          properties:
+            clientDataJSON: { type: string }
+            attestationObject: { type: string }
+            transports: { type: array, items: { type: string } }
+
+    # --- members -------------------------------------------------------------
     # Another member as seen by any authenticated client. Deliberately carries
-    # NO email: feed authors and conversation participants are third parties, and
-    # an email address identifies a real person outside this platform. Discretion
-    # is a product requirement here, so contact data never rides along with
-    # ordinary content responses.
+    # NO email and NO role: feed authors and conversation participants are third
+    # parties. An email address identifies a real person outside this platform,
+    # and a role tells an attacker which accounts are worth attacking (it also
+    # outs staff). Discretion is a product requirement here, so neither contact
+    # data nor authorisation metadata rides along with ordinary content
+    # responses. Do not add them back.
     PublicUser:
       type: object
       required: [id, displayName]
@@ -176,25 +1097,35 @@ components:
     # (AuthResponse), never for a third party.
     User:
       type: object
-      required: [id, email, verified]
+      required: [id, email, verified, role]
       properties:
         id: { type: string, format: uuid }
         email: { type: string, format: email }
         verified: { type: boolean }
+        role: { $ref: '#/components/schemas/UserRole' }
         displayName: { type: string }
         avatar: { type: string, format: uri, nullable: true }
+        twoFactorEnabled:
+          type: boolean
+          description: Whether the caller has at least one active factor (B4.2).
 
     Profile:
       type: object
-      required: [id, email, displayName]
+      required: [id, email, displayName, role]
       properties:
         id: { type: string, format: uuid }
         email: { type: string, format: email }
         displayName: { type: string }
+        role: { $ref: '#/components/schemas/UserRole' }
         avatar: { type: string, format: uri, nullable: true }
 
+    # Server-assigned fields are absent on purpose. `role` in particular is NOT
+    # patchable: it is granted by the operator, and accepting it here would be a
+    # self-service privilege escalation. `additionalProperties: false` so a
+    # smuggled `role` is rejected rather than silently ignored.
     UpdateProfileRequest:
       type: object
+      additionalProperties: false
       properties:
         displayName: { type: string }
         avatar: { type: string, format: uri }
@@ -239,4 +1170,22 @@ components:
       required: [message]
       properties:
         message: { type: string }
-        code: { type: string }
+        code: { $ref: '#/components/schemas/ErrorCode' }
+
+    # Stable, deliberately uninformative codes (ADR §9.5). MFA_INVALID_CODE does
+    # not distinguish "wrong" from "expired" — telling them apart is an oracle.
+    # Open enum: the server may return codes we have not modelled yet, and a
+    # client must not crash on one.
+    ErrorCode:
+      type: string
+      examples:
+        - MFA_REQUIRED
+        - MFA_INVALID_CODE
+        - MFA_TOKEN_EXPIRED
+        - MFA_RATE_LIMITED
+        - MFA_FACTOR_EXISTS
+        - MFA_LAST_FACTOR
+        - MFA_METHOD_DISABLED
+        - STEPUP_REQUIRED
+        - RECOVERY_PENDING
+        - PHONE_COOLDOWN
