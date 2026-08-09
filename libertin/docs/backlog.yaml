@@ -235,7 +235,10 @@ epics:
         title: Přepínač denního a nočního režimu
         scope: shared-ui
         role: frontend-web
-        status: todo
+        status: done
+        note: >
+          ThemeToggle; sleduje prefers-color-scheme, dokud člen nerozhodne sám.
+          FOUC zbývá — potřebuje blokující inline skript v layoutu.
         note: >
           B6. Tokeny pro noční režim existují ([data-theme="private"] v
           tokens.css), chybí jen ovládání a perzistence volby.
@@ -497,10 +500,22 @@ epics:
         title: Test parity tokenů — tokens.css vs. native.ts
         scope: qa
         role: qa
-        status: todo
+        status: done
+        note: >
+          packages/theme/tokens.test.ts; parita tokens.css vs. native.ts.
         note: >
           native.ts je ručně udržovaná kopie hodnot z tokens.css; rozejití se
           dnes projeví až vizuálně na zařízení.
+
+      - id: E3-T11
+        title: Odstranit záblesk světlého motivu (FOUC) při zvoleném nočním režimu
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E3-T10]
+        note: >
+          Motiv se dnes aplikuje až v efektu po hydrataci. Potřebuje malý
+          blokující inline skript v layoutu.
 
       - id: E11-T3
         title: Automatizovaný contract-check proti živému API
@@ -596,10 +611,37 @@ epics:
         title: Age gate serverovou cestou (cookie) + focus trap
         scope: client-web
         role: frontend-web
-        status: todo
+        status: review
+        note: >
+          Rozhodnutí o souhlasu je na serveru a modální kontrakt je reálný.
+          Zbytek řeší E14-T5b — Next streamuje RSC seed potomka i když se layout
+          rozhodne ho nevykreslit.
         note: >
           Z privacy review P3: aria-modal je dnes tvrzení, které implementace
           nedodržuje, a obsah se posílá do HTML ještě před rozhodnutím brány.
+
+      - id: E14-T5b
+        title: Zastavit požadavek před routingem (middleware) — RSC seed uniká i za bránou
+        scope: client-web
+        role: frontend-web
+        status: todo
+        blocked_by: [E14-T5]
+        note: >
+          Změřeno, ne odhadnuto: vykreslené markup nepotvrzené odpovědi je jen
+          brána, ale Next 14 stále streamuje seed data potomka ve skriptech
+          self.__next_f.push(...), takže obsah stránky je ve zdroji odpovědi.
+          Je to strukturální — seed vzniká dřív, než se layout rozhodne. Řešením
+          je apps/web/middleware.ts, který nepotvrzený požadavek přesměruje.
+
+      - id: E14-T8
+        title: Odchod z webu bez stopy v historii (P4)
+        scope: shared-ui
+        role: frontend-web
+        status: todo
+        note: >
+          "Opustit web" je dnes obyčejný odkaz — přidá záznam do historie, což je
+          přesný opak toho, co panic tlačítko slibuje, a spoléhá na hlavičku
+          Referrer-Policy, kterou konzumenti packages/ui nemají.
 
       - id: E14-T6
         title: Odstranění EXIF/GPS z nahrávaných fotografií
