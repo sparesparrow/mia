@@ -48,6 +48,25 @@ Každá iterace (ať ji spustí loop, nebo člověk) má stejný tvar:
 6. **Zapiš stav** — task na `done` (nebo `blocked` s důvodem), commit + push na
    pracovní branch. Rozsah, který se během práce ukázal, se doplní do backlogu.
 
+## Commituj průběžně, ne až na konci iterace
+
+**Naučeno tvrdě:** iterace 2 přišla o veškerou práci. Pět rolí odpracovalo ~17
+minut, dvě z nich dokončily a odreportovaly ověřený výstup — a než se stihl
+commit, prostředí bylo recyklováno. Rozdělaná práce žije jen v pracovním stromu
+kontejneru, který může kdykoliv zmizet. Nezáleží na tom, jak dobře je něco
+udělané, pokud to není pushnuté.
+
+Pravidla, která z toho plynou:
+
+1. **Commituj a pushuj hned, jak role dokončí** — ne až celá iterace doběhne.
+2. **Dávkuj po dvou až třech rolích**, ne po pěti. Kratší okno = menší ztráta.
+3. Když agent spadne (limit, chyba), **zkontroluj pracovní strom** — mohl stihnout
+   zapsat soubory. Nedokončenou práci buď dokonči, nebo zahoď vědomě; nikdy ji
+   nenechávej ležet necommitnutou.
+4. **Nikdy neber report agenta jako důkaz, že práce existuje.** Ověř `git status`
+   a přečti soubor. Agent může poctivě popsat, co udělal, a přesto to v repu
+   nebýt.
+
 ## Paralelismus a kolize
 
 - Tasky se **liší v `scope`** → mohou běžet současně.
