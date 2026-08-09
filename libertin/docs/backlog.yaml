@@ -136,7 +136,10 @@ epics:
         title: Rozšířit openapi.snapshot.yaml o 2FA endpointy a role
         scope: backend
         role: architect
-        status: todo
+        status: done
+        note: >
+          26 cest, provenance observed/designed. PublicUser zůstává bez e-mailu
+          i bez role. Otevírá D-006 (smí být SMS jediný faktor?) před E2-T4.
         blocked_by: [E2-T1]
       - id: E2-T3
         title: TOTP enrollment + verifikace — obrazovky web i mobile
@@ -485,7 +488,10 @@ epics:
         title: CI pipeline — contract → lint → test → build
         scope: qa
         role: devops
-        status: todo
+        status: done
+        note: >
+          GitHub Actions (install→type-check→test→build) + překlad do .gitlab-ci.yml
+          pro C10. Nepokrývá e2e, k6 budget ani contract drift — E11-T3/T4/T5.
         blocked_by: [E11-T1]
       - id: E11-T7
         title: Test parity tokenů — tokens.css vs. native.ts
