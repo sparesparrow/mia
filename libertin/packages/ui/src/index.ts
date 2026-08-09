@@ -7,3 +7,4 @@ export * from './CategoryCard';
 export * from './SiteFooter';
 export * from './AgeGate';
 export * from './LoginForm';
+export * from './ThemeToggle';

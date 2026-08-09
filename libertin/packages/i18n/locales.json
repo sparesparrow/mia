@@ -19,6 +19,11 @@
       "confirm": "Je mi 18+, vstoupit",
       "leave": "Opustit web"
     },
+    "theme": {
+      "toggle": "Noční režim",
+      "nightOn": "Noční režim zapnutý",
+      "dayOn": "Denní režim zapnutý"
+    },
     "auth": {
       "login": {
         "title": "Přihlášení",
@@ -127,6 +132,11 @@
       "body": "This site contains content intended for adults only. By continuing you confirm you are over 18.",
       "confirm": "I am 18+, enter",
       "leave": "Leave"
+    },
+    "theme": {
+      "toggle": "Night mode",
+      "nightOn": "Night mode on",
+      "dayOn": "Day mode on"
     },
     "auth": {
       "login": {

@@ -5,6 +5,6 @@ import { defineConfig } from 'vitest/config';
 // authoritative for environment and setup.
 export default defineConfig({
   test: {
-    projects: ['packages/ui', 'packages/i18n'],
+    projects: ['packages/ui', 'packages/i18n', 'packages/theme'],
   },
 });
