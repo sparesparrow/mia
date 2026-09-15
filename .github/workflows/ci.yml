@@ -229,19 +229,35 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          set -o pipefail
+          run_step() {
+            local label="$1"; shift
+            if ! "$@" 2>&1 | tee /tmp/step.log; then
+              echo "::error::${label} failed: $(tail -n 25 /tmp/step.log | tr '\n' '~')"
+              return 1
+            fi
+          }
+          run_step "apt-get update" sudo apt-get update
+          run_step "apt-get install" sudo apt-get install -y \
             cmake ninja-build pkg-config \
             flatbuffers-compiler libflatbuffers-dev \
             libcurl4-openssl-dev libssl-dev zlib1g-dev \
             libjsoncpp-dev libasound2-dev
       - name: Configure
-        run: >
-          cmake -S apps/rpi-backend/cpp-audio -B build/cpp -G Ninja
-          -DCMAKE_BUILD_TYPE=Release
-          -DWITH_HARDWARE=OFF
+        run: |
+          set -o pipefail
+          if ! cmake -S apps/rpi-backend/cpp-audio -B build/cpp -G Ninja \
+               -DCMAKE_BUILD_TYPE=Release -DWITH_HARDWARE=OFF 2>&1 | tee /tmp/configure.log; then
+            echo "::error::CMake configure failed: $(tail -n 30 /tmp/configure.log | tr '\n' '~')"
+            exit 1
+          fi
       - name: Build
-        run: cmake --build build/cpp -j"$(nproc)"
+        run: |
+          set -o pipefail
+          if ! cmake --build build/cpp -j"$(nproc)" 2>&1 | tee /tmp/build.log; then
+            echo "::error::Compilation failed: $(grep -E 'error:' /tmp/build.log | head -n 15 | tr '\n' '~')"
+            exit 1
+          fi
       - name: Stage binaries
         run: |
           mkdir -p dist/cpp
@@ -286,9 +302,13 @@ jobs:
       - name: Build with PlatformIO
         if: steps.check.outputs.has_pio == 'true'
         run: |
+          set -o pipefail
           python -m pip install --upgrade pip platformio
           cd apps/esp32
-          pio run
+          if ! pio run 2>&1 | tee /tmp/pio.log; then
+            echo "::error::PlatformIO build failed: $(grep -iE 'error|fatal' /tmp/pio.log | head -n 15 | tr '\n' '~')"
+            exit 1
+          fi
       - name: Stage firmware
         if: steps.check.outputs.has_pio == 'true'
         run: |
