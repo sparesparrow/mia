@@ -6,7 +6,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find Conan-generated packages
-find_package(flatbuffers REQUIRED)
+# flatbuffers — prefer the CMake config package (Conan), fall back to pkg-config.
+# Debian/Ubuntu's libflatbuffers-dev ships flatbuffers.pc but no CMake config.
+find_package(flatbuffers QUIET)
+if(NOT TARGET flatbuffers::flatbuffers)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(FLATBUFFERS REQUIRED flatbuffers)
+    add_library(mia_flatbuffers INTERFACE)
+    target_include_directories(mia_flatbuffers INTERFACE ${FLATBUFFERS_INCLUDE_DIRS})
+    target_link_directories(mia_flatbuffers INTERFACE ${FLATBUFFERS_LIBRARY_DIRS})
+    target_link_libraries(mia_flatbuffers INTERFACE ${FLATBUFFERS_LIBRARIES})
+    add_library(flatbuffers::flatbuffers ALIAS mia_flatbuffers)
+endif()
 find_package(CURL REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
