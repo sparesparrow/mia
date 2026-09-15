@@ -60,7 +60,7 @@ if(FLATBUFFERS_FLATC_EXECUTABLE)
     set(FLATBUFFERS_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/core)
 
     add_custom_target(gen_flatbuffers_headers
-        COMMAND ${FLATBUFFERS_FLATC_EXECUTABLE} --cpp --gen-mutable -o ${FLATBUFFERS_OUTPUT_DIR} ${FLATBUFFERS_SCHEMA_DIR}/webgrab.fbs
+        COMMAND ${FLATBUFFERS_FLATC_EXECUTABLE} --cpp --gen-mutable --scoped-enums -o ${FLATBUFFERS_OUTPUT_DIR} ${FLATBUFFERS_SCHEMA_DIR}/webgrab.fbs
         BYPRODUCTS ${FLATBUFFERS_OUTPUT_DIR}/webgrab_generated.h
         DEPENDS ${FLATBUFFERS_SCHEMA_DIR}/webgrab.fbs
         COMMENT "Generating FlatBuffers C++ headers"
