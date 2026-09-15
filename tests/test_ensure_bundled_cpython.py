@@ -14,6 +14,28 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = REPO_ROOT / "scripts" / "ensure-bundled-cpython.sh"
 
 
+def _bash_is_usable() -> bool:
+    """Return True when a working POSIX bash is on PATH.
+
+    On Windows the ``bash`` shim often resolves to WSL without an installed
+    distribution, which fails for reasons unrelated to the script under test.
+    """
+    try:
+        result = subprocess.run(
+            ["bash", "-c", "exit 0"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0
+
+
+BASH_AVAILABLE = _bash_is_usable()
+
+
+@unittest.skipUnless(BASH_AVAILABLE, "a working bash interpreter is required")
 class TestEnsureBundledCPythonScript(unittest.TestCase):
     def test_script_dry_run_generates_environment_and_wrapper(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

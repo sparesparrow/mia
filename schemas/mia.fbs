@@ -98,6 +98,27 @@ table LEDState {
 }
 
 // ============================================================================
+// ESP32 BPM Detector - zero-overhead structs for ESP-NOW (250-byte limit)
+// Note: structs have fixed layout, no field IDs needed
+// Workaround for ESP-IDF conflict: #undef STRUCT_END before including
+// ============================================================================
+
+struct AudioFeatures {
+  bpm: float;
+  beat_confidence: float;
+  dominant_freq: float;
+  rms_energy: float;
+  timestamp_ms: uint32;
+}
+
+struct BeatEvent {
+  bpm: float;
+  beat_confidence: float;
+  beat_number: uint32;
+  timestamp_ms: uint32;
+}
+
+// ============================================================================
 // Root Types for Different Message Categories
 // ============================================================================
 

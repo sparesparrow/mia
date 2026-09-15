@@ -245,30 +245,39 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { arch: x86_64, profile: linux-release, conan_arch: x86_64 }
+          - { arch: x86_64 }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-      - name: Install Conan & configure remotes
+      - name: Install build dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install "conan==${{ env.CONAN_VERSION }}"
-          conan profile detect --force
-          conan remote add sparetools https://conan.cloudsmith.io/sparesparrow-conan/sparetools/ --index 0 || true
-      - uses: actions/cache@v4
-        with:
-          path: ~/.conan2
-          key: conan-${{ matrix.arch }}-${{ hashFiles('infra/conan/conanfile.py', '.tool-versions') }}
-          restore-keys: conan-${{ matrix.arch }}-
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build pkg-config \
+            flatbuffers-compiler libflatbuffers-dev \
+            libcurl4-openssl-dev libssl-dev zlib1g-dev \
+            libjsoncpp-dev libasound2-dev
+      - name: Configure
+        run: >
+          cmake -S apps/rpi-backend/cpp-audio -B build/cpp -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DWITH_HARDWARE=OFF
       - name: Build
+        run: cmake --build build/cpp -j"$(nproc)"
+      - name: Stage binaries
         run: |
-          cd platforms/cpp
-          conan install ../.. --build=missing
-          cmake -B build .
-          cmake --build build -j$(nproc)
+          mkdir -p dist/cpp
+          find build/cpp -maxdepth 2 -type f \
+            \( -perm -111 -o -name '*.a' -o -name '*.so' \) \
+            ! -name '*.cmake' ! -name '*.ninja' \
+            -exec cp -v {} dist/cpp/ \; || true
+          ls -la dist/cpp
+      - name: Upload C++ binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: mia-cpp-linux-${{ matrix.arch }}
+          path: dist/cpp/
+          if-no-files-found: warn
+          retention-days: 30
 
   esp32-build:
     if: needs.changes.outputs.esp32 == 'true'
@@ -301,3 +310,19 @@ jobs:
           python -m pip install --upgrade pip platformio
           cd apps/esp32
           pio run
+      - name: Stage firmware
+        if: steps.check.outputs.has_pio == 'true'
+        run: |
+          mkdir -p dist/esp32
+          find apps/esp32/.pio/build -type f \
+            \( -name '*.bin' -o -name '*.elf' -o -name '*.hex' \) \
+            -exec cp -v {} dist/esp32/ \; || true
+          ls -la dist/esp32
+      - name: Upload ESP32 firmware
+        if: steps.check.outputs.has_pio == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mia-esp32-firmware
+          path: dist/esp32/
+          if-no-files-found: warn
+          retention-days: 30

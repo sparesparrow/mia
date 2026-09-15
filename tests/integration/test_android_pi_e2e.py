@@ -1410,6 +1410,7 @@ try:
     @pytest.mark.integration
     @pytest.mark.meta_harness
     @pytest.mark.slow
+    @pytest.mark.hardware
     def test_meta_harness_smoke():
         """Run smoke phase against the target and assert all steps pass."""
         host = os.getenv("MIA_TARGET_HOST", DEFAULT_HOST)
@@ -1430,6 +1431,7 @@ try:
     @pytest.mark.integration
     @pytest.mark.meta_harness
     @pytest.mark.slow
+    @pytest.mark.hardware
     def test_meta_harness_e2e():
         """Run preflight+smoke+e2e phases with an Android device."""
         host = os.getenv("MIA_TARGET_HOST", DEFAULT_HOST)
