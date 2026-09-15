@@ -71,10 +71,31 @@ jobs:
           yes | sdkmanager --licenses > /dev/null
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
       - name: Build APKs
+        env:
+          VERSION_NAME: ${{ needs.metadata.outputs.version }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: |
+          set -euo pipefail
           cd apps/android
           chmod +x gradlew
-          ./gradlew assembleDebug assembleRelease --no-daemon
+
+          targets="assembleDebug"
+          # app/build.gradle only populates signingConfigs.release when all four
+          # values are present; assembleRelease fails without them, so the signed
+          # build is opt-in via repository secrets.
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ] && [ -n "${KEY_ALIAS:-}" ] \
+             && [ -n "${KEY_PASSWORD:-}" ] && [ -n "${STORE_PASSWORD:-}" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            export STORE_FILE="$RUNNER_TEMP/release.keystore"
+            targets="$targets assembleRelease"
+          else
+            echo "::notice::Android signing secrets not configured; building the debug APK only."
+          fi
+
+          ./gradlew $targets --no-daemon
       - name: Stage APKs
         run: |
           mkdir -p dist/android

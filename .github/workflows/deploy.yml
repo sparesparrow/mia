@@ -63,16 +63,28 @@ jobs:
           done
       - name: Validate deploy scripts
         run: |
-          shopt -s nullglob
-          candidates=(
-            infra/deploy/rpi/deploy.sh
-            scripts/ensure-bundled-cpython.sh
+          shopt -s nullglob globstar
+          # Globs only, so a renamed or removed script cannot silently pass and
+          # a missing literal path cannot fail the job with exit 127.
+          scripts=(
+            infra/deploy/**/*.sh
             scripts/deploy*.sh
+            scripts/ensure-bundled-cpython.sh
           )
-          for script in "${candidates[@]}"; do
-            bash -n "$script"
-            echo "$script: syntax OK"
+          if [ ${#scripts[@]} -eq 0 ]; then
+            echo "::error::No deploy scripts matched; the expected layout has changed."
+            exit 1
+          fi
+          status=0
+          for script in "${scripts[@]}"; do
+            if bash -n "$script"; then
+              echo "  OK   $script"
+            else
+              echo "::error file=$script::bash syntax check failed"
+              status=1
+            fi
           done
+          exit "$status"
 
   docker-build:
     name: Compose Smoke Build

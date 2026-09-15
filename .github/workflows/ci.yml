@@ -57,7 +57,6 @@ concurrency:
 
 env:
   PYTHON_VERSION: '3.12'
-  CONAN_VERSION: '2.3.2'
 
 jobs:
   changes:
@@ -208,32 +207,12 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: requirements-ci.txt
-      - name: Install Conan & configure remotes
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install "conan==${{ env.CONAN_VERSION }}"
-          conan profile detect --force
-          conan remote add sparetools https://conan.cloudsmith.io/sparesparrow-conan/sparetools/ --index 0 || true
-      - uses: actions/cache@v4
-        with:
-          path: ~/.conan2
-          key: conan-cpython-${{ hashFiles('infra/conan/conanfile.py', '.tool-versions') }}
-          restore-keys: conan-cpython-
-      - name: Install bundled CPython via Conan
-        run: |
-          conan install --tool-requires=sparetools-cpython/3.12.7 --build=missing -g VirtualBuildEnv
-          source conanbuild.sh
-          python3 --version
-          which python3
-      - name: Install dependencies with bundled Python
-        run: |
-          source conanbuild.sh
-          python3 -m pip install --upgrade pip "setuptools<82" wheel
-          python3 -m pip install -r requirements-ci.txt
+          python -m pip install --upgrade pip "setuptools<82" wheel
+          python -m pip install -r requirements-ci.txt
       - name: Run tests
-        run: |
-          source conanbuild.sh
-          python3 -m pytest tests/ -v -m "not hardware" --tb=short -q
+        run: python -m pytest tests/ -m "not hardware" --tb=short -q
 
   cpp-build:
     if: needs.changes.outputs.cpp == 'true'
