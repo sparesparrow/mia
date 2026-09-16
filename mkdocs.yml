@@ -99,6 +99,7 @@ nav:
     - Quick Start: AUTOMOTIVE_QUICK_START.md
     - Citroen Integration: automotive/citroen-integration.md
     - Audi on Raspberry Pi: automotive/raspberry-pi-audi-integration.md
+    - Audi A4 8H Interface Integration: automotive/audi-a4-8h-interface-integration.md
   - Privacy:
     - DPIA Template: privacy/dpia-template.md
   - Troubleshooting: troubleshooting.md

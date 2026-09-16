@@ -1,0 +1,198 @@
+# Machine-readable interface inventory for the MIA prototype vehicle.
+#
+# Companion to docs/automotive/audi-a4-8h-interface-integration.md
+#
+# This file is a SURVEY RECORD, not a runtime enable-list. A consumer must treat every
+# entry whose `confidence` is not `confirmed` as unverified and refuse to act on it.
+# Update `confidence` and `verified_on` only from a real measurement or autoscan.
+
+schema_version: 1
+
+vehicle:
+  make: Audi
+  model: A4 Cabriolet
+  body_type: "8H"
+  generation_note: >-
+    MY2004 cabriolet is the 8H body on B6 running gear; the cabriolet moved to B7
+    running gear for MY2006. Look up wiring under 8H/8E, never B3.
+  model_year: 2004
+  vin: null                      # fill from UDS DID F190 once read
+  head_unit: unknown             # chorus_ii | concert_ii | symphony_ii | aftermarket
+  amplifier: unknown
+  transmission: unknown
+
+safety_posture:
+  read_only: true
+  powertrain_can_transmit: false
+  comfort_can_transmit: false    # hardware listen-only; do not flip this in software
+  uds_polling_enabled: false
+  allowed_read_services: ["19", "22"]
+  allow_extended_session: false
+  allow_security_access: false
+  allow_write_services: false
+  forbidden_actuation:
+    - convertible_top
+    - central_locking
+    - exterior_lighting
+    - immobiliser
+    - airbag_and_pyrotechnic_circuits
+
+buses:
+  powertrain_can:
+    bitrate: 500000
+    access: obd_port
+    obd_pins: { can_h: 6, can_l: 14, ground: [4, 5], battery: 16 }
+    pi_interface: can0
+    mode: normal          # transmit permitted only for diagnostic requests
+    confidence: confirmed
+    owner_module: apps/rpi-backend/py-api/services/obd_worker.py
+  comfort_can:
+    bitrate: 100000
+    access: harness_tap
+    tap_point: central_convenience_module
+    pi_interface: can1
+    mode: listen_only     # enforced in hardware, not in software
+    confidence: unverified
+    owner_module: orchestration/mcp/modules/body-bus-bridge/   # proposed
+  k_line:
+    access: obd_port
+    obd_pins: { k_line: 7 }
+    confidence: likely_present
+    notes: Legacy KWP2000 path for modules that do not answer over CAN.
+
+# One entry per photographed interface. `photo` paths are relative to
+# docs/automotive/ so the doc and this file stay in sync.
+interfaces:
+
+  - id: console_2pin
+    label: Unidentified 2-pin connector, centre console trim
+    photo: images/a4-8h/01-unknown-2pin-connector-console.jpg
+    observed:
+      pins: 2
+      wire_colors: [blue_white, brown_white]
+      gauge_class: signal
+      state: unplugged
+    hypotheses: [console_illumination, unused_switch_position, deleted_option]
+    confidence: low
+    verified_on: null
+    verification: >-
+      Measure both pins to chassis ground with key out, key position 1, ignition on,
+      and engine running. Constant 12V + switched ground => lamp. Pull-up with
+      switch-to-ground => switch input. Dead in all states => deleted option.
+    proposed_mia_use: push_to_talk_input
+    blocked_until: verification_passes
+
+  - id: door_control_unit_fl
+    label: Front-left door control unit
+    photo: images/a4-8h/02-door-card-modules-8h0959747-8e0959777.jpg
+    part_number: "8H0 959 747"
+    markings: ["KT3", "United Kingdom", "03480320", "58780 1"]
+    confidence: medium_high      # part number read clearly; exact function split unverified
+    verified_on: null
+    verification: Autoscan address 42 (door electronics, driver side); confirm coding and part number match.
+    signals_of_interest: [door_open, lock_state, window_position, mirror_switch]
+    access_path: comfort_can
+    proposed_mia_use: body_context_events
+
+  - id: mirror_memory_switch_pack
+    label: Mirror adjust / memory switch pack
+    photo: images/a4-8h/02-door-card-modules-8h0959747-8e0959777.jpg
+    part_number: "8E0 959 777"
+    markings: ["4PK", "07.05.02", "03 4814 01"]
+    confidence: medium_high
+    verified_on: null
+    verification: Confirm memory module presence in autoscan; watch comfort CAN while pressing memory buttons.
+    proposed_mia_use: secondary_input_surface
+    notes: >-
+      Wired to the door module, not to the Pi. Use the resulting CAN frame rather than
+      intercepting the switch harness.
+
+  - id: connector_repair_family
+    label: VAG repair connector housings present in door harness
+    part_number_family: "6X0 972 xxx"
+    confidence: high
+    notes: >-
+      Matching repair housings and pins are orderable. Use them instead of splicing
+      into existing conductors.
+
+  - id: aux_relay_carrier
+    label: Under-dash relay carrier with aftermarket inline fuse tap
+    photo: images/a4-8h/03-relay-carrier-inline-fuse-tap.jpg
+    observed:
+      relays: [green, black]
+      aftermarket_inline_fuse: true
+      tapped_wire_colors: [blue_white, brown]
+    confidence: high_that_tap_is_aftermarket
+    verified_on: null
+    verification: Trace the inline fuse to its source; determine permanent vs switched and what load it feeds.
+    proposed_mia_use: [switched_12v_candidate, mia_relay_outputs]
+    constraints:
+      - opto_isolated_drive_only
+      - flyback_protection_required
+      - no_safety_related_loads
+
+  - id: cd_changer_din
+    label: Factory CD-changer 8-pin mini-DIN
+    photo: images/a4-8h/04-cd-changer-mini-din-and-teal-connector.jpg
+    connector: mini_din_8
+    confidence: high
+    verified_on: null
+    verification: Confirm head unit model and whether a factory changer is already connected.
+    proposed_mia_use:
+      - audio_injection_via_cdc_emulator
+      - head_unit_button_events_as_mia_intents
+    requirements: [ground_loop_isolator]
+    priority: highest
+
+  - id: head_unit_side_harness
+    label: Teal 20-way + black connector with white/red twisted pair
+    photo: images/a4-8h/04-cd-changer-mini-din-and-teal-connector.jpg
+    confidence: medium
+    verified_on: null
+    verification: Identify whether this is the amplifier feed or head-unit data; do not assume the twisted pair is CAN.
+    proposed_mia_use: null
+
+  - id: interior_fuse_panel
+    label: Interior fuse panel, driver end of dash
+    photo: images/a4-8h/05-interior-fuse-panel.jpg
+    observed:
+      fuse_ratings_seen: [5, 10, 15, 25, 30]
+      empty_positions: true
+    confidence: high
+    proposed_mia_use: [kl30_permanent_feed, kl15_ignition_sense]
+    constraints:
+      - add_a_fuse_taps_only
+      - never_uprate_a_factory_fuse
+
+  - id: pink_connector_module
+    label: Module with pink multi-way connector behind trim
+    photo: images/a4-8h/06-module-with-pink-connector.jpg
+    hypotheses: [central_convenience_control_unit, convertible_top_control_unit]
+    confidence: low_medium
+    verified_on: null
+    verification: >-
+      Identify by autoscan address and by which module drops offline when the
+      connector is removed (battery disconnected first). Colour coding alone is not
+      an identification.
+    proposed_mia_use: comfort_can_tap_point
+    blocked_until: verification_passes
+
+# Proposed PUB/SUB topics on port 5556. None of these exist yet.
+proposed_topics:
+  vehicle/body:    { producer: body-bus-bridge,  event_types: [vehicle.body.door, vehicle.body.window, vehicle.body.access] }
+  vehicle/power:   { producer: ignition_sense,   event_types: [vehicle.power.ignition] }
+  hu/control:      { producer: head_unit_bridge, event_types: [vehicle.hu.control] }
+  hu/state:        { producer: head_unit_bridge, event_types: [] }
+
+power_budget:
+  pi_peak_watts: 20
+  buck_input_range_v: [6, 36]
+  buck_output: { volts: 5, amps_min: 5 }
+  target_sleep_current_ma: 5
+  shutdown: supervised_on_kl15_low_then_latching_cut
+
+privacy:
+  body_events_leave_device: false
+  rationale: >-
+    Door, lock and arrival events form a precise movement log of a private
+    individual. Cloud forwarding is opt-in per event class, never a global toggle.
