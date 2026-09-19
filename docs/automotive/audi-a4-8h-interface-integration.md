@@ -213,9 +213,11 @@ vehicle profile so the bridge knows what car it is attached to (see `config/vehi
 #### T2.1 Passive comfort-CAN sniffing (rows B, F)
 
 Tap the comfort CAN twisted pair at the convenience module, feed it to a second CAN channel at
-**100 kbit/s in listen-only mode**. Listen-only is a hardware mode: the transceiver never drives the
-bus, so a software bug cannot put a frame on the car's body network. This is non-negotiable for a
-first pass.
+**100 kbit/s in listen-only mode**. The controller's listen-only bit is a config register that a
+software bug can overwrite, so it is not the guarantee — **leave the TXD line between controller and
+transceiver physically unconnected** (or tie it to 3V3, the recessive level). The transceiver then
+has no way to drive the bus whatever the software does. Set the controller's listen-only mode as
+well; both together, not either alone. This is non-negotiable for a first pass.
 
 What this buys, roughly in order of usefulness:
 
@@ -353,5 +355,6 @@ better; P3 is where the interesting context-awareness starts.
 
 - [`raspberry-pi-audi-integration.md`](raspberry-pi-audi-integration.md) — existing OBD/UDS integration status
 - [`../wiring.md`](../wiring.md) — OBD-II pinout and ESP32/transceiver power wiring
+- [`../cs/automotive/zapojeni-audi-a4-8h.md`](../cs/automotive/zapojeni-audi-a4-8h.md) — Czech hands-on wiring guide: power, fuse taps, opto-isolated KL.15 sense, CAN taps, relays, audio
 - [`../../contracts/topics.md`](../../contracts/topics.md), [`../../contracts/events.md`](../../contracts/events.md) — message contracts
 - [`../../config/vehicles/audi_a4_8h_cabriolet.yaml`](../../config/vehicles/audi_a4_8h_cabriolet.yaml) — machine-readable interface inventory
