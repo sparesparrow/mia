@@ -74,9 +74,10 @@ Moduly SN65HVD230 z tržiště mívají 120 Ω osazený napevno — před montá
 - Pojistka 0,5–1 A co nejblíž odbočce, kroucený pár pro CAN, jediný zemnící bod.
 - Žluté konektory ve voze jsou airbagy — nesahat.
 
-!!! warning "Firmware zatím neodpovídá tomuhle dokumentu"
-    `ai_servis_obd.c` instaluje ovladač napevno v `TWAI_MODE_NORMAL` a v odesílaném rámci má chybu, kvůli které řídicí jednotka na dotazy neodpoví.
-    Rozbor včetně navržených oprav: [nálezy proti firmwaru](cs/automotive/zapojeni-esp32-moduly.md#10-nalezy-proti-firmwaru).
+!!! tip "Odposlechová varianta firmwaru"
+    `ai_servis_obd.c` se ve výchozím stavu instaluje v `TWAI_MODE_NORMAL`, protože posílá OBD dotazy.
+    Pasivní sestavení: `idf.py build -DMIA_TWAI_LISTEN_ONLY=1` — ovladač pak jede v `TWAI_MODE_LISTEN_ONLY` a `ai_servis_obd_read_pid()` nevysílá.
+    Souvislosti a další opravy v téhle komponentě: [nálezy proti firmwaru](cs/automotive/zapojeni-esp32-moduly.md#10-nalezy-proti-firmwaru).
 
 ## 6. Kam dál
 

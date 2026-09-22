@@ -1,7 +1,7 @@
 # Zapojení ESP32 modulů do MIA
 
 > **Pro koho**: ten, kdo pájí a montuje ESP32 desky do auta nebo na stůl
-> **Stav**: návrh zapojení + revize stávajícího firmwaru. V autě zatím neodzkoušené.
+> **Stav**: návrh zapojení + revize firmwaru. Pět chyb v `ai_servis_obd.c` je opravených (kap. 10), zapojení v autě zatím odzkoušené není.
 > **Sourozenecký dokument**: [Zapojení MIA do Audi A4 Cabriolet 8H](zapojeni-audi-a4-8h.md) — tam je strana Raspberry Pi a vozu, tady je strana mikrokontroléru.
 
 ---
@@ -111,10 +111,10 @@ Většina modulů SN65HVD230 z tržiště má 120 Ω osazený napevno na desce. 
 
 Jsou to dva různé režimy a firmware musí vědět, ve kterém je:
 
-| Režim | Co dělá | Jak vynutit |
-| --- | --- | --- |
-| Pasivní odposlech | jen poslouchá, na sběrnici nic neposílá | `TWAI_MODE_LISTEN_ONLY` **a** vodič TXD fyzicky nezapojený |
-| Aktivní OBD dotazy | posílá rámce na `0x7DF`, čte odpovědi z `0x7E8` | `TWAI_MODE_NORMAL`, TXD zapojený |
+| Režim | Co dělá | Jak sestavit | Drát |
+| --- | --- | --- | --- |
+| Pasivní odposlech | jen poslouchá, na sběrnici nic neposílá | `idf.py build -DMIA_TWAI_LISTEN_ONLY=1` | TXD **nezapojený** |
+| Aktivní OBD dotazy | posílá rámce na `0x7DF`, čte odpovědi z `0x7E8` | `idf.py build` (výchozí) | TXD zapojený |
 
 !!! warning "Softwarový přepínač sám o sobě není záruka"
     `TWAI_MODE_LISTEN_ONLY` je hodnota v konfiguračním registru — chyba v kódu ji přepíše.
@@ -239,72 +239,113 @@ Když modul nenabootuje, projdi tohle pořadí:
 
 ---
 
-## 10. Nálezy proti firmwaru {#10-nalezy-proti-firmwaru}
+## 10. Nálezy proti firmwaru — opravené {#10-nalezy-proti-firmwaru}
 
-Při psaní tohohle návodu jsem porovnával dokumentaci se zdrojáky. Čtyři věci nesedí.
-**Nic z toho zatím není opravené** — jsou to hlášení, ne provedené změny.
+Při psaní tohohle návodu jsem porovnával dokumentaci se zdrojáky
+`apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c`. Nesedělo pět věcí.
+**Všech pět je v tomhle PR opravených** a ověřených překladem i během proti náhradním (stub) hlavičkám ESP-IDF.
 
-### N1 — OBD dotaz má rámec posunutý o bajt (nefunguje) {#n1}
+### N1 — OBD dotaz měl rámec posunutý o bajt, takže jednotka nikdy neodpověděla {#n1}
 
-`apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c:95`
+Šablona dotazu měla jako první prvek pole `uint8_t` hodnotu `0x7DF` — CAN identifikátor.
+Do bajtu se nevejde a uřízne se na `0xDF`, čímž se posune celý zbytek rámce:
 
-```c
-static const uint8_t obd_request_template[] = {
-    0x7DF,  // CAN ID (broadcast)   ← 0x7DF se do uint8_t nevejde, uřízne se na 0xDF
-    0x02,   // Data length
-    0x01,   // Service mode 01
-    0x00,   // PID (to be filled)
-    ...
+| | Odesílaná data | PCI nibble | Výsledek |
+| --- | --- | --- | --- |
+| Před | `DF 02 01 0C 00 00 00 00` | `0xD` | neplatný typ rámce → ECU zahodí |
+| Po | `02 01 0C 55 55 55 55 55` | `0x0` | platný jednoduchý rámec |
+
+CAN identifikátor do datové části nepatří; nastavuje se na zprávě zvlášť, což kód už dělal.
+Že šlo o posun o jeden bajt, potvrzovala i kontrola odpovědi (`message.data[2] == pid`), která
+odpovídá *správnému* rozložení `03 41 <pid> …`, zatímco dotaz se plnil na `data[3]`.
+
+Oprava: identifikátor ze šablony pryč, PID se plní na `data[2]`, výplň `0x55` podle ISO 15765-2.
+
+### N2 — `twai_message_t` se neinicializovala {#n2}
+
+Vyplňovaly se `data`, `identifier` a `data_length_code`, ale **ne příznaky**. Struktura má bitové
+pole (`extd`, `rtr`, `ss`, `self`, `dlc_non_comp`), které tím zůstalo s náhodným obsahem ze
+zásobníku — rámec mohl odejít jako 29bitový extended nebo jako RTR, nereprodukovatelně.
+
+Oprava: `twai_message_t message = {0};`
+
+### N3 — nešlo zvolit pasivní odposlech {#n3}
+
+Ovladač se instaloval napevno v `TWAI_MODE_NORMAL` a odposlechová varianta nešla sestavit,
+ačkoli `docs/wiring.md` listen-only sliboval.
+
+Oprava: přepínač při překladu, **ve výchozím stavu vypnutý** (aktivní dotazování je smysl téhle
+komponenty, listen-only by ji umlčel):
+
+```bash
+idf.py build                                  # normální režim, posílá dotazy
+idf.py build -DMIA_TWAI_LISTEN_ONLY=1         # pasivní odposlech
 ```
 
-CAN identifikátor do datové části nepatří — nastavuje se zvlášť (což kód na řádku 206 i dělá).
-Výsledkem je, že se odesílá `DF 02 01 <pid> 00 00 00 00`, zatímco správný jednorámcový OBD dotaz je `02 01 <pid> 55 55 55 55 55`.
+V odposlechové variantě se ovladač instaluje v `TWAI_MODE_LISTEN_ONLY` a `ai_servis_obd_read_pid()`
+místo vysílání vrátí `ESP_ERR_NOT_SUPPORTED`. Kconfig jsem nepřidával — komponenta nemá
+`CMakeLists.txt`, kam by patřil (viz N6 níže), a soubor už stejný `#ifndef` vzor používá pro
+`MQTT_ALERT_BROKER_URI`.
 
-První bajt je PCI: horní nibble `0` = jednoduchý rámec. Tady je `0xD`, což není platný typ rámce → **řídicí jednotka dotaz zahodí a nikdy neodpoví.**
-
-Že jde o posun o jeden bajt, potvrzuje kontrola odpovědi na řádku 223: `message.data[2] == pid` odpovídá *správnému* rozložení (`03 41 <pid> …`), zatímco dotaz se plní na `data[3]`.
-
-Navržená oprava:
-
-```c
-static const uint8_t obd_request_template[] = {
-    0x02, 0x01, 0x00, 0x55, 0x55, 0x55, 0x55, 0x55
-};
-/* … */
-message.data[2] = pid;   // bylo data[3]
-```
-
-### N2 — `twai_message_t` se nikdy neinicializuje {#n2}
-
-`ai_servis_obd.c:203`
-
-```c
-twai_message_t message;
-memcpy(&message.data, obd_request_template, sizeof(obd_request_template));
-```
-
-Vyplní se `data`, `identifier` a `data_length_code`, ale **příznaky ne**. `twai_message_t` má v sobě bitové pole (`extd`, `rtr`, `ss`, `self`, `dlc_non_comp`), které tímhle zůstane s náhodným obsahem ze zásobníku.
-Podle toho, co na zásobníku zrovna leží, se rámec odešle jako 29bitový extended, jako RTR, nebo v režimu self-reception. Chování je nereprodukovatelné.
-
-Oprava je jednoznaková: `twai_message_t message = {0};`
-
-### N3 — dokumentace slibuje listen-only, firmware jede normal {#n3}
-
-`docs/wiring.md` uvádí „Read‑only (listen‑only) při testování". `ai_servis_obd.c:124` instaluje ovladač napevno s `TWAI_MODE_NORMAL` a žádný build flag pro odposlechovou variantu neexistuje.
-
-Aktivní dotazování na `0x7DF` je legitimní — dělá to každý OBD skener. Problém je, že **si mezi těmi dvěma režimy nelze vybrat** a dokument tvrdí něco jiného, než co se stane po nahrání firmwaru.
-Návrh: přidat volbu do `Kconfig` (`CONFIG_MIA_TWAI_LISTEN_ONLY`) a ve výchozím stavu ji zapnout.
+!!! warning "Přepínač nenahrazuje odpojený drát"
+    Režim řadiče je registr, který chyba v kódu přepíše. Pro tvrdou záruku nech vodič `TXD`
+    mezi ESP32 a budičem fyzicky nezapojený. Nastav oboje, ne jedno místo druhého.
 
 ### N4 — zbytečná konfigurace TX pinu před instalací ovladače {#n4}
 
-`ai_servis_obd.c:117–121` nastavuje `TWAI_TX_PIN` jako obyčejný výstup GPIO těsně před `twai_driver_install()`. Ovladač TWAI si pin směruje sám přes GPIO matici, takže tenhle blok nic nedělá.
-Škodí až ve chvíli, kdy ho někdo při úpravách přesune **za** instalaci ovladače — pak přebije směrování a vysílání přestane fungovat. Navrhuju ho smazat.
+`TWAI_TX_PIN` se nastavoval jako obyčejný výstup GPIO těsně před `twai_driver_install()`.
+Ovladač si pin směruje sám přes GPIO matici, takže to nic nedělalo — a kdyby někdo ten blok při
+úpravách přesunul **za** instalaci ovladače, přebil by směrování a vysílání by přestalo fungovat.
+
+Oprava: blok smazán, na jeho místě je komentář vysvětlující proč tam nepatří.
+
+### N5 — `twai_transmit()` volaný s chybějícím argumentem {#n5}
+
+```c
+esp_err_t ret = twai_transmit(&message);      // chybí ticks_to_wait
+```
+
+Skutečná signatura v ESP-IDF je `twai_transmit(const twai_message_t *message, TickType_t ticks_to_wait)`.
+**Proti opravdovému ESP-IDF se tenhle soubor nepřeložil vůbec** — což je zároveň důkaz, že komponenta
+nikdy sestavená nebyla.
+
+Oprava: `twai_transmit(&message, pdMS_TO_TICKS(100))`, stejný timeout jako u čekání na odpověď.
+
+### N6 — projekt `firmware-obd` nemá build soubory {#n6}
+
+Tenhle nález **opravený není**, protože je to návrh struktury, ne jednořádková chyba:
+
+- `apps/esp32/firmware-obd/components/ai_servis_obd/` nemá `CMakeLists.txt` s `idf_component_register()`
+- `apps/esp32/firmware-obd/main/` nemá `CMakeLists.txt`
+
+Bez nich ESP-IDF projekt nesestaví ani po opravách výše. Doplnit je znamená rozhodnout o
+závislostech komponenty a o tom, jestli má projekt vůbec zůstat oddělený od `apps/esp32/`.
+To patří k majiteli repa, ne do dokumentačního PR.
 
 !!! note "Proč to nechytila CI"
-    `0x7DF` v inicializaci `uint8_t` je věc, na kterou GCC běžně upozorní (`-Woverflow`).
-    Job `esp32-build` ale překládá jen `apps/esp32/main/` (kvůli `src_dir = main` v `platformio.ini`), takže `firmware-obd/` se nepřekládá vůbec a varování nemá kde vzniknout.
+    `apps/esp32/platformio.ini` má `src_dir = main`, takže job `esp32-build` překládá jen
+    `apps/esp32/main/`. Projekt `firmware-obd/` se nepřekládá vůbec — `-Woverflow` u N1 ani
+    chyba argumentu u N5 tak neměly kde vzniknout.
 
----
+### Jak jsem opravy ověřil
+
+ESP-IDF v tomhle prostředí není, takže jsem napsal náhradní (stub) hlavičky se skutečnými
+signaturami z ESP-IDF a soubor proti nim přeložil a spustil:
+
+| Kontrola | Výsledek |
+| --- | --- |
+| `gcc -Wall -Wextra -Woverflow` na původní verzi | `warning: … changes value from '2015' to '223'` |
+| původní verze proti skutečné signatuře `twai_transmit()` | `error: too few arguments` (N5) |
+| `gcc` i `clang`, `-Wall -Wextra`, obě konfigurace | bez varování |
+| běh, výchozí režim | `twai_driver_install: mode=0`, rámec `id=0x7DF extd=0 rtr=0 data=02 01 0C 55 55 55 55 55` |
+| běh, `-DMIA_TWAI_LISTEN_ONLY=1` | `mode=2`, `read_pid → ESP_ERR_NOT_SUPPORTED`, nic se neodeslalo |
+| volání `gpio_config()` | žádné — blok z N4 je pryč |
+
+Clang stojí za zmínku zvlášť: v odposlechové konfiguraci hlásil `obd_request_template` jako
+nepoužitou proměnnou, zatímco GCC mlčel. Šablona je proto schovaná za `#if !MIA_TWAI_LISTEN_ONLY`.
+
+Stub hlavičky zůstaly mimo repozitář; nahrazují ESP-IDF jen pro tuhle kontrolu a nejsou náhrada
+za sestavení opravdovým `idf.py` na cílové desce.
 
 ## 11. Materiál
 

@@ -91,17 +91,37 @@ static void send_mqtt_alert(const char *topic, const char *severity,
 #define TWAI_TX_PIN GPIO_NUM_17
 #define TWAI_BITRATE TWAI_TIMING_CONFIG_500KBITS()
 
-// OBD-II request template
+// Bus mode. OBD polling has to transmit requests, so normal mode is the default.
+// Build with -DMIA_TWAI_LISTEN_ONLY=1 for a passive sniffing build: the controller
+// then never drives the bus and ai_servis_obd_read_pid() refuses to transmit.
+// The controller mode is a register a bug can overwrite, so for a hard guarantee
+// also leave the transceiver TXD line physically unconnected.
+#ifndef MIA_TWAI_LISTEN_ONLY
+#define MIA_TWAI_LISTEN_ONLY 0
+#endif
+
+#if MIA_TWAI_LISTEN_ONLY
+#define TWAI_BUS_MODE TWAI_MODE_LISTEN_ONLY
+#else
+#define TWAI_BUS_MODE TWAI_MODE_NORMAL
+#endif
+
+#if !MIA_TWAI_LISTEN_ONLY
+// OBD-II mode 01 request, ISO 15765-2 single frame.
+// The CAN identifier is NOT part of the data field - it is set on the message
+// in ai_servis_obd_read_pid(). Putting it here truncated it to 0xDF and shifted
+// every following byte, which made the PCI nibble invalid so no ECU replied.
 static const uint8_t obd_request_template[] = {
-    0x7DF,  // CAN ID (broadcast)
-    0x02,   // Data length
-    0x01,   // Service mode 01
-    0x00,   // PID (to be filled)
-    0x00,   // Padding
-    0x00,   // Padding
-    0x00,   // Padding
-    0x00    // Padding
+    0x02,   // PCI: single frame, two data bytes follow
+    0x01,   // Service mode 01 (show current data)
+    0x00,   // PID (filled in per request)
+    0x55,   // Padding
+    0x55,   // Padding
+    0x55,   // Padding
+    0x55,   // Padding
+    0x55    // Padding
 };
+#endif
 
 static QueueHandle_t obd_queue = NULL;
 static bool obd_initialized = false;
@@ -110,18 +130,10 @@ esp_err_t ai_servis_obd_init(void)
 {
     ESP_LOGI(TAG, "Initializing OBD component");
 
-    // Configure TWAI pins
-    gpio_config_t io_conf = {
-        .intr_type = GPIO_INTR_DISABLE,
-        .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = (1ULL << TWAI_TX_PIN),
-        .pull_down_en = 0,
-        .pull_up_en = 0,
-    };
-    gpio_config(&io_conf);
-
-    // Install TWAI driver
-    twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TWAI_TX_PIN, TWAI_RX_PIN, TWAI_MODE_NORMAL);
+    // The TWAI driver routes TX/RX through the GPIO matrix itself, so the pins
+    // must not be configured as plain GPIOs here - doing that after
+    // twai_driver_install() would override the routing and break transmit.
+    twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(TWAI_TX_PIN, TWAI_RX_PIN, TWAI_BUS_MODE);
     twai_timing_config_t t_config = TWAI_BITRATE;
     twai_filter_config_t f_config = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
@@ -200,14 +212,29 @@ void ai_servis_obd_task(void *pvParameters)
 
 esp_err_t ai_servis_obd_read_pid(uint8_t pid, uint8_t *data, size_t *length)
 {
-    twai_message_t message;
-    memcpy(&message.data, obd_request_template, sizeof(obd_request_template));
-    message.data[3] = pid;  // Set PID
+#if MIA_TWAI_LISTEN_ONLY
+    // The polling task calls this at 10 Hz, so warn once rather than per call.
+    static bool warned = false;
+    (void)data;
+    (void)length;
+    (void)pid;
+    if (!warned) {
+        warned = true;
+        ESP_LOGW(TAG, "Listen-only build: OBD requests are not transmitted");
+    }
+    return ESP_ERR_NOT_SUPPORTED;
+#else
+    // Zero-initialise: twai_message_t carries extd/rtr/ss/self flags that would
+    // otherwise keep stack garbage and send the frame as extended ID or RTR.
+    twai_message_t message = {0};
+    memcpy(message.data, obd_request_template, sizeof(obd_request_template));
+    message.data[2] = pid;  // Set PID
     message.identifier = 0x7DF;
     message.data_length_code = 8;
 
-    // Send request
-    esp_err_t ret = twai_transmit(&message);
+    // Send request. twai_transmit() takes a timeout; matches the response
+    // timeout used below.
+    esp_err_t ret = twai_transmit(&message, pdMS_TO_TICKS(100));
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to transmit OBD request: %s", esp_err_to_name(ret));
         return ret;
@@ -230,6 +257,7 @@ esp_err_t ai_servis_obd_read_pid(uint8_t pid, uint8_t *data, size_t *length)
 
     ESP_LOGW(TAG, "Timeout waiting for OBD response");
     return ESP_ERR_TIMEOUT;
+#endif
 }
 
 esp_err_t ai_servis_obd_parse_data(obd_data_t *data, uint8_t *response, size_t length)
