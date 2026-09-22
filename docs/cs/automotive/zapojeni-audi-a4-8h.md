@@ -122,6 +122,8 @@ systém nerozsypal. A změřit ampérmetrem skutečný klidový odběr po uspán
 
 ## 2. OBD-II / hnací CAN (500 kbit/s)
 
+![OBD-II (J1962) — piny, které MIA používá](../../automotive/images/esp32/obd2-pinout-mia.svg)
+
 Pinout konektoru OBD-II ve voze:
 
 | Pin | Signál | Poznámka |
@@ -314,4 +316,5 @@ Dokud tam je `blocked_until: verification_passes`, nic se na ten konektor nepři
 - [Rozbor rozhraní a plán integrace (anglicky)](../../automotive/audi-a4-8h-interface-integration.md)
 - [Strojově čitelný soupis rozhraní](../../../config/vehicles/audi_a4_8h_cabriolet.yaml)
 - [Zapojení OBD-II / ESP32 (obecné)](../../wiring.md)
+- [Zapojení ESP32 modulů do MIA](zapojeni-esp32-moduly.md) — strana mikrokontroléru
 - [Integrace Audi na Raspberry Pi (anglicky)](../../automotive/raspberry-pi-audi-integration.md)
