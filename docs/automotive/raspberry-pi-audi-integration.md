@@ -6,11 +6,17 @@ This document explains how MIA integrates an Audi vehicle through a Raspberry Pi
 
 ## Primary Prototype Vehicle
 
-**Audi A4 B3 Cabriolet (2004)** — this is the primary development and validation target for all automotive work in MIA.
+**Audi A4 Cabriolet 8H (2004)** — this is the primary development and validation target for all automotive work in MIA.
+
+Chassis-code note: a MY2004 A4 Cabriolet is the **8H body on B6 running gear** (the cabriolet moved to B7
+running gear for MY2006). Earlier revisions of this document called it a "B3", which is a 1986–1991 Audi 80/90
+with no CAN bus at all — look up wiring and order parts under `8H`/`8E`.
 
 Key characteristics:
 - VAG platform with KWP2000 / early CAN-based UDS diagnostics
-- CAN bus at 500 kbps, simpler topology than modern MQB/MLB (no central gateway module)
+- Powertrain CAN at 500 kbps; comfort and infotainment CAN at 100 kbps
+- The instrument cluster acts as the diagnostic gateway — there is no separate gateway module as on MQB/MLB,
+  but comfort-domain traffic is still not rebroadcast onto the powertrain bus
 - Common engine variants: 1.8T (AMB/BFB), 2.4 V6 (BDV), 3.0 V6 (ASN/BBJ)
 - Standard OBD-II PIDs fully supported
 - Read-only UDS diagnostics achievable without complex gateway negotiation
@@ -32,7 +38,7 @@ Audi vehicles fit under the wider VAG family, so the integration model is differ
 
 - Generic OBD PIDs cover baseline signals such as RPM, speed, coolant temperature, and fuel level.
 - Deeper Audi diagnostics usually move into UDS over CAN and depend on module-specific identifiers.
-- The 2004 A4 B3 Cabriolet has a simpler CAN topology than newer VAG platforms — no central gateway module blocking diagnostic access, which makes it a good prototype target.
+- The 2004 A4 Cabriolet 8H has a simpler CAN topology than newer VAG platforms — the cluster gateways diagnostics instead of a dedicated gateway module negotiating access, which makes it a good prototype target.
 - Many cheap ELM327 clones are good enough for standard PIDs but unreliable for sustained UDS work.
 - Operations such as coding, adaptation, security access, routine control, and ECU resets should stay out of scope for MIA unless there is a dedicated safety and validation program.
 
@@ -40,17 +46,17 @@ That is why the repository currently treats Audi as a read-only integration prob
 
 ## Recommended Starter Platform
 
-The primary validation target is **Audi A4 B3 Cabriolet (2004)**.
+The primary validation target is **Audi A4 Cabriolet 8H (2004)**.
 
 Reasons:
 
 - simpler CAN bus topology makes initial integration straightforward
-- no central gateway module to negotiate (unlike MQB/MLB Evo platforms)
+- diagnostics are gatewayed by the cluster rather than by a dedicated gateway module (unlike MQB/MLB Evo platforms)
 - standard OBD-II and basic VAG UDS diagnostics are accessible with common adapters
 - realistic overlap with the generic telemetry already present in MIA
 - available as the physical development vehicle
 
-Future expansion targets (after A4 B3 is stable):
+Future expansion targets (after the 8H cabriolet is stable):
 - Audi A3 8V on MQB (2015–2019) — widespread platform with strong community tooling
 - Other VAG family vehicles sharing common diagnostic protocols
 
@@ -102,7 +108,7 @@ sudo systemctl status zmq-broker mia-api mia-serial-bridge mia-obd-worker
 curl http://localhost:8000/status
 ```
 
-### 3. In-Vehicle Passive Monitoring (Audi A4 B3 Cabriolet)
+### 3. In-Vehicle Passive Monitoring (Audi A4 Cabriolet 8H)
 
 - Start with ignition on and passive telemetry only
 - Verify speed, RPM, coolant, fuel, and voltage are stable
@@ -116,4 +122,12 @@ curl http://localhost:8000/status
 
 ## Practical Next Step
 
-The next useful engineering step is wiring a real Pi transport source into the VAG Audi bridge in read-only mode, validating VIN and DTC access on the Audi A4 B3 Cabriolet prototype, and only then widening the identifier set or expanding to newer VAG platforms.
+The next useful engineering step is wiring a real Pi transport source into the VAG Audi bridge in read-only mode, validating VIN and DTC access on the Audi A4 Cabriolet 8H prototype, and only then widening the identifier set or expanding to newer VAG platforms.
+
+## Beyond OBD: the rest of the car
+
+OBD covers the powertrain domain only. Door, lock, window, convertible-top, head-unit audio, switch inputs,
+relay outputs and vehicle power state all live outside it. The survey of those physical interfaces on the
+prototype car, with confidence levels, verification steps and a phased integration plan, is in
+[`audi-a4-8h-interface-integration.md`](audi-a4-8h-interface-integration.md), with a machine-readable
+inventory in [`../../config/vehicles/audi_a4_8h_cabriolet.yaml`](../../config/vehicles/audi_a4_8h_cabriolet.yaml).

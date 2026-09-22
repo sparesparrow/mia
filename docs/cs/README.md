@@ -8,7 +8,7 @@ MIA (Modular IoT Assistant) je distribuovaný řídicí systém navržený pro R
 
 ## Klíčové Funkce
 
-- **Automobilóvá Telemetrie**: OBD-II diagnostika — primárně pro Audi A4 B3 Cabriolet (2004)
+- **Automobilóvá Telemetrie**: OBD-II diagnostika — primárně pro Audi A4 Cabriolet 8H (2004)
 - **Chytrá Domácnost**: Ovládání GPIO, senzory, osvětlení
 - **Hlasové Ovládání**: Integrace s AI asistenty
 - **Vzdálený Přístup**: Android aplikace pro monitoring
@@ -37,9 +37,10 @@ sudo systemctl start mia-api
 
 ## Dokumentace
 
-- [Integrace Audi A4 B3](../docs/automotive/raspberry-pi-audi-integration.md)
-- [Architektura systému](../ARCHITECTURE.md)
-- [README](../README.md)
+- [Zapojení MIA do Audi A4 Cabriolet 8H](automotive/zapojeni-audi-a4-8h.md) — praktický montážní návod
+- [Integrace Audi A4 8H](../automotive/raspberry-pi-audi-integration.md)
+- [Architektura systému](../../ARCHITECTURE.md)
+- [README](../../README.md)
 
 ## Podpora
 

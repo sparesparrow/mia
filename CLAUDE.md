@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MIA is a distributed vehicle telemetry and IoT control system targeting Raspberry Pi 4B, with ESP32/Arduino microcontrollers and an Android companion app. Primary prototype vehicle: Audi A4 B3 Cabriolet (2004). Core capabilities: OBD-II vehicle telemetry (standard PIDs + VAG/Audi read-only UDS), GPIO/sensor control, AI voice assistant, and a mobile interface with BLE/ANPR/DVR. Legacy Citroën C4 PSA bridge is maintained but secondary.
+MIA is a distributed vehicle telemetry and IoT control system targeting Raspberry Pi 4B, with ESP32/Arduino microcontrollers and an Android companion app. Primary prototype vehicle: Audi A4 Cabriolet 8H (2004). Core capabilities: OBD-II vehicle telemetry (standard PIDs + VAG/Audi read-only UDS), GPIO/sensor control, AI voice assistant, and a mobile interface with BLE/ANPR/DVR. Legacy Citroën C4 PSA bridge is maintained but secondary.
 
 ## Build & Test Commands
 
@@ -68,7 +68,7 @@ Key runtime boundaries (quick reference for AI agents):
 - **Telemetry PUB/SUB**: port 5556 — real-time MCU data fan-out
 - **FastAPI**: port 8000 — REST/WebSocket gateway (`apps/rpi-backend/py-api/api/main.py`)
 - **MCP modules**: `orchestration/mcp/modules/` — domain microservices (automotive, audio, hardware)
-- **OBD Digital Twin**: `apps/rpi-backend/py-api/services/obd_worker.py` — ELM327 emulator for Audi A4 B3
+- **OBD Digital Twin**: `apps/rpi-backend/py-api/services/obd_worker.py` — ELM327 emulator for the Audi A4 Cabriolet 8H
 
 ## Key Configuration
 
