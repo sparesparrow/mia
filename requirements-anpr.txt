@@ -1,0 +1,7 @@
+# Optional ANPR (Automatic Number Plate Recognition) dependencies.
+# Kept out of requirements.txt on purpose: easyocr pulls in PyTorch, which is
+# several GB on a Raspberry Pi and is only needed on hosts that run ANPR. The
+# API starts without these; services/anpr_service.py logs a warning instead.
+easyocr>=1.7.0
+opencv-python>=4.8.0
+Pillow>=10.0.0

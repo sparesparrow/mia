@@ -7,8 +7,8 @@ Get your ANPR system up and running in 30 minutes.
 ```bash
 cd /home/sparrow/projects/mia
 
-# Install ANPR packages
-pip install -r requirements.txt
+# Install ANPR packages (optional extras, not in requirements.txt)
+pip install -r requirements-anpr.txt
 
 # Verify
 python -c "import easyocr; import cv2; print('✓ ANPR ready')"
