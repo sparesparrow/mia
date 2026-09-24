@@ -311,16 +311,33 @@ nikdy sestavená nebyla.
 
 Oprava: `twai_transmit(&message, pdMS_TO_TICKS(100))`, stejný timeout jako u čekání na odpověď.
 
-### N6 — projekt `firmware-obd` nemá build soubory {#n6}
+### N6 — projekt `firmware-obd` je nesestavitelný {#n6}
 
-Tenhle nález **opravený není**, protože je to návrh struktury, ne jednořádková chyba:
+Tenhle nález **opravený není**, protože je to návrh struktury, ne jednořádková chyba.
+
+Chybí build soubory:
 
 - `apps/esp32/firmware-obd/components/ai_servis_obd/` nemá `CMakeLists.txt` s `idf_component_register()`
 - `apps/esp32/firmware-obd/main/` nemá `CMakeLists.txt`
 
-Bez nich ESP-IDF projekt nesestaví ani po opravách výše. Doplnit je znamená rozhodnout o
-závislostech komponenty a o tom, jestli má projekt vůbec zůstat oddělený od `apps/esp32/`.
-To patří k majiteli repa, ne do dokumentačního PR.
+Doplnit je ale **nestačí** — build by se pak posunul jen o krok dál, k chybějícím hlavičkám.
+`firmware-obd/main/main.c` includuje a volá čtyři komponenty, z nichž existuje jedna:
+
+| Komponenta | Stav |
+| --- | --- |
+| `ai_servis_obd.h` | existuje |
+| `ai_servis_ble.h` | není nikde v repu |
+| `ai_servis_mqtt.h` | není nikde v repu |
+| `ai_servis_config.h` | není nikde v repu |
+
+`app_main()` volá `ai_servis_config_init()`, `ai_servis_ble_init()` a `ai_servis_mqtt_init()`
+a zakládá úlohy `ai_servis_ble_task` / `ai_servis_mqtt_task` — samé nedefinované symboly.
+Projektový `firmware-obd/CMakeLists.txt` navíc ukazuje `EXTRA_COMPONENT_DIRS` na
+`${CMAKE_CURRENT_SOURCE_DIR}/../shared`, což je adresář, který v repu není.
+
+Takže projekt nerozchodí ani nikdo s ESP-IDF po ruce. Dotáhnout to znamená ty tři komponenty
+dopsat (nebo `main.c` osekat na to, co existuje) a přitom rozhodnout, jestli má projekt vůbec
+zůstat oddělený od `apps/esp32/`. To patří k majiteli repa, ne do dokumentačního PR.
 
 !!! note "Proč to nechytila CI"
     `apps/esp32/platformio.ini` má `src_dir = main`, takže job `esp32-build` překládá jen
