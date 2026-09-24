@@ -36,18 +36,6 @@ class MdnsDiscovery @Inject constructor(
 
 	fun getLastApiResults(): List<String> = lastApiResults
 
-	/**
-	 * Discover MIA REST API via mDNS (_mia-api._tcp).
-	 * Returns list of "host:port" strings.
-	 */
-	suspend fun discoverApi(timeoutMs: Long = 2000L): List<String> {
-		val results = discoverServiceType("_mia-api._tcp", timeoutMs)
-		lastApiResults = results
-		return results
-	}
-
-	fun getLastApiResults(): List<String> = lastApiResults
-
 	suspend fun discoverMqtt(timeoutMs: Long = 2000L): List<String> {
 		val results = discoverServiceType("_mqtt._tcp", timeoutMs)
 		lastResults = results

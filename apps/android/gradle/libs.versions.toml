@@ -12,7 +12,7 @@ gradle = "8.4"
 
 # Compose
 compose-bom = "2024.06.00"
-compose-compiler = "1.5.14"
+compose-compiler = "1.5.8"
 
 # AndroidX Core
 core-ktx = "1.13.1"

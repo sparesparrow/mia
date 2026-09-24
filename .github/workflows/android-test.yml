@@ -42,6 +42,10 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default also installs the legacy 'tools' package, which
+          # the SDK repository no longer serves, so sdkmanager exits 1.
+          packages: platform-tools
 
       - name: Install Android SDK packages
         run: |
@@ -101,6 +105,10 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default also installs the legacy 'tools' package, which
+          # the SDK repository no longer serves, so sdkmanager exits 1.
+          packages: platform-tools
 
       - name: Install Android SDK packages
         run: |
@@ -113,19 +121,28 @@ jobs:
           name: android-apk
           path: apps/android/app/build/outputs/apk/
 
+      # Hosted Linux runners expose /dev/kvm but only to root; open it up so
+      # the emulator runs hardware-accelerated instead of fully emulated
+      # (which took ~4 min to boot and ~15 s per `uiautomator dump`).
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           arch: x86_64
-          disable-linux-hw-accel: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
+          # android-emulator-runner runs every line of `script` as a separate
+          # `sh -c`, so a command must not be split with backslashes: the
+          # first line then passes a literal "\" and the rest never runs.
+          # `test` does not install the app, so deploy the downloaded APK first.
           script: |
-            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test \
-              --scenario ${{ matrix.scenario }} \
-              --screenshots \
-              --logs \
-              --device emulator-5554
+            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" deploy --device emulator-5554
+            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
 
       - name: Parse Test Results
         if: always()
@@ -158,6 +175,8 @@ jobs:
     permissions:
       contents: read
       issues: write
+      # The summary is a comment on the PR; the API answered 403 with only issues: write.
+      pull-requests: write
 
     steps:
       - name: Download All Artifacts
