@@ -77,22 +77,22 @@ Recommendations applied in this revision:
 	- [x] Audi/VAG logic checks capability before enabling UDS work
 	- [x] degraded behavior is documented for generic-only adapters
 
-### ISSUE P1-ANPR-1: Make the eDalnice Vignette Lookup Work
+### ISSUE P1-ANPR-1: Make the eDalnice Vignette Lookup Work (implemented; live check not yet validated)
 
 - Goal: `apps/rpi-backend/py-api/services/edalnice_service.py` returns a real vignette status for a plate read by ANPR.
-- Current state: the service POSTs to `https://edalnice.cz/api/search`, which answers 301 to `edalnice.gov.cz`, where that path is 404. Every lookup falls back to `"status": "unknown"`.
+- Previous state: the service POSTed to `https://edalnice.cz/api/search`, which answers 301 to `edalnice.gov.cz`, where that path is 404, so every lookup fell back to `"status": "unknown"`. Replaced by `services/edalnice_client.py`.
 - Flow the official site uses (observed in a browser on 2026-09-24 via its "Ověření platnosti" form):
 	1. Token: `POST https://auth.edalnice.gov.cz/auth/connect/token`, body `grant_type=client_credentials&scope=eshop.api`, HTTP Basic auth as the public web client `eshop.client` (its secret ships in the site's JavaScript bundle). Token lives 3600 s.
 	2. Lookup: `GET https://eshop.edalnice.gov.cz/api/v3/charge_registrations/{countryId}/{plate}` with `Authorization: Bearer <token>`; 401 without it. CZ is `3906ba89-153c-4038-8e36-0ca1deb76076`; all ids come from `GET /api/v3/enums/countries?include_deleted=false`.
 	3. Response: `{"vehicle": {...}, "isGivenExemption": bool, "possibleExemptionReasonIds": [...], "charges": [{"priceListItemId", "validSince", "validUntil", "isCurrentlyValid"}]}`.
 	4. The site's verdict: `isGivenExemption` → exempt; non-empty `possibleExemptionReasonIds` → possibly exempt; any charge with `isCurrentlyValid` → valid; otherwise invalid.
-- Implementation plan:
-	- [ ] credentials: `EDALNICE_CLIENT_CREDENTIALS` (`client_id:secret`) if set, otherwise read from the site's JavaScript at runtime; nothing committed to the repo
-	- [ ] token: cache for its lifetime; on a 401, fetch a new token and retry once
-	- [ ] country: resolve the id from the country list, defaulting to CZ
-	- [ ] result: exempt / possibly exempt / valid / invalid by the site's rule, plus valid-from/until dates of current and upcoming charges
-	- [ ] unit tests with all HTTP calls mocked
-- Blocker: calling the API outside the browser was refused by the Claude Code auto-mode permission check; needs a Bash permission rule or a session outside auto mode.
+- Implementation (`apps/rpi-backend/py-api/services/edalnice_client.py`, used by `edalnice_service.py`):
+	- [x] credentials: `EDALNICE_CLIENT_CREDENTIALS` (`client_id:secret`) if set, otherwise read from the site's JavaScript at runtime; nothing committed to the repo
+	- [x] token: cached for its lifetime; on a 401, a new token and one retry
+	- [x] country: CZ id built in, others resolved from the country list
+	- [x] result: exempt / possibly exempt / valid / invalid by the site's rule, plus valid-from/until dates of current and upcoming charges
+	- [x] unit tests with all HTTP calls mocked (`tests/unit/test_edalnice_client.py`, `tests/unit/test_edalnice_service.py`)
+	- [ ] validated against the live site from a Pi: a plate with a valid vignette, one without, and an exempt vehicle; confirm the country list's field names (only CZ's id has been observed)
 - Open question: ask SFDI (the fund that runs eDalnice) for official API access; the web client's credentials and bundle can change without notice.
 
 ## Priority 0: Stabilize Build and Deployment

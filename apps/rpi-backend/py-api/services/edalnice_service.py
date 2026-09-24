@@ -1,17 +1,24 @@
 """
-Edalnice.cz Integration Service
-Czech toll/vehicle system integration for checking vehicle exemption status
+Edalnice Integration Service
+Checks a plate's Czech electronic vignette (or exemption) on edalnice.gov.cz,
+with an in-memory and on-disk cache in front of services.edalnice_client.
 """
 
-import logging
 import asyncio
-from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
 import hashlib
 import json
-from pathlib import Path
+import logging
 import urllib.error
-import urllib.request
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from services.edalnice_client import (
+    EdalniceClient,
+    Status,
+    VignetteCheckResult,
+    result_to_dict,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,29 +40,33 @@ class EdalniceCacheEntry:
 class EdalniceCzService:
     """Service for querying Czech vehicle exemption status from edalnice.cz"""
 
-    # Edalnice.cz API endpoint (public, no authentication required)
-    API_URL = "https://edalnice.cz/api/query"
-    API_SEARCH_URL = "https://edalnice.cz/api/search"
-
-    # Status constants
+    # Status texts
     STATUS_EXEMPTED = "Vozidlo osvobozeno"
-    STATUS_OK = "Vozidlo v pořádku"
-    STATUS_NOT_FOUND = "Vozidlo nenalezeno"
-    STATUS_DEBT = "Vozidlo má dluh"
+    STATUS_POSSIBLY_EXEMPTED = "Vozidlo může být osvobozeno"
 
-    def __init__(self, cache_dir: Optional[str] = None, cache_ttl_hours: int = 24):
+    def __init__(
+        self,
+        cache_dir: Optional[str] = None,
+        cache_ttl_hours: int = 24,
+        client: Optional[EdalniceClient] = None,
+        country: str = "CZ",
+    ):
         """
         Initialize Edalnice service
 
         Args:
             cache_dir: Directory for local cache
             cache_ttl_hours: Cache TTL in hours (default: 24)
+            client: edalnice.gov.cz client (default: one reading EDALNICE_CLIENT_CREDENTIALS)
+            country: Registration country of the plates looked up (default: CZ)
         """
         self.cache_dir = Path(cache_dir) if cache_dir else Path.home() / ".cache" / "edalnice"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.cache_ttl_hours = cache_ttl_hours
         self._memory_cache: Dict[str, EdalniceCacheEntry] = {}
         self._initialized = False
+        self._client = client or EdalniceClient()
+        self.country = country
 
     async def initialize(self):
         """Initialize HTTP session"""
@@ -141,7 +152,6 @@ class EdalniceCzService:
             if not self._initialized:
                 await self.initialize()
 
-            # Try public API first (no authentication)
             result = await self._query_public_api(plate_clean)
 
             if result and result.get("status") != "error":
@@ -170,110 +180,50 @@ class EdalniceCzService:
 
     async def _query_public_api(self, plate: str) -> Optional[Dict[str, Any]]:
         """
-        Query public edalnice.cz API
+        Check the plate's electronic vignette on edalnice.gov.cz
 
         Args:
             plate: Clean plate text (no spaces)
 
         Returns:
-            API response or None if request fails
+            Result dict, with "status": "error" if the lookup failed
         """
         try:
             if not self._initialized:
                 await self.initialize()
 
-            data = await asyncio.to_thread(self._post_public_api, plate)
-            http_error = data.get("__http_error")
-            if not http_error:
+            result = await asyncio.to_thread(self._client.check_plate, plate, self.country)
+            info = result_to_dict(result)
+            is_exempted = result.status == Status.EXEMPT
+            return {
+                "status": "success",
+                "plate": plate,
+                "country": self.country,
+                **info,
+                "is_exempted": is_exempted,
+                "possibly_exempted": result.status == Status.POSSIBLY_EXEMPT,
+                "has_valid_vignette": result.status == Status.VALID,
+                "exemption_reason": self._exemption_reason(result),
+                "timestamp": datetime.now().isoformat(),
+            }
 
-                # Parse response
-                is_exempted = self._parse_exemption_status(data)
-
-                return {
-                    "status": "success",
-                    "plate": plate,
-                    "is_exempted": is_exempted,
-                    "exemption_reason": self._get_exemption_reason(data),
-                    "raw_response": data,
-                    "timestamp": datetime.now().isoformat(),
-                }
-
-            logger.warning(f"API response status: {http_error}")
-            return {"status": "error", "error": f"HTTP {http_error}"}
-
-        except TimeoutError:
-            logger.warning(f"Timeout querying edalnice.cz for {plate}")
-            return {"status": "error", "error": "Request timeout"}
+        except urllib.error.HTTPError as e:
+            logger.warning(f"edalnice.gov.cz answered HTTP {e.code} for {plate}")
+            return {"status": "error", "error": f"HTTP {e.code}"}
+        except (urllib.error.URLError, TimeoutError) as e:
+            logger.warning(f"Could not reach edalnice.gov.cz for {plate}: {e}")
+            return {"status": "error", "error": str(e)}
         except Exception as e:
-            logger.error(f"Error querying API: {e}")
+            logger.error(f"Error querying edalnice.gov.cz: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _post_public_api(self, plate: str) -> Dict[str, Any]:
-        """Post plate lookup request using standard-library HTTP client."""
-        payload = json.dumps({"plate": plate}).encode("utf-8")
-        request = urllib.request.Request(
-            self.API_SEARCH_URL,
-            data=payload,
-            headers={"Accept": "application/json", "Content-Type": "application/json"},
-            method="POST",
-        )
-
-        try:
-            with urllib.request.urlopen(request, timeout=5) as response:
-                body = response.read().decode("utf-8")
-                return json.loads(body) if body else {}
-        except urllib.error.HTTPError as exc:
-            return {"__http_error": exc.code}
-
     @staticmethod
-    def _parse_exemption_status(response: Dict[str, Any]) -> bool:
-        """
-        Parse API response to determine if vehicle is exempted
-
-        Args:
-            response: API response dict
-
-        Returns:
-            True if vehicle is exempted
-        """
-        if not response:
-            return False
-
-        # Check various fields that might indicate exemption
-        status_text = response.get("status", "").lower()
-        message = response.get("message", "").lower()
-        data_text = json.dumps(response).lower()
-
-        exemption_keywords = [
-            "osvobozeno",  # exempted
-            "osvobozen",   # exempted (variant)
-            "vyňat",       # exempt
-            "vynecha",     # omitted
-            "bezplatně",   # free/exempt
-        ]
-
-        for keyword in exemption_keywords:
-            if keyword in status_text or keyword in message or keyword in data_text:
-                return True
-
-        return False
-
-    @staticmethod
-    def _get_exemption_reason(response: Dict[str, Any]) -> Optional[str]:
-        """
-        Extract exemption reason from API response
-
-        Args:
-            response: API response dict
-
-        Returns:
-            Exemption reason or None
-        """
-        # Common fields that might contain reason
-        for field in ["reason", "message", "status", "description", "info"]:
-            if field in response and isinstance(response[field], str):
-                return response[field]
-
+    def _exemption_reason(result: VignetteCheckResult) -> Optional[str]:
+        """Human-readable reason for the ANPR alert, in the site's own wording"""
+        if result.status == Status.EXEMPT:
+            return EdalniceCzService.STATUS_EXEMPTED
+        if result.status == Status.POSSIBLY_EXEMPT:
+            return EdalniceCzService.STATUS_POSSIBLY_EXEMPTED
         return None
 
 
