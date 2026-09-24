@@ -166,6 +166,8 @@ jobs:
     permissions:
       contents: read
       issues: write
+      # The summary is a comment on the PR; the API answered 403 with only issues: write.
+      pull-requests: write
 
     steps:
       - name: Download All Artifacts
