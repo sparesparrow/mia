@@ -6,7 +6,7 @@ Complete ANPR system for MIA vehicle telemetry platform with Czech license plate
 
 - **License Plate Detection**: Real-time OCR for vehicle license plates using EasyOCR
 - **Czech Plate Recognition**: Optimized for Czech plate format (2 letters + 3-5 digits + 2 letters)
-- **Vehicle Status Checking**: Integration with edalnice.cz for vehicle exemption status
+- **Vehicle Status Checking**: Integration with edalnice.cz for vehicle exemption status (not working yet: the endpoint it calls no longer exists; see ISSUE P1-ANPR-1 in [TODO.md](../TODO.md))
 - **Live Alert System**: Real-time notifications for exempted vehicles ("Vozidlo osvobozeno")
 - **WebSocket Streaming**: Real-time plate detection stream to Android app
 - **Local Caching**: Intelligent caching of edalnice.cz lookups (24h TTL)
