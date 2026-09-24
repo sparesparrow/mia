@@ -431,6 +431,46 @@ stop_logcat() {
   log "Logcat captured: $LOGCAT_FILE"
 }
 
+# Called on a failing `test` run: save what was on screen and why, so a CI
+# failure leaves evidence in the uploaded artifact instead of an empty dir.
+capture_failure_diagnostics() {
+  local diag_dir="$OUTPUT_DIR/logs"
+  log "Scenario failed; capturing diagnostics in $diag_dir"
+
+  timeout 30 adb -s "$DEVICE_SERIAL" shell dumpsys window 2>&1 |
+    grep -E 'mCurrentFocus|mFocusedApp' >"$diag_dir/focused-window.txt" || true
+  echo "--- focused window ---"
+  cat "$diag_dir/focused-window.txt"
+
+  timeout 60 adb -s "$DEVICE_SERIAL" shell uiautomator dump "$UI_DUMP_PATH" \
+    >"$diag_dir/uiautomator-dump.txt" 2>&1 || true
+  echo "--- uiautomator dump ---"
+  cat "$diag_dir/uiautomator-dump.txt"
+  timeout 30 adb -s "$DEVICE_SERIAL" shell cat "$UI_DUMP_PATH" \
+    >"$diag_dir/window_dump.xml" 2>&1 || true
+
+  timeout 60 adb -s "$DEVICE_SERIAL" logcat -d -v time >"$diag_dir/logcat-all.txt" 2>&1 || true
+  echo "--- crashes / ANRs ---"
+  grep -E 'FATAL EXCEPTION|AndroidRuntime|ANR in|not responding' "$diag_dir/logcat-all.txt" | head -40 || true
+
+  local saved_screenshots="$DO_SCREENSHOTS"
+  DO_SCREENSHOTS=1
+  take_screenshot "failure" || true
+  DO_SCREENSHOTS="$saved_screenshots"
+}
+
+on_test_exit() {
+  local rc=$?
+  trap - EXIT
+  if [[ $rc -ne 0 ]]; then
+    set +e
+    capture_failure_diagnostics
+    stop_logcat
+    generate_report
+  fi
+  exit "$rc"
+}
+
 scenario_dashboard() {
   log "Scenario: dashboard"
   open_nav_tab "Dashboard" "Start Service" exact || return 1
@@ -601,6 +641,7 @@ main() {
         err "No device selected. Use --device <serial>"
         exit 1
       }
+      trap on_test_exit EXIT
       start_logcat
       run_scenario
       stop_logcat

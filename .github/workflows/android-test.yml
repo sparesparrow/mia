@@ -121,12 +121,20 @@ jobs:
           name: android-apk
           path: apps/android/app/build/outputs/apk/
 
+      # Hosted Linux runners expose /dev/kvm but only to root; open it up so
+      # the emulator runs hardware-accelerated instead of fully emulated
+      # (which took ~4 min to boot and ~15 s per `uiautomator dump`).
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           arch: x86_64
-          disable-linux-hw-accel: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
           # android-emulator-runner runs every line of `script` as a separate
           # `sh -c`, so a command must not be split with backslashes: the
