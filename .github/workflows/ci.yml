@@ -242,7 +242,7 @@ jobs:
             cmake ninja-build pkg-config \
             flatbuffers-compiler libflatbuffers-dev \
             libcurl4-openssl-dev libssl-dev zlib1g-dev \
-            libjsoncpp-dev libasound2-dev
+            libjsoncpp-dev libasound2-dev libmosquitto-dev
       - name: Configure
         run: |
           set -o pipefail
@@ -323,5 +323,44 @@ jobs:
         with:
           name: mia-esp32-firmware
           path: dist/esp32/
+          if-no-files-found: warn
+          retention-days: 30
+
+  esp32-obd-build:
+    if: needs.changes.outputs.esp32 == 'true'
+    name: ESP32 OBD Firmware Build
+    runs-on: ubuntu-latest
+    needs: changes
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      # apps/esp32/firmware-obd is a plain ESP-IDF project, so the PlatformIO
+      # job above never touches it. Without this job its sources are shipped
+      # unbuilt.
+      - name: Build default configuration
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5
+          target: esp32
+          path: apps/esp32/firmware-obd
+      - name: Build listen-only configuration
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5
+          target: esp32
+          path: apps/esp32/firmware-obd
+          command: idf.py build -DMIA_TWAI_LISTEN_ONLY=1
+      - name: Stage firmware
+        run: |
+          mkdir -p dist/esp32-obd
+          find apps/esp32/firmware-obd/build -maxdepth 1 -type f \
+            \( -name '*.bin' -o -name '*.elf' \) \
+            -exec cp -v {} dist/esp32-obd/ \; || true
+          ls -la dist/esp32-obd
+      - name: Upload OBD firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: mia-esp32-obd-firmware
+          path: dist/esp32-obd/
           if-no-files-found: warn
           retention-days: 30

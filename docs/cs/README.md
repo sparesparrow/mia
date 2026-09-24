@@ -38,6 +38,7 @@ sudo systemctl start mia-api
 ## Dokumentace
 
 - [Zapojení MIA do Audi A4 Cabriolet 8H](automotive/zapojeni-audi-a4-8h.md) — praktický montážní návod
+- [Zapojení ESP32 modulů do MIA](automotive/zapojeni-esp32-moduly.md) — mikrokontroléry, CAN budič, napájení
 - [Integrace Audi A4 8H](../automotive/raspberry-pi-audi-integration.md)
 - [Architektura systému](../../ARCHITECTURE.md)
 - [README](../../README.md)

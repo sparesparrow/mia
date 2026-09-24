@@ -23,10 +23,61 @@
 
 static const char *TAG = "AI_SERVIS_MAIN";
 
+#define TELEMETRY_TOPIC_PREFIX "mia/telemetry/"
+
+
 // Global queues for inter-task communication
 QueueHandle_t obd_queue;
 QueueHandle_t ble_queue;
 QueueHandle_t mqtt_queue;
+
+/**
+ * Drain polled OBD samples and fan them out: notify a subscribed BLE client and
+ * publish JSON to MQTT. Without this the OBD task's queue has no consumer.
+ */
+static void telemetry_fanout_task(void *pvParameters)
+{
+    (void)pvParameters;
+
+    QueueHandle_t source = ai_servis_obd_get_queue();
+    if (!source) {
+        ESP_LOGE(TAG, "OBD queue unavailable, telemetry fan-out not started");
+        vTaskDelete(NULL);
+        return;
+    }
+
+    char topic[AI_SERVIS_MQTT_TOPIC_MAX];
+    snprintf(topic, sizeof(topic), TELEMETRY_TOPIC_PREFIX "%s",
+             ai_servis_config_get()->device_id);
+
+    obd_data_t sample;
+    char payload[AI_SERVIS_MQTT_PAYLOAD_MAX];
+
+    while (1) {
+        if (xQueueReceive(source, &sample, portMAX_DELAY) != pdTRUE) {
+            continue;
+        }
+
+        ai_servis_ble_notify_telemetry(&sample);
+
+        int length = snprintf(payload, sizeof(payload),
+                              "{\"rpm\":%u,\"speed\":%u,\"coolant\":%u,"
+                              "\"fuel\":%u,\"load\":%u,\"throttle\":%u,"
+                              "\"intake\":%u,\"timestamp\":%lu}",
+                              (unsigned)sample.engine_rpm,
+                              (unsigned)sample.vehicle_speed,
+                              (unsigned)sample.coolant_temp,
+                              (unsigned)sample.fuel_level,
+                              (unsigned)sample.engine_load,
+                              (unsigned)sample.throttle_pos,
+                              (unsigned)sample.intake_temp,
+                              (unsigned long)sample.timestamp);
+
+        if (length > 0 && (size_t)length < sizeof(payload)) {
+            ai_servis_mqtt_publish(topic, payload, 0, false);
+        }
+    }
+}
 
 void app_main(void)
 {
@@ -64,6 +115,7 @@ void app_main(void)
     xTaskCreate(ai_servis_obd_task, "obd_task", 4096, NULL, 5, NULL);
     xTaskCreate(ai_servis_ble_task, "ble_task", 4096, NULL, 5, NULL);
     xTaskCreate(ai_servis_mqtt_task, "mqtt_task", 4096, NULL, 5, NULL);
+    xTaskCreate(telemetry_fanout_task, "telemetry_task", 4096, NULL, 4, NULL);
 
     ESP_LOGI(TAG, "AI-SERVIS OBD firmware started successfully");
 }
