@@ -33,11 +33,17 @@ def test_parse_hex_val_strips_variable_length_prefix():
     assert module.parse_hex_val("41 0D 3C", "410D") == "3C"
 
 
-def test_default_zmq_pub_port_matches_telemetry_pubsub():
-    """Legacy bridge should publish on the canonical telemetry PUB/SUB port by default."""
+def test_default_zmq_pub_port_matches_vehicle_telemetry_consumer():
+    """The bridge must publish where the API consumes vehicle telemetry.
+
+    api/main.py reads VEHICLE_TELEMETRY_PORT from ZMQ_VEHICLE_PORT, then
+    ZMQ_PUB_PORT, then 5557, and decodes it with parse_citroen_telemetry().
+    5556 is the MCU channel bound by serial_bridge, so publishing there would
+    collide with that bind and land in the wrong consumer.
+    """
     module = load_citroen_bridge_module()
 
-    assert module.DEFAULT_ZMQ_PUB_PORT == 5556
+    assert module.DEFAULT_ZMQ_PUB_PORT == 5557
 
 
 def test_decode_hex_measurement_returns_zero_on_invalid_hex(caplog):
