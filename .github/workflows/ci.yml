@@ -242,7 +242,7 @@ jobs:
             cmake ninja-build pkg-config \
             flatbuffers-compiler libflatbuffers-dev \
             libcurl4-openssl-dev libssl-dev zlib1g-dev \
-            libjsoncpp-dev libasound2-dev
+            libjsoncpp-dev libasound2-dev libmosquitto-dev
       - name: Configure
         run: |
           set -o pipefail
