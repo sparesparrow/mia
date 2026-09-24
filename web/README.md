@@ -25,7 +25,6 @@ web/
 
   index.html                   hand-maintained gonzo landing
   voice-chat.{html,js}         WebSocket voice-intercept terminal demo
-  chatka-booking.html          hotel reception WebSocket booking sim
   agents/                      ElevenLabs convai agent portal
   team/                        team status board
   404.html                     redirect-aware 404
@@ -75,20 +74,9 @@ copied to `dist/i18n/`. When that fetch fails (CORS, offline, broken path)
 the loader now installs a visible red banner instead of silently rendering
 raw translation keys.
 
-The standalone pages (`index.html`, `voice-chat.html`, `chatka-booking.html`,
-`team/index.html`) are currently **not** i18n-enabled and ship with
-hardcoded Czech/English text. Migrating them is tracked separately.
-
-## chatka-booking.html
-
-`chatka-booking.html` derives its WebSocket URL from `window.location` at
-runtime. To point the page at a different backend without editing HTML:
-
-- append `?ws=ws://demo.local:8432/ws` to the URL, or
-- set `window.MIA_CHATKA_WS_URL` before the inline script runs.
-
-The default falls back to the current host and port `8432` (matches the
-local `python server.py` simulator).
+The standalone pages (`index.html`, `voice-chat.html`, `team/index.html`)
+are currently **not** i18n-enabled and ship with hardcoded Czech/English
+text. Migrating them is tracked separately.
 
 ## Known limitations
 
