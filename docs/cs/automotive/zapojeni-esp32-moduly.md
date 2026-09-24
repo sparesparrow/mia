@@ -283,8 +283,9 @@ idf.py build -DMIA_TWAI_LISTEN_ONLY=1         # pasivní odposlech
 ```
 
 V odposlechové variantě se ovladač instaluje v `TWAI_MODE_LISTEN_ONLY` a `ai_servis_obd_read_pid()`
-místo vysílání vrátí `ESP_ERR_NOT_SUPPORTED`. Kconfig jsem nepřidával — komponenta nemá
-`CMakeLists.txt`, kam by patřil (viz N6 níže), a soubor už stejný `#ifndef` vzor používá pro
+místo vysílání vrátí `ESP_ERR_NOT_SUPPORTED`. Přepínač je napojený v `CMakeLists.txt` komponenty
+přes `target_compile_definitions()` — bez toho by `idf.py` ten `-D` na příkazové řádce přijal
+a tiše zahodil. Kconfig zatím ne; soubor už stejný `#ifndef` vzor používá pro
 `MQTT_ALERT_BROKER_URI`.
 
 !!! warning "Přepínač nenahrazuje odpojený drát"
@@ -311,43 +312,56 @@ nikdy sestavená nebyla.
 
 Oprava: `twai_transmit(&message, pdMS_TO_TICKS(100))`, stejný timeout jako u čekání na odpověď.
 
-### N6 — projekt `firmware-obd` je nesestavitelný {#n6}
+### N6 — projekt `firmware-obd` byl nesestavitelný {#n6}
 
-Tenhle nález **opravený není**, protože je to návrh struktury, ne jednořádková chyba.
+Tenhle nález **už opravený je**, ale stálo to víc než doplnit build soubory.
 
-Chybí build soubory:
+Chyběly `CMakeLists.txt` pro `main/` i pro komponentu `ai_servis_obd/`. Doplnit je ale
+**nestačilo** — build by se posunul jen o krok dál, k chybějícím hlavičkám. `main.c` includuje
+a volá čtyři komponenty a existovala z nich jedna:
 
-- `apps/esp32/firmware-obd/components/ai_servis_obd/` nemá `CMakeLists.txt` s `idf_component_register()`
-- `apps/esp32/firmware-obd/main/` nemá `CMakeLists.txt`
+| Komponenta | Stav před | Stav teď |
+| --- | --- | --- |
+| `ai_servis_obd` | existovala | beze změny, plus `ai_servis_obd_get_queue()` |
+| `ai_servis_config` | nebyla v repu | dopsaná — konfigurace v NVS, výchozí hodnoty přeložené napevno |
+| `ai_servis_mqtt` | nebyla v repu | dopsaná — WiFi STA + esp-mqtt klient, fronta publikací |
+| `ai_servis_ble` | nebyla v repu | dopsaná — Bluedroid GATT server, příkazy a notifikace telemetrie |
 
-Doplnit je ale **nestačí** — build by se pak posunul jen o krok dál, k chybějícím hlavičkám.
-`firmware-obd/main/main.c` includuje a volá čtyři komponenty, z nichž existuje jedna:
+Projektový `CMakeLists.txt` navíc ukazoval `EXTRA_COMPONENT_DIRS` na
+`${CMAKE_CURRENT_SOURCE_DIR}/../shared`, což je adresář, který v repu není. Odstraněno —
+`components/` si ESP-IDF najde samo.
 
-| Komponenta | Stav |
-| --- | --- |
-| `ai_servis_obd.h` | existuje |
-| `ai_servis_ble.h` | není nikde v repu |
-| `ai_servis_mqtt.h` | není nikde v repu |
-| `ai_servis_config.h` | není nikde v repu |
+Při tom vyplavaly dvě další věci ve `sdkconfig.defaults`:
 
-`app_main()` volá `ai_servis_config_init()`, `ai_servis_ble_init()` a `ai_servis_mqtt_init()`
-a zakládá úlohy `ai_servis_ble_task` / `ai_servis_mqtt_task` — samé nedefinované symboly.
-Projektový `firmware-obd/CMakeLists.txt` navíc ukazuje `EXTRA_COMPONENT_DIRS` na
-`${CMAKE_CURRENT_SOURCE_DIR}/../shared`, což je adresář, který v repu není.
+- **Bluetooth nebyl zapnutý.** Byl tam `CONFIG_BT_BLE_ENABLED=y`, ale ne `CONFIG_BT_ENABLED`
+  ani host stack. Bez nich komponenta `bt` neexportuje ani `esp_bt.h`, takže ta jedna řádka
+  byla bez účinku.
+- **`CONFIG_NVS_ENCRYPTION=y` nic nedělalo.** Závisí na `CONFIG_SECURE_FLASH_ENC_ENABLED`,
+  který nastavený nebyl, takže se volba při generování `sdkconfig` tiše zahodila. Šifrování
+  NVS tedy nikdy zapnuté nebylo, jen to tak v souboru vypadalo. Zapnout kvůli tomu šifrování
+  flash je na reálném kusu železa nevratný krok a patří do rozhodnutí o provisioningu, ne do
+  build defaultů — proto je tam teď místo té řádky komentář, který to říká.
 
-Takže projekt nerozchodí ani nikdo s ESP-IDF po ruce. Dotáhnout to znamená ty tři komponenty
-dopsat (nebo `main.c` osekat na to, co existuje) a přitom rozhodnout, jestli má projekt vůbec
-zůstat oddělený od `apps/esp32/`. To patří k majiteli repa, ne do dokumentačního PR.
+Binárka se taky nevešla do výchozího 1MB oddílu, takže přibyl
+`CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE=y` a 4MB flash. I tak zbývají **jen ~4 % volného
+místa** v app oddílu — při dalším růstu bude potřeba vlastní tabulka oddílů.
 
-!!! note "Proč to nechytila CI"
-    `apps/esp32/platformio.ini` má `src_dir = main`, takže job `esp32-build` překládá jen
-    `apps/esp32/main/`. Projekt `firmware-obd/` se nepřekládá vůbec — `-Woverflow` u N1 ani
-    chyba argumentu u N5 tak neměly kde vzniknout.
+!!! warning "Fan-out telemetrie je nový kus chování"
+    `ai_servis_obd_task()` plnil frontu, kterou nikdo nevyprazdňoval. Přibyla úloha
+    `telemetry_fanout_task` v `main.c`, která vzorky rozesílá na BLE notifikaci a na MQTT
+    téma `mia/telemetry/<device_id>`. Bez ní by telemetrická charakteristika vracela nuly.
+
+!!! note "Proč to nechytila CI — a co s tím teď je"
+    `apps/esp32/platformio.ini` má `src_dir = main`, takže job `esp32-build` překládal jen
+    `apps/esp32/main/`. Projekt `firmware-obd/` se nepřekládal vůbec — `-Woverflow` u N1 ani
+    chyba argumentu u N5 tak neměly kde vzniknout. Přibyl proto job
+    `esp32-obd-build`, který `firmware-obd` staví přes ESP-IDF v obou konfiguracích
+    (výchozí i `-DMIA_TWAI_LISTEN_ONLY=1`).
 
 ### Jak jsem opravy ověřil
 
-ESP-IDF v tomhle prostředí není, takže jsem napsal náhradní (stub) hlavičky se skutečnými
-signaturami z ESP-IDF a soubor proti nim přeložil a spustil:
+Ověřovalo se ve dvou kolech. Nejdřív, než byly komponenty dopsané, proti náhradním (stub)
+hlavičkám se skutečnými signaturami z ESP-IDF:
 
 | Kontrola | Výsledek |
 | --- | --- |
@@ -361,8 +375,21 @@ signaturami z ESP-IDF a soubor proti nim přeložil a spustil:
 Clang stojí za zmínku zvlášť: v odposlechové konfiguraci hlásil `obd_request_template` jako
 nepoužitou proměnnou, zatímco GCC mlčel. Šablona je proto schovaná za `#if !MIA_TWAI_LISTEN_ONLY`.
 
-Stub hlavičky zůstaly mimo repozitář; nahrazují ESP-IDF jen pro tuhle kontrolu a nejsou náhrada
-za sestavení opravdovým `idf.py` na cílové desce.
+Po vyřešení N6 už jde projekt sestavit doopravdy, takže druhé kolo proběhlo skutečným
+ESP-IDF v5.5.5 s `xtensa-esp32-elf-gcc 14.2.0`:
+
+| Kontrola | Výsledek |
+| --- | --- |
+| `idf.py build`, výchozí konfigurace | projde, `ai-servis-obd.bin` 0x167560 B |
+| `idf.py build -DMIA_TWAI_LISTEN_ONLY=1` | projde, 0x166ec0 B — o 1 696 B méně |
+| varování v našich zdrojích (IDF staví s `-Wall -Wextra`) | žádné |
+| `nm` na odposlechové binárce | `twai_transmit` **0 výskytů** — linker vysílací cestu vyhodil |
+
+Ten poslední řádek je to, co u N3 dosud chybělo: že se v odposlechové variantě opravdu nedá
+vysílat, ne jen že to tak vypadá ve zdrojáku.
+
+Co ani tohle nenahrazuje: běh na cílové desce připojené ke skutečné sběrnici. Že se firmware
+přeloží a slinkuje, neříká nic o tom, jestli ECU na rámce odpoví.
 
 ## 11. Materiál
 

@@ -41,6 +41,13 @@ typedef struct {
 
 // Function declarations
 esp_err_t ai_servis_obd_init(void);
+
+/**
+ * Queue of polled samples. Valid after ai_servis_obd_init(); NULL before it.
+ * Exposed so a consumer can fan telemetry out to BLE and MQTT - without one,
+ * ai_servis_obd_task() fills this queue and nothing ever drains it.
+ */
+QueueHandle_t ai_servis_obd_get_queue(void);
 void ai_servis_obd_task(void *pvParameters);
 esp_err_t ai_servis_obd_read_pid(uint8_t pid, uint8_t *data, size_t *length);
 esp_err_t ai_servis_obd_parse_data(obd_data_t *data, uint8_t *response, size_t length);

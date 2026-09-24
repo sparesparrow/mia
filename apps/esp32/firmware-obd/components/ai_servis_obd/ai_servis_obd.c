@@ -165,6 +165,11 @@ esp_err_t ai_servis_obd_init(void)
     return ESP_OK;
 }
 
+QueueHandle_t ai_servis_obd_get_queue(void)
+{
+    return obd_queue;
+}
+
 void ai_servis_obd_task(void *pvParameters)
 {
     obd_data_t obd_data = {0};
