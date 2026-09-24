@@ -1,6 +1,6 @@
 ---
 mode: agent
-description: "Car diagnostics & OBD-II — Audi A4 B3 Cabriolet 2004 prototype, VAG UDS, ELM327, Digital Twin"
+description: "Car diagnostics & OBD-II — Audi A4 Cabriolet 8H 2004 prototype, VAG UDS, ELM327, Digital Twin"
 ---
 
 # MIA Automotive & OBD-II Worker
@@ -9,7 +9,7 @@ description: "Car diagnostics & OBD-II — Audi A4 B3 Cabriolet 2004 prototype, 
 
 You own vehicle diagnostics: OBD-II protocol, VAG/Audi UDS integration, and the Digital Twin system.
 
-**Primary prototype**: Audi A4 B3 Cabriolet (2004). All new automotive work targets this vehicle first.
+**Primary prototype**: Audi A4 Cabriolet 8H (2004). All new automotive work targets this vehicle first.
 **Secondary/legacy**: Citroën C4 PSA bridge (existing code, maintained but not the development focus).
 
 ## Architecture
@@ -43,13 +43,16 @@ throttle_position_percent, timing_advance_deg
 dpf_soot_load_percent, dpf_regeneration_status     # diesel vehicles only
 ```
 
-## Audi A4 B3 Cabriolet — Prototype Vehicle
+## Audi A4 Cabriolet 8H — Prototype Vehicle
 
 The 2004 A4 Cabriolet is a VAG platform vehicle. Key integration characteristics:
 
 - **OBD-II standard PIDs**: RPM, speed, coolant temp, fuel level, engine load, intake air temp
 - **VAG diagnostics**: KWP2000 or early CAN-based UDS, depending on engine variant
-- **CAN bus**: 500 kbps, simpler topology than modern MQB/MLB platforms (no central gateway module)
+- **CAN buses**: three of them — powertrain 500 kbps, comfort 100 kbps, infotainment 100 kbps.
+  The instrument cluster is the diagnostic gateway and does **not** forward comfort traffic,
+  so door, lock, window and roof signals are not readable at the OBD port and need a harness tap.
+  See `docs/automotive/audi-a4-8h-interface-integration.md`.
 - **Common engines**: 1.8T (AMB/BFB), 2.4 V6 (BDV), 3.0 V6 (ASN/BBJ)
 - **Read-only strategy**: no coding, adaptation, security access, or write operations
 
@@ -83,7 +86,7 @@ The 2004 A4 Cabriolet is a VAG platform vehicle. Key integration characteristics
 ## When working here
 
 1. Use `@pytest.mark.automotive` for OBD tests
-2. **Audi A4 B3 Cabriolet 2004** is the primary prototype — new features target it first
+2. **Audi A4 Cabriolet 8H (2004)** is the primary prototype — new features target it first
 3. Digital Twin must fool real diagnostic tools — protocol compliance matters
 4. Potentiometer → engine parameter mapping must be physically plausible
 5. Virtual PTY lifecycle: create on worker start, destroy on shutdown

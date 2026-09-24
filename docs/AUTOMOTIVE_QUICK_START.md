@@ -6,7 +6,7 @@
 
 MIA Automotive Integration enables real-time vehicle diagnostics through Bluetooth Low Energy (BLE) communication between your Android device and a Raspberry Pi-based OBD-II adapter.
 
-**Primary prototype vehicle**: Audi A4 B3 Cabriolet (2004)
+**Primary prototype vehicle**: Audi A4 Cabriolet 8H (2004)
 
 ## System Components
 
@@ -59,7 +59,7 @@ Once connected, the app will automatically start monitoring:
 
 ## Supported Vehicles
 
-- **Audi A4 B3 Cabriolet (2004)**: Primary prototype — full VAG read-only diagnostics
+- **Audi A4 Cabriolet 8H (2004)**: Primary prototype — full VAG read-only diagnostics
 - **Generic OBD-II**: Any vehicle with ELM327-compatible OBD-II adapter
 - **Citroën C4 (PSA)**: Legacy support via dedicated bridge module
 - **Protocols**: ISO 15765-4 (CAN), ISO 14230-4 (KWP2000), ISO 9141-2

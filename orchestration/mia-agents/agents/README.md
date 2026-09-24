@@ -1,6 +1,6 @@
 # PSA/Citroën Telemetry Agent
 
-> Legacy bridge: Citroën/PSA diagnostics are maintained for compatibility. New MIA automotive development targets the Audi A4 B3 read-only path first.
+> Legacy bridge: Citroën/PSA diagnostics are maintained for compatibility. New MIA automotive development targets the Audi A4 Cabriolet 8H read-only path first.
 
 This agent bridges an ELM327 OBD-II adapter to the Mia system via ZeroMQ. It queries standard and PSA-specific PIDs (like DPF Soot Mass, Eolys Level) and publishes them as FlatBuffers messages.
 
@@ -31,11 +31,13 @@ Run the bridge script from the repository root:
 ```bash
 export ELM_SERIAL_PORT=/dev/ttyUSB0
 export ELM_BAUD_RATE=38400
-export ZMQ_PUB_PORT=5556
+export ZMQ_PUB_PORT=5557
 python3 orchestration/mia-agents/agents/citroen_bridge.py
 ```
 
-`ZMQ_PUB_PORT` defaults to `5556`, matching the MIA telemetry PUB/SUB path.
+`ZMQ_PUB_PORT` defaults to `5557`, the vehicle telemetry channel the API
+subscribes to and decodes with `parse_citroen_telemetry()`. Do not use `5556`:
+that is the MCU telemetry channel, bound by `serial_bridge.py`.
 
 ## Mock Mode
 
