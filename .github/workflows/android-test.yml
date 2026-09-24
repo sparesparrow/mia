@@ -128,12 +128,13 @@ jobs:
           arch: x86_64
           disable-linux-hw-accel: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -no-metrics
+          # android-emulator-runner runs every line of `script` as a separate
+          # `sh -c`, so a command must not be split with backslashes: the
+          # first line then passes a literal "\" and the rest never runs.
+          # `test` does not install the app, so deploy the downloaded APK first.
           script: |
-            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test \
-              --scenario ${{ matrix.scenario }} \
-              --screenshots \
-              --logs \
-              --device emulator-5554
+            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" deploy --device emulator-5554
+            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
 
       - name: Parse Test Results
         if: always()
