@@ -212,9 +212,32 @@ class I18nLoader {
     }
 
     fallbackToHardcoded() {
-        console.log('Using hardcoded translations as fallback');
-        // This would contain hardcoded translations as a fallback
-        // For now, we'll just log the error and continue
+        // Surface i18n load failures to the user instead of silently rendering
+        // the page with raw translation keys. The banner only appears once.
+        console.warn('i18n: translations unavailable, falling back to raw keys');
+        if (typeof document === 'undefined' || document.getElementById('i18n-fallback-banner')) {
+            return;
+        }
+        const banner = document.createElement('div');
+        banner.id = 'i18n-fallback-banner';
+        banner.setAttribute('role', 'status');
+        banner.setAttribute('aria-live', 'polite');
+        banner.style.cssText = [
+            'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:9999',
+            'padding:8px 16px', 'background:#b00020', 'color:#fff',
+            'font:14px/1.4 system-ui, sans-serif', 'text-align:center'
+        ].join(';');
+        banner.textContent = 'Translations failed to load — showing default labels. Check the network tab for ./i18n/*.yaml.';
+        const insert = () => {
+            if (document.body && !document.getElementById('i18n-fallback-banner')) {
+                document.body.appendChild(banner);
+            }
+        };
+        if (document.body) {
+            insert();
+        } else {
+            document.addEventListener('DOMContentLoaded', insert, { once: true });
+        }
     }
 }
 

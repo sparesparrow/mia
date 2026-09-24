@@ -517,11 +517,6 @@ window.addEventListener('error', function(e) {
     });
 });
 
-// Service worker registration (for PWA features)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        // navigator.serviceWorker.register('/sw.js')
-        //     .then(registration => console.log('SW registered'))
-        //     .catch(error => console.log('SW registration failed'));
-    });
-}
+// Service worker registration intentionally omitted. Re-add a registration
+// block here when a real sw.js ships; the previous stub registered nothing
+// and only added an empty load listener.
