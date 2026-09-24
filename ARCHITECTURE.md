@@ -27,7 +27,7 @@ Includes:
 - Core orchestrator (routes user commands to specialized agents)
 - Service discovery (health checks, registry)
 - AI audio assistant (Whisper STT, ElevenLabs TTS, Spotify)
-- Automotive bridge (OBD-II, Audi A4 B3 Cabriolet primary prototype; Citroën C4 PSA legacy)
+- Automotive bridge (OBD-II, Audi A4 Cabriolet 8H primary prototype; Citroën C4 PSA legacy)
 - Hardware bridge (GPIO abstraction)
 - Security scanners and platform controllers
 
@@ -67,7 +67,7 @@ Cross-cutting concerns:
        │          │              │          │
    ┌───▼─┐ ┌─────▼─┐ ┌──────────▼──┐ ┌────▼────┐
    │GPIO │ │Serial │ │OBD Worker   │ │Orchestr │
-   │     │ │Bridge │ │(Audi A4 B3) │ │ (MCP)   │
+   │     │ │Bridge │ │(Audi A4 8H) │ │ (MCP)   │
    └─────┘ └───┬───┘ └─────────────┘ └────┬────┘
                │                          │
         ┌──────▼─────┐              ┌─────▼──────────┐
@@ -98,7 +98,7 @@ Cross-cutting concerns:
 - **service-discovery** — service registry with health checks
 - **ai-audio-assistant** — Whisper STT, ElevenLabs TTS, Spotify
 - **ai-platform-controllers** — system command execution
-- **automotive-mcp-bridge** / **vag-audi-bridge** — vehicle OBD-II (Audi A4 B3 primary)
+- **automotive-mcp-bridge** / **vag-audi-bridge** — vehicle OBD-II (Audi A4 8H primary)
 - **citroen-c4-bridge** — PSA-specific PID decoding (legacy)
 - **hardware-bridge** — GPIO abstraction
 
@@ -109,7 +109,7 @@ Cross-cutting concerns:
 - `apps/rpi-backend/cpp-audio/` — C++ audio and hardware implementations
 
 ### OBD-II Digital Twin
-`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real diagnostic tools (Torque, OBD Eleven, VCDS) with mapped engine parameters. Primary target: Audi A4 B3 Cabriolet (2004).
+`apps/rpi-backend/py-api/services/obd_worker.py` implements a Digital Twin: physical potentiometers on an MCU drive an ELM327 emulator that responds to real diagnostic tools (Torque, OBD Eleven, VCDS) with mapped engine parameters. Primary target: Audi A4 Cabriolet 8H (2004).
 
 Telemetry flow: MCU → serial bridge → ZMQ PUB → OBD worker → virtual PTY → diagnostic tool
 

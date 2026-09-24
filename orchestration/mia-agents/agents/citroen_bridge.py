@@ -18,7 +18,10 @@ except ImportError:  # pragma: no cover - exercised in lean CI environments
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 MIA_AGENTS_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ZMQ_PUB_PORT = 5556
+# Vehicle telemetry channel. The API consumes it on ZMQ_VEHICLE_PORT, falling
+# back to this same ZMQ_PUB_PORT and then 5557, and decodes it with
+# parse_citroen_telemetry(). 5556 is the MCU channel that serial_bridge binds.
+DEFAULT_ZMQ_PUB_PORT = 5557
 
 for import_root in (PROJECT_ROOT, MIA_AGENTS_ROOT):
     import_root_str = str(import_root)
