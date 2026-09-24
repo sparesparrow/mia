@@ -7,8 +7,8 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/adc.h"
 #include "driver/gpio.h"
+#include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
 #include "esp_mac.h"
 #include "esp_system.h"
@@ -21,7 +21,8 @@
 // GPIO Configuration
 #define LED_PIN GPIO_NUM_2
 #define BUTTON_PIN GPIO_NUM_0
-#define ADC_CHANNEL ADC1_CHANNEL_0
+#define ADC_UNIT_USED ADC_UNIT_1
+#define ADC_CHANNEL ADC_CHANNEL_0
 
 typedef struct {
     int adc_value;
@@ -30,6 +31,7 @@ typedef struct {
 } sensor_data_t;
 
 static char g_device_id[20] = "esp32-generic";
+static adc_oneshot_unit_handle_t s_adc_handle = NULL;
 
 static void init_device_id(void) {
     uint8_t mac[6] = {0};
@@ -64,8 +66,18 @@ static void gpio_init(void) {
 }
 
 static void adc_init(void) {
-    adc1_config_width(ADC_WIDTH_BIT_12);
-    adc1_config_channel_atten(ADC_CHANNEL, ADC_ATTEN_DB_11);
+    // Oneshot driver: the legacy driver/adc.h API this replaced was removed in ESP-IDF v5.
+    adc_oneshot_unit_init_cfg_t unit_cfg = {
+        .unit_id = ADC_UNIT_USED,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&unit_cfg, &s_adc_handle));
+
+    adc_oneshot_chan_cfg_t chan_cfg = {
+        // ADC_ATTEN_DB_11 was renamed to ADC_ATTEN_DB_12 in IDF 5.2; same ~3.3 V range.
+        .atten = ADC_ATTEN_DB_12,
+        .bitwidth = ADC_BITWIDTH_12,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc_handle, ADC_CHANNEL, &chan_cfg));
     ESP_LOGI(TAG, "ADC initialized.");
 }
 
@@ -86,8 +98,13 @@ static void sensor_task(void *pvParameters) {
     sensor_data_t sensor_data;
 
     while (1) {
-        // Read ADC value
-        sensor_data.adc_value = adc1_get_raw(ADC_CHANNEL);
+        // Read ADC value. adc1_get_raw() used to signal failure by returning -1;
+        // keep that contract so the Pi-side JSON consumer sees no new shape.
+        int adc_raw = -1;
+        if (adc_oneshot_read(s_adc_handle, ADC_CHANNEL, &adc_raw) != ESP_OK) {
+            adc_raw = -1;
+        }
+        sensor_data.adc_value = adc_raw;
 
         // Read GPIO state (button)
         sensor_data.gpio_state = gpio_get_level(BUTTON_PIN);
