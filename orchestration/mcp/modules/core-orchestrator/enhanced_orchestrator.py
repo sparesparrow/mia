@@ -1365,6 +1365,95 @@ class EnhancedCoreOrchestrator(MCPServer):
                 logger.warning(f"Health check failed for {service_name}: {e}")
 
 
+# --- Claudepy bridge wire-up -------------------------------------------------
+# Kept as an import-light shim because the bridge module lives in the existing
+# hyphenated MCP module directory (``claudepy-bridge``) and claudepy is optional
+# on Raspberry Pi / CI images. The bridge itself falls back when claudepy is not
+# installed, so routing low-confidence voice commands through it is safe.
+
+def _load_claudepy_bridge_class():
+    import importlib.util
+    import sys
+
+    bridge_path = Path(__file__).resolve().parents[1] / "claudepy-bridge" / "mia_claudepy_bridge.py"
+    spec = importlib.util.spec_from_file_location("mia_claudepy_bridge", bridge_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load claudepy bridge from {bridge_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules.setdefault("mia_claudepy_bridge", module)
+    spec.loader.exec_module(module)
+    return module.ClaudepyBridge
+
+
+def _ensure_claudepy_bridge(orchestrator):
+    bridge = getattr(orchestrator, "claudepy_bridge", None)
+    if bridge is None:
+        bridge_cls = _load_claudepy_bridge_class()
+        bridge = bridge_cls()
+        orchestrator.claudepy_bridge = bridge
+    return bridge
+
+
+def _should_route_via_claudepy(result, context):
+    if context and context.get("force_claudepy"):
+        return True
+    if not isinstance(result, dict):
+        return False
+    intent = result.get("intent")
+    confidence = float(result.get("confidence") or 0.0)
+    threshold = float(os.getenv("MIA_CLAUDEPY_BRIDGE_CONFIDENCE_THRESHOLD", "0.25"))
+    return intent in {"unknown", "question_answer"} or confidence < threshold
+
+
+_ORIGINAL_HANDLE_ENHANCED_VOICE_COMMAND = EnhancedCoreOrchestrator.handle_enhanced_voice_command
+
+
+async def _handle_enhanced_voice_command_with_claudepy(
+    self,
+    text: str,
+    session_id: Optional[str] = None,
+    user_id: str = "default",
+    interface_type: str = "voice",
+    context: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    result = await _ORIGINAL_HANDLE_ENHANCED_VOICE_COMMAND(
+        self,
+        text=text,
+        session_id=session_id,
+        user_id=user_id,
+        interface_type=interface_type,
+        context=context,
+    )
+    if not _should_route_via_claudepy(result, context or {}):
+        return result
+
+    bridge = _ensure_claudepy_bridge(self)
+    bridge_result = await bridge.process_voice_command(
+        text,
+        context={
+            "session_id": session_id,
+            "user_id": user_id,
+            "interface_type": interface_type,
+            **(context or {}),
+        },
+    )
+    enriched = dict(result) if isinstance(result, dict) else {"response": str(result)}
+    enriched.update(
+        {
+            "response": bridge_result.response,
+            "provider_used": bridge_result.provider_used,
+            "bridge_latency_ms": bridge_result.latency_ms,
+            "bridge_rag_context": bridge_result.rag_context,
+            "bridge_error": bridge_result.error,
+        }
+    )
+    return enriched
+
+
+EnhancedCoreOrchestrator.handle_enhanced_voice_command = _handle_enhanced_voice_command_with_claudepy
+# --- end Claudepy bridge wire-up --------------------------------------------
+
+
 async def main():
     """Main entry point for enhanced orchestrator"""
     logger.info("Starting MIA Enhanced Core Orchestrator")
