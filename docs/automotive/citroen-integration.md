@@ -1,6 +1,6 @@
 # Citroën OBD-II Integration Guide (Legacy)
 
-> **Status**: Legacy/secondary support. Primary development target is **Audi A4 B3 Cabriolet (2004)**.
+> **Status**: Legacy/secondary support. Primary development target is **Audi A4 Cabriolet 8H (2004)**.
 > See [raspberry-pi-audi-integration.md](raspberry-pi-audi-integration.md) for the primary vehicle integration.
 
 ## Overview

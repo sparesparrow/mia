@@ -144,7 +144,7 @@ Recommendations applied in this revision:
 - [ ] Decide the primary Pi transport path for Audi work: `mia-serial-bridge`, `mia-obd-worker`, or a dedicated transport agent
 - [x] Add transport capability reporting so the Pi can distinguish `generic_pid_only` from `uds_read_only`
 - [x] Verify end-to-end generic telemetry flow into the ZeroMQ telemetry path on port `5556` and then into the Audi bridge
-- [ ] Validate VIN reading via DID `F190` on the Audi A4 B3 Cabriolet prototype
+- [ ] Validate VIN reading via DID `F190` on the Audi A4 Cabriolet 8H prototype
 - [ ] Validate DTC summary reads via UDS service `0x19`
 - [ ] Add allowlisted `0x22` DID reads only after VIN and DTC reads are stable
 - [ ] Keep cloud-backed Audi Connect style integrations as a separate optional data-source track
@@ -153,9 +153,9 @@ Recommendations applied in this revision:
 
 - [x] Bench validation with simulated transport payloads on a non-vehicle development machine
 - [ ] Raspberry Pi bench validation with the chosen adapter and no write, session, or security traffic
-- [ ] In-vehicle passive validation on the Audi A4 B3 Cabriolet prototype
+- [ ] In-vehicle passive validation on the Audi A4 Cabriolet 8H prototype
 - [ ] Controlled VIN and DTC read-only validation with logs captured for review
-- [ ] Expansion decision only after the A4 B3 path is stable (next target: A3 8V MQB)
+- [ ] Expansion decision only after the A4 8H path is stable (next target: A3 8V MQB)
 
 ## Priority 2: Android and Client Integration
 

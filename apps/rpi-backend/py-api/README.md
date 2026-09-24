@@ -50,7 +50,7 @@ This directory contains the Python-based implementation of MIA for Raspberry Pi,
 
 ### Vehicle OBD-II Integration
 
-**Primary prototype: Audi A4 B3 Cabriolet (2004)**
+**Primary prototype: Audi A4 Cabriolet 8H (2004)**
 
 MIA connects to vehicles via ELM327 OBD-II adapter for read-only telemetry and diagnostics.
 
