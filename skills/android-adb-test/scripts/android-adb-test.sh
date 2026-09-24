@@ -570,7 +570,11 @@ main() {
   parse_args "$@"
   ensure_adb
   ensure_python3
-  pick_device
+  # `build` only runs Gradle, so it must work with no device attached (CI's
+  # Validate APK step); every other command talks to a device.
+  if [[ "$COMMAND" != "build" ]]; then
+    pick_device
+  fi
   ensure_output_dir
   
   case "$COMMAND" in
