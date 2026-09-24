@@ -106,6 +106,9 @@ esp32/firmware-*/build/
 esp32/firmware-*/sdkconfig
 esp32/firmware-*/managed_components/
 esp32/firmware-*/dependencies.lock
+# PlatformIO build and dependency cache. libdeps/ is what `pio run` downloads;
+# committing it vendored 300+ files of ArduinoJson into a PR once.
+apps/esp32/.pio/
 # Same generated files under the current apps/ layout. sdkconfig.defaults is
 # tracked, the sdkconfig it generates is not.
 apps/esp32/firmware-*/sdkconfig
@@ -209,3 +212,7 @@ automotive_test_results_*.log
 /android-device-workspace/downloads/
 .venv312/
 apps/android/.gradle/
+
+# pytest-cov database (binary)
+.coverage
+.coverage.*
