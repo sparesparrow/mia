@@ -1,1 +1,1 @@
-"""apps.rpi-backend.shared.telemetry package."""
+"""Shared telemetry contracts and decoders for MIA."""

@@ -8,8 +8,22 @@ import time
 import os
 import signal
 import logging
+import sys
 from datetime import datetime, timezone
 from typing import Optional
+
+RPI_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if RPI_ROOT not in sys.path:
+    sys.path.insert(0, RPI_ROOT)
+
+try:
+    from shared.telemetry.can_replay import Cycle1CANDecoder
+    from shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload
+except ImportError:
+    # Under pytest orchestration/mcp/modules/shared (a regular package) shadows
+    # this namespace package; fall back to the alias tests/conftest.py registers.
+    from apps.rpi_backend.shared.telemetry.can_replay import Cycle1CANDecoder
+    from apps.rpi_backend.shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload
 
 logger = logging.getLogger("mia.serial_bridge")
 
@@ -49,6 +63,7 @@ class SimulationSerialSource:
             "coolant_temp_c": round(coolant, 1),
             "fuel_level_percent": round(fuel, 1),
             "battery_voltage": round(voltage, 2),
+            "ignition": True,
         }
         return (json.dumps(payload) + "\n").encode()
 
@@ -91,6 +106,11 @@ class SerialBridge:
         self._adapter_kind = "unknown"
         self._device_path: Optional[str] = None
         self._message_count = 0
+        self._cycle1_decoder = Cycle1CANDecoder(
+            device_id="serial-bridge",
+            source="esp32.twai.listen_only",
+            confidence=0.9,
+        )
 
         signal.signal(signal.SIGTERM, self._handle_signal)
         signal.signal(signal.SIGINT, self._handle_signal)
@@ -261,19 +281,33 @@ class SerialBridge:
         logger.info("Serial bridge stopped")
 
     def _publish_telemetry(self, data):
-        """Publish telemetry data to ZMQ.
-
-        Attaches adapter capability metadata on the first message and then
-        periodically (every 50 messages) so downstream consumers like the
-        VAG Audi bridge can infer transport capabilities without polling.
-        """
+        """Publish legacy telemetry plus a complete Cycle 1 envelope when available."""
         self._message_count += 1
+
+        if data.get("type") == "can_frame":
+            envelope = self._cycle1_decoder.consume_payload(data)
+            if envelope is not None:
+                data["vehicle_telemetry"] = envelope
+                data.update({
+                    "ignition": envelope["signals"]["ignition"]["value"],
+                    "battery_voltage": envelope["signals"]["battery_voltage"]["value"],
+                    "engine_rpm": envelope["signals"]["engine_rpm"]["value"],
+                    "coolant_temp_c": envelope["signals"]["coolant_temp_c"]["value"],
+                })
+        else:
+            envelope = build_cycle1_envelope_from_flat_payload(
+                data,
+                source="simulation" if self.simulation_mode else "serial.flat",
+                confidence=0.5 if self.simulation_mode else 0.9,
+            )
+            if envelope is not None:
+                data["vehicle_telemetry"] = envelope
 
         if "adapter_capabilities" not in data and self._should_attach_adapter_metadata():
             data["adapter_capabilities"] = self._build_adapter_metadata()
 
         payload = json.dumps(data)
-        self.pub_socket.send_multipart([b"mcu/telemetry", payload.encode('utf-8')])
+        self.pub_socket.send_multipart([b"mcu/telemetry", payload.encode("utf-8")])
 
     def _should_attach_adapter_metadata(self) -> bool:
         """Attach metadata on the first message and then every 50 messages."""

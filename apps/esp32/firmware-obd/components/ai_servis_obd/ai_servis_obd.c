@@ -91,7 +91,9 @@ static void send_mqtt_alert(const char *topic, const char *severity,
 #define TWAI_TX_PIN GPIO_NUM_17
 #define TWAI_BITRATE TWAI_TIMING_CONFIG_500KBITS()
 
-// Bus mode. OBD polling has to transmit requests, so normal mode is the default.
+// Bus mode. OBD polling transmits requests in the normal build.
+// The listen-only build never issues OBD requests; it emits raw standard frames
+// to the Pi serial bridge/replay decoder.
 // Build with -DMIA_TWAI_LISTEN_ONLY=1 for a passive sniffing build: the controller
 // then never drives the bus and ai_servis_obd_read_pid() refuses to transmit.
 // The controller mode is a register a bug can overwrite, so for a hard guarantee
@@ -170,8 +172,47 @@ QueueHandle_t ai_servis_obd_get_queue(void)
     return obd_queue;
 }
 
+#if MIA_TWAI_LISTEN_ONLY
+static void emit_passive_can_frame(const twai_message_t *message)
+{
+    if (!message || message->extd || message->rtr || message->data_length_code == 0 ||
+        message->data_length_code > 8) {
+        return;
+    }
+
+    char data_hex[17] = {0};
+    for (uint8_t i = 0; i < message->data_length_code; ++i) {
+        snprintf(&data_hex[i * 2], 3, "%02X", message->data[i]);
+    }
+
+    printf(
+        "{\"type\":\"can_frame\",\"bus\":\"powertrain\","
+        "\"can_id\":\"0x%03lX\",\"data\":\"%s\","
+        "\"timestamp_ms\":%lu}\n",
+        (unsigned long)message->identifier,
+        data_hex,
+        (unsigned long)(xTaskGetTickCount() * portTICK_PERIOD_MS)
+    );
+    fflush(stdout);
+}
+#endif
+
 void ai_servis_obd_task(void *pvParameters)
 {
+#if MIA_TWAI_LISTEN_ONLY
+    (void)pvParameters;
+    ESP_LOGI(TAG, "OBD task started in passive listen-only mode");
+
+    while (obd_initialized) {
+        twai_message_t message = {0};
+        if (twai_receive(&message, pdMS_TO_TICKS(100)) == ESP_OK) {
+            emit_passive_can_frame(&message);
+        }
+    }
+
+    ESP_LOGI(TAG, "Passive OBD task stopped");
+    vTaskDelete(NULL);
+#else
     obd_data_t obd_data = {0};
     uint8_t request_pids[] = {PID_ENGINE_RPM, PID_VEHICLE_SPEED, PID_COOLANT_TEMP, PID_FUEL_LEVEL};
     uint8_t pid_index = 0;
@@ -213,6 +254,7 @@ void ai_servis_obd_task(void *pvParameters)
 
     ESP_LOGI(TAG, "OBD task stopped");
     vTaskDelete(NULL);
+#endif
 }
 
 esp_err_t ai_servis_obd_read_pid(uint8_t pid, uint8_t *data, size_t *length)

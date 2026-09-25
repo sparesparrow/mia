@@ -50,6 +50,24 @@ except ImportError:
     parse_citroen_telemetry = None
     logger.warning("Could not import Mia vehicle FlatBuffers codec. Telemetry decoding disabled.")
 
+try:
+    from shared.telemetry.vehicle_envelope import (
+        flatten_cycle1_envelope,
+        validate_cycle1_envelope,
+    )
+except ImportError:
+    try:
+        # Under pytest orchestration/mcp/modules/shared shadows apps/rpi-backend/shared;
+        # use the alias registered by tests/conftest.py.
+        from apps.rpi_backend.shared.telemetry.vehicle_envelope import (
+            flatten_cycle1_envelope,
+            validate_cycle1_envelope,
+        )
+    except ImportError:
+        flatten_cycle1_envelope = None
+        validate_cycle1_envelope = None
+        logger.warning("Cycle 1 telemetry envelope module not available.")
+
 # Import session management
 from api.sessions import (
     SessionManager, CreateSessionRequest, UpdateSessionRequest, ResumeSessionRequest
@@ -271,12 +289,25 @@ def _handle_mcu_telemetry(payload: Dict[str, Any]) -> str:
     device_id = _resolve_mcu_device_id(payload)
     cache_entry = dict(telemetry_cache.get(device_id, {}))
     source_timestamp = payload.get("timestamp")
+    previous_envelope = cache_entry.get("vehicle_telemetry")
 
     cache_entry.update(payload)
     cache_entry["timestamp"] = datetime.now().isoformat()
     cache_entry["source"] = "mcu/telemetry"
     if source_timestamp is not None:
         cache_entry["source_timestamp"] = source_timestamp
+
+    canonical = payload.get("vehicle_telemetry")
+    if canonical is not None:
+        # Only a validated envelope may replace the last good one.
+        cache_entry["vehicle_telemetry"] = previous_envelope
+    if canonical is not None and validate_cycle1_envelope and flatten_cycle1_envelope:
+        try:
+            validate_cycle1_envelope(canonical)
+            cache_entry["vehicle_telemetry"] = canonical
+            cache_entry.update(flatten_cycle1_envelope(canonical))
+        except ValueError as exc:
+            logger.warning("Rejecting invalid Cycle 1 telemetry envelope: %s", exc)
 
     telemetry_cache[device_id] = cache_entry
 
@@ -333,6 +364,16 @@ def _handle_mcu_status(payload: Dict[str, Any]) -> str:
         },
     )
     return device_id
+
+
+def _latest_cycle1_envelope() -> Optional[Dict[str, Any]]:
+    """Return the newest complete Cycle 1 envelope in the telemetry cache."""
+    envelopes = [
+        entry.get("vehicle_telemetry")
+        for entry in telemetry_cache.values()
+        if entry.get("vehicle_telemetry") is not None
+    ]
+    return max(envelopes, key=lambda value: value.get("timestamp", "")) if envelopes else None
 
 
 def _build_telemetry_source_summary() -> Dict[str, Any]:
@@ -740,6 +781,17 @@ async def get_telemetry(filter: Optional[TelemetryFilter] = None):
     }
 
 
+@app.get("/telemetry/cycle1")
+async def get_cycle1_telemetry():
+    """GET /telemetry/cycle1 - Fetch the latest complete Cycle 1 envelope."""
+    envelope = _latest_cycle1_envelope()
+    return {
+        "available": envelope is not None,
+        "telemetry": envelope,
+        "timestamp": datetime.now().isoformat(),
+    }
+
+
 @app.get("/led/state")
 async def get_led_state():
     """
@@ -916,6 +968,7 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
             # Prepare data for Android app
             data = {
                 "telemetry": telemetry_cache,
+                "vehicle_telemetry": _latest_cycle1_envelope(),
                 "led_state": led_state,
                 "timestamp": datetime.now().isoformat()
             }
