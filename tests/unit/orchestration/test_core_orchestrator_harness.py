@@ -13,6 +13,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-ORCH-001")
+
 # ---------------------------------------------------------------------------
 # Module loading — hyphenated directory requires importlib.util
 # ---------------------------------------------------------------------------

@@ -10,6 +10,9 @@ from typing import Dict, Any, List
 from unittest.mock import Mock, patch
 
 from hardware.sensors_i2c import BME280Sensor, SHT30Sensor, ADS1115Sensor, I2CInterface, create_i2c_sensor
+import pytest
+
+pytestmark = pytest.mark.req("REQ-HW-002")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

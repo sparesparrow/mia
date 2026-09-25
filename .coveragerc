@@ -11,6 +11,8 @@ omit =
     schemas/generated/*
 
 [report]
+# Ratchet: the baseline measured when the gate was added (51.7 %). Raise it as tests are added; never lower it.
+fail_under = 51
 precision = 2
 show_missing = True
 skip_covered = False

@@ -48,3 +48,7 @@ for source_path in reversed(SOURCE_PATHS):
     source_path_str = str(source_path)
     if source_path_str not in sys.path:
         sys.path.insert(0, source_path_str)
+
+# Requirement traceability: the req marker and --req-report (tests/plugins/req_traceability.py).
+sys.path.insert(0, str(REPO_ROOT / "tests" / "plugins"))
+pytest_plugins = ["req_traceability"]

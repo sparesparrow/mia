@@ -10,6 +10,9 @@ import time
 from typing import Dict, Any
 
 from hardware.arduino import ArduinoController
+import pytest
+
+pytestmark = pytest.mark.req("REQ-HW-003")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

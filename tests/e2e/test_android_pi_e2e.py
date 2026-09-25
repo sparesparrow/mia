@@ -29,6 +29,9 @@ from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AND-015", "REQ-NET-002")
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

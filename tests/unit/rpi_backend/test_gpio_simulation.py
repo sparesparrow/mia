@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-HW-001", "REQ-NFR-001")
+
 
 def load_gpio_module():
     """Import the gpio module directly for unit testing, bypassing relative imports."""

@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-DEP-005")
+
 
 def load_complete_bootstrap_module():
     """Import the script module so its helpers can be tested."""

@@ -4,6 +4,9 @@ import importlib.util
 import subprocess
 import sys
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-DEP-003")
 
 
 def load_deploy_rpi_module():

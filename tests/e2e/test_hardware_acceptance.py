@@ -16,6 +16,8 @@ import unittest
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-HW-001", "REQ-HW-004", "REQ-AUTO-001")
+
 
 @pytest.mark.hardware
 class TestGPIOAcceptance(unittest.TestCase):

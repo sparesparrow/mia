@@ -11,6 +11,8 @@ from dataclasses import dataclass
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-ORCH-001", "REQ-ORCH-007")
+
 _BRIDGE_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     "..",

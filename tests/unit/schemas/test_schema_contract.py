@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-AUTO-008")
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 SCHEMA_DIR = REPO_ROOT / "schemas"

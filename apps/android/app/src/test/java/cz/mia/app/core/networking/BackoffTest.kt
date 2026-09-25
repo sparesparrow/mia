@@ -1,5 +1,7 @@
 package cz.mia.app.core.networking
 
+// @req REQ-AND-013
+
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

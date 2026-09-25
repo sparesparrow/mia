@@ -4,6 +4,9 @@ import importlib.util
 import sys
 import urllib.request
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-DEP-006")
 
 
 def load_network_scanner_module():

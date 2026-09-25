@@ -10,7 +10,7 @@ on:
       - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, 'roadmap/**']
     paths:
       - 'apps/android/**'
       - 'contracts/**'

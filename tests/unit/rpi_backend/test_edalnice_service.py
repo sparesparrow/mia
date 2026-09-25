@@ -9,6 +9,8 @@ import pytest
 from services.edalnice_client import Status, VignetteCheckResult
 from services.edalnice_service import EdalniceCzService
 
+pytestmark = pytest.mark.req("REQ-ANPR-002")
+
 
 class StubClient:
     def __init__(self, *results):

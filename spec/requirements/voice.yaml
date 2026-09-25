@@ -9,6 +9,8 @@ requirements:
   evidence: implemented_untested
   implemented_in:
   - orchestration/mcp/modules/ai-audio-assistant
+  not_proven: The linked tests (tests/unit/orchestration/test_audio_engine.py and test_voice_processing.py) drive
+    mock engines and only fail if something raises; they assert no behaviour, so they do not support a tested state.
 - id: REQ-VOICE-002
   title: Voice command intelligence
   statement: Voice command outcomes shall be recorded per intent to compute success rates, surface failing patterns

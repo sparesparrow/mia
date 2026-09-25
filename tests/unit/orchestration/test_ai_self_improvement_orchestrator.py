@@ -40,6 +40,8 @@ from orchestration.ai_self_improvement.phases import (
     TestGenerationPhase,
 )
 
+pytestmark = pytest.mark.req("REQ-ORCH-005")
+
 
 # ------------------------------------------------------------------ #
 # Helpers                                                              #

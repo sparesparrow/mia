@@ -16,6 +16,9 @@ sys.path.append(str(Path(__file__).parent / "modules"))
 
 from enhanced_orchestrator import EnhancedCoreOrchestrator, ServiceInfo
 from shared.mcp_framework import create_tool
+import pytest
+
+pytestmark = pytest.mark.req("REQ-ORCH-001")
 
 
 class MockService:

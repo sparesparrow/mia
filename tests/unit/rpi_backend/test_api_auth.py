@@ -6,6 +6,9 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '../rpi'))
 
 from api.auth.api_key import APIKeyAuth, generate_api_key, APIKeyInfo
+import pytest
+
+pytestmark = pytest.mark.req("REQ-SEC-001")
 
 
 class TestAPIKeyGeneration(unittest.TestCase):

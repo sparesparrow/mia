@@ -21,12 +21,18 @@ requirements:
 - id: REQ-HW-002
   title: I2C sensor drivers
   statement: The Pi shall read BME280, SHT30 and ADS1115 sensors over I2C with per-sensor calibration.
-  evidence: implemented_untested
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - BME280, SHT30 and ADS1115 drivers initialise and read through the smbus2 code path against a mock bus
+  - The factory creates each sensor type, and SensorManager registers them and removes them on context exit
   implemented_in:
   - apps/rpi-backend/py-api/hardware/sensors_i2c.py
   - apps/rpi-backend/py-api/hardware/sensors.py
   services:
   - mia-api
+  decisions:
+  - ADR-0007
+  not_proven: Readings from physical sensors on the Pi I2C bus; calibration against reference values
 - id: REQ-HW-003
   title: Arduino serial protocol
   statement: The Pi shall discover Arduino controllers, perform a handshake and exchange text commands and responses

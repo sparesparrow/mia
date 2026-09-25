@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-DEP-006")
+
 
 def load_detect_devices_module():
     """Import the detect_devices script module for unit testing."""

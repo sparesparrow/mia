@@ -21,6 +21,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-ORCH-001")
+
 
 # ---------------------------------------------------------------------------
 # Module loader (hyphenated directory workaround)

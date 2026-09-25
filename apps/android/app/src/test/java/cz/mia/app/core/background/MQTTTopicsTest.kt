@@ -1,5 +1,7 @@
 package cz.mia.app.core.background
 
+// @req REQ-AND-006
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

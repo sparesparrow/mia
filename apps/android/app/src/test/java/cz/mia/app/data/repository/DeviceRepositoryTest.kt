@@ -1,5 +1,7 @@
 package cz.mia.app.data.repository
 
+// @req REQ-AND-015
+
 import cz.mia.app.data.remote.api.DeviceApi
 import cz.mia.app.data.remote.dto.CommandResponse
 import cz.mia.app.data.remote.dto.DeviceDto

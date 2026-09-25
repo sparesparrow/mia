@@ -2,6 +2,9 @@ import unittest
 import importlib.util
 import sys
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-005")
 
 
 def load_psa_decoder_module():

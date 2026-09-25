@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-HW-003", "REQ-NFR-001")
+
 
 def load_arduino_module():
     """Import the arduino module directly for unit testing."""

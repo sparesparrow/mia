@@ -10,6 +10,9 @@ from apps.rpi_backend.shared.telemetry.vehicle_envelope import (
     build_cycle1_envelope_from_flat_payload,
     flatten_cycle1_envelope,
 )
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-010", "REQ-AUTO-011")
 
 ROOT = Path(__file__).resolve().parents[3]
 

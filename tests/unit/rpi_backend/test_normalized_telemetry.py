@@ -5,6 +5,9 @@ import json
 import sys
 import unittest
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-007")
 
 # ── Load the normalized payload contract ─────────────────────────────────
 CONTRACT_PATH = (

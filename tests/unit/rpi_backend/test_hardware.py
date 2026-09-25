@@ -12,6 +12,9 @@ from typing import Dict, Any
 from hardware.gpio import GPIOController, GPIOMode
 from hardware.sensors import SensorManager, MockTemperatureSensor, MockHumiditySensor, SensorType
 from hardware.arduino import ArduinoController
+import pytest
+
+pytestmark = pytest.mark.req("REQ-HW-001", "REQ-HW-002", "REQ-HW-003", "REQ-NFR-001")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

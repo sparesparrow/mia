@@ -1,5 +1,7 @@
 package cz.mia.app.data.remote
 
+// @req REQ-AND-012
+
 import com.google.gson.Gson
 import cz.mia.app.data.remote.dto.Cycle1TelemetryEnvelope
 import cz.mia.app.data.remote.dto.Cycle1TelemetrySignals

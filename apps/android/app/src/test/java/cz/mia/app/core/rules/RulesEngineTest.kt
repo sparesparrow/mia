@@ -1,5 +1,7 @@
 package cz.mia.app.core.rules
 
+// @req REQ-AND-010
+
 import cz.mia.app.core.background.AlertSeverity
 import cz.mia.app.core.background.OBDData
 import org.junit.Assert.assertEquals

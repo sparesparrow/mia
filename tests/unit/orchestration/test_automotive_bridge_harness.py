@@ -14,6 +14,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-AUTO-004")
+
 # ---------------------------------------------------------------------------
 # Module loading — signal_router.py has no external deps (pure stdlib)
 # ---------------------------------------------------------------------------

@@ -15,6 +15,8 @@ from services.edalnice_client import (
     Status,
 )
 
+pytestmark = pytest.mark.req("REQ-ANPR-002")
+
 CZ_ID = "3906ba89-153c-4038-8e36-0ca1deb76076"
 COUNTRIES = {"items": [{"id": CZ_ID, "code": "CZ"}, {"id": "de-id", "code": "DE"}]}
 

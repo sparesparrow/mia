@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-AUTO-007", "REQ-DEP-001")
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 SYSTEMD_DIR = REPO_ROOT / "infra" / "systemd"

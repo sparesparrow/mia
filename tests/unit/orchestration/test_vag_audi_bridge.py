@@ -4,6 +4,9 @@ import importlib.util
 import sys
 from pathlib import Path
 import unittest
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-006")
 
 
 MODULE_PATH = (

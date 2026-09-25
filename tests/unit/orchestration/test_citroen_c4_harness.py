@@ -14,6 +14,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-AUTO-005")
+
 # ---------------------------------------------------------------------------
 # Mock zmq before loading the module
 # ---------------------------------------------------------------------------

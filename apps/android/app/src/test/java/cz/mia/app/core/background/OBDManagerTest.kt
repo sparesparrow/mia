@@ -1,5 +1,7 @@
 package cz.mia.app.core.background
 
+// @req REQ-AND-002
+
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

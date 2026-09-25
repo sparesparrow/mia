@@ -20,6 +20,9 @@ from voice_processing import (  # noqa: E402
     VoiceProfile, TTSRequest, STTRequest, TTSResponse, STTResponse,
     WakeWordConfig, VADConfig, WakeWordDetector, VoiceActivityDetector
 )
+import pytest
+
+pytestmark = pytest.mark.req("REQ-VOICE-001")
 
 # Setup logging
 logging.basicConfig(

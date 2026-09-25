@@ -8,6 +8,9 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-DEP-005")
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent

@@ -9,6 +9,9 @@ checks the listen-only ELF for the ``twai_transmit`` symbol.
 
 import re
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-012", "REQ-NFR-002")
 
 ROOT = Path(__file__).resolve().parents[3]
 FIRMWARE_DIR = ROOT / "apps" / "esp32" / "firmware-obd"

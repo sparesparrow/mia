@@ -6,6 +6,8 @@ import types
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-HW-006", "REQ-NFR-001")
+
 
 def _build_hardware_manager_module():
     """

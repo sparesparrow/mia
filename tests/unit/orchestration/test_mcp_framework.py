@@ -3,6 +3,8 @@
 import pytest
 from orchestration.mcp.modules.shared.mcp_framework import MCPError, MCPServer, MCPMessage, WebSocketTransport, create_tool
 
+pytestmark = pytest.mark.req("REQ-ORCH-003")
+
 
 @pytest.mark.asyncio
 async def test_mcp_message_creation():

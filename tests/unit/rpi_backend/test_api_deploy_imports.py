@@ -10,6 +10,9 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-NET-002")
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PY_API = REPO_ROOT / "apps" / "rpi-backend" / "py-api"

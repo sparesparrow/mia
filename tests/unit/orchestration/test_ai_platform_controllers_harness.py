@@ -14,6 +14,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+pytestmark = pytest.mark.req("REQ-ORCH-008")
+
 # ---------------------------------------------------------------------------
 # Mock aiohttp + websockets before loading the module
 # ---------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 package cz.mia.app.ui.screens.devices
 
+// @req REQ-AND-001
+
 import cz.mia.app.core.background.BLEManager
 import cz.mia.app.core.background.BleConnectionState
 import cz.mia.app.core.background.BleDeviceInfo

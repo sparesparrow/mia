@@ -18,6 +18,9 @@ from audio_engine import (  # noqa: E402
     CrossPlatformAudioEngine, PipeWireEngine, WASAPIEngine, CoreAudioEngine,
     AudioDeviceInfo, AudioStreamConfig, DeviceType, DeviceState, AudioFormat
 )
+import pytest
+
+pytestmark = pytest.mark.req("REQ-VOICE-001")
 
 # Setup logging
 logging.basicConfig(

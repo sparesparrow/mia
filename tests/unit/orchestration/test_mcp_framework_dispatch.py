@@ -33,6 +33,8 @@ from orchestration.mcp.modules.shared.mcp_framework import (
     create_tool,
 )
 
+pytestmark = pytest.mark.req("REQ-ORCH-003")
+
 
 # ---------------------------------------------------------------------------
 # MCPMessage: serialization round-trips

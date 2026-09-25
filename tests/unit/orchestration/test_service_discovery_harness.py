@@ -19,6 +19,8 @@ sys.modules.setdefault("websockets", MagicMock())
 
 import os
 
+pytestmark = pytest.mark.req("REQ-ORCH-002")
+
 _SD_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     "..",

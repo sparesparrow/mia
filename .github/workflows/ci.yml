@@ -7,7 +7,9 @@ on:
       - '.github/workflows/ci.yml'
       - '.tool-versions'
       - 'pytest.ini'
+      - '.coveragerc'
       - 'requirements*.txt'
+      - 'spec/**'
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
@@ -19,12 +21,14 @@ on:
       - 'tests/**'
       - 'tools/**'
   pull_request:
-    branches: [main]
+    branches: [main, 'roadmap/**']
     paths:
       - '.github/workflows/ci.yml'
       - '.tool-versions'
       - 'pytest.ini'
+      - '.coveragerc'
       - 'requirements*.txt'
+      - 'spec/**'
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
@@ -67,7 +71,9 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'pytest.ini'
+              - '.coveragerc'
               - 'requirements*.txt'
+              - 'spec/**'
               - 'agents/**'
               - 'apps/rpi-backend/py-api/**'
               - 'apps/rpi-backend/shared/**'
@@ -194,7 +200,12 @@ jobs:
           python -m pip install --upgrade pip "setuptools<82" wheel
           python -m pip install -r requirements-ci.txt
       - name: Run tests
-        run: python -m pytest tests/ -m "not hardware" --tb=short -q
+        run: python -m pytest tests/ -m "not hardware" --tb=short -q --cov --req-report=req-report.json
+      - name: Check requirement traceability
+        run: python tools/ci/traceability.py check --pytest-report req-report.json
+      - name: Write traceability matrix
+        if: always()
+        run: python tools/ci/traceability.py matrix --pytest-report req-report.json --out build/traceability.md && cat build/traceability.md >> "$GITHUB_STEP_SUMMARY"
 
   cycle1-replay:
     if: needs.changes.outputs.python == 'true'

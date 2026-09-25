@@ -30,6 +30,8 @@ from orchestration.mcp.modules.shared.mcp_framework import MCPClient  # noqa: E4
 import importlib  # noqa: E402
 import importlib.util  # noqa: E402
 
+pytestmark = pytest.mark.req("REQ-VOICE-002")
+
 _eo_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     "..",

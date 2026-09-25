@@ -37,6 +37,8 @@ from validation import validate_and_parse_json  # noqa: E402
 from voice_learning_client import VoiceLearningClient  # noqa: E402
 from voice_learning_server import VoiceLearningServer  # noqa: E402
 
+pytestmark = pytest.mark.req("REQ-VOICE-003")
+
 
 # ============================================================================
 # Test Data Fixtures

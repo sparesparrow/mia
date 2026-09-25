@@ -13,6 +13,8 @@ from fastapi.testclient import TestClient
 from api import main as api_main
 from api.main import app
 
+pytestmark = pytest.mark.req("REQ-NET-002", "REQ-NET-006")
+
 
 @pytest.fixture
 def client():

@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '../rpi'))
 
 from core.registry import DeviceRegistry, DeviceProfile, DeviceType, DeviceStatus
+import pytest
+
+pytestmark = pytest.mark.req("REQ-NET-007")
 
 
 class TestDeviceProfile(unittest.TestCase):

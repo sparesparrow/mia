@@ -12,6 +12,9 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from api import main as api_main  # noqa: E402
 from services.voice_command_router import _format_features  # noqa: E402
+import pytest
+
+pytestmark = pytest.mark.req("REQ-NFR-004", "REQ-NET-002")
 
 REGISTRY = Path(__file__).resolve().parents[3] / "spec" / "requirements"
 
@@ -43,6 +46,7 @@ def test_category_and_state_filters():
     assert {f["id"] for f in body["categories"]["automotive"]} == {"REQ-AUTO-011"}
 
 
+@pytest.mark.req("REQ-VOICE-010")
 def test_voice_router_reads_the_summary_aloud():
     text = _format_features({"total": 2, "summary": {"implemented_and_ci_tested": 1, "planned": 1}})
     assert text == "MIA has 2 features: 1 implemented and ci tested, 1 planned."

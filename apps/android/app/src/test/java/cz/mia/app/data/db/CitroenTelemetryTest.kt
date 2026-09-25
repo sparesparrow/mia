@@ -1,5 +1,7 @@
 package cz.mia.app.data.db
 
+// @req REQ-AND-011
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

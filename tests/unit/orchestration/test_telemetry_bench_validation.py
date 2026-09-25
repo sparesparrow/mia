@@ -16,6 +16,9 @@ import sys
 import unittest
 from datetime import datetime
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-007")
 
 # ── Load modules via importlib to avoid sys.path pollution ──────────────
 

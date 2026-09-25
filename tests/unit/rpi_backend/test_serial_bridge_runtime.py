@@ -4,6 +4,9 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+import pytest
+
+pytestmark = pytest.mark.req("REQ-HW-004", "REQ-AUTO-013")
 
 
 def load_serial_bridge_module():

@@ -3,6 +3,9 @@
 import os
 import sys
 import unittest
+import pytest
+
+pytestmark = pytest.mark.req("REQ-AUTO-008")
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 

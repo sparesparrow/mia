@@ -17,6 +17,8 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from apps.rpi_backend.shared.telemetry.can_replay import Cycle1CANDecoder  # noqa: E402
 
+pytestmark = pytest.mark.req("REQ-NET-003", "REQ-AUTO-010", "REQ-AUTO-013")
+
 FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "cycle1_bench.jsonl"
 
 

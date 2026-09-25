@@ -18,7 +18,7 @@ on:
       - 'tests/**'
       - 'tools/**'
   pull_request:
-    branches: [main]
+    branches: [main, 'roadmap/**']
     paths:
       - '.github/workflows/security.yml'
       - '.tool-versions'
