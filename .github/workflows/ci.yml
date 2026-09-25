@@ -376,19 +376,23 @@ jobs:
       # apps/esp32/firmware-obd is a plain ESP-IDF project, so the PlatformIO
       # job above never touches it. Without this job its sources are shipped
       # unbuilt.
+      # The nm checks prove the passive build contains no CAN transmit path:
+      # the default image must link twai_transmit (so the check matches the
+      # real symbol name) and the listen-only image must not.
       - name: Build default configuration
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.5
           target: esp32
           path: apps/esp32/firmware-obd
+          command: idf.py build && xtensa-esp32-elf-nm build/ai-servis-obd.elf | grep -qw twai_transmit
       - name: Build listen-only configuration
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.5
           target: esp32
           path: apps/esp32/firmware-obd
-          command: idf.py build -DMIA_TWAI_LISTEN_ONLY=1
+          command: idf.py build -DMIA_TWAI_LISTEN_ONLY=1 && xtensa-esp32-elf-nm build/ai-servis-obd.elf > build/listen-only-symbols.txt && test -s build/listen-only-symbols.txt && ! grep -qw twai_transmit build/listen-only-symbols.txt
       - name: Stage firmware
         run: |
           mkdir -p dist/esp32-obd

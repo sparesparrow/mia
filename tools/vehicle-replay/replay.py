@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Replay a Cycle 1 CAN JSONL trace and emit the canonical envelope."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,7 +14,7 @@ RPI_ROOT = ROOT / "apps" / "rpi-backend"
 if str(RPI_ROOT) not in sys.path:
     sys.path.insert(0, str(RPI_ROOT))
 
-from shared.telemetry.can_replay import Cycle1CANDecoder
+from shared.telemetry.can_replay import Cycle1CANDecoder  # noqa: E402
 
 
 def main() -> int:

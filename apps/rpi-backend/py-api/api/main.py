@@ -56,9 +56,17 @@ try:
         validate_cycle1_envelope,
     )
 except ImportError:
-    flatten_cycle1_envelope = None
-    validate_cycle1_envelope = None
-    logger.warning("Cycle 1 telemetry envelope module not available.")
+    try:
+        # Under pytest orchestration/mcp/modules/shared shadows apps/rpi-backend/shared;
+        # use the alias registered by tests/conftest.py.
+        from apps.rpi_backend.shared.telemetry.vehicle_envelope import (
+            flatten_cycle1_envelope,
+            validate_cycle1_envelope,
+        )
+    except ImportError:
+        flatten_cycle1_envelope = None
+        validate_cycle1_envelope = None
+        logger.warning("Cycle 1 telemetry envelope module not available.")
 
 # Import session management
 from api.sessions import (
@@ -281,6 +289,7 @@ def _handle_mcu_telemetry(payload: Dict[str, Any]) -> str:
     device_id = _resolve_mcu_device_id(payload)
     cache_entry = dict(telemetry_cache.get(device_id, {}))
     source_timestamp = payload.get("timestamp")
+    previous_envelope = cache_entry.get("vehicle_telemetry")
 
     cache_entry.update(payload)
     cache_entry["timestamp"] = datetime.now().isoformat()
@@ -289,6 +298,9 @@ def _handle_mcu_telemetry(payload: Dict[str, Any]) -> str:
         cache_entry["source_timestamp"] = source_timestamp
 
     canonical = payload.get("vehicle_telemetry")
+    if canonical is not None:
+        # Only a validated envelope may replace the last good one.
+        cache_entry["vehicle_telemetry"] = previous_envelope
     if canonical is not None and validate_cycle1_envelope and flatten_cycle1_envelope:
         try:
             validate_cycle1_envelope(canonical)

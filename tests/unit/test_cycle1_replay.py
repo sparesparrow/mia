@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-ROOT = Path(__file__).resolve().parents[2]
-RPI_ROOT = ROOT / "apps" / "rpi-backend"
-if str(RPI_ROOT) not in sys.path:
-    sys.path.insert(0, str(RPI_ROOT))
+from apps.rpi_backend.shared.telemetry.can_replay import Cycle1CANDecoder
+from apps.rpi_backend.shared.telemetry.vehicle_envelope import (
+    build_cycle1_envelope_from_flat_payload,
+    flatten_cycle1_envelope,
+)
 
-from shared.telemetry.can_replay import Cycle1CANDecoder
-from shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload, flatten_cycle1_envelope
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_fixture_reconstructs_complete_envelope():
@@ -37,9 +36,20 @@ def test_fixture_reconstructs_complete_envelope():
 
 
 def test_flat_payload_requires_all_four_signals():
-    payload = {"device_id": "simulation_0", "ignition": True, "battery_voltage": 13.8, "engine_rpm": 1750, "coolant_temp_c": 86}
+    payload = {
+        "device_id": "simulation_0",
+        "ignition": True,
+        "battery_voltage": 13.8,
+        "engine_rpm": 1750,
+        "coolant_temp_c": 86,
+    }
     assert build_cycle1_envelope_from_flat_payload(payload, source="simulation", confidence=0.5)
 
 
 def test_partial_flat_payload_is_not_promoted():
-    assert build_cycle1_envelope_from_flat_payload({"device_id": "simulation_0", "engine_rpm": 1750}, source="simulation", confidence=0.5) is None
+    assert (
+        build_cycle1_envelope_from_flat_payload(
+            {"device_id": "simulation_0", "engine_rpm": 1750}, source="simulation", confidence=0.5
+        )
+        is None
+    )

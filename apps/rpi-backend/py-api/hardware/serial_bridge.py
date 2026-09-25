@@ -16,8 +16,14 @@ RPI_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if RPI_ROOT not in sys.path:
     sys.path.insert(0, RPI_ROOT)
 
-from shared.telemetry.can_replay import Cycle1CANDecoder
-from shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload
+try:
+    from shared.telemetry.can_replay import Cycle1CANDecoder
+    from shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload
+except ImportError:
+    # Under pytest orchestration/mcp/modules/shared (a regular package) shadows
+    # this namespace package; fall back to the alias tests/conftest.py registers.
+    from apps.rpi_backend.shared.telemetry.can_replay import Cycle1CANDecoder
+    from apps.rpi_backend.shared.telemetry.vehicle_envelope import build_cycle1_envelope_from_flat_payload
 
 logger = logging.getLogger("mia.serial_bridge")
 

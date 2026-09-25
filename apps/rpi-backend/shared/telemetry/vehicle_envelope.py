@@ -86,9 +86,7 @@ def build_cycle1_envelope(
         raise VehicleEnvelopeValidationError("confidence must be in [0, 1]")
     missing = set(SIGNAL_DEFINITIONS) - set(signals)
     if missing:
-        raise VehicleEnvelopeValidationError(
-            "complete Cycle 1 telemetry is missing: " + ", ".join(sorted(missing))
-        )
+        raise VehicleEnvelopeValidationError("complete Cycle 1 telemetry is missing: " + ", ".join(sorted(missing)))
     envelope = {
         "schema_version": SCHEMA_VERSION,
         "message_type": MESSAGE_TYPE,
@@ -96,17 +94,17 @@ def build_cycle1_envelope(
         "timestamp": _timestamp(timestamp),
         "source": source,
         "confidence": float(confidence),
-        "signals": {
-            name: _signal(name, signals[name], source, confidence)
-            for name in SIGNAL_DEFINITIONS
-        },
+        "signals": {name: _signal(name, signals[name], source, confidence) for name in SIGNAL_DEFINITIONS},
     }
     validate_cycle1_envelope(envelope)
     return envelope
 
 
 def build_cycle1_envelope_from_flat_payload(
-    payload: Mapping[str, Any], *, source: str, confidence: float,
+    payload: Mapping[str, Any],
+    *,
+    source: str,
+    confidence: float,
     device_id: Optional[str] = None,
 ) -> Optional[dict[str, Any]]:
     values: dict[str, Any] = {}
@@ -127,6 +125,8 @@ def build_cycle1_envelope_from_flat_payload(
 
 
 def validate_cycle1_envelope(envelope: Mapping[str, Any]) -> None:
+    if not isinstance(envelope, Mapping):
+        raise VehicleEnvelopeValidationError("envelope must be an object")
     if envelope.get("schema_version") != SCHEMA_VERSION:
         raise VehicleEnvelopeValidationError("unsupported schema_version")
     if envelope.get("message_type") != MESSAGE_TYPE:
@@ -151,9 +151,7 @@ def validate_cycle1_envelope(envelope: Mapping[str, Any]) -> None:
         raise VehicleEnvelopeValidationError("signals must be an object")
     missing = set(SIGNAL_DEFINITIONS) - set(signals)
     if missing:
-        raise VehicleEnvelopeValidationError(
-            "complete Cycle 1 telemetry is missing: " + ", ".join(sorted(missing))
-        )
+        raise VehicleEnvelopeValidationError("complete Cycle 1 telemetry is missing: " + ", ".join(sorted(missing)))
     for name, signal in signals.items():
         if name not in SIGNAL_DEFINITIONS:
             raise VehicleEnvelopeValidationError(f"unknown Cycle 1 signal: {name}")
@@ -163,7 +161,10 @@ def validate_cycle1_envelope(envelope: Mapping[str, Any]) -> None:
             if key not in signal:
                 raise VehicleEnvelopeValidationError(f"{name} signal missing {key}")
         _coerce(name, signal["value"])
-        signal_confidence = float(signal["confidence"])
+        try:
+            signal_confidence = float(signal["confidence"])
+        except (TypeError, ValueError) as exc:
+            raise VehicleEnvelopeValidationError(f"{name} confidence must be numeric") from exc
         if not signal["source"] or not 0 <= signal_confidence <= 1:
             raise VehicleEnvelopeValidationError(f"invalid provenance for {name}")
 
