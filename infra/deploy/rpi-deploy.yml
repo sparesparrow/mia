@@ -26,7 +26,7 @@ deployment:
       
     - name: "arduino-test"
       type: "python-script"
-      source: "modules/hardware-bridge/test_arduino_led.py"
+      source: "modules/hardware-bridge/arduino_led_probe.py"
       destination: "modules/hardware-bridge/"
       
     - name: "arduino-code"

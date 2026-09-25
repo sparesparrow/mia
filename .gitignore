@@ -213,3 +213,4 @@ apps/android/.gradle/
 # pytest-cov database (binary)
 .coverage
 .coverage.*
+htmlcov/

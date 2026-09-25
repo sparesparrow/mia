@@ -29,7 +29,7 @@ timeout 2 cat < "$PORT" 2>&1 | head -10 || echo "No response received"
 
 echo ""
 echo "To properly test, use Python script:"
-echo "  python modules/hardware-bridge/test_arduino_led.py $PORT"
+echo "  python modules/hardware-bridge/arduino_led_probe.py $PORT"
 echo ""
 echo "Or use Arduino Serial Monitor:"
 echo "  arduino-cli monitor -p $PORT -c baudrate=$BAUD"

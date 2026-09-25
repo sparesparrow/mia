@@ -58,7 +58,7 @@ The deployment script will:
 # Test Arduino Connection
 ssh mia@192.168.200.139
 cd /opt/mia
-python3 modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0
+python3 modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0
 ```
 
 ## Troubleshooting

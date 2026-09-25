@@ -66,7 +66,7 @@ rsync -avz -e "${RSYNC_SSH_CMD[*]}" \
     --exclude='.git' \
     modules/hardware-bridge/arduino_led_controller.py \
     modules/hardware-bridge/arduino_led_mcp.py \
-    modules/hardware-bridge/test_arduino_led.py \
+    modules/hardware-bridge/arduino_led_probe.py \
     ${RPI_USER}@${RPI_HOST}:${RPI_PATH}/modules/hardware-bridge/
 
 echo -e "${GREEN}✓ Python modules deployed${NC}"
@@ -127,7 +127,7 @@ echo ""
 echo "1. Connect Arduino to /dev/ttyUSB0"
 echo "2. Test connection:"
 echo "   cd ${RPI_PATH}"
-echo "   python3 modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0"
+echo "   python3 modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0"
 echo ""
 echo "3. Start MQTT bridge:"
 echo "   python3 -m modules.hardware_bridge.arduino_led_controller /dev/ttyUSB0 localhost"

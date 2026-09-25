@@ -191,13 +191,13 @@ Comprehensive integration tests for the voice learning system.
 **Running Tests**:
 ```bash
 # Run all tests
-pytest modules/voice-learning/tests/test_integration.py -v
+pytest tests/unit/orchestration/test_voice_learning_integration.py -v
 
 # Run specific test class
-pytest modules/voice-learning/tests/test_integration.py::TestVoiceLearningServer -v
+pytest tests/unit/orchestration/test_voice_learning_integration.py::TestVoiceLearningServer -v
 
 # Run with coverage
-pytest modules/voice-learning/tests/test_integration.py --cov
+pytest tests/unit/orchestration/test_voice_learning_integration.py --cov
 ```
 
 ---

@@ -91,7 +91,7 @@ Recommendations applied in this revision:
 	- [x] token: cached for its lifetime; on a 401, a new token and one retry
 	- [x] country: CZ id built in, others resolved from the country list
 	- [x] result: exempt / possibly exempt / valid / invalid by the site's rule, plus valid-from/until dates of current and upcoming charges
-	- [x] unit tests with all HTTP calls mocked (`tests/unit/test_edalnice_client.py`, `tests/unit/test_edalnice_service.py`)
+	- [x] unit tests with all HTTP calls mocked (`tests/unit/rpi_backend/test_edalnice_client.py`, `tests/unit/rpi_backend/test_edalnice_service.py`)
 	- [ ] validated against the live site from a Pi: a plate with a valid vignette, one without, and an exempt vehicle; confirm the country list's field names (only CZ's id has been observed)
 - Open question: ask SFDI (the fund that runs eDalnice) for official API access; the web client's credentials and bundle can change without notice.
 

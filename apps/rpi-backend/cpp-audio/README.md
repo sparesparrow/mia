@@ -104,7 +104,7 @@ conan build ..  # Generates webgrab_generated.h from webgrab.fbs
 ctest --test-dir build
 
 # Integration tests
-python modules/hardware-bridge/test_integration.py
+python modules/hardware-bridge/bridge_probe.py
 ```
 
 ## Deployment

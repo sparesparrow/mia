@@ -39,7 +39,7 @@ sudo usermod -a -G dialout $USER
 ### 3. Test Connection
 
 ```bash
-python modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0
+python modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0
 ```
 
 ### 4. Use in Python

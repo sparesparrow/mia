@@ -108,7 +108,7 @@ After uploading, test the connection:
 
 ```bash
 # Test with Python script
-python modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0
+python modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0
 
 # Or send test command via serial
 echo '{"command":"status"}' > /dev/ttyUSB0
@@ -129,6 +129,6 @@ Expected response:
 ## Next Steps
 
 Once uploaded successfully:
-1. Test LED control: `python modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0`
+1. Test LED control: `python modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0`
 2. Start MQTT bridge: `python -m modules.hardware_bridge.arduino_led_controller /dev/ttyUSB0 localhost`
 3. Integrate with MCP: `python -m modules.hardware_bridge.arduino_led_mcp /dev/ttyUSB0 8084`
