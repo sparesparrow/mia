@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How MIA is specified
+    url: https://github.com/sparesparrow/mia/blob/main/spec/README.md
+    about: Requirements, decisions and evidence states, and how issues become requirements.

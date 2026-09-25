@@ -125,7 +125,7 @@ devices/esp32/        → ESP32 Firmware Worker
 apps/arduino/         → ESP32 Firmware Worker
 web/                  → Web UI Worker
 schemas/              → Schema Designer Worker
-contracts/            → Schema Designer Worker
+spec/interfaces/      → Schema Designer Worker
 schemas/generated/python/Mia/                  → Schema Designer Worker (generated, read-only)
 orchestration/mcp/    → Agent Developer Worker
 infra/                → Build & Deps Worker + Simulation Worker
@@ -137,7 +137,7 @@ tests/                → All workers (scoped by subdirectory)
 
 1. Every architecture decision must be reflected in diagrams — code outlives prose
 2. Use mermaid with consistent color theming (greens=RPi, blues=Android, oranges=MCU, purples=Web/MCP)
-3. Cross-cutting changes (new protocol, new message type, new service) require updating both `spec/architecture/README.md` and relevant `contracts/` files
+3. Cross-cutting changes (new protocol, new message type, new service) require updating both `spec/architecture/README.md` and the relevant `spec/interfaces/` files, and add or update the requirement in `spec/requirements/`
 4. Validate component boundaries before approving new dependencies
 5. Service startup DAG must remain acyclic — broker before all workers
 6. Document integration points between workers, not implementation details

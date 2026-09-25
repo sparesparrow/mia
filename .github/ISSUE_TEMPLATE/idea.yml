@@ -1,0 +1,21 @@
+name: Idea
+description: Something MIA could do that no requirement covers yet.
+labels: ["backlog:idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: What MIA would do, for whom, and why it matters.
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: Related requirements, decisions and prior work
+      description: REQ and ADR IDs, design notes, research links.
+  - type: textarea
+    id: next
+    attributes:
+      label: Before it can start
+      description: Decisions to make or requirements to write first.

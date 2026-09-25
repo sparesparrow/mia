@@ -42,8 +42,7 @@ You own the build pipeline across all platforms and the dependency graph.
 # Python
 pip3 install -r requirements-dev.txt
 
-# C++
-conan create . --build=missing
+# C++ (the ARM64 Conan recipe is tracked in #125)
 cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp
 
 # Android

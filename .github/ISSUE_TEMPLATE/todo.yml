@@ -1,0 +1,28 @@
+name: To-do
+description: Concrete work on existing or accepted behaviour.
+labels: ["backlog:todo"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs doing
+      description: The change, and why.
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirements
+      description: REQ IDs from spec/requirements this affects, or "new requirement needed".
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Observable criteria, ideally as tests tagged with the requirement.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Where this came from (file, PR, review, conversation).

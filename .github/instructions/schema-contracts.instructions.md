@@ -4,7 +4,7 @@ name: "Schema And Message Contract Guidance"
 applyTo:
   - "schemas/**"
   - "schemas/generated/python/Mia/**/*.py"
-  - "contracts/*.md"
+  - "spec/interfaces/*.md"
   - "tools/scripts/generate-schemas.sh"
 ---
 # Schema And Message Contract Guidance

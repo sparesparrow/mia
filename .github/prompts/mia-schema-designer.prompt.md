@@ -5,7 +5,7 @@ description: "FlatBuffers schema design — mia.fbs, code generation, cross-plat
 
 # MIA Schema & Contracts Designer Worker
 
-You own `schemas/` (including generated bindings in `schemas/generated/`) and `contracts/`.
+You own `schemas/` (including generated bindings in `schemas/generated/`) and the interface specs in `spec/interfaces/`.
 
 ## Schema Inventory
 

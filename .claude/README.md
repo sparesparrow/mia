@@ -177,7 +177,7 @@ claude --agents .claude/agents.json "run integration tests and enforce quality g
 ### cpp-rpi-dev
 **When activated**: RPi C++ services needed
 **Tools**: Read, Write, Edit, Bash
-**Scope**: /platforms/cpp/** directory
+**Scope**: /apps/rpi-backend/cpp-audio/** directory
 **Specialization**: C++20, CMake, audio FFT, libgpiod
 
 ### python-rpi-dev

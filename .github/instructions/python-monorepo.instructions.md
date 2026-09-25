@@ -7,8 +7,7 @@ applyTo:
   - "tools/scripts/**/*.py"
   - "tests/**/*.py"
   - "tools/**/*.py"
-  - "modules/**/*.py"
-  - "services/**/*.py"
+  - "agents/**/*.py"
   - "requirements*.txt"
   - "orchestration/mcp/modules/**/requirements.txt"
 ---
