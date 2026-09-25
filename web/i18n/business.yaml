@@ -2,8 +2,8 @@
 business:
   page:
     title:
-        en: AI-SERVIS - Professional AI for Business Vehicles
-        cs: AI-SERVIS - Profesionální AI pro obchodní vozidla
+        en: MIA - Professional AI for Business Vehicles
+        cs: MIA - Profesionální AI pro obchodní vozidla
     description:
         en: Professional AI solutions for business vehicles with productivity boost and enterprise security
         cs: Profesionální AI řešení pro obchodní vozidla s nárůstem produktivity a podnikovou bezpečností
@@ -17,9 +17,6 @@ business:
     solutions:
       en: Solutions
       cs: Řešení
-    pricing:
-      en: Pricing
-      cs: Ceny
     technology:
       en: Technology
       cs: Technologie
@@ -119,88 +116,6 @@ business:
     executive_transport:
       en: Executive Transport
       cs: Exekutivní doprava
-  pricing:
-    business_pricing:
-      en: Business Pricing
-      cs: Obchodní ceny
-    business_starter:
-      en: Business Starter
-      cs: Business Starter
-    essential_business_features:
-      en: Essential Business Features
-      cs: Základní obchodní funkce
-    price_55000:
-      en: '- 55.000'
-      cs: '- 55.000'
-    voice_assistant_calls:
-      en: Voice Assistant & Calls
-      cs: Hlasový asistent a hovory
-    basic_navigation:
-      en: Basic Navigation
-      cs: Základní navigace
-    email_integration:
-      en: Email Integration
-      cs: Integrace e-mailu
-    obd_diagnostics:
-      en: OBD Diagnostics
-      cs: OBD diagnostika
-    installation_2h:
-      en: 2h Installation
-      cs: 2h instalace
-    get_quote:
-      en: Get Quote
-      cs: Získat nabídku
-    most_popular:
-      en: Most Popular
-      cs: Nejoblíbenější
-    business_professional:
-      en: Business Professional
-      cs: Business Professional
-    complete_business_solution:
-      en: Complete Business Solution
-      cs: Kompletní obchodní řešení
-    price_105000:
-      en: '- 105.000'
-      cs: '- 105.000'
-    everything_in_starter:
-      en: Everything in Starter
-      cs: Vše ze Starter
-    crm_integration:
-      en: CRM Integration
-      cs: CRM integrace
-    advanced_navigation:
-      en: Advanced Navigation
-      cs: Pokročilá navigace
-    priority_support:
-      en: Priority Support
-      cs: Prioritní podpora
-    enterprise_fleet:
-      en: Enterprise Fleet
-      cs: Enterprise Fleet
-    fleet_management_solution:
-      en: Fleet Management Solution
-      cs: Řešení pro správu vozového parku
-    price_195000:
-      en: '- 195.000'
-      cs: '- 195.000'
-    everything_in_professional:
-      en: Everything in Professional
-      cs: Vše z Professional
-    fleet_management_api:
-      en: Fleet Management API
-      cs: Fleet management API
-    advanced_anpr_tracking:
-      en: Advanced ANPR Tracking
-      cs: Pokročilé ANPR sledování
-    custom_integrations:
-      en: Custom Integrations
-      cs: Vlastní integrace
-    dedicated_support:
-      en: Dedicated Support
-      cs: Vyhrazená podpora
-    contact_sales:
-      en: Contact Sales
-      cs: Kontaktovat obchod
   technology:
     enterprise_technology:
       en: Enterprise Technology
@@ -256,5 +171,5 @@ business:
       en: Contact
       cs: Kontakt
     copyright:
-      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
-      cs: © 2025 AI-SERVIS Business Solutions. Všechna práva vyhrazena.
+      en: © 2025 MIA Business Solutions. All rights reserved.
+      cs: © 2025 MIA Business Solutions. Všechna práva vyhrazena.

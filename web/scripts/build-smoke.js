@@ -1,40 +1,53 @@
 // Smoke test for the MIA web page generator.
 //
 // Run via `npm test` (which calls `npm run build` first via the `pretest`
-// hook). The goal is to catch obvious regressions in scripts/generatePages.js
-// without pulling in a full test framework. Exit code 0 means success.
+// hook). CI runs it in .github/workflows/publish-pages.yml. Exit code 0 means
+// success.
 //
 // Checks performed:
-//   1. Every expected segment HTML file exists and is non-empty.
-//   2. The output contains no leftover `{{...}}` template placeholders.
-//   3. Per-customer styles.css landed under dist/<segment>/.
-//   4. i18n YAML files were copied to dist/i18n/.
-//   5. The duplicate-asset-copy bug fixed in this PR did not regress: the
-//      build log line for "Copied shared asset" appears at most once per
-//      asset/segment (verified indirectly by checking that the legacy
-//      "shared asset" log message is gone).
+//   1. Every audience page exists in Czech (<page>/index.html) and English
+//      (<page>/en/index.html) and is non-empty.
+//   2. No page contains a leftover `{{...}}` template placeholder.
+//   3. No page uses the old AI-SERVIS name, or shows prices or the unsourced
+//      performance figures removed under REQ-WEB-002.
+//   4. Each page links to its other language, to the documentation, and to every
+//      audience (customer segments, professional aliases and the press kit).
+//   5. Old flat URLs (customers/<segment>.html) and the professional aliases
+//      redirect to the right place.
+//   6. Every local stylesheet and image a page references exists in dist/.
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 
 const WEB_ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(WEB_ROOT, 'dist');
 const SEGMENTS = ['business', 'family', 'musicians', 'journalists'];
-const REQUIRED_YAML = ['common.yaml', 'business.yaml', 'family.yaml',
-    'musicians.yaml', 'gonzo.yaml'];
+const PAGES = [...SEGMENTS, 'press'];
+const ROLE_REDIRECTS = {
+    developers: '../docs/for/developers/',
+    mechanics: '../docs/for/mechanics/',
+    testers: '../docs/for/testers/'
+};
+const FORBIDDEN = [
+    { pattern: /AI-SERVIS/i, label: 'old AI-SERVIS name' },
+    { pattern: /Kč|\bCZK\b|€/, label: 'prices' },
+    { pattern: /\b(300|93|70-93)\s?%/, label: 'unsourced percentages' },
+    { pattern: /id="pricing"|href="#pricing"/, label: 'pricing section' }
+];
+// Text that may legitimately mention the old name (the press kit explains the rename).
+const ALLOWED_OLD_NAME = /dříve pod názvem AI-SERVIS|previously called AI-SERVIS|starý název AI-SERVIS|old AI-SERVIS name/g;
 
 let failures = 0;
 
 function fail(message) {
     failures += 1;
-    console.error(`  \u2717 ${message}`);
+    console.error(`  ✗ ${message}`);
 }
 
 function pass(message) {
-    console.log(`  \u2713 ${message}`);
+    console.log(`  ✓ ${message}`);
 }
 
 function check(condition, message) {
@@ -45,68 +58,66 @@ function check(condition, message) {
     }
 }
 
-function fileNonEmpty(filePath) {
+function read(relPath) {
     try {
-        return fs.statSync(filePath).size > 0;
+        return fs.readFileSync(path.join(DIST, relPath), 'utf8');
     } catch (_err) {
-        return false;
+        return '';
     }
 }
 
 console.log('Smoke test: MIA web build');
 console.log(`  dist: ${DIST}`);
 
-// 1. Segment pages exist and are non-empty.
-for (const segment of SEGMENTS) {
-    const page = path.join(DIST, `${segment}.html`);
-    check(fileNonEmpty(page), `dist/${segment}.html exists and is non-empty`);
-}
+for (const page of PAGES) {
+    for (const [lang, rel] of [['cs', `${page}/index.html`], ['en', `${page}/en/index.html`]]) {
+        const html = read(rel);
+        // 1. Exists.
+        check(html.length > 0, `${rel} exists and is non-empty`);
+        if (!html) {
+            continue;
+        }
+        check(html.includes(`<html lang="${lang}">`), `${rel} declares lang="${lang}"`);
 
-// 2. No leftover template placeholders.
-for (const segment of SEGMENTS) {
-    const page = path.join(DIST, `${segment}.html`);
-    if (!fileNonEmpty(page)) {
-        continue;
+        // 2. No unrendered placeholders.
+        const placeholders = html.match(/\{\{[^}]+\}\}/g) || [];
+        check(placeholders.length === 0,
+            `${rel} has no unrendered {{...}} placeholders` +
+                (placeholders.length ? ` (found: ${placeholders.slice(0, 3).join(', ')})` : ''));
+
+        // 3. No old brand, prices or unsourced figures.
+        const scrubbed = html.replace(ALLOWED_OLD_NAME, '');
+        for (const { pattern, label } of FORBIDDEN) {
+            check(!pattern.test(scrubbed), `${rel} has no ${label}`);
+        }
+
+        // 4. Links.
+        const otherHref = lang === 'cs' ? 'href="en/"' : 'href="../"';
+        check(html.includes(otherHref), `${rel} links to its other language (${otherHref})`);
+        check(/href="(\.\.\/)+docs\/"/.test(html), `${rel} links to the documentation`);
+        const audiences = [...SEGMENTS, 'press'].map((s) => `${s}/`)
+            .concat(Object.values(ROLE_REDIRECTS).map((t) => t.replace('../', '')));
+        const missing = audiences.filter((a) => !html.includes(`${a}"`) && !html.includes(`${a}en/"`));
+        check(missing.length === 0, `${rel} links to every audience` +
+            (missing.length ? ` (missing: ${missing.join(', ')})` : ''));
+
+        // 6. Local assets exist.
+        const pageDir = path.dirname(path.join(DIST, rel));
+        const refs = [...html.matchAll(/(?:href|src)="([^"#:]+\.(?:css|jpg|png))"/g)].map((m) => m[1]);
+        const broken = refs.filter((ref) => !fs.existsSync(path.resolve(pageDir, ref)));
+        check(broken.length === 0, `${rel} references only existing local assets` +
+            (broken.length ? ` (missing: ${broken.join(', ')})` : ''));
     }
-    const html = fs.readFileSync(page, 'utf8');
-    // The template engine uses {{...}} for vars and {{#if}}/{{#each}} for control.
-    // After rendering, none should remain in the output.
-    const placeholderRegex = /\{\{[^}]+\}\}/g;
-    const matches = html.match(placeholderRegex) || [];
-    check(
-        matches.length === 0,
-        `dist/${segment}.html has no unrendered {{...}} placeholders` +
-            (matches.length ? ` (found: ${matches.slice(0, 3).join(', ')}\u2026)` : '')
-    );
 }
 
-// 3. Per-customer styles landed under dist/<segment>/.
+// 5. Redirect stubs.
 for (const segment of SEGMENTS) {
-    const css = path.join(DIST, segment, 'styles.css');
-    check(fileNonEmpty(css), `dist/${segment}/styles.css exists and is non-empty`);
+    const html = read(`customers/${segment}.html`);
+    check(html.includes(`url=../${segment}/"`), `customers/${segment}.html redirects to ${segment}/`);
 }
-
-// 4. i18n YAML files copied.
-for (const yaml of REQUIRED_YAML) {
-    const target = path.join(DIST, 'i18n', yaml);
-    check(fileNonEmpty(target), `dist/i18n/${yaml} exists and is non-empty`);
-}
-
-// 5. Sanity-check the generator log: re-run the build capturing stdout and
-// assert the duplicate "shared asset" log line is gone. This guards the
-// regression fixed in this PR.
-try {
-    const stdout = execFileSync(
-        process.execPath,
-        [path.join(WEB_ROOT, 'scripts', 'generatePages.js')],
-        { cwd: WEB_ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
-    );
-    check(
-        !stdout.includes('Copied shared asset'),
-        'generator log no longer emits the duplicated "Copied shared asset" line'
-    );
-} catch (err) {
-    fail(`generator failed to re-run: ${err.message}`);
+for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
+    const html = read(`${role}/index.html`);
+    check(html.includes(`url=${target}"`), `${role}/ redirects to ${target.replace('../', '')}`);
 }
 
 if (failures > 0) {

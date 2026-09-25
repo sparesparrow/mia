@@ -73,31 +73,25 @@ jobs:
         working-directory: web
         run: npm ci
 
-      - name: Generate customer pages
+      - name: Generate and smoke-test audience pages
         working-directory: web
-        run: npm run build
+        # `npm test` runs `npm run build` first (pretest) and then scripts/build-smoke.js.
+        run: npm test
 
       - name: Assemble static site
+        # Site map (web/README.md): the gonzo manifesto at the root, generated audience
+        # pages and the press kit from web/dist/, MkDocs under docs/ (deploy job).
+        # team/, agents/ and voice-chat.html are internal tools and are not published.
         run: |
           mkdir -p _site_web
+          cp -r web/dist/. _site_web/
 
-          cp web/index.html _site_web/
-          cp web/404.html _site_web/ 2>/dev/null || true
-          cp web/styles.css _site_web/ 2>/dev/null || true
-          cp web/gonzo-styles.css _site_web/ 2>/dev/null || true
-          cp web/app.js _site_web/ 2>/dev/null || true
-
-          cp -r web/agents _site_web/agents
-          cp -r web/team _site_web/team
-          cp -r web/js _site_web/js
-          cp -r web/css _site_web/css
-          cp -r web/assets _site_web/assets
-          cp -r web/i18n _site_web/i18n
-
-          if [ -d web/dist ]; then
-            mkdir -p _site_web/customers
-            cp -r web/dist/* _site_web/customers/
-          fi
+          cp web/index.html web/404.html _site_web/
+          mkdir -p _site_web/customers/journalists
+          cp web/customers/journalists/gonzo-styles.css \
+             web/customers/journalists/gonzo-app.js \
+             web/customers/journalists/background-music.mp3 \
+             _site_web/customers/journalists/
 
           touch _site_web/.nojekyll
 

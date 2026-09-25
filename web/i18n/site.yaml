@@ -1,0 +1,260 @@
+# Shared strings for the published site: status banner, "what works today",
+# audience navigation, pilot call to action and the press kit.
+# "What works today" may only list behaviour whose requirement in spec/requirements/
+# is implemented_and_ci_tested or better (ADR-0010). Update it when evidence changes.
+site:
+  brand:
+    en: MIA
+    cs: MIA
+  tagline:
+    en: Open prototype of in-car telemetry and a voice assistant
+    cs: Otevřený prototyp telemetrie a hlasového asistenta do auta
+  status_banner:
+    en: 'Prototype in development. MIA is not a product for sale and is not certified for road use.'
+    cs: 'Prototyp ve vývoji. MIA zatím není produkt na prodej ani zařízení certifikované pro provoz.'
+  language_switch:
+    en: Česky
+    cs: English
+  facts:
+    - en: Prototype on an Audi A4 Cabriolet 8H
+      cs: Prototyp na Audi A4 Cabriolet 8H
+    - en: Raspberry Pi 4B + ESP32 + Android
+      cs: Raspberry Pi 4B + ESP32 + Android
+    - en: Read-only access to the vehicle
+      cs: Z vozidla pouze čte
+  nav:
+    today:
+      en: Works today
+      cs: Funguje dnes
+    scenarios:
+      en: Scenarios
+      cs: Scénáře
+    technology:
+      en: Technology
+      cs: Technologie
+    pilot:
+      en: Join the pilot
+      cs: Zapojit se
+    all_pages:
+      en: All pages
+      cs: Všechny stránky
+  today:
+    title:
+      en: What works today
+      cs: Co funguje dnes
+    intro:
+      en: Everything below is implemented and checked by automated tests in CI or in simulation. Bench, hardware and in-vehicle validation is still under way.
+      cs: Vše níže je implementováno a ověřeno automatickými testy v CI nebo v simulaci. Ověření na stole, na hardwaru a ve voze teprve probíhá.
+    link:
+      en: Evidence state of every requirement
+      cs: Stav ověření každého požadavku
+    items:
+      - title:
+          en: OBD-II telemetry
+          cs: Telemetrie OBD-II
+        text:
+          en: Engine speed, coolant temperature, battery voltage and ignition state, from an ELM327 digital twin and passive CAN capture on ESP32.
+          cs: Otáčky, teplota chladicí kapaliny, napětí baterie a stav zapalování z digitálního dvojčete ELM327 a pasivního záznamu CAN na ESP32.
+      - title:
+          en: Read-only Audi diagnostics
+          cs: Diagnostika Audi jen pro čtení
+        text:
+          en: A VAG/Audi diagnostics bridge that only reads. MIA does not write to the vehicle bus by default.
+          cs: Diagnostický most VAG/Audi, který pouze čte. MIA ve výchozím stavu na sběrnici vozidla nezapisuje.
+      - title:
+          en: Number plate recognition
+          cs: Rozpoznávání SPZ
+        text:
+          en: Plate recognition in the Android app, with a Czech motorway vignette check.
+          cs: Rozpoznávání SPZ v aplikaci pro Android a kontrola dálniční známky.
+      - title:
+          en: Voice commands
+          cs: Hlasové ovládání
+        text:
+          en: Voice command handling on the Pi and spoken feedback in the Android app.
+          cs: Zpracování hlasových příkazů na Pi a mluvená zpětná vazba v aplikaci pro Android.
+      - title:
+          en: Android companion app
+          cs: Aplikace pro Android
+        text:
+          en: BLE pairing, a live telemetry card, dashcam recording and a local rules engine.
+          cs: Párování přes BLE, živá karta telemetrie, záznam z kamery a místní pravidla.
+      - title:
+          en: Raspberry Pi gateway
+          cs: Brána na Raspberry Pi
+        text:
+          en: REST and WebSocket API, ZeroMQ messaging and systemd services, with simulation fallbacks when hardware is absent.
+          cs: REST a WebSocket API, zprávy přes ZeroMQ a služby systemd, se simulací tam, kde hardware chybí.
+  scenarios:
+    label:
+      en: Planned scenarios
+      cs: Plánované scénáře
+    note:
+      en: Where the product is heading. These scenarios are not finished or validated yet.
+      cs: Kam produkt směřuje. Tyto scénáře zatím nejsou hotové ani ověřené.
+  technology:
+    title:
+      en: Technology
+      cs: Technologie
+    items:
+      - title:
+          en: Raspberry Pi 4B gateway
+          cs: Brána Raspberry Pi 4B
+        text:
+          en: Runs the API, messaging and AI services at the edge, in the car.
+          cs: Provozuje API, zprávy a AI služby přímo v autě.
+      - title:
+          en: ESP32 modules
+          cs: Moduly ESP32
+        text:
+          en: Listen on OBD-II and CAN and drive local inputs and outputs.
+          cs: Poslouchají OBD-II a CAN a obsluhují místní vstupy a výstupy.
+      - title:
+          en: Android companion
+          cs: Doprovodná aplikace
+        text:
+          en: Dashboard, BLE link, plate recognition and dashcam on the driver's phone.
+          cs: Přehled, spojení přes BLE, rozpoznávání SPZ a kamera v telefonu řidiče.
+      - title:
+          en: Open specification
+          cs: Otevřená specifikace
+        text:
+          en: Requirements, design decisions and validation evidence are public on GitHub.
+          cs: Požadavky, návrhová rozhodnutí a záznamy ověření jsou veřejně na GitHubu.
+  pilot:
+    text:
+      en: MIA is looking for pilot users and partners. There is no price list yet. Tell us what you need and we will work out what makes sense.
+      cs: MIA hledá pilotní uživatele a partnery. Ceník zatím nemáme. Napište nám, co potřebujete, a domluvíme se, co dává smysl.
+    button:
+      en: Join the pilot
+      cs: Zapojit se do pilotu
+    docs:
+      en: Read the documentation
+      cs: Číst dokumentaci
+  footer:
+    customers:
+      en: For customers
+      cs: Pro zákazníky
+    professionals:
+      en: For professionals
+      cs: Pro odborníky
+    project:
+      en: Project
+      cs: Projekt
+    manifesto:
+      en: Manifesto
+      cs: Manifest
+    documentation:
+      en: Documentation
+      cs: Dokumentace
+    source:
+      en: Source code
+      cs: Zdrojový kód
+    copyright:
+      en: © 2026 the MIA project. MIT licence.
+      cs: © 2026 projekt MIA. Licence MIT.
+  audiences:
+    business:
+      en: Business & fleets
+      cs: Firmy a flotily
+    family:
+      en: Families
+      cs: Rodiny
+    musicians:
+      en: Musicians
+      cs: Hudebníci
+    journalists:
+      en: Journalists
+      cs: Novináři
+    developers:
+      en: Developers
+      cs: Vývojáři
+    mechanics:
+      en: Mechanics & installers
+      cs: Automechanici a montáž
+    testers:
+      en: Testers
+      cs: Testeři
+    press:
+      en: Press & marketing
+      cs: Média a marketing
+  press:
+    title:
+      en: MIA press kit
+      cs: Tiskové podklady MIA
+    description:
+      en: Facts, status and images for writing about MIA.
+      cs: Fakta, stav projektu a obrázky pro psaní o MIA.
+    lead:
+      en: MIA is an open prototype that reads telemetry from a car, runs a voice assistant at the edge on a Raspberry Pi and pairs with an Android app. The first prototype vehicle is a 2004 Audi A4 Cabriolet (8H).
+      cs: MIA je otevřený prototyp, který čte telemetrii z auta, provozuje hlasového asistenta přímo v autě na Raspberry Pi a spolupracuje s aplikací pro Android. Prvním prototypovým vozem je Audi A4 Cabriolet (8H) z roku 2004.
+    facts_title:
+      en: Fact sheet
+      cs: Základní fakta
+    facts:
+      - label:
+          en: Name
+          cs: Název
+        value:
+          en: MIA (the project was previously called AI-SERVIS)
+          cs: MIA (dříve pod názvem AI-SERVIS)
+      - label:
+          en: Stage
+          cs: Fáze
+        value:
+          en: Prototype. Checked by automated tests in CI and in simulation. No bench, hardware or in-vehicle validation is recorded yet.
+          cs: Prototyp. Ověřeno automatickými testy v CI a v simulaci. Ověření na stole, na hardwaru ani ve voze zatím nemá záznam.
+      - label:
+          en: Hardware
+          cs: Hardware
+        value:
+          en: Raspberry Pi 4B, ESP32 microcontrollers, an Android phone
+          cs: Raspberry Pi 4B, mikrokontroléry ESP32, telefon s Androidem
+      - label:
+          en: Vehicle access
+          cs: Přístup k vozidlu
+        value:
+          en: Read-only by default. MIA listens to OBD-II and CAN and does not send commands to the car.
+          cs: Ve výchozím stavu jen čtení. MIA poslouchá OBD-II a CAN a do auta neposílá příkazy.
+      - label:
+          en: Price and availability
+          cs: Cena a dostupnost
+        value:
+          en: Not for sale. No price list. Pilot users and partners are welcome.
+          cs: Není na prodej. Bez ceníku. Pilotní uživatelé a partneři jsou vítáni.
+      - label:
+          en: Licence
+          cs: Licence
+        value:
+          en: MIT, source code on GitHub
+          cs: MIT, zdrojový kód na GitHubu
+    privacy_title:
+      en: Privacy
+      cs: Soukromí
+    privacy_text:
+      en: Number plate recognition and dashcam recording process personal data. Anyone deploying MIA is responsible for a data protection impact assessment. The documentation includes a DPIA template.
+      cs: Rozpoznávání SPZ a záznam z kamery zpracovávají osobní údaje. Kdo MIA nasazuje, odpovídá za posouzení vlivu na ochranu osobních údajů. Dokumentace obsahuje šablonu DPIA.
+    privacy_link:
+      en: DPIA template
+      cs: Šablona DPIA
+    images_title:
+      en: Images
+      cs: Obrázky
+    images_note:
+      en: Illustrative images, AI-generated. Some still show the old AI-SERVIS name. Free to use when writing about MIA.
+      cs: Ilustrační obrázky vytvořené AI. Některé ještě nesou starý název AI-SERVIS. Volně k použití při psaní o MIA.
+    tone_title:
+      en: Two voices
+      cs: Dva hlasy
+    tone_text:
+      en: The homepage is a deliberately provocative Czech "gonzo" manifesto. The audience pages and this press kit describe the project plainly. Quote facts from here.
+      cs: Úvodní stránka je záměrně provokativní „gonzo" manifest. Stránky pro jednotlivé skupiny a tyto podklady popisují projekt věcně. Fakta citujte odsud.
+    contact_title:
+      en: Contact
+      cs: Kontakt
+    contact_text:
+      en: Open an issue on GitHub. We answer there in public.
+      cs: Založte issue na GitHubu. Odpovídáme veřejně tam.
+    contact_button:
+      en: Contact via GitHub
+      cs: Napsat přes GitHub

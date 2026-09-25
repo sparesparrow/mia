@@ -1,463 +1,409 @@
+// Generates the audience landing pages and the press kit for the published site.
+//
+// Every page is rendered once per language: Czech at <page>/index.html and English
+// at <page>/en/index.html, so the language switch is a plain link and the pages
+// need no runtime i18n. Old flat URLs (customers/<segment>.html) and the short
+// professional aliases (developers/, mechanics/, testers/) become redirect stubs.
+//
+// Output goes to dist/, which .github/workflows/publish-pages.yml copies to the
+// site root. See web/README.md for the full site map.
+
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// Ensure dist directory exists
-const distDir = path.join(__dirname, '..', 'dist');
-if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir, { recursive: true });
+const WEB_ROOT = path.join(__dirname, '..');
+const distDir = path.join(WEB_ROOT, 'dist');
+const SITE_URL = 'https://sparesparrow.github.io/mia/';
+const LANGUAGES = ['cs', 'en'];
+const DEFAULT_LANGUAGE = 'cs';
+const PILOT_URL = 'https://github.com/sparesparrow/mia/issues/new?title=';
+
+fs.mkdirSync(distDir, { recursive: true });
+
+const pageTemplate = fs.readFileSync(path.join(WEB_ROOT, 'template.html'), 'utf8');
+const pressTemplate = fs.readFileSync(path.join(WEB_ROOT, 'press-template.html'), 'utf8');
+
+function loadYaml(file) {
+    return yaml.load(fs.readFileSync(path.join(WEB_ROOT, 'i18n', file), 'utf8'));
 }
 
-// Load the shared template
-const templatePath = path.join(__dirname, '..', 'template.html');
-const template = fs.readFileSync(templatePath, 'utf8');
+const site = loadYaml('site.yaml').site;
 
-// Define customer configurations
-const customers = [
+// Segment pages. Text paths point into the segment's YAML namespace; each scenario
+// has a title and either bullet `items` or a `text` paragraph.
+const segments = [
     {
         name: 'business',
-        namespace: 'business',
-        language: 'cs',
         yamlFile: 'business.yaml',
-        imageDir: 'business'
+        stylesheet: 'customers/business/styles.css',
+        heroImage: 'business.jpg',
+        tagline: 'navigation.business_intelligence_on_wheels',
+        heroTitle: 'hero.aipowered_business_vehicle_intelligence',
+        heroSubtitle: 'page.description',
+        scenariosTitle: 'solutions.business_solutions',
+        scenarios: [
+            {
+                title: 'solutions.sales_teams',
+                items: ['solutions.handsfree_crm_access', 'solutions.voicetotext_meeting_notes',
+                    'solutions.lead_tracking_and_routing', 'solutions.territory_optimization']
+            },
+            {
+                title: 'solutions.field_service_professionals',
+                items: ['solutions.job_dispatch_integration', 'solutions.voiceactivated_checklists',
+                    'solutions.realtime_eta_updates', 'solutions.service_report_generation']
+            },
+            {
+                title: 'solutions.executive_transportation',
+                items: ['solutions.secure_voice_encryption', 'solutions.executive_calendar_sync',
+                    'solutions.document_voice_review', 'solutions.privacyfirst_design']
+            }
+        ],
+        pilotTitle: 'cta.ready_to_transform_your_business_fleet'
     },
     {
         name: 'family',
-        namespace: 'family', 
-        language: 'cs',
         yamlFile: 'family.yaml',
-        imageDir: 'family'
+        stylesheet: 'customers/family/styles.css',
+        heroImage: 'family.jpg',
+        tagline: 'navigation.family_protection_first',
+        heroTitle: 'hero.comprehensive_family_safety',
+        heroSubtitle: 'page.description',
+        scenariosTitle: 'content.protection_scenarios',
+        scenarios: [
+            {
+                title: 'scenarios.parent_child_safety',
+                items: ['scenarios.teen_driver_monitoring', 'scenarios.family_arrival_notifications',
+                    'scenarios.safe_driving_alerts', 'scenarios.emergency_contact_system']
+            },
+            {
+                title: 'scenarios.partner_safety',
+                items: ['scenarios.coupled_location_sharing', 'scenarios.mutual_safety_alerts',
+                    'scenarios.trusted_partner_network', 'scenarios.privacy_controls']
+            },
+            {
+                title: 'scenarios.senior_family_care',
+                items: ['scenarios.independence_monitoring', 'scenarios.health_safety_alerts',
+                    'scenarios.battery_system_monitoring', 'scenarios.trusted_caregiver_network']
+            }
+        ],
+        pilotTitle: 'cta.give_your_family_the_protection_they_deserve'
     },
     {
         name: 'musicians',
-        namespace: 'musicians',
-        language: 'cs', 
         yamlFile: 'musicians.yaml',
-        imageDir: 'musicians'
+        stylesheet: 'customers/musicians/styles.css',
+        heroImage: 'mobile-dj.jpg',
+        bodyClass: 'theme-dark',
+        tagline: 'navigation.mobile_music_revolution',
+        heroTitle: 'hero.studiograde_features',
+        heroSubtitle: 'page.description',
+        scenariosTitle: 'navigation.performances',
+        scenarios: [
+            {
+                title: 'features.mobile_dj_revolution',
+                items: ['features.remote_deck_synchronization', 'features.live_streaming_capabilities',
+                    'features.multicar_collaboration', 'features.emergency_backup_systems']
+            },
+            {
+                title: 'features.band_collaboration',
+                items: ['features.realtime_audio_sync', 'features.distributed_recording',
+                    'features.cloud_collaboration', 'features.mobile_mixing_desk']
+            },
+            {
+                title: 'features.solo_artist_freedom',
+                items: ['features.creative_access_247', 'features.instant_recording_setup',
+                    'features.mobile_performance_rig', 'features.creative_freedom']
+            }
+        ],
+        pilotTitle: 'cta.ready_to_make_music_everywhere'
     },
     {
         name: 'journalists',
-        namespace: 'journalists',
-        language: 'cs',
         yamlFile: 'gonzo.yaml',
-        imageDir: 'journalists'
+        namespace: 'journalists',
+        stylesheet: 'customers/journalists/styles.css',
+        heroImage: 'investigator.jpg',
+        bodyClass: 'theme-dark',
+        tagline: 'navigation.gonzo_journalism',
+        heroTitle: 'hero.main_title',
+        heroSubtitle: 'hero.subtitle',
+        scenariosTitle: 'weaponry.title',
+        scenarios: [
+            { title: 'weaponry.anti_stalker_protocol.title', text: 'weaponry.anti_stalker_protocol.description' },
+            { title: 'weaponry.covert_ops_interface.title', text: 'weaponry.covert_ops_interface.description' },
+            { title: 'weaponry.gonzo_command_center.title', text: 'weaponry.gonzo_command_center.description' },
+            { title: 'weaponry.matrix_tracking_map.title', text: 'weaponry.matrix_tracking_map.description' },
+            { title: 'stories.gonzo_investigator.title', text: 'stories.gonzo_investigator.description' },
+            { title: 'stories.mobile_dj_revolution.title', text: 'stories.mobile_dj_revolution.description' }
+        ],
+        pilotTitle: 'cta.ready_to_investigate'
     }
 ];
 
-// Simple template engine using Handlebars-like syntax
-function renderTemplate(template, data) {
-    let result = template;
-    
-    // Handle {{#if}} conditions first
-    result = result.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
-        const value = getNestedValue(data, condition.trim());
-        if (value && value !== '' && value !== false && value !== 0) {
-            return content;
+// Short aliases for the professional audiences; their content lives in MkDocs.
+const roleRedirects = {
+    developers: 'docs/for/developers/',
+    mechanics: 'docs/for/mechanics/',
+    testers: 'docs/for/testers/'
+};
+
+const pressImages = [
+    'telemetry-flow.jpg', 'pi-wiring.jpg', 'business.jpg', 'family.jpg',
+    'hero-dashboard.jpg', 'investigator.jpg', 'mobile-dj.jpg', 'command-center.jpg'
+];
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function getPath(obj, dotted) {
+    return dotted.split('.').reduce((node, key) => (node == null ? undefined : node[key]), obj);
+}
+
+// Resolve a {cs, en} entry. A missing key or language fails the build rather than
+// shipping a raw key or the wrong language.
+function tr(entry, lang, where) {
+    if (!entry || typeof entry !== 'object' || typeof entry[lang] !== 'string') {
+        throw new Error(`Missing ${lang} text for ${where}`);
+    }
+    return entry[lang];
+}
+
+function textAt(data, dotted, lang, where) {
+    return tr(getPath(data, dotted), lang, `${where}.${dotted}`);
+}
+
+// {{name}} placeholders only; values are inserted as-is, so callers escape text
+// and pass ready-made HTML for the repeated blocks.
+function renderTemplate(template, values) {
+    return template.replace(/\{\{([a-z_]+)\}\}/g, (match, key) => {
+        if (!(key in values)) {
+            throw new Error(`Template placeholder {{${key}}} has no value`);
         }
-        return '';
+        return values[key];
     });
-    
-    // Handle {{#each}} loops - process multiple times to handle nested loops
-    let previousResult = '';
-    while (result !== previousResult) {
-        previousResult = result;
-        result = result.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayKey, loopTemplate) => {
-            const array = getNestedValue(data, arrayKey.trim());
-            if (!Array.isArray(array)) return '';
-            
-            return array.map(item => {
-                let itemTemplate = loopTemplate;
-                // Replace {{this.property}} with item.property
-                itemTemplate = itemTemplate.replace(/\{\{this\.([^}]+)\}\}/g, (m, prop) => {
-                    return getNestedValue(item, prop.trim()) || '';
-                });
-            // Replace {{../property}} and {{../../property}} with parent data
-            itemTemplate = itemTemplate.replace(/\{\{(\.\.\/)+([^}]+)\}\}/g, (m, dots, prop) => {
-                // For {{../../namespace}}, we still use the same parent data
-                // The number of ../ doesn't change the data context in this case
-                return getNestedValue(data, prop.trim()) || '';
-            });
-                return itemTemplate;
-            }).join('');
-        });
-    }
-    
-    // Replace simple variables {{variable}} - do this last
-    result = result.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-        const value = getNestedValue(data, key.trim());
-        return value !== undefined ? value : match;
-    });
-    
-    return result;
 }
 
-function getNestedValue(obj, path) {
-    return path.split('.').reduce((current, key) => {
-        return current && current[key] !== undefined ? current[key] : undefined;
-    }, obj);
+function langSuffix(lang) {
+    return lang === DEFAULT_LANGUAGE ? '' : `${lang}/`;
 }
 
-// Load YAML data
-function loadYamlData(yamlPath) {
-    try {
-        const yamlContent = fs.readFileSync(yamlPath, 'utf8');
-        return yaml.load(yamlContent);
-    } catch (error) {
-        console.error(`Error loading YAML file ${yamlPath}:`, error);
-        return {};
-    }
+function otherLanguage(lang) {
+    return lang === 'cs' ? 'en' : 'cs';
 }
 
-// Generate page data structure
-function generatePageData(customer, yamlData) {
-    const namespace = customer.namespace;
-    const data = yamlData[namespace] || {};
-    
+// Path from a page in <dir>/<lang suffix> back to the site root.
+function rootFor(lang) {
+    return lang === DEFAULT_LANGUAGE ? '../' : '../../';
+}
+
+function writeFile(relPath, content) {
+    const target = path.join(distDir, relPath);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, content);
+    console.log(`✓ Wrote ${relPath}`);
+}
+
+function copyFile(srcRel, destRel) {
+    const target = path.join(distDir, destRel);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.copyFileSync(path.join(WEB_ROOT, srcRel), target);
+}
+
+function redirectPage(target) {
+    const href = escapeHtml(target);
+    return `<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta http-equiv="refresh" content="0; url=${href}">
+    <link rel="canonical" href="${href}">
+    <title>MIA</title>
+</head>
+<body>
+    <p><a href="${href}">MIA</a></p>
+</body>
+</html>
+`;
+}
+
+function sharedValues(lang, pageDir) {
+    const root = rootFor(lang);
+    const other = otherLanguage(lang);
+    const t = (entry, where) => escapeHtml(tr(entry, lang, `site.${where}`));
+    const audience = (name) => t(site.audiences[name], `audiences.${name}`);
+    const suffix = langSuffix(lang);
+
+    const customerLinks = segments
+        .map((s) => `<li><a href="${root}${s.name}/${suffix}">${audience(s.name)}</a></li>`)
+        .join('');
+    const professionalLinks = Object.keys(roleRedirects)
+        .map((role) => `<li><a href="${root}${roleRedirects[role]}">${audience(role)}</a></li>`)
+        .concat(`<li><a href="${root}press/${suffix}">${audience('press')}</a></li>`)
+        .join('');
+    const projectLinks = [
+        `<li><a href="${root}">${t(site.footer.manifesto, 'footer.manifesto')}</a></li>`,
+        `<li><a href="${root}docs/">${t(site.footer.documentation, 'footer.documentation')}</a></li>`,
+        `<li><a href="https://github.com/sparesparrow/mia">${t(site.footer.source, 'footer.source')}</a></li>`
+    ].join('');
+
+    const column = (title, links) =>
+        `<div class="footer-column"><h4>${title}</h4><ul>${links}</ul></div>`;
+
     return {
-        language: customer.language,
-        namespace: namespace,
-        customer_name: customer.name,
-        page: {
-            title: data.page?.title?.[customer.language] || `${namespace} - AI-SERVIS`,
-            description: data.page?.description?.[customer.language] || 'AI-SERVIS solution'
-        },
-        navigation: {
-            main_title: data.navigation?.business_intelligence_on_wheels?.[customer.language] || 
-                       data.navigation?.family_protection_first?.[customer.language] ||
-                       data.navigation?.mobile_music_revolution?.[customer.language] ||
-                       data.navigation?.gonzo_journalism?.[customer.language] || 'AI-SERVIS',
-            features: data.navigation?.features?.[customer.language] || 'Features',
-            use_cases: data.navigation?.solutions?.[customer.language] || 
-                      data.navigation?.performances?.[customer.language] ||
-                      data.navigation?.safety?.[customer.language] ||
-                      data.navigation?.stories?.[customer.language] || 'Use Cases',
-            pricing: data.navigation?.pricing?.[customer.language] || 'Pricing',
-            technology: data.navigation?.technology?.[customer.language] || 'Technology',
-            cta_button: data.navigation?.get_demo?.[customer.language] ||
-                       data.navigation?.start_creating?.[customer.language] ||
-                       data.navigation?.protect_family?.[customer.language] ||
-                       data.navigation?.start_investigating?.[customer.language] || 'Get Started'
-        },
-        hero: {
-            main_title: data.hero?.aipowered_business_vehicle_intelligence?.[customer.language] ||
-                       data.hero?.comprehensive_family_safety?.[customer.language] ||
-                       data.hero?.studiograde_features?.[customer.language] ||
-                       data.hero?.main_title?.[customer.language] || 'AI-SERVIS',
-            subtitle: data.hero?.productivity_boost?.[customer.language] ||
-                     data.hero?.stalker_detection?.[customer.language] ||
-                     data.hero?.rtpmidi_network?.[customer.language] ||
-                     data.hero?.subtitle?.[customer.language] || 'Advanced AI Solution',
-            image: `assets/${customer.imageDir}/hero-image.jpg`,
-            image_alt: data.hero?.main_title?.[customer.language] || 'AI-SERVIS',
-            stats: [
-                {
-                    value: '300%',
-                    label: data.hero?.productivity_boost?.[customer.language] || 'Productivity'
-                },
-                {
-                    value: '24/7',
-                    label: data.hero?.business_hours?.[customer.language] || 'Monitoring'
-                },
-                {
-                    value: '100%',
-                    label: data.hero?.handsfree?.[customer.language] || 'Hands-Free'
-                }
-            ],
-            primary_button: data.hero?.schedule_demo?.[customer.language] ||
-                           data.hero?.start_family_protection?.[customer.language] ||
-                           data.hero?.start_creating_music?.[customer.language] ||
-                           data.hero?.buttons?.join_resistance?.[customer.language] || 'Get Started',
-            secondary_button: data.hero?.download_brochure?.[customer.language] ||
-                             data.hero?.schedule_family_demo?.[customer.language] ||
-                             data.hero?.book_studio_demo?.[customer.language] ||
-                             data.hero?.buttons?.watch_manifesto?.[customer.language] || 'Learn More'
-        },
-        features: {
-            title: data.features?.professional_features?.[customer.language] ||
-                   data.features?.stay_connected_stay_safe?.[customer.language] ||
-                   data.features?.mobile_dj_revolution?.[customer.language] ||
-                   data.features?.key_features?.[customer.language] || 'Key Features',
-            items: [
-                {
-                    icon: 'fas fa-microphone',
-                    title: data.features?.voice_ai_assistant?.[customer.language] || 'Voice AI Assistant',
-                    description: data.features?.voice_assistant_description?.[customer.language] || 'Advanced voice control'
-                },
-                {
-                    icon: 'fas fa-shield-alt',
-                    title: data.features?.enterprise_security?.[customer.language] || 'Security',
-                    description: data.features?.enterprise_security?.[customer.language] || 'Enterprise-grade security'
-                },
-                {
-                    icon: 'fas fa-route',
-                    title: data.features?.smart_navigation?.[customer.language] || 'Smart Navigation',
-                    description: data.features?.smart_navigation?.[customer.language] || 'Intelligent routing'
-                },
-                {
-                    icon: 'fas fa-chart-line',
-                    title: data.features?.business_analytics?.[customer.language] || 'Analytics',
-                    description: data.features?.business_analytics?.[customer.language] || 'Advanced analytics'
-                }
-            ]
-        },
-        use_cases: {
-            title: data.solutions?.business_solutions?.[customer.language] ||
-                   data.scenarios?.parent_child_safety?.[customer.language] ||
-                   data.features?.mobile_dj_revolution?.[customer.language] ||
-                   data.stories?.title?.[customer.language] || 'Use Cases',
-            items: [
-                {
-                    id: 'primary-use-case',
-                    layout: '',
-                    title: data.solutions?.sales_teams?.[customer.language] ||
-                           data.scenarios?.parent_child_safety?.[customer.language] ||
-                           data.features?.mobile_dj_revolution?.[customer.language] ||
-                           data.stories?.gonzo_investigator?.title?.[customer.language] || 'Primary Use Case',
-                    description: data.solutions?.handsfree_crm_access?.[customer.language] ||
-                               data.scenarios?.teen_driver_monitoring?.[customer.language] ||
-                               data.features?.remote_deck_synchronization?.[customer.language] ||
-                               data.stories?.gonzo_investigator?.description?.[customer.language] || 'Description',
-                    features: [
-                        data.solutions?.handsfree_crm_access?.[customer.language] || 'Feature 1',
-                        data.solutions?.voicetotext_meeting_notes?.[customer.language] || 'Feature 2',
-                        data.solutions?.lead_tracking_and_routing?.[customer.language] || 'Feature 3'
-                    ],
-                    icon: 'fas fa-handshake',
-                    badge: data.solutions?.sales_excellence?.[customer.language] ||
-                           data.scenarios?.parent?.[customer.language] ||
-                           data.features?.live_streaming_capabilities?.[customer.language] ||
-                           data.stories?.gonzo_investigator?.title?.[customer.language] || 'Badge'
-                }
-            ]
-        },
-        pricing: {
-            title: data.pricing?.business_pricing?.[customer.language] ||
-                   data.pricing?.family_basic?.[customer.language] ||
-                   data.pricing?.studio_starter?.[customer.language] ||
-                   data.pricing?.title?.[customer.language] || 'Pricing',
-            plans: [
-                {
-                    title: data.pricing?.business_starter?.[customer.language] ||
-                           data.pricing?.family_basic?.[customer.language] ||
-                           data.pricing?.studio_starter?.[customer.language] ||
-                           data.pricing?.phone_rebel?.title?.[customer.language] || 'Starter',
-                    subtitle: data.pricing?.essential_business_features?.[customer.language] ||
-                             data.pricing?.essential_family_protection?.[customer.language] ||
-                             data.pricing?.essential_recording_tools?.[customer.language] ||
-                             data.pricing?.phone_rebel?.description?.[customer.language] || 'Essential Features',
-                    price: '35000',
-                    price_range: data.pricing?.price_55000?.[customer.language] || '- 55.000',
-                    features: [
-                        data.pricing?.voice_assistant_calls?.[customer.language] || 'Voice Assistant',
-                        data.pricing?.basic_navigation?.[customer.language] || 'Basic Navigation',
-                        data.pricing?.email_integration?.[customer.language] || 'Email Integration',
-                        data.pricing?.obd_diagnostics?.[customer.language] || 'OBD Diagnostics'
-                    ],
-                    button_text: data.pricing?.get_quote?.[customer.language] || 'Get Quote',
-                    button_class: 'btn-outline'
-                },
-                {
-                    title: data.pricing?.business_professional?.[customer.language] ||
-                           data.pricing?.family_complete?.[customer.language] ||
-                           data.pricing?.performance_pro?.[customer.language] ||
-                           data.pricing?.hybrid_warrior?.title?.[customer.language] || 'Professional',
-                    subtitle: data.pricing?.complete_business_solution?.[customer.language] ||
-                             data.pricing?.full_family_safety_suite?.[customer.language] ||
-                             data.pricing?.complete_mobile_studio?.[customer.language] ||
-                             data.pricing?.hybrid_warrior?.description?.[customer.language] || 'Complete Solution',
-                    price: '65000',
-                    price_range: data.pricing?.price_105000?.[customer.language] || '- 105.000',
-                    featured: 'featured',
-                    badge: data.pricing?.most_popular?.[customer.language] || 'Most Popular',
-                    features: [
-                        data.pricing?.everything_in_starter?.[customer.language] || 'Everything in Starter',
-                        data.pricing?.crm_integration?.[customer.language] || 'CRM Integration',
-                        data.pricing?.advanced_navigation?.[customer.language] || 'Advanced Navigation',
-                        data.pricing?.priority_support?.[customer.language] || 'Priority Support'
-                    ],
-                    button_text: data.pricing?.get_quote?.[customer.language] || 'Get Quote',
-                    button_class: 'btn-primary'
-                },
-                {
-                    title: data.pricing?.enterprise_fleet?.[customer.language] ||
-                           data.pricing?.extended_family?.[customer.language] ||
-                           data.pricing?.band_master?.[customer.language] ||
-                           data.pricing?.pro_resistance?.title?.[customer.language] || 'Enterprise',
-                    subtitle: data.pricing?.fleet_management_solution?.[customer.language] ||
-                             data.pricing?.multigeneration_protection?.[customer.language] ||
-                             data.pricing?.multiartist_collaboration?.[customer.language] ||
-                             data.pricing?.pro_resistance?.description?.[customer.language] || 'Enterprise Solution',
-                    price: '125000',
-                    price_range: data.pricing?.price_195000?.[customer.language] || '- 195.000',
-                    features: [
-                        data.pricing?.everything_in_professional?.[customer.language] || 'Everything in Professional',
-                        data.pricing?.fleet_management_api?.[customer.language] || 'Fleet Management API',
-                        data.pricing?.advanced_anpr_tracking?.[customer.language] || 'Advanced Tracking',
-                        data.pricing?.dedicated_support?.[customer.language] || 'Dedicated Support'
-                    ],
-                    button_text: data.pricing?.contact_sales?.[customer.language] || 'Contact Sales',
-                    button_class: 'btn-outline'
-                }
-            ]
-        },
-        technology: {
-            title: data.technology?.enterprise_technology?.[customer.language] ||
-                   data.technology?.cuttingedge_technology?.[customer.language] || 'Technology',
-            items: [
-                {
-                    title: data.technology?.enterprise_security?.[customer.language] || 'Security',
-                    description: data.technology?.api_integration?.[customer.language] || 'Advanced security features'
-                },
-                {
-                    title: data.technology?.api_integration?.[customer.language] || 'API Integration',
-                    description: data.technology?.fleet_management?.[customer.language] || 'Seamless integration'
-                },
-                {
-                    title: data.technology?.fleet_management?.[customer.language] || 'Management',
-                    description: data.technology?.reliability_247?.[customer.language] || 'Centralized management'
-                },
-                {
-                    title: data.technology?.reliability_247?.[customer.language] || 'Reliability',
-                    description: data.technology?.reliability_247?.[customer.language] || '24/7 reliability'
-                }
-            ]
-        },
-        cta: {
-            title: data.cta?.ready_to_transform_your_business_fleet?.[customer.language] ||
-                   data.cta?.give_your_family_the_protection_they_deserve?.[customer.language] ||
-                   data.cta?.ready_to_make_music_everywhere?.[customer.language] ||
-                   data.cta?.ready_to_investigate?.[customer.language] || 'Ready to Get Started?',
-            description: data.cta?.join_the_revolution?.[customer.language] || 'Join the AI revolution',
-            primary_button: data.cta?.schedule_enterprise_demo?.[customer.language] ||
-                           data.cta?.start_family_protection?.[customer.language] ||
-                           data.cta?.start_creating_music?.[customer.language] ||
-                           data.cta?.start_investigative_journalism?.[customer.language] || 'Get Started',
-            secondary_button: data.cta?.download_case_studies?.[customer.language] ||
-                             data.cta?.schedule_family_demo?.[customer.language] ||
-                             data.cta?.book_studio_demo?.[customer.language] ||
-                             data.cta?.book_surveillance_demo?.[customer.language] || 'Learn More'
-        },
-        footer: {
-            brand: {
-                subtitle: data.footer?.brand?.subtitle?.[customer.language] || 'AI-SERVIS Solution'
-            },
-            links: [
-                {
-                    title: data.footer?.product?.[customer.language] || 'Product',
-                    items: [
-                        { text: data.footer?.documentation?.[customer.language] || 'Documentation', url: '#' },
-                        { text: data.footer?.support?.[customer.language] || 'Support', url: '#' },
-                        { text: data.footer?.help_center?.[customer.language] || 'Help Center', url: '#' }
-                    ]
-                },
-                {
-                    title: data.footer?.company?.[customer.language] || 'Company',
-                    items: [
-                        { text: data.footer?.about?.[customer.language] || 'About', url: '#' },
-                        { text: data.footer?.blog?.[customer.language] || 'Blog', url: '#' },
-                        { text: data.footer?.careers?.[customer.language] || 'Careers', url: '#' }
-                    ]
-                }
-            ],
-            copyright: data.footer?.copyright?.[customer.language] || '© 2025 AI-SERVIS. All rights reserved.'
-        }
+        lang,
+        root,
+        lang_suffix: suffix,
+        other_lang: other,
+        other_lang_href: lang === DEFAULT_LANGUAGE ? `${other}/` : '../',
+        canonical: `${SITE_URL}${pageDir}/${suffix}`,
+        url_cs: `${SITE_URL}${pageDir}/`,
+        url_en: `${SITE_URL}${pageDir}/en/`,
+        language_switch: t(site.language_switch, 'language_switch'),
+        status_banner: t(site.status_banner, 'status_banner'),
+        site_tagline: t(site.tagline, 'tagline'),
+        nav_all_pages: t(site.nav.all_pages, 'nav.all_pages'),
+        docs_button: t(site.pilot.docs, 'pilot.docs'),
+        today_title: t(site.today.title, 'today.title'),
+        today_link: t(site.today.link, 'today.link'),
+        copyright: t(site.footer.copyright, 'footer.copyright'),
+        footer_html: [
+            column(t(site.footer.customers, 'footer.customers'), customerLinks),
+            column(t(site.footer.professionals, 'footer.professionals'), professionalLinks),
+            column(t(site.footer.project, 'footer.project'), projectLinks)
+        ].join('\n                    ')
     };
 }
 
-// Copy shared assets
-const assetsToCopy = [
-    'styles.css',
-    'app.js',
-    'i18n-loader.js'
-];
+function renderSegment(segment, lang) {
+    const data = loadYaml(segment.yamlFile)[segment.namespace || segment.name];
+    const where = segment.name;
+    const text = (dotted) => escapeHtml(textAt(data, dotted, lang, where));
+    const t = (entry, name) => escapeHtml(tr(entry, lang, `site.${name}`));
 
-// Generate pages for each customer
-customers.forEach(customer => {
-    console.log(`Generating page for ${customer.name}...`);
-    
-    // Load YAML data
-    const yamlPath = path.join(__dirname, '..', 'i18n', customer.yamlFile);
-    const yamlData = loadYamlData(yamlPath);
-    
-    // Generate page data
-    const pageData = generatePageData(customer, yamlData);
-    
-    // Render template
-    const html = renderTemplate(template, pageData);
-    
-    // Write to dist directory
-    const outputPath = path.join(distDir, `${customer.name}.html`);
-    fs.writeFileSync(outputPath, html);
-    
-    console.log(`✓ Generated ${customer.name}.html`);
+    const card = (icon, title, body) =>
+        `<div class="feature-card"><div class="feature-icon"><i class="${icon}" aria-hidden="true"></i></div>` +
+        `<h3>${title}</h3>${body}</div>`;
+    const todayIcons = ['fas fa-gauge-high', 'fas fa-car', 'fas fa-id-card', 'fas fa-microphone',
+        'fas fa-mobile-screen', 'fas fa-microchip'];
 
-    // Copy customer-specific assets
-    assetsToCopy.forEach(asset => {
-        let sourcePath = path.join(__dirname, '..', 'customers', `${customer.name}`, asset);
-        const destPath = path.join(distDir, `${customer.name}`, asset);
-        
-        // Special case for journalists - use gonzo-styles.css
-        if (customer.name === 'journalists' && asset === 'styles.css') {
-            const gonzoStylesPath = path.join(__dirname, '..', 'customers', `${customer.name}`, 'gonzo-styles.css');
-            if (fs.existsSync(gonzoStylesPath)) {
-                sourcePath = gonzoStylesPath;
-            }
-        }
-        
-        if (fs.existsSync(sourcePath)) {
-            // Ensure destination directory exists
-            fs.mkdirSync(path.dirname(destPath), { recursive: true });
-            fs.copyFileSync(sourcePath, destPath);
-            console.log(`✓ Copied ${asset}`);
-        }
+    const values = Object.assign(sharedValues(lang, segment.name), {
+        segment: segment.name,
+        body_class: segment.bodyClass || '',
+        segment_base: lang === DEFAULT_LANGUAGE ? '' : '../',
+        title: `${text('page.title')}`,
+        description: text('page.description'),
+        tagline: text(segment.tagline),
+        hero_image: segment.heroImage,
+        hero_title: text(segment.heroTitle),
+        hero_subtitle: text(segment.heroSubtitle),
+        facts_html: site.facts
+            .map((fact, i) => `<li>${t(fact, `facts.${i}`)}</li>`)
+            .join('\n                    '),
+        nav_today: t(site.nav.today, 'nav.today'),
+        nav_scenarios: t(site.nav.scenarios, 'nav.scenarios'),
+        nav_technology: t(site.nav.technology, 'nav.technology'),
+        nav_pilot: t(site.nav.pilot, 'nav.pilot'),
+        today_intro: t(site.today.intro, 'today.intro'),
+        today_html: site.today.items
+            .map((item, i) => card(todayIcons[i % todayIcons.length],
+                t(item.title, `today.items.${i}.title`),
+                `<p>${t(item.text, `today.items.${i}.text`)}</p>`))
+            .join('\n                '),
+        scenarios_label: t(site.scenarios.label, 'scenarios.label'),
+        scenarios_title: text(segment.scenariosTitle),
+        scenarios_note: t(site.scenarios.note, 'scenarios.note'),
+        scenarios_html: segment.scenarios
+            .map((scenario) => {
+                const body = scenario.items
+                    ? `<ul>${scenario.items.map((item) => `<li>${text(item)}</li>`).join('')}</ul>`
+                    : `<p>${text(scenario.text)}</p>`;
+                return card('fas fa-route', text(scenario.title), body);
+            })
+            .join('\n                '),
+        technology_title: t(site.technology.title, 'technology.title'),
+        technology_html: site.technology.items
+            .map((item, i) =>
+                `<div class="tech-card"><h3>${t(item.title, `technology.items.${i}.title`)}</h3>` +
+                `<p>${t(item.text, `technology.items.${i}.text`)}</p></div>`)
+            .join('\n                '),
+        pilot_title: text(segment.pilotTitle),
+        pilot_text: t(site.pilot.text, 'pilot.text'),
+        pilot_button: t(site.pilot.button, 'pilot.button'),
+        pilot_href: escapeHtml(PILOT_URL + encodeURIComponent(`Pilot: ${segment.name}`))
     });
 
-    // Copy per-customer assets from web/assets/<customer>/ to dist/<customer>/assets/
-    const destAssetsDir = path.join(distDir, `${customer.name}`, 'assets');
-    const custAssetsDir = path.join(__dirname, '..', 'assets', `${customer.name}`);
-    if (fs.existsSync(custAssetsDir)) {
-        // Ensure destination directory exists
-        fs.mkdirSync(destAssetsDir, { recursive: true });
-        fs.readdirSync(custAssetsDir).forEach(assetFile => {
-            const assetSourcePath = path.join(custAssetsDir, assetFile);
-            const assetDestPath = path.join(destAssetsDir, assetFile);
-            if (fs.statSync(assetSourcePath).isFile()) {
-                fs.copyFileSync(assetSourcePath, assetDestPath);
-                console.log(`✓ Copied customer asset ${assetFile} to ${customer.name}/assets/`);
-            }
-        });
-    }
-});
-
-
-// Copy i18n files
-const i18nSourceDir = path.join(__dirname, '..', 'i18n');
-const i18nDestDir = path.join(distDir, 'i18n');
-
-if (!fs.existsSync(i18nDestDir)) {
-    fs.mkdirSync(i18nDestDir, { recursive: true });
+    return renderTemplate(pageTemplate, values);
 }
 
-fs.readdirSync(i18nSourceDir).forEach(file => {
-    if (file.endsWith('.yaml')) {
-        const sourcePath = path.join(i18nSourceDir, file);
-        const destPath = path.join(i18nDestDir, file);
-        fs.copyFileSync(sourcePath, destPath);
-        console.log(`✓ Copied i18n/${file}`);
-    }
-});
+function renderPress(lang) {
+    const press = site.press;
+    const t = (entry, name) => escapeHtml(tr(entry, lang, `site.press.${name}`));
+    const root = rootFor(lang);
 
-// Copy JavaScript files
-const jsFiles = ['app.js', 'i18n-loader.js'];
-jsFiles.forEach(jsFile => {
-    const sourcePath = path.join(__dirname, jsFile);
-    const destPath = path.join(distDir, jsFile);
-    if (fs.existsSync(sourcePath)) {
-        fs.copyFileSync(sourcePath, destPath);
-        console.log(`✓ Copied ${jsFile}`);
-    } else {
-        console.warn(`⚠️  JavaScript file ${jsFile} not found`);
+    const values = Object.assign(sharedValues(lang, 'press'), {
+        title: t(press.title, 'title'),
+        description: t(press.description, 'description'),
+        lead: t(press.lead, 'lead'),
+        facts_title: t(press.facts_title, 'facts_title'),
+        facts_html: press.facts
+            .map((fact, i) => `<tr><th scope="row">${t(fact.label, `facts.${i}.label`)}</th>` +
+                `<td>${t(fact.value, `facts.${i}.value`)}</td></tr>`)
+            .join('\n                    '),
+        today_html: site.today.items
+            .map((item, i) => `<li><strong>${escapeHtml(tr(item.title, lang, `today.${i}`))}.</strong> ` +
+                `${escapeHtml(tr(item.text, lang, `today.${i}`))}</li>`)
+            .join('\n                '),
+        tone_title: t(press.tone_title, 'tone_title'),
+        tone_text: t(press.tone_text, 'tone_text'),
+        privacy_title: t(press.privacy_title, 'privacy_title'),
+        privacy_text: t(press.privacy_text, 'privacy_text'),
+        privacy_link: t(press.privacy_link, 'privacy_link'),
+        images_title: t(press.images_title, 'images_title'),
+        images_note: t(press.images_note, 'images_note'),
+        images_html: pressImages
+            .map((file) => `<a href="${root}assets/site/${file}" download>` +
+                `<img src="${root}assets/site/${file}" alt="" loading="lazy"></a>`)
+            .join('\n                '),
+        contact_title: t(press.contact_title, 'contact_title'),
+        contact_text: t(press.contact_text, 'contact_text'),
+        contact_button: t(press.contact_button, 'contact_button'),
+        contact_href: escapeHtml(PILOT_URL + encodeURIComponent('Press enquiry'))
+    });
+
+    return renderTemplate(pressTemplate, values);
+}
+
+for (const segment of segments) {
+    console.log(`Generating ${segment.name}...`);
+    for (const lang of LANGUAGES) {
+        writeFile(path.join(segment.name, langSuffix(lang), 'index.html'), renderSegment(segment, lang));
     }
-});
+    copyFile(segment.stylesheet, path.join(segment.name, 'styles.css'));
+    // Keep the old flat URLs working.
+    writeFile(path.join('customers', `${segment.name}.html`), redirectPage(`../${segment.name}/`));
+}
+
+console.log('Generating press kit...');
+for (const lang of LANGUAGES) {
+    writeFile(path.join('press', langSuffix(lang), 'index.html'), renderPress(lang));
+}
+
+for (const [role, target] of Object.entries(roleRedirects)) {
+    writeFile(path.join(role, 'index.html'), redirectPage(`../${target}`));
+}
+
+// Shared stylesheet and the images the pages reference, so dist/ previews on its own.
+copyFile('site.css', 'site.css');
+const siteAssets = path.join(WEB_ROOT, 'assets', 'site');
+for (const file of fs.readdirSync(siteAssets)) {
+    copyFile(path.join('assets', 'site', file), path.join('assets', 'site', file));
+}
 
 console.log('🎉 All pages generated successfully!');

@@ -2,13 +2,12 @@
 family:
   page:
     title:
-      en: AI-SERVIS - Family Safety & Protection
-      cs: AI-SERVIS - Family Safety & Protection
+      en: MIA - Family Safety & Protection
+      cs: MIA - Bezpečnost a ochrana rodiny
     description:
       en: Comprehensive family safety and protection with intelligent surveillance
         and privacy-first design
-      cs: Comprehensive family safety and protection with intelligent surveillance
-        and privacy-first design
+      cs: Komplexní bezpečnost rodiny s chytrým hlídáním a důrazem na soukromí
   navigation:
     family_protection_first:
       en: Family Protection First
@@ -22,9 +21,6 @@ family:
     connect:
       en: Connect
       cs: Spojení
-    pricing:
-      en: Pricing
-      cs: Ceny
     protect_family:
       en: Protect Family
       cs: Chraň rodinu
@@ -127,82 +123,6 @@ family:
     protect_what_matters_most:
       en: Protect What Matters Most
       cs: Chraňte to nejdůležitější
-  pricing:
-    family_basic:
-      en: Family Basic
-      cs: Rodina Basic
-    essential_family_protection:
-      en: Essential Family Protection
-      cs: Základní ochrana rodiny
-    price_40000:
-      en: '- 40.000'
-      cs: '- 40.000'
-    basic_stalker_detection:
-      en: Basic Stalker Detection
-      cs: Základní detekce stalkera
-    emergency_alerts:
-      en: Emergency Alerts
-      cs: Nouzová upozornění
-    obd_health_monitoring:
-      en: OBD Health Monitoring
-      cs: OBD sledování zdraví
-    installation_15h:
-      en: 1.5h Installation
-      cs: 1,5h instalace
-    most_protected:
-      en: Most Protected
-      cs: Nejchráněnější
-    family_complete:
-      en: Family Complete
-      cs: Rodina Kompletní
-    full_family_safety_suite:
-      en: Full Family Safety Suite
-      cs: Kompletní balíček bezpečnosti rodiny
-    price_85000:
-      en: '- 85.000'
-      cs: '- 85.000'
-    everything_in_basic:
-      en: Everything in Basic
-      cs: Vše z Basic
-    advanced_ai_protection:
-      en: Advanced AI Protection
-      cs: Pokročilá AI ochrana
-    multivehicle_tracking:
-      en: Multi-Vehicle Tracking
-      cs: Sledování více vozidel
-    smart_notification_system:
-      en: Smart Notification System
-      cs: Chytrý systém upozornění
-    priority_support:
-      en: Priority Support
-      cs: Prioritní podpora
-    complete_protection:
-      en: Complete Protection
-      cs: Kompletní ochrana
-    extended_family:
-      en: Extended Family
-      cs: Rozšířená rodina
-    multigeneration_protection:
-      en: Multi-Generation Protection
-      cs: Ochrana více generací
-    price_145000:
-      en: '- 145.000'
-      cs: '- 145.000'
-    everything_in_complete:
-      en: Everything in Complete
-      cs: Vše z Kompletní
-    senior_care_features:
-      en: Senior Care Features
-      cs: Funkce péče o seniory
-    family_health_integration:
-      en: Family Health Integration
-      cs: Integrace zdraví rodiny
-    support_247_family:
-      en: 24/7 Family Support
-      cs: 24/7 rodinná podpora
-    protect_everyone:
-      en: Protect Everyone
-      cs: Chraň všechny
   cta:
     give_your_family_the_protection_they_deserve:
       en: Give Your Family the Protection They Deserve
@@ -252,5 +172,5 @@ family:
       en: Contact
       cs: Kontakt
     copyright:
-      en: © 2025 AI-SERVIS Business Solutions. All rights reserved.
-      cs: © 2025 AI-SERVIS Family Protection. Všechna práva vyhrazena.
+      en: © 2025 MIA Business Solutions. All rights reserved.
+      cs: © 2025 MIA Family Protection. Všechna práva vyhrazena.

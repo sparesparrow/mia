@@ -21,7 +21,6 @@ class GonzoMadnessController {
         this.setupPanicMode();
         this.setupScrollEffects();
         this.setupRandomMadness();
-        this.setupEasterEggs();
         this.setupAudio();
         this.startMadness();
 
@@ -505,35 +504,25 @@ class GonzoMadnessController {
 
     setupAudio() {
         this.backgroundMusic = document.getElementById('background-music');
-        
+
         if (!this.backgroundMusic) {
             console.log("Background music element not found");
             return;
         }
-        
+
         // Set volume to a reasonable level (25% for gonzo atmosphere)
         this.backgroundMusic.volume = 0.25;
-        
-        // Try to autoplay when user first interacts with the page
-        document.addEventListener('click', () => {
-            if (!this.isMusicPlaying && this.backgroundMusic.paused) {
-                this.playBackgroundMusic();
-            }
-        }, { once: true });
-        
+
+        // Music is opt-in: it only plays from the audio toggle button.
         // Handle audio toggle button
         const audioToggle = document.getElementById('audio-toggle');
         if (audioToggle) {
             audioToggle.addEventListener('click', () => this.toggleBackgroundMusic());
         }
-        
+
         // Update button state based on audio state
         this.updateAudioButtonState();
-        
-        // Try autoplay on page load (may be blocked by browser)
-        setTimeout(() => {
-            this.playBackgroundMusic();
-        }, 1000);
+
     }
 
     playBackgroundMusic() {
@@ -576,7 +565,7 @@ class GonzoMadnessController {
     updateAudioButtonState() {
         const audioToggle = document.getElementById('audio-toggle');
         if (!audioToggle) return;
-        
+
         if (this.isMusicPlaying) {
             audioToggle.textContent = '🔊';
             audioToggle.title = 'Pause gonzo soundtrack';

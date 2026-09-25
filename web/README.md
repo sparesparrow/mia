@@ -1,92 +1,98 @@
 # MIA Web Pages
 
-Static web surfaces for MIA. Customer segment landing pages are generated
-from a shared template; standalone experiences (gonzo landing, voice chat,
-booking sim, agents portal, team page, 404) are maintained by hand.
+Static web surfaces for MIA, published to <https://sparesparrow.github.io/mia/>
+by `.github/workflows/publish-pages.yml`. The audience landing pages and the
+press kit are generated from shared templates. The gonzo homepage and a few
+internal tools are maintained by hand.
+
+## Site map
+
+| Path | Audience | Source |
+|---|---|---|
+| `/` | general public, journalists (Czech "gonzo" manifesto) | `index.html`, hand-written |
+| `/business/`, `/family/`, `/musicians/`, `/journalists/` | customers and B2B partners | generated: `template.html` + `i18n/<segment>.yaml` + `i18n/site.yaml` |
+| `/<segment>/en/` | the same pages in English | generated |
+| `/press/`, `/press/en/` | press and marketing | generated: `press-template.html` + `i18n/site.yaml` |
+| `/docs/` | developers, mechanics, testers | MkDocs (`mkdocs.yml`, `docs/`) |
+| `/docs/for/{developers,mechanics,testers}/` | per-role entry pages | `docs/for/*.md` |
+| `/developers/`, `/mechanics/`, `/testers/` | short aliases | generated redirects to `/docs/for/<role>/` |
+| `/customers/<segment>.html` | old URLs | generated redirects to `/<segment>/` |
+| any other missing path | | `404.html` redirects moved pages and lists the rest |
+
+Czech is the default language. Every generated page is rendered once per
+language, so the language switch is a plain link and the pages need no runtime
+i18n.
+
+These are **not published**: `team/` (a mock status board), `agents/` (needs
+private ElevenLabs agent config), `voice-chat.html` (needs a local backend),
+`shared/formal-template/`, `templates/` and the gonzo monitor tooling.
+
+## Content rules
+
+- The product is called **MIA**. The old AI-SERVIS name only appears where the
+  press kit explains the rename. Some images still have it in their pixels.
+- No prices and no performance figures (such as "300% productivity") unless the
+  requirement registry supports them (ADR-0010, REQ-WEB-002). Pages invite
+  people to join the pilot instead.
+- The "what works today" list in `i18n/site.yaml` may only name behaviour
+  whose requirement is `implemented_and_ci_tested` or better. Update it when
+  evidence changes.
+- Images the site uses live in `assets/site/` as optimised JPEGs (made from the
+  originals in `assets/<segment>/`, `assets/shared/` and `assets/dev/`).
 
 ## Layout
 
 ```
 web/
-  template.html                shared HTML template for generated pages
-  tools/scripts/
-    generatePages.js           generator entry point (`npm run build`)
-    build-smoke.js             smoke test (`npm test`)
-    app.js                     runtime UI helpers shipped to generated pages
-    i18n-loader.js             runtime i18n loader shipped to generated pages
+  index.html                 gonzo homepage (root of the site)
+  404.html                   redirects moved pages, lists the rest
+  template.html              audience page template ({{name}} placeholders)
+  press-template.html        press kit template
+  site.css                   shared components for generated pages
+  scripts/
+    generatePages.js         generator entry point (`npm run build`)
+    build-smoke.js           smoke test (`npm test`)
   i18n/
-    common.yaml                shared strings (cs/en)
-    business.yaml              fleet / commercial segment
-    family.yaml                family safety segment
-    musicians.yaml             mobile studio segment
-    gonzo.yaml                 "journalists" gonzo paranoia segment
-  customers/<segment>/         per-segment overrides (styles.css, etc.)
-  assets/<segment>/            per-segment images and binaries
+    site.yaml                shared site strings: status, what works today, nav, press kit
+    business.yaml            fleet / commercial segment
+    family.yaml              family safety segment
+    musicians.yaml           mobile studio segment
+    gonzo.yaml               journalists (gonzo) segment
+    common.yaml              legacy shared strings and agents page strings
+  customers/<segment>/       per-segment stylesheet (journalists also holds the
+                             homepage's gonzo-styles.css, gonzo-app.js and music)
+  assets/site/               images used by the published pages
 
-  index.html                   hand-maintained gonzo landing
-  voice-chat.{html,js}         WebSocket voice-intercept terminal demo
-  agents/                      ElevenLabs convai agent portal
-  team/                        team status board
-  404.html                     redirect-aware 404
-
-  styles.css                   copy of customers/journalists/gonzo-styles.css;
-                               consumed by .github/workflows/publish-pages.yml
-                               (do not delete without updating the workflow)
-  gonzo-styles.css             same as above; kept for the publish workflow
-  css/*.css                    fallback shards used by tools/scripts/build_variant.py
-  js/{app,i18n-loader}.js      smaller legacy runtime used by templates/ and
-                               agents/index.html; do not merge with tools/scripts/
-                               versions without first fixing the agents page
+  agents/, team/, voice-chat.{html,js}   internal tools, not published
+  css/, js/, scripts/{app,i18n-loader}.js, styles.css, gonzo-styles.css,
+  templates/, shared/                    legacy runtime and templates, not published
 ```
-
-## Generated landing pages
-
-The generator emits one HTML file per segment into `dist/`:
-
-- `business.html` &mdash; fleets, productivity, navigation, analytics
-- `family.html` &mdash; safety, monitoring, family protection
-- `musicians.html` &mdash; mobile studio, performance
-- `journalists.html` &mdash; gonzo investigative tooling (uses
-  `customers/journalists/gonzo-styles.css` instead of the default per-segment
-  `styles.css`)
 
 ## Local workflow
 
 ```bash
 cd web
-npm install        # only js-yaml is required
+npm ci             # only js-yaml is required
 npm run build      # generate dist/
 npm test           # rebuilds and runs scripts/build-smoke.js
-npm run serve      # static preview at http://localhost:8080
+npm run serve      # static preview of dist/ at http://localhost:8080
 ```
 
-`npm test` exits non-zero if any expected output file is missing, if a
-template placeholder failed to render, or if the duplicate-asset-copy bug
-this README warns about regresses.
+`npm test` fails if a page or language version is missing, a template
+placeholder did not render, a page shows the old name, a price or a removed
+percentage, a page does not link to every audience, a local asset is missing, or
+a redirect points to the wrong place.
 
-> Always preview through a real HTTP server. The runtime i18n layer fetches
-> `./i18n/*.yaml` and most browsers block `fetch()` against `file://` URLs.
-
-## i18n
-
-Generated pages load `scripts/i18n-loader.js`, which fetches the YAML files
-copied to `dist/i18n/`. When that fetch fails (CORS, offline, broken path)
-the loader now installs a visible red banner instead of silently rendering
-raw translation keys.
-
-The standalone pages (`index.html`, `voice-chat.html`, `team/index.html`)
-are currently **not** i18n-enabled and ship with hardcoded Czech/English
-text. Migrating them is tracked separately.
+To preview the whole site as published, copy the homepage next to `dist/` the way
+the workflow's "Assemble static site" step does, and build the docs with
+`mkdocs build --site-dir <site>/docs`.
 
 ## Known limitations
 
-- `scripts/i18n-loader.js` includes a hand-rolled YAML parser that only
-  understands 4-level nesting. Deeper structures in `i18n/*.yaml` are
-  silently dropped at runtime.
-- `index.html` and `customers/journalists/index-gonzo.html` reference S3
-  images and a `background-music.mp3` checked in at ~3MB. These are gonzo
-  brand assets; clean them up only with product sign-off.
-- The generator's segment list and template fallback chains in
-  `scripts/generatePages.js` are hardcoded. Adding a fifth segment still
-  requires a code change.
-
+- The homepage (`index.html`) is hand-written Czech. Its English link goes to
+  `/journalists/en/`, and `build-smoke.js` does not check it.
+- `customers/journalists/background-music.mp3` (~7.8 MB) is published with the
+  homepage. It is not preloaded and only plays from the 🎵 button. It is a gonzo brand asset; clean it
+  up only with product sign-off.
+- `customers/journalists/index-gonzo.html` is an older copy of `index.html`
+  that the gonzo monitor tooling (`monitor-gonzo.py`) still uses.
