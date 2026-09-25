@@ -17,7 +17,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 SCHEMA_DIR = REPO_ROOT / "schemas"
-MIA_BINDINGS_DIR = REPO_ROOT / "Mia"
+MIA_BINDINGS_DIR = REPO_ROOT / "schemas" / "generated" / "python" / "Mia"
 
 # Expected generated binding modules (one per FlatBuffers table/enum)
 EXPECTED_BINDING_MODULES = [

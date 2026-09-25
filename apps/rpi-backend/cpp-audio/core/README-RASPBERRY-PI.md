@@ -33,7 +33,7 @@ Or manually:
 ```bash
 mkdir -p build-raspberry-pi
 cd build-raspberry-pi
-cmake ../platforms/cpp/core -DCMAKE_BUILD_TYPE=Release
+cmake ../schemas/generated/cpp -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 ```
 

@@ -123,7 +123,7 @@ pytest tests/ -m "not hardware"
 black . && isort . --profile black && flake8 . --max-line-length=120 --extend-ignore=E203,W503
 cd apps/android && ./gradlew assembleDebug testDebugUnitTest lint
 cd web && npm run build
-cd platforms/cpp && cmake -B build && cmake --build build
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp
 docker compose -f infra/docker/docker-compose.yml config
 pre-commit run --all-files
 ```

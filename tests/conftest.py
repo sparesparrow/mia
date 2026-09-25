@@ -41,6 +41,7 @@ SOURCE_PATHS = [
     REPO_ROOT / "orchestration" / "mcp" / "modules" / "core-orchestrator",
     REPO_ROOT / "orchestration" / "meta_harness",
     REPO_ROOT / "tools",
+    REPO_ROOT / "schemas" / "generated" / "python",
 ]
 
 for source_path in reversed(SOURCE_PATHS):

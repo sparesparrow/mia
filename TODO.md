@@ -31,7 +31,7 @@ Recommendations applied in this revision:
 - Runtime apps live under `apps/`
 - Orchestration and MCP modules live under `orchestration/`
 - Deployment assets live under `infra/`
-- Shared contracts live under `schemas/`, `protos/`, and generated bindings under `Mia/`
+- Shared contracts live under `schemas/`, `protos/`, and generated bindings under `schemas/generated/python/Mia/`
 - Android is already a Kotlin/Jetpack Compose app under `apps/android/`
 - Audi/VAG support is currently a read-only scaffold and not yet a validated production path
 
@@ -128,7 +128,7 @@ Recommendations applied in this revision:
 
 ### P1.2 Schema Discipline
 
-- [ ] Regenerate `Mia/` whenever `schemas/` changes instead of hand-editing generated bindings
+- [ ] Regenerate `schemas/generated/python/Mia/` whenever `schemas/` changes instead of hand-editing generated bindings
 - [x] Add contract checks for consumers affected by automotive telemetry changes
 - [ ] Keep schema changes and runtime protocol changes coordinated, not split across unrelated commits
 

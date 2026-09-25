@@ -151,7 +151,7 @@ class TestMiaSchemaFieldIds(unittest.TestCase):
         """All tables in vehicle.fbs have explicit field IDs."""
         schema_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "protos", "vehicle.fbs",
+            "schemas", "vehicle.fbs",
         )
         self._check_field_ids(schema_path)
 

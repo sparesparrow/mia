@@ -12,7 +12,7 @@ You own the build pipeline across all platforms and the dependency graph.
 | Platform | System | Entry Point | Output |
 |----------|--------|-------------|--------|
 | RPi Python | pip | `requirements.txt` | venv |
-| RPi C++ | CMake + Conan 2.0 | `platforms/cpp/CMakeLists.txt` | `hardware-server`, `voice-server` |
+| RPi C++ | CMake + Conan 2.0 | `apps/rpi-backend/cpp-audio/CMakeLists.txt` | `hardware-server`, `voice-server` |
 | Android | Gradle 8.x Kotlin DSL | `apps/android/build.gradle.kts` | APK |
 | ESP32 | PlatformIO | `apps/esp32/platformio.ini` | `firmware.bin` |
 | Docker | docker-compose | `infra/docker/docker-compose*.yml` | containers |
@@ -44,7 +44,7 @@ pip3 install -r requirements-dev.txt
 
 # C++
 conan create . --build=missing
-cd platforms/cpp && cmake -B build && cmake --build build
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp
 
 # Android
 cd apps/android && ./gradlew assembleDebug

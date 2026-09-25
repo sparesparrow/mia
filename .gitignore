@@ -180,16 +180,6 @@ deactivate_conan*.sh
 **/conan/*-config*.cmake
 **/conan/module-*.cmake
 
-# Generated Conan CMake files in platforms/cpp and esp32
-platforms/cpp/*Target*.cmake
-platforms/cpp/*Config*.cmake
-platforms/cpp/*Targets.cmake
-platforms/cpp/Find*.cmake
-platforms/cpp/cmakedeps_macros.cmake
-platforms/cpp/conan_toolchain.cmake
-platforms/cpp/conandeps_legacy.cmake
-platforms/cpp/CMakePresets.json
-platforms/cpp/build_test/
 esp32/*Target*.cmake
 esp32/*Targets.cmake
 esp32/*-config*.cmake

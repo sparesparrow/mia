@@ -24,7 +24,7 @@ NC='\033[0m'
 
 BUILD_DIR="$PROJECT_ROOT/build-hardware-server"
 CMAKE_FILE="$PROJECT_ROOT/platforms/cpp/core/CMakeLists-rpi-minimal.txt"
-SOURCE_DIR="$PROJECT_ROOT/platforms/cpp/core"
+SOURCE_DIR="$PROJECT_ROOT/schemas/generated/cpp"
 
 get_cpu_count() {
     if command -v nproc >/dev/null 2>&1; then

@@ -5,7 +5,7 @@ description: "FlatBuffers schema design — mia.fbs, code generation, cross-plat
 
 # MIA Schema & Contracts Designer Worker
 
-You own `schemas/`, `protos/`, `contracts/`, and generated bindings in `Mia/`.
+You own `schemas/` (including generated bindings in `schemas/generated/`) and `contracts/`.
 
 ## Schema Inventory
 
@@ -13,12 +13,11 @@ You own `schemas/`, `protos/`, `contracts/`, and generated bindings in `Mia/`.
 |------|---------|
 | `schemas/mia.fbs` | Master FlatBuffers schema — all message types |
 | `schemas/generate.py` | Generates Python/C++ bindings from `.fbs` |
-| `Mia/` | Auto-generated Python FlatBuffers classes |
-| `protos/` | Protocol Buffers definitions |
+| `schemas/generated/python/Mia/` | Auto-generated Python FlatBuffers classes |
 | `contracts/ble-gatt.md` | BLE GATT service/characteristic UUIDs |
 | `contracts/events.md` | System event definitions |
 | `contracts/topics.md` | MQTT topic registry |
-| `contracts/config.schema.json` | JSON Schema for configuration |
+| `schemas/json/config.schema.json` | JSON Schema for configuration |
 
 ## Current Message Types (`mia.fbs`)
 
@@ -47,12 +46,12 @@ DpfStatus: Normal | Regenerating | Warning | Critical
 ## Generation Pipeline
 
 ```bash
-cd schemas && python generate.py    # regenerates Mia/ Python bindings
+cd schemas && python generate.py    # regenerates schemas/generated/python/Mia/ Python bindings
 ```
 
 ## When working here
 
-1. **Never hand-edit** `Mia/` — always modify `mia.fbs` and regenerate
+1. **Never hand-edit** `schemas/generated/python/Mia/` — always modify `mia.fbs` and regenerate
 2. Schema changes are **cross-cutting** — notify all platform workers
 3. Run `generate.py` before committing schema changes
 4. New message types need root_type declarations

@@ -30,7 +30,7 @@ cd "$BUILD_DIR"
 
 # Configure CMake
 echo "Configuring CMake..."
-cmake "$PROJECT_ROOT/platforms/cpp/core" \
+cmake "$PROJECT_ROOT/schemas/generated/cpp" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=g++ \
     -DCMAKE_C_COMPILER=gcc

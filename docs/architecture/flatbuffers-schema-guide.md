@@ -116,13 +116,13 @@ flatc --cpp --gen-mutable mia_protocol.fbs
 ### Python (Raspberry Pi)
 ```bash
 flatc --python mia_protocol.fbs
-# Output: Mia/Protocol/*.py
+# Output: schemas/generated/python/Mia/Protocol/*.py
 ```
 
 ### Kotlin (Android)
 ```bash
 flatc --kotlin mia_protocol.fbs
-# Output: Mia/Protocol/*.kt
+# Output: schemas/generated/python/Mia/Protocol/*.kt
 ```
 
 ---

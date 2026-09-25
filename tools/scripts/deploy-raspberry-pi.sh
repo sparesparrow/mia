@@ -99,7 +99,7 @@ cd "$BUILD_DIR"
 # Configure CMake
 echo ""
 echo "Configuring CMake..."
-cmake ../platforms/cpp/core \
+cmake ../schemas/generated/cpp \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=g++ \
     -DCMAKE_C_COMPILER=gcc
@@ -147,7 +147,7 @@ if [ -d "$SHARED_SOURCE_DIR" ]; then
 fi
 
 if [ -d "$PROJECT_ROOT/Mia" ]; then
-    run_privileged cp -r "$PROJECT_ROOT/Mia/." "$INSTALL_DIR/Mia/"
+    run_privileged cp -r "$PROJECT_ROOT/schemas/generated/python/Mia/." "$INSTALL_DIR/Mia/"
 fi
 
 if [ -d "$PROJECT_ROOT/config" ]; then

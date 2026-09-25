@@ -18,7 +18,7 @@ This agent bridges an ELM327 OBD-II adapter to the Mia system via ZeroMQ. It que
     ```
 
 2.  **FlatBuffers Generation**:
-    The agent expects the canonical `Mia.VehicleTelemetry` bindings plus the vehicle wire wrapper validation generated from `schemas/vehicle_telemetry.fbs` and `protos/vehicle.fbs`.
+    The agent expects the canonical `Mia.VehicleTelemetry` bindings plus the vehicle wire wrapper validation generated from `schemas/vehicle_telemetry.fbs` and `schemas/vehicle.fbs`.
     ```bash
     python3 schemas/generate.py --all --no-cpp
     ```

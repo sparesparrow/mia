@@ -86,7 +86,7 @@ Typical commands:
 pytest tests/ -m "not hardware"
 cd apps/android && ./gradlew assembleDebug testDebugUnitTest lint
 cd web && npm run build
-cd platforms/cpp && cmake -B build && cmake --build build
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp
 docker compose -f infra/docker/docker-compose.yml config
 ```
 
@@ -105,7 +105,7 @@ docker compose -f infra/docker/docker-compose.yml config
 ### Contracts and Schemas
 
 - Edit source schema or contract definitions, then regenerate derived artifacts
-- Do not hand-edit generated code in `Mia/`
+- Do not hand-edit generated code in `schemas/generated/python/Mia/`
 
 ### Web
 

@@ -40,7 +40,7 @@ grep -rn "TODO\|FIXME\|HACK" apps/ orchestration/ modules/ --include="*.py" --in
 pytest tests/ --co -q 2>&1 | wc -l
 
 # FlatBuffers schema drift
-diff <(python3 schemas/generate.py --dry-run 2>&1) <(ls Mia/) 2>/dev/null
+diff <(python3 schemas/generate.py --dry-run 2>&1) <(ls schemas/generated/python/Mia/) 2>/dev/null
 
 # Worker prompt coverage (all 11 workers should have tests)
 ls .github/prompts/mia-*.prompt.md | wc -l

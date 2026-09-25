@@ -40,7 +40,7 @@ This document describes the comprehensive CI/CD pipeline and development environ
 
 **Jobs:**
 1. **Detect Changes** - Path-based change detection so the workflow only runs relevant platform jobs
-2. **Schema Validation** - FlatBuffers compilation checks for `schemas/`, `protos/`, and `webgrab.fbs`
+2. **Schema Validation** - FlatBuffers compilation checks for `schemas/` and `webgrab.fbs`
 3. **Lint** - Python formatting and lint checks for maintained Python surfaces
 4. **Python Tests** - `pytest tests/ -m "not hardware"` under the bundled CPython/Conan flow
 5. **Build C++** - Native build validation for the C++ surfaces when native paths change

@@ -536,7 +536,7 @@ phase_services() {
     fi
 
     if [[ -d "$PROJECT_ROOT/Mia" ]]; then
-        run_cmd "cp -r '$PROJECT_ROOT/Mia/.' '$INSTALL_DIR/Mia/'" "Copying generated Mia bindings"
+        run_cmd "cp -r '$PROJECT_ROOT/schemas/generated/python/Mia/.' '$INSTALL_DIR/Mia/'" "Copying generated Mia bindings"
     fi
 
     if [[ -d "$PROJECT_ROOT/scripts" ]]; then

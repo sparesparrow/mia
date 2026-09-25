@@ -11,17 +11,11 @@ on:
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
-      - 'conan-recipes/**'
       - 'infra/conan/**'
-      - 'Mia/**'
       - 'apps/rpi-backend/cpp-mcp-bridge/**'
-      - 'modules/**'
       - 'orchestration/**'
-      - 'platforms/**'
-      - 'rpi/**'
       - 'schemas/**'
       - 'tools/scripts/**'
-      - 'services/**'
       - 'tests/**'
       - 'tools/**'
   pull_request:
@@ -34,17 +28,11 @@ on:
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
-      - 'conan-recipes/**'
       - 'infra/conan/**'
-      - 'Mia/**'
       - 'apps/rpi-backend/cpp-mcp-bridge/**'
-      - 'modules/**'
       - 'orchestration/**'
-      - 'platforms/**'
-      - 'rpi/**'
       - 'schemas/**'
       - 'tools/scripts/**'
-      - 'services/**'
       - 'tests/**'
       - 'tools/**'
 
@@ -83,19 +71,14 @@ jobs:
               - 'agents/**'
               - 'apps/rpi-backend/py-api/**'
               - 'apps/rpi-backend/shared/**'
-              - 'Mia/**'
-              - 'modules/**'
               - 'orchestration/**'
-              - 'rpi/**'
               - 'schemas/**'
               - 'tools/scripts/**'
-              - 'services/**'
               - 'tests/**'
               - 'tools/**'
             schema:
               - '.github/workflows/ci.yml'
               - 'apps/rpi-backend/cpp-audio/core/webgrab.fbs'
-              - 'protos/**'
               - 'schemas/**'
               - 'schemas/generate.py'
               - 'tools/scripts/generate-schemas.sh'
@@ -103,10 +86,9 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'apps/rpi-backend/cpp-audio/**'
-              - 'conan-recipes/**'
               - 'infra/conan/**'
               - 'apps/rpi-backend/cpp-mcp-bridge/**'
-              - 'platforms/cpp/**'
+              - 'schemas/generated/cpp/**'
             esp32:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
@@ -128,7 +110,7 @@ jobs:
         run: |
           mkdir -p /tmp/fb-validate
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/mia.fbs
-          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs protos/vehicle.fbs
+          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/vehicle.fbs
           flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
       - name: Detect schema drift
         run: |
@@ -137,7 +119,7 @@ jobs:
           drifted=0
           for gen in /tmp/fb-drift/Mia/*.py; do
             fname=$(basename "$gen")
-            committed="Mia/$fname"
+            committed="schemas/generated/python/Mia/$fname"
             if [ -f "$committed" ]; then
               if ! diff -q "$gen" "$committed" > /dev/null 2>&1; then
                 echo "DRIFT: $committed differs from regenerated output"
@@ -156,7 +138,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           # If schemas changed, check that contracts are also updated (or at least reviewed)
-          schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ protos/ Mia/ | wc -l)
+          schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ | wc -l)
           contract_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- contracts/ | wc -l)
           if [ "$schema_changed" -gt 0 ] && [ "$contract_changed" -eq 0 ]; then
             echo "::warning::Schema files changed but contracts/ was not updated. Verify that contracts/events.md and contracts/topics.md still match."
@@ -187,7 +169,7 @@ jobs:
       - name: black --check
         run: >
           black --check --line-length 120
-          --exclude '/(\.git|\.venv|venv|build|apps/android|apps/esp32|platforms/cpp|Mia/Vehicle|web|\.backups|exported-assets)/'
+          --exclude '/(\.git|\.venv|venv|build|apps/android|apps/esp32|schemas/generated|web|\.backups|exported-assets)/'
           .
         continue-on-error: true
       - name: isort --check

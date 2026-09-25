@@ -14,7 +14,7 @@ Options:
     --kotlin        Generate Kotlin bindings
     --ts            Generate TypeScript bindings
     --rust          Generate Rust bindings
-    --all-schemas   Process all .fbs files in schemas/ and protos/
+    --all-schemas   Process all .fbs files in schemas/
     --output-dir    Output directory (default: project root)
     --schema        Single schema file to process (default: mia.fbs)
     --dry-run       Show expected outputs and detect drift (exit 0=clean, 2=drift)
@@ -139,12 +139,22 @@ def generate_cpp_bindings(schema_files, output_dir):
         print(f"✗ Error generating C++ bindings: {e}")
         return False
 
+def python_out_dir(project_root):
+    """Generated Python bindings (package ``Mia``) live under this directory."""
+    return project_root / "schemas" / "generated" / "python"
+
+
+def cpp_out_dir(project_root):
+    """Generated C++ headers for the shared schemas."""
+    return project_root / "schemas" / "generated" / "cpp"
+
+
 def generate_all(project_root, gen_python=True, gen_cpp=True):
     """Generate bindings from all known FlatBuffers schemas in the project.
 
     Schema sources and their outputs:
-    schemas/vehicle_telemetry.fbs + schemas/mia.fbs -> Mia/*.py / platforms/cpp/core/*.h
-    schemas/vehicle_telemetry.fbs + protos/vehicle.fbs -> canonical vehicle bindings with wire wrapper validation
+    schemas/vehicle_telemetry.fbs + schemas/mia.fbs -> schemas/generated/python/Mia/*.py, schemas/generated/cpp/*.h
+    schemas/vehicle_telemetry.fbs + schemas/vehicle.fbs -> canonical vehicle bindings with wire wrapper validation
     cpp-audio webgrab.fbs -> webgrab_generated.h (C++ only)
     """
     success = True
@@ -158,23 +168,22 @@ def generate_all(project_root, gen_python=True, gen_cpp=True):
         schemas.append(("core (mia.fbs)", core_schema))
         if gen_python:
             print("\n[core] Generating Python bindings from mia.fbs ...")
-            if not generate_python_bindings([vehicle_shared_schema, core_schema], project_root):
+            if not generate_python_bindings([vehicle_shared_schema, core_schema], python_out_dir(project_root)):
                 success = False
         if gen_cpp:
             print("\n[core] Generating C++ bindings from mia.fbs ...")
-            cpp_out = project_root / "platforms" / "cpp" / "core"
-            if not generate_cpp_bindings([vehicle_shared_schema, core_schema], cpp_out):
+            if not generate_cpp_bindings([vehicle_shared_schema, core_schema], cpp_out_dir(project_root)):
                 success = False
     else:
         print(f"⚠ Schema not found: {core_schema} or {vehicle_shared_schema}")
 
     # 2. Vehicle wire wrapper (validates root type + file identifier for PUB/SUB telemetry)
-    vehicle_schema = project_root / "protos" / "vehicle.fbs"
+    vehicle_schema = project_root / "schemas" / "vehicle.fbs"
     if vehicle_schema.exists() and vehicle_shared_schema.exists():
         schemas.append(("vehicle (vehicle.fbs)", vehicle_schema))
         if gen_python:
             print("\n[vehicle] Generating Python bindings from vehicle.fbs ...")
-            if not generate_python_bindings([vehicle_shared_schema, vehicle_schema], project_root):
+            if not generate_python_bindings([vehicle_shared_schema, vehicle_schema], python_out_dir(project_root)):
                 success = False
     else:
         print(f"⚠ Schema not found: {vehicle_schema} or {vehicle_shared_schema}")
@@ -205,9 +214,6 @@ def _dry_run(schema_dir, project_root, gen_python, gen_cpp):
 
     # Collect schema sources
     schemas_found = list(schema_dir.glob("*.fbs"))
-    protos_dir = project_root / "protos"
-    if protos_dir.is_dir():
-        schemas_found.extend(protos_dir.glob("*.fbs"))
     webgrab = project_root / "apps" / "rpi-backend" / "cpp-audio" / "core" / "webgrab.fbs"
     if webgrab.exists():
         schemas_found.append(webgrab)
@@ -231,19 +237,19 @@ def _dry_run(schema_dir, project_root, gen_python, gen_cpp):
         for match in table_pattern.finditer(content):
             name = match.group(1)
             if gen_python:
-                py_path = project_root / Path(*ns_parts) / f"{name}.py"
+                py_path = python_out_dir(project_root) / Path(*ns_parts) / f"{name}.py"
                 expected_python.add(py_path)
             if gen_cpp:
                 expected_cpp.add(name)
 
     # Check existing bindings
-    mia_dir = project_root / "Mia"
+    mia_dir = python_out_dir(project_root) / "Mia"
     existing_python = set(mia_dir.glob("*.py")) if mia_dir.is_dir() else set()
 
     drift_issues = []
 
     if gen_python:
-        print(f"\nPython bindings (expected dir: Mia/):")
+        print("\nPython bindings (expected dir: schemas/generated/python/Mia/):")
         print(f"  Expected types: {len(expected_python)}")
         print(f"  Existing files: {len(existing_python)}")
 
@@ -263,9 +269,9 @@ def _dry_run(schema_dir, project_root, gen_python, gen_cpp):
             print("  [ok] No drift detected")
 
     if gen_cpp:
-        cpp_dir = project_root / "platforms" / "cpp" / "core"
+        cpp_dir = cpp_out_dir(project_root)
         existing_cpp = set(cpp_dir.glob("*_generated.h")) if cpp_dir.is_dir() else set()
-        print(f"\nC++ bindings (expected dir: platforms/cpp/core/):")
+        print("\nC++ bindings (expected dir: schemas/generated/cpp/):")
         print(f"  Expected types: {len(expected_cpp)}")
         print(f"  Existing headers: {len(existing_cpp)}")
 
@@ -325,12 +331,11 @@ def main():
         success = True
         if gen_python:
             print("Generating Python bindings...")
-            if not generate_python_bindings(schema_file, project_root):
+            if not generate_python_bindings(schema_file, python_out_dir(project_root)):
                 success = False
         if gen_cpp:
             print("Generating C++ bindings...")
-            cpp_output = project_root / "platforms" / "cpp" / "core"
-            if not generate_cpp_bindings(schema_file, cpp_output):
+            if not generate_cpp_bindings(schema_file, cpp_out_dir(project_root)):
                 success = False
 
     if success:

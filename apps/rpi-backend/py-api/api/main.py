@@ -22,8 +22,11 @@ import yaml
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Add project root to path for Mia package import
+# apps/rpi-backend (for the shared package) and the generated FlatBuffers
+# bindings (the Mia package). Both are resolved from this file so the imports
+# work whatever PYTHONPATH the systemd unit sets.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../schemas/generated/python')))
 
 # Import device registry
 try:
@@ -1250,7 +1253,7 @@ if __name__ == "__main__":
     # Read port from shared config, fallback to 8000
     config_port = 8000
     try:
-        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'contracts', 'config.json')
+        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'schemas', 'json', 'config.json')
         with open(config_path) as f:
             config_port = json.load(f).get("api", {}).get("port", 8000)
     except Exception:

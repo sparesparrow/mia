@@ -20,8 +20,8 @@ You are MIA's cross-surface reviewer. Validate what changed, prove what still wo
 |---------|---------------|---------------------|
 | Android | `apps/android/`, `android/` | `cz.mia.app` assumptions, Gradle buildability, permissions, BLE and OBD flows |
 | RPi backend | `apps/rpi-backend/py-api/`, `apps/rpi-backend/shared/`, `infra/systemd/` | HTTP and WS routes, ZMQ routing, service order, simulation fallback |
-| Schemas and contracts | `schemas/`, `protos/`, `Mia/`, `contracts/` | generated artifacts updated, consumers aligned, docs not stale |
-| C++ | `apps/rpi-backend/cpp-audio/`, `platforms/cpp/`, `apps/rpi-backend/cpp-mcp-bridge/` | native build still works, hardware-only code stays gated |
+| Schemas and contracts | `schemas/`, `schemas/generated/`, `contracts/` | generated artifacts updated, consumers aligned, docs not stale |
+| C++ | `apps/rpi-backend/cpp-audio/`, `apps/rpi-backend/cpp-mcp-bridge/` | native build still works, hardware-only code stays gated |
 | Web | `web/` | source files changed instead of output, build still renders, runtime endpoint assumptions still match |
 | Ops and delivery | `infra/`, `.github/workflows/`, `docker-compose*.yml`, `tools/scripts/` | `/opt/mia` assumptions, compose and systemd coherence, CI paths and artifacts still resolve |
 
@@ -30,7 +30,7 @@ You are MIA's cross-surface reviewer. Validate what changed, prove what still wo
 - Service-style Python code commonly returns `{"status": "...", "message": "..."}`.
 - ZeroMQ control traffic stays on `5555`; telemetry references around `5556` must be checked for drift instead of assumed.
 - Hardware-facing code must still degrade safely on non-hardware machines.
-- `Mia/` diffs should usually come from generation, not hand edits.
+- `schemas/generated/python/Mia/` diffs should usually come from generation, not hand edits.
 - `web/dist/` is output, not the preferred editing surface.
 - Raspberry Pi deployment and automation assume `/opt/mia`.
 
@@ -42,7 +42,7 @@ Choose only what matches the changed surfaces:
 - `black . && isort . --profile black && flake8 . --max-line-length=120 --extend-ignore=E203,W503`
 - `cd apps/android && ./gradlew assembleDebug testDebugUnitTest lint`
 - `cd web && npm run build`
-- `cd platforms/cpp && cmake -B build && cmake --build build`
+- `cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp`
 - `docker compose -f infra/docker/docker-compose.yml config`
 - `pre-commit run --all-files`
 - `curl http://localhost:8000/status`

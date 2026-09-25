@@ -14,7 +14,7 @@ Based on the architecture document and current codebase analysis, here are the c
 - Enums and structs don't need IDs (fixed layout), only `table` types
 - Regenerate Python and C++ bindings via `schemas/generate.py`
 
-**Files:** `schemas/mia.fbs`, `protos/vehicle.fbs`, `apps/rpi-backend/cpp-audio/core/webgrab.fbs`
+**Files:** `schemas/mia.fbs`, `schemas/vehicle.fbs`, `apps/rpi-backend/cpp-audio/core/webgrab.fbs`
 
 ### 1.2 Add `flatc --conform` CI check
 **Why:** Only reliable guard against breaking schema changes when firmware updates lag behind app releases.

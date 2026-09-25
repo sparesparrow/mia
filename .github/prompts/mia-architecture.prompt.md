@@ -125,9 +125,8 @@ devices/esp32/        → ESP32 Firmware Worker
 apps/arduino/         → ESP32 Firmware Worker
 web/                  → Web UI Worker
 schemas/              → Schema Designer Worker
-protos/               → Schema Designer Worker
 contracts/            → Schema Designer Worker
-Mia/                  → Schema Designer Worker (generated, read-only)
+schemas/generated/python/Mia/                  → Schema Designer Worker (generated, read-only)
 orchestration/mcp/    → Agent Developer Worker
 infra/                → Build & Deps Worker + Simulation Worker
 tests/env/            → Simulation Worker

@@ -34,4 +34,4 @@ Příklady payloadů v `contracts/events.md`.
 Služby/charakteristiky a OTA viz `contracts/ble-gatt.md`.
 
 ## Konfigurace
-Schéma konfigurace zařízení/aplikace: `contracts/config.schema.json`.
+Schéma konfigurace zařízení/aplikace: `schemas/json/config.schema.json`.

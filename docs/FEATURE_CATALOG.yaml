@@ -135,7 +135,7 @@ categories:
       state: TESTED
       description: Schemas for engine, DPF, Eolys, GPIO, sensors, LED, system status
       services: []
-      files: [schemas/mia.fbs, protos/vehicle.fbs]
+      files: [schemas/mia.fbs, schemas/vehicle.fbs]
 
   # ── Voice & AI ───────────────────────────────────────────────────────────
   voice:

@@ -5,6 +5,6 @@
   - MQTT topics (`contracts/topics.md`)
   - Event payloads (`contracts/events.md`)
   - BLE GATT services (`contracts/ble-gatt.md`)
-  - Config schema (`contracts/config.schema.json`)
+  - Config schema (`schemas/json/config.schema.json`)
 
 Breaking changes: none

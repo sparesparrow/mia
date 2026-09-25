@@ -291,11 +291,9 @@ pip install conan
 # Build hardware server
 ./tools/scripts/build-hardware-server.sh
 
-# Or manually
-cd platforms/cpp
-conan install .. --build missing
-cmake -S . -B build
-cmake --build build
+# Or manually (the configuration CI builds)
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF
+cmake --build build/cpp
 ```
 
 #### 3. Run Android App

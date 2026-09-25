@@ -114,7 +114,7 @@ Cross-cutting concerns:
 Telemetry flow: MCU → serial bridge → ZMQ PUB → OBD worker → virtual PTY → diagnostic tool
 
 ### Serialization
-FlatBuffers schemas in `schemas/` (main: `mia.fbs`) and `protos/` define message types (VehicleTelemetry, GPIOCommand, SensorTelemetry). Generated Python bindings in `Mia/`.
+FlatBuffers schemas in `schemas/` (main: `mia.fbs`, vehicle wire wrapper: `vehicle.fbs`) define message types (VehicleTelemetry, GPIOCommand, SensorTelemetry). Generated Python bindings in `schemas/generated/python/Mia/`.
 
 ### Testing Strategy
 - **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/` (corresponding to `apps/` platforms)
@@ -159,6 +159,6 @@ This structure was established to support:
 
 Legacy files still being consolidated:
 - Old `core/`, `services/`, `rpi/` directories being merged into `apps/rpi-backend/`
-- Old `platforms/cpp/` moving to `apps/rpi-backend/cpp-audio/`
+- Old `platforms/cpp/` replaced by `apps/rpi-backend/cpp-audio/`; its generated headers moved to `schemas/generated/cpp/`
 - Old `docker/`, `deploy/` being consolidated under `infra/`
 - `modules/` becoming `orchestration/mcp/` (preserving hyphenated module names)
