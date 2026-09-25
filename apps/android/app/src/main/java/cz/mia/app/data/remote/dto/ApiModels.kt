@@ -257,6 +257,9 @@ data class WebSocketMessage(
     @SerializedName("telemetry")
     val telemetry: Map<String, Any>? = null,
 
+    @SerializedName("vehicle_telemetry")
+    val vehicleTelemetry: Cycle1TelemetryEnvelope? = null,
+
     @SerializedName("led_state")
     val ledState: LEDState? = null
 )

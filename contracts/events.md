@@ -139,3 +139,10 @@ All events use JSON format with the following structure:
 - Low: 24 hours
 - All events are hashed for privacy compliance
 
+## Cycle 1 Canonical Vehicle Telemetry
+
+The passive telemetry vertical slice uses schemas/vehicle_telemetry_envelope.schema.json.
+A complete sample requires ignition, battery_voltage, engine_rpm and coolant_temp_c.
+Each signal carries unit, source and confidence; the message carries source and
+confidence as well. The status matrix distinguishes CI/simulation evidence from
+hardware and vehicle validation.

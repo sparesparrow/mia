@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MIA Cycle 1 Vehicle Telemetry Envelope",
+  "type": "object",
+  "required": ["schema_version", "message_type", "device_id", "timestamp", "source", "confidence", "signals"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "message_type": {"const": "vehicle.telemetry"},
+    "device_id": {"type": "string", "minLength": 1},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "minLength": 1},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "signals": {
+      "type": "object",
+      "required": ["ignition", "battery_voltage", "engine_rpm", "coolant_temp_c"],
+      "properties": {
+        "ignition": {"$ref": "#/$defs/signal"},
+        "battery_voltage": {"$ref": "#/$defs/signal"},
+        "engine_rpm": {"$ref": "#/$defs/signal"},
+        "coolant_temp_c": {"$ref": "#/$defs/signal"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "signal": {
+      "type": "object",
+      "required": ["value", "unit", "source", "confidence"],
+      "properties": {
+        "value": {"oneOf": [{"type": "number"}, {"type": "boolean"}]},
+        "unit": {"type": "string"},
+        "source": {"type": "string", "minLength": 1},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

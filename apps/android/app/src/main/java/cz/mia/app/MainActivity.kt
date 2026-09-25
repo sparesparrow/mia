@@ -41,6 +41,7 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +62,7 @@ import cz.mia.app.features.dashboard.DashboardViewModel
 import cz.mia.app.features.dashboard.PolicyViewModel
 import cz.mia.app.features.settings.SettingsViewModel
 import cz.mia.app.features.led.LEDMonitorViewModel
+import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.DashboardGauges
 import cz.mia.app.ui.screens.CameraPreviewScreen
 import cz.mia.app.ui.screens.OBDPairingScreen
@@ -147,8 +149,14 @@ class MainActivity : ComponentActivity() {
 		val vm: DashboardViewModel = hiltViewModel()
 		val policyVm: PolicyViewModel = hiltViewModel()
 		val latest = vm.latest.value
+		val cycle1Telemetry by vm.cycle1Telemetry.collectAsState()
+		val cycle1Connection by vm.cycle1Connection.collectAsState()
 		val policy = policyVm.state.value
 		var isServiceRunning by remember { mutableStateOf(false) }
+
+		LaunchedEffect(Unit) {
+			vm.initializeCycle1Telemetry()
+		}
 		
 		Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
 			Text(
@@ -163,6 +171,13 @@ class MainActivity : ComponentActivity() {
 			Spacer(Modifier.height(16.dp))
 			
 			DashboardGauges(latest)
+
+			Spacer(Modifier.height(16.dp))
+
+			Cycle1TelemetryCard(
+				telemetry = cycle1Telemetry,
+				connection = cycle1Connection,
+			)
 
 			Spacer(Modifier.height(16.dp))
 

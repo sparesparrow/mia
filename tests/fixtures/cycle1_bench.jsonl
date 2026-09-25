@@ -1,0 +1,7 @@
+# Synthetic test vector, not Audi A4 8H data.
+# 0x100/bit0 is only a harness convention for ignition.
+{"timestamp_ms":0,"can_id":"0x100","data":"01","bus":"bench"}
+{"timestamp_ms":100,"can_id":"0x7E8","data":"04410C1B58000000","bus":"powertrain"}
+{"timestamp_ms":110,"can_id":"0x7E8","data":"0341057E00000000","bus":"powertrain"}
+{"timestamp_ms":120,"can_id":"0x7E8","data":"03410D3C00000000","bus":"powertrain"}
+{"timestamp_ms":130,"can_id":"0x7E8","data":"04414235E8000000","bus":"powertrain"}

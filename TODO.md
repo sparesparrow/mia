@@ -224,3 +224,10 @@ Recommendations applied in this revision:
 - [docs/PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md)
 - [docs/RASPBERRY_PI_SETUP.md](docs/RASPBERRY_PI_SETUP.md)
 - [docs/troubleshooting.md](docs/troubleshooting.md)
+
+## Cycle 1 delivery — passive telemetry vertical slice
+
+The first implementation slice freezes the four-signal envelope, adds a synthetic
+CAN replay vector, adds the ESP32 listen-only raw-frame path, normalizes the result
+on the Pi, and exposes the envelope to Android. It does not claim bench testing,
+vehicle installation, A4 signal mapping, active UDS, or actuation.
