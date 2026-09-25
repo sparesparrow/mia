@@ -20,7 +20,7 @@ The fastest way to deploy everything:
 # On Raspberry Pi
 cd /opt/mia
 git pull origin main
-sudo ./scripts/deploy-production-rpi.sh
+sudo ./tools/scripts/deploy-production-rpi.sh
 ```
 
 This script will:
@@ -45,13 +45,13 @@ git pull origin main
 #### 2. Setup BLE Services
 
 ```bash
-sudo ./scripts/setup-ble-service.sh
+sudo ./tools/scripts/setup-ble-service.sh
 ```
 
 #### 3. Deploy Main Services
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 ```
 
 #### 4. Enable Services
@@ -241,7 +241,7 @@ Create a health check script:
 
 ```bash
 #!/bin/bash
-# /opt/mia/scripts/health-check.sh
+# /opt/mia/tools/scripts/health-check.sh
 
 services=(
     "zmq-broker"
@@ -266,7 +266,7 @@ done
 Run as cron job:
 ```bash
 # Add to crontab
-*/5 * * * * /opt/mia/scripts/health-check.sh >> /var/log/mia/health-check.log 2>&1
+*/5 * * * * /opt/mia/tools/scripts/health-check.sh >> /var/log/mia/health-check.log 2>&1
 ```
 
 ## Troubleshooting
@@ -363,7 +363,7 @@ cd /opt/mia
 git pull origin main
 
 # Run deployment script
-sudo ./scripts/deploy-production-rpi.sh
+sudo ./tools/scripts/deploy-production-rpi.sh
 ```
 
 ### Rollback
@@ -375,7 +375,7 @@ git log --oneline
 git checkout <previous-commit-hash>
 
 # Redeploy
-sudo ./scripts/deploy-production-rpi.sh
+sudo ./tools/scripts/deploy-production-rpi.sh
 ```
 
 ## Security Considerations
@@ -427,5 +427,5 @@ Nice=10  # Lower priority (higher number = lower priority)
 ## Support
 
 For issues or questions:
-- **Documentation**: See [Raspberry Pi Setup](./RASPBERRY_PI_SETUP.md)
+- **Documentation**: See [Raspberry Pi Setup](RASPBERRY_PI_SETUP.md)
 - **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)

@@ -122,7 +122,7 @@ cd mia
 
 3. **Configure build**:
 ```bash
-cd platforms/cpp
+cd apps/rpi-backend/cpp-audio  # platforms/cpp was removed; Conan flow tracked as P0-ARM64-1
 conan install ../.. -pr:h=../../profiles/linux-arm64 -pr:b=../../profiles/linux-arm64 --build=missing
 ```
 
@@ -143,7 +143,7 @@ sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
 2. **Configure Conan**:
 ```bash
-cd platforms/cpp
+cd apps/rpi-backend/cpp-audio  # platforms/cpp was removed; Conan flow tracked as P0-ARM64-1
 conan install ../.. -pr:h=../../profiles/linux-arm64 -pr:b=../../profiles/linux-x86_64 --build=missing
 ```
 

@@ -8,14 +8,14 @@
 
 ```bash
 # Option 1: Use default configuration (mia@192.168.200.139)
-./scripts/deploy-raspberry-pi-remote.sh
+./tools/scripts/deploy-raspberry-pi-remote.sh
 
 # Option 2: Customize via environment variables
 export RPI_USER="mia"
 export RPI_HOST="192.168.200.139"
 export RPI_PORT="22"
 export SSH_KEY="~/.ssh/id_rsa"  # Optional
-./scripts/deploy-raspberry-pi-remote.sh
+./tools/scripts/deploy-raspberry-pi-remote.sh
 ```
 
 ## Prerequisites
@@ -58,7 +58,7 @@ The deployment script will:
 # Test Arduino Connection
 ssh mia@192.168.200.139
 cd /opt/mia
-python3 modules/hardware-bridge/test_arduino_led.py /dev/ttyUSB0
+python3 modules/hardware-bridge/arduino_led_probe.py /dev/ttyUSB0
 ```
 
 ## Troubleshooting

@@ -6,7 +6,7 @@ Complete ANPR system for MIA vehicle telemetry platform with Czech license plate
 
 - **License Plate Detection**: Real-time OCR for vehicle license plates using EasyOCR
 - **Czech Plate Recognition**: Optimized for Czech plate format (2 letters + 3-5 digits + 2 letters)
-- **Vehicle Status Checking**: Electronic vignette and exemption status from edalnice.gov.cz (`services/edalnice_client.py`; optional `EDALNICE_CLIENT_CREDENTIALS`, see ISSUE P1-ANPR-1 in [TODO.md](../TODO.md))
+- **Vehicle Status Checking**: Electronic vignette and exemption status from edalnice.gov.cz (`services/edalnice_client.py`; optional `EDALNICE_CLIENT_CREDENTIALS`, live validation tracked in [#123](https://github.com/sparesparrow/mia/issues/123))
 - **Live Alert System**: Real-time notifications for exempted vehicles ("Vozidlo osvobozeno")
 - **WebSocket Streaming**: Real-time plate detection stream to Android app
 - **Local Caching**: Intelligent caching of edalnice.cz lookups (24h TTL)
@@ -381,7 +381,7 @@ const char* WIFI_PASSWORD = "YOUR_PASSWORD";  // ← Set this
 
 ## 📚 Documentation
 
-- [MIA Architecture Overview](../ARCHITECTURE.md)
+- [MIA Architecture Overview](../spec/architecture/README.md)
 - [ESP32 Firmware Guide](../docs/esp32-setup.md)
 - [Android App Development](../apps/android/README.md)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)

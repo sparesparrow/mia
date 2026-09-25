@@ -1,5 +1,7 @@
 package cz.mia.app.core.camera
 
+// @req REQ-AND-004
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

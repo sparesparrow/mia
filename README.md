@@ -1,37 +1,46 @@
-# MIA Raspberry Pi Implementation
+# MIA
 
-This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in TODO.md.
+MIA is a vehicle telemetry and IoT control system built from three pieces:
+- a Raspberry Pi 4B edge server
+- ESP32 and Arduino microcontrollers
+- an Android companion app
 
-## Architecture
+The primary prototype vehicle is an Audi A4 Cabriolet 8H (2004). Vehicle access is passive (read-only) by default ([ADR-0006](spec/decisions/0006-passive-vehicle-access-by-default.md)).
 
-- **ZeroMQ Broker** (`core/messaging/broker.py`): Message routing using ROUTER-DEALER pattern
-- **FastAPI Server** (`api/main.py`): REST API and WebSocket endpoints
-- **GPIO Worker** (`hardware/gpio_worker.py`): Hardware control via GPIO pins
-- **Serial Bridge** (`hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
-- **OBD Worker** (`services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
+## Repository layout
 
-## Workspace Organization
+| Part | Where | What it holds |
+|---|---|---|
+| Requirements and design | [`spec/`](spec/README.md) | Requirements registry with evidence states, ADRs, architecture, interface specs, validation records |
+| Production code | `apps/`, `orchestration/`, `schemas/`, `infra/`, `web/`, `agents/` | `apps/`: the Pi backend, Android app, ESP32 and Arduino firmware. `orchestration/`: MCP modules. `schemas/`: FlatBuffers/JSON contracts. `infra/`: deployment |
+| Tests | [`tests/`](tests/README.md) | Unit, integration and hardware (e2e) tests, fixtures, the simulated test environment |
 
-This repository follows a structured workspace organization to separate development and deployment environments:
+- Developer tooling is in `tools/`.
+- User and operator guides are in [`docs/`](docs/index.md).
+- Open work (to-dos, ideas, validation tasks and test gaps) is tracked in [GitHub Issues](https://github.com/sparesparrow/mia/issues), not in files ([ADR-0001](spec/decisions/0001-record-decisions-and-keep-the-backlog-in-issues.md)).
+- Every test names the requirements it checks, and CI fails when a requirement claims more evidence than exists ([ADR-0010](spec/decisions/0010-evidence-based-requirement-status.md)).
 
-### Development Structure
-- **Development Repository**: `~/projects/mia/` - Contains the full source code, documentation, and build tools
-- **Configuration**: `config/paths.json` - Defines configurable paths for different environments
-- **Path Management**: `core/paths.py` - Python utility for resolving relative and configurable paths
+```bash
+pytest tests/ -m "not hardware" --req-report=req-report.json      # tests
+python tools/ci/traceability.py check --pytest-report req-report.json   # requirement claims
+```
 
-### Installation Structure
-- **Installed Code**: `/opt/mia/` - Contains deployed/running code (symlinked to development repo during development)
-- **System Services**: `/etc/systemd/system/mia-*.service` - Systemd service definitions
-- **Configuration**: `/etc/mia/` - System-wide configuration files
-- **Data**: `/var/lib/mia/` - Persistent data and logs
+The rest of this page covers the Raspberry Pi backend in `apps/rpi-backend/`.
 
-### Deployment Workflow
-1. **Development**: Work in `~/projects/mia/` with full access to source and tools
-2. **Testing**: Use relative paths and path configuration for environment-independent code
-3. **Deployment**: Copy or symlink code to `/opt/mia/` for production use
-4. **Services**: Use systemd services that reference `/opt/mia/` as the working directory
+## Raspberry Pi backend
 
-This separation ensures clean development workflows while maintaining proper system integration for production deployments.
+- **ZeroMQ Broker** (`apps/rpi-backend/shared/messaging/broker.py`): message routing using the ROUTER-DEALER pattern
+- **FastAPI Server** (`apps/rpi-backend/py-api/api/main.py`): REST API and WebSocket endpoints
+- **GPIO Worker** (`apps/rpi-backend/py-api/hardware/gpio_worker.py`): hardware control via GPIO pins
+- **Serial Bridge** (`apps/rpi-backend/py-api/hardware/serial_bridge.py`): ESP32/Arduino serial to ZeroMQ bridge
+- **OBD Worker** (`apps/rpi-backend/py-api/services/obd_worker.py`): ELM327 OBD-II simulator with dynamic PID responses
+
+### Paths
+
+- **Development:** a checkout of this repository. `apps/rpi-backend/config/paths.json` defines configurable paths, and `apps/rpi-backend/shared/paths.py` resolves them.
+- **Installed code:** `/opt/mia/`. The systemd units in `infra/systemd/` use it as their working directory.
+- **Configuration:** `/etc/mia/`
+- **Data:** `/var/lib/mia/`
 
 ## Components
 
@@ -79,12 +88,12 @@ The Citroën bridge connects to PSA vehicles via ELM327 OBD-II adapter.
 #### Quick Start
 ```bash
 # Deploy service
-sudo cp rpi/services/mia-citroen-bridge.service /etc/systemd/system/
+sudo cp infra/systemd/mia-citroen-bridge.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable mia-citroen-bridge
 
 # Test with mock mode
-ELM_MOCK=1 python3 agents/citroen_bridge.py
+ELM_MOCK=1 python3 orchestration/mia-agents/agents/citroen_bridge.py
 
 # Start real service
 sudo systemctl start mia-citroen-bridge
@@ -120,7 +129,7 @@ pip3 install -r requirements.txt
 Use the main deployment script:
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 ```
 
 This will:
@@ -135,7 +144,7 @@ This will:
 ### 1. Install Python dependencies
 
 ```bash
-pip3 install -r rpi/requirements.txt
+pip3 install -r apps/rpi-backend/py-api/requirements.txt
 ```
 
 ### 2. Copy files to installation directory
@@ -148,7 +157,7 @@ sudo cp -r . /opt/mia/
 ### 3. Install systemd services
 
 ```bash
-sudo cp rpi/services/*.service /etc/systemd/system/
+sudo cp infra/systemd/*.service /etc/systemd/system/
 sudo systemctl daemon-reload
 ```
 
@@ -294,13 +303,13 @@ Connect your OBD diagnostic tool to this PTY. As you turn the potentiometers on 
 Test serial bridge directly:
 
 ```bash
-python3 rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+python3 apps/rpi-backend/py-api/hardware/serial_bridge.py --port /dev/ttyUSB0
 ```
 
 Test OBD worker directly:
 
 ```bash
-python3 rpi/services/obd_worker.py
+python3 apps/rpi-backend/py-api/services/obd_worker.py
 ```
 
 ### Test WebSocket
@@ -429,7 +438,7 @@ sudo systemctl edit mia-serial-bridge
 # Add:
 # [Service]
 # ExecStart=
-# ExecStart=/usr/bin/python3 /opt/ai-servis/rpi/hardware/serial_bridge.py --port /dev/ttyUSB0
+# ExecStart=/usr/bin/python3 /opt/mia/apps/rpi-backend/py-api/hardware/serial_bridge.py --port /dev/ttyUSB0
 ```
 
 4. Test serial connection manually:

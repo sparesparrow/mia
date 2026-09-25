@@ -22,8 +22,11 @@ import yaml
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Add project root to path for Mia package import
+# apps/rpi-backend (for the shared package) and the generated FlatBuffers
+# bindings (the Mia package). Both are resolved from this file so the imports
+# work whatever PYTHONPATH the systemd unit sets.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../schemas/generated/python')))
 
 # Import device registry
 try:
@@ -1158,49 +1161,66 @@ async def resume_session(req: ResumeSessionRequest):
 # Feature Catalog Endpoint
 # ============================================================================
 
+def _load_requirements_registry() -> Optional[Dict[str, Any]]:
+    """Load spec/requirements/*.yaml, the single source for what MIA can do."""
+    for base in (
+        os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'spec', 'requirements'),
+        '/opt/mia/spec/requirements',
+    ):
+        if not os.path.isdir(base):
+            continue
+        areas = {}
+        for name in sorted(os.listdir(base)):
+            if not name.endswith('.yaml'):
+                continue
+            with open(os.path.join(base, name)) as f:
+                doc = yaml.safe_load(f) or {}
+            areas[doc.get('area', name[:-5])] = doc.get('requirements', [])
+        return areas
+    return None
+
+
 @app.get("/features", response_model=Dict[str, Any])
 async def get_features(category: Optional[str] = None, state: Optional[str] = None):
-    """GET /features — serve the feature catalog as JSON.
+    """GET /features — serve the requirements registry as a feature catalog.
 
     Query parameters:
-    - category: filter by category name (e.g. 'automotive', 'voice')
-    - state: filter by development state (IDEA, PLANNED, IMPLEMENTED, TESTED, QA, DEPLOYED)
+    - category: filter by area (e.g. 'automotive', 'voice')
+    - state: filter by evidence state (e.g. 'implemented_and_ci_tested', 'planned')
     """
-    catalog_paths = [
-        os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'docs', 'FEATURE_CATALOG.yaml'),
-        '/opt/mia/docs/FEATURE_CATALOG.yaml',
-    ]
-    catalog = None
-    for p in catalog_paths:
-        try:
-            with open(p) as f:
-                catalog = yaml.safe_load(f)
-            break
-        except FileNotFoundError:
-            continue
+    areas = _load_requirements_registry()
+    if not areas:
+        raise HTTPException(status_code=404, detail="Requirements registry not found")
 
-    if not catalog:
-        raise HTTPException(status_code=404, detail="Feature catalog not found")
-
-    categories = catalog.get("categories", {})
+    categories = {
+        area: [
+            {
+                "id": r["id"],
+                "name": r["title"],
+                "state": r["evidence"],
+                "evidence": r["evidence"],
+                "description": r["statement"],
+                "services": r.get("services", []),
+                "files": r.get("implemented_in", []),
+            }
+            for r in reqs
+        ]
+        for area, reqs in areas.items()
+    }
 
     if category:
         categories = {k: v for k, v in categories.items() if k == category}
 
     if state:
-        state_upper = state.upper()
-        categories = {
-            k: [feat for feat in v if feat.get("state") == state_upper]
-            for k, v in categories.items()
-        }
+        wanted = state.lower()
+        categories = {k: [feat for feat in v if feat["state"] == wanted] for k, v in categories.items()}
         categories = {k: v for k, v in categories.items() if v}
 
     # Compute summary counts
     all_features = [f for feats in categories.values() for f in feats]
     summary = {}
     for f in all_features:
-        s = f.get("state", "UNKNOWN")
-        summary[s] = summary.get(s, 0) + 1
+        summary[f["state"]] = summary.get(f["state"], 0) + 1
 
     return {
         "categories": categories,
@@ -1250,7 +1270,7 @@ if __name__ == "__main__":
     # Read port from shared config, fallback to 8000
     config_port = 8000
     try:
-        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'contracts', 'config.json')
+        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'schemas', 'json', 'config.json')
         with open(config_path) as f:
             config_port = json.load(f).get("api", {}).get("port", 8000)
     except Exception:

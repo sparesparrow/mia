@@ -12,19 +12,19 @@ You own the simulation layer that makes development possible without physical ha
 | System | Mechanism | Config |
 |--------|-----------|--------|
 | RPi GPIO | `GPIO_SIMULATION=true` env var + try-except RPi.GPIO | `gpio_worker.py` fallback |
-| Pi full stack | Docker containers | `docker-compose.pi-simulation.yml` |
+| Pi full stack | Docker containers | `tests/env/docker-compose.pi-simulation.yml` |
 | OBD-II Digital Twin | Potentiometer MCU → ELM327 emulator → virtual PTY | `obd_worker.py` |
-| GPIO web sim | Browser-based GPIO simulator | `containers/gpio-simulator/` |
-| Pi simulation | Full Pi environment in Docker | `containers/pi-simulation/` |
-| MQTT | Mosquitto container | `containers/mosquitto/` |
-| Metrics | Prometheus + AlertManager containers | `containers/prometheus/`, `containers/alertmanager/` |
-| Database | PostgreSQL container | `containers/postgres/` |
+| GPIO web sim | Browser-based GPIO simulator | `tests/env/gpio-simulator/` |
+| Pi simulation | Full Pi environment in Docker | `tests/env/pi-simulation/` |
+| MQTT | Mosquitto container | `infra/containers/mosquitto/` (stack), `tests/env/mosquitto/` (Pi simulation) |
+| Metrics | Prometheus + AlertManager containers | `infra/containers/prometheus/`, `infra/containers/alertmanager/` |
+| Database | PostgreSQL container | `infra/containers/postgres/` |
 
 ## Docker Dev Stack
 
 ```bash
 docker compose -f infra/docker/docker-compose.dev.yml up    # dev mode
-docker compose -f docker-compose.pi-simulation.yml up        # full Pi sim
+docker compose -f tests/env/docker-compose.pi-simulation.yml up        # full Pi sim
 ```
 
 ## Mock Patterns

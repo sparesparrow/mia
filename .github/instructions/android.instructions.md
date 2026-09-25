@@ -4,10 +4,10 @@ name: "Android App Guidance"
 applyTo:
   - "apps/android/**"
   - "android/**"
-  - "skills/android-adb-test/**"
-  - "scripts/test-orchestrator.sh"
-  - "scripts/test-android-ble-connection.sh"
-  - "ANDROID_*.md"
+  - ".claude/skills/android-adb-test/**"
+  - "tools/scripts/test-orchestrator.sh"
+  - "tools/scripts/test-android-ble-connection.sh"
+  - "apps/android/docs/*.md"
 ---
 # Android App Guidance
 
@@ -19,8 +19,8 @@ applyTo:
 - BLE, camera, microphone, and location flows require runtime permission handling. Fail clearly and degrade safely when a permission or hardware capability is missing.
 - Prefer Gradle validation for Android work: `cd apps/android && ./gradlew assembleDebug testDebugUnitTest lint`. Use `./gradlew connectedAndroidTest` only when a device or emulator is actually available.
 - Use the existing device-testing workflows instead of ad hoc ADB sequences when you need build, deploy, screenshots, and logs together:
-  - `bash scripts/test-orchestrator.sh <device-serial> <scenario> 1`
-  - `bash skills/android-adb-test/scripts/android-adb-test.sh build|deploy|test|interactive ...`
+  - `bash tools/scripts/test-orchestrator.sh <device-serial> <scenario> 1`
+  - `bash .claude/skills/android-adb-test/scripts/android-adb-test.sh build|deploy|test|interactive ...`
 - For BLE and OBD changes, prefer validation on a physical device. Emulator coverage is useful for UI and instrumentation work but is not enough for connection reliability changes.
 - Root Python linters do not validate Android sources. Use Gradle and Android-specific tooling for Kotlin, Compose, and device-test verification.
-- Related docs: [apps/android/README.md](../../apps/android/README.md), [ANDROID_TESTING.md](../../ANDROID_TESTING.md), [ANDROID_QUICK_REFERENCE.md](../../ANDROID_QUICK_REFERENCE.md), [docs/android-device-setup.md](../../docs/android-device-setup.md), and [../copilot-instructions.md](../copilot-instructions.md).
+- Related docs: [apps/android/README.md](../../apps/android/README.md), [apps/android/docs/TESTING.md](../../apps/android/docs/TESTING.md), [apps/android/docs/QUICK_REFERENCE.md](../../apps/android/docs/QUICK_REFERENCE.md), [docs/android-device-setup.md](../../docs/android-device-setup.md), and [../copilot-instructions.md](../copilot-instructions.md).

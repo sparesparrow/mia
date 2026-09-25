@@ -38,10 +38,10 @@ graph LR
 
 ```bash
 # Deploy all three agents to ElevenLabs and write agent IDs to .env
-python scripts/deploy-agents.py
+python tools/scripts/deploy-agents.py
 
 # Dry run (no API calls)
-python scripts/deploy-agents.py --dry-run
+python tools/scripts/deploy-agents.py --dry-run
 
 # Start the API server (signed URLs + webhook handler)
 uvicorn services.agents_api:app --host 0.0.0.0 --port 8042

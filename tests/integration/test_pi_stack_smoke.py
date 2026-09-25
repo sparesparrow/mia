@@ -20,6 +20,9 @@ from pathlib import Path
 
 import zmq
 import zmq.asyncio
+import pytest
+
+pytestmark = pytest.mark.req("REQ-NET-001", "REQ-AUTO-006", "REQ-DEP-001", "REQ-CAR-002", "REQ-NFR-002")
 
 # ── Constants ──────────────────────────────────────────────────────────
 

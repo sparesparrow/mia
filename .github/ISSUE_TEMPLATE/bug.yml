@@ -1,0 +1,32 @@
+name: Bug
+description: Something does not behave as its requirement or documentation says.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: Steps to reproduce, expected and actual behaviour, logs.
+    validations:
+      required: true
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirements
+      description: REQ IDs whose behaviour is wrong, if known.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - CI / simulation
+        - Bench
+        - Target hardware (Pi, ESP32, phone)
+        - Vehicle
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety impact
+      description: Could this transmit on a vehicle bus or actuate anything? If yes, say so first.

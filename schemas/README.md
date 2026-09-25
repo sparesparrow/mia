@@ -33,7 +33,7 @@ This directory contains the FlatBuffers schema definitions for the Modular IoT A
 #### Vehicle Telemetry
 - `vehicle_telemetry.fbs` - Canonical source for `VehicleTelemetry` and `DpfStatus`
 - `VehicleTelemetry` - Shared vehicle telemetry table included by `schemas/mia.fbs`
-- `protos/vehicle.fbs` - Thin wire wrapper that pins the PUB/SUB file identifier for vehicle telemetry
+- `schemas/vehicle.fbs` - Thin wire wrapper that pins the PUB/SUB file identifier for vehicle telemetry
 - `DpfStatus` - Diesel Particulate Filter regeneration states
 
 ## Usage
@@ -114,7 +114,7 @@ The schemas integrate with:
 - **API Layer** (`apps/rpi-backend/py-api/api/main.py`) - REST endpoints and WebSocket streaming
 - **Hardware Workers** (`apps/rpi-backend/py-api/hardware/gpio_worker.py`, `apps/rpi-backend/py-api/services/obd_worker.py`) - Device communication
 - **Message Broker** (`apps/rpi-backend/shared/messaging/broker.py`) - Inter-process communication
-- **Vehicle telemetry PUB/SUB path** — live `VehicleTelemetry` transport with `CTEL` file identifier and legacy-key compatibility in `Mia/vehicle_codec.py`
+- **Vehicle telemetry PUB/SUB path** — live `VehicleTelemetry` transport with `CTEL` file identifier and legacy-key compatibility in `schemas/generated/python/Mia/vehicle_codec.py`
 
 Keep `schemas/vehicle_telemetry.fbs` as the single source of truth for live vehicle telemetry fields. Android consumes the JSON/MQTT surface instead of these FlatBuffers directly.
 

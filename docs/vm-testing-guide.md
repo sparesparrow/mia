@@ -39,20 +39,20 @@ chmod +x vm-test-setup.sh
 # Or if you have the repository
 git clone https://github.com/ai-servis/ai-servis.git
 cd mia
-./scripts/vm-test-setup.sh
+./tools/scripts/vm-test-setup.sh
 ```
 
 ### 2. Run Complete Test Suite
 
 ```bash
 # Run all tests (takes ~20-30 minutes)
-./scripts/vm-test-setup.sh
+./tools/scripts/vm-test-setup.sh
 
 # Run quick tests only (takes ~10-15 minutes)
-./scripts/vm-test-setup.sh --quick
+./tools/scripts/vm-test-setup.sh --quick
 
 # Clean up after testing
-./scripts/vm-test-setup.sh --cleanup
+./tools/scripts/vm-test-setup.sh --cleanup
 ```
 
 ### 3. View Test Results
@@ -110,7 +110,7 @@ docker info
 
 ```bash
 # Manual validation:
-ls -la scripts/           # Check script permissions
+ls -la tools/scripts/           # Check script permissions
 pip3 list | grep pytest   # Check Python deps
 pre-commit --version      # Check pre-commit
 ```
@@ -125,7 +125,7 @@ pre-commit --version      # Check pre-commit
 
 ```bash
 # Manual validation:
-./scripts/dev-environment.sh status dev
+./tools/scripts/dev-environment.sh status dev
 curl http://localhost:8080/health
 curl http://localhost:8090/health
 ```
@@ -140,7 +140,7 @@ curl http://localhost:8090/health
 
 ```bash
 # Manual validation:
-./scripts/dev-environment.sh status pi-sim
+./tools/scripts/dev-environment.sh status pi-sim
 curl http://localhost:8084  # Pi Gateway
 curl http://localhost:9000  # GPIO Simulator
 ```
@@ -156,7 +156,7 @@ curl http://localhost:9000  # GPIO Simulator
 
 ```bash
 # Manual validation:
-./scripts/dev-environment.sh status monitoring
+./tools/scripts/dev-environment.sh status monitoring
 open http://localhost:3000   # Grafana
 open http://localhost:9090   # Prometheus
 ```
@@ -173,7 +173,7 @@ open http://localhost:9090   # Prometheus
 # Manual validation:
 flake8 --version
 docker build --help
-./scripts/docker-build-multiplatform.sh --help
+./tools/scripts/docker-build-multiplatform.sh --help
 ```
 
 ### Phase 8: Performance Validation ✅
@@ -186,7 +186,7 @@ docker build --help
 
 ```bash
 # Manual validation:
-./scripts/performance-tests.sh
+./tools/scripts/performance-tests.sh
 top                      # Check CPU usage
 free -h                  # Check memory usage
 ```
@@ -380,7 +380,7 @@ docker logs ai-servis-discovery-dev
 docker stats
 
 # Restart services:
-./scripts/dev-environment.sh restart dev
+./tools/scripts/dev-environment.sh restart dev
 ```
 
 #### 5. Port Conflicts
@@ -464,7 +464,7 @@ After automated tests, manually verify key functionality:
 
 ```bash
 # 1. Check all services are running:
-./scripts/dev-environment.sh status full
+./tools/scripts/dev-environment.sh status full
 
 # 2. Access web interfaces:
 open http://localhost:8080  # Core Orchestrator
@@ -472,10 +472,10 @@ open http://localhost:3000  # Grafana (admin/admin)
 open http://localhost:9000  # GPIO Simulator
 
 # 3. Run integration tests:
-./scripts/system-tests.sh
+./tools/scripts/system-tests.sh
 
 # 4. Test performance:
-./scripts/performance-tests.sh
+./tools/scripts/performance-tests.sh
 
 # 5. Validate monitoring:
 # Check Grafana dashboards show data
@@ -491,7 +491,7 @@ Test the CI/CD pipeline simulation:
 pre-commit run --all-files
 
 # 2. Test Docker builds:
-./scripts/docker-build-multiplatform.sh --help
+./tools/scripts/docker-build-multiplatform.sh --help
 
 # 3. Simulate GitHub Actions:
 # Check .github/workflows/ files are valid

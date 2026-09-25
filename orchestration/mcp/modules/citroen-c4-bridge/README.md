@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 3. **MIA Bootstrap**:
    ```bash
-   python complete-bootstrap.py  # Detects android-arm64 automatically
+   python tools/complete-bootstrap.py  # Detects android-arm64 automatically
    ```
 
 ## Configuration

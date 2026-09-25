@@ -1,0 +1,63 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: deployment
+title: Deployment and provisioning
+description: How the stack is installed and started.
+requirements:
+- id: REQ-DEP-001
+  title: Systemd service set
+  statement: Every Pi service shall run as a systemd unit with a restart policy and syslog identifier, with the
+    broker starting before the services that need it.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - zmq-broker is ordered before mia-api, the serial bridge and the bridges
+  - All core units restart on failure and set SyslogIdentifier
+  implemented_in:
+  - infra/systemd
+  decisions:
+  - ADR-0003
+  - ADR-0005
+  not_proven: A boot on the target Pi
+- id: REQ-DEP-002
+  title: Docker Compose stacks
+  statement: The orchestration stack shall start with Docker Compose, with separate dev, monitoring and Pi-simulation
+    variants.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/docker
+  - tests/env/docker-compose.pi-simulation.yml
+  notes: deploy.yml validates the compose files with docker compose config, but no test asserts behaviour.
+- id: REQ-DEP-003
+  title: Pi deployment
+  statement: A single command shall discover the Pi on the LAN, push SSH keys, sync code and bootstrap the services.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Connection and deployment checks report failure instead of raising
+  implemented_in:
+  - tools/scripts/deploy-mia-rpi.sh
+  - tools/scripts/deploy_rpi.py
+  notes: Only deploy_rpi.py is unit-tested; deploy-mia-rpi.sh has no test.
+- id: REQ-DEP-004
+  title: mDNS advertisement
+  statement: The Pi shall advertise _mia-api._tcp over Avahi so the app can find it.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/avahi-mia-api.service
+- id: REQ-DEP-005
+  title: Bundled CPython bootstrap
+  statement: A stdlib-only bootstrap shall install a bundled CPython and Conan on a fresh host.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Archive extraction rejects path traversal
+  - The ensure script writes the environment and wrapper in a dry run
+  implemented_in:
+  - tools/complete-bootstrap.py
+  - tools/scripts/ensure-bundled-cpython.sh
+- id: REQ-DEP-006
+  title: Device and network discovery tools
+  statement: Deployment tools shall detect attached devices and scan the LAN for MIA hosts.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Detection and scanning degrade gracefully when a probe fails
+  implemented_in:
+  - tools/scripts/detect_devices.py
+  - tools/scripts/network_scanner.py

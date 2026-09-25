@@ -1,5 +1,7 @@
 package cz.mia.app.core.background
 
+// @req REQ-AND-001
+
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context

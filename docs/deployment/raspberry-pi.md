@@ -9,7 +9,7 @@
 > curl -fsSL https://raw.githubusercontent.com/sparesparrow/mia/main/setup-mia.sh | sudo bash
 >
 > # Or use the detailed deployment script
-> sudo ./scripts/deploy-complete-system.sh
+> sudo ./tools/scripts/deploy-complete-system.sh
 > ```
 >
 > See **[COMPLETE_DEPLOYMENT_GUIDE.md](COMPLETE_DEPLOYMENT_GUIDE.md)** for full documentation.
@@ -356,7 +356,7 @@ python3 -c "import RPi.GPIO as GPIO; print('GPIO OK')"
 sudo tar -czvf mia-backup.tar.gz \
     /etc/mia/ \
     /var/lib/mia/ \
-    /opt/mia/config/
+    /opt/mia/apps/rpi-backend/config/
 ```
 
 ### Restore

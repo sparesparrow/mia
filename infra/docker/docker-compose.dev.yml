@@ -126,7 +126,7 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ../../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ../../volumes/mqtt-data:/mosquitto/data
       - ../../volumes/mqtt-logs:/mosquitto/log
     healthcheck:
@@ -151,7 +151,7 @@ services:
       - "5432:5432"
     volumes:
       - ../../volumes/postgres-data-dev:/var/lib/postgresql/data
-      - ../../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U aiservispdev -d aiservisdwxb"]
       interval: 30s

@@ -30,7 +30,7 @@ The project uses the following dependencies managed by Conan:
 The easiest way is to use the provided build script:
 
 ```bash
-./scripts/build-hardware-server.sh
+./tools/scripts/build-hardware-server.sh
 ```
 
 ### Option 2: Manual Build

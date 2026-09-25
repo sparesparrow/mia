@@ -12,6 +12,8 @@ import pytest
 import zmq
 from unittest.mock import patch
 
+pytestmark = pytest.mark.req("REQ-HW-004", "REQ-AUTO-001")
+
 # Import OBD components
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../rpi'))
 

@@ -26,21 +26,21 @@ sudo apt-get install -y \
 ### 2. Build
 
 ```bash
-./scripts/build-raspberry-pi.sh
+./tools/scripts/build-raspberry-pi.sh
 ```
 
 Or manually:
 ```bash
 mkdir -p build-raspberry-pi
 cd build-raspberry-pi
-cmake ../platforms/cpp/core -DCMAKE_BUILD_TYPE=Release
+cmake ../schemas/generated/cpp -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 ```
 
 ### 3. Deploy
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 sudo systemctl start mia-api
 sudo systemctl enable mia-api
 ```

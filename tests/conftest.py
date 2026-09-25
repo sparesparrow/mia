@@ -40,6 +40,8 @@ SOURCE_PATHS = [
     REPO_ROOT / "orchestration" / "mcp" / "modules",
     REPO_ROOT / "orchestration" / "mcp" / "modules" / "core-orchestrator",
     REPO_ROOT / "orchestration" / "meta_harness",
+    REPO_ROOT / "tools",
+    REPO_ROOT / "schemas" / "generated" / "python",
 ]
 
 for source_path in reversed(SOURCE_PATHS):
@@ -47,8 +49,6 @@ for source_path in reversed(SOURCE_PATHS):
     if source_path_str not in sys.path:
         sys.path.insert(0, source_path_str)
 
-
-# These tests are legacy snapshots that depend on relative imports from
-# a hyphenated directory name (tests/unit/rpi-backend), which pytest cannot
-# import as a normal Python package.
-collect_ignore_glob = ["unit/rpi-backend/test_*.py"]
+# Requirement traceability: the req marker and --req-report (tests/plugins/req_traceability.py).
+sys.path.insert(0, str(REPO_ROOT / "tests" / "plugins"))
+pytest_plugins = ["req_traceability"]

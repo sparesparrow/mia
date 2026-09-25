@@ -23,7 +23,7 @@ MIA_AGENTS_ROOT = Path(__file__).resolve().parents[1]
 # parse_citroen_telemetry(). 5556 is the MCU channel that serial_bridge binds.
 DEFAULT_ZMQ_PUB_PORT = 5557
 
-for import_root in (PROJECT_ROOT, MIA_AGENTS_ROOT):
+for import_root in (PROJECT_ROOT / "schemas" / "generated" / "python", MIA_AGENTS_ROOT):
     import_root_str = str(import_root)
     if import_root_str not in sys.path:
         sys.path.insert(0, import_root_str)

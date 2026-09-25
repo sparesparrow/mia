@@ -49,7 +49,7 @@
         "python.testing.pytestArgs": [
           "tests"
         ],
-        "cmake.buildDirectory": "${workspaceFolder}/platforms/cpp/build",
+        "cmake.buildDirectory": "${workspaceFolder}/build/cpp",
         "cmake.configureSettings": {
           "CMAKE_BUILD_TYPE": "Debug",
           "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"

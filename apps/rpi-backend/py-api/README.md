@@ -2,7 +2,7 @@
 
 > **Audience**: Backend developers, deployment engineers
 
-This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in ARCHITECTURE.md.
+This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in spec/architecture/README.md.
 
 ## Architecture
 
@@ -90,7 +90,7 @@ pip3 install -r requirements.txt
 Use the main deployment script:
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 ```
 
 ### Manual Service Setup

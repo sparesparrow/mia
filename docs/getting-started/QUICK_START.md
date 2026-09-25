@@ -129,7 +129,7 @@ python3 -c "
 import yaml
 from pathlib import Path
 
-config = yaml.safe_load(open('orchestrator-config.yaml'))
+config = yaml.safe_load(open('tools/orchestrator-config.yaml'))
 print(f'✅ Configuration loaded: {len(config.get(\"components\", []))} components')
 "
 ```
@@ -233,7 +233,7 @@ ls -la modules/
 ls -la platforms/
 
 # View configuration
-cat orchestrator-config.yaml
+cat tools/orchestrator-config.yaml
 
 # Check documentation
 ls -la docs/
@@ -262,8 +262,8 @@ ai-servis/
 
 ### Learn More
 
-1. **Read the Architecture** → [`docs/architecture/overview.md`](../architecture/overview.md)
-2. **Explore Modules** → [`docs/modules/`](../modules/)
+1. **Read the Architecture** → [`spec/architecture/overview.md`](../../spec/architecture/overview.md)
+2. **Read the Requirements** → [`spec/requirements/`](../../spec/requirements/)
 3. **Check API Docs** → [`docs/api/`](../api/)
 4. **Setup Development** → [`../DEVELOPMENT.md`](../../DEVELOPMENT.md)
 
@@ -289,13 +289,11 @@ docker compose -f infra/docker/docker-compose.dev.yml down
 pip install conan
 
 # Build hardware server
-./scripts/build-hardware-server.sh
+./tools/scripts/build-hardware-server.sh
 
-# Or manually
-cd platforms/cpp
-conan install .. --build missing
-cmake -S . -B build
-cmake --build build
+# Or manually (the configuration CI builds)
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF
+cmake --build build/cpp
 ```
 
 #### 3. Run Android App
@@ -313,7 +311,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ### Customize Configuration
 
-Edit `orchestrator-config.yaml` to customize:
+Edit `tools/orchestrator-config.yaml` to customize:
 
 ```yaml
 # Add your own component
@@ -356,7 +354,7 @@ pip install -r requirements.txt
 cd /path/to/ai-servis
 
 # Verify file exists
-ls orchestrator-config.yaml
+ls tools/orchestrator-config.yaml
 ```
 
 #### Issue 3: Import Errors
@@ -379,7 +377,7 @@ python3 -m test_orchestrator_simple
 **Solution**:
 ```bash
 # Make scripts executable
-chmod +x scripts/*.sh
+chmod +x tools/scripts/*.sh
 
 # Or run with python
 python3 script_name.py
@@ -387,7 +385,7 @@ python3 script_name.py
 
 ### Getting Help
 
-- **Documentation**: [`docs/`](../)
+- **Documentation**: [`docs/`](../../spec/)
 - **Troubleshooting Guide**: [`docs/troubleshooting.md`](../troubleshooting.md)
 - **GitHub Issues**: [Create an issue](https://github.com/sparesparrow/mia/issues)
 - **Discord**: [MIA Community](https://discord.gg/mia)
@@ -399,9 +397,9 @@ python3 script_name.py
 ### Beginner
 
 1. ✅ **Complete this Quick Start** ← You are here
-2. 📖 Read [Architecture Overview](../architecture/overview.md)
+2. 📖 Read [Architecture Overview](../../spec/architecture/overview.md)
 3. 🧪 Run more tests: `python3 test_orchestrator.py`
-4. 📝 Read [Module Documentation](../modules/)
+4. 📝 Read the [requirements](../../spec/requirements/)
 
 ### Intermediate
 
@@ -429,13 +427,13 @@ python3 test_orchestrator_simple.py
 python3 test_orchestrator.py
 
 # Check configuration
-python3 build_orchestrator.py orchestrator-config.yaml --help
+python3 tools/build_orchestrator.py tools/orchestrator-config.yaml --help
 
 # View logs (Docker)
 docker-compose logs -f [service-name]
 
 # Build C++ components
-./scripts/build-hardware-server.sh
+./tools/scripts/build-hardware-server.sh
 
 # Format code
 black .
@@ -450,12 +448,12 @@ mypy .
 
 | File | Purpose |
 |------|---------|
-| `orchestrator-config.yaml` | Main configuration |
+| `tools/orchestrator-config.yaml` | Main configuration |
 | `requirements.txt` | Python dependencies |
 | `requirements-minimal.txt` | Minimal dependencies |
 | `infra/docker/docker-compose.yml` | Canonical production-like Docker stack |
 | `test_orchestrator_simple.py` | Simple test suite |
-| `build_orchestrator.py` | Build automation |
+| `tools/build_orchestrator.py` | Build automation |
 
 ### Key Ports
 
@@ -485,13 +483,13 @@ You've successfully:
 Choose your path:
 
 **For Developers**:
-→ Start with [Module Development](../modules/README.md)
+→ Start with the [MCP modules](../../orchestration/mcp/modules/)
 
 **For DevOps**:
 → Continue to [Deployment Guide](../deployment/README.md)
 
 **For Researchers**:
-→ Explore [Architecture Deep Dive](../architecture/overview.md)
+→ Explore [Architecture Deep Dive](../../spec/architecture/overview.md)
 
 **For Contributors**:
 → Read [Contributing Guide](../../CONTRIBUTING.md) (coming soon)
@@ -501,9 +499,9 @@ Choose your path:
 ## 🔗 Quick Links
 
 - **Main README**: [README.md](../../README.md)
-- **Architecture**: [docs/architecture/](../architecture/)
+- **Architecture**: [docs/architecture/](../../spec/architecture/)
 - **API Docs**: [docs/api/](../api/)
-- **Modules**: [docs/modules/](../modules/)
+- **Requirements**: [spec/requirements/](../../spec/requirements/)
 - **Troubleshooting**: [docs/troubleshooting.md](../troubleshooting.md)
 - **GitHub**: [github.com/sparesparrow/mia](https://github.com/sparesparrow/mia)
 

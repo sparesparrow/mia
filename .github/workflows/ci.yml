@@ -7,44 +7,36 @@ on:
       - '.github/workflows/ci.yml'
       - '.tool-versions'
       - 'pytest.ini'
+      - '.coveragerc'
       - 'requirements*.txt'
+      - 'spec/**'
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
-      - 'conan-recipes/**'
       - 'infra/conan/**'
-      - 'Mia/**'
-      - 'mcp-cpp-bridge/**'
-      - 'modules/**'
+      - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'orchestration/**'
-      - 'platforms/**'
-      - 'rpi/**'
       - 'schemas/**'
-      - 'scripts/**'
-      - 'services/**'
+      - 'tools/scripts/**'
       - 'tests/**'
       - 'tools/**'
   pull_request:
-    branches: [main]
+    branches: [main, 'roadmap/**']
     paths:
       - '.github/workflows/ci.yml'
       - '.tool-versions'
       - 'pytest.ini'
+      - '.coveragerc'
       - 'requirements*.txt'
+      - 'spec/**'
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
-      - 'conan-recipes/**'
       - 'infra/conan/**'
-      - 'Mia/**'
-      - 'mcp-cpp-bridge/**'
-      - 'modules/**'
+      - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'orchestration/**'
-      - 'platforms/**'
-      - 'rpi/**'
       - 'schemas/**'
-      - 'scripts/**'
-      - 'services/**'
+      - 'tools/scripts/**'
       - 'tests/**'
       - 'tools/**'
 
@@ -79,34 +71,30 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'pytest.ini'
+              - '.coveragerc'
               - 'requirements*.txt'
+              - 'spec/**'
               - 'agents/**'
               - 'apps/rpi-backend/py-api/**'
               - 'apps/rpi-backend/shared/**'
-              - 'Mia/**'
-              - 'modules/**'
               - 'orchestration/**'
-              - 'rpi/**'
               - 'schemas/**'
-              - 'scripts/**'
-              - 'services/**'
+              - 'tools/scripts/**'
               - 'tests/**'
               - 'tools/**'
             schema:
               - '.github/workflows/ci.yml'
               - 'apps/rpi-backend/cpp-audio/core/webgrab.fbs'
-              - 'protos/**'
               - 'schemas/**'
               - 'schemas/generate.py'
-              - 'scripts/generate-schemas.sh'
+              - 'tools/scripts/generate-schemas.sh'
             cpp:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'apps/rpi-backend/cpp-audio/**'
-              - 'conan-recipes/**'
               - 'infra/conan/**'
-              - 'mcp-cpp-bridge/**'
-              - 'platforms/cpp/**'
+              - 'apps/rpi-backend/cpp-mcp-bridge/**'
+              - 'schemas/generated/cpp/**'
             esp32:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
@@ -128,7 +116,7 @@ jobs:
         run: |
           mkdir -p /tmp/fb-validate
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/mia.fbs
-          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs protos/vehicle.fbs
+          flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/vehicle.fbs
           flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
       - name: Detect schema drift
         run: |
@@ -137,7 +125,7 @@ jobs:
           drifted=0
           for gen in /tmp/fb-drift/Mia/*.py; do
             fname=$(basename "$gen")
-            committed="Mia/$fname"
+            committed="schemas/generated/python/Mia/$fname"
             if [ -f "$committed" ]; then
               if ! diff -q "$gen" "$committed" > /dev/null 2>&1; then
                 echo "DRIFT: $committed differs from regenerated output"
@@ -156,10 +144,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           # If schemas changed, check that contracts are also updated (or at least reviewed)
-          schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ protos/ Mia/ | wc -l)
-          contract_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- contracts/ | wc -l)
+          schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ | wc -l)
+          contract_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- spec/interfaces/ | wc -l)
           if [ "$schema_changed" -gt 0 ] && [ "$contract_changed" -eq 0 ]; then
-            echo "::warning::Schema files changed but contracts/ was not updated. Verify that contracts/events.md and contracts/topics.md still match."
+            echo "::warning::Schema files changed but spec/interfaces/ was not updated. Verify that spec/interfaces/events.md and spec/interfaces/topics.md still match."
           fi
 
   lint:
@@ -178,7 +166,7 @@ jobs:
       - name: flake8
         continue-on-error: true
         run: >
-          flake8 orchestration/ tests/ apps/rpi-backend/ agents/ services/ scripts/
+          flake8 orchestration/ tests/ apps/rpi-backend/ agents/ tools/
           --max-line-length=120
           --extend-ignore=E203,W503,W293,W291,E402,E302,E305,E501
           --per-file-ignores='tests/*:F401,F811'
@@ -187,7 +175,7 @@ jobs:
       - name: black --check
         run: >
           black --check --line-length 120
-          --exclude '/(\.git|\.venv|venv|build|apps/android|apps/esp32|platforms/cpp|Mia/Vehicle|web|\.backups|exported-assets)/'
+          --exclude '/(\.git|\.venv|venv|build|apps/android|apps/esp32|schemas/generated|web|\.backups|exported-assets)/'
           .
         continue-on-error: true
       - name: isort --check
@@ -212,7 +200,12 @@ jobs:
           python -m pip install --upgrade pip "setuptools<82" wheel
           python -m pip install -r requirements-ci.txt
       - name: Run tests
-        run: python -m pytest tests/ -m "not hardware" --tb=short -q
+        run: python -m pytest tests/ -m "not hardware" --tb=short -q --cov --req-report=req-report.json
+      - name: Check requirement traceability
+        run: python tools/ci/traceability.py check --pytest-report req-report.json
+      - name: Write traceability matrix
+        if: always()
+        run: python tools/ci/traceability.py matrix --pytest-report req-report.json --out build/traceability.md && cat build/traceability.md >> "$GITHUB_STEP_SUMMARY"
 
   cycle1-replay:
     if: needs.changes.outputs.python == 'true'

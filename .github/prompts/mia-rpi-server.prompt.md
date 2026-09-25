@@ -43,4 +43,4 @@ uvicorn api.main:app --host 0.0.0.0 --port 8000  # dev server
 2. Respect ZMQ message format: `{request_id, client_id, worker_type, command, data}`
 3. Don't break service startup order
 4. Match `{"status", "message"}` response shape in all workers
-5. Reference `config/paths.json` for environment-dependent paths
+5. Reference `apps/rpi-backend/config/paths.json` for environment-dependent paths

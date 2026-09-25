@@ -238,7 +238,7 @@ def _format_devices(data: dict) -> str:
 def _format_features(data: dict) -> str:
     total = data.get("total", 0)
     summary = data.get("summary", {})
-    parts = [f"{v} {k.lower()}" for k, v in summary.items()]
+    parts = [f"{v} {k.lower().replace('_', ' ')}" for k, v in summary.items()]
     return f"MIA has {total} features: {', '.join(parts)}."
 
 

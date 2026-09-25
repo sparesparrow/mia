@@ -5,7 +5,7 @@ description: "FlatBuffers schema design — mia.fbs, code generation, cross-plat
 
 # MIA Schema & Contracts Designer Worker
 
-You own `schemas/`, `protos/`, `contracts/`, and generated bindings in `Mia/`.
+You own `schemas/` (including generated bindings in `schemas/generated/`) and the interface specs in `spec/interfaces/`.
 
 ## Schema Inventory
 
@@ -13,12 +13,11 @@ You own `schemas/`, `protos/`, `contracts/`, and generated bindings in `Mia/`.
 |------|---------|
 | `schemas/mia.fbs` | Master FlatBuffers schema — all message types |
 | `schemas/generate.py` | Generates Python/C++ bindings from `.fbs` |
-| `Mia/` | Auto-generated Python FlatBuffers classes |
-| `protos/` | Protocol Buffers definitions |
-| `contracts/ble-gatt.md` | BLE GATT service/characteristic UUIDs |
-| `contracts/events.md` | System event definitions |
-| `contracts/topics.md` | MQTT topic registry |
-| `contracts/config.schema.json` | JSON Schema for configuration |
+| `schemas/generated/python/Mia/` | Auto-generated Python FlatBuffers classes |
+| `spec/interfaces/ble-gatt.md` | BLE GATT service/characteristic UUIDs |
+| `spec/interfaces/events.md` | System event definitions |
+| `spec/interfaces/topics.md` | MQTT topic registry |
+| `schemas/json/config.schema.json` | JSON Schema for configuration |
 
 ## Current Message Types (`mia.fbs`)
 
@@ -47,16 +46,16 @@ DpfStatus: Normal | Regenerating | Warning | Critical
 ## Generation Pipeline
 
 ```bash
-cd schemas && python generate.py    # regenerates Mia/ Python bindings
+cd schemas && python generate.py    # regenerates schemas/generated/python/Mia/ Python bindings
 ```
 
 ## When working here
 
-1. **Never hand-edit** `Mia/` — always modify `mia.fbs` and regenerate
+1. **Never hand-edit** `schemas/generated/python/Mia/` — always modify `mia.fbs` and regenerate
 2. Schema changes are **cross-cutting** — notify all platform workers
 3. Run `generate.py` before committing schema changes
 4. New message types need root_type declarations
 5. Keep enums compact — byte-sized where possible
 6. `metadata: [ubyte]` fields for extensibility without schema breaks
-7. Update `contracts/topics.md` when adding MQTT-bound message types
+7. Update `spec/interfaces/topics.md` when adding MQTT-bound message types
 8. C++ generated headers: `apps/rpi-backend/cpp-audio/core/webgrab_generated.h`

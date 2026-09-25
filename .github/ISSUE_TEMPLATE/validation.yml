@@ -1,0 +1,42 @@
+name: Validation
+description: Prove a requirement on the bench, on target hardware or in the vehicle.
+labels: ["backlog:validation"]
+body:
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirements
+      description: REQ IDs whose evidence state this would raise.
+    validations:
+      required: true
+  - type: dropdown
+    id: state
+    attributes:
+      label: Target evidence state
+      options:
+        - bench_tested
+        - hardware_tested
+        - vehicle_installed
+    validations:
+      required: true
+  - type: textarea
+    id: procedure
+    attributes:
+      label: Setup and procedure
+      description: Hardware, firmware build flags, wiring, steps.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: What must be observed, and the record to commit in spec/evidence/<REQ-ID>/<date>-<state>.md.
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety
+      description: What must be unable to transmit or actuate, and how it is checked (ADR-0006).
+    validations:
+      required: true

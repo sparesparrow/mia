@@ -14,9 +14,9 @@ Tohle není přání, ale stav zdrojáků. Piny jsou vyčtené z kódu, ne z dok
 | --- | --- | --- | --- |
 | OBD přes TWAI (ESP-IDF) | `apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c` | CAN (TWAI), MQTT | RX `GPIO16`, TX `GPIO17`, 500 kbit/s |
 | Telemetrie po UART (ESP-IDF) | `apps/esp32/main/main.c` | UART0 → Pi, JSON po řádcích | LED `GPIO2`, tlačítko `GPIO0`, `ADC1_CH0` (= GPIO36), 115200 Bd |
-| ELM327 emulátor (Arduino) | `firmware/esp32_obd/src/main.cpp` | 2× UART | `Serial` 38400 Bd (skener), `Serial2` 115200 Bd (Pi) |
+| ELM327 emulátor (Arduino) | `apps/esp32/elm327-emulator/src/main.cpp` | 2× UART | `Serial` 38400 Bd (skener), `Serial2` 115200 Bd (Pi) |
 | WiFi most (Arduino) | `apps/esp32/MIAWiFiBridge/MIAWiFiBridge.ino` | WiFi AP + TCP | TCP port 8888, SSID `MIA-Bridge` |
-| Protokol MIA | `arduino/MIAProtocol/` | rámce po sériové lince | — |
+| Protokol MIA | `apps/arduino/MIAProtocol/` | rámce po sériové lince | — |
 | Protistrana na Pi | `apps/rpi-backend/py-api/hardware/serial_bridge.py` | UART → ZeroMQ `:5556` | výchozí `/dev/ttyUSB0`, 115200 Bd |
 
 !!! warning "Sestavení v CI nepokrývá všechno"

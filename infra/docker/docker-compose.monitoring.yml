@@ -16,8 +16,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ../../containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ../../containers/prometheus/rules:/etc/prometheus/rules
+      - ../containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../containers/prometheus/rules:/etc/prometheus/rules
       - ../../volumes/prometheus-data:/prometheus
     networks:
       - ai-servis-monitoring
@@ -98,7 +98,7 @@ services:
     ports:
       - "9093:9093"
     volumes:
-      - ../../containers/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ../containers/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
       - ../../volumes/alertmanager-data:/alertmanager
     networks:
       - ai-servis-monitoring
@@ -123,7 +123,7 @@ services:
     restart: unless-stopped
     command: -config.file=/etc/promtail/config.yml
     volumes:
-      - ../../containers/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - ../containers/promtail/promtail-config.yml:/etc/promtail/config.yml
       - ../../logs:/var/log/ai-servis:ro
       - /var/log:/var/log/host:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -160,7 +160,7 @@ services:
   # MQTT Exporter - MQTT Metrics
   mqtt-exporter:
     build:
-      context: ../../containers/mqtt-exporter
+      context: ../containers/mqtt-exporter
       dockerfile: Dockerfile
     container_name: ai-servis-mqtt-exporter
     restart: unless-stopped
@@ -188,7 +188,7 @@ services:
     ports:
       - "9115:9115"
     volumes:
-      - ../../containers/blackbox-exporter/config.yml:/etc/blackbox_exporter/config.yml
+      - ../containers/blackbox-exporter/config.yml:/etc/blackbox_exporter/config.yml
     networks:
       - ai-servis-monitoring
       - ai-servis-dev-network
@@ -236,8 +236,8 @@ services:
     container_name: ai-servis-logstash
     restart: unless-stopped
     volumes:
-      - ../../containers/logstash/pipeline:/usr/share/logstash/pipeline
-      - ../../containers/logstash/config:/usr/share/logstash/config
+      - ../containers/logstash/pipeline:/usr/share/logstash/pipeline
+      - ../containers/logstash/config:/usr/share/logstash/config
       - ../../logs:/var/log/ai-servis:ro
     ports:
       - "5044:5044"

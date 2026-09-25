@@ -130,7 +130,7 @@ cmake "${GENERATOR_ARGS[@]}" \
     "-DCMAKE_BUILD_TYPE=$BUILD_TYPE" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     "${CONAN_TOOLCHAIN_ARGS[@]}" \
-    ../platforms/cpp/core
+    ../schemas/generated/cpp
 
 # Build
 echo ""

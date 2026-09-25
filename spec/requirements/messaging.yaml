@@ -1,0 +1,86 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: messaging
+title: Messaging and API gateway
+description: ZeroMQ control plane, telemetry fan-out, REST/WebSocket gateway, sessions and device registry.
+requirements:
+- id: REQ-NET-001
+  title: ZeroMQ control-plane broker
+  statement: A ROUTER-DEALER broker on port 5555 shall register workers and route requests and responses between
+    clients and workers.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A DEALER client reaches the broker in a hardware-free startup
+  implemented_in:
+  - apps/rpi-backend/shared/messaging/broker.py
+  - apps/rpi-backend/py-api/core/messaging/client.py
+  services:
+  - zmq-broker
+  decisions:
+  - ADR-0003
+  notes: apps/rpi-backend/py-api/core/messaging/broker.py duplicates the deployed broker; tracked as a follow-up.
+- id: REQ-NET-002
+  title: REST gateway
+  statement: A FastAPI gateway on port 8000 shall expose device, GPIO, telemetry, LED and session endpoints with
+    response shapes the Android client relies on.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - /devices, /status, /telemetry, /command and /sessions keep the contracted response shapes
+  - The API imports its generated bindings with the PYTHONPATH its systemd unit sets
+  implemented_in:
+  - apps/rpi-backend/py-api/api/main.py
+  - apps/rpi-backend/py-api/api/server.py
+  services:
+  - mia-api
+  decisions:
+  - ADR-0005
+- id: REQ-NET-003
+  title: Real-time WebSocket telemetry
+  statement: The gateway shall stream telemetry and LED state on /ws and /ws/telemetry at 10 Hz.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A /ws/telemetry message carries the telemetry cache, LED state and latest vehicle envelope
+  implemented_in:
+  - apps/rpi-backend/py-api/api/main.py
+  services:
+  - mia-api
+  decisions:
+  - ADR-0005
+- id: REQ-NET-004
+  title: BLE advertising
+  statement: The Pi shall advertise itself over BLE as a MIA OBD-II adapter via BlueZ D-Bus.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/ble_advertiser.py
+  services:
+  - mia-ble-advertiser
+- id: REQ-NET-005
+  title: BLE OBD GATT service
+  statement: The Pi shall bridge Android OBD commands received over the Nordic UART Service to ZeroMQ.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/ble_obd_service.py
+  services:
+  - mia-ble-obd
+- id: REQ-NET-006
+  title: Multi-client sessions
+  statement: The gateway shall keep sessions for multiple clients and let a session move between clients through
+    handoff tokens that expire after 5 minutes.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Sessions can be created, read, updated, handed off, resumed and deleted
+  implemented_in:
+  - apps/rpi-backend/py-api/api/sessions.py
+  services:
+  - mia-api
+- id: REQ-NET-007
+  title: Device registry
+  statement: The gateway shall keep a persistent registry of devices with profiles, health state and auto-discovery.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Devices register, update health and persist across restarts
+  implemented_in:
+  - apps/rpi-backend/py-api/core/registry/device_registry.py
+  - apps/rpi-backend/py-api/core/registry/device_profile.py
+  services:
+  - mia-api
+  notes: apps/rpi-backend/shared/registry/ duplicates this code; tracked as a follow-up.

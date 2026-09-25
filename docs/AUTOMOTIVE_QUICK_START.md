@@ -135,6 +135,6 @@ For additional help:
 
 ## Next Steps
 
-- [Production Deployment Guide](./PRODUCTION_DEPLOYMENT.md)
-- [API Documentation](./API_DOCUMENTATION.md)
+- [Production Deployment Guide](PRODUCTION_DEPLOYMENT.md)
+- [API Documentation](API_DOCUMENTATION.md)
 - [Troubleshooting Guide](./TROUBLESHOOTING.md)

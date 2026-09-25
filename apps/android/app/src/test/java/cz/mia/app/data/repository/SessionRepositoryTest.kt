@@ -1,5 +1,7 @@
 package cz.mia.app.data.repository
 
+// @req REQ-AND-015
+
 import cz.mia.app.data.remote.api.SessionApi
 import cz.mia.app.data.remote.dto.HandoffResponse
 import cz.mia.app.data.remote.dto.SessionDto

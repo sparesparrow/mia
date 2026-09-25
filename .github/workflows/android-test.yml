@@ -5,17 +5,17 @@ on:
     branches: [main, develop]
     paths:
       - 'apps/android/**'
-      - 'contracts/**'
-      - 'skills/android-adb-test/**'
-      - 'scripts/test-orchestrator.sh'
+      - 'spec/interfaces/**'
+      - '.claude/skills/android-adb-test/**'
+      - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, 'roadmap/**']
     paths:
       - 'apps/android/**'
-      - 'contracts/**'
-      - 'skills/android-adb-test/**'
-      - 'scripts/test-orchestrator.sh'
+      - 'spec/interfaces/**'
+      - '.claude/skills/android-adb-test/**'
+      - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
 
 permissions:
@@ -74,7 +74,7 @@ jobs:
         run: |
           cd apps/android
           set -o pipefail
-          bash ../../skills/android-adb-test/scripts/android-adb-test.sh build 2>&1 | tail -20
+          bash ../../.claude/skills/android-adb-test/scripts/android-adb-test.sh build 2>&1 | tail -20
 
       - name: Upload Build Artifacts
         if: always()
@@ -141,8 +141,8 @@ jobs:
           # first line then passes a literal "\" and the rest never runs.
           # `test` does not install the app, so deploy the downloaded APK first.
           script: |
-            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" deploy --device emulator-5554
-            bash "$GITHUB_WORKSPACE/skills/android-adb-test/scripts/android-adb-test.sh" test --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
+            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" deploy --device emulator-5554
+            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" test --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
 
       - name: Parse Test Results
         if: always()

@@ -396,7 +396,7 @@ console.log(await setResponse.json());
 
 The API acts as a bridge between HTTP/REST and the ZeroMQ messaging system. All commands are forwarded to the ZeroMQ broker, which routes them to appropriate workers.
 
-See [ZeroMQ Message Formats](./ZEROMQ_MESSAGE_FORMATS.md) for details on the underlying message protocol.
+See [ZeroMQ Message Formats](../spec/interfaces/zeromq-message-formats.md) for details on the underlying message protocol.
 
 ## Versioning
 

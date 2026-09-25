@@ -9,7 +9,7 @@ MIA je modulární Car AI systém kombinující ANPR, OBD diagnostiku, hlasovéh
  - Pi Gateway (Standalone): Raspberry Pi hostuje systém; Android volitelný. Viz [instalace](install/pi-gateway.md).
 
 ## Architektura
-- Přehled komponent a datových toků: [System Overview](architecture/overview.md)
+- Přehled komponent a datových toků: [System Overview](../spec/architecture/overview.md)
 - Komunikace: BLE GATT, MQTT topics, mDNS
 
 ## Dráty a napájení

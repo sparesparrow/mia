@@ -3,7 +3,7 @@ description: "Use when working on static web pages, generated customer pages, vo
 name: "Web Pages Guidance"
 applyTo:
   - "web/**"
-  - "scripts/build_variant.py"
+  - "tools/scripts/build_variant.py"
 ---
 # Web Pages Guidance
 

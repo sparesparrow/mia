@@ -1,8 +1,8 @@
-site_name: AI-SERVIS Documentation
-site_description: Modular Car AI Server — Android-first with ESP32 and optional Pi gateway
-repo_url: https://github.com/sparesparrow/mia-universal
-repo_name: sparesparrow/mia-universal
-site_url: https://sparesparrow.github.io/mia-universal/
+site_name: MIA Documentation
+site_description: Vehicle telemetry and IoT control on Raspberry Pi, ESP32 and Android
+repo_url: https://github.com/sparesparrow/mia
+repo_name: sparesparrow/mia
+site_url: https://sparesparrow.github.io/mia/
 
 theme:
   name: material
@@ -27,8 +27,8 @@ theme:
 # ─── Validation ───────────────────────────────────────────────────────────────
 # broken relative links in legacy docs point to files that don't exist yet;
 # downgrade those to info so --strict doesn't fail the build.
-# omitted_files: info  — two misc/ files with special-char names are excluded from
-# nav because YAML cannot reliably represent their filenames; they are still built.
+# docs/spec is a symlink to ../spec, so the requirements, decisions, architecture and interface
+# specs are published with the guides without being copied.
 validation:
   nav:
     omitted_files: info      # files in docs/ not listed in nav → info, not warn
@@ -46,16 +46,38 @@ nav:
     - Quick Start: getting-started/QUICK_START.md
     - Android Device Setup: android-device-setup.md
 
-  - Architecture:
-    - System Overview: architecture/overview.md
-    - Diagrams: architecture/diagrams.md
-    - Hybrid Messaging: architecture/hybrid-messaging.md
-    - Lean Architecture: architecture/lean-architecture.md
-    - FlatBuffers Schema: architecture/flatbuffers-schema-guide.md
-    - Voice Knowledge Integration: architecture/voice-knowledge-mia-integration.md
-    - Voice Knowledge Implementation: architecture/voice-knowledge-system-implementation-guide.md
-    - Voice Knowledge System: architecture/VOICE_KNOWLEDGE_SYSTEM_README.md
-    - Architecture Index: architecture/README.md
+  - Specification:
+    - How MIA is specified: spec/README.md
+    - Decisions (ADRs):
+      - Index: spec/decisions/README.md
+      - 0001 Decisions and backlog in issues: spec/decisions/0001-record-decisions-and-keep-the-backlog-in-issues.md
+      - 0002 Requirements, code and tests: spec/decisions/0002-separate-requirements-code-and-tests.md
+      - 0003 ZeroMQ control plane: spec/decisions/0003-zeromq-control-plane-and-telemetry.md
+      - 0004 FlatBuffers wire format: spec/decisions/0004-flatbuffers-wire-format.md
+      - 0005 Raspberry Pi edge: spec/decisions/0005-raspberry-pi-edge-with-fastapi-gateway.md
+      - 0006 Passive vehicle access: spec/decisions/0006-passive-vehicle-access-by-default.md
+      - 0007 Simulation fallback: spec/decisions/0007-simulation-fallback-for-hardware.md
+      - 0008 Audi A4 8H primary: spec/decisions/0008-audi-a4-8h-primary-citroen-secondary.md
+      - 0009 Telemetry envelope: spec/decisions/0009-canonical-vehicle-telemetry-envelope.md
+      - 0010 Evidence-based status: spec/decisions/0010-evidence-based-requirement-status.md
+    - Architecture:
+      - Architecture Index: spec/architecture/README.md
+      - System Overview: spec/architecture/overview.md
+      - Diagrams: spec/architecture/diagrams.md
+      - Hybrid Messaging: spec/architecture/hybrid-messaging.md
+      - Lean Architecture: spec/architecture/lean-architecture.md
+      - FlatBuffers Schema: spec/architecture/flatbuffers-schema-guide.md
+      - Cycle 1 Passive Telemetry: spec/architecture/cycle1-passive-telemetry.md
+      - Voice Command Chaining: spec/architecture/voice-command-chaining-design.md
+      - Voice Knowledge Integration: spec/architecture/voice-knowledge-mia-integration.md
+      - Voice Knowledge Implementation: spec/architecture/voice-knowledge-system-implementation-guide.md
+      - Voice Knowledge System: spec/architecture/VOICE_KNOWLEDGE_SYSTEM_README.md
+    - Interfaces:
+      - MQTT Topics: spec/interfaces/topics.md
+      - Events: spec/interfaces/events.md
+      - BLE GATT: spec/interfaces/ble-gatt.md
+      - ZeroMQ Message Formats: spec/interfaces/zeromq-message-formats.md
+    - Evidence Records: spec/evidence/README.md
 
   - Install:
     - Phone Edition: install/phone.md
@@ -72,32 +94,16 @@ nav:
     - Production Deployment: PRODUCTION_DEPLOYMENT.md
     - Raspberry Pi Setup: RASPBERRY_PI_SETUP.md
 
+  - API & Contracts:
+    - Overview: api/overview.md
+    - API Reference: api/mia-api-reference.md
+    - Changelog: api/changelog.md
+
   - Automotive:
     - Quick Start: AUTOMOTIVE_QUICK_START.md
     - Citroën Integration: automotive/citroen-integration.md
     - Citroën Testing Checklist: automotive/citroen-testing-checklist.md
     - OBD Simulator Automation: OBD_SIMULATOR_AUTOMATION.md
-    - ZeroMQ Message Formats: ZEROMQ_MESSAGE_FORMATS.md
-
-  - Modules:
-    - AI Audio Assistant: modules/ai-audio-assistant.md
-    - AI Android Controller: modules/ai-android-controller.md
-    - AI iOS Controller: modules/ai-ios-controller.md
-    - AI Linux Controller: modules/ai-linux-controller.md
-    - AI macOS Controller: modules/ai-macos-controller.md
-    - AI Windows Controller: modules/ai-windows-controller.md
-    - AI RTOS Controller: modules/ai-rtos-controller.md
-    - AI Communications: modules/ai-communications.md
-    - AI Home Automation: modules/ai-home-automation.md
-    - AI Maps & Navigation: modules/ai-maps-navigation.md
-    - AI Security & ANPR: modules/ai-security-anpr.md
-
-  - API & Contracts:
-    - Overview: api/overview.md
-    - Changelog: api/changelog.md
-  - Automotive:
-    - Quick Start: AUTOMOTIVE_QUICK_START.md
-    - Citroen Integration: automotive/citroen-integration.md
     - Audi on Raspberry Pi: automotive/raspberry-pi-audi-integration.md
     - Audi A4 8H Interface Integration: automotive/audi-a4-8h-interface-integration.md
     - Zapojení ESP32 modulů (CS): cs/automotive/zapojeni-esp32-moduly.md

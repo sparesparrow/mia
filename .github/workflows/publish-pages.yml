@@ -5,13 +5,15 @@ name: Publish Web Pages
     branches: [main]
     paths:
       - 'docs/**'
+      - 'spec/**'
       - 'mkdocs.yml'
       - 'web/**'
       - '.github/workflows/publish-pages.yml'
   pull_request:
-    branches: [main]
+    branches: [main, 'roadmap/**']
     paths:
       - 'docs/**'
+      - 'spec/**'
       - 'mkdocs.yml'
       - 'web/**'
       - '.github/workflows/publish-pages.yml'

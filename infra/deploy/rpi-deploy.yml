@@ -26,13 +26,13 @@ deployment:
       
     - name: "arduino-test"
       type: "python-script"
-      source: "modules/hardware-bridge/test_arduino_led.py"
+      source: "modules/hardware-bridge/arduino_led_probe.py"
       destination: "modules/hardware-bridge/"
       
     - name: "arduino-code"
       type: "arduino-sketch"
-      source: "arduino/led_strip_controller/"
-      destination: "arduino/led_strip_controller/"
+      source: "apps/arduino/led_strip_controller/"
+      destination: "apps/arduino/led_strip_controller/"
       
     - name: "requirements"
       type: "requirements-file"

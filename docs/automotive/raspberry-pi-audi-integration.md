@@ -130,4 +130,4 @@ OBD covers the powertrain domain only. Door, lock, window, convertible-top, head
 relay outputs and vehicle power state all live outside it. The survey of those physical interfaces on the
 prototype car, with confidence levels, verification steps and a phased integration plan, is in
 [`audi-a4-8h-interface-integration.md`](audi-a4-8h-interface-integration.md), with a machine-readable
-inventory in [`../../config/vehicles/audi_a4_8h_cabriolet.yaml`](../../config/vehicles/audi_a4_8h_cabriolet.yaml).
+inventory in [`../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml`](../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml).

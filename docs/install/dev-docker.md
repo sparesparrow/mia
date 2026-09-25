@@ -9,7 +9,7 @@ This setup runs a local MQTT broker and two simulators:
 
 ### Start
 ```bash
-cd edge-compat/pi-gateway
+cd infra/edge/pi-gateway
 VIN=DEVVIN docker compose -f docker-compose.dev.yml up -d --build
 # or use helper scripts
 bash scripts/dev-up.sh
