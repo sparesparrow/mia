@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiskové podklady MIA</title>
+    <meta name="description" content="Fakta, stav projektu a obrázky pro psaní o MIA.">
+    <link rel="canonical" href="https://sparesparrow.github.io/mia/press/">
+    <link rel="alternate" hreflang="cs" href="https://sparesparrow.github.io/mia/press/">
+    <link rel="alternate" hreflang="en" href="https://sparesparrow.github.io/mia/press/en/">
+    <link rel="stylesheet" href="../business/styles.css">
+    <link rel="stylesheet" href="../site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-press">
+    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>Prototyp ve vývoji. MIA zatím není produkt na prodej ani zařízení certifikované pro provoz.</p>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="../" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">Tiskové podklady MIA</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#facts">Základní fakta</a>
+                <a href="#images">Obrázky</a>
+                <a href="#site-footer">Všechny stránky</a>
+                <a href="en/" class="lang-link" hreflang="en" lang="en">English</a>
+                <a href="#contact" class="cta-btn">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="press-section">
+        <div class="container">
+            <h1>Tiskové podklady MIA</h1>
+            <p class="hero-subtitle">MIA je otevřený prototyp, který čte telemetrii z auta, provozuje hlasového asistenta přímo v autě na Raspberry Pi a spolupracuje s aplikací pro Android. Prvním prototypovým vozem je Audi A4 Cabriolet (8H) z roku 2004.</p>
+        </div>
+    </section>
+
+    <section class="press-section" id="facts">
+        <div class="container">
+            <h2>Základní fakta</h2>
+            <table class="press-facts">
+                <tbody>
+                    <tr><th scope="row">Název</th><td>MIA (dříve pod názvem AI-SERVIS)</td></tr>
+                    <tr><th scope="row">Fáze</th><td>Prototyp. Ověřeno automatickými testy v CI a v simulaci. Ověření na stole, na hardwaru ani ve voze zatím nemá záznam.</td></tr>
+                    <tr><th scope="row">Hardware</th><td>Raspberry Pi 4B, mikrokontroléry ESP32, telefon s Androidem</td></tr>
+                    <tr><th scope="row">Přístup k vozidlu</th><td>Ve výchozím stavu jen čtení. MIA poslouchá OBD-II a CAN a do auta neposílá příkazy.</td></tr>
+                    <tr><th scope="row">Cena a dostupnost</th><td>Není na prodej. Bez ceníku. Pilotní uživatelé a partneři jsou vítáni.</td></tr>
+                    <tr><th scope="row">Licence</th><td>MIT, zdrojový kód na GitHubu</td></tr>
+                </tbody>
+            </table>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">Stav ověření každého požadavku</a></p>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>Co funguje dnes</h2>
+            <ul>
+                <li><strong>Telemetrie OBD-II.</strong> Otáčky, teplota chladicí kapaliny, napětí baterie a stav zapalování z digitálního dvojčete ELM327 a pasivního záznamu CAN na ESP32.</li>
+                <li><strong>Diagnostika Audi jen pro čtení.</strong> Diagnostický most VAG/Audi, který pouze čte. MIA ve výchozím stavu na sběrnici vozidla nezapisuje.</li>
+                <li><strong>Rozpoznávání SPZ.</strong> Rozpoznávání SPZ v aplikaci pro Android a kontrola dálniční známky.</li>
+                <li><strong>Hlasové ovládání.</strong> Zpracování hlasových příkazů na Pi a mluvená zpětná vazba v aplikaci pro Android.</li>
+                <li><strong>Aplikace pro Android.</strong> Párování přes BLE, živá karta telemetrie, záznam z kamery a místní pravidla.</li>
+                <li><strong>Brána na Raspberry Pi.</strong> REST a WebSocket API, zprávy přes ZeroMQ a služby systemd, se simulací tam, kde hardware chybí.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>Dva hlasy</h2>
+            <p>Úvodní stránka je záměrně provokativní „gonzo&quot; manifest. Stránky pro jednotlivé skupiny a tyto podklady popisují projekt věcně. Fakta citujte odsud.</p>
+            <h2 style="margin-top: 2rem;">Soukromí</h2>
+            <p>Rozpoznávání SPZ a záznam z kamery zpracovávají osobní údaje. Kdo MIA nasazuje, odpovídá za posouzení vlivu na ochranu osobních údajů. Dokumentace obsahuje šablonu DPIA. <a href="../docs/privacy/dpia-template/">Šablona DPIA</a></p>
+        </div>
+    </section>
+
+    <section class="press-section" id="images">
+        <div class="container">
+            <h2>Obrázky</h2>
+            <p>Ilustrační obrázky vytvořené AI. Některé ještě nesou starý název AI-SERVIS. Volně k použití při psaní o MIA.</p>
+            <div class="press-images">
+                <a href="../assets/site/telemetry-flow.jpg" download><img src="../assets/site/telemetry-flow.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/pi-wiring.jpg" download><img src="../assets/site/pi-wiring.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/business.jpg" download><img src="../assets/site/business.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/family.jpg" download><img src="../assets/site/family.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/hero-dashboard.jpg" download><img src="../assets/site/hero-dashboard.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/investigator.jpg" download><img src="../assets/site/investigator.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/mobile-dj.jpg" download><img src="../assets/site/mobile-dj.jpg" alt="" loading="lazy"></a>
+                <a href="../assets/site/command-center.jpg" download><img src="../assets/site/command-center.jpg" alt="" loading="lazy"></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Kontakt</h2>
+                <p>Založte issue na GitHubu. Odpovídáme veřejně tam.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/sparesparrow/mia/issues/new?title=Press%20enquiry" class="btn btn-primary large">Napsat přes GitHub</a>
+                    <a href="../docs/" class="btn btn-secondary large">Číst dokumentaci</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>Otevřený prototyp telemetrie a hlasového asistenta do auta</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>Pro zákazníky</h4><ul><li><a href="../business/">Firmy a flotily</a></li><li><a href="../family/">Rodiny</a></li><li><a href="../musicians/">Hudebníci</a></li><li><a href="../journalists/">Novináři</a></li></ul></div>
+                    <div class="footer-column"><h4>Pro odborníky</h4><ul><li><a href="../docs/for/developers/">Vývojáři</a></li><li><a href="../docs/for/mechanics/">Automechanici a montáž</a></li><li><a href="../docs/for/testers/">Testeři</a></li><li><a href="../press/">Média a marketing</a></li></ul></div>
+                    <div class="footer-column"><h4>Projekt</h4><ul><li><a href="../">Manifest</a></li><li><a href="../docs/">Dokumentace</a></li><li><a href="https://github.com/sparesparrow/mia">Zdrojový kód</a></li></ul></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 projekt MIA. Licence MIT.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

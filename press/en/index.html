@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA press kit</title>
+    <meta name="description" content="Facts, status and images for writing about MIA.">
+    <link rel="canonical" href="https://sparesparrow.github.io/mia/press/en/">
+    <link rel="alternate" hreflang="cs" href="https://sparesparrow.github.io/mia/press/">
+    <link rel="alternate" hreflang="en" href="https://sparesparrow.github.io/mia/press/en/">
+    <link rel="stylesheet" href="../../business/styles.css">
+    <link rel="stylesheet" href="../../site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-press">
+    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>Prototype in development. MIA is not a product for sale and is not certified for road use.</p>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="../../en/" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">MIA press kit</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#facts">Fact sheet</a>
+                <a href="#images">Images</a>
+                <a href="#site-footer">All pages</a>
+                <a href="../" class="lang-link" hreflang="cs" lang="cs">Česky</a>
+                <a href="#contact" class="cta-btn">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="press-section">
+        <div class="container">
+            <h1>MIA press kit</h1>
+            <p class="hero-subtitle">MIA is an open prototype that reads telemetry from a car, runs a voice assistant at the edge on a Raspberry Pi and pairs with an Android app. The first prototype vehicle is a 2004 Audi A4 Cabriolet (8H).</p>
+        </div>
+    </section>
+
+    <section class="press-section" id="facts">
+        <div class="container">
+            <h2>Fact sheet</h2>
+            <table class="press-facts">
+                <tbody>
+                    <tr><th scope="row">Name</th><td>MIA (the project was previously called AI-SERVIS)</td></tr>
+                    <tr><th scope="row">Stage</th><td>Prototype. Checked by automated tests in CI and in simulation. No bench, hardware or in-vehicle validation is recorded yet.</td></tr>
+                    <tr><th scope="row">Hardware</th><td>Raspberry Pi 4B, ESP32 microcontrollers, an Android phone</td></tr>
+                    <tr><th scope="row">Vehicle access</th><td>Read-only by default. MIA listens to OBD-II and CAN and does not send commands to the car.</td></tr>
+                    <tr><th scope="row">Price and availability</th><td>Not for sale. No price list. Pilot users and partners are welcome.</td></tr>
+                    <tr><th scope="row">Licence</th><td>MIT, source code on GitHub</td></tr>
+                </tbody>
+            </table>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">Evidence state of every requirement</a></p>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>What works today</h2>
+            <ul>
+                <li><strong>OBD-II telemetry.</strong> Engine speed, coolant temperature, battery voltage and ignition state, from an ELM327 digital twin and passive CAN capture on ESP32.</li>
+                <li><strong>Read-only Audi diagnostics.</strong> A VAG/Audi diagnostics bridge that only reads. MIA does not write to the vehicle bus by default.</li>
+                <li><strong>Number plate recognition.</strong> Plate recognition in the Android app, with a Czech motorway vignette check.</li>
+                <li><strong>Voice commands.</strong> Voice command handling on the Pi and spoken feedback in the Android app.</li>
+                <li><strong>Android companion app.</strong> BLE pairing, a live telemetry card, dashcam recording and a local rules engine.</li>
+                <li><strong>Raspberry Pi gateway.</strong> REST and WebSocket API, ZeroMQ messaging and systemd services, with simulation fallbacks when hardware is absent.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>Two voices</h2>
+            <p>The homepage is a deliberately provocative Czech &quot;gonzo&quot; manifesto. The audience pages and this press kit describe the project plainly. Quote facts from here.</p>
+            <h2 style="margin-top: 2rem;">Privacy</h2>
+            <p>Number plate recognition and dashcam recording process personal data. Anyone deploying MIA is responsible for a data protection impact assessment. The documentation includes a DPIA template. <a href="../../docs/privacy/dpia-template/">DPIA template</a></p>
+        </div>
+    </section>
+
+    <section class="press-section" id="images">
+        <div class="container">
+            <h2>Images</h2>
+            <p>Illustrative images, AI-generated. Some still show the old AI-SERVIS name. Free to use when writing about MIA.</p>
+            <div class="press-images">
+                <a href="../../assets/site/telemetry-flow.jpg" download><img src="../../assets/site/telemetry-flow.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/pi-wiring.jpg" download><img src="../../assets/site/pi-wiring.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/business.jpg" download><img src="../../assets/site/business.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/family.jpg" download><img src="../../assets/site/family.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/hero-dashboard.jpg" download><img src="../../assets/site/hero-dashboard.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/investigator.jpg" download><img src="../../assets/site/investigator.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/mobile-dj.jpg" download><img src="../../assets/site/mobile-dj.jpg" alt="" loading="lazy"></a>
+                <a href="../../assets/site/command-center.jpg" download><img src="../../assets/site/command-center.jpg" alt="" loading="lazy"></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Contact</h2>
+                <p>Open an issue on GitHub. We answer there in public.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/sparesparrow/mia/issues/new?title=Press%20enquiry" class="btn btn-primary large">Contact via GitHub</a>
+                    <a href="../../docs/" class="btn btn-secondary large">Read the documentation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>Open prototype of in-car telemetry and a voice assistant</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>For customers</h4><ul><li><a href="../../business/en/">Business &amp; fleets</a></li><li><a href="../../family/en/">Families</a></li><li><a href="../../musicians/en/">Musicians</a></li><li><a href="../../journalists/en/">Journalists</a></li></ul></div>
+                    <div class="footer-column"><h4>For professionals</h4><ul><li><a href="../../docs/for/developers/">Developers</a></li><li><a href="../../docs/for/mechanics/">Mechanics &amp; installers</a></li><li><a href="../../docs/for/testers/">Testers</a></li><li><a href="../../press/en/">Press &amp; marketing</a></li></ul></div>
+                    <div class="footer-column"><h4>Project</h4><ul><li><a href="../../">Manifesto</a></li><li><a href="../../docs/">Documentation</a></li><li><a href="https://github.com/sparesparrow/mia">Source code</a></li></ul></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 the MIA project. MIT licence.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

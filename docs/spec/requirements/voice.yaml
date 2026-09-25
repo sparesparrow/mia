@@ -1,0 +1,85 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: voice
+title: Voice and AI assistant
+description: In-car voice pipeline and MCP voice services.
+requirements:
+- id: REQ-VOICE-001
+  title: AI audio assistant (MCP)
+  statement: An MCP service shall handle voice processing, music playback and audio device management.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/ai-audio-assistant
+  not_proven: The linked tests (tests/unit/orchestration/test_audio_engine.py and test_voice_processing.py) drive
+    mock engines and only fail if something raises; they assert no behaviour, so they do not support a tested state.
+- id: REQ-VOICE-002
+  title: Voice command intelligence
+  statement: Voice command outcomes shall be recorded per intent to compute success rates, surface failing patterns
+    and suggest improvements.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Success rates, failing patterns and improvement suggestions follow the recorded interactions
+  implemented_in:
+  - orchestration/mcp/modules/agents/voice_command_intelligence.py
+- id: REQ-VOICE-003
+  title: Voice learning server (MCP)
+  statement: An MCP server shall learn from command outcomes, analyse failures and stage learned prompts for review.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Learned prompts are staged for mcp-prompts review rather than published directly
+  implemented_in:
+  - orchestration/mcp/modules/voice-learning
+- id: REQ-VOICE-004
+  title: Context manager agent
+  statement: An agent shall keep interaction context and user preferences in privacy-preserving storage.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/agents/context_manager.py
+- id: REQ-VOICE-005
+  title: Web voice chat UI
+  statement: A web page shall offer a voice chat with an audio visualiser.
+  evidence: implemented_untested
+  implemented_in:
+  - web/voice-chat.html
+  - web/voice-chat.js
+- id: REQ-VOICE-006
+  title: In-car audio capture
+  statement: The Pi shall capture audio from a USB microphone into the ZeroMQ voice pipeline, with a simulation
+    fallback.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/audio_capture.py
+  services:
+  - mia-audio-capture
+- id: REQ-VOICE-007
+  title: Wake word detection
+  statement: The Pi shall detect the "Hey Mia" wake word on-device, falling back to energy detection.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/wake_word.py
+  services:
+  - mia-wake-word
+- id: REQ-VOICE-008
+  title: On-device speech-to-text
+  statement: The Pi shall transcribe speech on-device.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/stt_service.py
+  services:
+  - mia-stt
+- id: REQ-VOICE-009
+  title: On-device text-to-speech
+  statement: The Pi shall synthesise speech on-device, falling back to espeak.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/tts_service.py
+  services:
+  - mia-tts
+- id: REQ-VOICE-010
+  title: Voice command router
+  statement: Transcribed commands shall be routed by confidence score, asking for confirmation when the match is
+    ambiguous.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_command_router.py
+  services:
+  - mia-voice-router

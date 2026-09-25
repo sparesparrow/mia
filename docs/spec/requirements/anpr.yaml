@@ -1,0 +1,28 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: anpr
+title: Number plate recognition
+description: Backend ANPR and vignette checks; the Android side lives under android.
+requirements:
+- id: REQ-ANPR-001
+  title: Backend ANPR service
+  statement: The Pi shall recognise number plates from camera frames and expose results through the ANPR API.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/anpr_service.py
+  - apps/rpi-backend/py-api/api/routers/anpr.py
+  services:
+  - mia-api
+  notes: Heavy dependencies are optional (requirements-anpr.txt).
+- id: REQ-ANPR-002
+  title: eDálnice vignette check
+  statement: A recognised Czech plate shall be checked against edalnice.gov.cz using the site's token flow and its
+    own validity rule.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Valid, exempt, invalid and unknown results map from the live response shape
+  - Failures return unknown and are not cached
+  - A 401 refreshes the token and retries once
+  implemented_in:
+  - apps/rpi-backend/py-api/services/edalnice_client.py
+  - apps/rpi-backend/py-api/services/edalnice_service.py
+  not_proven: A live check against the real service

@@ -1,0 +1,36 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: web
+title: Web pages
+description: Published static web surfaces.
+requirements:
+- id: REQ-WEB-001
+  title: Generated segment landing pages
+  statement: Customer-segment landing pages shall be generated from one template with Czech and English strings,
+    and must not leak template placeholders.
+  evidence: implemented_untested
+  implemented_in:
+  - web/scripts/generatePages.js
+  - web/template.html
+  - web/i18n
+  notes: Each page is rendered once per language (Czech at <segment>/, English at <segment>/en/), so the pages
+    need no runtime i18n. web/scripts/build-smoke.js checks this, and the publish-pages workflow runs it through
+    npm test. It stays implemented_untested because the traceability check only counts pytest and Kotlin tests.
+- id: REQ-WEB-002
+  title: Audience routing and evidence-based marketing copy
+  statement: The published site shall give each audience (business, families, musicians, journalists, developers,
+    mechanics, testers, press) its own entry path, and shall publish no prices or performance figures that the
+    requirement registry does not support.
+  evidence: implemented_untested
+  implemented_in:
+  - web/scripts/generatePages.js
+  - web/i18n/site.yaml
+  - web/index.html
+  - web/404.html
+  - docs/for
+  - .github/workflows/publish-pages.yml
+  decisions:
+  - ADR-0010
+  notes: web/scripts/build-smoke.js checks that every generated page links to every audience, and that it has no
+    AI-SERVIS name, currency or the removed percentages. The "what works today" list in web/i18n/site.yaml must
+    only name requirements that are implemented_and_ci_tested or better. The hand-written homepage (web/index.html)
+    is not covered by the smoke test.

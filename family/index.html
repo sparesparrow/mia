@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA - Bezpečnost a ochrana rodiny</title>
+    <meta name="description" content="Komplexní bezpečnost rodiny s chytrým hlídáním a důrazem na soukromí">
+    <link rel="canonical" href="https://sparesparrow.github.io/mia/family/">
+    <link rel="alternate" hreflang="cs" href="https://sparesparrow.github.io/mia/family/">
+    <link rel="alternate" hreflang="en" href="https://sparesparrow.github.io/mia/family/en/">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-family ">
+    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>Prototyp ve vývoji. MIA zatím není produkt na prodej ani zařízení certifikované pro provoz.</p>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="../" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">Ochrana rodiny na prvním místě</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#today">Funguje dnes</a>
+                <a href="#scenarios">Scénáře</a>
+                <a href="#tech">Technologie</a>
+                <a href="#site-footer">Všechny stránky</a>
+                <a href="en/" class="lang-link" hreflang="en" lang="en">English</a>
+                <a href="#pilot" class="cta-btn">Zapojit se</a>
+            </div>
+            <button class="mobile-menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="../assets/site/family.jpg" alt="" class="hero-image">
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>Komplexní bezpečnost rodiny</h1>
+                <p class="hero-subtitle">Komplexní bezpečnost rodiny s chytrým hlídáním a důrazem na soukromí</p>
+                <ul class="hero-facts">
+                    <li>Prototyp na Audi A4 Cabriolet 8H</li>
+                    <li>Raspberry Pi 4B + ESP32 + Android</li>
+                    <li>Z vozidla pouze čte</li>
+                </ul>
+                <div class="hero-buttons">
+                    <a href="#pilot" class="btn btn-primary">Zapojit se do pilotu</a>
+                    <a href="../docs/" class="btn btn-secondary">Číst dokumentaci</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="today">
+        <div class="container">
+            <h2>Co funguje dnes</h2>
+            <p class="section-intro">Vše níže je implementováno a ověřeno automatickými testy v CI nebo v simulaci. Ověření na stole, na hardwaru a ve voze teprve probíhá.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high" aria-hidden="true"></i></div><h3>Telemetrie OBD-II</h3><p>Otáčky, teplota chladicí kapaliny, napětí baterie a stav zapalování z digitálního dvojčete ELM327 a pasivního záznamu CAN na ESP32.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-car" aria-hidden="true"></i></div><h3>Diagnostika Audi jen pro čtení</h3><p>Diagnostický most VAG/Audi, který pouze čte. MIA ve výchozím stavu na sběrnici vozidla nezapisuje.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-id-card" aria-hidden="true"></i></div><h3>Rozpoznávání SPZ</h3><p>Rozpoznávání SPZ v aplikaci pro Android a kontrola dálniční známky.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microphone" aria-hidden="true"></i></div><h3>Hlasové ovládání</h3><p>Zpracování hlasových příkazů na Pi a mluvená zpětná vazba v aplikaci pro Android.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen" aria-hidden="true"></i></div><h3>Aplikace pro Android</h3><p>Párování přes BLE, živá karta telemetrie, záznam z kamery a místní pravidla.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microchip" aria-hidden="true"></i></div><h3>Brána na Raspberry Pi</h3><p>REST a WebSocket API, zprávy přes ZeroMQ a služby systemd, se simulací tam, kde hardware chybí.</p></div>
+            </div>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">Stav ověření každého požadavku</a></p>
+        </div>
+    </section>
+
+    <section class="use-cases features" id="scenarios">
+        <div class="container">
+            <span class="section-eyebrow">Plánované scénáře</span>
+            <h2>Scénáře ochrany</h2>
+            <p class="section-intro">Kam produkt směřuje. Tyto scénáře zatím nejsou hotové ani ověřené.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-route" aria-hidden="true"></i></div><h3>Bezpečnost rodičů a dětí</h3><ul><li>Sledování mladých řidičů</li><li>Upozornění na příjezd rodiny</li><li>Upozornění na bezpečnou jízdu</li><li>Systém nouzového kontaktu</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-route" aria-hidden="true"></i></div><h3>Bezpečnost partnera</h3><ul><li>Sdílení polohy v páru</li><li>Vzájemná bezpečnostní upozornění</li><li>Síť důvěryhodných partnerů</li><li>Ovládání soukromí</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-route" aria-hidden="true"></i></div><h3>Péče o seniory</h3><ul><li>Sledování nezávislosti</li><li>Upozornění na zdraví a bezpečnost</li><li>Sledování baterie a systému</li><li>Síť důvěryhodných pečovatelů</li></ul></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="technology" id="tech">
+        <div class="container">
+            <h2>Technologie</h2>
+            <div class="tech-grid">
+                <div class="tech-card"><h3>Brána Raspberry Pi 4B</h3><p>Provozuje API, zprávy a AI služby přímo v autě.</p></div>
+                <div class="tech-card"><h3>Moduly ESP32</h3><p>Poslouchají OBD-II a CAN a obsluhují místní vstupy a výstupy.</p></div>
+                <div class="tech-card"><h3>Doprovodná aplikace</h3><p>Přehled, spojení přes BLE, rozpoznávání SPZ a kamera v telefonu řidiče.</p></div>
+                <div class="tech-card"><h3>Otevřená specifikace</h3><p>Požadavky, návrhová rozhodnutí a záznamy ověření jsou veřejně na GitHubu.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="pilot">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Dejte své rodině ochranu, kterou si zaslouží</h2>
+                <p>MIA hledá pilotní uživatele a partnery. Ceník zatím nemáme. Napište nám, co potřebujete, a domluvíme se, co dává smysl.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/sparesparrow/mia/issues/new?title=Pilot%3A%20family" class="btn btn-primary large">Zapojit se do pilotu</a>
+                    <a href="../docs/" class="btn btn-secondary large">Číst dokumentaci</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>Otevřený prototyp telemetrie a hlasového asistenta do auta</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>Pro zákazníky</h4><ul><li><a href="../business/">Firmy a flotily</a></li><li><a href="../family/">Rodiny</a></li><li><a href="../musicians/">Hudebníci</a></li><li><a href="../journalists/">Novináři</a></li></ul></div>
+                    <div class="footer-column"><h4>Pro odborníky</h4><ul><li><a href="../docs/for/developers/">Vývojáři</a></li><li><a href="../docs/for/mechanics/">Automechanici a montáž</a></li><li><a href="../docs/for/testers/">Testeři</a></li><li><a href="../press/">Média a marketing</a></li></ul></div>
+                    <div class="footer-column"><h4>Projekt</h4><ul><li><a href="../">Manifest</a></li><li><a href="../docs/">Dokumentace</a></li><li><a href="https://github.com/sparesparrow/mia">Zdrojový kód</a></li></ul></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 projekt MIA. Licence MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.querySelector('.nav-menu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                var open = menu.classList.toggle('mobile-open');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (event) {
+                if (event.target.tagName === 'A') {
+                    menu.classList.remove('mobile-open');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
