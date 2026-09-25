@@ -271,49 +271,11 @@ graph TB
     class MCPPrompts,SpareTools external
 ```
 
-### **Documentation Organization**
-```mermaid
-graph TB
-    subgraph "docs/ (Standardized)"
-        Architecture[architecture/<br/>System Design]
-        Automotive[automotive/<br/>Vehicle Integration]
-        Deployment[deployment/<br/>Production Guides]
-        Development[development/<br/>Developer Workflows]
-        API[api/<br/>API Documentation]
-        Archive[archive/<br/>Historical Documents]
-    end
+### **Repository Organization**
 
-    subgraph "Root Documentation"
-        README[README.md<br/>Project Overview]
-        TODO[TODO.md<br/>Roadmap]
-        IMPL[IMPLEMENTATION.md<br/>Current Status]
-        CLEANUP[CLEANUP_AND_MCP_INTEGRATION_PLAN.md<br/>Cleanup Strategy]
-    end
-
-    subgraph "Removed (Archived)"
-        OldStatus[29+ Status Reports]
-        OldBackups[.backups/ directory]
-        OldExports[exported-assets/]
-    end
-
-    README --> Architecture
-    README --> Deployment
-    TODO --> Development
-    IMPL --> Architecture
-    CLEANUP --> Development
-
-    OldStatus -.->|Moved to| Archive
-    OldBackups -.->|Deleted| Archive
-    OldExports -.->|Deleted| Archive
-
-    classDef active fill:#4caf50,stroke:#1b5e20,stroke-width:2px
-    classDef root fill:#2196f3,stroke:#0d47a1,stroke-width:2px
-    classDef removed fill:#f44336,stroke:#b71c1c,stroke-width:2px,stroke-dasharray: 5 5
-
-    class Architecture,Automotive,Deployment,Development,API active
-    class README,TODO,IMPL,CLEANUP root
-    class OldStatus,OldBackups,OldExports,Archive removed
-```
+The repository is split into requirements and design (`spec/`), production code (`apps/`, `orchestration/`,
+`schemas/`, `infra/`, `web/`, `agents/`) and tests (`tests/`). See [spec/README.md](../README.md) and
+[ADR-0002](../decisions/0002-separate-requirements-code-and-tests.md).
 
 ## 🤖 **MCP-Prompts Developer Integration**
 

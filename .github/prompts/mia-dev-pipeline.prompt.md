@@ -26,7 +26,8 @@ graph LR
 
 ## Backlog Location
 
-`orchestration/mia-agents/backlog.md` — single source of truth for all MIA dev tasks.
+GitHub Issues — single source of truth for all MIA dev tasks, labelled `backlog:todo`, `backlog:idea`,
+`backlog:validation`, `backlog:test-gap` or `backlog:adr` plus an `area:*` label ([ADR-0001](../../spec/decisions/0001-record-decisions-and-keep-the-backlog-in-issues.md)).
 
 ## Phase 1: Task Creator (daily)
 
@@ -34,7 +35,7 @@ Discover tasks from:
 
 ```bash
 # TODOs across MIA codebase
-grep -rn "TODO\|FIXME\|HACK" apps/ orchestration/ modules/ --include="*.py" --include="*.kt" --include="*.cpp" | head -30
+grep -rn "TODO\|FIXME\|HACK" apps/ orchestration/ tools/ --include="*.py" --include="*.kt" --include="*.cpp" | head -30
 
 # Test gaps
 pytest tests/ --co -q 2>&1 | wc -l

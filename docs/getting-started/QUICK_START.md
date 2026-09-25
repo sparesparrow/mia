@@ -263,7 +263,7 @@ ai-servis/
 ### Learn More
 
 1. **Read the Architecture** → [`spec/architecture/overview.md`](../../spec/architecture/overview.md)
-2. **Explore Modules** → [`docs/modules/`](../modules/)
+2. **Read the Requirements** → [`spec/requirements/`](../../spec/requirements/)
 3. **Check API Docs** → [`docs/api/`](../api/)
 4. **Setup Development** → [`../DEVELOPMENT.md`](../../DEVELOPMENT.md)
 
@@ -399,7 +399,7 @@ python3 script_name.py
 1. ✅ **Complete this Quick Start** ← You are here
 2. 📖 Read [Architecture Overview](../../spec/architecture/overview.md)
 3. 🧪 Run more tests: `python3 test_orchestrator.py`
-4. 📝 Read [Module Documentation](../modules/)
+4. 📝 Read the [requirements](../../spec/requirements/)
 
 ### Intermediate
 
@@ -483,7 +483,7 @@ You've successfully:
 Choose your path:
 
 **For Developers**:
-→ Start with [Module Development](../modules/README.md)
+→ Start with the [MCP modules](../../orchestration/mcp/modules/)
 
 **For DevOps**:
 → Continue to [Deployment Guide](../deployment/README.md)
@@ -501,7 +501,7 @@ Choose your path:
 - **Main README**: [README.md](../../README.md)
 - **Architecture**: [docs/architecture/](../../spec/architecture/)
 - **API Docs**: [docs/api/](../api/)
-- **Modules**: [docs/modules/](../modules/)
+- **Requirements**: [spec/requirements/](../../spec/requirements/)
 - **Troubleshooting**: [docs/troubleshooting.md](../troubleshooting.md)
 - **GitHub**: [github.com/sparesparrow/mia](https://github.com/sparesparrow/mia)
 
