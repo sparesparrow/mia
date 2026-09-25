@@ -397,12 +397,6 @@ categories:
       services: []
       files: [tools/sip-bridge/]
 
-    - name: Chatka Booking Tool
-      state: IMPLEMENTED
-      description: Voice-driven cabin booking with espeak/LLM, FastAPI webhook
-      services: []
-      files: [tools/chatka-booking/]
-
     - name: Messaging MCP (SMS/Email)
       state: IMPLEMENTED
       description: Twilio SMS + SMTP/IMAP email via MCP tools

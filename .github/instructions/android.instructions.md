@@ -7,7 +7,7 @@ applyTo:
   - "skills/android-adb-test/**"
   - "scripts/test-orchestrator.sh"
   - "scripts/test-android-ble-connection.sh"
-  - "ANDROID_*.md"
+  - "apps/android/docs/*.md"
 ---
 # Android App Guidance
 
@@ -23,4 +23,4 @@ applyTo:
   - `bash skills/android-adb-test/scripts/android-adb-test.sh build|deploy|test|interactive ...`
 - For BLE and OBD changes, prefer validation on a physical device. Emulator coverage is useful for UI and instrumentation work but is not enough for connection reliability changes.
 - Root Python linters do not validate Android sources. Use Gradle and Android-specific tooling for Kotlin, Compose, and device-test verification.
-- Related docs: [apps/android/README.md](../../apps/android/README.md), [ANDROID_TESTING.md](../../ANDROID_TESTING.md), [ANDROID_QUICK_REFERENCE.md](../../ANDROID_QUICK_REFERENCE.md), [docs/android-device-setup.md](../../docs/android-device-setup.md), and [../copilot-instructions.md](../copilot-instructions.md).
+- Related docs: [apps/android/README.md](../../apps/android/README.md), [apps/android/docs/TESTING.md](../../apps/android/docs/TESTING.md), [apps/android/docs/QUICK_REFERENCE.md](../../apps/android/docs/QUICK_REFERENCE.md), [docs/android-device-setup.md](../../docs/android-device-setup.md), and [../copilot-instructions.md](../copilot-instructions.md).

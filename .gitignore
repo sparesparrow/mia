@@ -208,8 +208,15 @@ screenshots/
 *integration_test*.json
 automotive_test_results_*.log
 
-# Android device workspace
-/android-device-workspace/downloads/
+# Generated output that must not be committed: mkdocs builds (CI uses
+# _site_docs), test run reports, device-setup workspaces and the arduino-cli
+# installer's ./bin download.
+/site/
+/_site_docs/
+test-artifacts/
+tests/**/artifacts/
+/android-device-workspace/
+/bin/
 .venv312/
 apps/android/.gradle/
 
