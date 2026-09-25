@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -158,7 +160,8 @@ class MainActivity : ComponentActivity() {
 			vm.initializeCycle1Telemetry()
 		}
 		
-		Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+		// Scrollable so the Cycle 1 card below the service controls stays reachable on small screens.
+		Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
 			Text(
 				text = "Dashboard",
 				style = MaterialTheme.typography.headlineMedium
@@ -171,13 +174,6 @@ class MainActivity : ComponentActivity() {
 			Spacer(Modifier.height(16.dp))
 			
 			DashboardGauges(latest)
-
-			Spacer(Modifier.height(16.dp))
-
-			Cycle1TelemetryCard(
-				telemetry = cycle1Telemetry,
-				connection = cycle1Connection,
-			)
 
 			Spacer(Modifier.height(16.dp))
 
@@ -223,6 +219,13 @@ class MainActivity : ComponentActivity() {
 					Text("Stop Service") 
 				}
 			}
+
+			Spacer(Modifier.height(16.dp))
+
+			Cycle1TelemetryCard(
+				telemetry = cycle1Telemetry,
+				connection = cycle1Connection,
+			)
 		}
 	}
 
