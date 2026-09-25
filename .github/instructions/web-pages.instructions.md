@@ -13,12 +13,13 @@ applyTo:
   - `cd web && npm install`
   - `cd web && npm run build`
   - `cd web && node scripts/generatePages.js` for the direct generator path
-- Preview over HTTP, not `file://`, because the runtime i18n loader uses `fetch()`.
-  - `cd web/dist && python3 -m http.server 8080`
+- Run `cd web && npm test` after changes; it rebuilds `dist/` and runs `scripts/build-smoke.js`. Preview with `npm run serve`.
+- Generated pages are static per language (Czech at `<page>/`, English at `<page>/en/`); there is no runtime i18n on them.
 - Keep segment concerns separated:
-  - shared copy in `web/i18n/common.yaml`
-  - segment copy in `web/i18n/*.yaml`
+  - shared site copy (status banner, "what works today", press kit) in `web/i18n/site.yaml`
+  - segment copy in `web/i18n/<segment>.yaml`
   - segment styling in `web/customers/<segment>/`
+- Publish no prices or performance figures the requirement registry does not support (ADR-0010, REQ-WEB-002). The site map is in `web/README.md`.
 - `web/voice-chat.html` and `web/voice-chat.js` are runtime-facing pages. If they change, verify their WebSocket and HTTP assumptions still match the FastAPI boundary and current `/ws` behavior.
 - The journalists and gonzo surface is partly hand-authored and has its own monitor loop. If you change that area, also audit `web/GONZO-MONITOR-README.md`, `web/monitor-gonzo.py`, and `web/start-gonzo-monitor.sh`.
 - Related docs: [web/README.md](../../web/README.md), [web/GONZO-MONITOR-README.md](../../web/GONZO-MONITOR-README.md), [README.md](../../README.md), and [../copilot-instructions.md](../copilot-instructions.md).

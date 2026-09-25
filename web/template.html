@@ -1,209 +1,143 @@
 <!DOCTYPE html>
-<html lang="{{language}}" id="html-root">
+<html lang="{{lang}}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{page.title}}</title>
-    <meta name="description" content="{{page.description}}">
-    <link rel="stylesheet" href="{{customer_name}}/styles.css">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
+    <link rel="canonical" href="{{canonical}}">
+    <link rel="alternate" hreflang="cs" href="{{url_cs}}">
+    <link rel="alternate" hreflang="en" href="{{url_en}}">
+    <link rel="stylesheet" href="{{segment_base}}styles.css">
+    <link rel="stylesheet" href="{{root}}site.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <!-- Language Switcher -->
-    <div class="language-switcher">
-        <button onclick="switchLanguage('en')" class="lang-btn" data-lang="en">EN</button>
-        <button onclick="switchLanguage('cs')" class="lang-btn active" data-lang="cs">CS</button>
-    </div>
+<body class="site-page segment-{{segment}} {{body_class}}">
+    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>{{status_banner}}</p>
 
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <h2>AI-SERVIS</h2>
-                <span class="tagline" data-i18n="{{navigation.main_title}}" data-i18n-ns="{{namespace}}">{{navigation.main_title}}</span>
+                <h2><a href="{{root}}{{lang_suffix}}" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">{{tagline}}</span>
             </div>
             <div class="nav-menu">
-                <a href="#features" data-i18n="{{navigation.features}}" data-i18n-ns="{{namespace}}">{{navigation.features}}</a>
-                <a href="#use-cases" data-i18n="{{navigation.use_cases}}" data-i18n-ns="{{namespace}}">{{navigation.use_cases}}</a>
-                <a href="#pricing" data-i18n="{{navigation.pricing}}" data-i18n-ns="{{namespace}}">{{navigation.pricing}}</a>
-                <a href="#tech" data-i18n="{{navigation.technology}}" data-i18n-ns="{{namespace}}">{{navigation.technology}}</a>
-                <button class="cta-btn" data-i18n="{{navigation.cta_button}}" data-i18n-ns="{{namespace}}">{{navigation.cta_button}}</button>
+                <a href="#today">{{nav_today}}</a>
+                <a href="#scenarios">{{nav_scenarios}}</a>
+                <a href="#tech">{{nav_technology}}</a>
+                <a href="#site-footer">{{nav_all_pages}}</a>
+                <a href="{{other_lang_href}}" class="lang-link" hreflang="{{other_lang}}" lang="{{other_lang}}">{{language_switch}}</a>
+                <a href="#pilot" class="cta-btn">{{nav_pilot}}</a>
             </div>
-            <div class="mobile-menu-toggle">
+            <button class="mobile-menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg">
-            <img src="{{hero.image}}" alt="{{hero.image_alt}}" class="hero-image">
+            <img src="{{root}}assets/site/{{hero_image}}" alt="" class="hero-image">
         </div>
         <div class="container hero-content">
             <div class="hero-text">
-                <h1 data-i18n="{{hero.main_title}}" data-i18n-ns="{{namespace}}">{{hero.main_title}}</h1>
-                <p class="hero-subtitle" data-i18n="{{hero.subtitle}}" data-i18n-ns="{{namespace}}">{{hero.subtitle}}</p>
-                <div class="hero-stats">
-                    {{#each hero.stats}}
-                    <div class="stat">
-                        <span class="stat-number">{{this.value}}</span>
-                        <span class="stat-label" data-i18n="{{this.label}}" data-i18n-ns="{{../namespace}}">{{this.label}}</span>
-                    </div>
-                    {{/each}}
-                </div>
+                <h1>{{hero_title}}</h1>
+                <p class="hero-subtitle">{{hero_subtitle}}</p>
+                <ul class="hero-facts">
+                    {{facts_html}}
+                </ul>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary" data-i18n="{{hero.primary_button}}" data-i18n-ns="{{namespace}}">{{hero.primary_button}}</button>
-                    <button class="btn btn-secondary" data-i18n="{{hero.secondary_button}}" data-i18n-ns="{{namespace}}">{{hero.secondary_button}}</button>
+                    <a href="#pilot" class="btn btn-primary">{{pilot_button}}</a>
+                    <a href="{{root}}docs/" class="btn btn-secondary">{{docs_button}}</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Key Features -->
-    <section class="features" id="features">
+    <section class="features" id="today">
         <div class="container">
-            <h2 data-i18n="{{features.title}}" data-i18n-ns="{{namespace}}">{{features.title}}</h2>
+            <h2>{{today_title}}</h2>
+            <p class="section-intro">{{today_intro}}</p>
             <div class="features-grid">
-                {{#each features.items}}
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="{{this.icon}}"></i>
-                    </div>
-                    <h3 data-i18n="{{this.title}}" data-i18n-ns="{{../namespace}}">{{this.title}}</h3>
-                    <p data-i18n="{{this.description}}" data-i18n-ns="{{../namespace}}">{{this.description}}</p>
-                </div>
-                {{/each}}
+                {{today_html}}
             </div>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">{{today_link}}</a></p>
         </div>
     </section>
 
-    <!-- Use Cases -->
-    <section class="use-cases" id="use-cases">
+    <section class="use-cases features" id="scenarios">
         <div class="container">
-            <h2 data-i18n="{{use_cases.title}}" data-i18n-ns="{{namespace}}">{{use_cases.title}}</h2>
-            {{#each use_cases.items}}
-            <div class="use-case" id="{{this.id}}">
-                <div class="use-case-content {{this.layout}}">
-                    <div class="use-case-text">
-                        <h3 data-i18n="{{this.title}}" data-i18n-ns="{{../namespace}}">{{this.title}}</h3>
-                        <p data-i18n="{{this.description}}" data-i18n-ns="{{../namespace}}">{{this.description}}</p>
-                        <ul>
-                            {{#each this.features}}
-                            <li data-i18n="{{this}}" data-i18n-ns="{{../../namespace}}">{{this}}</li>
-                            {{/each}}
-                        </ul>
-                    </div>
-                    <div class="use-case-image">
-                        <div class="placeholder-image">
-                            <i class="{{this.icon}}"></i>
-                            <span data-i18n="{{this.badge}}" data-i18n-ns="{{../namespace}}">{{this.badge}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{/each}}
-        </div>
-    </section>
-
-    <!-- Pricing -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <h2 data-i18n="{{pricing.title}}" data-i18n-ns="{{namespace}}">{{pricing.title}}</h2>
-            <div class="pricing-grid">
-                {{#each pricing.plans}}
-                <div class="pricing-card {{this.featured}}">
-                    {{#if this.badge}}
-                    <div class="pricing-badge" data-i18n="{{this.badge}}" data-i18n-ns="{{../../namespace}}">{{this.badge}}</div>
-                    {{/if}}
-                    <div class="pricing-header">
-                        <h3 data-i18n="{{this.title}}" data-i18n-ns="{{../../namespace}}">{{this.title}}</h3>
-                        <p class="pricing-subtitle" data-i18n="{{this.subtitle}}" data-i18n-ns="{{../../namespace}}">{{this.subtitle}}</p>
-                        <div class="price">
-                            <span class="currency">Kč</span>
-                            <span class="amount">{{this.price}}</span>
-                            {{#if this.price_range}}
-                            <span class="period" data-i18n="{{this.price_range}}" data-i18n-ns="{{../../namespace}}">{{this.price_range}}</span>
-                            {{/if}}
-                        </div>
-                    </div>
-                    <div class="pricing-features">
-                        <ul>
-                            {{#each this.features}}
-                            <li data-i18n="{{this}}" data-i18n-ns="{{../../namespace}}">{{this}}</li>
-                            {{/each}}
-                        </ul>
-                    </div>
-                    <button class="btn {{this.button_class}}" data-i18n="{{this.button_text}}" data-i18n-ns="{{../../namespace}}">{{this.button_text}}</button>
-                </div>
-                {{/each}}
+            <span class="section-eyebrow">{{scenarios_label}}</span>
+            <h2>{{scenarios_title}}</h2>
+            <p class="section-intro">{{scenarios_note}}</p>
+            <div class="features-grid">
+                {{scenarios_html}}
             </div>
         </div>
     </section>
 
-    <!-- Technology -->
     <section class="technology" id="tech">
         <div class="container">
-            <h2 data-i18n="{{technology.title}}" data-i18n-ns="{{namespace}}">{{technology.title}}</h2>
+            <h2>{{technology_title}}</h2>
             <div class="tech-grid">
-                {{#each technology.items}}
-                <div class="tech-card">
-                    <h3 data-i18n="{{this.title}}" data-i18n-ns="{{../namespace}}">{{this.title}}</h3>
-                    <p data-i18n="{{this.description}}" data-i18n-ns="{{../namespace}}">{{this.description}}</p>
-                </div>
-                {{/each}}
+                {{technology_html}}
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
+    <section class="cta-section" id="pilot">
         <div class="container">
             <div class="cta-content">
-                <h2 data-i18n="{{cta.title}}" data-i18n-ns="{{namespace}}">{{cta.title}}</h2>
-                <p data-i18n="{{cta.description}}" data-i18n-ns="{{namespace}}">{{cta.description}}</p>
+                <h2>{{pilot_title}}</h2>
+                <p>{{pilot_text}}</p>
                 <div class="cta-buttons">
-                    <button class="btn btn-primary large" data-i18n="{{cta.primary_button}}" data-i18n-ns="{{namespace}}">{{cta.primary_button}}</button>
-                    <button class="btn btn-secondary large" data-i18n="{{cta.secondary_button}}" data-i18n-ns="{{namespace}}">{{cta.secondary_button}}</button>
+                    <a href="{{pilot_href}}" class="btn btn-primary large">{{pilot_button}}</a>
+                    <a href="{{root}}docs/" class="btn btn-secondary large">{{docs_button}}</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="site-footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <h3>AI-SERVIS</h3>
-                    <p data-i18n="{{footer.brand.subtitle}}" data-i18n-ns="{{namespace}}">{{footer.brand.subtitle}}</p>
+                    <h3>MIA</h3>
+                    <p>{{site_tagline}}</p>
                 </div>
                 <div class="footer-links">
-                    {{#each footer.links}}
-                    <div class="footer-column">
-                        <h4 data-i18n="{{this.title}}" data-i18n-ns="{{../namespace}}">{{this.title}}</h4>
-                        <ul>
-                            {{#each this.items}}
-                            <li><a href="{{this.url}}" data-i18n="{{this.text}}" data-i18n-ns="{{../../namespace}}">{{this.text}}</a></li>
-                            {{/each}}
-                        </ul>
-                    </div>
-                    {{/each}}
+                    {{footer_html}}
                 </div>
             </div>
             <div class="footer-bottom">
-                <p data-i18n="{{footer.copyright}}" data-i18n-ns="{{namespace}}">{{footer.copyright}}</p>
+                <p>{{copyright}}</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
-    <script src="i18n-loader.js"></script>
-    <script src="app.js"></script>
+    <script>
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.querySelector('.nav-menu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                var open = menu.classList.toggle('mobile-open');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (event) {
+                if (event.target.tagName === 'A') {
+                    menu.classList.remove('mobile-open');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

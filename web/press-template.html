@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
+    <link rel="canonical" href="{{canonical}}">
+    <link rel="alternate" hreflang="cs" href="{{url_cs}}">
+    <link rel="alternate" hreflang="en" href="{{url_en}}">
+    <link rel="stylesheet" href="{{root}}business/styles.css">
+    <link rel="stylesheet" href="{{root}}site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-press">
+    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>{{status_banner}}</p>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="{{root}}{{lang_suffix}}" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">{{title}}</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#facts">{{facts_title}}</a>
+                <a href="#images">{{images_title}}</a>
+                <a href="#site-footer">{{nav_all_pages}}</a>
+                <a href="{{other_lang_href}}" class="lang-link" hreflang="{{other_lang}}" lang="{{other_lang}}">{{language_switch}}</a>
+                <a href="#contact" class="cta-btn">{{contact_title}}</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="press-section">
+        <div class="container">
+            <h1>{{title}}</h1>
+            <p class="hero-subtitle">{{lead}}</p>
+        </div>
+    </section>
+
+    <section class="press-section" id="facts">
+        <div class="container">
+            <h2>{{facts_title}}</h2>
+            <table class="press-facts">
+                <tbody>
+                    {{facts_html}}
+                </tbody>
+            </table>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">{{today_link}}</a></p>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>{{today_title}}</h2>
+            <ul>
+                {{today_html}}
+            </ul>
+        </div>
+    </section>
+
+    <section class="press-section">
+        <div class="container">
+            <h2>{{tone_title}}</h2>
+            <p>{{tone_text}}</p>
+            <h2 style="margin-top: 2rem;">{{privacy_title}}</h2>
+            <p>{{privacy_text}} <a href="{{root}}docs/privacy/dpia-template/">{{privacy_link}}</a></p>
+        </div>
+    </section>
+
+    <section class="press-section" id="images">
+        <div class="container">
+            <h2>{{images_title}}</h2>
+            <p>{{images_note}}</p>
+            <div class="press-images">
+                {{images_html}}
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2>{{contact_title}}</h2>
+                <p>{{contact_text}}</p>
+                <div class="cta-buttons">
+                    <a href="{{contact_href}}" class="btn btn-primary large">{{contact_button}}</a>
+                    <a href="{{root}}docs/" class="btn btn-secondary large">{{docs_button}}</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>{{site_tagline}}</p>
+                </div>
+                <div class="footer-links">
+                    {{footer_html}}
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>{{copyright}}</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

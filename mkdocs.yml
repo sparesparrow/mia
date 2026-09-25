@@ -42,9 +42,20 @@ validation:
 nav:
   - Overview: index.md
 
+  - For you:
+    - Developers: for/developers.md
+    - Mechanics & installers: for/mechanics.md
+    - Testers: for/testers.md
+
   - Getting Started:
     - Quick Start: getting-started/QUICK_START.md
     - Android Device Setup: android-device-setup.md
+
+  - Development:
+    - CI/CD & Dev Environment: ci-cd-setup.md
+    - Conan Setup: conan-setup.md
+    - ARM64 Build Requirements: ARM64_BUILD_REQUIREMENTS.md
+    - VM Testing Guide: vm-testing-guide.md
 
   - Specification:
     - How MIA is specified: spec/README.md
@@ -86,6 +97,7 @@ nav:
     - Pi Gateway (Standalone): install/pi-gateway.md
     - Dev (No Pi): install/dev-docker.md
     - Installer Checklist: install/installer-checklist.md
+    - Wiring & Power: wiring.md
 
   - Deployment:
     - Deployment Index: deployment/README.md
@@ -104,6 +116,8 @@ nav:
     - Citroën Integration: automotive/citroen-integration.md
     - Citroën Testing Checklist: automotive/citroen-testing-checklist.md
     - OBD Simulator Automation: OBD_SIMULATOR_AUTOMATION.md
+    - ANPR Quick Start: ANPR_QUICK_START.md
+    - ANPR Implementation: ANPR_IMPLEMENTATION.md
     - Audi on Raspberry Pi: automotive/raspberry-pi-audi-integration.md
     - Audi A4 8H Interface Integration: automotive/audi-a4-8h-interface-integration.md
     - Zapojení ESP32 modulů (CS): cs/automotive/zapojeni-esp32-moduly.md

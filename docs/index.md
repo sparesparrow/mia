@@ -2,6 +2,12 @@
 
 MIA je modulární Car AI systém kombinující ANPR, OBD diagnostiku, hlasového asistenta a volitelný DVR gateway. Tento web shrnuje instalaci, architekturu, kontrakty a podporu.
 
+## Pro koho / For you
+- Vývojáři / Developers: [start here](for/developers.md)
+- Automechanici a montáž / Mechanics & installers: [start here](for/mechanics.md)
+- Testeři / Testers: [start here](for/testers.md)
+- Zákazníci, partneři a média / Customers, partners and press: [hlavní web / main site](https://sparesparrow.github.io/mia/)
+
 ## Rychlý přehled
 - Phone Edition: Android jako hub + ESP32 OBD/IO. Viz [instalace](install/phone.md).
 - Hybrid Edition: Telefon + mikro DVR/Pi. Viz [instalace](install/hybrid.md).
