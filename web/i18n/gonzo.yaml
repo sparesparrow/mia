@@ -86,8 +86,8 @@ journalists:
         en: Anti-Stalker Protocol
         cs: ANTI-STALKER PROTOKOL
       description:
-        en: 'When the night fog in Prague dissipates and your rear wiper catches the same number for the sixth time - MIA finally screams: Watch out! You have a parasite on your tail!'
-        cs: 'Když se noční mlha v Praze rozplyne a tvůj zadní stěrač zahlédne už pošesté to stejné číslo - MIA konečně křičí: Bacha! Máš parazita na ocase!'
+        en: "When the night fog lifts and your rear wiper catches the same number plate for the sixth time, MIA warns you: Heads up! Someone's riding your ass!"
+        cs: "Když se noční mlha rozplyne a tvůj zadní stěrač zahlédne už pošesté tu stejnou SPZ - MIA tě upozorní: Bacha! Máš sledku za prdelí!"
       quote:
         en: "The mobile light flashes like a magnesium flash - a second of truth for both the stalked and the one who thinks they're invisible."
         cs: "Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro stalkovaného i toho, kdo si myslí, že je neviditelný."
@@ -96,8 +96,8 @@ journalists:
         en: Covert Ops Interface
         cs: COVERT OPS INTERFACE
       description:
-        en: All secret services love invisibility. This screen can only be operated by you and the dark boys in civilian clothes. Repeated license plates are stored below the surface of awareness.
-        cs: Všechny tajné služby mají rády neviditelnost. Tahle obrazovka neumí nikdo kromě tebe a temných chlapců v civilu. Opakované SPZ se ukládají pod hladinu povědomí.
+        en: "Every number plate of the cars driving behind you goes into a database. If they keep showing up, you'll know."
+        cs: "Všechny SPZ aut, co jedou za tebou, se ukládají do databáze. Když se budou opakovat, budeš o tom vědět."
       quote:
         en: "Who watches the watchers? We do."
         cs: "Kdo hlídá hlídače? Hlídáme my."
@@ -106,8 +106,8 @@ journalists:
         en: Gonzo Command Center
         cs: GONZO COMMAND CENTER
       description:
-        en: 'The control center of the paranoid universe: Everything on one control panel. Charts, alerts, control lights burning like cocaine ampoules in Vegas.'
-        cs: 'Centrum řízení paranoidního vesmíru: Všechno na jednom řídícím stole. Grafy, alerty, kontrolky hoří jak kokainové ampule ve Vegas.'
+        en: "Just because you're paranoid doesn't mean they're not after you: every plate you pass is checked against edalnice.cz. Vehicles exempt from the motorway toll are driven by the criminal police!"
+        cs: "Že seš paranoidní neznamená že po tobě nejdou: Všechny potkané SPZ se ověří dotazem na edalnice.cz - vozidla osvobozená od dálničního poplatku řídí kriminálka!"
       quote:
         en: "If something escapes you, it was just a bad trip."
         cs: "Pokud ti něco unikne, byl to jen špatný trip."
@@ -116,8 +116,8 @@ journalists:
         en: Matrix Tracking Map
         cs: MATRIX TRACKING MAP
       description:
-        en: God protects those who have a map and information. Vehicles push glow on the screen like crazy bugs with their own trajectories and heart in the bowels of the city.
-        cs: Bůh chrání ty, kdo mají mapu a informace. Vozidla tlačí glow na obrazovce jako šílení brouci s vlastními trajektoriemi a srdcem v útrobách města.
+        en: "When you drive, your hands are on the wheel and your eyes on the road. Not even an automatic gearbox lets you fiddle with your phone's settings while driving; MIA does it for you, just talk to her. And when they pull you over, MIA will play your pregnant wife on the phone, the one you're speeding to get to the hospital!"
+        cs: "Když řídíš, máš ruce na volantu a oči na silnici. Ani automat ti neposkytne pohodlí sekat se za jízdy v nadstavnení telefonu; MIA to bude dělat za tebe, stačí s ní mluvit. A až tě budou stavět, MIA bude hrát těhotnou manželku na telefonu, pro kterou rychle jedeš abys ji vzal do nemocnice!"
       quote:
         en: "One movement, one wrong license plate - and history is written online."
         cs: "Jeden pohyb, jedna chybná SPZ – a historie se píše online."
@@ -143,8 +143,8 @@ journalists:
         en: Gonzo Investigator
         cs: GONZO INVESTIGATOR
       description:
-        en: 'Every report starts with a question: Who is watching me and why? Mobile newsroom in the car, AI as co-pilot, voice notes without using hands. Ultimate tool for investigative journalism.'
-        cs: 'Každý report začíná otázkou: Kdo mě sleduje a proč? Mobilní redakce v autě, AI jako co-pilot, hlasové poznámky bez použití rukou. Ultimátní nástroj pro investigativní žurnalistiku.'
+        en: "MIA maps your steering-wheel buttons to any action you like: read out phone notifications when a message pings, start Waze navigation on a route with no cops, or send \"RDY\" to all your Signal contacts."
+        cs: "MIA ti namapuje tlačítka na volantu na libovolné akce: Přečíst notifikace z telefonu, když ti cinkne zpráva, spustit navigaci přes Waze cestou, kde nejsou policajti, nebo napsat všem kontaktům na Signal \"RDY\"."
       features:
         - en: Real-time surveillance
           cs: Real-time surveillance
