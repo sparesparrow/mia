@@ -108,7 +108,7 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ../../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ../containers/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ../../volumes/mqtt-data:/mosquitto/data
       - ../../volumes/mqtt-logs:/mosquitto/log
     healthcheck:
@@ -133,7 +133,7 @@ services:
       - "5432:5432"
     volumes:
       - ../../volumes/postgres-data:/var/lib/postgresql/data
-      - ../../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../containers/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U aiservisdv -d aiservisbwx"]
       interval: 30s
@@ -169,7 +169,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ../../containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../containers/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ../../volumes/prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'

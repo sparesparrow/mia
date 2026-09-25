@@ -11,7 +11,7 @@ import pytest
 
 def load_complete_bootstrap_module():
     """Import the script module so its helpers can be tested."""
-    module_path = Path(__file__).resolve().parents[2] / "complete-bootstrap.py"
+    module_path = Path(__file__).resolve().parents[2] / "tools" / "complete-bootstrap.py"
     spec = importlib.util.spec_from_file_location("complete_bootstrap", module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module

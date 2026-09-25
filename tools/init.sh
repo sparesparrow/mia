@@ -3,10 +3,10 @@
 # AI-SERVIS Development Environment Initialization
 # =============================================================================
 # Simple entry point that sets up the AI-SERVIS build environment.
-# Uses Cloudsmith-centric CPython-tool bootstrap (complete-bootstrap.py).
+# Uses Cloudsmith-centric CPython-tool bootstrap (tools/complete-bootstrap.py).
 #
 # Usage:
-#   ./tools/init.sh              # Full setup (calls complete-bootstrap.py)
+#   ./tools/init.sh              # Full setup (calls tools/complete-bootstrap.py)
 #   ./tools/init.sh --update     # Update existing environment
 #   ./tools/init.sh --clean      # Remove and reinstall
 #   source tools/init.sh --shell # Initialize for interactive use
@@ -288,16 +288,16 @@ main() {
     echo -e "${BLUE}Starting AI-SERVIS environment setup...${NC}"
     echo ""
     
-    # Check if complete-bootstrap.py exists and run it
-    if [ -f "$PROJECT_ROOT/complete-bootstrap.py" ]; then
+    # Check if tools/complete-bootstrap.py exists and run it
+    if [ -f "$PROJECT_ROOT/tools/complete-bootstrap.py" ]; then
         echo -e "${CYAN}Running Cloudsmith-centric bootstrap...${NC}"
-        python3 "$PROJECT_ROOT/complete-bootstrap.py" || {
+        python3 "$PROJECT_ROOT/tools/complete-bootstrap.py" || {
             echo -e "${YELLOW}Bootstrap script failed, falling back to legacy approach...${NC}"
             setup_conan_remotes
             create_mia_env
         }
     else
-        echo -e "${YELLOW}complete-bootstrap.py not found, using legacy approach...${NC}"
+        echo -e "${YELLOW}tools/complete-bootstrap.py not found, using legacy approach...${NC}"
         setup_conan_remotes
         create_mia_env
     fi

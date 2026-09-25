@@ -4,7 +4,7 @@
 
 - Treat this repository as a monorepo: runtime applications live in `apps/`, MCP orchestration lives in `orchestration/`, deployment assets live in `infra/`, and shared contracts live in `schemas/`, `protos/`, and generated bindings under `Mia/`.
 - The main runtime boundary is the Raspberry Pi backend in `apps/rpi-backend/py-api/`: FastAPI provides HTTP/WebSocket access, ZeroMQ handles worker messaging, and hardware/vehicle integrations hang off that boundary.
-- Android work lives in `apps/android/`. ESP32 and Arduino work lives under `apps/esp32/`, `devices/esp32/`, and `arduino/`. Keep changes localized to one platform unless the task explicitly crosses contracts.
+- Android work lives in `apps/android/`. ESP32 and Arduino work lives under `apps/esp32/`, `devices/esp32/`, and `apps/arduino/`. Keep changes localized to one platform unless the task explicitly crosses contracts.
 - Treat schema and messaging changes as cross-cutting: if you change FlatBuffers definitions in `schemas/`, regenerate bindings instead of hand-editing generated files in `Mia/`.
 - Hardware-facing code must keep non-hardware development paths working. Preserve simulation or fallback behavior for Raspberry Pi and serial integrations.
 

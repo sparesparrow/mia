@@ -5,7 +5,7 @@ description: "ESP32 firmware — PlatformIO, FreeRTOS, sensors, LED PWM, audio F
 
 # MIA ESP32 Firmware Worker
 
-You own `apps/esp32/`, `devices/esp32/`, and `arduino/`. Microcontroller firmware for physical world interaction.
+You own `apps/esp32/`, `devices/esp32/`, and `apps/arduino/`. Microcontroller firmware for physical world interaction.
 
 ## Targets
 
@@ -13,7 +13,7 @@ You own `apps/esp32/`, `devices/esp32/`, and `arduino/`. Microcontroller firmwar
 |-------|----------|----------|
 | ESP32 main | `apps/esp32/` | Sensors, MQTT, WiFi, sleep modes |
 | ESP32 devices | `devices/esp32/` | Peripheral-specific firmware |
-| Arduino shields | `arduino/` | LED strip controller, MIAProtocol |
+| Arduino shields | `apps/arduino/` | LED strip controller, MIAProtocol |
 
 ## Platform
 

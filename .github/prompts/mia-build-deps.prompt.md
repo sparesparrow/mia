@@ -16,12 +16,12 @@ You own the build pipeline across all platforms and the dependency graph.
 | Android | Gradle 8.x Kotlin DSL | `apps/android/build.gradle.kts` | APK |
 | ESP32 | PlatformIO | `apps/esp32/platformio.ini` | `firmware.bin` |
 | Docker | docker-compose | `infra/docker/docker-compose*.yml` | containers |
-| MCP bridge | Conan + CMake | `mcp-cpp-bridge/conanfile.py` | lib |
+| MCP bridge | Conan + CMake | `apps/rpi-backend/cpp-mcp-bridge/conanfile.py` | lib |
 | TinyMCP | Conan | `conan-recipes/tinymcp/conanfile.py` | lib |
 
 ## Conan Configuration
 
-- **Conan 2.3.2**, profiles in `orchestrator-config.yaml`
+- **Conan 2.3.2**, profiles in `tools/orchestrator-config.yaml`
 - Cloudsmith remote: `sparetools` @ `https://cloudsmith.io/~sparesparrow-conan/repos/sparetools/`
 - Base package: `sparetools-base/2.0.3`
 - Cross-compilation profiles: `linux-release`, `linux-debug`, `raspberry-pi`

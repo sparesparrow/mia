@@ -17,8 +17,8 @@ else
     sleep 10
     
     # Run health check
-    if [ -f "./scripts/health-check.sh" ]; then
-        ./scripts/health-check.sh || echo "⚠️  Some services may not be fully ready yet"
+    if [ -f "./tools/scripts/health-check.sh" ]; then
+        ./tools/scripts/health-check.sh || echo "⚠️  Some services may not be fully ready yet"
     fi
 fi
 

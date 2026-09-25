@@ -269,7 +269,7 @@ Vyhodnocení:
 - **Všude 0 V ve všech stavech** → nezapojená výbava. Vodiče existují, ale nikam nevedou — dá se
   využít jako natažená kabeláž.
 
-Výsledek zapiš do `config/vehicles/audi_a4_8h_cabriolet.yaml` (pole `confidence` a `verified_on`).
+Výsledek zapiš do `apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml` (pole `confidence` a `verified_on`).
 Dokud tam je `blocked_until: verification_passes`, nic se na ten konektor nepřipojuje.
 
 ---
@@ -314,7 +314,7 @@ Dokud tam je `blocked_until: verification_passes`, nic se na ten konektor nepři
 ## 11. Související dokumenty
 
 - [Rozbor rozhraní a plán integrace (anglicky)](../../automotive/audi-a4-8h-interface-integration.md)
-- [Strojově čitelný soupis rozhraní](../../../config/vehicles/audi_a4_8h_cabriolet.yaml)
+- [Strojově čitelný soupis rozhraní](../../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml)
 - [Zapojení OBD-II / ESP32 (obecné)](../../wiring.md)
 - [Zapojení ESP32 modulů do MIA](zapojeni-esp32-moduly.md) — strana mikrokontroléru
 - [Integrace Audi na Raspberry Pi (anglicky)](../../automotive/raspberry-pi-audi-integration.md)

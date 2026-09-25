@@ -16,7 +16,7 @@ This repository follows a structured workspace organization to separate developm
 
 ### Development Structure
 - **Development Repository**: `~/projects/mia/` - Contains the full source code, documentation, and build tools
-- **Configuration**: `config/paths.json` - Defines configurable paths for different environments
+- **Configuration**: `apps/rpi-backend/config/paths.json` - Defines configurable paths for different environments
 - **Path Management**: `core/paths.py` - Python utility for resolving relative and configurable paths
 
 ### Installation Structure
@@ -120,7 +120,7 @@ pip3 install -r requirements.txt
 Use the main deployment script:
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 ```
 
 This will:

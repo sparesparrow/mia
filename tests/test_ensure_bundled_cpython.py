@@ -1,4 +1,4 @@
-"""Regression tests for scripts/ensure-bundled-cpython.sh."""
+"""Regression tests for tools/scripts/ensure-bundled-cpython.sh."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRIPT_PATH = REPO_ROOT / "scripts" / "ensure-bundled-cpython.sh"
+SCRIPT_PATH = REPO_ROOT / "tools" / "scripts" / "ensure-bundled-cpython.sh"
 
 
 def _bash_is_usable() -> bool:

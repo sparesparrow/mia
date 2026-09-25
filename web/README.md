@@ -9,7 +9,7 @@ booking sim, agents portal, team page, 404) are maintained by hand.
 ```
 web/
   template.html                shared HTML template for generated pages
-  scripts/
+  tools/scripts/
     generatePages.js           generator entry point (`npm run build`)
     build-smoke.js             smoke test (`npm test`)
     app.js                     runtime UI helpers shipped to generated pages
@@ -33,9 +33,9 @@ web/
                                consumed by .github/workflows/publish-pages.yml
                                (do not delete without updating the workflow)
   gonzo-styles.css             same as above; kept for the publish workflow
-  css/*.css                    fallback shards used by scripts/build_variant.py
+  css/*.css                    fallback shards used by tools/scripts/build_variant.py
   js/{app,i18n-loader}.js      smaller legacy runtime used by templates/ and
-                               agents/index.html; do not merge with scripts/
+                               agents/index.html; do not merge with tools/scripts/
                                versions without first fixing the agents page
 ```
 

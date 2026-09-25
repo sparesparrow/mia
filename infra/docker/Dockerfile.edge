@@ -29,7 +29,7 @@ COPY modules/hardware-bridge/ ./hardware-bridge/
 COPY modules/mcp_framework.py ./mcp_framework.py
 
 # Copy edge compatibility layer
-COPY edge-compat/pi-gateway/ ./pi-gateway/
+COPY infra/edge/pi-gateway/ ./pi-gateway/
 
 # Expose ports
 EXPOSE 8080 8081 1883

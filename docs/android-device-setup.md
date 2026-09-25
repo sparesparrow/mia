@@ -57,7 +57,7 @@ This guide provides step-by-step instructions for setting up HTC One M7 devices 
 Run the environment verification script to ensure your Ubuntu system is properly configured:
 
 ```bash
-cd scripts/android-device-setup/environment
+cd tools/scripts/android-device-setup/environment
 ./verify-environment.sh
 ```
 
@@ -108,7 +108,7 @@ sudo usermod -aG plugdev $USER
 Run the device verification script:
 
 ```bash
-cd scripts/android-device-setup/environment
+cd tools/scripts/android-device-setup/environment
 ./device-manager.sh setup
 ```
 
@@ -125,7 +125,7 @@ This will:
 Run the master installation script:
 
 ```bash
-cd scripts/android-device-setup/installation
+cd tools/scripts/android-device-setup/installation
 ./install-lineageos.sh
 ```
 
@@ -145,26 +145,26 @@ If you prefer more control, run individual phases:
 
 #### Phase 1: Recovery Installation
 ```bash
-cd scripts/android-device-setup/recovery
+cd tools/scripts/android-device-setup/recovery
 ./twrp-manager.sh install
 ./verify-recovery.sh verify
 ```
 
 #### Phase 2: Download Files
 ```bash
-cd scripts/android-device-setup/rom
+cd tools/scripts/android-device-setup/rom
 ./rom-manager.sh download-all
 ```
 
 #### Phase 3: Transfer Files to Device
 ```bash
-cd scripts/android-device-setup/rom
+cd tools/scripts/android-device-setup/rom
 ./file-transfer.sh batch <device_serial> <rom_file> <gapps_file>
 ```
 
 #### Phase 4: Flash ROM
 ```bash
-cd scripts/android-device-setup/installation
+cd tools/scripts/android-device-setup/installation
 ./flash-operations.sh wipe <device_serial>
 ./flash-operations.sh flash-rom <device_serial>
 ./flash-operations.sh flash-gapps <device_serial>
@@ -172,13 +172,13 @@ cd scripts/android-device-setup/installation
 
 #### Phase 5: Install Root
 ```bash
-cd scripts/android-device-setup/root
+cd tools/scripts/android-device-setup/root
 ./magisk-manager.sh install <device_serial>
 ```
 
 #### Phase 6: Post-Installation Setup
 ```bash
-cd scripts/android-device-setup/post-install
+cd tools/scripts/android-device-setup/post-install
 ./setup-dev-environment.sh configure <device_serial>
 ./mia-integration.sh setup <device_serial>
 ```
@@ -200,7 +200,7 @@ After installation completes, the device will reboot into LineageOS 14.1. Comple
 Run a comprehensive health check:
 
 ```bash
-cd scripts/android-device-setup/testing
+cd tools/scripts/android-device-setup/testing
 ./health-check.sh full <device_serial>
 ```
 
@@ -216,7 +216,7 @@ This verifies:
 Run MIA-specific tests:
 
 ```bash
-cd scripts/android-device-setup/testing
+cd tools/scripts/android-device-setup/testing
 ./test-suite.sh full <device_serial>
 ```
 
@@ -233,7 +233,7 @@ This tests:
 Verify root access:
 
 ```bash
-cd scripts/android-device-setup/root
+cd tools/scripts/android-device-setup/root
 ./verify-root.sh verify <device_serial>
 ```
 
@@ -244,7 +244,7 @@ cd scripts/android-device-setup/root
 Always create backups before making changes:
 
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./backup-manager.sh create full <device_serial>
 ```
 
@@ -260,19 +260,19 @@ If something goes wrong:
 
 #### Boot Loop Recovery
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./recovery-procedures.sh bootloop <device_serial>
 ```
 
 #### Failed Installation Rollback
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./recovery-procedures.sh rollback <device_serial>
 ```
 
 #### Emergency Recovery
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./recovery-procedures.sh bricked <device_serial>
 ```
 
@@ -308,14 +308,14 @@ fastboot devices
 tail -f android-device-workspace/logs/installation.log
 
 # Run diagnostics
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./recovery-procedures.sh diagnostics <device_serial>
 ```
 
 #### Root Not Working
 ```bash
 # Verify Magisk installation
-cd scripts/android-device-setup/root
+cd tools/scripts/android-device-setup/root
 ./verify-root.sh verify <device_serial>
 
 # Reinstall Magisk
@@ -342,20 +342,20 @@ All operations are logged to:
 
 #### Weekly Health Checks
 ```bash
-cd scripts/android-device-setup/testing
+cd tools/scripts/android-device-setup/testing
 ./health-check.sh full <device_serial>
 ```
 
 #### Monthly Backups
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./backup-manager.sh create full <device_serial>
 ```
 
 #### Update Management
 ```bash
 # Update Magisk
-cd scripts/android-device-setup/root
+cd tools/scripts/android-device-setup/root
 ./magisk-manager.sh update <device_serial>
 
 # Update MIA app (when available)
@@ -367,7 +367,7 @@ cd scripts/android-device-setup/root
 Monitor device performance:
 
 ```bash
-cd scripts/android-device-setup/testing
+cd tools/scripts/android-device-setup/testing
 ./health-check.sh performance <device_serial>
 ```
 
@@ -376,7 +376,7 @@ cd scripts/android-device-setup/testing
 Clean up old backups:
 
 ```bash
-cd scripts/android-device-setup/backup
+cd tools/scripts/android-device-setup/backup
 ./backup-manager.sh clean <device_serial>
 ```
 
@@ -394,30 +394,30 @@ All automated scripts can be run individually for manual control:
 
 ```bash
 # Environment
-./scripts/android-device-setup/environment/verify-environment.sh
-./scripts/android-device-setup/environment/device-manager.sh setup
+./tools/scripts/android-device-setup/environment/verify-environment.sh
+./tools/scripts/android-device-setup/environment/device-manager.sh setup
 
 # Recovery
-./scripts/android-device-setup/recovery/twrp-manager.sh install
-./scripts/android-device-setup/recovery/verify-recovery.sh verify
+./tools/scripts/android-device-setup/recovery/twrp-manager.sh install
+./tools/scripts/android-device-setup/recovery/verify-recovery.sh verify
 
 # Downloads
-./scripts/android-device-setup/rom/rom-manager.sh download-all
+./tools/scripts/android-device-setup/rom/rom-manager.sh download-all
 
 # Installation
-./scripts/android-device-setup/installation/flash-operations.sh wipe
-./scripts/android-device-setup/installation/flash-operations.sh flash-rom
+./tools/scripts/android-device-setup/installation/flash-operations.sh wipe
+./tools/scripts/android-device-setup/installation/flash-operations.sh flash-rom
 
 # Root
-./scripts/android-device-setup/root/magisk-manager.sh install
+./tools/scripts/android-device-setup/root/magisk-manager.sh install
 
 # Configuration
-./scripts/android-device-setup/post-install/setup-dev-environment.sh configure
-./scripts/android-device-setup/post-install/mia-integration.sh setup
+./tools/scripts/android-device-setup/post-install/setup-dev-environment.sh configure
+./tools/scripts/android-device-setup/post-install/mia-integration.sh setup
 
 # Testing
-./scripts/android-device-setup/testing/health-check.sh full
-./scripts/android-device-setup/testing/test-suite.sh full
+./tools/scripts/android-device-setup/testing/health-check.sh full
+./tools/scripts/android-device-setup/testing/test-suite.sh full
 ```
 
 ### Report Generation
@@ -425,7 +425,7 @@ All automated scripts can be run individually for manual control:
 Generate comprehensive reports:
 
 ```bash
-cd scripts/android-device-setup/reporting
+cd tools/scripts/android-device-setup/reporting
 ./generate-report.sh comprehensive <device_serial>
 ```
 

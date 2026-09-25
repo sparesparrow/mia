@@ -51,5 +51,5 @@ This will generate random telemetry data and publish it.
 
 ## Configuration
 
-Commands are defined in `config/commands.json`.
+Commands are defined in `apps/rpi-backend/config/commands.json`.
 Decoder logic is in `orchestration/mia-agents/agents/psa_decoder.py`.

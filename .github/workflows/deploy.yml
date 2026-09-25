@@ -34,12 +34,12 @@ jobs:
           filters: |
             deploy:
               - '.github/workflows/deploy.yml'
-              - 'containers/**'
-              - 'docker-compose.pi-simulation.yml'
+              - 'tests/env/**'
+              - 'tests/env/docker-compose.pi-simulation.yml'
               - 'infra/**'
-              - 'orchestrator-config.yaml'
-              - 'scripts/deploy*.sh'
-              - 'scripts/ensure-bundled-cpython.sh'
+              - 'tools/orchestrator-config.yaml'
+              - 'tools/scripts/deploy*.sh'
+              - 'tools/scripts/ensure-bundled-cpython.sh'
 
   validate:
     name: Validate Configs
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate docker-compose files
         run: |
-          for f in infra/docker/docker-compose.yml infra/docker/docker-compose.dev.yml infra/docker/docker-compose.monitoring.yml docker-compose.pi-simulation.yml; do
+          for f in infra/docker/docker-compose.yml infra/docker/docker-compose.dev.yml infra/docker/docker-compose.monitoring.yml tests/env/docker-compose.pi-simulation.yml; do
             if [ -f "$f" ]; then
               echo "Validating $f..."
               docker compose -f "$f" config > /dev/null
@@ -68,8 +68,8 @@ jobs:
           # a missing literal path cannot fail the job with exit 127.
           scripts=(
             infra/deploy/**/*.sh
-            scripts/deploy*.sh
-            scripts/ensure-bundled-cpython.sh
+            tools/scripts/deploy*.sh
+            tools/scripts/ensure-bundled-cpython.sh
           )
           if [ ${#scripts[@]} -eq 0 ]; then
             echo "::error::No deploy scripts matched; the expected layout has changed."

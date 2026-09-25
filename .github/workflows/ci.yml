@@ -14,13 +14,13 @@ on:
       - 'conan-recipes/**'
       - 'infra/conan/**'
       - 'Mia/**'
-      - 'mcp-cpp-bridge/**'
+      - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'modules/**'
       - 'orchestration/**'
       - 'platforms/**'
       - 'rpi/**'
       - 'schemas/**'
-      - 'scripts/**'
+      - 'tools/scripts/**'
       - 'services/**'
       - 'tests/**'
       - 'tools/**'
@@ -37,13 +37,13 @@ on:
       - 'conan-recipes/**'
       - 'infra/conan/**'
       - 'Mia/**'
-      - 'mcp-cpp-bridge/**'
+      - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'modules/**'
       - 'orchestration/**'
       - 'platforms/**'
       - 'rpi/**'
       - 'schemas/**'
-      - 'scripts/**'
+      - 'tools/scripts/**'
       - 'services/**'
       - 'tests/**'
       - 'tools/**'
@@ -88,7 +88,7 @@ jobs:
               - 'orchestration/**'
               - 'rpi/**'
               - 'schemas/**'
-              - 'scripts/**'
+              - 'tools/scripts/**'
               - 'services/**'
               - 'tests/**'
               - 'tools/**'
@@ -98,14 +98,14 @@ jobs:
               - 'protos/**'
               - 'schemas/**'
               - 'schemas/generate.py'
-              - 'scripts/generate-schemas.sh'
+              - 'tools/scripts/generate-schemas.sh'
             cpp:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'apps/rpi-backend/cpp-audio/**'
               - 'conan-recipes/**'
               - 'infra/conan/**'
-              - 'mcp-cpp-bridge/**'
+              - 'apps/rpi-backend/cpp-mcp-bridge/**'
               - 'platforms/cpp/**'
             esp32:
               - '.github/workflows/ci.yml'
@@ -178,7 +178,7 @@ jobs:
       - name: flake8
         continue-on-error: true
         run: >
-          flake8 orchestration/ tests/ apps/rpi-backend/ agents/ services/ scripts/
+          flake8 orchestration/ tests/ apps/rpi-backend/ agents/ tools/
           --max-line-length=120
           --extend-ignore=E203,W503,W293,W291,E402,E302,E305,E501
           --per-file-ignores='tests/*:F401,F811'

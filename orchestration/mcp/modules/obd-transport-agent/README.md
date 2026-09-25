@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ## Android Setup
 
 1. **USB OTG Permissions**: Ensure Android device supports USB OTG and grant permissions
-2. **Bootstrap MIA**: Run `complete-bootstrap.py` on Android (detects android-arm64 platform)
+2. **Bootstrap MIA**: Run `tools/complete-bootstrap.py` on Android (detects android-arm64 platform)
 3. **USB Device Path**: Typically `/dev/bus/usb/*` or `/dev/ttyUSB0`
 
 ## Usage

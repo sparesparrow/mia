@@ -21,4 +21,4 @@ export SSH_KEY=""  # Set to path of SSH key if needed, e.g., "~/.ssh/id_rsa"
 
 # Usage:
 #   source deploy/rpi-config.sh
-#   ./scripts/deploy-raspberry-pi-remote.sh
+#   ./tools/scripts/deploy-raspberry-pi-remote.sh

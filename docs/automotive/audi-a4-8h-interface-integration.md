@@ -206,7 +206,7 @@ already be occupied and the emulator has to replace it.
 Keep the current posture from `vag-audi-bridge`: passive monitoring on, UDS polling off, read services
 limited to `0x19`/`0x22`, no extended session, no security access, no writes. The 8H's simpler
 topology means VIN (`F190`) and DTC summary reads are achievable once the transport is stable. Add a
-vehicle profile so the bridge knows what car it is attached to (see `config/vehicles/`).
+vehicle profile so the bridge knows what car it is attached to (see `apps/rpi-backend/config/vehicles/`).
 
 ### Tier 2 — high value, needs verification first
 
@@ -230,7 +230,7 @@ What this buys, roughly in order of usefulness:
 
 Reverse-engineering method: park, log frames with `candump -l` across scripted actions (open driver
 door, close it, lock, unlock, window down/up, top open/close), then diff the logs. Store the resulting
-map as a DBC-style YAML under `config/vehicles/`, never hardcoded in Python.
+map as a DBC-style YAML under `apps/rpi-backend/config/vehicles/`, never hardcoded in Python.
 
 **Hard rule: no transmit on comfort CAN.** Not in phase 1, not in phase 5. Writing to the body bus of
 a 20-year-old car is how you get a convertible top that opens at 40 km/h and an insurance problem.
@@ -294,10 +294,10 @@ forwarding is opt-in per event class, not a global toggle.
 
 | Phase | Work | Exit criteria |
 | --- | --- | --- |
-| **P0 — Survey** | Full autoscan archived; rows A/C/F identified with a meter; head unit model confirmed; photograph and label every connector before touching it | `docs/automotive/scans/` holds a dated autoscan; `config/vehicles/audi_a4_8h_cabriolet.yaml` confidence fields all read `confirmed` or `ruled_out` |
+| **P0 — Survey** | Full autoscan archived; rows A/C/F identified with a meter; head unit model confirmed; photograph and label every connector before touching it | `docs/automotive/scans/` holds a dated autoscan; `apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml` confidence fields all read `confirmed` or `ruled_out` |
 | **P1 — Power** | Buck, power controller, KL.15 opto, add-a-fuse taps, star ground | 50 clean start/stop cycles, sleep current measured < 5 mA, no brown-out on crank |
 | **P2 — Buses** | CAN HAT on `can0` (powertrain, existing path) and `can1` (comfort, listen-only); frame logging harness | VIN + DTC read on the real car; comfort-CAN frame log captured for all scripted door/window/lock actions |
-| **P3 — Body decode** | Diff-based decode into `config/vehicles/*.yaml`; `body-bus-bridge` module with vcan simulation fallback; unit tests off-car | `vehicle/body` publishes correct door/lock events for 20/20 scripted actions; CI green with no hardware |
+| **P3 — Body decode** | Diff-based decode into `apps/rpi-backend/config/vehicles/*.yaml`; `body-bus-bridge` module with vcan simulation fallback; unit tests off-car | `vehicle/body` publishes correct door/lock events for 20/20 scripted actions; CI green with no hardware |
 | **P4 — Audio** | CDC emulator, ground-loop isolation, `head_unit_bridge`, button→intent binding | Mia TTS audible through factory speakers; head-unit button produces a Mia intent end-to-end |
 | **P5 — I/O** | Row-A switch as push-to-talk (if confirmed), opto relay board for DVR power | Push-to-talk works from cold boot; relay outputs fail safe (de-energised) on Pi halt |
 
@@ -357,4 +357,4 @@ better; P3 is where the interesting context-awareness starts.
 - [`../wiring.md`](../wiring.md) — OBD-II pinout and ESP32/transceiver power wiring
 - [`../cs/automotive/zapojeni-audi-a4-8h.md`](../cs/automotive/zapojeni-audi-a4-8h.md) — Czech hands-on wiring guide: power, fuse taps, opto-isolated KL.15 sense, CAN taps, relays, audio
 - [`../../contracts/topics.md`](../../contracts/topics.md), [`../../contracts/events.md`](../../contracts/events.md) — message contracts
-- [`../../config/vehicles/audi_a4_8h_cabriolet.yaml`](../../config/vehicles/audi_a4_8h_cabriolet.yaml) — machine-readable interface inventory
+- [`../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml`](../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml) — machine-readable interface inventory

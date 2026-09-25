@@ -122,7 +122,7 @@ apps/rpi-backend/     → RPi Server Worker
 apps/android/         → Android Client Worker
 apps/esp32/           → ESP32 Firmware Worker
 devices/esp32/        → ESP32 Firmware Worker
-arduino/              → ESP32 Firmware Worker
+apps/arduino/         → ESP32 Firmware Worker
 web/                  → Web UI Worker
 schemas/              → Schema Designer Worker
 protos/               → Schema Designer Worker
@@ -130,7 +130,7 @@ contracts/            → Schema Designer Worker
 Mia/                  → Schema Designer Worker (generated, read-only)
 orchestration/mcp/    → Agent Developer Worker
 infra/                → Build & Deps Worker + Simulation Worker
-containers/           → Simulation Worker
+tests/env/            → Simulation Worker
 tests/                → All workers (scoped by subdirectory)
 ```
 

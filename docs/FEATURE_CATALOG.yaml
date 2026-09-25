@@ -23,7 +23,7 @@ categories:
       state: TESTED
       description: Handshake, device discovery, text-based command/response protocol
       services: [mia-serial-bridge]
-      files: [hardware/arduino.py, arduino/MIAProtocol/]
+      files: [hardware/arduino.py, apps/arduino/MIAProtocol/]
 
     - name: Serial Bridge (MCU Telemetry)
       state: DEPLOYED
@@ -35,7 +35,7 @@ categories:
       state: TESTED
       description: 23-LED AI state visualizer with drive/parked/night/service modes
       services: [mia-led-monitor]
-      files: [hardware/led_controller.py, arduino/led_strip_controller/]
+      files: [hardware/led_controller.py, apps/arduino/led_strip_controller/]
 
     - name: Hardware Manager
       state: TESTED
@@ -53,7 +53,7 @@ categories:
       state: IMPLEMENTED
       description: ESP32 ELM327 emulator firmware, Serial2 state updates
       services: []
-      files: [firmware/esp32_obd/src/main.cpp]
+      files: [apps/esp32/elm327-emulator/src/main.cpp]
 
   # ── Networking ───────────────────────────────────────────────────────────
   networking:
@@ -349,7 +349,7 @@ categories:
       state: IMPLEMENTED
       description: Scrape targets + 30+ alert rules for automotive, voice, security
       services: []
-      files: [monitoring/prometheus-automotive.yml, monitoring/rules/]
+      files: [infra/monitoring/prometheus-automotive.yml, infra/monitoring/rules/]
 
   # ── Deployment ───────────────────────────────────────────────────────────
   deployment:
@@ -363,7 +363,7 @@ categories:
       state: IMPLEMENTED
       description: Canonical compose files under infra/docker plus the root Pi simulation stack
       services: []
-      files: [infra/docker/, docker-compose.pi-simulation.yml]
+      files: [infra/docker/, tests/env/docker-compose.pi-simulation.yml]
 
     - name: CI/CD (GitHub Actions)
       state: IMPLEMENTED
@@ -375,7 +375,7 @@ categories:
       state: DEPLOYED
       description: Single-command LAN discovery, SSH key push, code sync, service bootstrap
       services: []
-      files: [scripts/deploy-mia-rpi.sh]
+      files: [tools/scripts/deploy-mia-rpi.sh]
 
     - name: mDNS Advertisement (Avahi)
       state: DEPLOYED
@@ -407,7 +407,7 @@ categories:
       state: IMPLEMENTED
       description: Scenario-driven E2E test — voice commands, telemetry, sessions, GPIO, WebSocket
       services: []
-      files: [tools/driver-simulator/simulator.py]
+      files: [tests/env/driver-simulator/simulator.py]
 
   # ── In-Car Infrastructure (Planned) ──────────────────────────────────────
   in-car:

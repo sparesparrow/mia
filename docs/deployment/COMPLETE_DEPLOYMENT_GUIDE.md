@@ -31,10 +31,10 @@ git clone https://github.com/sparesparrow/mia.git ~/mia
 cd ~/mia
 
 # 3. Run complete deployment
-sudo ./scripts/deploy-complete-system.sh
+sudo ./tools/scripts/deploy-complete-system.sh
 
 # 4. Validate deployment
-sudo ./scripts/validate-mia-deployment.py
+sudo ./tools/scripts/validate-mia-deployment.py
 ```
 
 That's it! Your MIA system will be fully operational.
@@ -46,7 +46,7 @@ That's it! Your MIA system will be fully operational.
 The deployment script handles complete system setup:
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase system
+sudo ./tools/scripts/deploy-complete-system.sh --phase system
 ```
 
 **What it does:**
@@ -61,7 +61,7 @@ sudo ./scripts/deploy-complete-system.sh --phase system
 ### Phase 2: Repository Setup
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase repository
+sudo ./tools/scripts/deploy-complete-system.sh --phase repository
 ```
 
 **What it does:**
@@ -73,7 +73,7 @@ sudo ./scripts/deploy-complete-system.sh --phase repository
 ### Phase 3: Dependencies Installation
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase dependencies
+sudo ./tools/scripts/deploy-complete-system.sh --phase dependencies
 ```
 
 **What it does:**
@@ -87,7 +87,7 @@ sudo ./scripts/deploy-complete-system.sh --phase dependencies
 ### Phase 4: Hardware Configuration
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase hardware
+sudo ./tools/scripts/deploy-complete-system.sh --phase hardware
 ```
 
 **What it does:**
@@ -100,7 +100,7 @@ sudo ./scripts/deploy-complete-system.sh --phase hardware
 ### Phase 5: MIA Services Deployment
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase services
+sudo ./tools/scripts/deploy-complete-system.sh --phase services
 ```
 
 **What it does:**
@@ -113,7 +113,7 @@ sudo ./scripts/deploy-complete-system.sh --phase services
 ### Phase 6: Validation & Testing
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase validate
+sudo ./tools/scripts/deploy-complete-system.sh --phase validate
 ```
 
 **What it does:**
@@ -127,7 +127,7 @@ sudo ./scripts/deploy-complete-system.sh --phase validate
 ### Phase 7: Monitoring Setup
 
 ```bash
-sudo ./scripts/deploy-complete-system.sh --phase monitor
+sudo ./tools/scripts/deploy-complete-system.sh --phase monitor
 ```
 
 **What it does:**
@@ -143,39 +143,39 @@ sudo ./scripts/deploy-complete-system.sh --phase monitor
 
 ```bash
 # Use custom repository URL
-REPO_URL="https://github.com/your-org/mia.git" sudo ./scripts/deploy-complete-system.sh
+REPO_URL="https://github.com/your-org/mia.git" sudo ./tools/scripts/deploy-complete-system.sh
 
 # Use different branch
-REPO_BRANCH="development" sudo ./scripts/deploy-complete-system.sh
+REPO_BRANCH="development" sudo ./tools/scripts/deploy-complete-system.sh
 
 # Custom MIA user
-MIA_USER="automotive" sudo ./scripts/deploy-complete-system.sh
+MIA_USER="automotive" sudo ./tools/scripts/deploy-complete-system.sh
 ```
 
 ### Selective Deployment
 
 ```bash
 # Deploy only specific components
-sudo ./scripts/deploy-complete-system.sh --phase dependencies --phase hardware
+sudo ./tools/scripts/deploy-complete-system.sh --phase dependencies --phase hardware
 
 # Skip validation (faster deployment)
-sudo ./scripts/deploy-complete-system.sh --skip-validation
+sudo ./tools/scripts/deploy-complete-system.sh --skip-validation
 
 # Verbose output
-sudo ./scripts/deploy-complete-system.sh --verbose
+sudo ./tools/scripts/deploy-complete-system.sh --verbose
 ```
 
 ### Hardware-Specific Options
 
 ```bash
 # Disable Bluetooth features
-ENABLE_BLUETOOTH=false sudo ./scripts/deploy-complete-system.sh
+ENABLE_BLUETOOTH=false sudo ./tools/scripts/deploy-complete-system.sh
 
 # Disable GPIO features
-ENABLE_GPIO=false sudo ./scripts/deploy-complete-system.sh
+ENABLE_GPIO=false sudo ./tools/scripts/deploy-complete-system.sh
 
 # Disable serial features
-ENABLE_SERIAL=false sudo ./scripts/deploy-complete-system.sh
+ENABLE_SERIAL=false sudo ./tools/scripts/deploy-complete-system.sh
 ```
 
 ## 🧪 Post-Deployment Validation
@@ -184,13 +184,13 @@ After deployment, run comprehensive validation:
 
 ```bash
 # Run full validation suite
-sudo ./scripts/validate-mia-deployment.py
+sudo ./tools/scripts/validate-mia-deployment.py
 
 # Generate detailed report
-sudo ./scripts/validate-mia-deployment.py --output validation-report.json
+sudo ./tools/scripts/validate-mia-deployment.py --output validation-report.json
 
 # Verbose validation output
-sudo ./scripts/validate-mia-deployment.py --verbose
+sudo ./tools/scripts/validate-mia-deployment.py --verbose
 ```
 
 ### Validation Tests Include:
@@ -338,7 +338,7 @@ sudo systemctl stop mia-*
 sudo rm -rf /opt/mia
 
 # Re-run deployment
-sudo ./scripts/deploy-complete-system.sh
+sudo ./tools/scripts/deploy-complete-system.sh
 ```
 
 #### Service Reset
@@ -384,5 +384,5 @@ Your MIA system is now ready for automotive AI integration! Connect your OBD-II 
 **Need Help?**
 - Check the troubleshooting section above
 - Review deployment logs: `tail -f ~/mia/deployment-*.log`
-- Run validation: `sudo ./scripts/validate-mia-deployment.py`
+- Run validation: `sudo ./tools/scripts/validate-mia-deployment.py`
 - Visit the project repository for updates and community support

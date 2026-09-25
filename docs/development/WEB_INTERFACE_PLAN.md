@@ -384,7 +384,7 @@ projects/mia/
 ├── docs/
 │   └── development/
 │       └── WEB_INTERFACE_PLAN.md # This file
-└── scripts/
+└── tools/scripts/
     └── deploy-web-interface.sh   # NEW: Deployment script
 ```
 

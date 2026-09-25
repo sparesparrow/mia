@@ -8,16 +8,16 @@ This document describes the comprehensive CI/CD pipeline and development environ
 
 ```bash
 # Start development environment
-./scripts/dev-environment.sh up dev
+./tools/scripts/dev-environment.sh up dev
 
 # Start with monitoring
-./scripts/dev-environment.sh up full
+./tools/scripts/dev-environment.sh up full
 
 # Check status
-./scripts/dev-environment.sh status dev
+./tools/scripts/dev-environment.sh status dev
 
 # View logs
-./scripts/dev-environment.sh logs dev --follow
+./tools/scripts/dev-environment.sh logs dev --follow
 ```
 
 ### VS Code Development Container
@@ -87,7 +87,7 @@ Cross-platform C++ builds using Conan:
 |-------------|-------------|---------------------|
 | `dev` | Development with hot reloading | `infra/docker/docker-compose.dev.yml` |
 | `prod` | Production-like environment | `infra/docker/docker-compose.yml` |
-| `pi-sim` | Raspberry Pi simulation | `docker-compose.pi-simulation.yml` |
+| `pi-sim` | Raspberry Pi simulation | `tests/env/docker-compose.pi-simulation.yml` |
 | `monitoring` | Observability stack | `infra/docker/docker-compose.monitoring.yml` |
 | `full` | All services combined | All compose files |
 
@@ -292,10 +292,10 @@ SLACK_WEBHOOK_URL=your-webhook
 1. **Container Won't Start**
    ```bash
    # Check logs
-   ./scripts/dev-environment.sh logs dev service-name
+   ./tools/scripts/dev-environment.sh logs dev service-name
    
    # Rebuild container
-   ./scripts/dev-environment.sh build dev
+   ./tools/scripts/dev-environment.sh build dev
    ```
 
 2. **Port Conflicts**
@@ -304,7 +304,7 @@ SLACK_WEBHOOK_URL=your-webhook
    netstat -tulpn | grep :8080
    
    # Stop conflicting services
-   ./scripts/dev-environment.sh down dev
+   ./tools/scripts/dev-environment.sh down dev
    ```
 
 3. **Permission Issues**
@@ -317,13 +317,13 @@ SLACK_WEBHOOK_URL=your-webhook
    ```bash
    # Reset database
    docker-compose down -v
-   ./scripts/dev-environment.sh up dev
+   ./tools/scripts/dev-environment.sh up dev
    ```
 
 ### Getting Help
 
-- Check the logs: `./scripts/dev-environment.sh logs dev --follow`
-- Run health checks: `./scripts/dev-environment.sh health dev`
+- Check the logs: `./tools/scripts/dev-environment.sh logs dev --follow`
+- Run health checks: `./tools/scripts/dev-environment.sh health dev`
 - Review documentation: `docs/troubleshooting.md`
 - Open an issue on GitHub
 

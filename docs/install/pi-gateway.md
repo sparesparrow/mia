@@ -8,13 +8,13 @@
 ### Steps
 1. Install Docker (and compose plugin):
 ```bash
-cd edge-compat/pi-gateway/scripts
+cd infra/edge/pi-gateway/scripts
 ./install.sh
 ```
 
 2. Configure VIN and camera stream:
 ```bash
-cd edge-compat/pi-gateway
+cd infra/edge/pi-gateway
 cp env.example .env
 # edit VIN and ANPR_RTSP_URL
 ```

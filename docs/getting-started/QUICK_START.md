@@ -129,7 +129,7 @@ python3 -c "
 import yaml
 from pathlib import Path
 
-config = yaml.safe_load(open('orchestrator-config.yaml'))
+config = yaml.safe_load(open('tools/orchestrator-config.yaml'))
 print(f'✅ Configuration loaded: {len(config.get(\"components\", []))} components')
 "
 ```
@@ -233,7 +233,7 @@ ls -la modules/
 ls -la platforms/
 
 # View configuration
-cat orchestrator-config.yaml
+cat tools/orchestrator-config.yaml
 
 # Check documentation
 ls -la docs/
@@ -289,7 +289,7 @@ docker compose -f infra/docker/docker-compose.dev.yml down
 pip install conan
 
 # Build hardware server
-./scripts/build-hardware-server.sh
+./tools/scripts/build-hardware-server.sh
 
 # Or manually
 cd platforms/cpp
@@ -313,7 +313,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ### Customize Configuration
 
-Edit `orchestrator-config.yaml` to customize:
+Edit `tools/orchestrator-config.yaml` to customize:
 
 ```yaml
 # Add your own component
@@ -356,7 +356,7 @@ pip install -r requirements.txt
 cd /path/to/ai-servis
 
 # Verify file exists
-ls orchestrator-config.yaml
+ls tools/orchestrator-config.yaml
 ```
 
 #### Issue 3: Import Errors
@@ -379,7 +379,7 @@ python3 -m test_orchestrator_simple
 **Solution**:
 ```bash
 # Make scripts executable
-chmod +x scripts/*.sh
+chmod +x tools/scripts/*.sh
 
 # Or run with python
 python3 script_name.py
@@ -429,13 +429,13 @@ python3 test_orchestrator_simple.py
 python3 test_orchestrator.py
 
 # Check configuration
-python3 build_orchestrator.py orchestrator-config.yaml --help
+python3 tools/build_orchestrator.py tools/orchestrator-config.yaml --help
 
 # View logs (Docker)
 docker-compose logs -f [service-name]
 
 # Build C++ components
-./scripts/build-hardware-server.sh
+./tools/scripts/build-hardware-server.sh
 
 # Format code
 black .
@@ -450,12 +450,12 @@ mypy .
 
 | File | Purpose |
 |------|---------|
-| `orchestrator-config.yaml` | Main configuration |
+| `tools/orchestrator-config.yaml` | Main configuration |
 | `requirements.txt` | Python dependencies |
 | `requirements-minimal.txt` | Minimal dependencies |
 | `infra/docker/docker-compose.yml` | Canonical production-like Docker stack |
 | `test_orchestrator_simple.py` | Simple test suite |
-| `build_orchestrator.py` | Build automation |
+| `tools/build_orchestrator.py` | Build automation |
 
 ### Key Ports
 

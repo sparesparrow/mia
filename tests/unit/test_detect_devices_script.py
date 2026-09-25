@@ -10,7 +10,7 @@ import pytest
 
 def load_detect_devices_module():
     """Import the detect_devices script module for unit testing."""
-    module_path = Path(__file__).resolve().parents[2] / "scripts" / "detect_devices.py"
+    module_path = Path(__file__).resolve().parents[2] / "tools" / "scripts" / "detect_devices.py"
     spec = importlib.util.spec_from_file_location("detect_devices_script", module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module

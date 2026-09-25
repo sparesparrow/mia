@@ -8,7 +8,7 @@ from pathlib import Path
 
 def load_network_scanner_module():
     """Import the scanner script module for unit testing."""
-    module_path = Path(__file__).resolve().parents[2] / "scripts" / "network_scanner.py"
+    module_path = Path(__file__).resolve().parents[2] / "tools" / "scripts" / "network_scanner.py"
     spec = importlib.util.spec_from_file_location("network_scanner", module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module

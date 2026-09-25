@@ -28,13 +28,13 @@ The single comprehensive guide for building, deploying, and testing the MIA Andr
 ### One-Command Build & Test
 ```bash
 cd ~/projects/embedded/mia
-bash skills/android-adb-test/scripts/android-adb-test.sh \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh \
   build-and-test --scenario dashboard --screenshots --logs
 ```
 
 ### With Device Specified
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh \
   build-and-test --scenario full-flow --screenshots --logs --device HT36TW903516
 ```
 
@@ -48,7 +48,7 @@ bash skills/android-adb-test/scripts/android-adb-test.sh \
 ├── skills/
 │   └── android-adb-test/           # Skill root
 │       ├── SKILL.md                 # Skill definition
-│       ├── scripts/
+│       ├── tools/scripts/
 │       │   ├── android-adb-test.sh              # Main orchestrator
 │       │   └── spawn-logcat-monitor.sh          # Subagent spawner
 │       └── references/
@@ -63,32 +63,32 @@ bash skills/android-adb-test/scripts/android-adb-test.sh \
 
 ### Pattern 1: Build Only (for CI verification)
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh build
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh build
 # Output: apps/android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### Pattern 2: Deploy Only (for already-built APK)
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh deploy \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh deploy \
   --device HT36TW903516
 ```
 
 ### Pattern 3: Interactive Testing (manual debugging)
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh interactive \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh interactive \
   --device HT36TW903516
 # Commands: tap X Y | swipe X1 Y1 X2 Y2 | text "str" | screenshot | logcat | exit
 ```
 
 ### Pattern 4: Test Specific Scenario
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh test \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh test \
   --scenario ble-scan --screenshots --logs --device HT36TW903516
 ```
 
 ### Pattern 5: Full CI Build → Deploy → Test → Analyze
 ```bash
-bash skills/android-adb-test/scripts/android-adb-test.sh \
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh \
   build-and-test \
   --scenario full-flow \
   --screenshots \
@@ -262,9 +262,9 @@ adb shell pm list permissions -g | grep cz.mia.app
 - `apps/android/README.md` — Project overview
 - `apps/android/docs/ARCHITECTURE.md` — App architecture & components
 - `apps/android/docs/USER_GUIDE.md` — End-user guide
-- `skills/android-adb-test/references/adb-commands.md` — ADB command reference
-- `skills/android-adb-test/references/logcat-patterns.md` — Error patterns
-- `skills/android-adb-test/references/test-scenarios.md` — Scenario specs
+- `.claude/skills/android-adb-test/references/adb-commands.md` — ADB command reference
+- `.claude/skills/android-adb-test/references/logcat-patterns.md` — Error patterns
+- `.claude/skills/android-adb-test/references/test-scenarios.md` — Scenario specs
 
 ---
 

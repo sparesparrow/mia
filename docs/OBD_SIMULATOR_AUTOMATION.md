@@ -115,7 +115,7 @@ Automated integration test script:
 
 ```bash
 # Run integration tests
-bash scripts/test-obd-simulator.sh
+bash tools/scripts/test-obd-simulator.sh
 ```
 
 The script validates:
@@ -160,7 +160,7 @@ Workflows trigger on:
 
 ### Automated Deployment Script
 
-The deployment script (`scripts/deploy-raspberry-pi.sh`) has been updated to include:
+The deployment script (`tools/scripts/deploy-raspberry-pi.sh`) has been updated to include:
 
 1. **OBD Service Installation**:
    - Copies `mia-serial-bridge.service`
@@ -189,7 +189,7 @@ python -m sparetools_obd bootstrap
 
 ```bash
 # Run deployment script
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 
 # Start services
 sudo systemctl start zmq-broker

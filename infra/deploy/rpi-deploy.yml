@@ -31,8 +31,8 @@ deployment:
       
     - name: "arduino-code"
       type: "arduino-sketch"
-      source: "arduino/led_strip_controller/"
-      destination: "arduino/led_strip_controller/"
+      source: "apps/arduino/led_strip_controller/"
+      destination: "apps/arduino/led_strip_controller/"
       
     - name: "requirements"
       type: "requirements-file"

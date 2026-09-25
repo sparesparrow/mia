@@ -8,11 +8,11 @@
 # 3. Uses bundled interpreter to install/configure Conan 2.21.0
 # 4. Sets Conan remotes to Cloudsmith Conan repos
 #
-# This script delegates to complete-bootstrap.py (stdlib-only, no external deps)
+# This script delegates to tools/complete-bootstrap.py (stdlib-only, no external deps)
 # for the actual bootstrap work.
 #
 # Usage:
-#   ./tools/bootstrap.sh              # Full setup (calls complete-bootstrap.py)
+#   ./tools/bootstrap.sh              # Full setup (calls tools/complete-bootstrap.py)
 #   ./tools/bootstrap.sh --update     # Update existing environment
 #   ./tools/bootstrap.sh --clean      # Remove and reinstall
 #   ./tools/bootstrap.sh --legacy     # Use legacy Conan-based approach (deprecated)
@@ -422,12 +422,12 @@ update_gitignore() {
 
 # Run Cloudsmith-centric bootstrap (canonical approach)
 run_cloudsmith_bootstrap() {
-    echo -e "${CYAN}Running Cloudsmith-centric bootstrap (complete-bootstrap.py)...${NC}"
+    echo -e "${CYAN}Running Cloudsmith-centric bootstrap (tools/complete-bootstrap.py)...${NC}"
     echo ""
     
-    # Check if complete-bootstrap.py exists
-    if [ ! -f "$PROJECT_ROOT/complete-bootstrap.py" ]; then
-        echo -e "${RED}Error: complete-bootstrap.py not found at $PROJECT_ROOT/complete-bootstrap.py${NC}"
+    # Check if tools/complete-bootstrap.py exists
+    if [ ! -f "$PROJECT_ROOT/tools/complete-bootstrap.py" ]; then
+        echo -e "${RED}Error: tools/complete-bootstrap.py not found at $PROJECT_ROOT/tools/complete-bootstrap.py${NC}"
         echo -e "${YELLOW}Falling back to legacy Conan-based approach...${NC}"
         return 1
     fi
@@ -448,7 +448,7 @@ run_cloudsmith_bootstrap() {
     
     # Run the bootstrap script
     cd "$PROJECT_ROOT"
-    "$python_cmd" "$PROJECT_ROOT/complete-bootstrap.py"
+    "$python_cmd" "$PROJECT_ROOT/tools/complete-bootstrap.py"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Cloudsmith bootstrap completed successfully${NC}"
@@ -488,7 +488,7 @@ main() {
                 echo "  -h, --help    Show this help"
                 echo ""
                 echo "This script uses Cloudsmith-centric CPython-tool bootstrap"
-                echo "by default (complete-bootstrap.py). The legacy Conan-based"
+                echo "by default (tools/complete-bootstrap.py). The legacy Conan-based"
                 echo "approach is deprecated and will be removed."
                 exit 0
                 ;;

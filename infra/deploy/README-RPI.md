@@ -8,14 +8,14 @@
 
 ```bash
 # Option 1: Use default configuration (mia@192.168.200.139)
-./scripts/deploy-raspberry-pi-remote.sh
+./tools/scripts/deploy-raspberry-pi-remote.sh
 
 # Option 2: Customize via environment variables
 export RPI_USER="mia"
 export RPI_HOST="192.168.200.139"
 export RPI_PORT="22"
 export SSH_KEY="~/.ssh/id_rsa"  # Optional
-./scripts/deploy-raspberry-pi-remote.sh
+./tools/scripts/deploy-raspberry-pi-remote.sh
 ```
 
 ## Prerequisites

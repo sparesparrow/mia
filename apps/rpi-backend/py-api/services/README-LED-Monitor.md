@@ -28,7 +28,7 @@ Legend:
 
 ## Service Architecture
 
-1. **Arduino LED Controller** (`arduino/led_strip_controller/`) — firmware
+1. **Arduino LED Controller** (`apps/arduino/led_strip_controller/`) — firmware
 2. **Python LED Controller** (`apps/rpi-backend/py-api/hardware/led_controller.py`) — high-level interface
 3. **LED Monitor Service** (`apps/rpi-backend/py-api/services/led_monitor_service.py`) — ZeroMQ integration
 
@@ -40,7 +40,7 @@ arduino-cli lib install "FastLED"
 arduino-cli lib install "ArduinoJson"
 
 # Upload firmware
-cd arduino/led_strip_controller
+cd apps/arduino/led_strip_controller
 ./upload.sh
 
 # Enable systemd service

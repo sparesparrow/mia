@@ -8,7 +8,7 @@ from pathlib import Path
 
 def load_deploy_rpi_module():
     """Import the deploy_rpi script module for unit testing."""
-    module_path = Path(__file__).resolve().parents[2] / "scripts" / "deploy_rpi.py"
+    module_path = Path(__file__).resolve().parents[2] / "tools" / "scripts" / "deploy_rpi.py"
     spec = importlib.util.spec_from_file_location("deploy_rpi_script", module_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module

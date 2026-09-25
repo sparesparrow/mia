@@ -8,7 +8,7 @@ applyTo:
   - "apps/rpi-backend/py-api/api/**/*.py"
   - "orchestration/mcp/modules/shared/mcp_framework.py"
   - "orchestration/mcp/modules/**/main.py"
-  - "orchestrator-config.yaml"
+  - "tools/orchestrator-config.yaml"
   - "web/voice-chat.html"
   - "web/voice-chat.js"
 ---
@@ -28,5 +28,5 @@ applyTo:
 - Useful validation:
   - `curl http://localhost:8000/status`
   - `pytest tests/ -m "not hardware"`
-  - `bash scripts/system-tests.sh` for changes that span multiple services
+  - `bash tools/scripts/system-tests.sh` for changes that span multiple services
 - Related docs: [contracts/topics.md](../../contracts/topics.md), [contracts/events.md](../../contracts/events.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [README.md](../../README.md), and [../copilot-instructions.md](../copilot-instructions.md).

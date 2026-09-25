@@ -26,7 +26,7 @@ sudo apt-get install -y \
 ### 2. Build
 
 ```bash
-./scripts/build-raspberry-pi.sh
+./tools/scripts/build-raspberry-pi.sh
 ```
 
 Or manually:
@@ -40,7 +40,7 @@ make -j$(nproc)
 ### 3. Deploy
 
 ```bash
-sudo ./scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-raspberry-pi.sh
 sudo systemctl start mia-api
 sudo systemctl enable mia-api
 ```

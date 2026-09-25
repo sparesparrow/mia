@@ -34,8 +34,8 @@ from typing import Any, Optional
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_DIR = REPO_ROOT / "tests" / "integration" / "artifacts"
 LEARNINGS_FILE = ARTIFACTS_DIR / "self_improvement_learnings.json"
-ROOT_VERIFY_SCRIPT = REPO_ROOT / "scripts" / "android-device-setup" / "root" / "verify-root.sh"
-ANDROID_SKILL_SCRIPT = REPO_ROOT / "skills" / "android-adb-test" / "scripts" / "android-adb-test.sh"
+ROOT_VERIFY_SCRIPT = REPO_ROOT / "tools" / "scripts" / "android-device-setup" / "root" / "verify-root.sh"
+ANDROID_SKILL_SCRIPT = REPO_ROOT / ".claude" / "skills" / "android-adb-test" / "scripts" / "android-adb-test.sh"
 
 DEFAULT_HOST = os.getenv("MIA_TARGET_HOST", "192.168.200.134")
 DEFAULT_USER = os.getenv("MIA_TARGET_USER", "sparrow")
@@ -977,7 +977,7 @@ class IntegrationHarness:
             f"""
             set -o pipefail
             cd {shlex.quote(self.remote_repo_path)}
-            printf 'y\n' | sudo -E env DEBIAN_FRONTEND=noninteractive MIA_INSTALL_DIR={shlex.quote(self.install_path)} bash scripts/deploy-production-rpi.sh
+            printf 'y\n' | sudo -E env DEBIAN_FRONTEND=noninteractive MIA_INSTALL_DIR={shlex.quote(self.install_path)} bash tools/scripts/deploy-production-rpi.sh
             """
         )
         result = self.remote.ssh(command, timeout=3600, check=False)

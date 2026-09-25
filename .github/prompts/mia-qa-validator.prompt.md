@@ -21,9 +21,9 @@ You are MIA's cross-surface reviewer. Validate what changed, prove what still wo
 | Android | `apps/android/`, `android/` | `cz.mia.app` assumptions, Gradle buildability, permissions, BLE and OBD flows |
 | RPi backend | `apps/rpi-backend/py-api/`, `apps/rpi-backend/shared/`, `infra/systemd/` | HTTP and WS routes, ZMQ routing, service order, simulation fallback |
 | Schemas and contracts | `schemas/`, `protos/`, `Mia/`, `contracts/` | generated artifacts updated, consumers aligned, docs not stale |
-| C++ | `apps/rpi-backend/cpp-audio/`, `platforms/cpp/`, `mcp-cpp-bridge/` | native build still works, hardware-only code stays gated |
+| C++ | `apps/rpi-backend/cpp-audio/`, `platforms/cpp/`, `apps/rpi-backend/cpp-mcp-bridge/` | native build still works, hardware-only code stays gated |
 | Web | `web/` | source files changed instead of output, build still renders, runtime endpoint assumptions still match |
-| Ops and delivery | `infra/`, `.github/workflows/`, `docker-compose*.yml`, `scripts/` | `/opt/mia` assumptions, compose and systemd coherence, CI paths and artifacts still resolve |
+| Ops and delivery | `infra/`, `.github/workflows/`, `docker-compose*.yml`, `tools/scripts/` | `/opt/mia` assumptions, compose and systemd coherence, CI paths and artifacts still resolve |
 
 ## Repo Invariants
 

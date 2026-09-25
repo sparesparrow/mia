@@ -10,19 +10,19 @@ For the complete guide, see [TESTING.md](TESTING.md).
 
 ```bash
 # Full build + test
-bash scripts/test-orchestrator.sh HT36TW903516 full-flow 1
+bash tools/scripts/test-orchestrator.sh HT36TW903516 full-flow 1
 
 # Build only
-bash skills/android-adb-test/scripts/android-adb-test.sh build
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh build
 
 # Deploy only
-bash skills/android-adb-test/scripts/android-adb-test.sh deploy --device HT36TW903516
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh deploy --device HT36TW903516
 
 # Interactive testing
-bash skills/android-adb-test/scripts/android-adb-test.sh interactive --device HT36TW903516
+bash .claude/skills/android-adb-test/scripts/android-adb-test.sh interactive --device HT36TW903516
 
 # Analyze logcat
-bash scripts/spawn-test-tasks.sh all apps/android/test-artifacts/<timestamp>
+bash tools/scripts/spawn-test-tasks.sh all apps/android/test-artifacts/<timestamp>
 ```
 
 ---
@@ -40,7 +40,7 @@ bash scripts/spawn-test-tasks.sh all apps/android/test-artifacts/<timestamp>
 | `interactive` | Manual debugging | N/A |
 
 ```bash
-bash scripts/test-orchestrator.sh <device> <scenario>
+bash tools/scripts/test-orchestrator.sh <device> <scenario>
 ```
 
 ---
@@ -98,7 +98,7 @@ apps/android/test-artifacts/<YYYYMMDD_HHMMSS>/
 | File | Content |
 |------|-------|
 | [TESTING.md](TESTING.md) | **Complete guide** — start here |
-| `skills/android-adb-test/SKILL.md` | Skill spec + workflows |
-| `skills/android-adb-test/references/adb-commands.md` | 60+ ADB commands |
-| `skills/android-adb-test/references/logcat-patterns.md` | Error patterns |
-| `skills/android-adb-test/references/test-scenarios.md` | Scenario specs |
+| `.claude/skills/android-adb-test/SKILL.md` | Skill spec + workflows |
+| `.claude/skills/android-adb-test/references/adb-commands.md` | 60+ ADB commands |
+| `.claude/skills/android-adb-test/references/logcat-patterns.md` | Error patterns |
+| `.claude/skills/android-adb-test/references/test-scenarios.md` | Scenario specs |
