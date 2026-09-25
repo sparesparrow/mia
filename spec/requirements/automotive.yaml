@@ -1,0 +1,164 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: automotive
+title: Automotive telemetry and diagnostics
+description: OBD-II, vehicle bridges, telemetry contracts and the Cycle 1 passive telemetry slice.
+requirements:
+- id: REQ-AUTO-001
+  title: OBD-II digital twin
+  statement: The Pi shall emulate an ELM327 adapter backed by a dynamic car state built from hardware telemetry,
+    including AT initialisation, CAN protocol auto-detect and retry backoff.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Car state follows the MCU telemetry it is fed
+  - Car state maps onto the OBD PIDs the emulator serves
+  implemented_in:
+  - apps/rpi-backend/py-api/services/obd_worker.py
+  services:
+  - mia-obd-worker
+  not_proven: A real OBD client against the Pi
+- id: REQ-AUTO-002
+  title: OBD physics engine
+  statement: The Pi shall bridge hardware inputs to the ESP32 as a binary struct at 20 Hz for RPM and speed physics.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/obd_physics.py
+  services:
+  - mia-obd-worker
+- id: REQ-AUTO-003
+  title: OBD transport agent (MCP)
+  statement: An MCP agent shall provide OBD-II access with FlatBuffers messages, Android USB-OTG transport and an
+    ISO-TP queue.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/obd-transport-agent
+- id: REQ-AUTO-004
+  title: Automotive MCP bridge
+  statement: An MCP bridge shall expose safety-classified vehicle state and route vehicle signals to the brand bridges.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Physical, functional and broadcast addressing resolve to the right targets
+  - The VAG Audi bridge is wired in
+  implemented_in:
+  - orchestration/mcp/modules/automotive-mcp-bridge
+- id: REQ-AUTO-005
+  title: Citroën C4 PSA bridge (secondary)
+  statement: The Citroën C4 bridge shall decode PSA diagnostics (DPF, Eolys, BSI), raise vehicle alerts and publish
+    vehicle telemetry on port 5557.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - PSA values (soot mass, oil temperature, Eolys level, DPF status) decode correctly
+  - Telemetry is published on 5557, not the MCU channel 5556
+  implemented_in:
+  - orchestration/mcp/modules/citroen-c4-bridge/main.py
+  - orchestration/mia-agents/agents/citroen_bridge.py
+  - orchestration/mia-agents/agents/psa_decoder.py
+  services:
+  - mia-citroen-bridge
+  decisions:
+  - ADR-0008
+  not_proven: A physical Citroën C4
+- id: REQ-AUTO-006
+  title: VAG/Audi read-only diagnostics bridge
+  statement: The VAG bridge shall read Audi A4 8H diagnostics without writing to any ECU, report adapter capabilities,
+    and keep UDS disabled unless explicitly enabled.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The default configuration is read-only and passive, and UDS is disabled in the systemd unit
+  - Data identifier reads are blocked unless the transport reports UDS capability
+  implemented_in:
+  - orchestration/mcp/modules/vag-audi-bridge/main.py
+  services:
+  - mia-vag-audi-bridge
+  decisions:
+  - ADR-0006
+  - ADR-0008
+  not_proven: Bench or in-vehicle validation on the Audi A4 8H
+  safety: 'Read-only: no ECU writes; UDS off by default'
+- id: REQ-AUTO-007
+  title: Normalised telemetry payload
+  statement: Vehicle telemetry from every source shall be normalised into one payload contract before it reaches
+    API consumers.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Replay fixtures produce the contracted payload
+  - A simulated end-to-end flow keeps the payload shape
+  implemented_in:
+  - apps/rpi-backend/shared/telemetry/normalized_payload.py
+  not_proven: Pi bench validation with real transports
+- id: REQ-AUTO-008
+  title: Vehicle telemetry FlatBuffers schemas
+  statement: Vehicle, GPIO, sensor, LED and system messages shall be defined as FlatBuffers schemas with explicit
+    field IDs, and committed bindings shall match them.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every table declares explicit field IDs
+  - Generated bindings exist for every schema type and are marked generated
+  - Citroën telemetry round-trips through the vehicle codec
+  implemented_in:
+  - schemas/mia.fbs
+  - schemas/vehicle.fbs
+  - schemas/vehicle_telemetry.fbs
+  - schemas/generated/python/Mia
+  decisions:
+  - ADR-0004
+- id: REQ-AUTO-010
+  title: Canonical vehicle telemetry envelope v1
+  statement: Cycle 1 telemetry shall use one vehicle.telemetry envelope (schema_version 1) carrying ignition, battery
+    voltage, engine RPM and coolant temperature, each with unit, source and confidence.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A complete envelope validates against the JSON Schema
+  - Partial payloads are never promoted to an envelope
+  - Malformed envelopes are rejected with a validation error, never an unhandled exception
+  implemented_in:
+  - schemas/vehicle_telemetry_envelope.schema.json
+  - apps/rpi-backend/shared/telemetry/vehicle_envelope.py
+  decisions:
+  - ADR-0009
+  not_proven: Compatibility with external legacy consumers
+- id: REQ-AUTO-011
+  title: CAN replay harness
+  statement: A recorded or synthetic CAN trace shall replay into complete Cycle 1 envelopes without a vehicle.
+  evidence: simulation_tested
+  acceptance:
+  - The bench fixture replays to ignition=true, 13.8 V, 1750 rpm, 86 °C
+  implemented_in:
+  - apps/rpi-backend/shared/telemetry/can_replay.py
+  - tools/vehicle-replay
+  - tests/fixtures/cycle1_bench.jsonl
+  decisions:
+  - ADR-0009
+  not_proven: SocketCAN timing and a real vehicle capture; 0x100 ignition is a harness convention, not an Audi 8H
+    mapping
+- id: REQ-AUTO-012
+  title: ESP32 passive CAN capture
+  statement: The ESP32 listen-only build shall receive standard CAN frames and emit them as JSON lines to the Pi
+    without any transmit path compiled in.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every twai_transmit call sits in a branch compiled out when MIA_TWAI_LISTEN_ONLY=1
+  - 'CI: the listen-only ELF contains no twai_transmit symbol, the default ELF does'
+  implemented_in:
+  - apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c
+  decisions:
+  - ADR-0006
+  not_proven: Flashing either build to a board
+  safety: No transmit symbol in the listen-only build; the car install also leaves the transceiver TXD physically
+    disconnected
+- id: REQ-AUTO-013
+  title: Pi normalisation and exposure of Cycle 1 telemetry
+  statement: The serial bridge shall turn passive CAN frames or complete flat telemetry into the Cycle 1 envelope,
+    and the API shall serve the latest valid envelope on /telemetry/cycle1 and /ws/telemetry.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Only a validated envelope replaces the cached one
+  - Legacy telemetry fields survive a malformed envelope
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/serial_bridge.py
+  - apps/rpi-backend/py-api/api/main.py
+  services:
+  - mia-serial-bridge
+  - mia-api
+  decisions:
+  - ADR-0009
+  not_proven: Deployment on the target Raspberry Pi

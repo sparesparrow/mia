@@ -141,7 +141,7 @@ jobs:
           schema_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- schemas/ | wc -l)
           contract_changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- contracts/ | wc -l)
           if [ "$schema_changed" -gt 0 ] && [ "$contract_changed" -eq 0 ]; then
-            echo "::warning::Schema files changed but contracts/ was not updated. Verify that contracts/events.md and contracts/topics.md still match."
+            echo "::warning::Schema files changed but contracts/ was not updated. Verify that spec/interfaces/events.md and spec/interfaces/topics.md still match."
           fi
 
   lint:

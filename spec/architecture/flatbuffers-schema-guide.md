@@ -339,4 +339,4 @@ table Telemetry {
 - [FlatBuffers GitHub](https://github.com/google/flatbuffers)
 - Cross-language serialization best practices
 
-See also: [lean-architecture.md](./lean-architecture.md) for system integration patterns.
+See also: [lean-architecture.md](lean-architecture.md) for system integration patterns.

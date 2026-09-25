@@ -1,0 +1,15 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: web
+title: Web pages
+description: Published static web surfaces.
+requirements:
+- id: REQ-WEB-001
+  title: Generated segment landing pages
+  statement: Customer-segment landing pages shall be generated from one template with Czech and English strings,
+    and must not leak template placeholders.
+  evidence: implemented_untested
+  implemented_in:
+  - web/scripts/generatePages.js
+  - web/template.html
+  - web/i18n
+  notes: web/scripts/build-smoke.js checks this, but CI runs only npm run build, not npm test.

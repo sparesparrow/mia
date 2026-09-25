@@ -25,3 +25,11 @@ tools/vehicle-replay/run_cycle1.sh
 
 The expected synthetic values are ignition=true, battery_voltage=13.8 V,
 engine_rpm=1750 and coolant_temp_c=86 °C. They are not vehicle measurements.
+
+## Requirements and evidence
+
+The slice is specified as REQ-AUTO-010 (envelope), REQ-AUTO-011 (replay harness),
+REQ-AUTO-012 (ESP32 passive capture), REQ-AUTO-013 (Pi normalisation and exposure) and
+REQ-AND-012 (Android card), under the passive-access rule REQ-NFR-002. Their evidence states,
+and what each has not proven yet, live in `spec/requirements/`; the design decision is
+[ADR-0009](../decisions/0009-canonical-vehicle-telemetry-envelope.md).

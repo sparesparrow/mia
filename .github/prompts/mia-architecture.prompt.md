@@ -137,7 +137,7 @@ tests/                → All workers (scoped by subdirectory)
 
 1. Every architecture decision must be reflected in diagrams — code outlives prose
 2. Use mermaid with consistent color theming (greens=RPi, blues=Android, oranges=MCU, purples=Web/MCP)
-3. Cross-cutting changes (new protocol, new message type, new service) require updating both `ARCHITECTURE.md` and relevant `contracts/` files
+3. Cross-cutting changes (new protocol, new message type, new service) require updating both `spec/architecture/README.md` and relevant `contracts/` files
 4. Validate component boundaries before approving new dependencies
 5. Service startup DAG must remain acyclic — broker before all workers
 6. Document integration points between workers, not implementation details

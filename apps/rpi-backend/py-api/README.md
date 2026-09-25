@@ -2,7 +2,7 @@
 
 > **Audience**: Backend developers, deployment engineers
 
-This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in ARCHITECTURE.md.
+This directory contains the Python-based implementation of MIA for Raspberry Pi, following the Lean Architecture specified in spec/architecture/README.md.
 
 ## Architecture
 

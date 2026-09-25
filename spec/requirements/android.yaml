@@ -1,0 +1,149 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: android
+title: Android companion app
+description: Kotlin/Compose client; its unit tests run in CI with testDebugUnitTest.
+requirements:
+- id: REQ-AND-001
+  title: BLE device management
+  statement: The app shall scan for BLE devices, manage connection lifecycle and list devices.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Connection state transitions and OBD adapter name filtering behave as specified
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesViewModel.kt
+  not_proven: A real phone
+- id: REQ-AND-002
+  title: OBD manager
+  statement: The app shall read OBD-II data and pair with a BLE OBD adapter.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - OBD responses parse into RPM, speed, coolant, fuel, engine load and DTCs
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/OBDManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/OBDPairingScreen.kt
+  not_proven: A real adapter
+- id: REQ-AND-003
+  title: Dashboard and telemetry
+  statement: The dashboard shall show real-time gauges from WebSocket telemetry, including Citroën-specific values.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Gauges.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt
+  notes: The emulator dashboard scenario in android-test.yml only checks that the screen opens.
+- id: REQ-AND-004
+  title: ANPR on Android
+  statement: The app shall recognise number plates from the camera and store only salted plate hashes.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Plate candidates are post-processed
+  - Plates are hashed, never stored in clear
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/ANPRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/camera/AnprPostprocessor.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/security/PlateHasher.kt
+- id: REQ-AND-005
+  title: Dashcam recording
+  statement: The app shall record continuously, offload clips, clean up by retention policy and play clips back.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Clip naming, the rolling buffer and storage limits behave as specified
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DVRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DvrOffloadWorker.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/clips/ClipsViewModel.kt
+- id: REQ-AND-006
+  title: MQTT client
+  statement: The app shall publish and subscribe over MQTT with configurable topics.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Topics are built from the configured prefix and device
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTTopics.kt
+- id: REQ-AND-007
+  title: Driving foreground service
+  statement: A foreground service shall run ANPR, DVR, OBD and BLE during driving with user-visible notifications.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+- id: REQ-AND-008
+  title: Pi discovery
+  statement: The app shall discover the Pi over mDNS (_mia-api._tcp) or Wi-Fi Direct and observe connectivity.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/MdnsDiscovery.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/WifiDirectManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/ConnectivityObserver.kt
+- id: REQ-AND-009
+  title: Spoken feedback
+  statement: The app shall speak prompts through text-to-speech with a bounded priority queue in Czech or English.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Speech requests queue by priority up to the maximum size
+  - Rate and pitch are clamped
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/VoiceManager.kt
+- id: REQ-AND-010
+  title: Rules engine
+  statement: The app shall evaluate client-side automation rules.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Rules fire only when their conditions hold
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/RulesEngine.kt
+- id: REQ-AND-011
+  title: Local database and repositories
+  statement: The app shall store alerts, ANPR events, telemetry, clips and audit records locally.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Telemetry entities carry the Citroën-specific fields, nullable when absent
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/db/AppDatabase.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Daos.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Entities.kt
+- id: REQ-AND-012
+  title: Cycle 1 telemetry card
+  statement: The dashboard shall deserialise the Cycle 1 envelope and show the four signals below the service controls,
+    with an explicit Pi-offline state.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The canonical envelope parses into typed signal values
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/dto/Cycle1Telemetry.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Cycle1TelemetryCard.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  decisions:
+  - ADR-0009
+  not_proven: A real phone connected to the Pi; the instrumented card test is not run by CI
+- id: REQ-AND-013
+  title: Reconnect backoff
+  statement: Network reconnection attempts shall back off exponentially up to a cap.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Delays grow and stop at the cap
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/Backoff.kt
+- id: REQ-AND-014
+  title: Battery-aware sampling policy
+  statement: The app shall lower its sampling mode as the battery drains and show the advisory on the dashboard.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Low battery or thermal throttling drops the sampling mode to MINIMAL
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/SystemPolicyManager.kt
+- id: REQ-AND-015
+  title: Pi API client
+  statement: The app shall call the Pi REST API for devices, status, commands and sessions, unwrapping response
+    envelopes and reporting network failures as errors.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Device and session responses unwrap from their envelopes
+  - A network failure yields an error result
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/DeviceRepository.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/SessionRepository.kt
+  decisions:
+  - ADR-0005

@@ -381,7 +381,7 @@ const char* WIFI_PASSWORD = "YOUR_PASSWORD";  // ← Set this
 
 ## 📚 Documentation
 
-- [MIA Architecture Overview](../ARCHITECTURE.md)
+- [MIA Architecture Overview](../spec/architecture/README.md)
 - [ESP32 Firmware Guide](../docs/esp32-setup.md)
 - [Android App Development](../apps/android/README.md)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)

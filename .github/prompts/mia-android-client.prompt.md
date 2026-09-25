@@ -48,6 +48,6 @@ adb shell am start -n cz.mia.app/.MainActivity
 
 1. Align MQTT topics with RPi backend and ESP32 firmware
 2. REST contracts must match `py-api/api/` endpoint shapes
-3. BLE service UUIDs defined in `contracts/ble-gatt.md`
+3. BLE service UUIDs defined in `spec/interfaces/ble-gatt.md`
 4. Use `@pytest.mark.android` for any cross-platform test touching Android
 5. Don't modify Python linter configs — Android is excluded

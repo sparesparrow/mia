@@ -14,9 +14,9 @@ You own `schemas/` (including generated bindings in `schemas/generated/`) and `c
 | `schemas/mia.fbs` | Master FlatBuffers schema — all message types |
 | `schemas/generate.py` | Generates Python/C++ bindings from `.fbs` |
 | `schemas/generated/python/Mia/` | Auto-generated Python FlatBuffers classes |
-| `contracts/ble-gatt.md` | BLE GATT service/characteristic UUIDs |
-| `contracts/events.md` | System event definitions |
-| `contracts/topics.md` | MQTT topic registry |
+| `spec/interfaces/ble-gatt.md` | BLE GATT service/characteristic UUIDs |
+| `spec/interfaces/events.md` | System event definitions |
+| `spec/interfaces/topics.md` | MQTT topic registry |
 | `schemas/json/config.schema.json` | JSON Schema for configuration |
 
 ## Current Message Types (`mia.fbs`)
@@ -57,5 +57,5 @@ cd schemas && python generate.py    # regenerates schemas/generated/python/Mia/ 
 4. New message types need root_type declarations
 5. Keep enums compact — byte-sized where possible
 6. `metadata: [ubyte]` fields for extensibility without schema breaks
-7. Update `contracts/topics.md` when adding MQTT-bound message types
+7. Update `spec/interfaces/topics.md` when adding MQTT-bound message types
 8. C++ generated headers: `apps/rpi-backend/cpp-audio/core/webgrab_generated.h`

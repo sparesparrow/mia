@@ -1,0 +1,102 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: hardware
+title: Hardware I/O
+description: GPIO, sensors, MCU links and hardware management on the Raspberry Pi.
+requirements:
+- id: REQ-HW-001
+  title: GPIO control
+  statement: The Pi shall configure, read and write digital GPIO pins on request over ZeroMQ and the REST API.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Pin configure/set/get behave identically in simulation mode when RPi.GPIO is unavailable
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/gpio.py
+  - apps/rpi-backend/py-api/hardware/gpio_worker.py
+  services:
+  - mia-gpio-worker
+  - mia-api
+  decisions:
+  - ADR-0007
+  not_proven: Operation on physical Pi GPIO pins
+- id: REQ-HW-002
+  title: I2C sensor drivers
+  statement: The Pi shall read BME280, SHT30 and ADS1115 sensors over I2C with per-sensor calibration.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/sensors_i2c.py
+  - apps/rpi-backend/py-api/hardware/sensors.py
+  services:
+  - mia-api
+- id: REQ-HW-003
+  title: Arduino serial protocol
+  statement: The Pi shall discover Arduino controllers, perform a handshake and exchange text commands and responses
+    over USB serial.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The controller works in simulation mode without a serial device
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/arduino.py
+  - apps/arduino/MIAProtocol
+  services:
+  - mia-serial-bridge
+  decisions:
+  - ADR-0007
+  not_proven: A physical Arduino on USB
+- id: REQ-HW-004
+  title: Serial bridge for MCU telemetry
+  statement: The Pi shall bridge MCU telemetry from USB serial onto the ZeroMQ telemetry channel, auto-detecting
+    the port and reconnecting with exponential backoff, and shall publish mcu/status events.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Simulated telemetry is produced when no serial device is found or port enumeration fails
+  - Serial close and enumeration errors are contained instead of stopping the bridge
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/serial_bridge.py
+  services:
+  - mia-serial-bridge
+  decisions:
+  - ADR-0003
+  - ADR-0007
+  not_proven: A physical MCU on the target Pi
+- id: REQ-HW-005
+  title: LED strip AI-state visualiser
+  statement: The Pi shall drive a WS2812B LED strip through the Arduino controller to show AI state, service status,
+    OBD values and drive/parked/night/service modes.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - AI-state, service-status, OBD, mode and emergency commands are encoded as the JSON protocol the firmware expects
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/led_controller.py
+  - apps/arduino/led_strip_controller
+  services:
+  - mia-led-monitor
+  not_proven: The physical strip and firmware
+- id: REQ-HW-006
+  title: Hardware manager
+  statement: The Pi shall expose GPIO, sensors, Arduino devices and the device registry through one hardware manager,
+    isolating a failing component from the others.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Each component falls back to simulation independently when its hardware is missing
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/hardware_manager.py
+  services:
+  - mia-api
+  decisions:
+  - ADR-0007
+- id: REQ-HW-007
+  title: USB camera service
+  statement: The Pi shall discover USB cameras, manage stream lifecycle and handle hot-plug, reporting over ZeroMQ
+    and MQTT.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/usb_camera_service.py
+  services:
+  - mia-usb-camera
+- id: REQ-HW-008
+  title: ESP32 ELM327 emulator firmware
+  statement: An ESP32 shall emulate an ELM327 adapter and accept vehicle-state updates over Serial2.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/esp32/elm327-emulator/src/main.cpp
+  notes: Not built by CI.

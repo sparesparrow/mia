@@ -61,7 +61,7 @@ docker compose -f infra/docker/docker-compose.dev.yml up      # dev mode with vo
 
 ## Architecture
 
-> For complete architecture, data flow diagrams, and component details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+> For complete architecture, data flow diagrams, and component details, see [spec/architecture/README.md](spec/architecture/README.md).
 
 Key runtime boundaries (quick reference for AI agents):
 - **ZeroMQ broker**: port 5555 — ROUTER-DEALER control plane (`apps/rpi-backend/shared/messaging/broker.py`)

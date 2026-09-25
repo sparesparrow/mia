@@ -29,7 +29,7 @@
 ## Key References
 
 - General development commands and deployment notes: [CLAUDE.md](../CLAUDE.md)
-- Repository structure and system overview: [ARCHITECTURE.md](../ARCHITECTURE.md)
+- Repository structure and system overview: [spec/architecture/README.md](../spec/architecture/README.md)
 - Test markers and pytest defaults: [pytest.ini](../pytest.ini)
 - Android-specific architecture and Gradle workflows: [apps/android/README.md](../apps/android/README.md)
 - Deployment and environment setup details: [docs/PRODUCTION_DEPLOYMENT.md](../docs/PRODUCTION_DEPLOYMENT.md), [docs/RASPBERRY_PI_SETUP.md](../docs/RASPBERRY_PI_SETUP.md), [docs/conan-setup.md](../docs/conan-setup.md)

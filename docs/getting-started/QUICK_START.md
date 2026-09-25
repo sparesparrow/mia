@@ -262,7 +262,7 @@ ai-servis/
 
 ### Learn More
 
-1. **Read the Architecture** → [`docs/architecture/overview.md`](../architecture/overview.md)
+1. **Read the Architecture** → [`spec/architecture/overview.md`](../../spec/architecture/overview.md)
 2. **Explore Modules** → [`docs/modules/`](../modules/)
 3. **Check API Docs** → [`docs/api/`](../api/)
 4. **Setup Development** → [`../DEVELOPMENT.md`](../../DEVELOPMENT.md)
@@ -385,7 +385,7 @@ python3 script_name.py
 
 ### Getting Help
 
-- **Documentation**: [`docs/`](../)
+- **Documentation**: [`docs/`](../../spec/)
 - **Troubleshooting Guide**: [`docs/troubleshooting.md`](../troubleshooting.md)
 - **GitHub Issues**: [Create an issue](https://github.com/sparesparrow/mia/issues)
 - **Discord**: [MIA Community](https://discord.gg/mia)
@@ -397,7 +397,7 @@ python3 script_name.py
 ### Beginner
 
 1. ✅ **Complete this Quick Start** ← You are here
-2. 📖 Read [Architecture Overview](../architecture/overview.md)
+2. 📖 Read [Architecture Overview](../../spec/architecture/overview.md)
 3. 🧪 Run more tests: `python3 test_orchestrator.py`
 4. 📝 Read [Module Documentation](../modules/)
 
@@ -489,7 +489,7 @@ Choose your path:
 → Continue to [Deployment Guide](../deployment/README.md)
 
 **For Researchers**:
-→ Explore [Architecture Deep Dive](../architecture/overview.md)
+→ Explore [Architecture Deep Dive](../../spec/architecture/overview.md)
 
 **For Contributors**:
 → Read [Contributing Guide](../../CONTRIBUTING.md) (coming soon)
@@ -499,7 +499,7 @@ Choose your path:
 ## 🔗 Quick Links
 
 - **Main README**: [README.md](../../README.md)
-- **Architecture**: [docs/architecture/](../architecture/)
+- **Architecture**: [docs/architecture/](../../spec/architecture/)
 - **API Docs**: [docs/api/](../api/)
 - **Modules**: [docs/modules/](../modules/)
 - **Troubleshooting**: [docs/troubleshooting.md](../troubleshooting.md)

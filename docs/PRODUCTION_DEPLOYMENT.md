@@ -427,5 +427,5 @@ Nice=10  # Lower priority (higher number = lower priority)
 ## Support
 
 For issues or questions:
-- **Documentation**: See [Raspberry Pi Setup](./RASPBERRY_PI_SETUP.md)
+- **Documentation**: See [Raspberry Pi Setup](RASPBERRY_PI_SETUP.md)
 - **Issues**: [GitHub Issues](https://github.com/sparesparrow/mia/issues)

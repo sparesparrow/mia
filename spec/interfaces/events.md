@@ -144,5 +144,6 @@ All events use JSON format with the following structure:
 The passive telemetry vertical slice uses schemas/vehicle_telemetry_envelope.schema.json.
 A complete sample requires ignition, battery_voltage, engine_rpm and coolant_temp_c.
 Each signal carries unit, source and confidence; the message carries source and
-confidence as well. The status matrix distinguishes CI/simulation evidence from
-hardware and vehicle validation.
+confidence as well. The contract is REQ-AUTO-010 and ADR-0009; its evidence state in
+`spec/requirements/automotive.yaml` distinguishes CI and simulation evidence from hardware
+and vehicle validation.

@@ -8,7 +8,7 @@ Tento projekt používá konzistentní kontrakty napříč Android/ESP32/Pi.
 - `vehicle/alerts/{vin}` – severity, code, message
 - `vehicle/cmd/{vin}/io` – relé/LED/buzzer
 
-Detailní popis viz `contracts/topics.md`.
+Detailní popis viz `spec/interfaces/topics.md`.
 
 ## Flow: Telemetry → Alert → Command
 
@@ -28,10 +28,10 @@ sequenceDiagram
 ```
 
 ## Eventy
-Příklady payloadů v `contracts/events.md`.
+Příklady payloadů v `spec/interfaces/events.md`.
 
 ## BLE GATT
-Služby/charakteristiky a OTA viz `contracts/ble-gatt.md`.
+Služby/charakteristiky a OTA viz `spec/interfaces/ble-gatt.md`.
 
 ## Konfigurace
 Schéma konfigurace zařízení/aplikace: `schemas/json/config.schema.json`.

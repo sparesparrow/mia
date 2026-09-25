@@ -279,8 +279,8 @@ curl http://localhost:8000/anpr/history
 ## Help & Support
 
 - Check logs: `tail -f /var/log/mia/api.log`
-- View architecture: [ARCHITECTURE.md](../ARCHITECTURE.md)
-- Full docs: [ANPR_IMPLEMENTATION.md](./ANPR_IMPLEMENTATION.md)
+- View architecture: [spec/architecture/README.md](../spec/architecture/README.md)
+- Full docs: [ANPR_IMPLEMENTATION.md](ANPR_IMPLEMENTATION.md)
 - Backend API: http://localhost:8000/docs
 - WebSocket testing: `pip install websocat`
 

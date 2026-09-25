@@ -215,7 +215,7 @@ Recommendations applied in this revision:
 
 ## Reference Documents
 
-- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [spec/architecture/README.md](spec/architecture/README.md)
 - [README.md](README.md)
 - [apps/android/TODO.md](apps/android/TODO.md)
 - [docs/automotive/raspberry-pi-audi-integration.md](docs/automotive/raspberry-pi-audi-integration.md)

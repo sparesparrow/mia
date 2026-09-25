@@ -271,7 +271,7 @@ New topics on the existing PUB/SUB plane (port 5556), alongside today's `obd/tel
 | `hu/control` | `head_unit_bridge` | `{button: next\|prev\|disc\|scan, disc: int, ts}` |
 | `hu/state` | `head_unit_bridge` | `{source: cd\|radio\|aux, emulator_connected: bool, ts}` |
 
-Corresponding event types for `contracts/events.md`, following the existing
+Corresponding event types for `spec/interfaces/events.md`, following the existing
 `vehicle.telemetry.obd` naming:
 
 - `vehicle.body.door` — door open/close/lock transitions
@@ -356,5 +356,5 @@ better; P3 is where the interesting context-awareness starts.
 - [`raspberry-pi-audi-integration.md`](raspberry-pi-audi-integration.md) — existing OBD/UDS integration status
 - [`../wiring.md`](../wiring.md) — OBD-II pinout and ESP32/transceiver power wiring
 - [`../cs/automotive/zapojeni-audi-a4-8h.md`](../cs/automotive/zapojeni-audi-a4-8h.md) — Czech hands-on wiring guide: power, fuse taps, opto-isolated KL.15 sense, CAN taps, relays, audio
-- [`../../contracts/topics.md`](../../contracts/topics.md), [`../../contracts/events.md`](../../contracts/events.md) — message contracts
+- [`../../spec/interfaces/topics.md`](../../spec/interfaces/topics.md), [`../../spec/interfaces/events.md`](../../spec/interfaces/events.md) — message contracts
 - [`../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml`](../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml) — machine-readable interface inventory

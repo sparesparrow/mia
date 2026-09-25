@@ -25,4 +25,4 @@ applyTo:
   - `conan create . --build=missing`
   - `cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DWITH_HARDWARE=OFF && cmake --build build/cpp`
   - `bash tools/scripts/build-hardware-server-rpi.sh`
-- Related docs: [docs/ARM64_BUILD_REQUIREMENTS.md](../../docs/ARM64_BUILD_REQUIREMENTS.md), [docs/conan-setup.md](../../docs/conan-setup.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), and [../copilot-instructions.md](../copilot-instructions.md).
+- Related docs: [docs/ARM64_BUILD_REQUIREMENTS.md](../../docs/ARM64_BUILD_REQUIREMENTS.md), [docs/conan-setup.md](../../docs/conan-setup.md), [spec/architecture/README.md](../../spec/architecture/README.md), and [../copilot-instructions.md](../copilot-instructions.md).

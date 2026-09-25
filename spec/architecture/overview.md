@@ -14,4 +14,4 @@
 - Edge-only by default, retenční politika 24–72h, hashování SPZ (HMAC‑SHA256)
 - Pairing QR + Ed25519; TLS pinning pro Wi‑Fi sessions
 
-Více k protokolům a payloadům viz [API & Contracts](../api/overview.md).
+Více k protokolům a payloadům viz [API & Contracts](../../docs/api/overview.md).

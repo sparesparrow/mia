@@ -387,4 +387,4 @@ flatc --python mia_protocol.fbs
 4. Build **Android UI** with Kotlin + gRPC or HTTP
 5. Optional: Add **micro-ROS on ESP32** if OBD2 module is needed
 
-See also: [flatbuffers-schema-guide.md](./flatbuffers-schema-guide.md) for detailed schema design patterns.
+See also: [flatbuffers-schema-guide.md](flatbuffers-schema-guide.md) for detailed schema design patterns.

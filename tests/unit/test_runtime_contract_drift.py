@@ -200,8 +200,8 @@ class TestContractDocumentation:
     """Key contract documents must exist and not be empty."""
 
     @pytest.mark.parametrize("rel_path", [
-        "contracts/events.md",
-        "contracts/topics.md",
+        "spec/interfaces/events.md",
+        "spec/interfaces/topics.md",
     ])
     def test_contract_doc_exists(self, rel_path: str):
         path = REPO_ROOT / rel_path

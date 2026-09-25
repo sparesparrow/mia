@@ -14,7 +14,7 @@ applyTo:
 - After changing a FlatBuffers schema, regenerate bindings before finishing the task. Use [schemas/generate.py](../../schemas/generate.py) for `schemas/mia.fbs`, and use [tools/scripts/generate-schemas.sh](../../tools/scripts/generate-schemas.sh) when the change also affects `schemas/vehicle.fbs` or other wrapper-managed outputs.
 - Review and commit regenerated binding diffs as generated artifacts when they change, but make source changes in the schema or generator, not in `schemas/generated/python/Mia/`.
 - Prefer additive schema evolution. Adding fields and tables is safer than removing fields or changing types. Treat renames, removals, and type changes as cross-platform compatibility work.
-- Keep contract docs aligned with binary schemas. If a schema change affects event payloads or topic semantics, update [contracts/events.md](../../contracts/events.md) and [contracts/topics.md](../../contracts/topics.md) instead of letting code and docs drift.
+- Keep contract docs aligned with binary schemas. If a schema change affects event payloads or topic semantics, update [spec/interfaces/events.md](../../spec/interfaces/events.md) and [spec/interfaces/topics.md](../../spec/interfaces/topics.md) instead of letting code and docs drift.
 - The current generation flow is split. [schemas/generate.py](../../schemas/generate.py) emits Python bindings to `schemas/generated/python/` (package `Mia`) and C++ bindings to `schemas/generated/cpp/`; [tools/scripts/generate-schemas.sh](../../tools/scripts/generate-schemas.sh) also handles `schemas/vehicle.fbs` and optional `webgrab` generation. Verify the active output path before changing generator behavior.
 - When schema changes touch runtime code, audit Python call sites, tests, and any consumers in Android or C++ instead of assuming only one platform is affected.
 - Useful commands:
@@ -22,4 +22,4 @@ applyTo:
   - `python schemas/generate.py --cpp=false`
   - `python schemas/generate.py --python=false`
   - `bash tools/scripts/generate-schemas.sh`
-- Related docs: [schemas/README.md](../../schemas/README.md), [contracts/events.md](../../contracts/events.md), [contracts/topics.md](../../contracts/topics.md), [ARCHITECTURE.md](../../ARCHITECTURE.md), [CLAUDE.md](../../CLAUDE.md), and [../copilot-instructions.md](../copilot-instructions.md).
+- Related docs: [schemas/README.md](../../schemas/README.md), [spec/interfaces/events.md](../../spec/interfaces/events.md), [spec/interfaces/topics.md](../../spec/interfaces/topics.md), [spec/architecture/README.md](../../spec/architecture/README.md), [CLAUDE.md](../../CLAUDE.md), and [../copilot-instructions.md](../copilot-instructions.md).
