@@ -8,22 +8,8 @@ a.cta-btn {
     text-decoration: none;
 }
 
-.status-banner {
-    margin: 0;
-    padding: 0.6rem 1rem;
-    background: #fff4d6;
-    color: #5c4400;
-    border-bottom: 1px solid #e8c766;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-.status-banner i {
-    margin-right: 0.4rem;
-}
-
 .site-page .navbar {
-    /* Sticky rather than fixed, so the navbar sits below the status banner. */
+    /* Sticky rather than fixed, so the navbar stays in the page flow. */
     position: sticky;
     top: 0;
 }

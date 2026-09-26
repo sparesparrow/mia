@@ -31,6 +31,7 @@ requirements:
   decisions:
   - ADR-0010
   notes: web/scripts/build-smoke.js checks that every generated page links to every audience, and that it has no
-    AI-SERVIS name, currency or the removed percentages. The "what works today" list in web/i18n/site.yaml must
-    only name requirements that are implemented_and_ci_tested or better. The hand-written homepage (web/index.html)
-    is not covered by the smoke test.
+    AI-SERVIS name, currency or the removed percentages. The "what works today" list in web/i18n/site.yaml, and
+    a segment's own `site:` override of it (web/i18n/gonzo.yaml), must only name requirements that are
+    implemented_and_ci_tested or better; planned features go in the use cases. The hand-written homepage
+    (web/index.html) is not covered by the smoke test.
