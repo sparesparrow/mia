@@ -15,6 +15,8 @@
 //   5. Old flat URLs (customers/<segment>.html) and the professional aliases
 //      redirect to the right place.
 //   6. Every local stylesheet and image a page references exists in dist/.
+//   7. No page carries the old prototype status banner, and on every segment page the
+//      use cases (#scenarios) come before "what works today" (#today).
 
 'use strict';
 
@@ -100,6 +102,15 @@ for (const page of PAGES) {
         const missing = audiences.filter((a) => !html.includes(`${a}"`) && !html.includes(`${a}en/"`));
         check(missing.length === 0, `${rel} links to every audience` +
             (missing.length ? ` (missing: ${missing.join(', ')})` : ''));
+
+        // 7. No status banner; use cases before "what works today".
+        check(!html.includes('status-banner'), `${rel} has no status banner`);
+        if (page !== 'press') {
+            const scenarios = html.indexOf('id="scenarios"');
+            const today = html.indexOf('id="today"');
+            check(scenarios !== -1 && today !== -1 && scenarios < today,
+                `${rel} shows #scenarios before #today`);
+        }
 
         // 6. Local assets exist.
         const pageDir = path.dirname(path.join(DIST, rel));

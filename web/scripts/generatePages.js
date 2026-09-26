@@ -30,6 +30,20 @@ function loadYaml(file) {
 
 const site = loadYaml('site.yaml').site;
 
+// A segment may override parts of site.yaml with its own `site:` block (for example the
+// journalists page rewrites "what works today" in its own voice). Objects merge key by
+// key; arrays and strings replace the shared value.
+function mergeSite(base, override) {
+    if (!override || typeof override !== 'object' || Array.isArray(override)) {
+        return override === undefined ? base : override;
+    }
+    const merged = Object.assign({}, base);
+    for (const [key, value] of Object.entries(override)) {
+        merged[key] = mergeSite(base ? base[key] : undefined, value);
+    }
+    return merged;
+}
+
 // Segment pages. Text paths point into the segment's YAML namespace; each scenario
 // has a title and either bullet `items` or a `text` paragraph.
 const segments = [
@@ -127,13 +141,15 @@ const segments = [
         bodyClass: 'theme-dark',
         tagline: 'navigation.gonzo_journalism',
         heroTitle: 'hero.main_title',
-        heroSubtitle: 'hero.subtitle',
+        heroSubtitle: 'hero.description',
         scenariosTitle: 'weaponry.title',
         scenarios: [
             { title: 'weaponry.anti_stalker_protocol.title', text: 'weaponry.anti_stalker_protocol.description' },
             { title: 'weaponry.covert_ops_interface.title', text: 'weaponry.covert_ops_interface.description' },
             { title: 'weaponry.gonzo_command_center.title', text: 'weaponry.gonzo_command_center.description' },
             { title: 'weaponry.matrix_tracking_map.title', text: 'weaponry.matrix_tracking_map.description' },
+            { title: 'weaponry.obd_whisperer.title', text: 'weaponry.obd_whisperer.description' },
+            { title: 'weaponry.dashcam.title', text: 'weaponry.dashcam.description' },
             { title: 'stories.gonzo_investigator.title', text: 'stories.gonzo_investigator.description' },
             { title: 'stories.mobile_dj_revolution.title', text: 'stories.mobile_dj_revolution.description' }
         ],
@@ -233,24 +249,24 @@ function redirectPage(target) {
 `;
 }
 
-function sharedValues(lang, pageDir) {
+function sharedValues(lang, pageDir, s = site) {
     const root = rootFor(lang);
     const other = otherLanguage(lang);
     const t = (entry, where) => escapeHtml(tr(entry, lang, `site.${where}`));
-    const audience = (name) => t(site.audiences[name], `audiences.${name}`);
+    const audience = (name) => t(s.audiences[name], `audiences.${name}`);
     const suffix = langSuffix(lang);
 
     const customerLinks = segments
-        .map((s) => `<li><a href="${root}${s.name}/${suffix}">${audience(s.name)}</a></li>`)
+        .map((seg) => `<li><a href="${root}${seg.name}/${suffix}">${audience(seg.name)}</a></li>`)
         .join('');
     const professionalLinks = Object.keys(roleRedirects)
         .map((role) => `<li><a href="${root}${roleRedirects[role]}">${audience(role)}</a></li>`)
         .concat(`<li><a href="${root}press/${suffix}">${audience('press')}</a></li>`)
         .join('');
     const projectLinks = [
-        `<li><a href="${root}">${t(site.footer.manifesto, 'footer.manifesto')}</a></li>`,
-        `<li><a href="${root}docs/">${t(site.footer.documentation, 'footer.documentation')}</a></li>`,
-        `<li><a href="https://github.com/sparesparrow/mia">${t(site.footer.source, 'footer.source')}</a></li>`
+        `<li><a href="${root}">${t(s.footer.manifesto, 'footer.manifesto')}</a></li>`,
+        `<li><a href="${root}docs/">${t(s.footer.documentation, 'footer.documentation')}</a></li>`,
+        `<li><a href="https://github.com/sparesparrow/mia">${t(s.footer.source, 'footer.source')}</a></li>`
     ].join('');
 
     const column = (title, links) =>
@@ -265,24 +281,24 @@ function sharedValues(lang, pageDir) {
         canonical: `${SITE_URL}${pageDir}/${suffix}`,
         url_cs: `${SITE_URL}${pageDir}/`,
         url_en: `${SITE_URL}${pageDir}/en/`,
-        language_switch: t(site.language_switch, 'language_switch'),
-        status_banner: t(site.status_banner, 'status_banner'),
-        site_tagline: t(site.tagline, 'tagline'),
-        nav_all_pages: t(site.nav.all_pages, 'nav.all_pages'),
-        docs_button: t(site.pilot.docs, 'pilot.docs'),
-        today_title: t(site.today.title, 'today.title'),
-        today_link: t(site.today.link, 'today.link'),
-        copyright: t(site.footer.copyright, 'footer.copyright'),
+        language_switch: t(s.language_switch, 'language_switch'),
+        site_tagline: t(s.tagline, 'tagline'),
+        nav_all_pages: t(s.nav.all_pages, 'nav.all_pages'),
+        docs_button: t(s.pilot.docs, 'pilot.docs'),
+        today_title: t(s.today.title, 'today.title'),
+        today_link: t(s.today.link, 'today.link'),
+        copyright: t(s.footer.copyright, 'footer.copyright'),
         footer_html: [
-            column(t(site.footer.customers, 'footer.customers'), customerLinks),
-            column(t(site.footer.professionals, 'footer.professionals'), professionalLinks),
-            column(t(site.footer.project, 'footer.project'), projectLinks)
+            column(t(s.footer.customers, 'footer.customers'), customerLinks),
+            column(t(s.footer.professionals, 'footer.professionals'), professionalLinks),
+            column(t(s.footer.project, 'footer.project'), projectLinks)
         ].join('\n                    ')
     };
 }
 
 function renderSegment(segment, lang) {
     const data = loadYaml(segment.yamlFile)[segment.namespace || segment.name];
+    const s = mergeSite(site, data.site);
     const where = segment.name;
     const text = (dotted) => escapeHtml(textAt(data, dotted, lang, where));
     const t = (entry, name) => escapeHtml(tr(entry, lang, `site.${name}`));
@@ -293,7 +309,7 @@ function renderSegment(segment, lang) {
     const todayIcons = ['fas fa-gauge-high', 'fas fa-car', 'fas fa-id-card', 'fas fa-microphone',
         'fas fa-mobile-screen', 'fas fa-microchip'];
 
-    const values = Object.assign(sharedValues(lang, segment.name), {
+    const values = Object.assign(sharedValues(lang, segment.name, s), {
         segment: segment.name,
         body_class: segment.bodyClass || '',
         segment_base: lang === DEFAULT_LANGUAGE ? '' : '../',
@@ -303,22 +319,22 @@ function renderSegment(segment, lang) {
         hero_image: segment.heroImage,
         hero_title: text(segment.heroTitle),
         hero_subtitle: text(segment.heroSubtitle),
-        facts_html: site.facts
+        facts_html: s.facts
             .map((fact, i) => `<li>${t(fact, `facts.${i}`)}</li>`)
             .join('\n                    '),
-        nav_today: t(site.nav.today, 'nav.today'),
-        nav_scenarios: t(site.nav.scenarios, 'nav.scenarios'),
-        nav_technology: t(site.nav.technology, 'nav.technology'),
-        nav_pilot: t(site.nav.pilot, 'nav.pilot'),
-        today_intro: t(site.today.intro, 'today.intro'),
-        today_html: site.today.items
+        nav_today: t(s.nav.today, 'nav.today'),
+        nav_scenarios: t(s.nav.scenarios, 'nav.scenarios'),
+        nav_technology: t(s.nav.technology, 'nav.technology'),
+        nav_pilot: t(s.nav.pilot, 'nav.pilot'),
+        today_intro: t(s.today.intro, 'today.intro'),
+        today_html: s.today.items
             .map((item, i) => card(todayIcons[i % todayIcons.length],
                 t(item.title, `today.items.${i}.title`),
                 `<p>${t(item.text, `today.items.${i}.text`)}</p>`))
             .join('\n                '),
-        scenarios_label: t(site.scenarios.label, 'scenarios.label'),
+        scenarios_label: t(s.scenarios.label, 'scenarios.label'),
         scenarios_title: text(segment.scenariosTitle),
-        scenarios_note: t(site.scenarios.note, 'scenarios.note'),
+        scenarios_note: t(s.scenarios.note, 'scenarios.note'),
         scenarios_html: segment.scenarios
             .map((scenario) => {
                 const body = scenario.items
@@ -327,15 +343,15 @@ function renderSegment(segment, lang) {
                 return card('fas fa-route', text(scenario.title), body);
             })
             .join('\n                '),
-        technology_title: t(site.technology.title, 'technology.title'),
-        technology_html: site.technology.items
+        technology_title: t(s.technology.title, 'technology.title'),
+        technology_html: s.technology.items
             .map((item, i) =>
                 `<div class="tech-card"><h3>${t(item.title, `technology.items.${i}.title`)}</h3>` +
                 `<p>${t(item.text, `technology.items.${i}.text`)}</p></div>`)
             .join('\n                '),
         pilot_title: text(segment.pilotTitle),
-        pilot_text: t(site.pilot.text, 'pilot.text'),
-        pilot_button: t(site.pilot.button, 'pilot.button'),
+        pilot_text: t(s.pilot.text, 'pilot.text'),
+        pilot_button: t(s.pilot.button, 'pilot.button'),
         pilot_href: escapeHtml(PILOT_URL + encodeURIComponent(`Pilot: ${segment.name}`))
     });
 

@@ -16,8 +16,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="site-page segment-{{segment}} {{body_class}}">
-    <p class="status-banner" role="note"><i class="fas fa-flask" aria-hidden="true"></i>{{status_banner}}</p>
-
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
@@ -25,8 +23,8 @@
                 <span class="tagline">{{tagline}}</span>
             </div>
             <div class="nav-menu">
-                <a href="#today">{{nav_today}}</a>
                 <a href="#scenarios">{{nav_scenarios}}</a>
+                <a href="#today">{{nav_today}}</a>
                 <a href="#tech">{{nav_technology}}</a>
                 <a href="#site-footer">{{nav_all_pages}}</a>
                 <a href="{{other_lang_href}}" class="lang-link" hreflang="{{other_lang}}" lang="{{other_lang}}">{{language_switch}}</a>
@@ -59,17 +57,6 @@
         </div>
     </section>
 
-    <section class="features" id="today">
-        <div class="container">
-            <h2>{{today_title}}</h2>
-            <p class="section-intro">{{today_intro}}</p>
-            <div class="features-grid">
-                {{today_html}}
-            </div>
-            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">{{today_link}}</a></p>
-        </div>
-    </section>
-
     <section class="use-cases features" id="scenarios">
         <div class="container">
             <span class="section-eyebrow">{{scenarios_label}}</span>
@@ -78,6 +65,17 @@
             <div class="features-grid">
                 {{scenarios_html}}
             </div>
+        </div>
+    </section>
+
+    <section class="features" id="today">
+        <div class="container">
+            <h2>{{today_title}}</h2>
+            <p class="section-intro">{{today_intro}}</p>
+            <div class="features-grid">
+                {{today_html}}
+            </div>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">{{today_link}}</a></p>
         </div>
     </section>
 
