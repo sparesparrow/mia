@@ -7,6 +7,5 @@ using FlatBuffers serialized messages.
 """
 
 from .client import MessagingClient
-from .broker import ZeroMQBroker
 
-__all__ = ['MessagingClient', 'ZeroMQBroker']
+__all__ = ['MessagingClient']
