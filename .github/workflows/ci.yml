@@ -59,6 +59,7 @@ jobs:
       schema: ${{ steps.filter.outputs.schema }}
       cpp: ${{ steps.filter.outputs.cpp }}
       esp32: ${{ steps.filter.outputs.esp32 }}
+      simulation: ${{ steps.filter.outputs.simulation }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -99,6 +100,22 @@ jobs:
               - '.github/workflows/ci.yml'
               - '.tool-versions'
               - 'apps/esp32/**'
+            simulation:
+              - '.github/workflows/ci.yml'
+              - 'tests/env/**'
+
+  simulation-compose:
+    if: needs.changes.outputs.simulation == 'true'
+    name: Pi Simulation Compose
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose model
+        run: docker compose -f tests/env/docker-compose.pi-simulation.yml --profile legacy-sim config
+      - name: Build simulation images
+        run: docker compose -f tests/env/docker-compose.pi-simulation.yml --profile legacy-sim build driver-simulator
 
   schema-validation:
     if: needs.changes.outputs.schema == 'true'
