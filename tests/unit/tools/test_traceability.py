@@ -119,12 +119,12 @@ def test_unknown_ids_in_comment_tags_and_reports_are_errors(repo):
     assert any("REQ-TST-998" in e for e in errors)
 
 
-def test_android_unit_test_tag_links_but_instrumented_tag_does_not(repo):
+def test_android_unit_and_instrumented_tags_are_ci_evidence(repo):
     root = repo(_requirement())
     instrumented = root / "apps" / "android" / "app" / "src" / "androidTest" / "ThingTest.kt"
     instrumented.parent.mkdir(parents=True)
     instrumented.write_text("// @req REQ-TST-001\n")
-    assert traceability.check(root, []).errors
+    assert traceability.check(root, []).errors == []
 
     unit = root / "apps" / "android" / "app" / "src" / "test" / "ThingTest.kt"
     unit.parent.mkdir(parents=True)

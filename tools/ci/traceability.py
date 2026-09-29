@@ -33,14 +33,16 @@ REQ_TAG = re.compile(r"@req\b([^\n]*)")
 # pytest.mark.req("REQ-…", …) in Python tests, used when no pytest report is given.
 PY_REQ_MARK = re.compile(r"mark\.req\(([^)]*)\)")
 
-# Tag globs whose tests run in CI (android-test.yml runs ./gradlew testDebugUnitTest).
-CI_TAG_GLOBS = ("apps/android/app/src/test/**/*.kt",)
-# Tag globs whose tests exist but no CI job runs yet: they link, but never count as CI evidence.
-OTHER_TAG_GLOBS = (
+# Tag globs whose tests run in CI. Keep this list aligned with the workflows that
+# execute each suite; a tagged test only counts as CI evidence when its suite is gated.
+CI_TAG_GLOBS = (
+    "apps/android/app/src/test/**/*.kt",
     "apps/android/app/src/androidTest/**/*.kt",
     "apps/rpi-backend/cpp-audio/core/tests/**/*.cpp",
-    "web/**/*.test.js",
+    "web/scripts/build-smoke.js",
 )
+# Tagged tests that exist but are not executed by a CI workflow.
+OTHER_TAG_GLOBS = ("web/**/*.test.js",)
 PY_TEST_GLOB = "tests/**/test_*.py"
 
 

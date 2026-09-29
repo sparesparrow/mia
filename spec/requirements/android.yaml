@@ -69,6 +69,9 @@ requirements:
   evidence: implemented_untested
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  notes: The emulator instrumented test verifies service creation, the foreground notification and pause/resume state;
+    it does not prove the full ANPR/DVR/OBD/BLE manager lifecycle.
+  not_proven: Full manager lifecycle on a real phone with the vehicle peripherals.
 - id: REQ-AND-008
   title: Pi discovery
   statement: The app shall discover the Pi over mDNS (_mia-api._tcp) or Wi-Fi Direct and observe connectivity.
@@ -117,7 +120,7 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
   decisions:
   - ADR-0009
-  not_proven: A real phone connected to the Pi; the instrumented card test is not run by CI
+  not_proven: A real phone connected to the Pi
 - id: REQ-AND-013
   title: Reconnect backoff
   statement: Network reconnection attempts shall back off exponentially up to a cap.

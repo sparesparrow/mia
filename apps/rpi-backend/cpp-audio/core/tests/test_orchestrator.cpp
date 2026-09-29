@@ -7,7 +7,7 @@ void testOrchestrator() {
     using namespace WebGrab;
     
     // Test 1: Create orchestrator
-    CoreOrchestrator orchestrator(9997);
+    CoreOrchestrator orchestrator(9997, ".");
     
     // Test 2: Register a service
     std::vector<std::string> capabilities = {"test", "capability"};

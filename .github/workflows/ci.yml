@@ -291,7 +291,7 @@ jobs:
             cmake ninja-build pkg-config \
             flatbuffers-compiler libflatbuffers-dev \
             libcurl4-openssl-dev libssl-dev zlib1g-dev \
-            libjsoncpp-dev libasound2-dev libmosquitto-dev
+            libjsoncpp-dev libasound2-dev libmosquitto-dev libgpiod-dev
       - name: Configure
         run: |
           set -o pipefail
@@ -307,6 +307,14 @@ jobs:
             echo "::error::Compilation failed: $(grep -E 'error:' /tmp/build.log | head -n 15 | tr '\n' '~')"
             exit 1
           fi
+      - name: Configure C++ unit tests
+        run: |
+          cmake -S apps/rpi-backend/cpp-audio/core -B build/cpp-tests -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug
+      - name: Build and run C++ unit tests
+        run: |
+          cmake --build build/cpp-tests --target tests -j"$(nproc)"
+          ctest --test-dir build/cpp-tests --output-on-failure
       - name: Stage binaries
         run: |
           mkdir -p dist/cpp
