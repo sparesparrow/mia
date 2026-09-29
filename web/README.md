@@ -23,6 +23,12 @@ Czech is the default language. Every generated page is rendered once per
 language, so the language switch is a plain link and the pages need no runtime
 i18n.
 
+A segment page shows its use cases (`#scenarios`) first, then "what works today"
+(`#today`), technology and the pilot call to action. A segment's YAML may carry a
+`site:` block that overrides parts of `i18n/site.yaml` for that page only; the
+journalists page (`gonzo.yaml`) uses it to say "what works today", technology
+and the pilot text in the gonzo voice.
+
 These are **not published**: `team/` (a mock status board), `agents/` (needs
 private ElevenLabs agent config), `voice-chat.html` (needs a local backend),
 `shared/formal-template/`, `templates/` and the gonzo monitor tooling.
@@ -34,9 +40,10 @@ private ElevenLabs agent config), `voice-chat.html` (needs a local backend),
 - No prices and no performance figures (such as "300% productivity") unless the
   requirement registry supports them (ADR-0010, REQ-WEB-002). Pages invite
   people to join the pilot instead.
-- The "what works today" list in `i18n/site.yaml` may only name behaviour
-  whose requirement is `implemented_and_ci_tested` or better. Update it when
-  evidence changes.
+- The "what works today" list in `i18n/site.yaml`, and any segment override of
+  it, may only name behaviour whose requirement is `implemented_and_ci_tested`
+  or better. Update it when evidence changes. Planned features belong in the
+  use cases, not in this list.
 - Images the site uses live in `assets/site/` as optimised JPEGs (made from the
   originals in `assets/<segment>/`, `assets/shared/` and `assets/dev/`).
 
@@ -53,7 +60,7 @@ web/
     generatePages.js         generator entry point (`npm run build`)
     build-smoke.js           smoke test (`npm test`)
   i18n/
-    site.yaml                shared site strings: status, what works today, nav, press kit
+    site.yaml                shared site strings: what works today, nav, pilot, press kit
     business.yaml            fleet / commercial segment
     family.yaml              family safety segment
     musicians.yaml           mobile studio segment

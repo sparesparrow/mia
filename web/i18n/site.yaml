@@ -1,4 +1,4 @@
-# Shared strings for the published site: status banner, "what works today",
+# Shared strings for the published site: "what works today",
 # audience navigation, pilot call to action and the press kit.
 # "What works today" may only list behaviour whose requirement in spec/requirements/
 # is implemented_and_ci_tested or better (ADR-0010). Update it when evidence changes.
@@ -9,15 +9,12 @@ site:
   tagline:
     en: Open prototype of in-car telemetry and a voice assistant
     cs: Otevřený prototyp telemetrie a hlasového asistenta do auta
-  status_banner:
-    en: 'Prototype in development. MIA is not a product for sale and is not certified for road use.'
-    cs: 'Prototyp ve vývoji. MIA zatím není produkt na prodej ani zařízení certifikované pro provoz.'
   language_switch:
     en: Česky
     cs: English
   facts:
-    - en: Prototype on an Audi A4 Cabriolet 8H
-      cs: Prototyp na Audi A4 Cabriolet 8H
+    - en: Built on an Audi A4 Cabriolet 8H
+      cs: Vyvíjeno na Audi A4 Cabriolet 8H
     - en: Raspberry Pi 4B + ESP32 + Android
       cs: Raspberry Pi 4B + ESP32 + Android
     - en: Read-only access to the vehicle

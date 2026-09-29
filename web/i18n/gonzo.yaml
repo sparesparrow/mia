@@ -46,8 +46,8 @@ journalists:
       en: Digital Paranoia on Wheels
       cs: DIGITÁLNÍ PARANOIA NA KOLECH
     description:
-      en: We live in an era of digital surveillance. Every movement, every license plate, every stop at the gas station - everything is a record in someone's database. MIA gives you the weapon back in your hands. Edge AI that doesn't talk, doesn't suppress, and doesn't sell your data to corporate hyenas.
-      cs: Žijeme v éře digitální surveillance. Každý pohyb, každá SPZ, každé zastavení u pumpy - všechno je záznam v něčí databázi. MIA ti dává zbraň zpět do rukou. Edge AI, které nekecá, netlumí a neprodává tvoje data korporátním hyenám.
+      en: "MIA is your co-driver: she sees who's behind you, reads what's going on under the bonnet, and does everything you'd otherwise take your hands off the wheel for. She runs on a Raspberry Pi under your seat, not in someone else's cloud, and sells your car's data to nobody."
+      cs: "MIA je parťák do auta: vidí, kdo jede za tebou, čte, co se děje pod kapotou, a dělá za tebe všechno, kvůli čemu bys jinak pustil volant. Běží na Raspberry Pi pod sedačkou, ne v cizím cloudu, a data z auta neprodává nikomu."
     ultimate_tool_for_investigative_reporting:
       en: Ultimate Tool for Investigative Reporting
       cs: Ultimátní nástroj pro investigativní žurnalistiku
@@ -79,48 +79,68 @@ journalists:
         cs: SLEDOVAT MANIFESTO
   weaponry:
     title:
-      en: Arsenal for Digital Guerrilla
-      cs: ARSENAL PRO DIGITÁLNÍ GUERILLU
+      en: "Arsenal for Digital Guerrilla"
+      cs: "ARSENAL PRO DIGITÁLNÍ GUERILLU"
     anti_stalker_protocol:
       title:
-        en: Anti-Stalker Protocol
-        cs: ANTI-STALKER PROTOKOL
+        en: "Anti-Stalker Protocol"
+        cs: "ANTI-STALKER PROTOKOL"
       description:
         en: "When the night fog lifts and your rear wiper catches the same number plate for the sixth time, MIA warns you: Heads up! Someone's riding your ass!"
         cs: "Když se noční mlha rozplyne a tvůj zadní stěrač zahlédne už pošesté tu stejnou SPZ - MIA tě upozorní: Bacha! Máš sledku za prdelí!"
       quote:
-        en: "The mobile light flashes like a magnesium flash - a second of truth for both the stalked and the one who thinks they're invisible."
-        cs: "Světlo mobilu blikne jako magnéziový blesk – vteřina pravdy pro stalkovaného i toho, kdo si myslí, že je neviditelný."
+        en: "Once is chance. Twice is coincidence. The sixth time it's a tail."
+        cs: "Jednou je to náhoda. Dvakrát souhra okolností. Pošesté je to sledka."
     covert_ops_interface:
       title:
-        en: Covert Ops Interface
-        cs: COVERT OPS INTERFACE
+        en: "The Plate Black Book"
+        cs: "ČERNÁ KNIHA SPZ"
       description:
         en: "Every number plate of the cars driving behind you goes into a database. If they keep showing up, you'll know."
         cs: "Všechny SPZ aut, co jedou za tebou, se ukládají do databáze. Když se budou opakovat, budeš o tom vědět."
       quote:
-        en: "Who watches the watchers? We do."
-        cs: "Kdo hlídá hlídače? Hlídáme my."
+        en: "Besides the plates from the rear camera, MIA also remembers the Bluetooth and Wi-Fi addresses around you. Plates can be swapped; the phone in your tail's pocket, not so easily."
+        cs: "Kromě SPZ ze zadní kamery si MIA pamatuje i Bluetooth a Wi-Fi adresy okolo. Značky se dají přešroubovat, mobil v kapse sledky už tak snadno ne."
     gonzo_command_center:
       title:
-        en: Gonzo Command Center
-        cs: GONZO COMMAND CENTER
+        en: "Unmarked Cop Detector"
+        cs: "DETEKTOR KRIMINÁLKY"
       description:
         en: "Just because you're paranoid doesn't mean they're not after you: every plate you pass is checked against edalnice.cz. Vehicles exempt from the motorway toll are driven by the criminal police!"
         cs: "Že seš paranoidní neznamená že po tobě nejdou: Všechny potkané SPZ se ověří dotazem na edalnice.cz - vozidla osvobozená od dálničního poplatku řídí kriminálka!"
       quote:
-        en: "If something escapes you, it was just a bad trip."
-        cs: "Pokud ti něco unikne, byl to jen špatný trip."
+        en: "Only two kinds of people drive without a vignette: the ones who forgot, and the ones who don't have to pay."
+        cs: "Bez dálniční známky jezdí jen dva druhy lidí: ti, co zapomněli, a ti, co platit nemusí."
     matrix_tracking_map:
       title:
-        en: Matrix Tracking Map
-        cs: MATRIX TRACKING MAP
+        en: "Hands on the Wheel"
+        cs: "RUCE NA VOLANTU"
       description:
         en: "When you drive, your hands are on the wheel and your eyes on the road. Not even an automatic gearbox lets you fiddle with your phone's settings while driving; MIA does it for you, just talk to her. And when they pull you over, MIA will play your pregnant wife on the phone, the one you're speeding to get to the hospital!"
         cs: "Když řídíš, máš ruce na volantu a oči na silnici. Ani automat ti neposkytne pohodlí sekat se za jízdy v nadstavnení telefonu; MIA to bude dělat za tebe, stačí s ní mluvit. A až tě budou stavět, MIA bude hrát těhotnou manželku na telefonu, pro kterou rychle jedeš abys ji vzal do nemocnice!"
       quote:
-        en: "One movement, one wrong license plate - and history is written online."
-        cs: "Jeden pohyb, jedna chybná SPZ – a historie se píše online."
+        en: "Say “Hey Mia” and leave the phone in its mount."
+        cs: "Řekni „Hey Mia“ a telefon nech v držáku."
+    obd_whisperer:
+      title:
+        en: "The Car Talks, MIA Translates"
+        cs: "AUTO MLUVÍ, MIA PŘEKLÁDÁ"
+      description:
+        en: "RPM, coolant temperature, battery voltage, fault codes. MIA reads them from OBD and CAN, and when she doesn't like something she tells you out loud, instead of you hearing it from the tow truck driver. Hook up Torque or Car Scanner if you like: she passes for a plain ELM327 OBD adapter."
+        cs: "Otáčky, teplota vody, napětí baterie, chybové kódy. MIA to čte z OBD a CAN, a když se jí něco nelíbí, řekne ti to nahlas, místo aby ses to dozvěděl od odtahovky. Klidně se k ní připoj s Torque nebo Car Scannerem, tváří se jako obyčejný OBD adaptér ELM327."
+      quote:
+        en: "She only listens. The ESP32 on the CAN bus doesn't even have a transmit path compiled in."
+        cs: "Jen poslouchá. ESP32 na CAN sběrnici nemá ani zkompilovanou cestu k vysílání."
+    dashcam:
+      title:
+        en: "The Camera That Never Sleeps"
+        cs: "KAMERA, CO NESPÍ"
+      description:
+        en: "Your phone records the road on a loop, deletes old footage by itself and puts the important clips aside. When someone rear-ends you and then claims you reversed into them, you play it back to them."
+        cs: "Telefon nahrává cestu pořád dokola, staré záznamy maže sám a ty důležité odloží stranou. Když ti někdo vletí do zadku a pak tvrdí, že jsi couval, pustíš mu to."
+      quote:
+        en: "Memory has holes. Video doesn't."
+        cs: "Paměť je děravá. Video ne."
   features:
     realtime_surveillance_tracking:
       en: Real-Time Surveillance Tracking
@@ -136,57 +156,57 @@ journalists:
       cs: Anonymní režim provozu
   stories:
     title:
-      en: Stories from the Front
-      cs: PŘÍBĚHY Z FRONTY
+      en: "Stories from the Front"
+      cs: "PŘÍBĚHY Z FRONTY"
     gonzo_investigator:
       title:
-        en: Gonzo Investigator
-        cs: GONZO INVESTIGATOR
+        en: "Steering-Wheel Buttons"
+        cs: "TLAČÍTKA NA VOLANTU"
       description:
         en: "MIA maps your steering-wheel buttons to any action you like: read out phone notifications when a message pings, start Waze navigation on a route with no cops, or send \"RDY\" to all your Signal contacts."
         cs: "MIA ti namapuje tlačítka na volantu na libovolné akce: Přečíst notifikace z telefonu, když ti cinkne zpráva, spustit navigaci přes Waze cestou, kde nejsou policajti, nebo napsat všem kontaktům na Signal \"RDY\"."
       features:
-        - en: Real-time surveillance
-          cs: Real-time surveillance
-        - en: Voice transcription
-          cs: Voice transcription
-        - en: Encrypted evidence
-          cs: Encrypted evidence
+        - en: "Notifications read aloud"
+          cs: "Notifikace nahlas"
+        - en: "Waze without cops"
+          cs: "Waze bez policajtů"
+        - en: "Signal with one thumb"
+          cs: "Signal jedním palcem"
     mobile_dj_revolution:
       title:
-        en: Mobile DJ Revolution
-        cs: MOBILE DJ REVOLUTION
+        en: "MIA in the Factory Speakers"
+        cs: "MIA V TOVÁRNÍCH REPRÁCÍCH"
       description:
-        en: Traffic jam on the highway? Show must go on! RTP-MIDI connection to remote DAW, car as mobile DJ booth. Party starts on time, even when you're in traffic hell.
-        cs: Kolona na dálnici? Show must go on! RTP-MIDI připojení k vzdálenému DAW, auto jako mobilní DJ pult. Párty startuje včas, i když jsi v pekle dopravy.
+        en: "Your 2004 radio has no Bluetooth? No problem. MIA plugs into the CD changer connector, the radio thinks it's playing “CD 1”, and music, navigation and MIA all come out of the factory speakers. No cut wires, no new head unit. And the steering-wheel buttons send her commands."
+        cs: "Rádio z roku 2004 neumí Bluetooth? Nevadí. MIA se připojí do konektoru pro CD měnič, rádio si myslí, že hraje „CD 1“, a z továrních repráků ti jde hudba, navigace i MIA. Bez řezání kabelů, bez nového rádia. A tlačítka na volantu jí k tomu posílají povely."
       features:
-        - en: RTP-MIDI sync
-          cs: RTP-MIDI sync
-        - en: Live streaming
-          cs: Live streaming
-        - en: Multi-car collaboration
-          cs: Multi-car collaboration
+        - en: "CD changer connector"
+          cs: "Konektor CD měniče"
+        - en: "Factory speakers"
+          cs: "Tovární repráky"
+        - en: "No cutting"
+          cs: "Žádné řezání"
   manifesto:
     title:
-      en: Digital Guerrilla Manifesto
-      cs: MANIFESTÍ DIGITÁLNÍ GUERILLY
+      en: "Digital Guerrilla Manifesto"
+      cs: "MANIFESTÍ DIGITÁLNÍ GUERILLY"
     content:
       paragraph1:
-        en: "We, guerrilla fighters of the digital age, refuse to be mere data points in corporate hyena databases. We refuse to be watched without the ability to watch back."
-        cs: "My, guerilla fighters digitálního věku, odmítáme být pouhými datovými body v databases korporátních hyenáček. Odmítáme být sledováni bez možnosti sledovat zpět."
+        en: "Your car knows more about you than your mum does. How much you drive, where you park, how you brake. A new car sends that to the manufacturer and the insurer. MIA reads it for you alone."
+        cs: "Tvoje auto o tobě ví víc než tvoje máma. Kolik jezdíš, kde stojíš, jak brzdíš. Nové auto to pošle výrobci a pojišťovně. MIA to čte jen pro tebe."
       paragraph2:
-        en: "MIA is not just technology. It's a Statement. Rebel yell. Digital molotov against surveillance state that thinks it has a monopoly on information."
-        cs: "MIA není jen technologie. Je to Statement. Rebel yell. Digitální molotov proti surveillance state, která si myslí, že má monopol na informace."
+        en: "No cloud, no subscription. A Raspberry Pi under the seat, a couple of ESP32s behind the dash and a phone in the mount. The hardware is yours, the code is open, and nobody can switch it off remotely."
+        cs: "Žádný cloud, žádné předplatné. Raspberry Pi pod sedačkou, pár ESP32 za palubkou a telefon v držáku. Hardware je tvůj, kód je otevřený a nikdo ti to na dálku nevypne."
       paragraph3:
-        en: "Every ESP32 module in your car is a small act of revolt. Every recognized license plate is a middle finger to the system. Every voice note is bullets into the establishment."
-        cs: "Každý ESP32 modul v tvém autě je malý akt revolty. Každé rozpoznané SPZ je middle finger systemu. Každá hlasová poznámka je bullets do establishment."
+        en: "She only listens to the car. She sends nothing on the bus and writes nothing to the control units. MIA can't kill your engine or unlock your doors, even if she wanted to."
+        cs: "Do auta jen poslouchá. Na sběrnici nic neposílá, do řídicích jednotek nezapisuje. MIA ti nezhasne motor ani neodemkne dveře, ani kdyby chtěla."
       paragraph4:
-        en: "Join us. Or stay sheep in the digital slaughterhouse. Choice is yours, freedom fighter."
-        cs: "Připoj se k nám. Nebo zůstaň sheep in the digital slaughterhouse. Choice is yours, freedom fighter."
+        en: "Join us. Or keep driving a car that snitches on you instead of to you."
+        cs: "Připoj se. Nebo dál jezdi v autě, které donáší na tebe, a ne tobě."
   cta:
     ready_to_investigate:
-      en: Ready to Investigate?
-      cs: Připraveni vyšetřovat?
+      en: "Want MIA in your car first?"
+      cs: "Chceš MIA do auta jako první?"
     start_investigative_journalism:
       en: Start Investigative Journalism
       cs: Začít investigativní žurnalistiku
@@ -253,3 +273,86 @@ journalists:
     cancel_button:
       en: CANCEL SELF-DESTRUCTION
       cs: ZRUŠIT SAMODESTRUKCI
+  # Overrides for the shared strings in site.yaml on this page only (see generatePages.js).
+  site:
+    scenarios:
+      label:
+        en: "What MIA does"
+        cs: "Co MIA umí"
+      note:
+        en: "This is what MIA does while you keep your hands on the wheel."
+        cs: "Tohle MIA dělá, zatímco ty držíš volant."
+    today:
+      title:
+        en: "What already runs"
+        cs: "Co už teď jede"
+      intro:
+        en: "No slide deck. This is written, tested in CI and running in simulation. We're bolting it into the car right now."
+        cs: "Žádný powerpoint. Tohle je napsané, otestované v CI a běží v simulaci. Do auta to právě šroubujeme."
+      items:
+        - title:
+            en: "What's under the bonnet"
+            cs: "Co se děje pod kapotou"
+          text:
+            en: "RPM, coolant temperature, battery voltage and ignition, from OBD and passive CAN listening."
+            cs: "Otáčky, teplota vody, napětí baterie a zapalování z OBD a pasivního odposlechu CAN."
+        - title:
+            en: "Read-only Audi"
+            cs: "Audi jen pro čtení"
+          text:
+            en: "VAG diagnostics that only read. MIA keeps her hands off the control units."
+            cs: "Diagnostika VAG, která jen čte. Do řídicích jednotek MIA nesahá."
+        - title:
+            en: "Plate reader"
+            cs: "Čtečka SPZ"
+          text:
+            en: "A rear-facing camera reads number plates and checks them against eDálnice straight away."
+            cs: "Kamera namířená dozadu čte SPZ a hned je prověří na eDálnici."
+        - title:
+            en: "Talk, don't fiddle"
+            cs: "Mluv, nehrabej"
+          text:
+            en: "The Pi handles voice commands and the phone speaks the answers."
+            cs: "Hlasové příkazy zpracuje Pi, odpovědi ti telefon řekne nahlas."
+        - title:
+            en: "Phone as a dashboard"
+            cs: "Telefon jako palubka"
+          text:
+            en: "BLE, live telemetry, dashcam and your own “if this, do that” rules."
+            cs: "BLE, živá telemetrie, dashcam a vlastní pravidla typu „když tohle, udělej tamto“."
+        - title:
+            en: "Brain under the seat"
+            cs: "Mozek pod sedačkou"
+          text:
+            en: "A Raspberry Pi with an API, WebSocket and services that start by themselves. No hardware attached? It runs in simulation."
+            cs: "Raspberry Pi s API, WebSocketem a službami, co naběhnou samy. Když hardware chybí, jede simulace."
+    technology:
+      items:
+        - title:
+            en: "Raspberry Pi under the seat"
+            cs: "Raspberry Pi pod sedačkou"
+          text:
+            en: "API, messaging and voice services run right in the car."
+            cs: "API, zprávy a hlasové služby běží přímo v autě."
+        - title:
+            en: "ESP32s behind the dash"
+            cs: "ESP32 za palubkou"
+          text:
+            en: "They listen to OBD and CAN, switch relays, read buttons, and one watches number plates through the rear camera."
+            cs: "Poslouchají OBD a CAN, spínají relé, čtou tlačítka a jedna kouká zadní kamerou na SPZ."
+        - title:
+            en: "Phone in the mount"
+            cs: "Telefon v držáku"
+          text:
+            en: "Dashboard, dashcam and a scan of the Bluetooth and Wi-Fi addresses around you."
+            cs: "Palubka, dashcam a sken Bluetooth a Wi-Fi adres okolo."
+        - title:
+            en: "Open code"
+            cs: "Otevřený kód"
+          text:
+            en: "Requirements, decisions and test results are on GitHub. We hide nothing."
+            cs: "Požadavky, rozhodnutí i výsledky testů jsou na GitHubu. Nic neschováváme."
+    pilot:
+      text:
+        en: "There's no price list and we won't make one up. We're looking for crews who want MIA in their car first and aren't afraid of a screwdriver. Drop us a line."
+        cs: "Ceník nemáme a nebudeme si ho vymýšlet. Hledáme posádky, co chtějí MIA v autě první a nebojí se šroubováku. Napiš nám."
