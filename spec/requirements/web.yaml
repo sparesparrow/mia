@@ -8,6 +8,9 @@ requirements:
   statement: Customer-segment landing pages shall be generated from one template with Czech and English strings,
     and must not leak template placeholders.
   evidence: implemented_and_ci_tested
+  acceptance:
+  - Every customer segment is generated in Czech and English from the shared template
+  - Generated pages contain no unresolved template placeholders
   implemented_in:
   - web/scripts/generatePages.js
   - web/template.html
@@ -21,6 +24,9 @@ requirements:
     mechanics, testers, press) its own entry path, and shall publish no prices or performance figures that the
     requirement registry does not support.
   evidence: implemented_and_ci_tested
+  acceptance:
+  - Every published generated page links to every supported audience and its alternate language
+  - Generated audience pages contain no unsupported prices, performance figures or retired AI-SERVIS branding
   implemented_in:
   - web/scripts/generatePages.js
   - web/i18n/site.yaml
