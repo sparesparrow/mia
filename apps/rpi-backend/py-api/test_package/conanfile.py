@@ -18,7 +18,6 @@ class TestMiaRpiPythonConan(ConanFile):
         
         # Verify key files exist
         required_files = [
-            "core/messaging/broker.py",
             "api/main.py",
             "hardware/gpio_worker.py",
         ]
@@ -35,7 +34,7 @@ class TestMiaRpiPythonConan(ConanFile):
         sys.path.insert(0, rpi_root)
         
         try:
-            from core.messaging.broker import ZeroMQBroker
-            self.output.info("✓ Successfully imported ZeroMQBroker")
+            from core.messaging.client import MessagingClient
+            self.output.info("✓ Successfully imported MessagingClient")
         except ImportError as e:
             self.output.warning(f"⚠ Import test failed: {e}")
