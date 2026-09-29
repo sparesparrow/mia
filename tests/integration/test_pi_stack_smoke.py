@@ -12,9 +12,12 @@ Verifies:
 """
 
 import asyncio
+import importlib.util
 import json
 import os
 import re
+import socket
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -73,6 +76,43 @@ class TestSystemdDependencyOrdering(unittest.TestCase):
 
     def test_broker_service_exists(self):
         self._get_unit("zmq-broker")
+
+    def test_systemd_broker_entrypoint_starts(self):
+        """Start the exact broker implementation referenced by zmq-broker.service."""
+        unit = self._get_unit("zmq-broker")
+        exec_start = " ".join(unit.get("Service", {}).get("ExecStart", []))
+        match = re.search(r"/opt/mia/([^'\" ]*broker\.py)", exec_start)
+        self.assertIsNotNone(match, f"Broker path not found in ExecStart: {exec_start}")
+
+        broker_path = ROOT / match.group(1)
+        self.assertEqual(
+            broker_path,
+            ROOT / "apps/rpi-backend/shared/messaging/broker.py",
+            "systemd must run the canonical shared broker",
+        )
+        self.assertTrue(broker_path.exists(), f"Broker entrypoint missing: {broker_path}")
+
+        spec = importlib.util.spec_from_file_location("mia_systemd_broker", broker_path)
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+            probe.bind(("127.0.0.1", 0))
+            port = probe.getsockname()[1]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            broker = module.ZeroMQBroker(
+                router_port=port,
+                persistence_path=str(Path(tmpdir) / "broker.db"),
+            )
+            self.assertTrue(broker.start())
+            try:
+                self.assertTrue(broker.running)
+                self.assertIsNotNone(broker.router)
+            finally:
+                broker.stop()
 
     def test_all_core_services_have_restart_policy(self):
         for name in ("zmq-broker", "mia-api", "mia-serial-bridge", "mia-obd-worker"):
