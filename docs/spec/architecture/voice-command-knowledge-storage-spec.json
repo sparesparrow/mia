@@ -1,0 +1,1432 @@
+{
+  "specification": {
+    "version": "1.0.0",
+    "created_at": "2025-01-27",
+    "title": "Voice Command Knowledge Storage and Retrieval System",
+    "purpose": "Comprehensive knowledge storage architecture for MIA voice command interactions, enabling fast retrieval, pattern detection, and distributed learning across devices",
+    "status": "specification"
+  },
+  "system_overview": {
+    "description": "Multi-tier knowledge storage system optimized for voice command intelligence in distributed MIA environments",
+    "target_metrics": {
+      "retrieval_latency_ms": 47,
+      "cache_hit_rate_percent": 89,
+      "consistency_score_percent": 100,
+      "availability_percent": 99.9,
+      "storage_reduction_percent": 43
+    },
+    "storage_tiers": [
+      {
+        "name": "hot_cache",
+        "purpose": "Sub-100ms retrieval for recent command patterns",
+        "storage_type": "in_memory",
+        "ttl_seconds": 3600,
+        "typical_size_mb": 128
+      },
+      {
+        "name": "warm_index",
+        "purpose": "Fast indexed search for last 7 days of commands",
+        "storage_type": "local_sqlite_with_indices",
+        "ttl_seconds": 604800,
+        "typical_size_mb": 512
+      },
+      {
+        "name": "cold_archive",
+        "purpose": "Historical analysis and long-term pattern learning",
+        "storage_type": "compressed_append_only_log",
+        "ttl_seconds": 7776000,
+        "typical_size_mb": 5120,
+        "compression_ratio": 0.25
+      },
+      {
+        "name": "distributed_knowledge",
+        "purpose": "Synchronized command patterns across devices",
+        "storage_type": "distributed_hash_map",
+        "sync_protocol": "eventual_consistency",
+        "replication_factor": 3
+      }
+    ]
+  },
+  "data_model": {
+    "voice_interaction_event": {
+      "description": "Core unit of knowledge - a single voice command interaction with full context and outcome",
+      "schema": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for this interaction event"
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "unix_timestamp_ms",
+          "description": "When the command was spoken (milliseconds since epoch)"
+        },
+        "device_id": {
+          "type": "string",
+          "description": "Which device received the command (car, phone, home_assistant)"
+        },
+        "session_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Links to session context for multi-turn conversations"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Anonymous user hash (privacy-preserving)"
+        },
+        "voice_input": {
+          "type": "object",
+          "description": "Raw voice command information",
+          "properties": {
+            "raw_text": {
+              "type": "string",
+              "description": "Transcribed voice command text"
+            },
+            "confidence_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Speech-to-text confidence (0.0 to 1.0)"
+            },
+            "duration_ms": {
+              "type": "integer",
+              "description": "Length of voice input in milliseconds"
+            },
+            "audio_sample_rate": {
+              "type": "integer",
+              "description": "Sample rate of captured audio (e.g., 16000)"
+            },
+            "language_detected": {
+              "type": "string",
+              "description": "Detected language code (e.g., 'en', 'fr')"
+            },
+            "acoustic_features": {
+              "type": "object",
+              "description": "Compressed audio fingerprint for similarity matching",
+              "properties": {
+                "mfcc_hash": {
+                  "type": "string",
+                  "description": "MFCC feature hash for acoustic similarity"
+                },
+                "pitch_range": {
+                  "type": "object",
+                  "properties": {
+                    "min_hz": {"type": "number"},
+                    "max_hz": {"type": "number"}
+                  }
+                },
+                "energy_profile": {
+                  "type": "string",
+                  "description": "Compressed energy envelope for prosody matching"
+                }
+              }
+            }
+          },
+          "required": ["raw_text", "confidence_score"]
+        },
+        "interpreted_command": {
+          "type": "object",
+          "description": "NLP interpretation of the voice command",
+          "properties": {
+            "intent": {
+              "type": "string",
+              "description": "Classified intent (e.g., 'play_music', 'control_climate')"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Intent classification confidence"
+            },
+            "parameters": {
+              "type": "object",
+              "description": "Extracted command parameters and values",
+              "additionalProperties": true
+            },
+            "alternative_intents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "intent": {"type": "string"},
+                  "confidence": {"type": "number"}
+                }
+              },
+              "description": "Ranked alternative intent interpretations"
+            },
+            "reasoning_trace": {
+              "type": "string",
+              "description": "Explanation of how intent was determined (for debugging)"
+            }
+          },
+          "required": ["intent", "confidence"]
+        },
+        "context_snapshot": {
+          "type": "object",
+          "description": "State information at time of command",
+          "properties": {
+            "location": {
+              "type": "object",
+              "properties": {
+                "latitude": {"type": "number"},
+                "longitude": {"type": "number"},
+                "accuracy_m": {"type": "number"},
+                "semantic_location": {
+                  "type": "string",
+                  "description": "Human-friendly location (e.g., 'home', 'car', 'office')"
+                }
+              }
+            },
+            "time_of_day": {
+              "type": "string",
+              "enum": ["morning", "afternoon", "evening", "night"],
+              "description": "Time period for circadian patterns"
+            },
+            "day_of_week": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6,
+              "description": "Day of week for weekly pattern detection"
+            },
+            "vehicle_state": {
+              "type": "object",
+              "description": "Current vehicle state (if automotive command)",
+              "properties": {
+                "speed_kmh": {"type": "number"},
+                "engine_state": {
+                  "type": "string",
+                  "enum": ["off", "idle", "running"]
+                },
+                "fuel_percent": {"type": "number"},
+                "climate_temp_celsius": {"type": "number"},
+                "doors_locked": {"type": "boolean"}
+              }
+            },
+            "device_state": {
+              "type": "object",
+              "description": "Device hardware state",
+              "properties": {
+                "battery_percent": {"type": "number"},
+                "network_connectivity": {
+                  "type": "string",
+                  "enum": ["wifi", "cellular", "offline", "all"]
+                },
+                "active_applications": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            },
+            "user_activity": {
+              "type": "string",
+              "enum": ["driving", "stationary", "walking", "idle"],
+              "description": "Inferred user activity from motion and context"
+            },
+            "previous_commands": {
+              "type": "array",
+              "maxItems": 5,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "intent": {"type": "string"},
+                  "timestamp_ms": {"type": "integer"},
+                  "time_delta_ms": {"type": "integer"}
+                }
+              },
+              "description": "Recent command history for conversation context"
+            },
+            "environmental_conditions": {
+              "type": "object",
+              "properties": {
+                "ambient_light_lux": {"type": "number"},
+                "noise_level_db": {"type": "number"},
+                "weather_condition": {"type": "string"}
+              }
+            }
+          }
+        },
+        "execution_outcome": {
+          "type": "object",
+          "description": "What happened when the command was executed",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["success", "partial_success", "failed", "cancelled"],
+              "description": "Execution result status"
+            },
+            "executed_action": {
+              "type": "object",
+              "properties": {
+                "service_name": {"type": "string"},
+                "tool_name": {"type": "string"},
+                "actual_parameters": {
+                  "type": "object",
+                  "description": "Parameters actually used (may differ from requested)"
+                }
+              }
+            },
+            "result_summary": {
+              "type": "string",
+              "description": "Human-readable summary of what was done"
+            },
+            "error_details": {
+              "type": "object",
+              "description": "Error information if status is failed",
+              "properties": {
+                "error_code": {"type": "string"},
+                "error_message": {"type": "string"},
+                "recovery_attempted": {"type": "boolean"}
+              }
+            },
+            "execution_time_ms": {
+              "type": "integer",
+              "description": "How long command execution took"
+            },
+            "affected_systems": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Systems/services modified by this command"
+            }
+          },
+          "required": ["status"]
+        },
+        "user_feedback": {
+          "type": "object",
+          "description": "User's assessment of command handling",
+          "properties": {
+            "satisfaction": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "User satisfaction rating (1-5 stars)"
+            },
+            "was_correct": {
+              "type": "boolean",
+              "description": "Did we interpret the command correctly?"
+            },
+            "explicit_correction": {
+              "type": "string",
+              "description": "User's correction if interpretation was wrong"
+            },
+            "natural_feedback": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Natural language feedback from user"
+            },
+            "feedback_latency_ms": {
+              "type": "integer",
+              "description": "How quickly user provided feedback"
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "System metadata for lifecycle management",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "Schema version for this record"
+            },
+            "storage_tier": {
+              "type": "string",
+              "enum": ["hot", "warm", "cold"],
+              "description": "Current storage location"
+            },
+            "compressed": {
+              "type": "boolean",
+              "description": "Whether this record is compressed"
+            },
+            "last_accessed_ts": {
+              "type": "integer",
+              "format": "unix_timestamp_ms",
+              "description": "When this knowledge was last accessed for learning"
+            },
+            "access_count": {
+              "type": "integer",
+              "description": "How many times this event was used for matching"
+            },
+            "retention_policy": {
+              "type": "string",
+              "enum": ["permanent", "anonymize_after_1y", "delete_after_1y"],
+              "description": "Retention and privacy policy"
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "timestamp",
+        "device_id",
+        "user_id",
+        "voice_input",
+        "interpreted_command",
+        "execution_outcome"
+      ]
+    },
+    "command_pattern": {
+      "description": "Aggregated pattern detected across multiple similar interactions",
+      "schema": {
+        "pattern_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "pattern_type": {
+          "type": "string",
+          "enum": [
+            "semantic_cluster",
+            "temporal_sequence",
+            "contextual_variation",
+            "error_recovery",
+            "user_preference"
+          ]
+        },
+        "intent_class": {
+          "type": "string",
+          "description": "Primary intent this pattern represents"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Compact hash signature for fast matching"
+        },
+        "matching_events": {
+          "type": "array",
+          "items": {"type": "string"},
+          "maxItems": 100,
+          "description": "Sample of event IDs matching this pattern"
+        },
+        "frequency": {
+          "type": "object",
+          "properties": {
+            "occurrences": {"type": "integer"},
+            "unique_users": {"type": "integer"},
+            "unique_devices": {"type": "integer"},
+            "first_occurrence_ts": {"type": "integer"},
+            "last_occurrence_ts": {"type": "integer"}
+          }
+        },
+        "parameters_variations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parameter_set": {"type": "object"},
+              "frequency": {"type": "integer"},
+              "success_rate": {"type": "number"}
+            }
+          },
+          "description": "Common parameter combinations for this pattern"
+        },
+        "success_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of matching commands that succeeded"
+        },
+        "contextual_conditions": {
+          "type": "object",
+          "description": "Context conditions when pattern is most effective",
+          "properties": {
+            "best_time_of_day": {"type": "string"},
+            "best_location": {"type": "string"},
+            "best_user_activity": {"type": "string"}
+          }
+        }
+      },
+      "required": ["pattern_id", "intent_class", "signature"]
+    },
+    "knowledge_index": {
+      "description": "Fast lookup index for retrieving related commands and patterns",
+      "schema": {
+        "index_key": {
+          "type": "string",
+          "description": "Index key for retrieval (e.g., 'intent:play_music', 'device:car', 'location:home')"
+        },
+        "matching_event_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Event IDs matching this index key"
+        },
+        "matching_pattern_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Pattern IDs matching this index key"
+        },
+        "bloom_filter": {
+          "type": "string",
+          "description": "Compact bloom filter for existence checking"
+        },
+        "last_updated_ts": {
+          "type": "integer",
+          "format": "unix_timestamp_ms"
+        }
+      }
+    },
+    "synchronization_event": {
+      "description": "Record of knowledge synchronization between devices",
+      "schema": {
+        "sync_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_device": {
+          "type": "string",
+          "description": "Device that discovered new pattern"
+        },
+        "target_devices": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Devices receiving the pattern"
+        },
+        "patterns_synced": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "unix_timestamp_ms"
+        },
+        "sync_status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "completed", "failed"]
+        },
+        "bytes_transferred": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "storage_organization": {
+    "directory_structure": {
+      "description": "Physical storage layout on devices",
+      "structure": {
+        "~/.mia/knowledge": {
+          "description": "Root knowledge directory",
+          "subdirectories": {
+            "hot_cache": {
+              "description": "In-memory cache (recreated on startup)",
+              "format": "json_lines"
+            },
+            "warm_index": {
+              "description": "Local SQLite database with indices",
+              "format": "sqlite3",
+              "files": [
+                "commands.db (main interaction database)",
+                "patterns.db (detected patterns)",
+                "indices.db (lookup indices)"
+              ]
+            },
+            "cold_archive": {
+              "description": "Compressed historical records",
+              "format": "zstd_compressed_append_only_log",
+              "files": [
+                "archive_2025_01.log.zst",
+                "archive_2025_02.log.zst"
+              ]
+            },
+            "sync": {
+              "description": "Synchronization metadata and queue",
+              "files": [
+                "sync_queue.jsonl (pending syncs)",
+                "sync_history.log (completed syncs)"
+              ]
+            },
+            "config": {
+              "description": "Knowledge system configuration",
+              "files": [
+                "storage_config.json",
+                "retention_policies.json",
+                "privacy_settings.json"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "partitioning_strategy": {
+      "time_based": {
+        "description": "Partition hot and warm tiers by time for efficient cleanup",
+        "granularity": "weekly",
+        "rotation_policy": "archive_after_7_days"
+      },
+      "intent_based": {
+        "description": "Secondary partitioning by intent class for faster intent-specific queries",
+        "example_keys": [
+          "intent:play_music",
+          "intent:control_climate",
+          "intent:navigation"
+        ]
+      },
+      "device_based": {
+        "description": "Partition distributed knowledge by device origin",
+        "example_keys": [
+          "device:car_primary",
+          "device:phone_personal",
+          "device:home_assistant"
+        ]
+      }
+    },
+    "indexing_strategy": {
+      "hot_cache_indices": {
+        "description": "In-memory hash maps for ultra-fast access",
+        "indices": [
+          "intent -> recent_event_ids",
+          "device_id -> recent_event_ids",
+          "user_id -> recent_event_ids",
+          "pattern_signature -> pattern_id"
+        ]
+      },
+      "warm_database_indices": {
+        "description": "SQLite B-tree indices for efficient database queries",
+        "indices": [
+          "idx_timestamp (for time range queries)",
+          "idx_intent_device (composite: intent + device)",
+          "idx_user_location (composite: user + location)",
+          "idx_success_rate (for quality filtering)",
+          "fts_voice_input (full-text search on transcribed text)"
+        ]
+      },
+      "distributed_indices": {
+        "description": "Hash ring indices for distributed pattern lookup",
+        "strategy": "consistent_hashing",
+        "example_keys": [
+          "hash(pattern_signature) % 3 -> replica_1,replica_2,replica_3"
+        ]
+      }
+    },
+    "compression_strategy": {
+      "hot_tier": {
+        "compression": "none",
+        "reason": "Need maximum speed for frequent access"
+      },
+      "warm_tier": {
+        "compression": "optional_selective",
+        "criteria": "compress older than 3 days or accessed less than 2x"
+      },
+      "cold_tier": {
+        "compression": "always",
+        "algorithm": "zstd",
+        "compression_level": 19,
+        "typical_ratio": 0.25,
+        "dictionary": "voice_command_domain_optimized"
+      }
+    }
+  },
+  "retrieval_patterns": {
+    "similar_command_retrieval": {
+      "description": "Find past commands similar to a new voice input for pattern matching",
+      "query_types": [
+        {
+          "name": "semantic_similarity",
+          "method": "cosine_similarity_on_embeddings",
+          "parameters": {
+            "embedding_model": "sentence-transformers-mia-small",
+            "top_k": 5,
+            "similarity_threshold": 0.75
+          },
+          "latency_target_ms": 50,
+          "example": "Find commands similar to 'Turn on the lights' in home context"
+        },
+        {
+          "name": "acoustic_similarity",
+          "method": "mfcc_hash_distance",
+          "parameters": {
+            "hash_algorithm": "dhash",
+            "max_distance": 8,
+            "top_k": 3
+          },
+          "latency_target_ms": 25,
+          "example": "Find commands with similar prosody/accent from same user"
+        },
+        {
+          "name": "intent_parameter_matching",
+          "method": "exact_or_fuzzy_parameter_match",
+          "parameters": {
+            "fuzzy_threshold": 0.80,
+            "top_k": 10
+          },
+          "latency_target_ms": 30,
+          "example": "Find 'play_music' commands with similar artist/genre parameters"
+        },
+        {
+          "name": "contextual_retrieval",
+          "method": "multi_field_index_intersection",
+          "parameters": {
+            "fields": ["intent", "location", "time_of_day", "day_of_week"],
+            "top_k": 5
+          },
+          "latency_target_ms": 40,
+          "example": "Find commands executed in same context (car, evening, Friday)"
+        }
+      ]
+    },
+    "pattern_search": {
+      "description": "Discover command patterns and variations",
+      "query_types": [
+        {
+          "name": "intent_pattern_search",
+          "method": "pattern_signature_lookup",
+          "example": "Find all play_music patterns and their parameter variations"
+        },
+        {
+          "name": "temporal_pattern_search",
+          "method": "sequence_analysis",
+          "example": "Find command sequences (e.g., 'play music' followed by 'increase volume')"
+        },
+        {
+          "name": "error_pattern_search",
+          "method": "failed_execution_clustering",
+          "example": "Find common causes of command failures by intent"
+        },
+        {
+          "name": "user_preference_patterns",
+          "method": "parameter_frequency_analysis",
+          "example": "What artist/genre does this user prefer for music?"
+        }
+      ]
+    },
+    "aggregate_queries": {
+      "description": "Analytics queries across knowledge base",
+      "examples": [
+        {
+          "query": "success_rate_by_intent",
+          "description": "Which intents have highest success rate?",
+          "output": "intent, success_count, failure_count, success_rate"
+        },
+        {
+          "query": "peak_usage_times",
+          "description": "When are voice commands most common?",
+          "output": "hour_of_day, day_of_week, command_count"
+        },
+        {
+          "query": "context_effectiveness",
+          "description": "Which context conditions lead to successful commands?",
+          "output": "context_combination, success_rate, sample_count"
+        },
+        {
+          "query": "parameter_trends",
+          "description": "How are command parameters changing over time?",
+          "output": "intent, parameter_name, top_values_over_time"
+        }
+      ]
+    }
+  },
+  "metadata_specification": {
+    "indexing_metadata": {
+      "description": "Metadata that enables fast retrieval",
+      "fields": [
+        {
+          "name": "intent",
+          "type": "categorical",
+          "use": "primary index key for intent-based queries",
+          "cardinality": "50-200"
+        },
+        {
+          "name": "device_id",
+          "type": "categorical",
+          "use": "device-specific knowledge partitioning",
+          "cardinality": "3-50"
+        },
+        {
+          "name": "user_id",
+          "type": "categorical",
+          "use": "user-specific pattern learning",
+          "cardinality": "1-100k"
+        },
+        {
+          "name": "location_hash",
+          "type": "categorical",
+          "use": "context-aware pattern matching",
+          "cardinality": "10-1000"
+        },
+        {
+          "name": "pattern_signature",
+          "type": "string_hash",
+          "use": "fast pattern lookup and deduplication",
+          "cardinality": "high"
+        },
+        {
+          "name": "timestamp_hour",
+          "type": "integer",
+          "use": "time-based range queries",
+          "cardinality": "168 (7*24)"
+        }
+      ]
+    },
+    "quality_metrics": {
+      "description": "Metadata tracking knowledge quality",
+      "fields": [
+        {
+          "name": "confidence_score",
+          "range": [0, 1],
+          "use": "filter low-confidence matches",
+          "aggregation": "average"
+        },
+        {
+          "name": "success_rate",
+          "range": [0, 1],
+          "use": "rank most reliable patterns",
+          "aggregation": "weighted_average"
+        },
+        {
+          "name": "user_satisfaction",
+          "range": [1, 5],
+          "use": "identify problematic interpretations",
+          "aggregation": "average"
+        },
+        {
+          "name": "feedback_provided",
+          "type": "boolean",
+          "use": "training signal presence",
+          "aggregation": "proportion"
+        },
+        {
+          "name": "execution_latency_ms",
+          "type": "integer",
+          "use": "performance baseline",
+          "aggregation": "p50, p95, p99"
+        }
+      ]
+    },
+    "lifecycle_metadata": {
+      "description": "Metadata for data governance",
+      "fields": [
+        {
+          "name": "created_timestamp",
+          "type": "timestamp",
+          "use": "retention policy application"
+        },
+        {
+          "name": "last_accessed_timestamp",
+          "type": "timestamp",
+          "use": "eviction policies for LRU cache",
+          "update_frequency": "on_every_access"
+        },
+        {
+          "name": "access_count",
+          "type": "integer",
+          "use": "identify frequently used knowledge",
+          "reset": "never"
+        },
+        {
+          "name": "storage_tier",
+          "type": "categorical",
+          "values": ["hot", "warm", "cold"],
+          "use": "track current storage location"
+        },
+        {
+          "name": "retention_policy",
+          "type": "categorical",
+          "values": [
+            "permanent",
+            "anonymize_after_1y",
+            "delete_after_1y",
+            "delete_after_7d"
+          ],
+          "use": "compliance and privacy"
+        },
+        {
+          "name": "device_origin",
+          "type": "string",
+          "use": "source tracking for patterns"
+        }
+      ]
+    }
+  },
+  "retention_policies": {
+    "policy_selection": {
+      "description": "Determine retention based on data characteristics",
+      "default_policies": [
+        {
+          "type": "successful_commands",
+          "retention_days": 365,
+          "action": "move_to_cold_after_7d, anonymize_after_1y"
+        },
+        {
+          "type": "failed_commands",
+          "retention_days": 90,
+          "action": "extract_patterns_then_delete"
+        },
+        {
+          "type": "user_feedback",
+          "retention_days": 180,
+          "action": "anonymize_user_id_after_90d"
+        },
+        {
+          "type": "sensitive_voice_data",
+          "retention_days": 7,
+          "action": "extract_mfcc_then_delete_raw"
+        },
+        {
+          "type": "patterns_and_aggregates",
+          "retention_days": 3650,
+          "action": "permanent_unless_contested"
+        }
+      ]
+    },
+    "privacy_policies": {
+      "voice_data": {
+        "raw_audio": "delete_after_7_days",
+        "transcribed_text": "anonymize_user_after_90_days",
+        "acoustic_features": "permanent",
+        "reasoning": "Keep features for acoustic learning, delete identifying content"
+      },
+      "user_preferences": {
+        "parameter_patterns": "permanent_aggregate_only",
+        "user_id_mapping": "delete_after_90_days",
+        "reasoning": "Keep learned preferences, forget user identity"
+      },
+      "location_data": {
+        "precise_coordinates": "delete_after_7_days",
+        "semantic_location": "anonymize_after_30_days",
+        "reasoning": "Keep location-based patterns, delete precise data"
+      },
+      "device_state": {
+        "sensitive_vin_or_identifiers": "delete_immediately",
+        "generic_state": "permanent",
+        "reasoning": "Keep aggregated patterns, delete identifying info"
+      }
+    },
+    "expiration_triggers": {
+      "automatic_expiration": {
+        "cold_archive": {
+          "age_days": 365,
+          "action": "anonymize_user_id"
+        }
+      },
+      "manual_deletion": {
+        "on_user_request": "full_deletion_within_30_days",
+        "on_policy_change": "batch_reprocessing_with_new_policy",
+        "on_compliance_audit": "selective_deletion"
+      }
+    }
+  },
+  "synchronization_strategy": {
+    "consistency_model": {
+      "type": "eventual_consistency",
+      "guarantee": "All devices converge to same state within timeout",
+      "timeout_seconds": 300,
+      "rationale": "Voice command patterns change slowly, not worth strict consistency cost"
+    },
+    "sync_protocol": {
+      "name": "crdt_with_vector_clocks",
+      "description": "Conflict-free replicated data type for distributed pattern knowledge",
+      "mechanism": {
+        "conflict_detection": "vector_clocks_on_events",
+        "conflict_resolution": "last_write_wins_with_timestamp",
+        "example": "If pattern X discovered by device A and device B simultaneously, keep higher resolution version"
+      }
+    },
+    "replication_architecture": {
+      "model": "multi_master_eventual_consistency",
+      "replication_factor": 3,
+      "topology": "mesh",
+      "description": "Each device can write, changes propagate via gossip protocol to other devices",
+      "primary_replica": "none (truly peer-to-peer)",
+      "fallback": "cloud_seed_repo_if_no_peer_available"
+    },
+    "sync_triggers": {
+      "event_based_sync": [
+        {
+          "trigger": "new_pattern_detected",
+          "priority": "high",
+          "delay_seconds": 5,
+          "description": "Send newly discovered pattern to other devices immediately"
+        },
+        {
+          "trigger": "improved_pattern_confidence",
+          "priority": "medium",
+          "delay_seconds": 30,
+          "description": "Share pattern refinements when confidence improves"
+        },
+        {
+          "trigger": "batch_aggregation_complete",
+          "priority": "low",
+          "delay_seconds": 300,
+          "description": "Send daily aggregated statistics"
+        }
+      ],
+      "time_based_sync": [
+        {
+          "schedule": "every_6_hours",
+          "type": "full_reconciliation",
+          "description": "Hourly sync to catch missed updates"
+        }
+      ],
+      "network_based_sync": [
+        {
+          "condition": "network_available",
+          "batch_pending_syncs": true,
+          "max_wait_seconds": 600,
+          "description": "Sync when network becomes available, batching queued items"
+        }
+      ]
+    },
+    "sync_payload": {
+      "structure": {
+        "metadata": {
+          "source_device": "string",
+          "sync_timestamp": "unix_timestamp_ms",
+          "vector_clock": "map<device_id, int>",
+          "generation": "int"
+        },
+        "patterns": {
+          "type": "array",
+          "items": "command_pattern",
+          "description": "New or updated patterns from source device"
+        },
+        "statistics": {
+          "type": "object",
+          "description": "Aggregate statistics for analytics"
+        }
+      },
+      "compression": {
+        "algorithm": "zstd",
+        "target_size_kb": 50,
+        "typical_size_kb": 15
+      }
+    },
+    "bandwidth_optimization": {
+      "delta_sync": {
+        "description": "Only send changed patterns, not full dataset",
+        "mechanism": "track pattern_ids and vector_clocks of last sync"
+      },
+      "selective_sync": {
+        "description": "Only sync high-value patterns",
+        "criteria": "success_rate > 0.8 AND frequency > 5",
+        "rationale": "Don't sync noisy single-occurrence patterns"
+      },
+      "batch_windows": {
+        "description": "Batch multiple pattern syncs into single network request",
+        "batch_size": "up_to_100_patterns_or_5_min_timeout",
+        "compression": "zstd_compression_applied"
+      }
+    },
+    "conflict_resolution": {
+      "scenario": "Same pattern discovered independently on two devices",
+      "resolution_steps": [
+        "Compare vector_clock to determine causality",
+        "If concurrent: prefer higher confidence version",
+        "If concurrent + equal confidence: prefer lower device_id lexicographically",
+        "Merge parameter variations from both versions"
+      ]
+    }
+  },
+  "query_patterns": {
+    "hot_path_queries": {
+      "description": "Ultra-fast queries for command interpretation",
+      "queries": [
+        {
+          "name": "get_recent_similar_commands",
+          "method": "in_memory_hash_table_lookup",
+          "latency_target_ms": 10,
+          "example": "get_recent_similar_commands(intent='play_music', limit=5)"
+        },
+        {
+          "name": "get_successful_patterns_for_intent",
+          "method": "hot_cache_scan",
+          "latency_target_ms": 15,
+          "example": "get_successful_patterns_for_intent('climate_control', min_success_rate=0.85)"
+        },
+        {
+          "name": "check_pattern_exists",
+          "method": "bloom_filter_lookup",
+          "latency_target_ms": 5,
+          "example": "check_pattern_exists(pattern_signature='abc123def456')"
+        }
+      ]
+    },
+    "warm_path_queries": {
+      "description": "Fast database queries for pattern learning",
+      "queries": [
+        {
+          "name": "search_similar_commands_by_intent",
+          "method": "sql_index_scan",
+          "latency_target_ms": 50,
+          "example": "SELECT * FROM commands WHERE intent='play_music' AND timestamp > now()-7d ORDER BY confidence DESC LIMIT 10"
+        },
+        {
+          "name": "find_context_specific_patterns",
+          "method": "composite_index_join",
+          "latency_target_ms": 75,
+          "example": "SELECT * FROM commands WHERE intent='navigation' AND location_hash='home' AND hour_of_day=18 LIMIT 5"
+        },
+        {
+          "name": "analyze_success_by_parameter",
+          "method": "aggregation_query",
+          "latency_target_ms": 200,
+          "example": "SELECT parameters->>'artist', COUNT(*), SUM(CASE WHEN status='success' THEN 1 ELSE 0 END) FROM commands WHERE intent='play_music' GROUP BY parameters->>'artist'"
+        }
+      ]
+    },
+    "cold_path_queries": {
+      "description": "Batch analytics queries for long-term learning",
+      "queries": [
+        {
+          "name": "trend_analysis",
+          "method": "time_series_aggregation",
+          "latency_target_ms": 5000,
+          "example": "Analyze how parameter preferences change over 6 months"
+        },
+        {
+          "name": "user_cohort_analysis",
+          "method": "pattern_clustering",
+          "latency_target_ms": 10000,
+          "example": "Group users by command pattern similarity, identify user types"
+        },
+        {
+          "name": "error_root_cause_analysis",
+          "method": "correlative_analysis",
+          "latency_target_ms": 30000,
+          "example": "Find which context combinations lead to command failures"
+        }
+      ]
+    }
+  },
+  "api_specification": {
+    "storage_interface": {
+      "methods": [
+        {
+          "name": "store_interaction_event",
+          "input": "voice_interaction_event",
+          "output": "event_id (uuid)",
+          "latency_target_ms": 20,
+          "description": "Store a new voice command interaction event"
+        },
+        {
+          "name": "store_pattern",
+          "input": "command_pattern",
+          "output": "pattern_id (uuid)",
+          "latency_target_ms": 15,
+          "description": "Store a newly detected command pattern"
+        },
+        {
+          "name": "update_event_feedback",
+          "input": "event_id, user_feedback",
+          "output": "success (boolean)",
+          "latency_target_ms": 10,
+          "description": "Add user feedback to existing event"
+        }
+      ]
+    },
+    "retrieval_interface": {
+      "methods": [
+        {
+          "name": "find_similar_commands",
+          "input": "voice_input_text, context, limit=5, similarity_threshold=0.75",
+          "output": "[voice_interaction_event]",
+          "latency_target_ms": 50,
+          "description": "Find past commands similar to new voice input"
+        },
+        {
+          "name": "get_patterns_for_intent",
+          "input": "intent, limit=10, min_success_rate=0.0",
+          "output": "[command_pattern]",
+          "latency_target_ms": 30,
+          "description": "Retrieve all known patterns for an intent"
+        },
+        {
+          "name": "get_context_specific_patterns",
+          "input": "intent, location, time_of_day, limit=5",
+          "output": "[command_pattern]",
+          "latency_target_ms": 40,
+          "description": "Get patterns effective in specific context"
+        },
+        {
+          "name": "search_commands_by_text",
+          "input": "query_text, intent_filter=null, limit=20",
+          "output": "[voice_interaction_event]",
+          "latency_target_ms": 100,
+          "description": "Full-text search over transcribed commands"
+        }
+      ]
+    },
+    "pattern_interface": {
+      "methods": [
+        {
+          "name": "detect_pattern_from_events",
+          "input": "[event_id], pattern_type",
+          "output": "command_pattern",
+          "latency_target_ms": 1000,
+          "description": "Cluster events into a pattern"
+        },
+        {
+          "name": "merge_pattern_variations",
+          "input": "pattern_id, similar_pattern_ids",
+          "output": "merged_pattern_id",
+          "latency_target_ms": 500,
+          "description": "Consolidate similar patterns"
+        },
+        {
+          "name": "get_parameter_recommendations",
+          "input": "intent, context, previous_parameters=null",
+          "output": "{parameter_name: [recommended_values]}",
+          "latency_target_ms": 40,
+          "description": "Suggest parameter values based on patterns and context"
+        }
+      ]
+    },
+    "synchronization_interface": {
+      "methods": [
+        {
+          "name": "sync_patterns",
+          "input": "patterns_to_sync, target_devices",
+          "output": "sync_event_id",
+          "latency_target_ms": 50,
+          "description": "Initiate pattern sync to other devices"
+        },
+        {
+          "name": "receive_sync",
+          "input": "sync_payload",
+          "output": "merge_results",
+          "description": "Receive and merge incoming patterns from peer"
+        },
+        {
+          "name": "get_sync_status",
+          "input": "sync_id",
+          "output": "sync_event",
+          "description": "Check status of ongoing synchronization"
+        }
+      ]
+    },
+    "analytics_interface": {
+      "methods": [
+        {
+          "name": "get_success_metrics",
+          "input": "intent_filter=null, time_range=last_7d",
+          "output": "{success_rate, failure_count, avg_confidence}",
+          "latency_target_ms": 200,
+          "description": "Get success statistics by intent"
+        },
+        {
+          "name": "get_usage_patterns",
+          "input": "time_range=last_30d",
+          "output": "{hour_of_day: count, day_of_week: count, location: count}",
+          "latency_target_ms": 500,
+          "description": "Analyze command usage patterns"
+        },
+        {
+          "name": "get_parameter_trends",
+          "input": "intent, time_range=last_30d",
+          "output": "{parameter_name: {value: frequency_over_time}}",
+          "latency_target_ms": 1000,
+          "description": "Analyze how parameter preferences change"
+        }
+      ]
+    }
+  },
+  "recommendations": {
+    "when_to_store": {
+      "always_store": [
+        "Commands executed successfully",
+        "Commands with user feedback",
+        "Edge cases and errors (for learning)",
+        "Commands with high confidence scores"
+      ],
+      "consider_storing": [
+        "Commands with medium confidence (0.5-0.75) if device has storage"
+      ],
+      "dont_store": [
+        "Duplicate commands within 5 minutes of identical previous command",
+        "Failed commands where error reason is transient (network timeout)",
+        "Commands explicitly marked as sensitive by user"
+      ]
+    },
+    "when_to_cache": {
+      "hot_cache_candidates": [
+        "Last 10 commands in current session",
+        "5 most successful patterns for current intent",
+        "Frequently accessed context-specific patterns",
+        "Recent user feedback"
+      ],
+      "cache_ttl_recommendations": {
+        "recent_commands": "3600_seconds (1_hour)",
+        "current_session_context": "until_session_end",
+        "intent_patterns": "86400_seconds (1_day)",
+        "user_preferences": "604800_seconds (7_days)"
+      }
+    },
+    "sensitive_voice_data_handling": {
+      "audio_deletion_policy": {
+        "raw_audio_waveform": "delete_immediately_after_transcription",
+        "retention_days": 0,
+        "rationale": "Raw audio is most identifying, transcribed text sufficient"
+      },
+      "transcript_anonymization": {
+        "policy": "remove_pii_before_permanent_storage",
+        "examples": [
+          "Replace named entities (names, addresses) with generic placeholders",
+          "Remove credit card numbers, phone numbers, email addresses",
+          "Keep action words and intent structure"
+        ]
+      },
+      "acoustic_features": {
+        "retention_policy": "permanent",
+        "reasoning": "MFCC and other spectral features don't directly identify users",
+        "storage_format": "hash_only (cannot reconstruct audio)"
+      },
+      "user_consent_tracking": {
+        "store": "explicit_consent_timestamp_per_recording",
+        "allow_voice_learning": "only_if_user_has_consented",
+        "default": "conservative (store less, delete sooner)"
+      }
+    },
+    "privacy_preserving_knowledge_sharing": {
+      "anonymization_approach": {
+        "method": "differential_privacy",
+        "description": "Add noise to aggregate patterns to prevent user identification",
+        "epsilon": 0.5,
+        "example": "Shared pattern: '80% of users prefer artist X' has small random noise added"
+      },
+      "federated_learning": {
+        "method": "local_pattern_learning_then_sync",
+        "flow": [
+          "Device A learns patterns locally from own data",
+          "Device A sends learned patterns (not raw data) to Device B",
+          "Device B merges patterns with own learning",
+          "Never share raw voice data between devices"
+        ]
+      },
+      "device_level_privacy": {
+        "shared_patterns": "intent + parameter distribution only (no user_id or raw text)",
+        "not_shared": "raw_text, user_id, location_coordinates, device_state"
+      }
+    },
+    "knowledge_lifecycle_management": {
+      "hot_to_warm_migration": {
+        "trigger": "after_7_days_or_when_access_count_drops",
+        "process": [
+          "Compress event data using zstd",
+          "Move from hot cache to SQLite warm tier",
+          "Update indices for quick lookup",
+          "Keep access_count and last_accessed for cache behavior"
+        ]
+      },
+      "warm_to_cold_migration": {
+        "trigger": "after_30_days_without_access",
+        "process": [
+          "Anonymize user_id field",
+          "Compress using zstd with high compression level",
+          "Append to monthly archive log",
+          "Remove from warm index, keep only pattern references"
+        ]
+      },
+      "pattern_consolidation": {
+        "trigger": "daily_or_when_5_similar_patterns_detected",
+        "process": [
+          "Merge variations into single authoritative pattern",
+          "Keep highest confidence version",
+          "Archive alternate versions",
+          "Update indices to point to consolidated pattern"
+        ]
+      },
+      "deletion_process": {
+        "retention_expiration": [
+          "Anonymized events: delete after 1 year",
+          "Sensitive data: purge immediately after extraction",
+          "Patterns: keep indefinitely (low privacy risk when anonymized)"
+        ],
+        "user_deletion_requests": [
+          "Immediate: delete raw voice and transcript",
+          "Within 30 days: delete all user-specific events",
+          "Keep only: anonymized aggregate patterns"
+        ]
+      }
+    },
+    "graceful_fallback_strategies": {
+      "when_cache_unavailable": {
+        "fallback": "query_warm_database_instead",
+        "latency_increase": "from_10ms_to_50ms",
+        "reliability": "same (database is persistent)"
+      },
+      "when_database_corrupted": {
+        "fallback": "use_hot_cache_only",
+        "latency": "10ms_for_cached_items",
+        "coverage": "limited_to_recent_commands",
+        "action": "rebuild_database_from_archive_in_background"
+      },
+      "when_sync_unavailable": {
+        "fallback": "local_learning_only",
+        "queue_pending_syncs": true,
+        "resume_when_available": "automatic",
+        "data_loss": "none (syncs are stored locally)"
+      },
+      "when_storage_full": {
+        "fallback": "aggressive_archival",
+        "policy": "move_all_warm_to_cold_immediately",
+        "then": "delete_low_access_cold_data_starting_with_oldest",
+        "alert": "notify_user_to_free_space"
+      }
+    }
+  },
+  "implementation_checklist": {
+    "phase_1_foundation": [
+      "Design SQLite schema for warm tier storage",
+      "Implement voice_interaction_event storage with basic indices",
+      "Create hot cache layer using in-memory dictionaries",
+      "Implement basic retrieval by intent and device_id",
+      "Add JSON serialization for event persistence"
+    ],
+    "phase_2_retrieval": [
+      "Implement similarity search using embedding-based matching",
+      "Add acoustic feature extraction and MFCC hashing",
+      "Create full-text search index on transcribed commands",
+      "Implement context-aware pattern matching",
+      "Add pattern detection clustering algorithm"
+    ],
+    "phase_3_synchronization": [
+      "Design CRDT data structure for patterns",
+      "Implement vector clock versioning",
+      "Create gossip protocol for peer-to-peer sync",
+      "Add conflict resolution logic",
+      "Implement batch sync with compression"
+    ],
+    "phase_4_advanced_features": [
+      "Add temporal pattern detection (sequences)",
+      "Implement user cohort analysis",
+      "Create parameter recommendation engine",
+      "Add privacy-preserving analytics",
+      "Implement differential privacy for shared patterns"
+    ],
+    "phase_5_optimization": [
+      "Profile hot path latencies and optimize indices",
+      "Implement adaptive cache sizing based on device storage",
+      "Add compression benchmarking and tuning",
+      "Optimize sync payload compression",
+      "Benchmark end-to-end retrieval latencies"
+    ]
+  },
+  "validation_criteria": {
+    "performance": [
+      "Similar command retrieval < 50ms (p95)",
+      "Pattern lookup < 30ms (p95)",
+      "Store interaction event < 20ms (p95)",
+      "Full-text search < 100ms (p95)",
+      "Sync payload < 50KB typical"
+    ],
+    "consistency": [
+      "All replicas converge within 5 minutes",
+      "No knowledge loss during sync failures",
+      "Vector clocks accurately track causality",
+      "Conflict resolution deterministic and idempotent"
+    ],
+    "availability": [
+      "Graceful operation with unavailable devices in cluster",
+      "Hot cache survives device restart",
+      "Warm database resilient to corruption",
+      "Sync queue survives process crashes"
+    ],
+    "privacy_and_security": [
+      "Raw audio deleted within 24 hours",
+      "PII anonymized in permanent storage",
+      "User consent verified before voice learning",
+      "Encryption in transit for cross-device sync",
+      "Access logs for compliance auditing"
+    ],
+    "learning_effectiveness": [
+      "Pattern matching improves confidence scores over time",
+      "Parameter recommendations show positive user feedback trend",
+      "Command success rate increases with more stored examples",
+      "Context-aware patterns show >10% improvement over baseline"
+    ]
+  }
+}

@@ -1,0 +1,3477 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Vehicle telemetry and IoT control on Raspberry Pi, ESP32 and Android">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia/cs/automotive/zapojeni-audi-a4-8h/">
+      
+      
+        <link rel="prev" href="../zapojeni-esp32-moduly/">
+      
+      
+        <link rel="next" href="../../../privacy/dpia-template/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Zapojení Audi A4 8H (CS) - MIA Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#zapojeni-mia-do-audi-a4-cabriolet-8h-2004" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MIA Documentation" class="md-header__button md-logo" aria-label="MIA Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MIA Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Zapojení Audi A4 8H (CS)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../for/developers/" class="md-tabs__link">
+          
+  
+    
+  
+  For you
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../getting-started/QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ci-cd-setup/" class="md-tabs__link">
+          
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../spec/" class="md-tabs__link">
+          
+  
+    
+  
+  Specification
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../install/phone/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/" class="md-tabs__link">
+          
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../troubleshooting/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MIA Documentation" class="md-nav__button md-logo" aria-label="MIA Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    MIA Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    For you
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            For you
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/developers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/mechanics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mechanics & installers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/testers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../android-device-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android Device Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci-cd-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD & Dev Environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../conan-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conan Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARM64_BUILD_REQUIREMENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARM64 Build Requirements
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../vm-testing-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VM Testing Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../spec/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Specification
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Specification
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../spec/decisions/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Decisions (ADRs)
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Decisions (ADRs)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0001-record-decisions-and-keep-the-backlog-in-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0001 Decisions and backlog in issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0002-separate-requirements-code-and-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0002 Requirements, code and tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0003-zeromq-control-plane-and-telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0003 ZeroMQ control plane
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0004-flatbuffers-wire-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0004 FlatBuffers wire format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0005-raspberry-pi-edge-with-fastapi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0005 Raspberry Pi edge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0006-passive-vehicle-access-by-default/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0006 Passive vehicle access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0007-simulation-fallback-for-hardware/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0007 Simulation fallback
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0008-audi-a4-8h-primary-citroen-secondary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0008 Audi A4 8H primary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0009-canonical-vehicle-telemetry-envelope/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0009 Telemetry envelope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/decisions/0010-evidence-based-requirement-status/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0010 Evidence-based status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../spec/architecture/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/diagrams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/hybrid-messaging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Messaging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/lean-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lean Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/flatbuffers-schema-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlatBuffers Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/cycle1-passive-telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cycle 1 Passive Telemetry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/voice-command-chaining-design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Command Chaining
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/voice-knowledge-mia-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/voice-knowledge-system-implementation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/architecture/VOICE_KNOWLEDGE_SYSTEM_README/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Interfaces
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/interfaces/topics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MQTT Topics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/interfaces/events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/interfaces/ble-gatt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BLE GATT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/interfaces/zeromq-message-formats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZeroMQ Message Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../spec/evidence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evidence Records
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/phone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/hybrid/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/pro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pro Edition
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pi Gateway (Standalone)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/dev-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../wiring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../deployment/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/COMPLETE_DEPLOYMENT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/raspberry-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PRODUCTION_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RASPBERRY_PI_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/mia-api-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/citroen-testing-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Testing Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBD_SIMULATOR_AUTOMATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OBD Simulator Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ANPR_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ANPR Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ANPR_IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ANPR Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/audi-a4-8h-interface-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi A4 8H Interface Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zapojeni-esp32-moduly/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zapojení ESP32 modulů (CS)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Zapojení Audi A4 8H (CS)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Zapojení Audi A4 8H (CS)
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-nez-sahnes-na-auto" class="md-nav__link">
+    <span class="md-ellipsis">
+      0. Než sáhneš na auto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-napajeni-tady-to-vetsina-podobnych-stavb-polozi" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Napájení — tady to většina podobných stavb položí
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Napájení — tady to většina podobných stavb položí">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-princip" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Princip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-odber-a-dimenzovani" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Odběr a dimenzování
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-odbocka-z-pojistkove-skrine" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Odbočka z pojistkové skříně
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-snimani-kl15-optoclenem" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4 Snímání KL.15 optočlenem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-rizene-vypnuti" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.5 Řízené vypnutí
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-obd-ii-hnaci-can-500-kbits" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. OBD-II / hnací CAN (500 kbit/s)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-komfortni-can-100-kbits-jen-poslech" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Komfortní CAN (100 kbit/s) — jen poslech
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Komfortní CAN (100 kbit/s) — jen poslech">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-jak-zajistit-ze-se-neda-vysilat" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Jak zajistit, že se nedá vysílat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-odbocka" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Odbočka
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-opravne-konektory" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Opravné konektory
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-vstupy-tlacitko-pro-mia" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Vstupy — tlačítko pro MIA
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-vystupy-rele" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Výstupy — relé
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-audio-vstup-do-tovarni-autoradia-pres-konektor-menice-cd" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Audio — vstup do tovární autorádia přes konektor měniče CD
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-zemneni-a-vedeni-kabelu" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Zemnění a vedení kabelů
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-postup-pro-neznamy-dvoupin-fotka-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Postup pro neznámý dvoupin (fotka 01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Materiál
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-kontrolni-seznam-pred-prvnim-zapnutim" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Kontrolní seznam před prvním zapnutím
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-souvisejici-dokumenty" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Související dokumenty
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-nez-sahnes-na-auto" class="md-nav__link">
+    <span class="md-ellipsis">
+      0. Než sáhneš na auto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-napajeni-tady-to-vetsina-podobnych-stavb-polozi" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Napájení — tady to většina podobných stavb položí
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Napájení — tady to většina podobných stavb položí">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-princip" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 Princip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-odber-a-dimenzovani" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Odběr a dimenzování
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-odbocka-z-pojistkove-skrine" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3 Odbočka z pojistkové skříně
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-snimani-kl15-optoclenem" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4 Snímání KL.15 optočlenem
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-rizene-vypnuti" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.5 Řízené vypnutí
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-obd-ii-hnaci-can-500-kbits" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. OBD-II / hnací CAN (500 kbit/s)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-komfortni-can-100-kbits-jen-poslech" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Komfortní CAN (100 kbit/s) — jen poslech
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Komfortní CAN (100 kbit/s) — jen poslech">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-jak-zajistit-ze-se-neda-vysilat" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Jak zajistit, že se nedá vysílat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-odbocka" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Odbočka
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-opravne-konektory" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Opravné konektory
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-vstupy-tlacitko-pro-mia" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Vstupy — tlačítko pro MIA
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-vystupy-rele" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Výstupy — relé
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-audio-vstup-do-tovarni-autoradia-pres-konektor-menice-cd" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Audio — vstup do tovární autorádia přes konektor měniče CD
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-zemneni-a-vedeni-kabelu" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Zemnění a vedení kabelů
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-postup-pro-neznamy-dvoupin-fotka-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Postup pro neznámý dvoupin (fotka 01)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. Materiál
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-kontrolni-seznam-pred-prvnim-zapnutim" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Kontrolní seznam před prvním zapnutím
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-souvisejici-dokumenty" class="md-nav__link">
+    <span class="md-ellipsis">
+      11. Související dokumenty
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/sparesparrow/mia/edit/master/docs/cs/automotive/zapojeni-audi-a4-8h.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="zapojeni-mia-do-audi-a4-cabriolet-8h-2004">Zapojení MIA do Audi A4 Cabriolet 8H (2004)</h1>
+<blockquote>
+<p><strong>Pro koho</strong>: ten, kdo to bude fyzicky montovat do auta
+<strong>Stav</strong>: návrh zapojení. Nic z toho zatím není v autě odzkoušené.
+<strong>Anglický protějšek</strong>: <a href="../../../automotive/audi-a4-8h-interface-integration/"><code>audi-a4-8h-interface-integration.md</code></a>
+— tam je rozbor rozhraní a fázový plán, tady je čistě elektrikařina.</p>
+</blockquote>
+<p>Vůz: Audi A4 Cabriolet, karoserie <strong>8H</strong> (ročník 2004 = 8H na technice B6; kabrio přešlo na
+techniku B7 až pro MY2006). Díly a schémata hledej pod <code>8H</code>/<code>8E</code>, ne pod B3.</p>
+<hr />
+<h2 id="0-nez-sahnes-na-auto">0. Než sáhneš na auto</h2>
+<ol>
+<li><strong>Odpoj zápornou svorku baterie a počkej 10 minut.</strong> Airbagové okruhy mají kondenzátory.</li>
+<li><strong>Žluté konektory jsou airbagy a pyrotechnika. Na ty se nesahá.</strong> Ani měřit, ani rozpojovat.</li>
+<li>Nejdřív <strong>kompletní autoscan</strong> (VCDS / OBDeleven), ulož ho do <code>docs/automotive/scans/</code>.
+   Bez něj nevíš, které řídicí jednotky vůz vůbec má.</li>
+<li><strong>Vyfoť a olep každý konektor dřív, než ho rozpojíš.</strong> Po dvou hodinách si nevzpomeneš.</li>
+<li>Žádné scotchloky (rychlospojky s nožem). Ve 20 let starém autě je to jistá koroze a přerušený
+   vodič za rok.</li>
+<li>Pracuj s <strong>pojistkou co nejblíž zdroji</strong>, ne u spotřebiče. Chrání se kabel, ne přístroj.</li>
+</ol>
+<hr />
+<h2 id="1-napajeni-tady-to-vetsina-podobnych-stavb-polozi">1. Napájení — tady to většina podobných stavb položí</h2>
+<h3 id="11-princip">1.1 Princip</h3>
+<div class="highlight"><pre><span></span><code>graph LR
+  B["Baterie / pojistková skříň&lt;br/&gt;KL.30 trvalých +12V"]
+  F["Pojistka 7,5 A&lt;br/&gt;co nejblíž odbočce"]
+  M["Měnič 6-36V → 5V / 5A&lt;br/&gt;automotive, odolný load dump"]
+  L["Spínač napájení s nízkým&lt;br/&gt;klidovým odběrem (LTC2954 /&lt;br/&gt;Witty Pi / Sleepy Pi)"]
+  P["Raspberry Pi 4B"]
+  K["KL.15 spínané +12V"]
+  O["Optočlen PC817"]
+  G["GPIO vstup"]
+
+  B --&gt; F --&gt; M --&gt; L --&gt; P
+  K --&gt; O --&gt; G
+  G -. "povel k vypnutí" .-&gt; L
+</code></pre></div>
+<p>Klíčová myšlenka: <strong>Pi se napájí z trvalého +12 V (KL.30), ne ze spínaného.</strong> KL.15 slouží jen
+jako <em>informace</em> „zapalování zapnuto/vypnuto". Kdyby Pi viselo přímo na KL.15, při každém otočení
+klíčem mu spadne napájení uprostřed zápisu na kartu a za měsíc máš rozbitý filesystém.</p>
+<h3 id="12-odber-a-dimenzovani">1.2 Odběr a dimenzování</h3>
+<table>
+<thead>
+<tr>
+<th>Veličina</th>
+<th>Hodnota</th>
+<th>Poznámka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Špičkový příkon Pi 4B + HAT + chlazení</td>
+<td>~20 W</td>
+<td>tj. ~1,7 A na straně 12 V</td>
+</tr>
+<tr>
+<td>Měnič</td>
+<td>5 V / min. 5 A</td>
+<td>rezerva na rozběh a USB periferie</td>
+</tr>
+<tr>
+<td>Vstupní rozsah měniče</td>
+<td><strong>6–36 V</strong></td>
+<td>při startování motoru napětí v palubní síti klesá hluboko pod 9 V; měnič „12 V nominal" Pi při každém startu shodí</td>
+</tr>
+<tr>
+<td>Pojistka na odbočce</td>
+<td>7,5 A</td>
+<td>nikdy nenahrazuj tovární pojistku silnější</td>
+</tr>
+<tr>
+<td>Průřez napájení 12 V</td>
+<td>1,5 mm²</td>
+<td></td>
+</tr>
+<tr>
+<td>Průřez signálů</td>
+<td>0,5 mm²</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Cílový klidový odběr po uspání</strong></td>
+<td><strong>&lt; 5 mA</strong></td>
+<td>kabrio, které stojí týden, nemá žádnou rezervu</td>
+</tr>
+</tbody>
+</table>
+<p>Měnič musí snést <strong>load dump podle ISO 7637-2</strong>. Levný modul z laboratorního zdroje tohle nesplňuje
+a první odpojení baterie za chodu ho zabije.</p>
+<h3 id="13-odbocka-z-pojistkove-skrine">1.3 Odbočka z pojistkové skříně</h3>
+<p>Použij <strong>přídavné pojistkové adaptéry (add-a-fuse)</strong> do volných pozic v palubní pojistkové skříni
+(fotka 05 v anglickém dokumentu). Postup:</p>
+<ol>
+<li>Změř multimetrem v klidu i se zapalováním, které pozice jsou trvalé (KL.30) a které spínané (KL.15).</li>
+<li>Do trvalé pozice dej add-a-fuse: tovární pojistka zůstane, nová větev dostane vlastní 7,5 A.</li>
+<li>Totéž pro KL.15, ale tam stačí <strong>1 A</strong> — bereš jen signál, ne proud.</li>
+<li>Zem <strong>neber z pojistkové skříně</strong>. Najdi tovární zemnící šroub na karoserii a udělej z něj
+   jediný společný bod (viz kap. 7).</li>
+</ol>
+<p><strong>Pozor na už existující zásah</strong>: na fotce 03 je do svazku vložené přídavné pouzdro s pojistkou —
+to není z výroby. Než ho použiješ jako zdroj, vystopuj, odkud je napájené a co napájí. Pokud visí na
+trvalém plusu, je to existující vybíječ baterie a patří to opravit tak jako tak.</p>
+<h3 id="14-snimani-kl15-optoclenem">1.4 Snímání KL.15 optočlenem</h3>
+<p>12 V nikdy nesmí na GPIO. Galvanické oddělení optočlenem:</p>
+<div class="highlight"><pre><span></span><code>KL.15 (+12V spínané) ──[ R1 2,2 kΩ / 0,25 W ]──┬── anoda PC817
+                                                │
+                                          D1 1N4148
+                                       (antiparalelně k LED,
+                                        chrání proti záporným
+                                        špičkám v palubní síti)
+                                                │
+                                katoda PC817 ────┴──── GND (společná zem)
+
+Výstup PC817:
+  kolektor ──┬── GPIO17
+             │
+        R2 10 kΩ  (pull-up)
+             │
+            3V3
+  emitor ────── GND
+  Navíc C1 100 nF mezi GPIO17 a GND (odrušení, zákmity).
+</code></pre></div>
+<p>Výpočet R1: při 14,4 V (motor běží) prochází LED <code>(14,4 − 1,2) / 2200 ≈ 6 mA</code>, ztráta na odporu
+<code>≈ 0,08 W</code> — odpor 0,25 W je v pohodě. Při 12 V klidových je to ~4,9 mA, pořád dost.</p>
+<p><strong>Logika je obrácená</strong>: zapalování zapnuto → optočlen sepne → GPIO čte <strong>LOG. 0</strong>. Ošetři to
+v softwaru, ať to nikoho nepřekvapí.</p>
+<h3 id="15-rizene-vypnuti">1.5 Řízené vypnutí</h3>
+<ol>
+<li>GPIO zaznamená pokles KL.15.</li>
+<li>MIA dopublikuje poslední telemetrii, uzavře soubory (<code>vehicle/power</code> s <code>state: shutdown_pending</code>).</li>
+<li><code>systemctl halt</code>.</li>
+<li>Spínač napájení (LTC2954 nebo hotový Witty Pi) po doběhu <strong>odpojí i KL.30</strong> → klidový odběr klesne
+   na jednotky mA.</li>
+</ol>
+<p>Doporučený test před ostrým provozem: <strong>50 cyklů zapni/vypni</strong> a po nich kontrola, že se souborový
+systém nerozsypal. A změřit ampérmetrem skutečný klidový odběr po uspání, ne ho odhadnout.</p>
+<hr />
+<h2 id="2-obd-ii-hnaci-can-500-kbits">2. OBD-II / hnací CAN (500 kbit/s)</h2>
+<p><img alt="OBD-II (J1962) — piny, které MIA používá" src="../../../automotive/images/esp32/obd2-pinout-mia.svg" /></p>
+<p>Pinout konektoru OBD-II ve voze:</p>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Signál</th>
+<th>Poznámka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>CAN High</td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>CAN Low</td>
+<td></td>
+</tr>
+<tr>
+<td>4, 5</td>
+<td>Zem (kostra / signálová)</td>
+<td></td>
+</tr>
+<tr>
+<td>16</td>
+<td>+12 V trvalých</td>
+<td><strong>nepoužívej pro napájení Pi</strong> — viz níže</td>
+</tr>
+<tr>
+<td>7</td>
+<td>K-line</td>
+<td>starší KWP2000 jednotky</td>
+</tr>
+</tbody>
+</table>
+<p>Zapojení na Pi: CAN HAT (MCP2515 / MCP2518FD + budič SN65HVD230) → kroucený pár na piny 6/14, zem
+na pin 4. Rychlost 500 kbit/s, 11bitové identifikátory.</p>
+<p><strong>Terminátor 120 Ω nepřidávej.</strong> Sběrnice ve voze je zakončená na obou koncích z výroby; třetí
+odpor sníží impedanci a rozhodí komunikaci.</p>
+<p>Napájení z pinu 16 je lákavé, ale je to tenký, slabě jištěný vodič určený pro diagnostiku, ne pro
+trvalých 1,7 A. Napájení ber z pojistkové skříně podle kapitoly 1.</p>
+<hr />
+<h2 id="3-komfortni-can-100-kbits-jen-poslech">3. Komfortní CAN (100 kbit/s) — jen poslech</h2>
+<p>Komfortní domény (dveře, zámky, okna, střecha) <strong>se přes OBD zásuvku nedají číst</strong> — přístrojová
+deska funguje jako brána a komfortní provoz nepřeposílá na hnací sběrnici. Musí se odbočit přímo ze
+svazku u komfortní jednotky (fotka 06) nebo ve dveřním svazku (fotka 02).</p>
+<h3 id="31-jak-zajistit-ze-se-neda-vysilat">3.1 Jak zajistit, že se nedá vysílat</h3>
+<p>Softwarový přepínač „listen-only" v MCP2515 je konfigurační registr — chyba v kódu ho přepíše.
+Chceš tvrdou pojistku:</p>
+<ul>
+<li><strong>Vodič TXD mezi kontrolérem a budičem fyzicky nezapojuj</strong> (nebo ho na budiči vytáhni a přivaž
+  na 3V3 = recesivní úroveň).</li>
+<li>Budič pak konstrukčně nemá čím sběrnici rozkmitat, ať v softwaru nastaví kdokoli cokoli.</li>
+</ul>
+<p>K tomu navíc zapni listen-only mód i v kontroléru. Jistí se to dvakrát, protože zápis do karoserní
+sběrnice dvacet let starého kabria je přesně ta chyba, po které se střecha otevře za jízdy.</p>
+<h3 id="32-odbocka">3.2 Odbočka</h3>
+<ul>
+<li>Kroucený pár, průřez 0,35–0,5 mm².</li>
+<li>Odboč <strong>paralelně</strong> (piggyback na kontakt v opravném pouzdře), vodič <strong>nepřerušuj</strong>.</li>
+<li>Zem budiče na stejný společný bod jako zbytek instalace.</li>
+<li><strong>Žádný terminátor</strong> — jsi pasivní posluchač s vysokou impedancí.</li>
+<li>Na Pi druhý kanál CAN HATu (<code>can1</code>), 100 kbit/s.</li>
+</ul>
+<h3 id="33-opravne-konektory">3.3 Opravné konektory</h3>
+<p>Na fotce 02 jsou pouzdra řady <code>6X0 972 xxx</code> — to je VAG řada opravných konektorů. Existují k nim
+pasující pouzdra i kontakty ke koupi. <strong>Použij je</strong> místo naříznutí původního vodiče: instalace pak
+jde beze stopy vrátit do původního stavu.</p>
+<hr />
+<h2 id="4-vstupy-tlacitko-pro-mia">4. Vstupy — tlačítko pro MIA</h2>
+<p>Kandidát je nezapojený dvoupinový konektor na tunelu (fotka 01). <strong>Nejdřív ho změř</strong> (kap. 8), teprve
+pak zapojuj.</p>
+<p>Pokud se potvrdí, že jde o spínač na kostru:</p>
+<div class="highlight"><pre><span></span><code>Kontakt 1 ──┬── GPIO27
+            │
+       R 10 kΩ pull-up na 3V3
+            │
+Kontakt 2 ──┴── GND
++ C 100 nF mezi GPIO27 a GND (odrušení zákmitů)
+</code></pre></div>
+<p>Pokud by šlo o okruh, kde je 12 V, <strong>musí tam jít znovu optočlen</strong> podle kapitoly 1.4, ne přímé
+spojení. Stisk = LOG. 0 na GPIO.</p>
+<hr />
+<h2 id="5-vystupy-rele">5. Výstupy — relé</h2>
+<p>Pro spínané zátěže (napájení kamery/DVR, přídavné osvětlení v kufru):</p>
+<ul>
+<li><strong>Optočlenem oddělená relé deska</strong> s 12 V cívkami, řízená z GPIO.</li>
+<li><strong>Ochranná dioda</strong> (1N4007) antiparalelně k cívce, pokud ji deska nemá — bez ní indukční špička
+  zabije budič.</li>
+<li>Cívku napájej z vlastní jištěné větve (1 A), ne z 5 V Pi.</li>
+<li>Kontakty relé dimenzuj na 2× předpokládaný proud zátěže.</li>
+<li><strong>Klidový stav = rozepnuto.</strong> Při vypnutém Pi musí zátěž zůstat bez proudu sama od sebe.</li>
+</ul>
+<p><strong>Na relé nesmí nic, co souvisí s bezpečností</strong>: střecha, centrální zamykání, vnější osvětlení,
+palivový systém, chlazení. Ani „jen na zkoušku".</p>
+<hr />
+<h2 id="6-audio-vstup-do-tovarni-autoradia-pres-konektor-menice-cd">6. Audio — vstup do tovární autorádia přes konektor měniče CD</h2>
+<p>Osmipinový mini-DIN (fotka 04) je tovární konektor pro CD měnič. Je to nejčistší cesta, jak dostat
+hlas MIA do továrních reproduktorů — nic se neřeže a jde to kdykoli vrátit.</p>
+<p>Dvě varianty:</p>
+<ol>
+<li><strong>Emulátor CD měniče</strong> (Yatour/Dension nebo vlastní, mluvící protokolem měniče VAG).
+   Rádio ho vidí jako měnič, MIA hraje jako „CD 1" — a hlavně: <strong>tlačítka na rádiu a na volantu se
+   stanou vstupem pro MIA</strong> (další/předchozí stopa, volba disku). Ovládací plocha bez vrtání do palubky.</li>
+<li><strong>Prostý linkový vstup</strong> přes audio piny konektoru. Jednodušší, ale rádio musí být přepnuté do
+   režimu měniče a žádné tlačítkové události nedostaneš.</li>
+</ol>
+<p><strong>Oddělovací transformátor (ground loop isolator) do audio cesty patří od začátku.</strong> Pi a zesilovač
+sdílejí kostru, vznikne zemní smyčka a v reproduktorech se ozve houkání alternátoru měnící se
+s otáčkami. Softwarem se to neodstraní.</p>
+<p>Otevřená otázka: jaké rádio je ve voze (Chorus II / Concert II / Symphony II) a jestli v kufru není
+připojený skutečný měnič. Pokud ano, konektor je obsazený a emulátor ho musí nahradit.</p>
+<hr />
+<h2 id="7-zemneni-a-vedeni-kabelu">7. Zemnění a vedení kabelů</h2>
+<ul>
+<li><strong>Jediný společný zemnící bod</strong> (hvězda): měnič, Pi, CAN budiče i relé deska na jeden tovární
+  zemnící šroub karoserie. Zem braná na dvou místech = zemní smyčka a šum v audiu.</li>
+<li>Napájecí a signálové vodiče veď <strong>odděleně</strong>, nejlépe po opačných stranách tunelu.</li>
+<li>CAN vždy kroucený pár. Vedle zapalovacích kabelů nebo vedení alternátoru ho netahej.</li>
+<li>Svazek zajisti textilní páskou (jako z výroby), ne izolepou — ta se v horku rozteče.</li>
+<li>Průchodky pryžovými manžetami: nic se nesmí odírat o plech.</li>
+<li>V kabriu počítej s <strong>teplotou v kabině přes 60 °C v létě</strong> — Pi potřebuje aktivní chlazení a nesmí
+  být v přímém slunci pod plastem palubky.</li>
+</ul>
+<hr />
+<h2 id="8-postup-pro-neznamy-dvoupin-fotka-01">8. Postup pro neznámý dvoupin (fotka 01)</h2>
+<p>Jen multimetr, <strong>nic nezapojovat</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Stav klíče</th>
+<th>Měř kontakt 1 vůči kostře</th>
+<th>Měř kontakt 2 vůči kostře</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Klíč vytažený</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Klíč v poloze 1</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Zapalování zapnuto</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Motor běží</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Vyhodnocení:</p>
+<ul>
+<li><strong>Trvalých 12 V na jednom + druhý spíná na kostru</strong> → je to žárovka/osvětlení. Použitelné jako výstup.</li>
+<li><strong>Napětí přes pull-up, spínání na kostru</strong> → je to vstup spínače. Ideální pro tlačítko MIA.</li>
+<li><strong>Všude 0 V ve všech stavech</strong> → nezapojená výbava. Vodiče existují, ale nikam nevedou — dá se
+  využít jako natažená kabeláž.</li>
+</ul>
+<p>Výsledek zapiš do <code>apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml</code> (pole <code>confidence</code> a <code>verified_on</code>).
+Dokud tam je <code>blocked_until: verification_passes</code>, nic se na ten konektor nepřipojuje.</p>
+<hr />
+<h2 id="9-material">9. Materiál</h2>
+<table>
+<thead>
+<tr>
+<th>Položka</th>
+<th>Poznámka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raspberry Pi 4B (4 GB+) s aktivním chlazením</td>
+<td></td>
+</tr>
+<tr>
+<td>2kanálový CAN HAT (MCP2515/MCP2518FD + SN65HVD230)</td>
+<td>musí umět 100 kbit/s</td>
+</tr>
+<tr>
+<td>Měnič 6–36 V → 5 V / 5 A, automotive</td>
+<td>odolný load dump</td>
+</tr>
+<tr>
+<td>Spínač napájení s nízkým klidovým odběrem</td>
+<td>LTC2954, Witty Pi nebo Sleepy Pi</td>
+</tr>
+<tr>
+<td>Add-a-fuse adaptéry (mini) + pojistky 7,5 A a 1 A</td>
+<td></td>
+</tr>
+<tr>
+<td>Optočleny PC817, odpory 2,2 kΩ a 10 kΩ, diody 1N4148, kondenzátory 100 nF</td>
+<td></td>
+</tr>
+<tr>
+<td>Optočlenem oddělená relé deska 12 V + diody 1N4007</td>
+<td></td>
+</tr>
+<tr>
+<td>Emulátor CD měniče s mini-DIN 8</td>
+<td>nebo jen mini-DIN pigtail</td>
+</tr>
+<tr>
+<td>Oddělovací audio transformátor</td>
+<td></td>
+</tr>
+<tr>
+<td>Opravné konektory VAG řady <code>6X0 972 xxx</code></td>
+<td>pouzdra + kontakty</td>
+</tr>
+<tr>
+<td>Kabel 1,5 mm² (napájení), 0,5 mm² (signály), kroucený pár 0,35 mm² (CAN)</td>
+<td></td>
+</tr>
+<tr>
+<td>Dutinky, kleště na dutinky, smršťovací bužírky, textilní páska</td>
+<td>žádné scotchloky</td>
+</tr>
+<tr>
+<td>VCDS nebo OBDeleven</td>
+<td>povinné pro fázi 0</td>
+</tr>
+<tr>
+<td>Multimetr, zkoušečka, popisovač na štítky</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-kontrolni-seznam-pred-prvnim-zapnutim">10. Kontrolní seznam před prvním zapnutím</h2>
+<ul>
+<li>[ ] Autoscan uložený, žádná nová chybová hlášení oproti výchozímu stavu</li>
+<li>[ ] Všechny odbočky jištěné co nejblíž zdroji</li>
+<li>[ ] Zem na jednom jediném bodě, dotažená, očištěná od laku</li>
+<li>[ ] Na GPIO nikde nevede 12 V — překontrolováno multimetrem při odpojeném Pi</li>
+<li>[ ] TXD komfortního CAN budiče fyzicky odpojen</li>
+<li>[ ] Na komfortním ani hnacím CAN není přidaný terminátor</li>
+<li>[ ] Relé v klidu rozepnutá, na nic bezpečnostního nepřipojená</li>
+<li>[ ] Audio přes oddělovací transformátor</li>
+<li>[ ] Změřen klidový odběr po uspání (cíl &lt; 5 mA)</li>
+<li>[ ] 50 cyklů zapalování bez poškození souborového systému</li>
+<li>[ ] Svazky uvázané, nic se neodírá, nic nepřekáží pedálům ani airbagům</li>
+</ul>
+<hr />
+<h2 id="11-souvisejici-dokumenty">11. Související dokumenty</h2>
+<ul>
+<li><a href="../../../automotive/audi-a4-8h-interface-integration/">Rozbor rozhraní a plán integrace (anglicky)</a></li>
+<li><a href="../../../apps/rpi-backend/config/vehicles/audi_a4_8h_cabriolet.yaml">Strojově čitelný soupis rozhraní</a></li>
+<li><a href="../../../wiring/">Zapojení OBD-II / ESP32 (obecné)</a></li>
+<li><a href="../zapojeni-esp32-moduly/">Zapojení ESP32 modulů do MIA</a> — strana mikrokontroléru</li>
+<li><a href="../../../automotive/raspberry-pi-audi-integration/">Integrace Audi na Raspberry Pi (anglicky)</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>

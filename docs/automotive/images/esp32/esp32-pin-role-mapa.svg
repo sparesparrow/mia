@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 540" width="980" height="540" role="img" aria-label="Mapa rolí GPIO pinů ESP32 pro MIA">
+<title>ESP32 — mapa rolí GPIO pinů v MIA</title>
+<rect x="0" y="0" width="980" height="540" rx="12" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1"/>
+<text x="38" y="38" font-size="19" font-weight="700" fill="#1f2328">ESP32-WROOM-32 — k čemu který pin v MIA je</text>
+<text x="38" y="60" font-size="12.5" fill="#57606a">Pořadí pinů na liště závisí na konkrétní desce — toto je mapa rolí, ne fyzický pinout. Ověřuj proti datasheetu své desky.</text>
+<text x="38" y="86" font-size="15" font-weight="600" fill="#1f2328">Nepoužívat — interní SPI flash</text>
+<rect x="38" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="70" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO6</text>
+<rect x="110" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="142" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO7</text>
+<rect x="182" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="214" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO8</text>
+<rect x="254" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="286" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO9</text>
+<rect x="326" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="358" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO10</text>
+<rect x="398" y="98" width="64" height="30" rx="7" fill="#ffd7d5" stroke="#a40e26" stroke-width="1"/><text x="430" y="118" font-size="12.5" font-weight="600" text-anchor="middle" fill="#a40e26">GPIO11</text>
+<text x="38" y="142" font-size="12" fill="#57606a">Připojení k flash paměti na modulu. Použití = modul nenabootuje.</text>
+<line x1="24" y1="154" x2="956" y2="154" stroke="#d0d7de" stroke-width="1"/>
+<text x="38" y="168" font-size="15" font-weight="600" fill="#1f2328">Strapping — stav při bootu něco znamená</text>
+<rect x="38" y="180" width="64" height="30" rx="7" fill="#fff1c2" stroke="#7a5900" stroke-width="1"/><text x="70" y="200" font-size="12.5" font-weight="600" text-anchor="middle" fill="#7a5900">GPIO0</text>
+<rect x="110" y="180" width="64" height="30" rx="7" fill="#fff1c2" stroke="#7a5900" stroke-width="1"/><text x="142" y="200" font-size="12.5" font-weight="600" text-anchor="middle" fill="#7a5900">GPIO2</text>
+<rect x="182" y="180" width="64" height="30" rx="7" fill="#fff1c2" stroke="#7a5900" stroke-width="1"/><text x="214" y="200" font-size="12.5" font-weight="600" text-anchor="middle" fill="#7a5900">GPIO5</text>
+<rect x="254" y="180" width="64" height="30" rx="7" fill="#fff1c2" stroke="#7a5900" stroke-width="1"/><text x="286" y="200" font-size="12.5" font-weight="600" text-anchor="middle" fill="#7a5900">GPIO12</text>
+<rect x="326" y="180" width="64" height="30" rx="7" fill="#fff1c2" stroke="#7a5900" stroke-width="1"/><text x="358" y="200" font-size="12.5" font-weight="600" text-anchor="middle" fill="#7a5900">GPIO15</text>
+<text x="38" y="224" font-size="12" fill="#57606a">GPIO0 LOW při resetu = bootloader. GPIO12 HIGH při resetu = 1,8V flash (modul se nerozběhne).</text>
+<line x1="24" y1="236" x2="956" y2="236" stroke="#d0d7de" stroke-width="1"/>
+<text x="38" y="250" font-size="15" font-weight="600" fill="#1f2328">Jen vstup — bez pull-up/pull-down, nelze použít jako výstup</text>
+<rect x="38" y="262" width="64" height="30" rx="7" fill="#e6e8eb" stroke="#57606a" stroke-width="1"/><text x="70" y="282" font-size="12.5" font-weight="600" text-anchor="middle" fill="#57606a">GPIO34</text>
+<rect x="110" y="262" width="64" height="30" rx="7" fill="#e6e8eb" stroke="#57606a" stroke-width="1"/><text x="142" y="282" font-size="12.5" font-weight="600" text-anchor="middle" fill="#57606a">GPIO35</text>
+<rect x="182" y="262" width="92" height="30" rx="7" fill="#e6e8eb" stroke="#57606a" stroke-width="1"/><text x="228" y="282" font-size="12.5" font-weight="600" text-anchor="middle" fill="#57606a">GPIO36 (VP)</text>
+<rect x="282" y="262" width="92" height="30" rx="7" fill="#e6e8eb" stroke="#57606a" stroke-width="1"/><text x="328" y="282" font-size="12.5" font-weight="600" text-anchor="middle" fill="#57606a">GPIO39 (VN)</text>
+<text x="38" y="306" font-size="12" fill="#57606a">Pull-up/pull-down musí být externí. Vhodné pro ADC1 a opto-oddělené vstupy.</text>
+<line x1="24" y1="318" x2="956" y2="318" stroke="#d0d7de" stroke-width="1"/>
+<text x="38" y="332" font-size="15" font-weight="600" fill="#1f2328">Obsazené v MIA (podle zdrojáků v repu)</text>
+<rect x="38" y="344" width="114" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="95" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO16 TWAI RX</text>
+<rect x="160" y="344" width="114" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="217" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO17 TWAI TX</text>
+<rect x="282" y="344" width="114" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="339" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO1 UART0 TX</text>
+<rect x="404" y="344" width="114" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="461" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO3 UART0 RX</text>
+<rect x="526" y="344" width="77" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="564" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO2 LED</text>
+<rect x="611" y="344" width="114" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="668" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO0 tlačítko</text>
+<rect x="733" y="344" width="122" height="30" rx="7" fill="#cfe4fd" stroke="#0a4ea3" stroke-width="1"/><text x="794" y="364" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0a4ea3">GPIO36 ADC1_CH0</text>
+<text x="38" y="388" font-size="12" fill="#57606a">TWAI: ai_servis_obd.c   ·   LED / tlačítko / ADC: apps/esp32/main/main.c</text>
+<line x1="24" y1="400" x2="956" y2="400" stroke="#d0d7de" stroke-width="1"/>
+<text x="38" y="414" font-size="15" font-weight="600" fill="#1f2328">Volné pro další periferie</text>
+<rect x="38" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="70" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO4</text>
+<rect x="110" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="142" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO13</text>
+<rect x="182" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="214" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO14</text>
+<rect x="254" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="286" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO18</text>
+<rect x="326" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="358" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO19</text>
+<rect x="398" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="430" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO21</text>
+<rect x="470" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="502" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO22</text>
+<rect x="542" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="574" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO23</text>
+<rect x="614" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="646" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO25</text>
+<rect x="686" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="718" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO26</text>
+<rect x="758" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="790" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO27</text>
+<rect x="830" y="426" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="862" y="446" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO32</text>
+<rect x="38" y="464" width="64" height="30" rx="7" fill="#d4f5dd" stroke="#0f6b35" stroke-width="1"/><text x="70" y="484" font-size="12.5" font-weight="600" text-anchor="middle" fill="#0f6b35">GPIO33</text>
+<text x="38" y="508" font-size="12" fill="#57606a">GPIO21/22 = výchozí I2C. GPIO25/26 = DAC. ADC2 (GPIO4, 12–15, 25–27) nelze číst při zapnuté WiFi.</text>
+<line x1="24" y1="520" x2="956" y2="520" stroke="#d0d7de" stroke-width="1"/>
+</svg>

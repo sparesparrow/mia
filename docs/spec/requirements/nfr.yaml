@@ -1,0 +1,63 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: nfr
+title: Non-functional requirements
+description: Cross-cutting constraints every component must meet.
+requirements:
+- id: REQ-NFR-001
+  title: Simulation fallback
+  statement: Every hardware-dependent component shall fall back to a simulation when its hardware is absent, so
+    it runs in CI and on non-Pi machines.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - GPIO, Arduino and the hardware manager work with no hardware attached
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/gpio.py
+  - apps/rpi-backend/py-api/hardware/arduino.py
+  - apps/rpi-backend/py-api/hardware/hardware_manager.py
+  - apps/rpi-backend/py-api/hardware/serial_bridge.py
+  decisions:
+  - ADR-0007
+- id: REQ-NFR-002
+  title: Passive vehicle access by default
+  statement: MIA shall not transmit on a vehicle bus, run active diagnostics or actuate anything unless that capability
+    is explicitly enabled for a specific install.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The listen-only firmware cannot transmit
+  - UDS is disabled by default in the VAG bridge unit
+  implemented_in:
+  - apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c
+  - orchestration/mcp/modules/vag-audi-bridge/main.py
+  - infra/systemd/mia-vag-audi-bridge.service
+  decisions:
+  - ADR-0006
+  safety: Physical TXD disconnection on the car build remains required; software cannot prove it
+- id: REQ-NFR-003
+  title: Structured errors
+  statement: Service and API error results shall be structured objects with status and message keys.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/api/main.py
+  - orchestration/mcp/modules/shared/mcp_framework.py
+  notes: A project convention (CLAUDE.md); no test enforces it yet.
+- id: REQ-NFR-004
+  title: Evidence-based status
+  statement: 'No requirement shall claim more evidence than exists: automated states need passing linked tests,
+    and bench, hardware or vehicle states need a recorded evidence file.'
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A test that names a requirement ID missing from the registry stops the pytest run
+  - The check fails when a requirement claims implemented_and_ci_tested or simulation_tested without a passing
+    linked test, or when a linked test fails
+  - The check fails when a requirement claims bench_tested or above without a spec/evidence record for that state
+  - The check fails on a registry file that breaks schema.json, a duplicate ID, a missing implemented_in path or an
+    unknown ADR
+  - GET /features serves every requirement with its evidence state
+  implemented_in:
+  - spec/requirements
+  - tools/ci/traceability.py
+  - tests/plugins/req_traceability.py
+  - apps/rpi-backend/py-api/api/main.py
+  decisions:
+  - ADR-0010
+  notes: CI runs the check after the Python tests (python-test job in .github/workflows/ci.yml).
