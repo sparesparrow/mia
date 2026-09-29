@@ -1,4 +1,5 @@
 // Smoke test for the MIA web page generator.
+// @req REQ-WEB-001 REQ-WEB-002
 //
 // Run via `npm test` (which calls `npm run build` first via the `pretest`
 // hook). CI runs it in .github/workflows/publish-pages.yml. Exit code 0 means
