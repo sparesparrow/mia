@@ -7,20 +7,20 @@ requirements:
   title: Generated segment landing pages
   statement: Customer-segment landing pages shall be generated from one template with Czech and English strings,
     and must not leak template placeholders.
-  evidence: implemented_untested
+  evidence: implemented_and_ci_tested
   implemented_in:
   - web/scripts/generatePages.js
   - web/template.html
   - web/i18n
   notes: Each page is rendered once per language (Czech at <segment>/, English at <segment>/en/), so the pages
     need no runtime i18n. web/scripts/build-smoke.js checks this, and the publish-pages workflow runs it through
-    npm test. It stays implemented_untested because the traceability check only counts pytest and Kotlin tests.
+    npm test; traceability counts that smoke test as CI evidence.
 - id: REQ-WEB-002
   title: Audience routing and evidence-based marketing copy
   statement: The published site shall give each audience (business, families, musicians, journalists, developers,
     mechanics, testers, press) its own entry path, and shall publish no prices or performance figures that the
     requirement registry does not support.
-  evidence: implemented_untested
+  evidence: implemented_and_ci_tested
   implemented_in:
   - web/scripts/generatePages.js
   - web/i18n/site.yaml
@@ -35,3 +35,4 @@ requirements:
     a segment's own `site:` override of it (web/i18n/gonzo.yaml), must only name requirements that are
     implemented_and_ci_tested or better; planned features go in the use cases. The hand-written homepage
     (web/index.html) is not covered by the smoke test.
+  not_proven: The hand-written homepage is outside the generated-page smoke test.
