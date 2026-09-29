@@ -154,15 +154,18 @@ add_executable(tests
     tests/test_gpio_control.cpp
     tests/test_orchestrator.cpp
     tests/test_gpio_tcp.cpp
+    HardwareControlServer.cpp
 )
 target_link_libraries(tests
     webgrab_lib
     ${GPIOD_LIBRARIES}
     ${JSONCPP_LIBRARIES}
+    ${MOSQUITTO_LIBRARIES}
     Threads::Threads
 )
 target_include_directories(tests PRIVATE 
     ${GPIOD_INCLUDE_DIRS}
     ${JSONCPP_INCLUDE_DIRS}
+    ${MOSQUITTO_INCLUDE_DIRS}
 )
 add_test(NAME BasicTests COMMAND tests)
