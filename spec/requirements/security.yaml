@@ -12,9 +12,15 @@ requirements:
   - Keys verify against their stored hash and unknown keys are rejected
   - Scopes gate access and admin has all of them
   - Disabled or removed keys stop working
+  - Once a key is configured every HTTP route except /, /auth/status and the docs needs it (read for GET, write otherwise)
+  - Every WebSocket route (/ws, /ws/telemetry, /anpr/stream) is closed without a valid X-API-Key header; a query-string key is not accepted
+  - With no key configured the API stays open and logs a warning; MIA_AUTH_DISABLED=1 opts out explicitly
+  - Browsers are limited to local origins unless MIA_CORS_ORIGINS says otherwise
   implemented_in:
   - apps/rpi-backend/py-api/api/auth/api_key.py
   - apps/rpi-backend/py-api/api/auth/dependencies.py
+  - apps/rpi-backend/py-api/api/main.py
+  - apps/rpi-backend/py-api/api/routers/anpr.py
   services:
   - mia-api
 - id: REQ-SEC-002

@@ -13,7 +13,10 @@ from .dependencies import (
     get_current_user,
     require_auth,
     optional_auth,
-    require_scope
+    require_scope,
+    enforce_api_auth,
+    authenticate_websocket,
+    auth_configured
 )
 
 __all__ = [
@@ -25,5 +28,8 @@ __all__ = [
     'get_current_user',
     'require_auth',
     'optional_auth',
-    'require_scope'
+    'require_scope',
+    'enforce_api_auth',
+    'authenticate_websocket',
+    'auth_configured'
 ]
