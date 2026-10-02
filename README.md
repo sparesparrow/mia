@@ -103,7 +103,7 @@ sudo systemctl start mia-citroen-bridge
 - Standard: RPM, Speed, Coolant Temp
 - PSA-specific: DPF Soot, Oil Temp, Eolys Level
 
-See [docs/automotive/citroen-integration.md](../docs/automotive/citroen-integration.md) for full documentation.
+See [docs/automotive/citroen-integration.md](docs/automotive/citroen-integration.md) for full documentation.
 
 ## Installation
 

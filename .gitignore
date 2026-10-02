@@ -214,3 +214,7 @@ apps/android/.gradle/
 .coverage
 .coverage.*
 htmlcov/
+
+# Compiler output and editor swap files
+*.o
+*.kate-swp
