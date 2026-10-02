@@ -136,8 +136,9 @@ requirements:
     without any transmit path compiled in.
   evidence: implemented_and_ci_tested
   acceptance:
-  - Every twai_transmit call sits in a branch compiled out when MIA_TWAI_LISTEN_ONLY=1
-  - 'CI: the listen-only ELF contains no twai_transmit symbol, the default ELF does'
+  - Every twai_transmit call sits in a branch compiled out when MIA_TWAI_LISTEN_ONLY=1 (the default)
+  - 'The default build is passive: MIA_TWAI_LISTEN_ONLY defaults to 1 unless -DMIA_ALLOW_TX=1 is given'
+  - 'CI: the default ELF contains no twai_transmit symbol, the MIA_ALLOW_TX ELF does'
   implemented_in:
   - apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c
   decisions:
