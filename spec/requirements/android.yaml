@@ -60,6 +60,8 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - Topics are built from the configured prefix and device
+  - Broker candidates come only from MIA_MQTT_URL, mDNS and cached LAN hosts; there is no public fallback broker
+  - The app is excluded from Android backups (allowBackup=false)
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTManager.kt
   - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTTopics.kt
