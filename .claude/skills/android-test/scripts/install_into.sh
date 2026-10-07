@@ -21,7 +21,7 @@ while [ $# -gt 0 ]; do
 done
 [ -d "$repo/.git" ] || { echo "REPO_DIR must be a git checkout" >&2; exit 2; }
 [ -f "$here/profiles/$profile.env" ] || { echo "no profile '$profile' in $here/profiles" >&2; exit 2; }
-[ -f "$repo/$adir/gradlew" ] || echo "warning: $repo/$adir/gradlew not found; CI needs a committed Gradle wrapper" >&2
+[ -f "$repo/$adir/gradlew" ] || echo "warning: $repo/$adir/gradlew not found; the workflow will generate a wrapper (commit one for reproducible builds)" >&2
 
 dest="$repo/.claude/skills/android-test"
 if [ "$(realpath "$here")" = "$(realpath -m "$dest")" ]; then echo "source and destination are the same" >&2; exit 2; fi

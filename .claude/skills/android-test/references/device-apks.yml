@@ -25,6 +25,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'   # only used to create a wrapper when the repo has none
       - uses: android-actions/setup-android@v3
         with:
           # the default also installs legacy 'tools', which the SDK repo no longer serves (sdkmanager exits 1)
@@ -32,7 +34,10 @@ jobs:
       - run: |
           yes | sdkmanager --licenses > /dev/null
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
-      - run: chmod +x ./gradlew
+      - name: Gradle wrapper (generate if the repo has none)
+        run: |
+          [ -f gradlew ] || gradle wrapper --gradle-version 8.7
+          chmod +x ./gradlew
       - run: ./gradlew assembleDebug assembleDebugAndroidTest --stacktrace
       - uses: actions/upload-artifact@v4
         with:
