@@ -7,6 +7,8 @@ description: MIA Android app testing via ADB. Build APK, deploy to device/emulat
 
 Unified testing framework for MIA Android app combining APK builds, device deployment, ADB UI automation, and subagent-driven log analysis.
 
+> **Two skills, one split.** Generic device testing now lives in the shared [`android-test`](../android-test/SKILL.md) skill: fetch the CI-built APKs (release assets or workflow artifacts), install with runtime permissions granted, run the instrumented tests (`phone_ci.sh --repo sparesparrow/mia --pkg cz.mia.app --release latest`), and UI smoke scenarios (`run_scenario.sh --profile profiles/mia.env --scenario nav-all`). Use **this** skill for what is MIA-specific and needs the hardware: BLE scan, OBD pairing, ANPR, and local Gradle builds. Needs on-device permissions first: `DrivingService` starts a camera foreground service and crashes on Android 14+ if CAMERA is not granted (install with `adb install -g` or run `pm grant`).
+
 ## Quick Start
 
 ### One-shot test (dashboard flow)
