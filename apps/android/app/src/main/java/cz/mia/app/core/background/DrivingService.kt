@@ -5,11 +5,16 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import cz.mia.app.MIAApplication.Companion.CHANNEL_DRIVING_SERVICE
@@ -82,7 +87,25 @@ class DrivingService : LifecycleService() {
 		events = entryPoint.events()
 		connectivityObserver = entryPoint.connectivityObserver()
 		systemPolicyManager = entryPoint.systemPolicyManager()
-		startForeground(NOTIFICATION_ID, createNotification())
+		enterForeground()
+	}
+
+	/**
+	 * Promote to foreground with only the service types whose permissions are granted.
+	 * Declaring the camera type without CAMERA makes Android 14+ throw SecurityException
+	 * from startForeground and kills the app (seen on the device test run of v2.0.0-dev).
+	 */
+	private fun enterForeground() {
+		var type = ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC or
+			ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+			PackageManager.PERMISSION_GRANTED
+		) {
+			type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+		} else {
+			Log.w(TAG, "CAMERA not granted: starting foreground service without camera type")
+		}
+		ServiceCompat.startForeground(this, NOTIFICATION_ID, createNotification(), type)
 	}
 
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -116,7 +139,7 @@ class DrivingService : LifecycleService() {
 
 	private fun startService() {
 		_serviceState.value = ServiceState.STARTING
-		startForeground(NOTIFICATION_ID, createNotification())
+		enterForeground()
 		
 		connectivityObserver.start(
 			onAvailable = {
@@ -300,6 +323,7 @@ class DrivingService : LifecycleService() {
 	}
 
 	companion object {
+		private const val TAG = "DrivingService"
 		private const val NOTIFICATION_ID = 1001
 		private const val CHANNEL_ALERTS = "alerts"
 		
