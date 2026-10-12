@@ -113,13 +113,13 @@ requirements:
   - A closed or vanished peer ends a read with a closed error after the queued messages, and a write to a closed channel fails
   - A UDP channel ignores datagrams from any address but its peer's
   - A listener hands out one channel per TCP or unix-socket connection
-  - The WebSocket endpoint refuses connections unless enabled, and refuses text frames
+  - The WebSocket endpoint refuses connections unless enabled, needs the API key when keys are configured, refuses text frames, and drops a console that stops reading instead of buffering without limit
   implemented_in:
   - apps/rpi-backend/py-api/services/voice_fsm/wire/channel.py
   - apps/rpi-backend/py-api/api/voice_console.py
   decisions:
   - ADR-0013
-  not_proven: Run on loopback, socket pairs and a test client only. No channel authenticates its peer, a slow TCP peer is dropped after a 2 s send timeout that was not tested under load, and nothing ran across a real network, the car's Wi-Fi or a serial line.
+  not_proven: Run on loopback, socket pairs and a test client only. The stream and UDP channels do not authenticate their peers, a read-scope key is enough to press the console buttons, a slow TCP peer is dropped after a 2 s send timeout that was not tested under load, and nothing ran across a real network, the car's Wi-Fi or a serial line.
 - id: REQ-NET-010
   title: Remaining voice transports
   statement: The voice envelope shall also be carried over ZeroMQ, BLE and a serial line, each behind the same channel interface.

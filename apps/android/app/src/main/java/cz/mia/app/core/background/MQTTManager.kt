@@ -18,6 +18,27 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import java.util.UUID
 
+/**
+ * Broker URLs to try, in order: an explicit URL, brokers found by mDNS, then
+ * previously cached hosts. There is deliberately no public fallback broker:
+ * the app publishes the VIN, plates and telemetry, which must never leave the
+ * vehicle network in plaintext.
+ */
+internal fun buildBrokerCandidates(
+	envUrl: String?,
+	mdnsPairs: List<String>,
+	cachedHosts: List<String>
+): List<String> = buildList {
+	envUrl?.takeIf { it.isNotBlank() }?.let { add(it) }
+	mdnsPairs.forEach { pair ->
+		val parts = pair.split(":")
+		val host = parts.getOrNull(0)?.takeIf { it.isNotBlank() } ?: return@forEach
+		val port = parts.getOrNull(1)?.takeIf { it.isNotBlank() } ?: "1883"
+		add("tcp://$host:$port")
+	}
+	cachedHosts.filter { it.isNotBlank() }.forEach { add("tcp://$it:1883") }
+}.distinct()
+
 interface MQTTManager {
 	suspend fun connect()
 	suspend fun disconnect()
@@ -36,32 +57,28 @@ class MQTTManagerImpl @Inject constructor(
 	private val mdns: MdnsDiscovery
 ) : MQTTManager {
 	@Volatile private var client: MqttAndroidClient? = null
+	// Use ssl://host:8883 here to require TLS; credentials are optional.
 	private val envBrokerUrl: String? = System.getenv("MIA_MQTT_URL")
-	private val defaultBrokerUrl: String = "tcp://test.mosquitto.org:1883"
+	private val envUsername: String? = System.getenv("MIA_MQTT_USERNAME")
+	private val envPassword: String? = System.getenv("MIA_MQTT_PASSWORD")
 	private val clientId: String = "mia-android-${UUID.randomUUID()}"
 
 	override suspend fun connect() = withContext(Dispatchers.IO) {
 		if (client?.isConnected == true) return@withContext
 		val discoveredPairs = mdns.discoverMqtt(timeoutMs = 2500)
-		val mdnsUrls = discoveredPairs.map { pair ->
-			val parts = pair.split(":")
-			val host = parts.getOrNull(0) ?: return@map defaultBrokerUrl
-			val port = (parts.getOrNull(1) ?: "1883")
-			"tcp://$host:$port"
-		}
-		val cached = mdns.discoverServices("_mqtt._tcp.local.").map { host -> "tcp://$host:1883" }
-		val candidates = buildList {
-			envBrokerUrl?.let { add(it) }
-			addAll(mdnsUrls)
-			addAll(cached)
-			add(defaultBrokerUrl)
-		}.distinct()
+		val cached = mdns.discoverServices("_mqtt._tcp.local.")
+		val candidates = buildBrokerCandidates(envBrokerUrl, discoveredPairs, cached)
+		if (candidates.isEmpty()) return@withContext
 
 		val options = MqttConnectOptions().apply {
 			isAutomaticReconnect = true
 			isCleanSession = true
 			connectionTimeout = 10
 			keepAliveInterval = 30
+			if (!envUsername.isNullOrBlank()) {
+				userName = envUsername
+				password = (envPassword ?: "").toCharArray()
+			}
 		}
 
 		val backoffMs = listOf(0L, 2000L, 5000L, 10000L)

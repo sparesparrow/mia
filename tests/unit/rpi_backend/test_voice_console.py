@@ -116,3 +116,51 @@ def test_a_second_console_sees_the_first_ones_button_presses(client):
         assert _next(first).seq == 2
         seen = decode_event(_next(second).payload)
         assert isinstance(seen, Feedback)  # the machine's first effect is the wake cue
+
+
+def test_a_console_that_stops_reading_is_dropped_instead_of_buffered_without_limit():
+    import asyncio
+
+    async def scenario():
+        outbox = asyncio.Queue(maxsize=voice_console.OUTBOX_LIMIT)
+        overflowed = asyncio.Event()
+        sink = voice_console.make_sink(outbox, overflowed)
+        for i in range(voice_console.OUTBOX_LIMIT):
+            sink(bytes([i % 256]))
+        assert not overflowed.is_set()
+        with pytest.raises(voice_console.OutboxFull):
+            sink(b"one too many")
+        assert overflowed.is_set() and outbox.qsize() == voice_console.OUTBOX_LIMIT
+
+    asyncio.run(scenario())
+
+
+def test_the_router_drops_a_console_whose_sink_overflows_and_keeps_the_others():
+    import asyncio
+
+    from services.voice_fsm import VoiceMachine
+    from services.voice_fsm.wire import EnvelopeRouter, VoiceService
+
+    async def scenario():
+        router = EnvelopeRouter()
+        service = VoiceService(VoiceMachine(lambda: 0.0))
+        router.register(Service.VOICE, service)
+        slow_box, slow_flag = asyncio.Queue(maxsize=2), asyncio.Event()
+        ok_box = asyncio.Queue()
+        slow = router.connect(voice_console.make_sink(slow_box, slow_flag))
+        fine = router.connect(ok_box.put_nowait)
+        for connection, name in ((slow, "slow"), (fine, "fine")):
+            connection.handle(
+                encode_envelope(Envelope(Service.VOICE, name, Op.OPEN, Status.OK, 1))
+            )
+        fine.handle(
+            encode_envelope(
+                Envelope(
+                    Service.VOICE, "fine", Op.DATA, Status.OK, 2, encode_command(Wake())
+                )
+            )
+        )
+        assert not slow.alive and slow_flag.is_set()
+        assert fine.alive and ok_box.qsize() > 2
+
+    asyncio.run(scenario())

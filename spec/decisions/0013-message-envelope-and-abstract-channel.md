@@ -48,8 +48,9 @@ own format, mostly JSON.
 - A console may send only button-equivalent commands and the verbosity setting. Results, finished-speech
   reports, warnings, phone messages and typed intents enter the machine from inside the Pi. The channel sets
   the command `source`; the peer cannot claim `car` or `voice`.
-- The WebSocket endpoint is off by default (`VOICE_CONSOLE=1`) and, like the other sockets of the API, has
-  no authentication yet. Authenticating peers is open.
+- The WebSocket endpoint is off by default (`VOICE_CONSOLE=1`) and, like every other WebSocket of the API,
+  needs the API key when keys are configured (REQ-SEC-001). A read-scope key is enough, so a stricter scope
+  for commands is open. The stream and UDP channels do not authenticate.
 - Phrase parameters are text, integer, real, flag, or a list of text; other types are refused rather than guessed.
 
 ## Sources
