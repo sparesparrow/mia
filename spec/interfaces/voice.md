@@ -15,7 +15,8 @@ item is tracked by the requirement named beside it.
 | Console | simulated button, persona or verbosity change from the Android app | same commands with `source=console` |
 
 A command from a button and the same command from speech are indistinguishable to the machine.
-(REQ-VOICE-015)
+In `confirming` the go-now button counts as an explicit yes. In `speaking` cancel silences MIA and drops
+any pending chain. (REQ-VOICE-015)
 
 ## States
 
@@ -27,6 +28,7 @@ A command from a button and the same command from speech are indistinguishable t
 | `analysing` | transcript is being split and classified | blue, pulsing | none |
 | `executing` | actions are running | green | short confirm beep |
 | `window` | uncertain part announced; 5 s countdown | yellow | two beeps at the start |
+| `confirming` | a message or call waits for an explicit yes | yellow | double beep |
 | `speaking` | MIA is talking, microphone muted | purple | none |
 | `dictating` | a note is being recorded | red | beep at start and end |
 | `warning` | safety warning being announced | orange or red, flashing | distinct warning tone |

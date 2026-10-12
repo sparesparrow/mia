@@ -89,38 +89,55 @@ requirements:
 - id: REQ-VOICE-011
   title: Voice state machine
   statement: One state machine shall own the voice session, consume typed commands from every input and emit the action, speech, LED and tone effects.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Commands from every source go through one machine and yield execute, speak, mute, LED and tone effects
+  - Every state has exactly one LED and tone cue in one table
+  - A warning interrupts dictation and the window; an incoming message waits until the machine is free
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
   decisions:
   - ADR-0011
-  not_proven: Not yet implemented
+  not_proven: The machine is pure logic with a fake clock. It is not yet wired to the router, TTS, audio capture or the LED node.
 - id: REQ-VOICE-012
   title: Confirmation window by action class
   statement: Uncertain parts of a chain in the read, comfort and note classes shall be announced and run after one shared 5 s window unless cancelled or corrected, while certain parts run immediately.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A certain part runs at once and an uncertain read, comfort or note part runs only after one shared window
+  - The window does not start while MIA is still speaking
+  - Cancel and go-now work from a button, voice or the console and a new utterance replaces the pending part
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
   decisions:
   - ADR-0012
-  not_proven: Not yet implemented
+  not_proven: Pure logic with a fake clock. The splitter that decides which parts are certain, and the TTS event that ends speech, are not implemented.
 - id: REQ-VOICE-013
   title: Explicit confirmation for messages and calls
   statement: A message or phone call shall never be sent or placed on silence and shall require an explicit spoken or button confirmation.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A message or call part never runs on silence and times out without executing
+  - It runs after an explicit yes or the go-now button and is dropped on a no or cancel
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
   decisions:
   - ADR-0012
   safety: A mis-recognised transcript cannot send a message or place a call.
-  not_proven: Not yet implemented
+  not_proven: Pure logic with a fake clock. No messages or calls are sent, because messages_mcp and the SIP bridge are not connected.
 - id: REQ-VOICE-014
   title: Refuse vehicle writes in a chain
   statement: A voice chain shall refuse any part that writes to a control unit, such as clearing fault codes or starting a DPF regeneration, and shall say so.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A forbidden part is refused with a spoken reason, never queued, and the other parts still run
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
   decisions:
   - ADR-0006
   - ADR-0012
   safety: Voice cannot cause an ECU write.
-  not_proven: Not yet implemented
+  not_proven: Pure logic with a fake clock. Nothing yet classifies a spoken phrase as forbidden.
 - id: REQ-VOICE-015
   title: Buttons produce the same commands as voice
   statement: A go-now and a cancel button, simulated or physical, shall produce the same typed commands as the equivalent spoken command, and the cancel button shall work without speech recognition.
