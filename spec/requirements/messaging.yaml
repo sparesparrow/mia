@@ -87,17 +87,44 @@ requirements:
 - id: REQ-NET-008
   title: Message envelope
   statement: Voice and console messages shall travel in one FlatBuffers envelope that routes by service type, carries a version and session, and nests a service payload.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every voice command and event round-trips through the envelope, and the machine's feedback table is fully representable
+  - A garbled buffer, a wrong version, an unknown service or an unopened session is answered with a status and never raises
+  - The schema, the generated Python and C++ bindings, the enum-only header and the interface table agree, and CI compares them with a fresh flatc run
+  - A console can send only the button commands and the verbosity setting; the channel, not the peer, sets the command source
+  - Events go to every open session of the service and to no other
+  implemented_in:
+  - schemas/voice.fbs
+  - apps/rpi-backend/py-api/services/voice_fsm/wire
+  - apps/rpi-backend/py-api/api/voice_console.py
+  - tools/schemas/extract_enums.py
   decisions:
   - ADR-0004
   - ADR-0013
-  not_proven: Not yet implemented
+  not_proven: Only in-process and loopback peers have exchanged envelopes. No Android client or ESP32 firmware reads them, the console endpoint drives a simulated machine rather than the voice pipeline on the Pi, and the numbers were not measured on a Pi.
 - id: REQ-NET-009
   title: Abstract channel
-  statement: Messages shall be sent and received through a channel interface with ZeroMQ, WebSocket, BLE, serial and in-memory implementations, with length framing only on stream transports.
+  statement: Messages shall be sent and received through a channel interface with in-memory, stream (TCP and unix socket), UDP and WebSocket implementations, with length framing only on stream transports.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - One write is one read on the other side for the in-memory, framed-stream and UDP channels
+  - A framed channel reassembles a message that arrives in pieces, splits messages that arrive together, and drops a stream that announces an oversized frame
+  - A closed or vanished peer ends a read with a closed error after the queued messages, and a write to a closed channel fails
+  - A UDP channel ignores datagrams from any address but its peer's
+  - A listener hands out one channel per TCP or unix-socket connection
+  - The WebSocket endpoint refuses connections unless enabled, needs the API key when keys are configured, refuses text frames, and drops a console that stops reading instead of buffering without limit
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm/wire/channel.py
+  - apps/rpi-backend/py-api/api/voice_console.py
+  decisions:
+  - ADR-0013
+  not_proven: Run on loopback, socket pairs and a test client only. The stream and UDP channels do not authenticate their peers, a read-scope key is enough to press the console buttons, a slow TCP peer is dropped after a 2 s send timeout that was not tested under load, and nothing ran across a real network, the car's Wi-Fi or a serial line.
+- id: REQ-NET-010
+  title: Remaining voice transports
+  statement: The voice envelope shall also be carried over ZeroMQ, BLE and a serial line, each behind the same channel interface.
   evidence: planned
   implemented_in: []
   decisions:
   - ADR-0013
-  not_proven: Not yet implemented
+  not_proven: Not yet implemented; a serial line is expected to be the framed stream channel over pyserial.

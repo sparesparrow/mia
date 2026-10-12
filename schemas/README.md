@@ -36,6 +36,15 @@ This directory contains the FlatBuffers schema definitions for the Modular IoT A
 - `schemas/vehicle.fbs` - Thin wire wrapper that pins the PUB/SUB file identifier for vehicle telemetry
 - `DpfStatus` - Diesel Particulate Filter regeneration states
 
+#### Voice (`voice.fbs`)
+- Namespace `MiaVoice`, file identifier `MIAV`; standalone, it does not include `mia.fbs`
+- `Envelope` - routing header (version, service, session, op, status, seq) around a nested `VoiceMessage`
+- `VoiceMessage` / `VoiceBody` - the commands a console may send and the events the voice state machine emits
+- Python bindings in `schemas/generated/python/MiaVoice/`, C++ in `schemas/generated/cpp/voice_generated.h`
+- `python tools/schemas/extract_enums.py` writes `schemas/generated/cpp/voice_enums.h` (enums only, for firmware)
+- Wire contract: `spec/interfaces/voice.md`; decision: ADR-0013. CI regenerates and fails on any difference
+- `schemas/baseline/voice.fbs` is the compatibility baseline (ADR-0004)
+
 ## Usage
 
 ### Generating Bindings

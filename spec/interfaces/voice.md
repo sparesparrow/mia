@@ -36,7 +36,8 @@ console adapter exists yet, so the end-to-end claim belongs to REQ-VOICE-015, no
 | `MuteMic(muted)` | emitted when the microphone state changes | implemented |
 | `Feedback(state, led, tone)` | LED colour and tone for a state or a transient cue | implemented |
 | `StateChanged(previous, current)` | a resting state changed | implemented |
-| `Transcript`, `Spoken`, `QueueEntry`, `WindowTick` for the console | | planned |
+| `Spoken` (a `Speak` for peers), `Transcript` | on the wire as events for the console | implemented |
+| `QueueEntry`, `WindowTick` for the console | | planned |
 
 ### Speech contract
 
@@ -122,11 +123,66 @@ Audio capture mutes the microphone while an utterance plays and for a short tail
 never stays closed more than 30 s after the last speaking event, so a lost `finished` cannot leave it muted. The
 router runs the machine only when `VOICE_FSM=1` (off by default). (REQ-VOICE-016)
 
-## Envelope and channel (planned)
+## Envelope and channel
 
-Defined by ADR-0013. A message has a routing type, a version, a session, a create, close or data flag and a
-nested payload for the named service. Request, response and unsolicited event are the three message kinds.
-A channel offers read, write and is-open; stream transports add a length prefix. (REQ-NET-008, REQ-NET-009)
+Defined by ADR-0013 in `schemas/voice.fbs` (namespace `MiaVoice`, file identifier `MIAV`); bindings are committed
+in `schemas/generated/` and compared with a fresh `flatc` run in CI. (REQ-NET-008, REQ-NET-009)
+
+An **envelope** routes a message and never looks inside it:
+
+| Field | Meaning |
+|---|---|
+| `version` | wire version, now 1; any other value is answered `UnsupportedVersion` |
+| `service` | which service owns the payload: `Voice`; a missing or unknown value is answered `UnknownService` |
+| `session_id` | chosen by the peer on `Open`; `Data` and `Close` must name a session that peer opened |
+| `op` | `Data`, `Open` or `Close` |
+| `status` | `Ok` on requests; on a reply `Ok`, `UnknownService`, `UnsupportedVersion`, `Malformed`, `NotPermitted` or `UnknownSession` |
+| `seq` | chosen by the sender and echoed in the reply; events carry the router's own counter |
+| `payload` | a nested `VoiceMessage` (one `VoiceBody` union member) |
+
+A request is answered with one reply to the sender. Events (the machine's effects) go to every open session
+of the service and to no other. A garbled buffer, a wrong version or an unknown service is answered with a
+status; nothing raises. Messages are at most 64 KiB.
+
+### Voice messages
+
+| Message | Direction | Dataclass |
+|---|---|---|
+| `Wake`, `GoNow`, `Cancel`, `Confirm`, `Deny`, `EndDictation`, `SetVerbosity` | peer to machine, allowed from a console | the command of the same name |
+| `Intent`, `DictationText` | peer to machine, in-process only | the command of the same name |
+| `SpeakingDone`, `ExecutionDone`, `SafetyWarning`, `IncomingMessage` | peer to machine, in-process only | the command of the same name |
+| `StateChanged`, `FeedbackCue`, `Spoken` | machine to peers | `StateChanged`, `Feedback`, `Speak` |
+| `Transcript` | machine side to peers | `wire.Transcript` (not consumed by the machine) |
+
+`Execute`, `Abort`, `StopSpeaking` and `MuteMic` talk to the machine's own executors and microphone and are not on
+the wire. `WindowTick` and a queue-entry event are planned; the machine does not emit them yet.
+
+A console can send only the commands in `PEER_COMMANDS`: the two button roles, the answer buttons, wake, end of
+dictation and the verbosity setting. The rest is refused with `NotPermitted`, so a socket cannot report a safety
+warning, a finished utterance or a result. **The channel, not the peer, sets `source`**: a console message is
+stamped `console` whatever it claims.
+
+Enum names in the schema are the CamelCase form of the strings in the code (`State.WINDOW = "window"` is `Window`).
+`FeedbackCue` carries the resting `state`, or a transient `cue` when it is not `NoCue`, with the LED colour and the
+tone as enums. `tools/schemas/extract_enums.py` writes `schemas/generated/cpp/voice_enums.h`, which holds only these
+enums, for firmware that cannot use FlatBuffers. Both sides are checked by tests.
+
+### Channels
+
+A channel reads and writes whole messages; a listener hands out one channel per connection. Stream transports
+carry a 4-byte big-endian length before each message; datagram transports do not.
+
+| Channel | Status |
+|---|---|
+| in-memory pair (`LoopbackChannel`) | implemented |
+| length-framed stream over TCP or a unix socket (`FramedChannel`, `SocketListener`) | implemented; a serial line is the same class over a stream with `recv` and `sendall` |
+| UDP to one peer (`UdpChannel`), datagrams from other addresses dropped | implemented; may lose or reorder messages |
+| WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`, API key required; talks to a machine simulated in the API process |
+| ZeroMQ, BLE, a real serial line | planned |
+
+The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.
+`/ws/voice` requires the `X-API-Key` header when API keys are configured (a read-scope key is enough) and drops a
+console whose queue of 256 unsent frames fills up.
 
 ## Interaction log record (planned)
 

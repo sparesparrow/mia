@@ -122,7 +122,7 @@ def test_a_verified_key_is_cached(configure_auth, monkeypatch):
 
 def test_every_websocket_route_is_known():
     # Guards the parametrised tests below: a new WebSocket route must be authenticated too.
-    assert _websocket_paths() == ["/anpr/stream", "/ws", "/ws/telemetry"]
+    assert _websocket_paths() == ["/anpr/stream", "/ws", "/ws/telemetry", "/ws/voice"]
 
 
 @pytest.mark.parametrize("path", _websocket_paths())
@@ -146,6 +146,27 @@ def test_telemetry_websockets_accept_a_valid_header_key(configure_auth, monkeypa
     monkeypatch.setattr(api_main, "asyncio", _OneTickAsyncio())
     with client.websocket_connect(path, headers={"X-API-Key": WRITE_KEY}) as ws:
         assert ws.receive_json()
+
+
+def test_voice_console_needs_a_key_even_when_it_is_switched_on(configure_auth, monkeypatch):
+    # Without this the reject test above would pass because the console is off, not because of the key.
+    monkeypatch.setenv("VOICE_CONSOLE", "1")
+    client = configure_auth(MIA_API_KEY=WRITE_KEY)
+    with pytest.raises(WebSocketDisconnect) as closed:
+        with client.websocket_connect("/ws/voice"):
+            pass
+    assert closed.value.code == 1008
+    with client.websocket_connect("/ws/voice", headers={"X-API-Key": WRITE_KEY}) as ws:
+        ws.send_bytes(b"not an envelope")
+        assert ws.receive_bytes()  # answered with a status, so the session is live
+
+
+def test_voice_console_stays_off_for_a_valid_key_unless_enabled(configure_auth, monkeypatch):
+    monkeypatch.delenv("VOICE_CONSOLE", raising=False)
+    client = configure_auth(MIA_API_KEY=WRITE_KEY)
+    with pytest.raises(WebSocketDisconnect):
+        with client.websocket_connect("/ws/voice", headers={"X-API-Key": WRITE_KEY}):
+            pass
 
 
 def test_anpr_stream_accepts_a_valid_header_key(configure_auth):
