@@ -2,7 +2,7 @@
 FastAPI Server for Raspberry Pi
 Implements Phase 3.1: REST API Development
 """
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, model_validator
 from typing import List, Optional, Dict, Any
@@ -39,13 +39,13 @@ except ImportError:
 # Import authentication
 try:
     from api.auth import require_auth, optional_auth, require_scope, APIKeyInfo
+    from api.auth import enforce_api_auth, authenticate_websocket
     from api.auth.api_key import get_api_key_auth
     AUTH_AVAILABLE = True
 except ImportError as e:
-    AUTH_AVAILABLE = False
-    logger.warning("Authentication module not available")
-    AUTH_AVAILABLE = False
-    logger.warning("Authentication module not available")
+    # The auth module is part of the deployment; running without it would leave
+    # every route unauthenticated without anyone noticing, so fail at import.
+    raise RuntimeError("api.auth failed to import; refusing to start without authentication") from e
 
 try:
     from Mia.vehicle_codec import parse_citroen_telemetry
@@ -170,16 +170,33 @@ async def lifespan(app: FastAPI):
         logger.info("FastAPI server shutting down...")
 
 
-app = FastAPI(title="MIA Raspberry Pi API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="MIA Raspberry Pi API",
+    version="1.0.0",
+    lifespan=lifespan,
+    dependencies=[Depends(enforce_api_auth)],
+)
 app.include_router(ota_router)
 app.include_router(logs_router)
 app.include_router(anpr_router)
+# Browsers may only call the API from local/LAN origins by default. Set
+# MIA_CORS_ORIGINS to a comma-separated allow-list (or "*" to restore the old
+# wide-open behaviour). Native clients (Android) are not subject to CORS.
+_cors_env = os.environ.get("MIA_CORS_ORIGINS", "").strip()
+_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
+if _cors_origins == ["*"]:
+    _cors_kwargs = {"allow_origins": ["*"], "allow_credentials": False}
+else:
+    _cors_kwargs = {
+        "allow_origins": _cors_origins,
+        "allow_origin_regex": r"^https?://(localhost|127\.0\.0\.1|\[::1\]|[A-Za-z0-9-]+\.local)(:\d+)?$",
+        "allow_credentials": True,
+    }
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    **_cors_kwargs,
 )
 
 
@@ -925,6 +942,8 @@ async def websocket_endpoint(websocket: WebSocket):
     WebSocket endpoint for real-time telemetry streaming
     Phase 3.2: WebSocket Real-Time Telemetry
     """
+    if not await authenticate_websocket(websocket):
+        return
     await websocket.accept()
     active_connections.append(websocket)
     logger.info(f"WebSocket client connected. Total connections: {len(active_connections)}")
@@ -960,6 +979,8 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
     """
     WebSocket endpoint for telemetry and LED control - Android app compatible
     """
+    if not await authenticate_websocket(websocket):
+        return
     await websocket.accept()
     logger.info("Android telemetry WebSocket client connected")
 
