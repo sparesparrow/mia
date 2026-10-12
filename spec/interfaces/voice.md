@@ -86,6 +86,12 @@ Cues are shown and played but are never a state the machine rests in and emit no
 | `dictating` | end and save the note | discard it |
 | `warning` | nothing (the warning keeps playing) | drop the chain the warning paused |
 
+## Spoken answers
+
+In `window` and `confirming` the router bridge treats only a short reply (at most three words) as a yes or a
+no. A longer sentence that contains one, such as "okay so send it to Jana instead", is a correction and is
+routed as a new utterance. A no wins over a yes in the same short reply.
+
 ## Priority and queues
 
 A `SafetyWarning` interrupts dictation, listening, the window and speech. What it cut off is said again
@@ -112,7 +118,8 @@ run after the shared window. Message and call parts need an explicit yes. Forbid
 | `mia/voice/feedback` | 5561 | `voice_command_router` (FSM mode) | `{state, led, tone}` for the LED node |
 | `mia/voice/speaking` | 5563 | `tts_service` | `{event: started or finished, ok, timestamp, utterance_id}` |
 
-Audio capture mutes the microphone while an utterance plays and for a short tail after the last one. The
+Audio capture mutes the microphone while an utterance plays and for a short tail after the last one. The gate
+never stays closed more than 30 s after the last speaking event, so a lost `finished` cannot leave it muted. The
 router runs the machine only when `VOICE_FSM=1` (off by default). (REQ-VOICE-016)
 
 ## Envelope and channel (planned)

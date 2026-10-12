@@ -163,6 +163,7 @@ requirements:
   - Speaking started and finished events encode and decode on one topic, and garbage is rejected
   - While MIA speaks the gate turns microphone frames into silence of the same length and stays closed for a short tail afterwards
   - The speaking events carry the utterance id and the gate opens only when no utterance is still playing
+  - The gate reopens by itself if a finished event is lost, so the microphone cannot stay muted
   - TTS, audio capture and the router use the same speaking port
   implemented_in:
   - apps/rpi-backend/py-api/services/tts_service.py

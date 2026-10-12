@@ -313,3 +313,81 @@ def test_the_bridge_answers_each_batch_with_its_own_id(clock):
 
     done = [c for c in seen if isinstance(c, ExecutionDone)]
     assert [d.batch_id for d in done] == [1]
+
+
+# ── Review round 2 ────────────────────────────────────────────────────────
+
+
+def test_the_last_feedback_published_matches_the_state_after_a_certain_read(clock):
+    h = Harness(clock)
+    h.bridge.on_transcript("turn the lights on")
+    assert h.machine.state is State.SPEAKING
+    assert h.feedback[-1].state == h.machine.state.value
+    assert [fb.state for fb in h.feedback] == ["analysing", "executing", "speaking"]
+
+
+def test_the_last_feedback_matches_the_state_when_there_is_nothing_to_say(clock):
+    h = Harness(clock, execute_result="")
+    h.bridge.on_transcript("turn the lights on")
+    assert h.machine.state is State.IDLE
+    assert h.feedback[-1].state == "idle"
+
+
+def test_the_gate_reopens_when_a_finished_event_is_lost(clock):
+    gate = MicGate(clock, tail_sec=0.3, max_closed_sec=30.0)
+    gate.on_event(STARTED)  # TTS died before it could send "finished"
+    clock.now += 29
+    assert not gate.is_open
+    clock.now += 2
+    assert gate.is_open
+
+
+def test_a_long_run_of_utterances_does_not_trip_the_ceiling(clock):
+    gate = MicGate(clock, tail_sec=0.3, max_closed_sec=30.0)
+    for _ in range(4):
+        gate.on_event(STARTED)
+        clock.now += 20
+        assert (
+            not gate.is_open
+        )  # each event refreshes the ceiling, so 80 s in total never trips it
+        gate.on_event(FINISHED)
+    clock.now += 1
+    assert gate.is_open
+
+
+def test_a_long_sentence_with_a_yes_in_it_is_a_correction_not_a_confirmation(clock):
+    seen = []
+
+    def classify(text):
+        seen.append(text)
+        return ()
+
+    h = Harness(clock, classify=classify)
+    h.machine.handle(
+        Intent((Part("message.send", ActionClass.MESSAGE, {}, certain=False),))
+    )
+    h.tts_finished()
+    assert h.machine.state is State.CONFIRMING
+
+    h.bridge.on_transcript("okay so send it to Jana instead")
+    assert seen == ["okay so send it to Jana instead"]
+    assert h.executed == []
+
+
+def test_a_short_yes_still_confirms_and_a_short_no_still_denies(clock):
+    for words, expected_run in (("yes", True), ("yes please", True), ("no", False)):
+        h = Harness(clock, classify=lambda text: ())
+        h.machine.handle(
+            Intent((Part("message.send", ActionClass.MESSAGE, {}, certain=False),))
+        )
+        h.tts_finished()
+        h.bridge.on_transcript(words)
+        assert bool(h.executed) is expected_run, words
+
+
+def test_a_long_sentence_in_the_window_is_a_new_command_not_a_go_ahead(clock):
+    h = Harness(clock)
+    h.bridge.on_transcript("lights")
+    h.tts_finished()
+    h.bridge.on_transcript("okay actually turn the lights on now")
+    assert h.executed == ["turn lights on"]

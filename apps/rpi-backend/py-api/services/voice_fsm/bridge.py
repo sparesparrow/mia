@@ -17,6 +17,7 @@ from .types import (
     Abort,
     ActionClass,
     Cancel,
+    Command,
     Confirm,
     Deny,
     Effect,
@@ -71,6 +72,9 @@ DEFAULT_PHRASES: Dict[str, str] = {
 }
 
 logger = logging.getLogger(__name__)
+
+# The longest reply that still counts as a yes or a no.
+MAX_ANSWER_WORDS = 3
 
 Route = Optional[Tuple[str, Dict[str, Any], float]]
 
@@ -140,16 +144,19 @@ class RouterBridge:
         if not text:
             return
         state = self.machine.state
-        if state is State.CONFIRMING:
-            if _says(text, NO_WORDS):
-                return self._apply(self.machine.handle(Deny(Source.VOICE)))
-            if _says(text, YES_WORDS):
-                return self._apply(self.machine.handle(Confirm(Source.VOICE)))
-        elif state is State.WINDOW:
-            if _says(text, NO_WORDS):
-                return self._apply(self.machine.handle(Cancel(Source.VOICE)))
-            if _says(text, YES_WORDS):
-                return self._apply(self.machine.handle(GoNow(Source.VOICE)))
+        # Only a short reply is an answer to a question or to the window. A longer sentence that happens to
+        # contain "yes" or "no" is a correction ("okay so send it to Jana instead") and is routed anew.
+        if len(text.split()) <= MAX_ANSWER_WORDS:
+            if state is State.CONFIRMING:
+                if _says(text, NO_WORDS):
+                    return self._apply(self.machine.handle(Deny(Source.VOICE)))
+                if _says(text, YES_WORDS):
+                    return self._apply(self.machine.handle(Confirm(Source.VOICE)))
+            elif state is State.WINDOW:
+                if _says(text, NO_WORDS):
+                    return self._apply(self.machine.handle(Cancel(Source.VOICE)))
+                if _says(text, YES_WORDS):
+                    return self._apply(self.machine.handle(GoNow(Source.VOICE)))
         self._apply(self.machine.handle(Intent(self._classify(text), Source.VOICE)))
 
     def on_speaking(
@@ -164,24 +171,30 @@ class RouterBridge:
     # ── Effects ────────────────────────────────────────────────────────────
 
     def _apply(self, effects: List[Effect]) -> None:
+        # Publish everything this step produced before feeding anything back: a command fed back
+        # mid-list would make the machine emit newer effects that older ones in this list then overtake.
+        follow_up: List[Command] = []
         for effect in effects:
             if isinstance(effect, Speak):
                 text = render_phrase(effect.phrase, dict(effect.params), self._phrases)
                 if text:
                     self._publish_text(text, effect.id)
                 else:  # nothing to say, so nothing will announce that speech ended
-                    self._apply(self.machine.handle(SpeakingDone(effect.id)))
+                    follow_up.append(SpeakingDone(effect.id))
             elif isinstance(effect, Feedback):
                 self._publish_feedback(effect)
             elif isinstance(effect, Execute):
                 results = [self._execute(part) for part in effect.parts]
                 text = " ".join(r for r in results if r)
-                done = ExecutionDone(
-                    "raw" if text else "", {"text": text}, effect.batch_id
+                follow_up.append(
+                    ExecutionDone(
+                        "raw" if text else "", {"text": text}, effect.batch_id
+                    )
                 )
-                self._apply(self.machine.handle(done))
             elif isinstance(effect, Abort):
                 # The router's executor is synchronous, so the batch has already finished by now.
                 logger.info(
                     "Abort for batch %s ignored: already finished", effect.batch_id
                 )
+        for command in follow_up:
+            self._apply(self.machine.handle(command))

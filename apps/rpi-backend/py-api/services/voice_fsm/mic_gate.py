@@ -2,7 +2,8 @@
 
 Closed frames become silence of the same length rather than being dropped, so downstream timing,
 voice activity detection and the wake word keep working and simply hear nothing. A short tail after
-the speech ends covers the room echo.
+the speech ends covers the room echo. The gate never stays closed longer than ``max_closed_sec`` after
+the last event, so a lost "finished" (TTS restarted, a dropped PUB/SUB message) cannot leave the car deaf.
 """
 
 from __future__ import annotations
@@ -14,27 +15,41 @@ from .events import FINISHED, STARTED
 
 
 class MicGate:
-    def __init__(self, clock: Callable[[], float], tail_sec: float = 0.3) -> None:
+    def __init__(
+        self,
+        clock: Callable[[], float],
+        tail_sec: float = 0.3,
+        max_closed_sec: float = 30.0,
+    ) -> None:
         self._clock = clock
         self._tail_sec = tail_sec
+        self._max_closed_sec = max_closed_sec
         self._lock = threading.Lock()
         # TTS announces every utterance it starts, so the gate counts them: a finished event only opens it
         # when no other utterance is still playing.
         self._depth = 0
         self._open_at = 0.0
+        self._last_event = 0.0
 
     def on_event(self, event: str) -> None:
         with self._lock:
+            now = self._clock()
+            self._last_event = now
             if event == STARTED:
                 self._depth += 1
             elif event == FINISHED:
                 self._depth = max(0, self._depth - 1)
-                self._open_at = self._clock() + self._tail_sec
+                self._open_at = now + self._tail_sec
 
     @property
     def is_open(self) -> bool:
         with self._lock:
-            return self._depth == 0 and self._clock() >= self._open_at
+            now = self._clock()
+            if self._depth and now - self._last_event > self._max_closed_sec:
+                # A "finished" was lost: never stay deaf.
+                self._depth = 0
+                self._open_at = now
+            return self._depth == 0 and now >= self._open_at
 
     def apply(self, pcm: bytes) -> bytes:
         return pcm if self.is_open else b"\x00" * len(pcm)
