@@ -16,9 +16,10 @@ class OkHttpVoiceSocketFactory(client: OkHttpClient) : VoiceSocketFactory {
         .pingInterval(20, TimeUnit.SECONDS)
         .build()
 
-    override fun open(url: String, listener: VoiceSocketListener): VoiceSocket {
+    override fun open(url: String, headers: Map<String, String>, listener: VoiceSocketListener): VoiceSocket {
+        val request = Request.Builder().url(url).apply { headers.forEach { (name, value) -> header(name, value) } }.build()
         val socket = client.newWebSocket(
-            Request.Builder().url(url).build(),
+            request,
             object : WebSocketListener() {
                 override fun onOpen(webSocket: WebSocket, response: Response) = listener.onOpen()
 

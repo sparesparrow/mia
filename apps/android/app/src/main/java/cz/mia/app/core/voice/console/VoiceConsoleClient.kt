@@ -23,7 +23,7 @@ interface VoiceSocketListener {
 }
 
 fun interface VoiceSocketFactory {
-    fun open(url: String, listener: VoiceSocketListener): VoiceSocket
+    fun open(url: String, headers: Map<String, String>, listener: VoiceSocketListener): VoiceSocket
 }
 
 /**
@@ -35,6 +35,7 @@ fun interface VoiceSocketFactory {
  */
 class VoiceConsoleClient(
     private val url: String,
+    private val headers: Map<String, String>,
     private val factory: VoiceSocketFactory,
     private val scope: CoroutineScope,
     private val sessionId: String = "console-" + java.util.UUID.randomUUID().toString().take(8),
@@ -132,7 +133,7 @@ class VoiceConsoleClient(
                 if (synchronized(lock) { generation == mine }) lost(message)
             }
         }
-        val created = factory.open(url, listener)
+        val created = factory.open(url, headers, listener)
         val ready = synchronized(lock) {
             if (generation != mine) {
                 null

@@ -14,7 +14,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-private class FakeSocket(val url: String, val listener: VoiceSocketListener) : VoiceSocket {
+private class FakeSocket(val url: String, val headers: Map<String, String>, val listener: VoiceSocketListener) : VoiceSocket {
     val sent = mutableListOf<WireEnvelope>()
     var closed = false
     var accept = true
@@ -50,8 +50,8 @@ private class FakeFactory : VoiceSocketFactory {
     val sockets = mutableListOf<FakeSocket>()
     var openImmediately = false
 
-    override fun open(url: String, listener: VoiceSocketListener): VoiceSocket {
-        val socket = FakeSocket(url, listener)
+    override fun open(url: String, headers: Map<String, String>, listener: VoiceSocketListener): VoiceSocket {
+        val socket = FakeSocket(url, headers, listener)
         sockets += socket
         if (openImmediately) listener.onOpen()
         return socket
@@ -64,6 +64,7 @@ class VoiceConsoleClientTest {
     private val factory = FakeFactory()
     private val client = VoiceConsoleClient(
         url = "ws://pi:8000/ws/voice",
+        headers = mapOf("X-API-Key" to "test-key"),
         factory = factory,
         scope = scope,
         sessionId = "console-test",
@@ -86,6 +87,7 @@ class VoiceConsoleClientTest {
         assertEquals(ConnectionState.CONNECTING, client.state.value.connection)
         val socket = factory.sockets.single()
         assertEquals("ws://pi:8000/ws/voice", socket.url)
+        assertEquals(mapOf("X-API-Key" to "test-key"), socket.headers)
         socket.listener.onOpen()
         val open = socket.sent.single()
         assertEquals(WireOp.OPEN, open.op)
@@ -231,6 +233,13 @@ class VoiceConsoleClientTest {
         scope.runCurrent()
         assertEquals(1, factory.sockets.size)
         assertEquals(ConnectionState.DISCONNECTED, client.state.value.connection)
+    }
+
+    @Test
+    fun `the key goes in a header and an empty key sends no header`() {
+        assertEquals(mapOf("X-API-Key" to "abc"), VoiceConsoleViewModel.authHeaders("abc"))
+        assertEquals(emptyMap<String, String>(), VoiceConsoleViewModel.authHeaders(""))
+        assertEquals(emptyMap<String, String>(), VoiceConsoleViewModel.authHeaders("  "))
     }
 
     @Test

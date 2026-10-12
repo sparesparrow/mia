@@ -63,12 +63,16 @@ android {
             signingConfig signingConfigs.release
             buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(true)}\""
             buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(true)}\""
+            // A release APK never carries a key.
+            buildConfigField 'String', 'API_KEY', '""'
         }
         debug {
             // applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
             buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(false)}\""
             buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(false)}\""
+            // Sent as X-API-Key to a Pi that has keys configured (REQ-SEC-001); empty when none is set.
+            buildConfigField 'String', 'API_KEY', "\"${getConfiguredValue(['miaApiKey'], ['MIA_API_KEY'], '')}\""
         }
     }
 

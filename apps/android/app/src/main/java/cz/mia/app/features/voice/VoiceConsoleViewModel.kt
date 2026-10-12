@@ -2,6 +2,7 @@ package cz.mia.app.features.voice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.mia.app.BuildConfig
 import cz.mia.app.core.voice.console.ConsoleCommand
 import cz.mia.app.core.voice.console.OkHttpVoiceSocketFactory
 import cz.mia.app.core.voice.console.VoiceConsoleClient
@@ -19,6 +20,7 @@ class VoiceConsoleViewModel @Inject constructor(
 ) : ViewModel() {
     private val client = VoiceConsoleClient(
         url = consoleUrl(baseUrl),
+        headers = authHeaders(BuildConfig.API_KEY),
         factory = OkHttpVoiceSocketFactory(okHttpClient),
         scope = viewModelScope,
     )
@@ -39,5 +41,9 @@ class VoiceConsoleViewModel @Inject constructor(
 
     companion object {
         fun consoleUrl(wsBaseUrl: String): String = wsBaseUrl.trimEnd('/') + "/ws/voice"
+
+        /** The Pi wants the key in a header, never in the URL (REQ-SEC-001). No key, no header. */
+        fun authHeaders(apiKey: String): Map<String, String> =
+            if (apiKey.isBlank()) emptyMap() else mapOf("X-API-Key" to apiKey)
     }
 }
