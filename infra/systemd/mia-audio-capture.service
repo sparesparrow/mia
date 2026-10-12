@@ -16,6 +16,7 @@ StandardOutput=journal
 StandardError=journal
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 Environment=ZMQ_PUB_PORT=5558
+Environment=ZMQ_SPEAKING_PORT=5563
 # SupplementaryGroups=audio for ALSA access
 SupplementaryGroups=audio
 

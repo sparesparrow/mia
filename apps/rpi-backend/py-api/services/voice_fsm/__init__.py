@@ -1,0 +1,76 @@
+"""Voice state machine: the single source of commands and feedback (ADR-0011).
+
+Pure logic with an injected clock. It reads typed commands and returns effects; it does no
+audio, network or file I/O, so it runs identically in tests, on the Pi and in simulation.
+"""
+
+from .classes import ACTION_CLASSES, effective_class
+from .feedback import BUSY_TONE, FEEDBACK, Cue
+from .machine import VoiceMachine
+from .types import (
+    Abort,
+    ActionClass,
+    Cancel,
+    Command,
+    Confirm,
+    CueName,
+    Deny,
+    DictationText,
+    Effect,
+    EndDictation,
+    Execute,
+    ExecutionDone,
+    Feedback,
+    GoNow,
+    IncomingMessage,
+    Intent,
+    MuteMic,
+    Part,
+    SafetyWarning,
+    SetVerbosity,
+    Source,
+    Speak,
+    SpeakingDone,
+    State,
+    StateChanged,
+    StopSpeaking,
+    Verbosity,
+    Wake,
+)
+
+__all__ = [
+    "ACTION_CLASSES",
+    "Abort",
+    "ActionClass",
+    "BUSY_TONE",
+    "Cancel",
+    "Command",
+    "Confirm",
+    "Cue",
+    "CueName",
+    "Deny",
+    "DictationText",
+    "Effect",
+    "EndDictation",
+    "Execute",
+    "ExecutionDone",
+    "FEEDBACK",
+    "Feedback",
+    "GoNow",
+    "IncomingMessage",
+    "Intent",
+    "MuteMic",
+    "Part",
+    "SafetyWarning",
+    "SetVerbosity",
+    "Source",
+    "Speak",
+    "SpeakingDone",
+    "State",
+    "StateChanged",
+    "StopSpeaking",
+    "Verbosity",
+    "VoiceMachine",
+    "Wake",
+    "effective_class",
+]

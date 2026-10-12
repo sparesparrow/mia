@@ -12,6 +12,11 @@ Environment variables:
   API_BASE_URL        — FastAPI base URL (default: http://localhost:8000)
   ZMQ_TRANSCRIPT_PORT — SUB port for transcripts (default: 5560)
   ZMQ_PUB_PORT        — PUB port for voice responses (default: 5561)
+  VOICE_FSM           — "1" hands decisions to the voice state machine (ADR-0011, ADR-0012);
+                        default "0" keeps the confirmation loop below
+  ZMQ_WAKE_PORT       — SUB port for wake events, FSM mode only (default: 5559)
+  ZMQ_SPEAKING_PORT   — SUB port for TTS speaking events, FSM mode only (default: 5563)
+  VOICE_WINDOW_SEC    — confirmation window in FSM mode (default: 5)
 """
 
 import os
@@ -34,6 +39,9 @@ logger = logging.getLogger(__name__)
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
 ZMQ_TRANSCRIPT_PORT = int(os.environ.get("ZMQ_TRANSCRIPT_PORT", "5560"))
 ZMQ_PUB_PORT = int(os.environ.get("ZMQ_PUB_PORT", "5561"))
+ZMQ_WAKE_PORT = int(os.environ.get("ZMQ_WAKE_PORT", "5559"))
+ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
+VOICE_WINDOW_SEC = float(os.environ.get("VOICE_WINDOW_SEC", "5"))
 
 # ── Dependencies ──────────────────────────────────────────────────────────
 try:
@@ -315,7 +323,7 @@ def _execute_action(action: Dict[str, Any]) -> str:
     return str(api_result)
 
 
-def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[str]):
+def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[str], utterance_id: Optional[int] = None):
     """Publish a spoken response to the TTS service."""
     event = {
         "text": text,
@@ -323,6 +331,9 @@ def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[
         "route": route_endpoint,
         "timestamp": datetime.now().isoformat(),
     }
+    if utterance_id is not None:
+        # TTS echoes it in its speaking events so the state machine can match them to what it said.
+        event["utterance_id"] = utterance_id
     pub.send_multipart([
         b"mia/voice/response",
         json.dumps(event).encode()
@@ -330,8 +341,81 @@ def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[
     logger.info(f"Response: '{text[:80]}'")
 
 
+def main_fsm():
+    """Run the router as a thin shell around the voice state machine (ADR-0011).
+
+    Wake events, transcripts and TTS speaking events go in; speech and LED or tone cues come out.
+    The machine decides everything in between, including the five second window.
+    """
+    global running
+
+    from services.voice_fsm.bridge import RouterBridge, parts_from_route
+    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, encode_feedback
+    from services.voice_fsm.machine import VoiceMachine
+
+    def handle_signal(signum, frame):
+        global running
+        running = False
+
+    signal.signal(signal.SIGTERM, handle_signal)
+    signal.signal(signal.SIGINT, handle_signal)
+
+    logger.info("MIA Voice Command Router starting (voice state machine)")
+    ctx = zmq.Context()
+
+    def subscribe(port: int, topic: bytes):
+        sock = ctx.socket(zmq.SUB)
+        sock.connect(f"tcp://localhost:{port}")
+        sock.subscribe(topic)
+        return sock
+
+    transcripts = subscribe(ZMQ_TRANSCRIPT_PORT, b"mia/voice/transcript")
+    wakes = subscribe(ZMQ_WAKE_PORT, b"mia/voice/wake")
+    speaking = subscribe(ZMQ_SPEAKING_PORT, SPEAKING_TOPIC)
+
+    pub = ctx.socket(zmq.PUB)
+    pub.bind(f"tcp://*:{ZMQ_PUB_PORT}")
+
+    machine = VoiceMachine(time.monotonic, window_sec=VOICE_WINDOW_SEC)
+    bridge = RouterBridge(
+        machine,
+        classify=lambda text: parts_from_route(route_command(text), CONFIRM_THRESHOLD),
+        execute=lambda part: _execute_action(part.args["action"]),
+        publish_text=lambda text, utterance_id: _publish_response(pub, text, "", None, utterance_id),
+        publish_feedback=lambda fb: pub.send_multipart(list(encode_feedback(fb.state.value, fb.led, fb.tone))),
+    )
+
+    poller = zmq.Poller()
+    for sock in (transcripts, wakes, speaking):
+        poller.register(sock, zmq.POLLIN)
+
+    try:
+        while running:
+            ready = dict(poller.poll(100))
+            if wakes in ready:
+                wakes.recv_multipart()
+                bridge.on_wake()
+            if speaking in ready:
+                _, payload = speaking.recv_multipart()
+                decoded = decode_speaking_event(payload)
+                if decoded:
+                    bridge.on_speaking(*decoded)
+            if transcripts in ready:
+                _, msg_data = transcripts.recv_multipart()
+                bridge.on_transcript(json.loads(msg_data).get("text", ""))
+            bridge.poll()
+    finally:
+        for sock in (transcripts, wakes, speaking, pub):
+            sock.close()
+        ctx.term()
+        logger.info("Voice command router stopped")
+
+
 def main():
     global running
+
+    if os.environ.get("VOICE_FSM", "0") == "1":
+        return main_fsm()
 
     def handle_signal(signum, frame):
         global running
