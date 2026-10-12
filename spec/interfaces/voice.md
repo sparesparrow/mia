@@ -182,6 +182,20 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 
 No channel authenticates its peer. Bind listeners to loopback or a trusted link.
 
+### Peers
+
+| Peer | Status |
+|---|---|
+| Python voice service (`services/voice_fsm/wire`) | implemented |
+| Android console (`core/voice/console`, tab "Voice") | implemented; connects to `/ws/voice` with OkHttp, shows the LED, tone, machine state, transcript, spoken phrases and the event queue, and sends the button commands and the verbosity setting |
+| ESP32 feedback node | planned (REQ-HW-009); it will use `voice_enums.h` and the same envelope |
+
+The Android app compiles the Kotlin bindings that `schemas/generate.py` writes to
+`apps/android/app/src/main/generated/kotlin/MiaVoice` (runtime `flatbuffers-java` 2.0.8, the same version as `flatc`).
+`tests/fixtures/voice/envelopes.json` holds envelopes as the Python codec writes them
+(`tools/schemas/gen_voice_fixtures.py`). The Python tests check the file against the codec, and the Android unit
+tests decode the same bytes and re-encode the console commands to the same bytes.
+
 ## Interaction log record (planned)
 
 Fields stored per interaction (REQ-VOICE-021, ADR-0014): time, chain id, transcript, speech recognition

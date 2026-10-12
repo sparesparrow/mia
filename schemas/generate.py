@@ -139,6 +139,36 @@ def generate_cpp_bindings(schema_files, output_dir):
         print(f"✗ Error generating C++ bindings: {e}")
         return False
 
+def generate_kotlin_bindings(schema_files, output_dir):
+    """Generate Kotlin bindings (needs the flatbuffers-java runtime of the same version)."""
+    flatc = find_flatc()
+    if not flatc:
+        print("Error: flatc compiler not found. Install with: sudo apt install flatbuffers-compiler")
+        return False
+
+    schema_paths = _normalize_schema_files(schema_files)
+    missing = [str(schema_path) for schema_path in schema_paths if not schema_path.exists()]
+    if missing:
+        print(f"Error: Schema file not found: {', '.join(missing)}")
+        return False
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    cmd = [flatc, '--kotlin', '-o', str(output_path), *[str(p) for p in schema_paths]]
+    print(f"  Generating kotlin: {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(output_path))
+    if result.returncode != 0:
+        print(f"  -> FAILED kotlin: {result.stderr}")
+        return False
+    print(f"  -> kotlin bindings generated in {output_path}")
+    return True
+
+
+def kotlin_out_dir(project_root):
+    """Generated Kotlin bindings live inside the Android module so its Docker build context has them."""
+    return project_root / "apps" / "android" / "app" / "src" / "main" / "generated" / "kotlin"
+
+
 def python_out_dir(project_root):
     """Generated Python bindings (package ``Mia``) live under this directory."""
     return project_root / "schemas" / "generated" / "python"
@@ -149,13 +179,14 @@ def cpp_out_dir(project_root):
     return project_root / "schemas" / "generated" / "cpp"
 
 
-def generate_all(project_root, gen_python=True, gen_cpp=True):
+def generate_all(project_root, gen_python=True, gen_cpp=True, gen_kotlin=True):
     """Generate bindings from all known FlatBuffers schemas in the project.
 
     Schema sources and their outputs:
     schemas/vehicle_telemetry.fbs + schemas/mia.fbs -> schemas/generated/python/Mia/*.py, schemas/generated/cpp/*.h
     schemas/vehicle_telemetry.fbs + schemas/vehicle.fbs -> canonical vehicle bindings with wire wrapper validation
-    schemas/voice.fbs -> schemas/generated/python/MiaVoice/*.py, schemas/generated/cpp/voice_generated.h
+    schemas/voice.fbs -> schemas/generated/python/MiaVoice/*.py, schemas/generated/cpp/voice_generated.h,
+                         apps/android/app/src/main/generated/kotlin/MiaVoice/*.kt
     cpp-audio webgrab.fbs -> webgrab_generated.h (C++ only)
     """
     success = True
@@ -200,6 +231,10 @@ def generate_all(project_root, gen_python=True, gen_cpp=True):
         if gen_cpp:
             print("\n[voice] Generating C++ bindings from voice.fbs ...")
             if not generate_cpp_bindings(voice_schema, cpp_out_dir(project_root)):
+                success = False
+        if gen_kotlin:
+            print("\n[voice] Generating Kotlin bindings from voice.fbs ...")
+            if not generate_kotlin_bindings(voice_schema, kotlin_out_dir(project_root)):
                 success = False
     else:
         print(f"⚠ Schema not found: {voice_schema}")
@@ -312,6 +347,8 @@ def main():
                        help='Generate C++ bindings')
     parser.add_argument('--no-cpp', action='store_true', default=False,
                        help='Skip C++ bindings')
+    parser.add_argument('--no-kotlin', action='store_true', default=False,
+                       help='Skip Kotlin bindings (voice.fbs only)')
     parser.add_argument('--all', action='store_true', default=False,
                        help='Generate from all known schemas (mia.fbs, vehicle.fbs, webgrab.fbs)')
     parser.add_argument('--output-dir', default='..',
@@ -338,7 +375,7 @@ def main():
     print("-" * 50)
 
     if args.all:
-        success = generate_all(project_root, gen_python=gen_python, gen_cpp=gen_cpp)
+        success = generate_all(project_root, gen_python=gen_python, gen_cpp=gen_cpp, gen_kotlin=not args.no_kotlin)
     else:
         schema_file = script_dir / args.schema
         print(f"Schema: {schema_file}")

@@ -367,3 +367,59 @@ def test_the_interface_spec_names_the_commands_a_console_may_send():
     assert set(re.findall(r"`(\w+)`", row.split("|")[1])) == {
         c.__name__ for c in PEER_COMMANDS
     }
+
+
+# ── Fixtures shared with the Android unit tests ───────────────────────────
+
+
+def _load_fixture_tool():
+    spec = importlib.util.spec_from_file_location(
+        "gen_voice_fixtures", REPO_ROOT / "tools" / "schemas" / "gen_voice_fixtures.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_committed_voice_fixtures_are_what_the_codec_encodes_today():
+    tool = _load_fixture_tool()
+    assert tool.OUT.read_text(encoding="utf-8") == tool.render()
+
+
+def _snake_case(name):
+    import re
+
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+
+
+def test_every_committed_voice_fixture_decodes_to_what_it_claims():
+    import json
+
+    cases = json.loads(_load_fixture_tool().OUT.read_text(encoding="utf-8"))["cases"]
+    assert {c["type"] for c in cases} == {"open", "command", "event", "reply"}
+    for case in cases:
+        envelope = decode_envelope(bytes.fromhex(case["hex"]))
+        assert (envelope.session_id, envelope.seq) == (
+            case["session"],
+            case["seq"],
+        ), case["name"]
+        if case["type"] == "open":
+            assert envelope.op == Op.OPEN
+        elif case["type"] == "reply":
+            assert (
+                envelope.status == Status[case["status"].upper()]
+                and not envelope.payload
+            )
+        elif case["type"] == "command":
+            command = decode_command(envelope.payload)
+            assert command.source is Source.CONSOLE
+            if isinstance(command, SetVerbosity):
+                assert case["command"] == f"verbosity_{command.level.value}"
+            else:
+                assert case["command"] == _snake_case(type(command).__name__)
+        else:
+            event = decode_event(envelope.payload)
+            expect = case["event"]
+            assert _snake_case(type(event).__name__) == {"spoken": "speak"}.get(
+                expect["kind"], expect["kind"]
+            )
