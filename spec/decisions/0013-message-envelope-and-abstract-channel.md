@@ -42,7 +42,18 @@ own format, mostly JSON.
 - Tests use an in-memory channel; hardware uses the real one, with identical messages.
 - The envelope is a new layer above `schemas/mia.fbs`; existing messages are unchanged.
 
+### What the first implementation settled
+- The envelope carries a protocol `version` (1) that is rejected when it differs, a `status` for replies and a
+  sender-chosen `seq` that the reply echoes.
+- A console may send only button-equivalent commands and the verbosity setting. Results, finished-speech
+  reports, warnings, phone messages and typed intents enter the machine from inside the Pi. The channel sets
+  the command `source`; the peer cannot claim `car` or `voice`.
+- The WebSocket endpoint is off by default (`VOICE_CONSOLE=1`) and, like the other sockets of the API, has
+  no authentication yet. Authenticating peers is open.
+- Phrase parameters are text, integer, real, flag, or a list of text; other types are refused rather than guessed.
+
 ## Sources
+
 `spec/decisions/0003-zeromq-control-plane-and-telemetry.md`,
 `spec/decisions/0004-flatbuffers-wire-format.md`,
 `spec/decisions/0009-canonical-vehicle-telemetry-envelope.md`, `schemas/mia.fbs`,

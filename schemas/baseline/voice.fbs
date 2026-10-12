@@ -1,0 +1,134 @@
+// MIA voice envelope and voice service messages (ADR-0013, ADR-0004).
+//
+// One envelope carries every message between the voice state machine and its peers (Android
+// console, ESP32 feedback node, tests). The envelope routes by `service` and does not interpret
+// `payload`; the payload is a nested `VoiceMessage` that belongs to the voice service.
+//
+// Evolution rules (ADR-0004): explicit field ids, add fields only at the end, never reuse an id,
+// never reorder or renumber enum values. Enum names in this file are the CamelCase form of the
+// string values in services/voice_fsm (State.IDLE = "idle" is `Idle`); a test checks both sides.
+
+namespace MiaVoice;
+
+file_identifier "MIAV";
+
+// ── Envelope ──────────────────────────────────────────────────────────────
+
+enum ServiceType : ubyte {
+  Unknown = 0,  // a missing field reads as Unknown and is answered with UnknownService
+  Voice = 1
+}
+
+enum Op : ubyte {
+  Data = 0,
+  Open = 1,   // create the session named by session_id
+  Close = 2   // end it
+}
+
+enum Status : ubyte {
+  Ok = 0,
+  UnknownService = 1,
+  UnsupportedVersion = 2,
+  Malformed = 3,
+  NotPermitted = 4,
+  UnknownSession = 5
+}
+
+table Envelope {
+  version:ubyte (id: 0);       // 0 reads as "absent" and is rejected; the current version is 1
+  service:ServiceType (id: 1);
+  session_id:string (id: 2);
+  op:Op (id: 3);
+  status:Status (id: 4);       // set on replies; Ok on requests
+  seq:uint (id: 5);            // chosen by the sender, echoed in replies
+  payload:[ubyte] (id: 6, nested_flatbuffer: "VoiceMessage");
+}
+
+// ── Voice service: shared enums ───────────────────────────────────────────
+
+enum Source : ubyte { Voice = 0, Button = 1, Console = 2, Car = 3, Rule = 4 }
+
+enum ActionClass : ubyte { Read = 0, Comfort = 1, Note = 2, Message = 3, Forbidden = 4 }
+
+enum Verbosity : ubyte { Quiet = 0, Normal = 1, Chatty = 2 }
+
+// Resting states of the machine.
+enum State : ubyte {
+  Idle = 0, Listening = 1, Executing = 2, Window = 3, Confirming = 4,
+  Speaking = 5, Dictating = 6, Warning = 7
+}
+
+// Transient cues: shown and played, never a state the machine rests in.
+enum CueName : ubyte { NoCue = 0, WakeCaught = 1, Analysing = 2, Cancelled = 3 }
+
+enum Led : ubyte {
+  Off = 0, Blue = 1, Green = 2, YellowCountdown = 3, YellowSolid = 4, Purple = 5,
+  Red = 6, OrangeFlash = 7, WhiteBrief = 8, BluePulse = 9
+}
+
+enum Tone : ubyte {
+  NoTone = 0, ConfirmBeep = 1, DoubleBeep = 2, QuestionTone = 3, StartEndBeep = 4,
+  WarningTone = 5, RisingBeep = 6, FallingBeep = 7, BusyBeep = 8
+}
+
+// ── Voice service: building blocks ────────────────────────────────────────
+
+enum ArgKind : ubyte { Text = 0, Int = 1, Real = 2, Flag = 3, TextList = 4 }
+
+// One named value of a part or a phrase. The field that matches `kind` carries the value.
+table Arg {
+  key:string (id: 0);
+  kind:ArgKind (id: 1);
+  text:string (id: 2);
+  int_value:long (id: 3);
+  real_value:double (id: 4);
+  texts:[string] (id: 5);   // TextList: for example the names of the parts a phrase announces
+}
+
+table Part {
+  name:string (id: 0);
+  action_class:ActionClass (id: 1);
+  args:[Arg] (id: 2);
+  certain:bool = true (id: 3);
+}
+
+// ── Voice service: commands (peer to machine) ─────────────────────────────
+
+table Wake { source:Source (id: 0); }
+table Intent { parts:[Part] (id: 0); source:Source (id: 1); }
+table GoNow { source:Source (id: 0); }
+table Cancel { source:Source (id: 0); }
+table Confirm { source:Source (id: 0); }
+table Deny { source:Source (id: 0); }
+table EndDictation { source:Source (id: 0); }
+table DictationText { text:string (id: 0); }
+table SpeakingDone { utterance_id:uint (id: 0); }  // 0 = the oldest outstanding utterance
+table ExecutionDone { phrase:string (id: 0); params:[Arg] (id: 1); batch_id:uint (id: 2); }  // 0 = oldest
+table SafetyWarning { phrase:string (id: 0); params:[Arg] (id: 1); }
+table IncomingMessage { sender:string (id: 0); text:string (id: 1); }
+table SetVerbosity { level:Verbosity (id: 0); source:Source (id: 1); }
+
+// ── Voice service: events (machine to peer) ───────────────────────────────
+
+table StateChanged { previous:State (id: 0); current:State (id: 1); }
+
+// The LED colour and tone for a resting state, or for a transient cue when `cue` is not NoCue.
+table FeedbackCue { state:State (id: 0); cue:CueName (id: 1); led:Led (id: 2); tone:Tone (id: 3); }
+
+// MIA says a phrase: a key plus parameters; the persona turns it into words (ADR-0015).
+table Spoken { phrase:string (id: 0); params:[Arg] (id: 1); priority:ubyte (id: 2); utterance_id:uint (id: 3); }
+
+// What the user said, as recognised.
+table Transcript { text:string (id: 0); utterance_id:uint (id: 1); }
+
+union VoiceBody {
+  Wake, Intent, GoNow, Cancel, Confirm, Deny, EndDictation, DictationText, SpeakingDone,
+  ExecutionDone, SafetyWarning, IncomingMessage, SetVerbosity,
+  StateChanged, FeedbackCue, Spoken, Transcript
+}
+
+table VoiceMessage {
+  body:VoiceBody (id: 1);  // the union type takes id 0
+}
+
+root_type Envelope;

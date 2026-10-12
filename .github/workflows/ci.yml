@@ -21,7 +21,7 @@ on:
       - 'tests/**'
       - 'tools/**'
   pull_request:
-    branches: [main, 'roadmap/**']
+    branches: [main, 'roadmap/**', 'claude/**']
     paths:
       - '.github/workflows/ci.yml'
       - '.tool-versions'
@@ -88,6 +88,7 @@ jobs:
               - 'apps/rpi-backend/cpp-audio/core/webgrab.fbs'
               - 'schemas/**'
               - 'schemas/generate.py'
+              - 'tools/schemas/**'
               - 'tools/scripts/generate-schemas.sh'
             cpp:
               - '.github/workflows/ci.yml'
@@ -135,6 +136,8 @@ jobs:
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/mia.fbs
           flatc --python -o /tmp/fb-validate schemas/vehicle_telemetry.fbs schemas/vehicle.fbs
           flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate apps/rpi-backend/cpp-audio/core/webgrab.fbs
+          flatc --python -o /tmp/fb-validate schemas/voice.fbs
+          flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-validate schemas/voice.fbs
       - name: Detect schema drift
         run: |
           mkdir -p /tmp/fb-drift
@@ -157,6 +160,15 @@ jobs:
           if [ "$drifted" -eq 1 ]; then
             echo "::warning::Schema drift detected — run 'python schemas/generate.py --all' and commit the result"
           fi
+      - name: Detect voice schema drift (fails the job)
+        run: |
+          # voice.fbs is new and has no history of stale bindings, so unlike the step above this one is strict.
+          mkdir -p /tmp/fb-voice
+          flatc --python -o /tmp/fb-voice schemas/voice.fbs
+          flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-voice schemas/voice.fbs
+          diff -r -x __pycache__ /tmp/fb-voice/MiaVoice schemas/generated/python/MiaVoice
+          diff /tmp/fb-voice/voice_generated.h schemas/generated/cpp/voice_generated.h
+          python3 tools/schemas/extract_enums.py --check
       - name: Check schema and contract coordination
         if: github.event_name == 'pull_request'
         run: |

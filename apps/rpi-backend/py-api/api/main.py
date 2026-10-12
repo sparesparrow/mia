@@ -955,6 +955,14 @@ async def websocket_endpoint(websocket: WebSocket):
             active_connections.remove(websocket)
 
 
+@app.websocket("/ws/voice")
+async def voice_websocket_endpoint(websocket: WebSocket):
+    """Voice console: FlatBuffers envelopes in binary frames (off unless VOICE_CONSOLE=1)."""
+    from api import voice_console
+
+    await voice_console.serve(websocket)
+
+
 @app.websocket("/ws/telemetry")
 async def telemetry_websocket_endpoint(websocket: WebSocket):
     """

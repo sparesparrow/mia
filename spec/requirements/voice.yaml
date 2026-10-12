@@ -154,7 +154,7 @@ requirements:
   implemented_in: []
   decisions:
   - ADR-0011
-  not_proven: Not yet implemented; the physical button path (CD-changer emulator) is only a plan
+  not_proven: Not yet implemented as a requirement. The machine gives the same effects for a command from a voice, button or console source, also when it arrives in an envelope (tests under REQ-NET-008), but no adapter turns a physical or Android button press into that command, and the physical path (CD-changer emulator) is only a plan
 - id: REQ-VOICE-016
   title: Microphone muted while speaking
   statement: The microphone shall be muted while MIA speaks, and the TTS service shall announce when speech has finished.

@@ -83,7 +83,7 @@ def generate_python_bindings(schema_files, output_dir):
         *[str(schema_path) for schema_path in schema_paths],
     ]
 
-    lang_name = language.lstrip('-')
+    lang_name = 'python'
     print(f"  Generating {lang_name}: {' '.join(cmd)}")
 
     try:
@@ -155,6 +155,7 @@ def generate_all(project_root, gen_python=True, gen_cpp=True):
     Schema sources and their outputs:
     schemas/vehicle_telemetry.fbs + schemas/mia.fbs -> schemas/generated/python/Mia/*.py, schemas/generated/cpp/*.h
     schemas/vehicle_telemetry.fbs + schemas/vehicle.fbs -> canonical vehicle bindings with wire wrapper validation
+    schemas/voice.fbs -> schemas/generated/python/MiaVoice/*.py, schemas/generated/cpp/voice_generated.h
     cpp-audio webgrab.fbs -> webgrab_generated.h (C++ only)
     """
     success = True
@@ -188,7 +189,22 @@ def generate_all(project_root, gen_python=True, gen_cpp=True):
     else:
         print(f"⚠ Schema not found: {vehicle_schema} or {vehicle_shared_schema}")
 
-    # 3. C++ protocol schema (webgrab.fbs) — C++ only
+    # 3. Voice envelope and voice service (ADR-0013); standalone, namespace MiaVoice
+    voice_schema = project_root / "schemas" / "voice.fbs"
+    if voice_schema.exists():
+        schemas.append(("voice (voice.fbs)", voice_schema))
+        if gen_python:
+            print("\n[voice] Generating Python bindings from voice.fbs ...")
+            if not generate_python_bindings(voice_schema, python_out_dir(project_root)):
+                success = False
+        if gen_cpp:
+            print("\n[voice] Generating C++ bindings from voice.fbs ...")
+            if not generate_cpp_bindings(voice_schema, cpp_out_dir(project_root)):
+                success = False
+    else:
+        print(f"⚠ Schema not found: {voice_schema}")
+
+    # 4. C++ protocol schema (webgrab.fbs) — C++ only
     webgrab_schema = project_root / "apps" / "rpi-backend" / "cpp-audio" / "core" / "webgrab.fbs"
     if webgrab_schema.exists():
         schemas.append(("protocol (webgrab.fbs)", webgrab_schema))
