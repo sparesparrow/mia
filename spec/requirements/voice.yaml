@@ -83,3 +83,107 @@ requirements:
   - apps/rpi-backend/py-api/services/voice_command_router.py
   services:
   - mia-voice-router
+  decisions:
+  - ADR-0012
+  notes: ADR-0012 changes what silence means, by action class; the statement is reworded when REQ-VOICE-012 is implemented.
+- id: REQ-VOICE-011
+  title: Voice state machine
+  statement: One state machine shall own the voice session, consume typed commands from every input and emit the action, speech, LED and tone effects.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0011
+  not_proven: Not yet implemented
+- id: REQ-VOICE-012
+  title: Confirmation window by action class
+  statement: Uncertain parts of a chain in the read, comfort and note classes shall be announced and run after one shared 5 s window unless cancelled or corrected, while certain parts run immediately.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0012
+  not_proven: Not yet implemented
+- id: REQ-VOICE-013
+  title: Explicit confirmation for messages and calls
+  statement: A message or phone call shall never be sent or placed on silence and shall require an explicit spoken or button confirmation.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0012
+  safety: A mis-recognised transcript cannot send a message or place a call.
+  not_proven: Not yet implemented
+- id: REQ-VOICE-014
+  title: Refuse vehicle writes in a chain
+  statement: A voice chain shall refuse any part that writes to a control unit, such as clearing fault codes or starting a DPF regeneration, and shall say so.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0006
+  - ADR-0012
+  safety: Voice cannot cause an ECU write.
+  not_proven: Not yet implemented
+- id: REQ-VOICE-015
+  title: Buttons produce the same commands as voice
+  statement: A go-now and a cancel button, simulated or physical, shall produce the same typed commands as the equivalent spoken command, and the cancel button shall work without speech recognition.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0011
+  not_proven: Not yet implemented; the physical button path (CD-changer emulator) is only a plan
+- id: REQ-VOICE-016
+  title: Microphone muted while speaking
+  statement: The microphone shall be muted while MIA speaks, and the TTS service shall announce when speech has finished.
+  evidence: planned
+  implemented_in: []
+  not_proven: Not yet implemented
+- id: REQ-VOICE-017
+  title: Verbosity modes
+  statement: MIA shall offer quiet, normal and chatty modes, switchable by voice and by button and remembered across drives.
+  evidence: planned
+  implemented_in: []
+  not_proven: Not yet implemented
+- id: REQ-VOICE-018
+  title: Proactive announcements with priority
+  statement: MIA shall announce safety warnings, ignition and parking summaries and incoming phone messages by verbosity, with a warning interrupting dictation or the window and a message waiting in a queue.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0014
+  not_proven: Not yet implemented; there is no source of phone messages on the Pi
+- id: REQ-VOICE-019
+  title: Personas
+  statement: MIA shall offer the personas Holly and Rimmer as data packages that change tone, voice and warning style but never the content of a warning.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0015
+  not_proven: Not yet implemented
+- id: REQ-VOICE-020
+  title: Explicit-conjunction splitter with shadow analysis
+  statement: A rule-based splitter shall split a transcript only at explicit conjunctions and decide what runs, while a language-model analysis runs in parallel only to be stored for later comparison.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0012
+  - ADR-0014
+  not_proven: Not yet implemented
+- id: REQ-VOICE-021
+  title: Local voice interaction log
+  statement: Each interaction shall be stored locally on the Pi with its transcript, both analyses, what ran, the user's reaction and a short audio clip, and deleted after a configured retention.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0014
+  safety: Clips never leave the Pi and are never committed to the repository.
+  not_proven: Not yet implemented
+- id: REQ-VOICE-022
+  title: Standing rules by voice
+  statement: The user shall be able to set, list and delete persistent rules such as "tell me when the coolant passes 100".
+  evidence: planned
+  implemented_in: []
+  not_proven: Not yet implemented
+- id: REQ-VOICE-023
+  title: Czech speech recognition
+  statement: The Pi shall recognise Czech commands including inflected forms and English technical terms.
+  evidence: blocked
+  implemented_in: []
+  notes: Blocked until real recordings exist to measure model and wake word choices.

@@ -106,3 +106,12 @@ requirements:
   implemented_in:
   - apps/esp32/elm327-emulator/src/main.cpp
   notes: Not built by CI.
+- id: REQ-HW-009
+  title: Voice feedback LED and tone on ESP32
+  statement: An ESP32 with a dedicated RGB LED and a buzzer shall show the voice state as a colour and play its tone when the state machine emits a feedback cue.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0011
+  - ADR-0013
+  not_proven: Not yet implemented; needs bench validation

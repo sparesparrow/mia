@@ -150,3 +150,20 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/data/repository/SessionRepository.kt
   decisions:
   - ADR-0005
+- id: REQ-AND-016
+  title: Voice console
+  statement: The app shall act as a console for the voice state machine, simulating the steering-wheel buttons and showing the LED, the captured command text, MIA's spoken text and the event queue.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0011
+  - ADR-0013
+  not_proven: Not yet implemented
+- id: REQ-AND-017
+  title: Persona and verbosity setting
+  statement: The app shall let the user choose the persona and the verbosity mode.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0015
+  not_proven: Not yet implemented

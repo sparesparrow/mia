@@ -84,3 +84,20 @@ requirements:
   services:
   - mia-api
   notes: apps/rpi-backend/shared/registry/ duplicates this code; tracked as a follow-up.
+- id: REQ-NET-008
+  title: Message envelope
+  statement: Voice and console messages shall travel in one FlatBuffers envelope that routes by service type, carries a version and session, and nests a service payload.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0004
+  - ADR-0013
+  not_proven: Not yet implemented
+- id: REQ-NET-009
+  title: Abstract channel
+  statement: Messages shall be sent and received through a channel interface with ZeroMQ, WebSocket, BLE, serial and in-memory implementations, with length framing only on stream transports.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0013
+  not_proven: Not yet implemented

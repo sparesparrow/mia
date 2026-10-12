@@ -16,6 +16,11 @@ beyond their status line.
 | [0008](0008-audi-a4-8h-primary-citroen-secondary.md) | Audi A4 Cabriolet 8H is the primary vehicle; Citroën C4 is secondary on 5557 | Accepted |
 | [0009](0009-canonical-vehicle-telemetry-envelope.md) | Canonical vehicle telemetry envelope v1 | Accepted |
 | [0010](0010-evidence-based-requirement-status.md) | Requirement status is evidence-based | Accepted |
+| [0011](0011-voice-state-machine-single-source.md) | One voice state machine is the single source of commands and feedback | Proposed |
+| [0012](0012-voice-confirmation-window-and-action-classes.md) | Uncertain voice commands run after a 5 s window, by action class | Proposed |
+| [0013](0013-message-envelope-and-abstract-channel.md) | Message envelope and an abstract channel for voice and console traffic | Proposed |
+| [0014](0014-voice-data-and-privacy.md) | Voice data stays local, with a bounded retention | Proposed |
+| [0015](0015-personas-are-data.md) | Personas are data, not code | Proposed |
 
 ## Template
 
