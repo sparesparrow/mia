@@ -18,21 +18,23 @@ class MicGate:
         self._clock = clock
         self._tail_sec = tail_sec
         self._lock = threading.Lock()
-        self._speaking = False
+        # TTS announces every utterance it starts, so the gate counts them: a finished event only opens it
+        # when no other utterance is still playing.
+        self._depth = 0
         self._open_at = 0.0
 
     def on_event(self, event: str) -> None:
         with self._lock:
             if event == STARTED:
-                self._speaking = True
+                self._depth += 1
             elif event == FINISHED:
-                self._speaking = False
+                self._depth = max(0, self._depth - 1)
                 self._open_at = self._clock() + self._tail_sec
 
     @property
     def is_open(self) -> bool:
         with self._lock:
-            return not self._speaking and self._clock() >= self._open_at
+            return self._depth == 0 and self._clock() >= self._open_at
 
     def apply(self, pcm: bytes) -> bytes:
         return pcm if self.is_open else b"\x00" * len(pcm)

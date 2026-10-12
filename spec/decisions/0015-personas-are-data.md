@@ -15,8 +15,10 @@ prevent real help.
   and a warning style. Selecting a persona changes none of the logic.
 - Templates are chosen offline. A language model may add colour only in the chatty mode and
   only when online.
-- **Warnings keep their content in every persona.** The value, unit and recommendation are
-  identical; only the framing sentence changes.
+- **Warnings keep their content in every persona, and the content comes first.** Every warning
+  starts with a shared safety fragment (value, unit, recommendation) that no persona can change or
+  delay. A persona may add one short framing sentence after it, not before, and may skip it while the
+  car is moving. A test checks that every persona's warning template starts with the shared fragment.
 - Lines are written for MIA. Quotes, scripts and dubbing from the show are not copied, and no
   voice clone of an actor is made. Audio comes from stock voices of the chosen provider.
 - Switching works by button, by the voice command "change persona" and in the Android app. The

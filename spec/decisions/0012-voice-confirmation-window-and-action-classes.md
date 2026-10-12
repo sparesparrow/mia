@@ -24,8 +24,16 @@ Commands fall into classes; the class decides what silence means.
 - Certain parts of a chain run immediately; uncertain parts share **one** window that starts
   when MIA finishes announcing.
 - Two buttons: **go now** shortens the window, **cancel** aborts the chain. Cancel must not
-  depend on speech recognition.
+  depend on speech recognition. Go now during the announcement runs the part at once; during a
+  confirmation question it skips the question and a message still needs a second, explicit press.
+  During a warning, cancel drops the chain the warning paused and the warning keeps playing.
 - The window needs a "speech finished" signal from TTS and a clock that can be faked in tests.
+- **Interrupted announcements are repeated.** If a warning (or anything else) cuts off the
+  announcement or the confirmation question, it is said again before the window or the confirmation
+  starts. A part never runs, and a message is never confirmed, on a question the driver did not hear.
+- **The class comes from a fixed, reviewed table keyed by action name** (`voice_fsm/classes.py`). A
+  label on a part can only make it stricter, and an unknown action is forbidden (fail closed). The
+  guarantee that a message never runs on silence therefore does not depend on the splitter.
 
 ## Consequences
 - REQ-VOICE-010 is reworded: ambiguity no longer always means cancel-on-silence; it depends on

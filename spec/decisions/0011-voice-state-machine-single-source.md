@@ -22,7 +22,10 @@ a spoken command would each need their own path to the same action.
 - The machine is pure logic with an injected clock, so it is tested without audio, a car or
   a sleep (ADR-0007).
 - Long-running work, such as a chain waiting in its confirmation window, is a job with status,
-  abort and "go now" operations.
+  abort and "go now" operations. Executor batches and utterances carry ids, so the machine drops the
+  result of an aborted batch and a stale "finished" from a stopped utterance.
+- Resting states and transient cues are different things: `wake_caught`, `analysing` and `cancelled`
+  are shown on the LED and played as tones but the machine never rests in them.
 
 ## Consequences
 - The router stops owning confirmation state; it hands intents to the machine.

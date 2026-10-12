@@ -13,9 +13,11 @@ full also discloses the sender's text to everyone in the car.
 ## Decision
 - Transcripts, analysis results and short audio clips are stored **only on the Pi**, in a path
   outside the repository, with a configured retention period after which they are deleted.
+  Defaults: **30 days** for transcripts and analyses, **7 days** for audio clips. A shorter value is
+  allowed; a longer one needs an explicit setting.
 - The language-model analysis runs in the background and its output is stored; it does not
-  decide what runs. Sending a transcript to a cloud model is the one online step and is
-  optional (off when offline).
+  decide what runs. Sending a transcript to a cloud model is **opt-in and off by default**, and the
+  interaction log records which interactions were sent.
 - In the chatty verbosity mode incoming phone messages are read aloud in full, even with a
   passenger present. The owner accepted this risk; the setting can be narrowed later without
   changing the rest.

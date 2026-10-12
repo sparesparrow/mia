@@ -4,13 +4,16 @@ Pure logic with an injected clock. It reads typed commands and returns effects; 
 audio, network or file I/O, so it runs identically in tests, on the Pi and in simulation.
 """
 
-from .feedback import FEEDBACK, Cue
+from .classes import ACTION_CLASSES, effective_class
+from .feedback import BUSY_TONE, FEEDBACK, Cue
 from .machine import VoiceMachine
 from .types import (
+    Abort,
     ActionClass,
     Cancel,
     Command,
     Confirm,
+    CueName,
     Deny,
     DictationText,
     Effect,
@@ -23,6 +26,7 @@ from .types import (
     Intent,
     MuteMic,
     Part,
+    SafetyWarning,
     SetVerbosity,
     Source,
     Speak,
@@ -32,15 +36,18 @@ from .types import (
     StopSpeaking,
     Verbosity,
     Wake,
-    Warning,
 )
 
 __all__ = [
+    "ACTION_CLASSES",
+    "Abort",
     "ActionClass",
+    "BUSY_TONE",
     "Cancel",
     "Command",
     "Confirm",
     "Cue",
+    "CueName",
     "Deny",
     "DictationText",
     "Effect",
@@ -54,6 +61,7 @@ __all__ = [
     "Intent",
     "MuteMic",
     "Part",
+    "SafetyWarning",
     "SetVerbosity",
     "Source",
     "Speak",
@@ -64,5 +72,5 @@ __all__ = [
     "Verbosity",
     "VoiceMachine",
     "Wake",
-    "Warning",
+    "effective_class",
 ]

@@ -4,20 +4,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Mapping, Tuple, Union
+from typing import Any, Mapping, Optional, Tuple, Union
 
 
 class State(str, Enum):
+    """Resting states: the machine stays in one of these until a command or the clock moves it."""
+
     IDLE = "idle"
-    WAKE_CAUGHT = "wake_caught"
     LISTENING = "listening"
-    ANALYSING = "analysing"
     EXECUTING = "executing"
     WINDOW = "window"
     CONFIRMING = "confirming"
     SPEAKING = "speaking"
     DICTATING = "dictating"
     WARNING = "warning"
+
+
+class CueName(str, Enum):
+    """Transient cues: shown on the LED and played as a tone, never a state the machine rests in."""
+
+    WAKE_CAUGHT = "wake_caught"
+    ANALYSING = "analysing"
     CANCELLED = "cancelled"
 
 
@@ -51,11 +58,15 @@ SAVE_NOTE = "note.save"
 
 @dataclass(frozen=True)
 class Part:
-    """One action inside a chain. ``certain`` is decided by the splitter, not by the machine."""
+    """One action inside a chain.
+
+    ``certain`` comes from the splitter. The class is checked against the machine's fixed table, so a
+    wrong label can only make a part stricter, never looser (see classes.py).
+    """
 
     name: str
     action_class: ActionClass
-    args: Mapping[str, Any] = field(default_factory=dict)
+    args: Mapping[str, Any] = field(default_factory=dict, hash=False)
     certain: bool = True
 
 
@@ -105,21 +116,27 @@ class DictationText:
 
 @dataclass(frozen=True)
 class SpeakingDone:
-    pass
+    """One utterance finished. ``id`` echoes ``Speak.id``; None means the oldest outstanding one."""
+
+    id: Optional[int] = None
 
 
 @dataclass(frozen=True)
 class ExecutionDone:
-    """The executor finished a batch; ``phrase`` is what MIA should say about it, if anything."""
+    """An executor batch finished. ``batch_id`` echoes ``Execute.batch_id``; None means the oldest.
+
+    ``phrase`` is what MIA should say about the result, if anything.
+    """
 
     phrase: str = ""
-    params: Mapping[str, Any] = field(default_factory=dict)
+    params: Mapping[str, Any] = field(default_factory=dict, hash=False)
+    batch_id: Optional[int] = None
 
 
 @dataclass(frozen=True)
-class Warning:  # noqa: A001 - mirrors the domain word
+class SafetyWarning:
     phrase: str
-    params: Mapping[str, Any] = field(default_factory=dict)
+    params: Mapping[str, Any] = field(default_factory=dict, hash=False)
 
 
 @dataclass(frozen=True)
@@ -145,7 +162,7 @@ Command = Union[
     DictationText,
     SpeakingDone,
     ExecutionDone,
-    Warning,
+    SafetyWarning,
     IncomingMessage,
     SetVerbosity,
 ]
@@ -156,16 +173,31 @@ Command = Union[
 
 @dataclass(frozen=True)
 class Execute:
+    """Run these parts. The executor answers with ``ExecutionDone(batch_id=...)``."""
+
     parts: Tuple[Part, ...]
+    batch_id: int = 0
+
+
+@dataclass(frozen=True)
+class Abort:
+    """Stop the batch if it is still running; its ``ExecutionDone`` will be ignored."""
+
+    batch_id: int
 
 
 @dataclass(frozen=True)
 class Speak:
-    """Speech is a phrase key plus parameters; the persona turns it into words (ADR-0015)."""
+    """Speech is a phrase key plus parameters; the persona turns it into words (ADR-0015).
+
+    Utterances play first in, first out and each one ends with exactly one ``SpeakingDone(id)``,
+    none after ``StopSpeaking``.
+    """
 
     phrase: str
-    params: Mapping[str, Any] = field(default_factory=dict)
+    params: Mapping[str, Any] = field(default_factory=dict, hash=False)
     priority: int = 0  # 1 = warning
+    id: int = 0
 
 
 @dataclass(frozen=True)
@@ -180,7 +212,9 @@ class MuteMic:
 
 @dataclass(frozen=True)
 class Feedback:
-    state: State
+    """LED colour and tone for a state or a transient cue, named by its string value."""
+
+    state: str
     led: str
     tone: str
 
@@ -191,4 +225,4 @@ class StateChanged:
     current: State
 
 
-Effect = Union[Execute, Speak, StopSpeaking, MuteMic, Feedback, StateChanged]
+Effect = Union[Execute, Abort, Speak, StopSpeaking, MuteMic, Feedback, StateChanged]

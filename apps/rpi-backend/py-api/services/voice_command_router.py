@@ -323,7 +323,7 @@ def _execute_action(action: Dict[str, Any]) -> str:
     return str(api_result)
 
 
-def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[str]):
+def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[str], utterance_id: Optional[int] = None):
     """Publish a spoken response to the TTS service."""
     event = {
         "text": text,
@@ -331,6 +331,9 @@ def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[
         "route": route_endpoint,
         "timestamp": datetime.now().isoformat(),
     }
+    if utterance_id is not None:
+        # TTS echoes it in its speaking events so the state machine can match them to what it said.
+        event["utterance_id"] = utterance_id
     pub.send_multipart([
         b"mia/voice/response",
         json.dumps(event).encode()
@@ -347,7 +350,7 @@ def main_fsm():
     global running
 
     from services.voice_fsm.bridge import RouterBridge, parts_from_route
-    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking, encode_feedback
+    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, encode_feedback
     from services.voice_fsm.machine import VoiceMachine
 
     def handle_signal(signum, frame):
@@ -378,7 +381,7 @@ def main_fsm():
         machine,
         classify=lambda text: parts_from_route(route_command(text), CONFIRM_THRESHOLD),
         execute=lambda part: _execute_action(part.args["action"]),
-        publish_text=lambda text: _publish_response(pub, text, "", None),
+        publish_text=lambda text, utterance_id: _publish_response(pub, text, "", None, utterance_id),
         publish_feedback=lambda fb: pub.send_multipart(list(encode_feedback(fb.state.value, fb.led, fb.tone))),
     )
 
@@ -394,7 +397,9 @@ def main_fsm():
                 bridge.on_wake()
             if speaking in ready:
                 _, payload = speaking.recv_multipart()
-                bridge.on_speaking(decode_speaking(payload))
+                decoded = decode_speaking_event(payload)
+                if decoded:
+                    bridge.on_speaking(*decoded)
             if transcripts in ready:
                 _, msg_data = transcripts.recv_multipart()
                 bridge.on_transcript(json.loads(msg_data).get("text", ""))

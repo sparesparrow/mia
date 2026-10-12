@@ -7,12 +7,14 @@ fakes and a fake clock, with no ZeroMQ and no audio.
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 from .events import FINISHED
 from .machine import VoiceMachine
 from .types import (
+    Abort,
     ActionClass,
     Cancel,
     Confirm,
@@ -68,6 +70,8 @@ DEFAULT_PHRASES: Dict[str, str] = {
     "verbosity.set": "Okay, {level}.",
 }
 
+logger = logging.getLogger(__name__)
+
 Route = Optional[Tuple[str, Dict[str, Any], float]]
 
 
@@ -115,7 +119,7 @@ class RouterBridge:
         machine: VoiceMachine,
         classify: Callable[[str], Tuple[Part, ...]],
         execute: Callable[[Part], str],
-        publish_text: Callable[[str], None],
+        publish_text: Callable[[str, int], None],
         publish_feedback: Callable[[Feedback], None] = lambda fb: None,
         phrases: Optional[Dict[str, str]] = None,
     ) -> None:
@@ -148,9 +152,11 @@ class RouterBridge:
                 return self._apply(self.machine.handle(GoNow(Source.VOICE)))
         self._apply(self.machine.handle(Intent(self._classify(text), Source.VOICE)))
 
-    def on_speaking(self, event: Optional[str]) -> None:
+    def on_speaking(
+        self, event: Optional[str], utterance_id: Optional[int] = None
+    ) -> None:
         if event == FINISHED:
-            self._apply(self.machine.handle(SpeakingDone()))
+            self._apply(self.machine.handle(SpeakingDone(utterance_id)))
 
     def poll(self) -> None:
         self._apply(self.machine.tick())
@@ -162,16 +168,20 @@ class RouterBridge:
             if isinstance(effect, Speak):
                 text = render_phrase(effect.phrase, dict(effect.params), self._phrases)
                 if text:
-                    self._publish_text(text)
+                    self._publish_text(text, effect.id)
                 else:  # nothing to say, so nothing will announce that speech ended
-                    self._apply(self.machine.handle(SpeakingDone()))
+                    self._apply(self.machine.handle(SpeakingDone(effect.id)))
             elif isinstance(effect, Feedback):
                 self._publish_feedback(effect)
             elif isinstance(effect, Execute):
                 results = [self._execute(part) for part in effect.parts]
                 text = " ".join(r for r in results if r)
-                self._apply(
-                    self.machine.handle(
-                        ExecutionDone("raw" if text else "", {"text": text})
-                    )
+                done = ExecutionDone(
+                    "raw" if text else "", {"text": text}, effect.batch_id
+                )
+                self._apply(self.machine.handle(done))
+            elif isinstance(effect, Abort):
+                # The router's executor is synchronous, so the batch has already finished by now.
+                logger.info(
+                    "Abort for batch %s ignored: already finished", effect.batch_id
                 )

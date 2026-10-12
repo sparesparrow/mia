@@ -14,6 +14,7 @@ from services.voice_fsm.events import (
     FINISHED,
     STARTED,
     decode_speaking,
+    decode_speaking_event,
     encode_feedback,
     encode_speaking,
 )
@@ -38,6 +39,7 @@ class Harness:
     def __init__(self, clock, classify=None, execute_result="Lights turned on."):
         self.clock = clock
         self.spoken = []
+        self.ids = []
         self.feedback = []
         self.executed = []
         self.machine = VoiceMachine(clock)
@@ -55,12 +57,16 @@ class Harness:
                 )
             ),
             execute=execute,
-            publish_text=self.spoken.append,
+            publish_text=self._publish,
             publish_feedback=self.feedback.append,
         )
 
-    def tts_finished(self):
-        self.bridge.on_speaking(FINISHED)
+    def _publish(self, text, utterance_id):
+        self.spoken.append(text)
+        self.ids.append(utterance_id)
+
+    def tts_finished(self, utterance_id=None):
+        self.bridge.on_speaking(FINISHED, utterance_id)
 
 
 @pytest.fixture
@@ -77,6 +83,13 @@ def test_speaking_events_round_trip():
         assert topic == b"mia/voice/speaking"
         assert decode_speaking(payload) == event
         assert json.loads(payload)["timestamp"] == 1.5
+
+
+def test_the_utterance_id_travels_with_the_speaking_event():
+    _, payload = encode_speaking(FINISHED, utterance_id=7)
+    assert decode_speaking_event(payload) == (FINISHED, 7)
+    _, payload = encode_speaking(STARTED)
+    assert decode_speaking_event(payload) == (STARTED, None)
 
 
 def test_garbage_is_not_a_speaking_event():
@@ -119,6 +132,18 @@ def test_the_gate_stays_closed_for_a_short_tail_after_the_speech(clock):
     clock.now += 0.29
     assert not gate.is_open
     clock.now += 0.02
+    assert gate.is_open
+
+
+def test_a_finished_event_opens_the_gate_only_when_no_utterance_is_still_playing(clock):
+    gate = MicGate(clock, tail_sec=0.3)
+    gate.on_event(STARTED)
+    gate.on_event(STARTED)  # a second utterance begins
+    gate.on_event(FINISHED)
+    clock.now += 1
+    assert not gate.is_open
+    gate.on_event(FINISHED)
+    clock.now += 1
     assert gate.is_open
 
 
@@ -193,13 +218,23 @@ def test_an_empty_result_does_not_leave_the_machine_waiting_for_speech(clock):
     assert h.machine.state is State.IDLE
 
 
+def test_the_utterance_id_is_sent_to_tts_and_a_stale_done_is_ignored(clock):
+    h = Harness(clock)
+    h.bridge.on_transcript("lights")  # announced, then waits for the speech to end
+    assert h.ids == [1]
+    h.tts_finished(utterance_id=99)  # not outstanding
+    assert h.machine.state is State.SPEAKING
+    h.tts_finished(utterance_id=1)
+    assert h.machine.state is State.WINDOW
+
+
 def test_every_state_change_is_published_as_feedback(clock):
     h = Harness(clock)
     h.bridge.on_wake()
     h.bridge.on_transcript("turn the lights on")
     states = [fb.state for fb in h.feedback]
-    assert states[:3] == [State.WAKE_CAUGHT, State.LISTENING, State.ANALYSING]
-    assert State.EXECUTING in states
+    assert states[:3] == ["wake_caught", "listening", "analysing"]
+    assert "executing" in states
 
 
 def test_a_wake_event_reaches_the_machine(clock):
@@ -261,3 +296,20 @@ def test_tts_audio_capture_and_router_agree_on_the_speaking_port():
 
 def test_the_state_machine_is_off_by_default_on_the_pi():
     assert _env("mia-voice-router.service").get("VOICE_FSM") == "0"
+
+
+def test_the_bridge_answers_each_batch_with_its_own_id(clock):
+    h = Harness(clock)
+    seen = []
+    original = h.machine.handle
+
+    def spy(command):
+        seen.append(command)
+        return original(command)
+
+    h.machine.handle = spy
+    h.bridge.on_transcript("turn the lights on")
+    from services.voice_fsm import ExecutionDone
+
+    done = [c for c in seen if isinstance(c, ExecutionDone)]
+    assert [d.batch_id for d in done] == [1]

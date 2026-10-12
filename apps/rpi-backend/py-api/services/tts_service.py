@@ -170,9 +170,9 @@ def main():
     pub.bind(f"tcp://*:{ZMQ_SPEAKING_PORT}")
     logger.info(f"Publishing mia/voice/speaking on port {ZMQ_SPEAKING_PORT}")
 
-    def announce(event: str, ok: bool = True) -> None:
+    def announce(event: str, ok: bool = True, utterance_id=None) -> None:
         if encode_speaking is not None:
-            pub.send_multipart(list(encode_speaking(event, ok)))
+            pub.send_multipart(list(encode_speaking(event, ok, utterance_id=utterance_id)))
 
     poller = zmq.Poller()
     poller.register(sub, zmq.POLLIN)
@@ -192,13 +192,14 @@ def main():
 
             logger.info(f"Speaking: '{text[:60]}{'...' if len(text) > 60 else ''}'")
             start = time.time()
-            announce(STARTED)
+            utterance_id = msg.get("utterance_id")
+            announce(STARTED, utterance_id=utterance_id)
             success = False
             try:
                 success = speak(text)
             finally:
                 # Always announce the end, or the state machine would wait for it forever.
-                announce(FINISHED, success)
+                announce(FINISHED, success, utterance_id)
             elapsed = int((time.time() - start) * 1000)
 
             if success:
