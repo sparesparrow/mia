@@ -61,6 +61,19 @@ flag and a nested payload for the named service. Request, response and unsolicit
 three message kinds. A channel offers read, write and is-open; stream transports add a length
 prefix. (REQ-NET-008, REQ-NET-009)
 
+## ZeroMQ topics on the Pi
+
+| Topic | Port | Publisher | Content |
+|---|---|---|---|
+| `mia/voice/wake` | 5559 | `wake_word` | wake word detected |
+| `mia/voice/transcript` | 5560 | `stt_service` | recognised text and language |
+| `mia/voice/response` | 5561 | `voice_command_router` | text for TTS |
+| `mia/voice/feedback` | 5561 | `voice_command_router` (FSM mode) | `{state, led, tone}` for the LED node |
+| `mia/voice/speaking` | 5563 | `tts_service` | `{event: started or finished, ok, timestamp}` |
+
+Audio capture mutes the microphone between `started` and a short tail after `finished`. The router
+runs the machine only when `VOICE_FSM=1` (off by default). (REQ-VOICE-016)
+
 ## Events the console and the LED node receive
 
 | Event | Carries |

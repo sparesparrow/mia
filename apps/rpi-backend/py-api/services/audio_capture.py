@@ -10,6 +10,7 @@ Audio format: 16kHz, 16-bit mono PCM (optimal for speech recognition).
 Environment variables:
   AUDIO_DEVICE_INDEX  — ALSA device index (default: auto-detect USB mic)
   ZMQ_PUB_PORT        — PUB socket port (default: 5558)
+  ZMQ_SPEAKING_PORT   — TTS "speaking" events; the microphone is muted while MIA talks (default: 5563)
   CHUNK_DURATION_MS   — audio chunk size in ms (default: 30)
   SAMPLE_RATE         — sample rate in Hz (default: 16000)
 """
@@ -21,6 +22,7 @@ import time
 import signal
 import logging
 import struct
+import threading
 from datetime import datetime
 
 logging.basicConfig(
@@ -36,6 +38,7 @@ SAMPLE_WIDTH = 2  # 16-bit = 2 bytes
 CHUNK_DURATION_MS = int(os.environ.get("CHUNK_DURATION_MS", "30"))
 CHUNK_FRAMES = int(SAMPLE_RATE * CHUNK_DURATION_MS / 1000)
 ZMQ_PUB_PORT = int(os.environ.get("ZMQ_PUB_PORT", "5558"))
+ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
 DEVICE_INDEX = os.environ.get("AUDIO_DEVICE_INDEX", None)
 if DEVICE_INDEX is not None:
     DEVICE_INDEX = int(DEVICE_INDEX)
@@ -61,7 +64,39 @@ try:
 except ImportError:
     PYAUDIO_AVAILABLE = False
 
+try:
+    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking
+    from services.voice_fsm.mic_gate import MicGate
+except ImportError:  # run without the services package on the path: no muting
+    MicGate = None
+
 running = True
+
+# Closed while MIA speaks (REQ-VOICE-016). None when the gate could not be imported.
+mic_gate = MicGate(time.monotonic) if MicGate is not None else None
+
+
+def gated(pcm: bytes) -> bytes:
+    """Silence the frame while MIA is speaking so it does not hear itself."""
+    return mic_gate.apply(pcm) if mic_gate is not None else pcm
+
+
+def listen_for_speaking(ctx):
+    """Follow TTS speaking events and drive the gate (runs in a daemon thread)."""
+    sub = ctx.socket(zmq.SUB)
+    sub.connect(f"tcp://localhost:{ZMQ_SPEAKING_PORT}")
+    sub.subscribe(SPEAKING_TOPIC)
+    poller = zmq.Poller()
+    poller.register(sub, zmq.POLLIN)
+    try:
+        while running:
+            if sub in dict(poller.poll(200)):
+                _, payload = sub.recv_multipart()
+                event = decode_speaking(payload)
+                if event:
+                    mic_gate.on_event(event)
+    finally:
+        sub.close()
 
 
 def find_usb_microphone():
@@ -104,7 +139,7 @@ def capture_with_sounddevice(pub_socket):
             raise sd.CallbackAbort()
         # indata is numpy float32 array, convert to int16 bytes
         import numpy as np
-        pcm_data = (indata[:, 0] * 32767).astype(np.int16).tobytes()
+        pcm_data = gated((indata[:, 0] * 32767).astype(np.int16).tobytes())
         try:
             pub_socket.send_multipart([
                 b"mia/audio/raw",
@@ -145,7 +180,7 @@ def capture_with_pyaudio(pub_socket):
 
     try:
         while running:
-            pcm_data = stream.read(CHUNK_FRAMES, exception_on_overflow=False)
+            pcm_data = gated(stream.read(CHUNK_FRAMES, exception_on_overflow=False))
             try:
                 pub_socket.send_multipart([
                     b"mia/audio/raw",
@@ -198,6 +233,10 @@ def main():
     pub = ctx.socket(zmq.PUB)
     pub.bind(f"tcp://*:{ZMQ_PUB_PORT}")
     logger.info(f"ZMQ PUB bound on tcp://*:{ZMQ_PUB_PORT}")
+
+    if mic_gate is not None:
+        threading.Thread(target=listen_for_speaking, args=(ctx,), daemon=True).start()
+        logger.info(f"Microphone muted while MIA speaks (events on port {ZMQ_SPEAKING_PORT})")
 
     try:
         if SOUNDDEVICE_AVAILABLE:

@@ -10,6 +10,7 @@ Environment variables:
   PIPER_MODEL         — piper voice model (default: en_US-amy-medium)
   PIPER_DATA_DIR      — directory for piper models (default: /opt/mia/data/piper)
   ZMQ_RESPONSE_PORT   — SUB port for response text (default: 5561)
+  ZMQ_SPEAKING_PORT   — PUB port for "speaking started/finished" events (default: 5563)
   AUDIO_OUTPUT_DEVICE — ALSA device for playback (default: auto)
 """
 
@@ -33,6 +34,7 @@ logger = logging.getLogger(__name__)
 PIPER_MODEL = os.environ.get("PIPER_MODEL", "en_US-amy-medium")
 PIPER_DATA_DIR = os.environ.get("PIPER_DATA_DIR", "/opt/mia/data/piper")
 ZMQ_RESPONSE_PORT = int(os.environ.get("ZMQ_RESPONSE_PORT", "5561"))
+ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
 AUDIO_OUTPUT = os.environ.get("AUDIO_OUTPUT_DEVICE", "")
 
 # ── Dependencies ──────────────────────────────────────────────────────────
@@ -40,6 +42,11 @@ try:
     import zmq
 except ImportError:
     logger.error("pyzmq required"); sys.exit(1)
+
+try:
+    from services.voice_fsm.events import FINISHED, STARTED, encode_speaking
+except ImportError:  # run without the services package on the path: no events, speech still works
+    STARTED, FINISHED, encode_speaking = "started", "finished", None
 
 # Check for piper-tts binary
 PIPER_BIN = None
@@ -159,6 +166,14 @@ def main():
     sub.subscribe(b"mia/voice/response")
     logger.info(f"Subscribed to mia/voice/response on port {ZMQ_RESPONSE_PORT}")
 
+    pub = ctx.socket(zmq.PUB)
+    pub.bind(f"tcp://*:{ZMQ_SPEAKING_PORT}")
+    logger.info(f"Publishing mia/voice/speaking on port {ZMQ_SPEAKING_PORT}")
+
+    def announce(event: str, ok: bool = True) -> None:
+        if encode_speaking is not None:
+            pub.send_multipart(list(encode_speaking(event, ok)))
+
     poller = zmq.Poller()
     poller.register(sub, zmq.POLLIN)
 
@@ -177,7 +192,13 @@ def main():
 
             logger.info(f"Speaking: '{text[:60]}{'...' if len(text) > 60 else ''}'")
             start = time.time()
-            success = speak(text)
+            announce(STARTED)
+            success = False
+            try:
+                success = speak(text)
+            finally:
+                # Always announce the end, or the state machine would wait for it forever.
+                announce(FINISHED, success)
             elapsed = int((time.time() - start) * 1000)
 
             if success:
@@ -187,6 +208,7 @@ def main():
 
     finally:
         sub.close()
+        pub.close()
         ctx.term()
         logger.info("TTS service stopped")
 

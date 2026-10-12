@@ -94,11 +94,13 @@ requirements:
   - Commands from every source go through one machine and yield execute, speak, mute, LED and tone effects
   - Every state has exactly one LED and tone cue in one table
   - A warning interrupts dictation and the window; an incoming message waits until the machine is free
+  - The router bridge turns wake events, transcripts and TTS events into commands and publishes speech and feedback
   implemented_in:
   - apps/rpi-backend/py-api/services/voice_fsm
+  - apps/rpi-backend/py-api/services/voice_command_router.py
   decisions:
   - ADR-0011
-  not_proven: The machine is pure logic with a fake clock. It is not yet wired to the router, TTS, audio capture or the LED node.
+  not_proven: The machine and the router bridge run with fakes and a fake clock. The router runs the machine only with VOICE_FSM=1, which is off by default and has not run on a Pi. No LED node consumes the feedback yet.
 - id: REQ-VOICE-012
   title: Confirmation window by action class
   statement: Uncertain parts of a chain in the read, comfort and note classes shall be announced and run after one shared 5 s window unless cancelled or corrected, while certain parts run immediately.
@@ -111,7 +113,7 @@ requirements:
   - apps/rpi-backend/py-api/services/voice_fsm
   decisions:
   - ADR-0012
-  not_proven: Pure logic with a fake clock. The splitter that decides which parts are certain, and the TTS event that ends speech, are not implemented.
+  not_proven: Fake clock and fakes only. The router marks a part certain from its keyword confidence; the explicit-conjunction splitter does not exist, and the window has not run against real TTS timing.
 - id: REQ-VOICE-013
   title: Explicit confirmation for messages and calls
   statement: A message or phone call shall never be sent or placed on silence and shall require an explicit spoken or button confirmation.
@@ -149,9 +151,20 @@ requirements:
 - id: REQ-VOICE-016
   title: Microphone muted while speaking
   statement: The microphone shall be muted while MIA speaks, and the TTS service shall announce when speech has finished.
-  evidence: planned
-  implemented_in: []
-  not_proven: Not yet implemented
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Speaking started and finished events encode and decode on one topic, and garbage is rejected
+  - While MIA speaks the gate turns microphone frames into silence of the same length and stays closed for a short tail afterwards
+  - TTS, audio capture and the router use the same speaking port
+  implemented_in:
+  - apps/rpi-backend/py-api/services/tts_service.py
+  - apps/rpi-backend/py-api/services/audio_capture.py
+  - apps/rpi-backend/py-api/services/voice_fsm/events.py
+  - apps/rpi-backend/py-api/services/voice_fsm/mic_gate.py
+  services:
+  - mia-tts
+  - mia-audio-capture
+  not_proven: Tested with fakes and a fake clock. No real microphone, speaker or room echo was involved, the tail length is a guess, and TTS cannot yet stop speech mid-sentence.
 - id: REQ-VOICE-017
   title: Verbosity modes
   statement: MIA shall offer quiet, normal and chatty modes, switchable by voice and by button and remembered across drives.
