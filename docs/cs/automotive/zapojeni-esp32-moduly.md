@@ -114,7 +114,7 @@ Jsou to dva různé režimy a firmware musí vědět, ve kterém je:
 | Režim | Co dělá | Jak sestavit | Drát |
 | --- | --- | --- | --- |
 | Pasivní odposlech (výchozí) | jen poslouchá, na sběrnici nic neposílá | `idf.py build` | TXD **nezapojený** |
-| Aktivní OBD dotazy | posílá rámce na `0x7DF`, čte odpovědi z `0x7E8` | `idf.py build -DMIA_ALLOW_TX=1` (výslovný souhlas) | TXD zapojený |
+| Aktivní OBD dotazy | posílá rámce na `0x7DF`, čte odpovědi z `0x7E8` | `idf.py -B build-tx -DMIA_ALLOW_TX=1 build` (výslovný souhlas, vlastní adresář) | TXD zapojený |
 
 !!! warning "Softwarový přepínač sám o sobě není záruka"
     `TWAI_MODE_LISTEN_ONLY` je hodnota v konfiguračním registru — chyba v kódu ji přepíše.
@@ -279,7 +279,7 @@ komponenty, listen-only by ji umlčel):
 
 ```bash
 idf.py build                                  # pasivní odposlech (výchozí, ADR-0006)
-idf.py build -DMIA_ALLOW_TX=1                 # aktivní režim, posílá dotazy
+idf.py -B build-tx -DMIA_ALLOW_TX=1 build      # aktivní režim, posílá dotazy (jen v build-tx)
 ```
 
 V odposlechové variantě se ovladač instaluje v `TWAI_MODE_LISTEN_ONLY` a `ai_servis_obd_read_pid()`

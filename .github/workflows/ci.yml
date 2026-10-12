@@ -410,10 +410,13 @@ jobs:
           esp_idf_version: v5.5
           target: esp32
           path: apps/esp32/firmware-obd
-          command: idf.py build -DMIA_ALLOW_TX=1 && xtensa-esp32-elf-nm build/ai-servis-obd.elf | grep -qw twai_transmit
+          # Separate build dir: build/ (and the uploaded artifact) must stay the passive image.
+          command: idf.py -B build-tx -DMIA_ALLOW_TX=1 build && xtensa-esp32-elf-nm build-tx/ai-servis-obd.elf | grep -qw twai_transmit
       - name: Stage firmware
         run: |
           mkdir -p dist/esp32-obd
+          # Only build/ is shipped: it holds the passive image checked above, the
+          # MIA_ALLOW_TX image stays in build-tx/ (ADR-0006).
           find apps/esp32/firmware-obd/build -maxdepth 1 -type f \
             \( -name '*.bin' -o -name '*.elf' \) \
             -exec cp -v {} dist/esp32-obd/ \; || true

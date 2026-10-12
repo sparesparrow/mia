@@ -22,7 +22,9 @@ that software can overwrite.
 - Tests prove the software half (no `twai_transmit` in the listen-only ELF; UDS off by
   default). The physical half needs a recorded evidence file in `spec/evidence/`.
 - Features that need to transmit (OBD polling) exist only in the non-passive build, which must be
-  requested explicitly (`idf.py build -DMIA_ALLOW_TX=1`). A plain `idf.py build` is passive.
+  requested explicitly (`idf.py -B build-tx -DMIA_ALLOW_TX=1 build`). A plain `idf.py build` is passive, and the
+  build refuses an active configuration outside a `*-tx` build directory, so a cached flag cannot
+  leave `build/` transmitting.
 
 ## Sources
 `TODO.md` "Audi/VAG read-only pilot" guardrails, `docs/automotive/audi-a4-8h-interface-integration.md`,
