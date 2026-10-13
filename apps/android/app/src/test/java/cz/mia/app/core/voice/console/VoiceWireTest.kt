@@ -11,6 +11,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 
+private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
+
 class VoiceWireTest {
     private val fixtures = VoiceFixtures.load()
 
@@ -41,7 +43,7 @@ class VoiceWireTest {
                 VoiceWire.SERVICE_VOICE, fixture.session, WireOp.DATA, null, fixture.seq,
                 VoiceWire.encodeCommand(commandFor(fixture.command)),
             )
-            assertArrayEquals(fixture.name, fixture.bytes, VoiceWire.encodeEnvelope(envelope))
+            assertEquals(fixture.name, fixture.bytes.toHex(), VoiceWire.encodeEnvelope(envelope).toHex())
         }
     }
 

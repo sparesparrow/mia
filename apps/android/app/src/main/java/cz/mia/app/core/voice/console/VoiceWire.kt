@@ -125,6 +125,7 @@ object VoiceWire {
                 throw VoiceWireException("not a MIAV envelope")
             }
             val e = Envelope.getRootAsEnvelope(bb)
+            checkCount("payload", e.payloadLength, data.size)
             val payload = ByteArray(e.payloadLength) { i -> e.payload(i).toByte() }
             return WireEnvelope(
                 service = e.service.toInt(),
@@ -153,8 +154,13 @@ object VoiceWire {
             is ConsoleCommand.Confirm -> VoiceBody.Confirm to Confirm.createConfirm(b, console)
             is ConsoleCommand.Deny -> VoiceBody.Deny to Deny.createDeny(b, console)
             is ConsoleCommand.EndDictation -> VoiceBody.EndDictation to EndDictation.createEndDictation(b, console)
-            is ConsoleCommand.SetVerbosity ->
-                VoiceBody.SetVerbosity to SetVerbosity.createSetVerbosity(b, command.level.value, console)
+            is ConsoleCommand.SetVerbosity -> {
+                // Field order matches services/voice_fsm/wire/codec.py so the bytes are identical.
+                SetVerbosity.startSetVerbosity(b)
+                SetVerbosity.addLevel(b, command.level.value)
+                SetVerbosity.addSource(b, console)
+                VoiceBody.SetVerbosity to SetVerbosity.endSetVerbosity(b)
+            }
         }
         VoiceMessage.startVoiceMessage(b)
         VoiceMessage.addBodyType(b, type)
@@ -188,7 +194,7 @@ object VoiceWire {
                 VoiceBody.Spoken -> {
                     val t = Spoken()
                     message.body(t) ?: throw VoiceWireException("voice message has no body")
-                    ConsoleEvent.Spoken(t.phrase ?: "", readArgs(t), t.priority.toInt(), t.utteranceId.toLong())
+                    ConsoleEvent.Spoken(t.phrase ?: "", readArgs(t, payload.size), t.priority.toInt(), t.utteranceId.toLong())
                 }
                 VoiceBody.Transcript -> {
                     val t = Transcript()
@@ -205,8 +211,9 @@ object VoiceWire {
     }
 
     /** Parameter values as display text; a list is joined with commas. */
-    private fun readArgs(spoken: Spoken): Map<String, String> {
+    private fun readArgs(spoken: Spoken, bufferSize: Int): Map<String, String> {
         val out = linkedMapOf<String, String>()
+        checkCount("params", spoken.paramsLength, bufferSize)
         for (i in 0 until spoken.paramsLength) {
             val arg: Arg = spoken.params(i) ?: continue
             val key = arg.key ?: ""
@@ -215,11 +222,19 @@ object VoiceWire {
                 ArgKind.Int -> arg.intValue.toString()
                 ArgKind.Real -> arg.realValue.toString()
                 ArgKind.Flag -> (arg.intValue != 0L).toString()
-                ArgKind.TextList -> (0 until arg.textsLength).joinToString(", ") { arg.texts(it) ?: "" }
+                ArgKind.TextList -> {
+                    checkCount("texts", arg.textsLength, bufferSize)
+                    (0 until arg.textsLength).joinToString(", ") { arg.texts(it) ?: "" }
+                }
                 else -> throw VoiceWireException("argument $key has unknown kind ${arg.kind}")
             }
         }
         return out
+    }
+
+    /** A vector cannot hold more elements than the buffer has bytes; a damaged length must not drive an allocation. */
+    private fun checkCount(what: String, count: Int, bufferSize: Int) {
+        if (count < 0 || count > bufferSize) throw VoiceWireException("$what length $count does not fit a $bufferSize byte buffer")
     }
 
     /** `YellowCountdown` to `yellow_countdown`. */

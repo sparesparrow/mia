@@ -224,6 +224,28 @@ class VoiceConsoleClientTest {
     }
 
     @Test
+    fun `late callbacks from a replaced socket do not disturb the new session`() {
+        val old = connected()
+        old.listener.onFailure("reset")
+        scope.advanceTimeBy(101)
+        scope.runCurrent()
+        val fresh = factory.sockets.last()
+        fresh.listener.onOpen()
+        fresh.reply(fresh.sent.single(), WireStatus.OK)
+        assertEquals(ConnectionState.CONNECTED, client.state.value.connection)
+
+        old.listener.onClosed()
+        old.listener.onFailure("late failure")
+        old.deliver(WireEnvelope(VoiceWire.SERVICE_VOICE, "console-test", WireOp.DATA, null, 99, VoiceFixtures.load().first { it.name == "event_state_changed" }.let { VoiceWire.decodeEnvelope(it.bytes).payload }))
+        scope.advanceTimeBy(60_000)
+        scope.runCurrent()
+
+        assertEquals(ConnectionState.CONNECTED, client.state.value.connection)
+        assertEquals("idle", client.state.value.machineState)
+        assertEquals(2, factory.sockets.size)
+    }
+
+    @Test
     fun `disconnect closes the socket and does not reconnect`() {
         val socket = connected()
         client.disconnect()
