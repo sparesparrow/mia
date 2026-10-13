@@ -14,6 +14,7 @@ import asyncio
 import urllib.error
 import urllib.request
 
+from api.auth import authenticate_websocket
 from services.anpr_service import get_anpr_service, process_image_data
 from services.edalnice_service import get_edalnice_service
 
@@ -339,6 +340,8 @@ async def websocket_stream(websocket: WebSocket):
 
     Broadcasts detected plates and alerts to connected clients
     """
+    if not await authenticate_websocket(websocket):
+        return
     await manager.connect(websocket)
     try:
         while True:

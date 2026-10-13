@@ -9,6 +9,7 @@ checks the listen-only ELF for the ``twai_transmit`` symbol.
 
 import re
 from pathlib import Path
+
 import pytest
 
 pytestmark = pytest.mark.req("REQ-AUTO-012", "REQ-NFR-002")
@@ -86,3 +87,90 @@ def test_classifier_handles_else_branches():
     assert modes["passive();"] == "passive"
     assert modes["active(); "] == "active"
     assert modes["both();"] is None
+
+
+def _default_listen_only(*flags):
+    """Preprocess the real macro-default block and return MIA_TWAI_LISTEN_ONLY."""
+    import shutil
+    import subprocess
+
+    cc = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
+    if cc is None:
+        pytest.skip("no C preprocessor available")
+    source = _strip_comments(OBD_SOURCE.read_text(encoding="utf-8"))
+    start = source.index(f"#ifndef {_MACRO}")
+    depth, end = 0, None
+    lines = source[start:].splitlines(keepends=True)
+    for i, line in enumerate(lines):
+        directive = line.strip()
+        if re.match(r"#\s*if", directive):
+            depth += 1
+        elif re.match(r"#\s*endif\b", directive):
+            depth -= 1
+            if depth == 0:
+                end = i
+                break
+    block = "".join(lines[: end + 1]) + f"\nRESULT {_MACRO}\n"
+    out = subprocess.run(
+        [cc, "-E", "-P", "-x", "c", *flags, "-"], input=block, capture_output=True, text=True, check=True
+    ).stdout
+    return out.split("RESULT")[1].strip()
+
+
+def test_default_build_is_passive():
+    assert _default_listen_only() == "1"
+
+
+def test_transmit_needs_explicit_opt_in():
+    assert _default_listen_only("-DMIA_ALLOW_TX=1") == "0"
+    assert _default_listen_only("-DMIA_ALLOW_TX=0") == "1"
+
+
+def test_explicit_listen_only_flag_still_wins():
+    assert _default_listen_only("-DMIA_TWAI_LISTEN_ONLY=1") == "1"
+
+
+COMPONENT_CMAKE = OBD_SOURCE.parent / "CMakeLists.txt"
+
+
+def _configure(tmp_path, build_dir, *flags):
+    """Configure the component's real mode block with CMake; return 'active', 'passive' or 'refused'."""
+    import shutil
+    import subprocess
+
+    cmake = shutil.which("cmake")
+    if cmake is None:
+        pytest.skip("cmake not available")
+    text = COMPONENT_CMAKE.read_text(encoding="utf-8")
+    block = text[text.index("if(MIA_ALLOW_TX") :]
+    block = block.replace("${COMPONENT_LIB} PRIVATE", "").replace("target_compile_definitions(", "message(STATUS MODE=")
+    project = tmp_path / "project"
+    project.mkdir(exist_ok=True)
+    (project / "CMakeLists.txt").write_text(
+        "cmake_minimum_required(VERSION 3.10)\nproject(mode NONE)\n" + block, encoding="utf-8"
+    )
+    run = subprocess.run(
+        [cmake, "-S", str(project), "-B", str(tmp_path / build_dir), *flags], capture_output=True, text=True
+    )
+    if run.returncode != 0:
+        return "refused"
+    return "active" if "MODE=MIA_ALLOW_TX=1" in run.stdout else "passive"
+
+
+def test_cmake_default_build_is_passive(tmp_path):
+    assert _configure(tmp_path, "build") == "passive"
+
+
+def test_cmake_refuses_an_active_build_in_the_default_directory(tmp_path):
+    assert _configure(tmp_path, "build", "-DMIA_ALLOW_TX=1") == "refused"
+
+
+def test_cmake_active_build_only_in_a_tx_directory(tmp_path):
+    assert _configure(tmp_path, "build-tx", "-DMIA_ALLOW_TX=1") == "active"
+    assert _configure(tmp_path, "build-tx", "-DMIA_ALLOW_TX=1", "-DMIA_TWAI_LISTEN_ONLY=1") == "passive"
+
+
+def test_ci_ships_only_the_passive_build_directory():
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert "idf.py -B build-tx -DMIA_ALLOW_TX=1 build" in ci
+    assert "idf.py build -DMIA_ALLOW_TX" not in ci

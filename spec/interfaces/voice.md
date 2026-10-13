@@ -177,10 +177,12 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 | in-memory pair (`LoopbackChannel`) | implemented |
 | length-framed stream over TCP or a unix socket (`FramedChannel`, `SocketListener`) | implemented; a serial line is the same class over a stream with `recv` and `sendall` |
 | UDP to one peer (`UdpChannel`), datagrams from other addresses dropped | implemented; may lose or reorder messages |
-| WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`; talks to a machine simulated in the API process |
+| WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`, API key required; talks to a machine simulated in the API process |
 | ZeroMQ, BLE, a real serial line | planned |
 
-No channel authenticates its peer. Bind listeners to loopback or a trusted link.
+The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.
+`/ws/voice` requires the `X-API-Key` header when API keys are configured (a read-scope key is enough) and drops a
+console whose queue of 256 unsent frames fills up.
 
 ### Peers
 

@@ -91,15 +91,19 @@ static void send_mqtt_alert(const char *topic, const char *severity,
 #define TWAI_TX_PIN GPIO_NUM_17
 #define TWAI_BITRATE TWAI_TIMING_CONFIG_500KBITS()
 
-// Bus mode. OBD polling transmits requests in the normal build.
-// The listen-only build never issues OBD requests; it emits raw standard frames
-// to the Pi serial bridge/replay decoder.
-// Build with -DMIA_TWAI_LISTEN_ONLY=1 for a passive sniffing build: the controller
-// then never drives the bus and ai_servis_obd_read_pid() refuses to transmit.
+// Bus mode. The default build is PASSIVE (ADR-0006): the controller never drives
+// the bus, ai_servis_obd_read_pid() refuses to transmit, and raw standard frames
+// are emitted to the Pi serial bridge/replay decoder.
+// Active OBD polling must be requested explicitly: idf.py build -DMIA_ALLOW_TX=1
+// (never on the daily-driver install).
 // The controller mode is a register a bug can overwrite, so for a hard guarantee
 // also leave the transceiver TXD line physically unconnected.
 #ifndef MIA_TWAI_LISTEN_ONLY
+#if defined(MIA_ALLOW_TX) && MIA_ALLOW_TX
 #define MIA_TWAI_LISTEN_ONLY 0
+#else
+#define MIA_TWAI_LISTEN_ONLY 1
+#endif
 #endif
 
 #if MIA_TWAI_LISTEN_ONLY

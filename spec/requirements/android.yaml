@@ -60,6 +60,8 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - Topics are built from the configured prefix and device
+  - Broker candidates come only from MIA_MQTT_URL, mDNS and cached LAN hosts; there is no public fallback broker
+  - The app is excluded from Android backups (allowBackup=false)
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTManager.kt
   - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTTopics.kt
@@ -168,7 +170,7 @@ requirements:
   decisions:
   - ADR-0011
   - ADR-0013
-  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine.
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. Debug builds send the API key from MIA_API_KEY or miaApiKey as X-API-Key; release builds embed none, so a release app cannot yet reach a Pi that has keys configured until the key can be entered in Settings.
 - id: REQ-AND-017
   title: Persona and verbosity setting
   statement: The app shall let the user choose the persona and the verbosity mode.
