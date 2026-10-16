@@ -68,6 +68,7 @@ import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.DashboardGauges
 import cz.mia.app.ui.screens.CameraPreviewScreen
 import cz.mia.app.ui.screens.OBDPairingScreen
+import cz.mia.app.ui.screens.VoiceConsoleScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -129,6 +130,12 @@ class MainActivity : ComponentActivity() {
 					NavigationBarItem(
 						selected = selected == 5,
 						onClick = { selected = 5 },
+						icon = { Icon(Icons.Default.Mic, contentDescription = null) },
+						label = { Text("Voice") }
+					)
+					NavigationBarItem(
+						selected = selected == 6,
+						onClick = { selected = 6 },
 						icon = { Icon(Icons.Default.Settings, contentDescription = null) },
 						label = { Text("Settings") }
 					)
@@ -141,6 +148,7 @@ class MainActivity : ComponentActivity() {
 				2 -> CameraPreviewScreen(Modifier.padding(padding))
 				3 -> OBDPairingScreen(Modifier.padding(padding))
 				4 -> LEDMonitorScreen(Modifier.padding(padding))
+				5 -> VoiceConsoleScreen(Modifier.padding(padding))
 				else -> SettingsScreen(Modifier.padding(padding))
 			}
 		}

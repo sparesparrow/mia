@@ -168,6 +168,8 @@ jobs:
           flatc --cpp --gen-mutable --scoped-enums -o /tmp/fb-voice schemas/voice.fbs
           diff -r -x __pycache__ /tmp/fb-voice/MiaVoice schemas/generated/python/MiaVoice
           diff /tmp/fb-voice/voice_generated.h schemas/generated/cpp/voice_generated.h
+          flatc --kotlin -o /tmp/fb-voice-kt schemas/voice.fbs
+          diff -r /tmp/fb-voice-kt/MiaVoice apps/android/app/src/main/generated/kotlin/MiaVoice
           python3 tools/schemas/extract_enums.py --check
       - name: Check schema and contract coordination
         if: github.event_name == 'pull_request'

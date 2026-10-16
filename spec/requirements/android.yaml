@@ -154,13 +154,23 @@ requirements:
   - ADR-0005
 - id: REQ-AND-016
   title: Voice console
-  statement: The app shall act as a console for the voice state machine, simulating the steering-wheel buttons and showing the LED, the captured command text, MIA's spoken text and the event queue.
-  evidence: planned
-  implemented_in: []
+  statement: The app shall act as a console for the voice state machine, simulating the steering-wheel buttons and showing the LED, the captured command text, MIA's spoken phrases and the event queue.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The button commands and the verbosity setting encode to the very bytes the Pi's codec writes, and the events the Pi writes decode to the values in the shared fixture
+  - Damaged frames and truncated payloads end as a wire error and never as another exception
+  - The client opens a session, becomes connected only after the Pi's ok, sends nothing before that, and shows a refused command as an error
+  - A lost connection is retried with growing delays up to a limit, a successful session resets the budget, and disconnect does not reconnect
+  - State changes, feedback cues, spoken phrases and transcripts fold into the state, the event queue is bounded, and every LED name of the schema has a look whose pattern, not only its colour, separates window from confirming
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  - apps/android/app/src/main/java/cz/mia/app/features/voice/VoiceConsoleViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
+  - apps/android/app/src/main/generated/kotlin/MiaVoice
   decisions:
   - ADR-0011
   - ADR-0013
-  not_proven: Not yet implemented
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. Debug builds send the API key from MIA_API_KEY or miaApiKey as X-API-Key; release builds embed none, so a release app cannot yet reach a Pi that has keys configured until the key can be entered in Settings.
 - id: REQ-AND-017
   title: Persona and verbosity setting
   statement: The app shall let the user choose the persona and the verbosity mode.
@@ -168,4 +178,4 @@ requirements:
   implemented_in: []
   decisions:
   - ADR-0015
-  not_proven: Not yet implemented
+  not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016); the persona has no message on the wire yet and no setting.

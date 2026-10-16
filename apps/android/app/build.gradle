@@ -63,12 +63,16 @@ android {
             signingConfig signingConfigs.release
             buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(true)}\""
             buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(true)}\""
+            // A release APK never carries a key.
+            buildConfigField 'String', 'API_KEY', '""'
         }
         debug {
             // applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
             buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(false)}\""
             buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(false)}\""
+            // Sent as X-API-Key to a Pi that has keys configured (REQ-SEC-001); empty when none is set.
+            buildConfigField 'String', 'API_KEY', "\"${getConfiguredValue(['miaApiKey'], ['MIA_API_KEY'], '')}\""
         }
     }
 
@@ -85,6 +89,12 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.8'
+    }
+    sourceSets {
+        main {
+            // Bindings generated from schemas/voice.fbs by schemas/generate.py (committed, checked in CI).
+            java.srcDirs += 'src/main/generated/kotlin'
+        }
     }
     testOptions {
         unitTests.includeAndroidResources = true
@@ -229,6 +239,8 @@ dependencies {
     // ElevenLabs TTS
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.10.1'
+    // Runtime for the generated MiaVoice bindings; must match the flatc version that generated them (2.0.8).
+    implementation 'com.google.flatbuffers:flatbuffers-java:2.0.8'
 
     // Work Manager
     implementation 'androidx.work:work-runtime-ktx:2.9.0'

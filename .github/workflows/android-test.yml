@@ -6,14 +6,18 @@ on:
     paths:
       - 'apps/android/**'
       - 'spec/interfaces/**'
+      - 'schemas/voice.fbs'
+      - 'tests/fixtures/voice/**'
       - '.claude/skills/android-adb-test/**'
       - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
   pull_request:
-    branches: [main, develop, 'roadmap/**']
+    branches: [main, develop, 'roadmap/**', 'claude/**']
     paths:
       - 'apps/android/**'
       - 'spec/interfaces/**'
+      - 'schemas/voice.fbs'
+      - 'tests/fixtures/voice/**'
       - '.claude/skills/android-adb-test/**'
       - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
