@@ -1,0 +1,181 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: android
+title: Android companion app
+description: Kotlin/Compose client; its unit tests run in CI with testDebugUnitTest.
+requirements:
+- id: REQ-AND-001
+  title: BLE device management
+  statement: The app shall scan for BLE devices, manage connection lifecycle and list devices.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Connection state transitions and OBD adapter name filtering behave as specified
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesViewModel.kt
+  not_proven: A real phone
+- id: REQ-AND-002
+  title: OBD manager
+  statement: The app shall read OBD-II data and pair with a BLE OBD adapter.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - OBD responses parse into RPM, speed, coolant, fuel, engine load and DTCs
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/OBDManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/OBDPairingScreen.kt
+  not_proven: A real adapter
+- id: REQ-AND-003
+  title: Dashboard and telemetry
+  statement: The dashboard shall show real-time gauges from WebSocket telemetry, including Citroën-specific values.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Gauges.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt
+  notes: The emulator dashboard scenario in android-test.yml only checks that the screen opens.
+- id: REQ-AND-004
+  title: ANPR on Android
+  statement: The app shall recognise number plates from the camera and store only salted plate hashes.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Plate candidates are post-processed
+  - Plates are hashed, never stored in clear
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/ANPRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/camera/AnprPostprocessor.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/security/PlateHasher.kt
+- id: REQ-AND-005
+  title: Dashcam recording
+  statement: The app shall record continuously, offload clips, clean up by retention policy and play clips back.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Clip naming, the rolling buffer and storage limits behave as specified
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DVRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DvrOffloadWorker.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/clips/ClipsViewModel.kt
+- id: REQ-AND-006
+  title: MQTT client
+  statement: The app shall publish and subscribe over MQTT with configurable topics.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Topics are built from the configured prefix and device
+  - Broker candidates come only from MIA_MQTT_URL, mDNS and cached LAN hosts; there is no public fallback broker
+  - The app is excluded from Android backups (allowBackup=false)
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTTopics.kt
+- id: REQ-AND-007
+  title: Driving foreground service
+  statement: A foreground service shall run ANPR, DVR, OBD and BLE during driving with user-visible notifications.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  notes: The emulator instrumented test verifies service creation, the foreground notification and pause/resume state;
+    it does not prove the full ANPR/DVR/OBD/BLE manager lifecycle.
+  not_proven: Full manager lifecycle on a real phone with the vehicle peripherals.
+- id: REQ-AND-008
+  title: Pi discovery
+  statement: The app shall discover the Pi over mDNS (_mia-api._tcp) or Wi-Fi Direct and observe connectivity.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/MdnsDiscovery.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/WifiDirectManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/ConnectivityObserver.kt
+- id: REQ-AND-009
+  title: Spoken feedback
+  statement: The app shall speak prompts through text-to-speech with a bounded priority queue in Czech or English.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Speech requests queue by priority up to the maximum size
+  - Rate and pitch are clamped
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/VoiceManager.kt
+- id: REQ-AND-010
+  title: Rules engine
+  statement: The app shall evaluate client-side automation rules.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Rules fire only when their conditions hold
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/RulesEngine.kt
+- id: REQ-AND-011
+  title: Local database and repositories
+  statement: The app shall store alerts, ANPR events, telemetry, clips and audit records locally.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Telemetry entities carry the Citroën-specific fields, nullable when absent
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/db/AppDatabase.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Daos.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Entities.kt
+- id: REQ-AND-012
+  title: Cycle 1 telemetry card
+  statement: The dashboard shall deserialise the Cycle 1 envelope and show the four signals below the service controls,
+    with an explicit Pi-offline state.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The canonical envelope parses into typed signal values
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/dto/Cycle1Telemetry.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Cycle1TelemetryCard.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  decisions:
+  - ADR-0009
+  not_proven: A real phone connected to the Pi
+- id: REQ-AND-013
+  title: Reconnect backoff
+  statement: Network reconnection attempts shall back off exponentially up to a cap.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Delays grow and stop at the cap
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/Backoff.kt
+- id: REQ-AND-014
+  title: Battery-aware sampling policy
+  statement: The app shall lower its sampling mode as the battery drains and show the advisory on the dashboard.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Low battery or thermal throttling drops the sampling mode to MINIMAL
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/SystemPolicyManager.kt
+- id: REQ-AND-015
+  title: Pi API client
+  statement: The app shall call the Pi REST API for devices, status, commands and sessions, unwrapping response
+    envelopes and reporting network failures as errors.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Device and session responses unwrap from their envelopes
+  - A network failure yields an error result
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/DeviceRepository.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/SessionRepository.kt
+  decisions:
+  - ADR-0005
+- id: REQ-AND-016
+  title: Voice console
+  statement: The app shall act as a console for the voice state machine, simulating the steering-wheel buttons and showing the LED, the captured command text, MIA's spoken phrases and the event queue.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The button commands and the verbosity setting encode to the very bytes the Pi's codec writes, and the events the Pi writes decode to the values in the shared fixture
+  - Damaged frames and truncated payloads end as a wire error and never as another exception
+  - The client opens a session, becomes connected only after the Pi's ok, sends nothing before that, and shows a refused command as an error
+  - A lost connection is retried with growing delays up to a limit, a successful session resets the budget, and disconnect does not reconnect
+  - State changes, feedback cues, spoken phrases and transcripts fold into the state, the event queue is bounded, and every LED name of the schema has a look whose pattern, not only its colour, separates window from confirming
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  - apps/android/app/src/main/java/cz/mia/app/features/voice/VoiceConsoleViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
+  - apps/android/app/src/main/generated/kotlin/MiaVoice
+  decisions:
+  - ADR-0011
+  - ADR-0013
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. Debug builds send the API key from MIA_API_KEY or miaApiKey as X-API-Key; release builds embed none, so a release app cannot yet reach a Pi that has keys configured until the key can be entered in Settings.
+- id: REQ-AND-017
+  title: Persona and verbosity setting
+  statement: The app shall let the user choose the persona and the verbosity mode.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0015
+  not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016); the persona has no message on the wire yet and no setting.

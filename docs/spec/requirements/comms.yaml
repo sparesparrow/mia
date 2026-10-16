@@ -1,0 +1,23 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: comms
+title: Communications
+description: Messaging and telephony bridges to MIA.
+requirements:
+- id: REQ-COMMS-001
+  title: Communications gateway
+  statement: A gateway shall bridge Telegram, Signal, WhatsApp and KDE Connect to the MIA WebSocket.
+  evidence: implemented_untested
+  implemented_in:
+  - tools/comms-gateway
+- id: REQ-COMMS-002
+  title: SIP voice bridge
+  statement: Calls over SIP shall reach an ElevenLabs voice agent through Asterisk over Tailscale.
+  evidence: implemented_untested
+  implemented_in:
+  - tools/sip-bridge
+- id: REQ-COMMS-003
+  title: Messaging MCP
+  statement: MCP tools shall send SMS through Twilio and email through SMTP/IMAP.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/messages_mcp

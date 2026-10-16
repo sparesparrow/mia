@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>MIA: stránka nenalezena</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --text: #0f172a;
+            --muted: #475569;
+            --link: #0369a1;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --text: #e2e8f0;
+                --muted: #94a3b8;
+                --link: #38bdf8;
+            }
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            font-family: "Inter", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .container {
+            max-width: 34rem;
+            padding: 2rem 1rem;
+        }
+        p {
+            color: var(--muted);
+        }
+        a {
+            color: var(--link);
+        }
+        ul {
+            padding-left: 1.2rem;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stránka nenalezena / Page not found</h1>
+        <p id="status">Tahle adresa na webu MIA neexistuje. / This address does not exist on the MIA site.</p>
+        <ul>
+            <li><a data-path="" href="/mia/">Úvod / Home</a></li>
+            <li><a data-path="business/" href="/mia/business/">Firmy a flotily / Business &amp; fleets</a></li>
+            <li><a data-path="family/" href="/mia/family/">Rodiny / Families</a></li>
+            <li><a data-path="musicians/" href="/mia/musicians/">Hudebníci / Musicians</a></li>
+            <li><a data-path="journalists/" href="/mia/journalists/">Novináři / Journalists</a></li>
+            <li><a data-path="press/" href="/mia/press/">Média a marketing / Press &amp; marketing</a></li>
+            <li><a data-path="docs/" href="/mia/docs/">Dokumentace / Documentation</a></li>
+        </ul>
+    </div>
+    <script>
+        // GitHub Pages serves this page for every missing path. Pages that moved or were
+        // retired get an automatic redirect; anything else shows the list above.
+        (function () {
+            var segments = window.location.pathname.split('/').filter(Boolean);
+            // Project site: the first segment is the repository name.
+            var base = segments.length && segments[0] === 'mia' ? '/mia/' : '/';
+            var rest = (base === '/mia/' ? segments.slice(1) : segments).join('/');
+
+            document.querySelectorAll('a[data-path]').forEach(function (link) {
+                link.setAttribute('href', base + link.getAttribute('data-path'));
+            });
+
+            var moved = {
+                'team': '',
+                'agents': '',
+                'voice-chat.html': '',
+                'index-gonzo.html': '',
+                'customers/journalists/index-gonzo.html': ''
+            };
+            var target = null;
+            var flat = rest.match(/^customers\/(business|family|musicians|journalists)(\.html|\/.*)?$/);
+            if (flat) {
+                target = flat[1] + '/';
+            } else if (Object.prototype.hasOwnProperty.call(moved, rest.replace(/\/$/, ''))) {
+                target = moved[rest.replace(/\/$/, '')];
+            }
+            if (target !== null) {
+                window.location.replace(base + target);
+            }
+        })();
+    </script>
+</body>
+</html>

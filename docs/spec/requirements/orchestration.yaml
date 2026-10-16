@@ -1,0 +1,85 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: orchestration
+title: MCP orchestration
+description: MCP host, framework, discovery and orchestration services.
+requirements:
+- id: REQ-ORCH-001
+  title: Core orchestrator (MCP host)
+  statement: The core orchestrator shall route user commands to MCP services by NLP intent, keeping per-session
+    context.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Intents, alternatives and confidence are classified for each command category
+  - Session context is created, updated, expired and persisted
+  implemented_in:
+  - orchestration/mcp/modules/core-orchestrator
+- id: REQ-ORCH-002
+  title: Service discovery
+  statement: Services shall register themselves, be health-checked by heartbeat with a 30 s timeout, and be queryable
+    by capability.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Services register, deregister, and are listed and filtered by capability
+  implemented_in:
+  - orchestration/mcp/modules/service-discovery/main.py
+- id: REQ-ORCH-003
+  title: MCP framework
+  statement: A shared MCP framework shall provide servers, clients, messages, transports and a tool decorator.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Messages dispatch to registered tools and prompts
+  - Transports round-trip messages
+  implemented_in:
+  - orchestration/mcp/modules/shared/mcp_framework.py
+- id: REQ-ORCH-004
+  title: Hardware bridge (MCP)
+  statement: GPIO, OBD query, RF capture and Arduino LED control shall be exposed as MCP tools.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/hardware-bridge
+- id: REQ-ORCH-005
+  title: AI self-improvement loop
+  statement: A five-phase learning loop shall run over a persistent JSON knowledge base.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Metrics converge only when every target is met
+  - Recurring patterns gain confidence in the knowledge base
+  implemented_in:
+  - orchestration/ai_self_improvement
+- id: REQ-ORCH-006
+  title: Learning loop agents
+  statement: Error-coordinator, knowledge-synthesiser and performance-monitor agents shall support the learning
+    loop.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/agents
+- id: REQ-ORCH-007
+  title: ClaudePy bridge (MCP)
+  statement: The orchestrator shall be able to route requests to Claude through the claudepy bridge.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A forced route reaches the bridge
+  implemented_in:
+  - orchestration/mcp/modules/claudepy-bridge/main.py
+  not_proven: Behaviour with the real claudepy package installed
+- id: REQ-ORCH-008
+  title: Linux platform controller
+  statement: A Linux platform controller shall expose process and system management to the orchestrator.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Commands return their output, report failure, and are killed on timeout
+  implemented_in:
+  - orchestration/mcp/modules/ai-platform-controllers/linux/main.py
+- id: REQ-ORCH-009
+  title: FlatBuffers to JSON-RPC gateway
+  statement: FlatBuffers messages shall translate to MCP JSON-RPC and back, over an MQTT topic scheme organised
+    by cognitive layer.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Topics build and parse symmetrically
+  - Baseline schemas exist for compatibility checks
+  implemented_in:
+  - orchestration/mcp/modules/flatbuffers-gateway
+  - orchestration/mcp/modules/shared/topics.py
+  decisions:
+  - ADR-0004

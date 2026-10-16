@@ -1,0 +1,228 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: voice
+title: Voice and AI assistant
+description: In-car voice pipeline and MCP voice services.
+requirements:
+- id: REQ-VOICE-001
+  title: AI audio assistant (MCP)
+  statement: An MCP service shall handle voice processing, music playback and audio device management.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/ai-audio-assistant
+  not_proven: The linked tests (tests/unit/orchestration/test_audio_engine.py and test_voice_processing.py) drive
+    mock engines and only fail if something raises; they assert no behaviour, so they do not support a tested state.
+- id: REQ-VOICE-002
+  title: Voice command intelligence
+  statement: Voice command outcomes shall be recorded per intent to compute success rates, surface failing patterns
+    and suggest improvements.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Success rates, failing patterns and improvement suggestions follow the recorded interactions
+  implemented_in:
+  - orchestration/mcp/modules/agents/voice_command_intelligence.py
+- id: REQ-VOICE-003
+  title: Voice learning server (MCP)
+  statement: An MCP server shall learn from command outcomes, analyse failures and stage learned prompts for review.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Learned prompts are staged for mcp-prompts review rather than published directly
+  implemented_in:
+  - orchestration/mcp/modules/voice-learning
+- id: REQ-VOICE-004
+  title: Context manager agent
+  statement: An agent shall keep interaction context and user preferences in privacy-preserving storage.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/agents/context_manager.py
+- id: REQ-VOICE-005
+  title: Web voice chat UI
+  statement: A web page shall offer a voice chat with an audio visualiser.
+  evidence: implemented_untested
+  implemented_in:
+  - web/voice-chat.html
+  - web/voice-chat.js
+- id: REQ-VOICE-006
+  title: In-car audio capture
+  statement: The Pi shall capture audio from a USB microphone into the ZeroMQ voice pipeline, with a simulation
+    fallback.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/audio_capture.py
+  services:
+  - mia-audio-capture
+- id: REQ-VOICE-007
+  title: Wake word detection
+  statement: The Pi shall detect the "Hey Mia" wake word on-device, falling back to energy detection.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/wake_word.py
+  services:
+  - mia-wake-word
+- id: REQ-VOICE-008
+  title: On-device speech-to-text
+  statement: The Pi shall transcribe speech on-device.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/stt_service.py
+  services:
+  - mia-stt
+- id: REQ-VOICE-009
+  title: On-device text-to-speech
+  statement: The Pi shall synthesise speech on-device, falling back to espeak.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/tts_service.py
+  services:
+  - mia-tts
+- id: REQ-VOICE-010
+  title: Voice command router
+  statement: Transcribed commands shall be routed by confidence score, asking for confirmation when the match is
+    ambiguous.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_command_router.py
+  services:
+  - mia-voice-router
+  decisions:
+  - ADR-0012
+  notes: ADR-0012 changes what silence means, by action class; the statement is reworded when the router hands intents to the voice state machine (VOICE_FSM=1 becomes the default).
+- id: REQ-VOICE-011
+  title: Voice state machine
+  statement: One state machine shall own the voice session, consume typed commands from every input and emit the action, speech, LED and tone effects.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The machine accepts typed commands regardless of their source and yields execute, abort, speak, mute, LED and tone effects
+  - Every state and transient cue has exactly one LED and tone entry, and the table in spec/interfaces/voice.md matches the code
+  - A warning interrupts dictation, listening, the window and speech, and a phone message waits until the machine is free
+  - Utterances and executor batches carry ids, so a stale done or an aborted batch changes nothing
+  - Under random orderings of commands no message part runs without an explicit yes and no forbidden or unknown part runs
+  - The router bridge turns wake events, transcripts and TTS events into commands and publishes speech and feedback
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
+  - apps/rpi-backend/py-api/services/voice_command_router.py
+  decisions:
+  - ADR-0011
+  not_proven: The machine and the router bridge run with fakes and a fake clock. No button or console adapter routes a real source into it yet (REQ-VOICE-015). The router runs the machine only with VOICE_FSM=1, which is off by default and has not run on a Pi. No LED node consumes the feedback yet.
+- id: REQ-VOICE-012
+  title: Confirmation window by action class
+  statement: Uncertain parts of a chain in the read, comfort and note classes shall be announced and run after one shared 5 s window unless cancelled or corrected, while certain parts run immediately.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A certain part runs at once and an uncertain read, comfort or note part runs only after one shared window that starts when speech has finished
+  - Cancel and go-now have the same effect whatever their source, and a new utterance replaces the pending part
+  - Go-now during the announcement runs the part at once
+  - A warning that cuts off the announcement is followed by a repeat before the window starts
+  - A result spoken while the window is open does not lose the pending part
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
+  decisions:
+  - ADR-0012
+  not_proven: Fake clock and fakes only. The router marks a part certain from its keyword confidence; the explicit-conjunction splitter does not exist, and the window has not run against real TTS timing.
+- id: REQ-VOICE-013
+  title: Explicit confirmation for messages and calls
+  statement: A message or phone call shall never be sent or placed on silence and shall require an explicit spoken or button confirmation.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A message or call part never runs on silence and times out without executing
+  - It runs after an explicit yes or the go-now button and is dropped on a no or cancel
+  - A message part mislabelled as comfort still needs confirmation, because the class comes from a fixed table
+  - A warning that cuts off the question cannot be followed by a blind confirmation
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
+  decisions:
+  - ADR-0012
+  safety: In the machine a message part can run only through a confirmation, whatever the splitter labels it.
+  not_proven: Fake clock and fakes only. No message or call is sent, because messages_mcp and the SIP bridge are not connected.
+- id: REQ-VOICE-014
+  title: Refuse vehicle writes in a chain
+  statement: A voice chain shall refuse any part that writes to a control unit, such as clearing fault codes or starting a DPF regeneration, and shall say so.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A forbidden part is refused with a spoken reason, never queued, and the other parts still run
+  - A forbidden action with a harmless label, and an action that is not in the class table, are refused
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm
+  decisions:
+  - ADR-0006
+  - ADR-0012
+  safety: In the machine no forbidden or unknown action reaches an executor.
+  not_proven: Fake clock and fakes only. Nothing yet classifies a spoken phrase, so the table holds only the actions that are named in it.
+- id: REQ-VOICE-015
+  title: Buttons produce the same commands as voice
+  statement: A go-now and a cancel button, simulated or physical, shall produce the same typed commands as the equivalent spoken command, and the cancel button shall work without speech recognition.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0011
+  not_proven: Not yet implemented as a requirement. The machine gives the same effects for a command from a voice, button or console source, also when it arrives in an envelope (tests under REQ-NET-008), but no adapter turns a physical or Android button press into that command, and the physical path (CD-changer emulator) is only a plan
+- id: REQ-VOICE-016
+  title: Microphone muted while speaking
+  statement: The microphone shall be muted while MIA speaks, and the TTS service shall announce when speech has finished.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Speaking started and finished events encode and decode on one topic, and garbage is rejected
+  - While MIA speaks the gate turns microphone frames into silence of the same length and stays closed for a short tail afterwards
+  - The speaking events carry the utterance id and the gate opens only when no utterance is still playing
+  - The gate reopens by itself if a finished event is lost, so the microphone cannot stay muted
+  - TTS, audio capture and the router use the same speaking port
+  implemented_in:
+  - apps/rpi-backend/py-api/services/tts_service.py
+  - apps/rpi-backend/py-api/services/audio_capture.py
+  - apps/rpi-backend/py-api/services/voice_fsm/events.py
+  - apps/rpi-backend/py-api/services/voice_fsm/mic_gate.py
+  services:
+  - mia-tts
+  - mia-audio-capture
+  not_proven: Tested with fakes and a fake clock. No real microphone, speaker or room echo was involved, the tail length is a guess, and TTS cannot yet stop speech mid-sentence.
+- id: REQ-VOICE-017
+  title: Verbosity modes
+  statement: MIA shall offer quiet, normal and chatty modes, switchable by voice and by button and remembered across drives.
+  evidence: planned
+  implemented_in: []
+  not_proven: Not yet implemented
+- id: REQ-VOICE-018
+  title: Proactive announcements with priority
+  statement: MIA shall announce safety warnings, ignition and parking summaries and incoming phone messages by verbosity, with a warning interrupting dictation or the window and a message waiting in a queue.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0014
+  not_proven: Not yet implemented; there is no source of phone messages on the Pi
+- id: REQ-VOICE-019
+  title: Personas
+  statement: MIA shall offer the personas Holly and Rimmer as data packages that change tone, voice and warning style but never the content of a warning.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0015
+  not_proven: Not yet implemented
+- id: REQ-VOICE-020
+  title: Explicit-conjunction splitter with shadow analysis
+  statement: A rule-based splitter shall split a transcript only at explicit conjunctions and decide what runs, while a language-model analysis runs in parallel only to be stored for later comparison.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0012
+  - ADR-0014
+  not_proven: Not yet implemented
+- id: REQ-VOICE-021
+  title: Local voice interaction log
+  statement: Each interaction shall be stored locally on the Pi with its transcript, both analyses, what ran, the user's reaction and a short audio clip, and deleted after a configured retention.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0014
+  safety: Clips never leave the Pi and are never committed to the repository.
+  not_proven: Not yet implemented
+- id: REQ-VOICE-022
+  title: Standing rules by voice
+  statement: The user shall be able to set, list and delete persistent rules such as "tell me when the coolant passes 100".
+  evidence: planned
+  implemented_in: []
+  not_proven: Not yet implemented
+- id: REQ-VOICE-023
+  title: Czech speech recognition
+  statement: The Pi shall recognise Czech commands including inflected forms and English technical terms.
+  evidence: blocked
+  implemented_in: []
+  notes: Blocked until real recordings exist to measure model and wake word choices.

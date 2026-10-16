@@ -1,0 +1,77 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: in-car
+title: In-car infrastructure
+description: Power, resilience and field operation of the Pi in the car.
+requirements:
+- id: REQ-CAR-001
+  title: Graceful shutdown on ignition off
+  statement: The Pi shall shut down safely when a GPIO optocoupler input reports ignition loss.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/services/power_monitor.py
+  services:
+  - mia-power-monitor
+- id: REQ-CAR-002
+  title: Hardware watchdog
+  statement: The BCM2711 hardware watchdog shall reboot a hung Pi; services themselves shall not use systemd WatchdogSec.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - No core service sets a non-zero WatchdogSec
+  implemented_in:
+  - infra/deploy/rpi/watchdog.conf
+  not_proven: The watchdog daemon on real hardware
+  notes: The feature catalog claimed WatchdogSec on all services; the tested behaviour is the opposite.
+- id: REQ-CAR-003
+  title: Thermal monitoring
+  statement: The API shall report SoC temperature against 70/80/90 °C thresholds.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/api/main.py
+  services:
+  - mia-api
+  notes: Only exercised by the hardware-gated Android/Pi e2e harness.
+- id: REQ-CAR-004
+  title: Read-only root filesystem
+  statement: The root filesystem shall run read-only with a tmpfs overlay to prevent SD card wear.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/rpi/setup-overlayfs.sh
+- id: REQ-CAR-005
+  title: Wi-Fi access point
+  statement: The Pi shall provide a MIA-Car Wi-Fi network for the phone.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/rpi/setup-wifi-ap.sh
+  - infra/deploy/rpi/hostapd.conf
+- id: REQ-CAR-006
+  title: Stable USB device names
+  statement: udev rules shall give USB devices stable names such as /dev/obd2 and start their services on plug.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/rpi/udev/99-mia-devices.rules
+- id: REQ-CAR-007
+  title: OTA updates
+  statement: The API shall apply HTTP-delivered updates with an atomic swap and roll back on failure.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/api/routers/ota.py
+  services:
+  - mia-api
+  notes: Only exercised by the hardware-gated Android/Pi e2e harness.
+- id: REQ-CAR-008
+  title: Remote log viewer
+  statement: The API shall serve journal logs of allowed services so the Pi can be debugged without SSH.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/rpi-backend/py-api/api/routers/logs.py
+  services:
+  - mia-api
+  notes: Only exercised by the hardware-gated Android/Pi e2e harness.
+- id: REQ-CAR-009
+  title: Boot self-test
+  statement: Before services start, the Pi shall check SD card health, free space, temperature and network.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/rpi/selftest.sh
+  services:
+  - mia-selftest
