@@ -201,5 +201,28 @@ class TestAPIKeyInfo(unittest.TestCase):
         self.assertTrue(info.enabled)
 
 
+def test_require_auth_route_with_auth_disabled(monkeypatch):
+    """MIA_AUTH_DISABLED=1: a route behind require_auth gets the admin stand-in instead of a 500."""
+    from fastapi import Depends, FastAPI
+    from fastapi.testclient import TestClient
+
+    from api.auth import api_key as api_key_module
+    from api.auth.dependencies import require_auth
+
+    monkeypatch.setenv("MIA_AUTH_DISABLED", "1")
+    monkeypatch.setattr(api_key_module, "_api_key_auth", None)  # rebuild the singleton from the env
+
+    app = FastAPI()
+
+    @app.get("/protected")
+    async def protected(user: APIKeyInfo = Depends(require_auth)):
+        return {"key_id": user.key_id, "scopes": user.scopes}
+
+    response = TestClient(app).get("/protected")
+    assert response.status_code == 200
+    assert response.json()["key_id"] == "disabled"
+    assert "admin" in response.json()["scopes"]
+
+
 if __name__ == '__main__':
     unittest.main()
