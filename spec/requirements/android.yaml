@@ -218,16 +218,19 @@ requirements:
 - id: REQ-AND-019
   title: Spoken car warnings
   statement: While the driving service runs, the app shall warn by voice and notification when a Cycle 1 signal from
-    the Pi or a BLE OBD reading passes a limit, once per occurrence until it clears, with the value and unit first and a
-    recommendation after; a critical warning interrupts other speech.
+    the Pi or a BLE OBD reading passes a limit, raise one alert per occurrence until it clears, and repeat the spoken
+    warning while the signal stays past its limit (critical every minute, others every five minutes), with the value and
+    unit first and a recommendation after; a critical warning interrupts other speech.
   evidence: implemented_and_ci_tested
   acceptance:
   - A condition warns only after it has held for its dwell time (coolant 10 s, battery 60 s, engine speed 3 s, fuel 30 s),
     and a dip below the limit restarts the wait
-  - A warned condition does not warn again until it has been back past its clear value for 5 s; a minute without data
+  - A warned condition is not raised again until it has been back past its clear value for 5 s; a minute without data
     withdraws it
-  - One occurrence raises one alert, under a notification id that is fixed per condition, and one utterance, whichever
-    source reported it
+  - One occurrence raises one alert, under a notification id that is fixed per condition, whichever source reported it
+  - While a warned condition stays past its limit it is spoken again, every 60 s for a critical one and every 5 min for
+    a warning, refreshing the same notification without a new alert; in the band between limit and clear value, while
+    clearing or without data there is no reminder
   - Every Czech and English text names the value and unit in its first sentence and gives a recommendation after it
   - A critical warning is spoken at once and flushes the queue; a warning is queued with high priority
   implemented_in:
@@ -243,4 +246,5 @@ requirements:
   not_proven: Never spoken on a phone or heard in the car, and never driven by a real Pi stream. The limits are repo
     defaults, not checked against the A4 8H engine. Warnings run only after the user starts the driving service. The
     DrivingService wiring (independent collectors, the alert record, MQTT alert, notification and clip behind each
-    raised alert) has no unit test of its own; it compiles and the parts it calls are tested.
+    raised alert, the notification refresh behind a reminder) has no unit test of its own; it compiles and the parts it
+    calls are tested. The repeat intervals follow #193 and are not tuned in the car.

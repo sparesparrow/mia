@@ -310,6 +310,10 @@ class DrivingService : LifecycleService(), AlertSink {
 		dvrManager.triggerEventClip("alert_${alert.code}")
 	}
 
+	override fun remind(alert: VehicleAlert, notificationId: Int) {
+		showAlertNotification(alert, notificationId)
+	}
+
 	override fun withdraw(notificationId: Int) {
 		(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(notificationId)
 	}

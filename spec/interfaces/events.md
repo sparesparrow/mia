@@ -62,12 +62,15 @@ All events use JSON format with the following structure:
   "payload": {
     "severity": "warning|error|critical",
     "code": "FUEL_LOW|ENGINE_OVERHEAT|BATTERY_LOW|BATTERY_HIGH|RPM_HIGH|DTC_DETECTED",
-    "message": "Palivo dochází. Nejbližší čerpačka 4km.",
+    "message": "Palivo 12 %. Natankujte při nejbližší příležitosti.",
     "action_required": true,
     "timestamp": "2025-01-15T10:30:00Z"
   }
 }
 ```
+
+The Android app publishes one alert per occurrence (REQ-AND-019). Its spoken reminders while the condition lasts
+refresh the phone notification only and are not published again.
 
 ## Device Control Events
 

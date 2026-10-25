@@ -14,12 +14,16 @@ import kotlinx.coroutines.sync.withLock
 interface AlertSink {
 	suspend fun raise(alert: VehicleAlert, notificationId: Int)
 
+	/** The same warning again: refresh its notification, without a new record, MQTT alert or clip. */
+	fun remind(alert: VehicleAlert, notificationId: Int)
+
 	fun withdraw(notificationId: Int)
 }
 
 /**
- * Turns readings into spoken warnings (REQ-AND-019): one warning per occurrence, a critical one interrupts
- * whatever is being said, and a cleared condition withdraws its notification.
+ * Turns readings into spoken warnings (REQ-AND-019): a warning when a condition passes its limit, a spoken reminder
+ * while it stays there (see [AlertThrottle]), a critical one interrupting whatever is being said, and a cleared
+ * condition withdrawing its notification.
  */
 @Singleton
 class CarWarningAnnouncer(
@@ -35,17 +39,18 @@ class CarWarningAnnouncer(
 		val events = lock.withLock { throttle.update(readings) }
 		for (event in events) {
 			when (event) {
-				is ThrottleEvent.Activated -> announce(event, sink)
+				is ThrottleEvent.Activated -> announce(event.condition, event.value, sink, reminder = false)
+				is ThrottleEvent.Reminder -> announce(event.condition, event.value, sink, reminder = true)
 				is ThrottleEvent.Cleared -> sink.withdraw(notificationId(event.condition))
 			}
 		}
 	}
 
-	private suspend fun announce(event: ThrottleEvent.Activated, sink: AlertSink) {
-		val condition = event.condition
+	private suspend fun announce(condition: CarCondition, value: Double, sink: AlertSink, reminder: Boolean) {
 		val language = if (voice.activeLocale().language == "cs") "cs" else "en"
-		val message = WarningText.render(condition, event.value, language)
-		sink.raise(VehicleAlert(condition.severity, condition.code, message.display), notificationId(condition))
+		val message = WarningText.render(condition, value, language)
+		val alert = VehicleAlert(condition.severity, condition.code, message.display)
+		if (reminder) sink.remind(alert, notificationId(condition)) else sink.raise(alert, notificationId(condition))
 		if (condition.severity == AlertSeverity.CRITICAL) {
 			voice.speakNow(message.spoken, SpeechPriority.CRITICAL)
 		} else {

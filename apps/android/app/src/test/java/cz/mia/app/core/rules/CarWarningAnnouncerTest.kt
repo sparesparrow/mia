@@ -41,10 +41,15 @@ private class FakeVoice(var locale: Locale = Locale("cs", "CZ")) : VoiceManager 
 
 private class FakeSink : AlertSink {
 	val raised = mutableListOf<Pair<VehicleAlert, Int>>()
+	val reminded = mutableListOf<Pair<VehicleAlert, Int>>()
 	val withdrawn = mutableListOf<Int>()
 
 	override suspend fun raise(alert: VehicleAlert, notificationId: Int) {
 		raised += alert to notificationId
+	}
+
+	override fun remind(alert: VehicleAlert, notificationId: Int) {
+		reminded += alert to notificationId
 	}
 
 	override fun withdraw(notificationId: Int) {
@@ -88,6 +93,20 @@ class CarWarningAnnouncerTest {
 		assertTrue(voice.immediate.isEmpty())
 		assertEquals(SpeechPriority.HIGH, voice.queued.single().priority)
 		assertEquals("RPM_HIGH", sink.raised.single().first.code)
+	}
+
+	@Test
+	fun `a reminder is spoken again and refreshes the notification without raising a new alert`() {
+		at(0, ConditionReading.of(CarCondition.ENGINE_OVERHEAT, 112.0))
+		at(10_000, ConditionReading.of(CarCondition.ENGINE_OVERHEAT, 112.0))
+		at(70_000, ConditionReading.of(CarCondition.ENGINE_OVERHEAT, 114.0))
+
+		assertEquals(2, voice.immediate.size)
+		assertTrue(voice.immediate.last().first.startsWith("Teplota motoru 114 stupňů."))
+		assertEquals(1, sink.raised.size)
+		val (alert, id) = sink.reminded.single()
+		assertEquals("ENGINE_OVERHEAT", alert.code)
+		assertEquals(CarWarningAnnouncer.notificationId(CarCondition.ENGINE_OVERHEAT), id)
 	}
 
 	@Test
