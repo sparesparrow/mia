@@ -1,4 +1,4 @@
-ssssssssss"""
+"""
 Claudepy Bridge Module for MIA
 
 Provides integration between MIA's voice pipeline and claudepy's AI orchestrator.

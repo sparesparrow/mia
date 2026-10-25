@@ -205,7 +205,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
-          python -m compileall -q apps/rpi-backend orchestration Mia
+          python -m compileall -q apps/rpi-backend orchestration
       - name: Build deployment bundle
         env:
           VERSION: ${{ needs.metadata.outputs.version }}
@@ -217,9 +217,8 @@ jobs:
               -czf "dist/mia-rpi-backend-${VERSION}.tar.gz" \
               apps/rpi-backend \
               orchestration \
-              Mia \
               schemas \
-              contracts \
+              spec/interfaces \
               infra/systemd \
               infra/deploy \
               requirements.txt \
@@ -280,7 +279,9 @@ jobs:
         with:
           tag_name: ${{ needs.metadata.outputs.ref }}
           name: MIA ${{ needs.metadata.outputs.version }}
-          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft }}
+          # Only a manual run can opt out of a draft. A pushed tag always builds a draft, so
+          # nothing goes public before the artifacts have been checked and the draft is published.
+          draft: ${{ github.event_name != 'workflow_dispatch' || inputs.draft }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: release/*

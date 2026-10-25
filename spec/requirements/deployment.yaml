@@ -64,3 +64,16 @@ requirements:
   implemented_in:
   - tools/scripts/detect_devices.py
   - tools/scripts/network_scanner.py
+- id: REQ-DEP-007
+  title: Release build inputs
+  statement: The release workflow shall build from paths that exist in the repository and shall publish a release
+    triggered by a pushed tag as a draft, so a release is only made public after its artifacts have been checked.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every path the Raspberry Pi backend bundle archives, and every path the compile check lists, exists
+  - Every Python source under apps/rpi-backend and orchestration compiles
+  - A tag push builds a draft release, and only a manual run can opt out of the draft
+  implemented_in:
+  - .github/workflows/release.yml
+  not_proven: The workflow has not run end to end since the repository was restructured; only its path list, compile
+    check and draft rule are asserted. The Android signing secrets may be absent, which yields a debug APK only.
