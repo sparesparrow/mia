@@ -22,8 +22,8 @@ class RulesEngineImpl @Inject constructor() : RulesEngine {
 			alerts.add(
 				VehicleAlert(
 					severity = AlertSeverity.WARNING,
-					code = "FUEL_LOW",
-					message = "Palivo dochází. Nejbližší čerpačka v dosahu."
+					code = CarWarningCodes.FUEL_LOW,
+					message = CarWarningTexts.FUEL_LOW
 				)
 			)
 		}
@@ -32,8 +32,8 @@ class RulesEngineImpl @Inject constructor() : RulesEngine {
 			alerts.add(
 				VehicleAlert(
 					severity = AlertSeverity.CRITICAL,
-					code = "ENGINE_OVERHEAT",
-					message = "POZOR! Motor přehřívá. Zastavte bezpečně."
+					code = CarWarningCodes.ENGINE_OVERHEAT,
+					message = CarWarningTexts.ENGINE_OVERHEAT
 				)
 			)
 		}
