@@ -148,6 +148,21 @@ keyAlias=your_key_alias
 keyPassword=your_key_password
 ```
 
+## 🔌 Connecting to the Pi
+
+The app reaches the Pi's API (REST on port 8000, plus the `/ws/telemetry` and `/ws/voice` WebSockets) at the
+address in **Settings → Pi connection**:
+
+- **Pi address**: an IP or host name (`192.168.1.50`, `pi.local:8000`) or a URL. Without a port the app uses 8000.
+  Leave it blank to use the address built into the app (`MIA_API_BASE_URL` / `MIA_WS_BASE_URL` at build time;
+  `10.0.2.2:8000`, the host machine, in debug builds).
+- **API key**: required once the Pi has `MIA_API_KEY` set. It is sent only in the `X-API-Key` header, only to the
+  address entered with it, and is never written to the audit log. A key typed without an address is ignored.
+- A new address applies when you next open the Dashboard, LED or Voice screen.
+
+The Pi serves plain HTTP, so the app allows cleartext traffic and the key travels unencrypted on the Pi's
+network (ADR-0016).
+
 ## 🔨 Building
 
 ### Using Gradle

@@ -2,6 +2,9 @@ package cz.mia.app.di
 
 import com.google.gson.Gson
 import cz.mia.app.BuildConfig
+import cz.mia.app.core.networking.PiConnection
+import cz.mia.app.core.networking.PiConnectionProvider
+import cz.mia.app.core.networking.PiRequestInterceptor
 import cz.mia.app.data.remote.api.DeviceApi
 import cz.mia.app.data.remote.api.SessionApi
 import cz.mia.app.data.remote.api.TelemetryApi
@@ -14,7 +17,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -33,6 +35,8 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
+            // The key must not reach logcat, which BODY level would otherwise print with the headers.
+            redactHeader(PiConnection.API_KEY_HEADER)
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
@@ -44,9 +48,11 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
+        piConnection: PiConnectionProvider
     ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(PiRequestInterceptor(BuildConfig.API_BASE_URL, piConnection::current))
             .addInterceptor(loggingInterceptor)
             .addInterceptor { chain ->
                 val original = chain.request()
@@ -93,12 +99,5 @@ object NetworkModule {
     @Singleton
     fun provideSessionApi(retrofit: Retrofit): SessionApi {
         return retrofit.create(SessionApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    @Named("ws_base_url")
-    fun provideWebSocketBaseUrl(): String {
-        return BuildConfig.WS_BASE_URL
     }
 }

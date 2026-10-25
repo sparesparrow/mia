@@ -172,7 +172,7 @@ requirements:
   decisions:
   - ADR-0011
   - ADR-0013
-  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. Debug builds send the API key from MIA_API_KEY or miaApiKey as X-API-Key; release builds embed none, so a release app cannot yet reach a Pi that has keys configured until the key can be entered in Settings.
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
 - id: REQ-AND-017
   title: Persona and verbosity setting
   statement: The app shall let the user choose the persona and the verbosity mode.
@@ -181,3 +181,21 @@ requirements:
   decisions:
   - ADR-0015
   not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016); the persona has no message on the wire yet and no setting.
+- id: REQ-AND-018
+  title: Pi address and API key setting
+  statement: The app shall let the user enter the Pi's address and API key in Settings, and shall send the key in the
+    X-API-Key header on REST calls, the telemetry WebSocket and the voice console, only to the Pi that was entered.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A bare IP or host name, a port, an http or https URL and ws or wss are accepted, a path is dropped, and an unusable address is refused with a reason
+  - A blank address means the build's defaults, and a key typed without an address is ignored
+  - REST calls for the build's default host go to the Pi that was entered with the key, and calls to any other host are left untouched and carry no key
+  - Printing a connection, and the HTTP logger, never show the key
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiConnection.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiConnectionProvider.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiRequestInterceptor.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/settings/SettingsViewModel.kt
+  decisions:
+  - ADR-0016
+  not_proven: The Settings screen has not been rendered or used on a device, and no phone has reached a Pi that has keys configured. The key is stored unencrypted in the app's private preferences and travels in cleartext on the Pi's network (ADR-0016). A new address applies when the Dashboard, LED or Voice screen is next opened, not to a connection that is already open. The ANPR stream URL (ANPRRepository, not reachable from any screen) still uses the build's default.
