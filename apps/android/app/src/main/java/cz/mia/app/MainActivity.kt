@@ -64,6 +64,7 @@ import cz.mia.app.features.dashboard.DashboardViewModel
 import cz.mia.app.features.dashboard.PolicyViewModel
 import cz.mia.app.features.settings.SettingsViewModel
 import cz.mia.app.features.led.LEDMonitorViewModel
+import cz.mia.app.ui.components.CitroenReadings
 import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.DashboardGauges
 import cz.mia.app.ui.screens.CameraPreviewScreen
@@ -185,10 +186,8 @@ class MainActivity : ComponentActivity() {
 
 			Spacer(Modifier.height(16.dp))
 
-			// Citroën C4 specific controls
-			CitroenControls(latest)
-
-			Spacer(Modifier.height(16.dp))
+			// Citroën C4 readings: text only, nothing is shown when the Pi sends none (ADR-0006)
+			CitroenReadings(latest)
 
 			// Service control buttons
 			Row(
@@ -350,107 +349,6 @@ private fun PolicyAdvisory(message: String?, mode: String, battery: Int) {
 	}
 }
 
-
-@Composable
-private fun CitroenControls(latest: TelemetryEntity?) {
-	Column(modifier = Modifier.fillMaxWidth()) {
-		Text("Citroën C4 Controls", style = MaterialTheme.typography.titleMedium)
-
-		Spacer(Modifier.height(8.dp))
-
-		// DPF Controls
-		if (latest?.dpfSootMass != null) {
-			Text("DPF Management", style = MaterialTheme.typography.titleSmall)
-			Spacer(Modifier.height(4.dp))
-
-			Row(
-				modifier = Modifier.fillMaxWidth(),
-				horizontalArrangement = Arrangement.spacedBy(8.dp)
-			) {
-				OutlinedButton(
-					onClick = {
-						// TODO: Implement DPF status check via MCP bridge
-						// This would send command to automotive-mcp-bridge
-					},
-					modifier = Modifier.weight(1f)
-				) {
-					Icon(Icons.Default.Info, contentDescription = null)
-					Spacer(Modifier.width(8.dp))
-					Text("Check DPF")
-				}
-
-				Button(
-					onClick = {
-						// TODO: Implement DPF regeneration via MCP bridge
-						// This would send regeneration command to citroen-c4-bridge
-					},
-					modifier = Modifier.weight(1f),
-					enabled = latest.dpfStatus == "ok" || latest.dpfStatus == "warning",
-					colors = ButtonDefaults.buttonColors(
-						containerColor = Color(0xFF4CAF50) // Green for regeneration
-					)
-				) {
-					Icon(Icons.Default.Refresh, contentDescription = null)
-					Spacer(Modifier.width(8.dp))
-					Text("Regenerate")
-				}
-			}
-
-			Spacer(Modifier.height(8.dp))
-		}
-
-		// AdBlue Controls
-		if (latest?.adBlueLevel != null) {
-			Text("AdBlue System", style = MaterialTheme.typography.titleSmall)
-			Spacer(Modifier.height(4.dp))
-
-			OutlinedButton(
-				onClick = {
-					// TODO: Implement AdBlue status check via MCP bridge
-				},
-				modifier = Modifier.fillMaxWidth()
-			) {
-				Icon(Icons.Default.LocalGasStation, contentDescription = null)
-				Spacer(Modifier.width(8.dp))
-				Text("Check AdBlue Level (${latest.adBlueLevel}%)")
-			}
-
-			Spacer(Modifier.height(8.dp))
-		}
-
-		// Diagnostics
-		Text("Diagnostics", style = MaterialTheme.typography.titleSmall)
-		Spacer(Modifier.height(4.dp))
-
-		Row(
-			modifier = Modifier.fillMaxWidth(),
-			horizontalArrangement = Arrangement.spacedBy(8.dp)
-		) {
-			OutlinedButton(
-				onClick = {
-					// TODO: Implement full diagnostics via MCP bridge
-					// This would run comprehensive vehicle health check
-				},
-				modifier = Modifier.weight(1f)
-			) {
-				Icon(Icons.Default.Build, contentDescription = null)
-				Spacer(Modifier.width(8.dp))
-				Text("Run Diag")
-			}
-
-			OutlinedButton(
-				onClick = {
-					// TODO: Implement DTC code reading via MCP bridge
-				},
-				modifier = Modifier.weight(1f)
-			) {
-				Icon(Icons.Default.Warning, contentDescription = null)
-				Spacer(Modifier.width(8.dp))
-				Text("Check DTC")
-			}
-		}
-	}
-}
 
 @Composable
 private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
