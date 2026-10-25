@@ -26,18 +26,24 @@ import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import cz.mia.app.core.rules.RulesEngine
+import cz.mia.app.core.rules.AlertSink
+import cz.mia.app.core.rules.CarRules
+import cz.mia.app.core.rules.CarWarningAnnouncer
 import cz.mia.app.core.voice.VoiceManager
+import cz.mia.app.data.remote.websocket.Cycle1TelemetrySource
 import cz.mia.app.data.repositories.EventRepository
 import cz.mia.app.core.networking.ConnectivityObserver
 
-class DrivingService : LifecycleService() {
+class DrivingService : LifecycleService(), AlertSink {
 
 	lateinit var bleManager: BLEManager
 
@@ -51,7 +57,9 @@ class DrivingService : LifecycleService() {
 
 	lateinit var voiceManager: VoiceManager
 
-	lateinit var rulesEngine: RulesEngine
+	lateinit var carWarnings: CarWarningAnnouncer
+
+	lateinit var cycle1Source: Cycle1TelemetrySource
 
 	lateinit var events: EventRepository
 
@@ -71,6 +79,9 @@ class DrivingService : LifecycleService() {
 	@Volatile
 	private var appliedSamplingMode: SamplingMode? = null
 
+	/** The collectors run while the service runs; each is its own coroutine so one never blocks another. */
+	private var collectors: Job? = null
+
 	override fun onCreate() {
 		super.onCreate()
 		val entryPoint = EntryPointAccessors.fromApplication(
@@ -83,7 +94,8 @@ class DrivingService : LifecycleService() {
 		anprManager = entryPoint.anprManager()
 		dvrManager = entryPoint.dvrManager()
 		voiceManager = entryPoint.voiceManager()
-		rulesEngine = entryPoint.rulesEngine()
+		carWarnings = entryPoint.carWarnings()
+		cycle1Source = entryPoint.cycle1Source()
 		events = entryPoint.events()
 		connectivityObserver = entryPoint.connectivityObserver()
 		systemPolicyManager = entryPoint.systemPolicyManager()
@@ -128,6 +140,8 @@ class DrivingService : LifecycleService() {
 
 	override fun onDestroy() {
 		super.onDestroy()
+		collectors?.cancel()
+		collectors = null
 		serviceScope.cancel()
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
 			stopForeground(STOP_FOREGROUND_REMOVE)
@@ -148,25 +162,36 @@ class DrivingService : LifecycleService() {
 			onLost = { /* optional: update state or schedule retry */ }
 		)
 		
+		startCollectors()
 		serviceScope.launch {
-			try {
-				// Initialize managers
-				bleManager.initialize()
-				mqttManager.connect()
-				obdManager.startMonitoring()
-				anprManager.startDetection()
-				dvrManager.startRecording()
-				
-				_serviceState.value = ServiceState.RUNNING
-				
-				// Start data collection
-				collectVehicleData()
-				collectAnprEvents()
-				collectPolicy()
-				
-			} catch (e: Exception) {
-				_serviceState.value = ServiceState.ERROR
+			// One manager failing to start (no Bluetooth, no camera) must not stop the others or the collectors.
+			val starters = listOf(
+				"BLE" to suspend { bleManager.initialize() },
+				"MQTT" to suspend { mqttManager.connect() },
+				"OBD" to suspend { obdManager.startMonitoring() },
+				"ANPR" to suspend { anprManager.startDetection() },
+				"DVR" to suspend { dvrManager.startRecording() },
+			)
+			val failures = starters.mapNotNull { (name, start) ->
+				try {
+					start()
+					null
+				} catch (e: Exception) {
+					Log.e(TAG, "$name failed to start", e)
+					name
+				}
 			}
+			_serviceState.value = if (failures.size == starters.size) ServiceState.ERROR else ServiceState.RUNNING
+		}
+	}
+
+	private fun startCollectors() {
+		if (collectors?.isActive == true) return
+		collectors = serviceScope.launch {
+			launch { collectVehicleData() }
+			launch { collectCycle1Warnings() }
+			launch { collectAnprEvents() }
+			launch { collectPolicy() }
 		}
 	}
 
@@ -174,6 +199,8 @@ class DrivingService : LifecycleService() {
 		_serviceState.value = ServiceState.STOPPING
 		
 		connectivityObserver.stop()
+		collectors?.cancel()
+		collectors = null
 		
 		serviceScope.launch {
 			try {
@@ -192,11 +219,9 @@ class DrivingService : LifecycleService() {
 		}
 	}
 
-	private fun collectPolicy() {
-		serviceScope.launch {
-			systemPolicyManager.state.collect { newState ->
-				applyPolicy(newState.samplingMode)
-			}
+	private suspend fun collectPolicy() {
+		systemPolicyManager.state.collect { newState ->
+			applyPolicy(newState.samplingMode)
 		}
 	}
 
@@ -248,9 +273,25 @@ class DrivingService : LifecycleService() {
 			// Persist & publish
 			serviceScope.launch { events.recordTelemetry(obdData) }
 			mqttManager.publishVehicleTelemetry(obdData)
-			
-			// Check for alerts
-			checkAlerts(obdData)
+
+			carWarnings.update(CarRules.fromObd(obdData), this@DrivingService)
+		}
+	}
+
+	/**
+	 * Evaluates the Pi's Cycle 1 telemetry once a second (REQ-AND-019). A tick rather than per message, because
+	 * a limit must hold for its dwell time and a stale envelope must count as unknown even when nothing arrives.
+	 */
+	private suspend fun collectCycle1Warnings() {
+		val lease = cycle1Source.acquire()
+		try {
+			while (serviceScope.isActive) {
+				val readings = CarRules.fromCycle1(cycle1Source.envelope.value, cycle1Source.isStale())
+				carWarnings.update(readings, this@DrivingService)
+				delay(CYCLE1_EVALUATION_MS)
+			}
+		} finally {
+			lease.release()
 		}
 	}
 
@@ -262,20 +303,18 @@ class DrivingService : LifecycleService() {
 		}
 	}
 
-	private fun checkAlerts(obdData: OBDData) {
-		val alerts = rulesEngine.evaluate(obdData)
-		if (alerts.isNotEmpty()) {
-			alerts.forEach { alert ->
-				serviceScope.launch { events.recordAlert(alert) }
-				serviceScope.launch { mqttManager.publishAlert(alert) }
-				showAlertNotification(alert)
-				serviceScope.launch { voiceManager.speak(alert.message) }
-				dvrManager.triggerEventClip("alert_${alert.code}")
-			}
-		}
+	override suspend fun raise(alert: VehicleAlert, notificationId: Int) {
+		serviceScope.launch { events.recordAlert(alert) }
+		serviceScope.launch { mqttManager.publishAlert(alert) }
+		showAlertNotification(alert, notificationId)
+		dvrManager.triggerEventClip("alert_${alert.code}")
 	}
 
-	private fun showAlertNotification(alert: VehicleAlert) {
+	override fun withdraw(notificationId: Int) {
+		(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(notificationId)
+	}
+
+	private fun showAlertNotification(alert: VehicleAlert, notificationId: Int) {
 		val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 		
 		val intent = Intent(this, MainActivity::class.java).apply {
@@ -296,7 +335,7 @@ class DrivingService : LifecycleService() {
 			.setAutoCancel(true)
 			.build()
 		
-		notificationManager.notify(alert.hashCode(), notification)
+		notificationManager.notify(notificationId, notification)
 	}
 
 	private fun createNotification(): Notification {
@@ -326,6 +365,7 @@ class DrivingService : LifecycleService() {
 		private const val TAG = "DrivingService"
 		private const val NOTIFICATION_ID = 1001
 		private const val CHANNEL_ALERTS = "alerts"
+		private const val CYCLE1_EVALUATION_MS = 1_000L
 		
 		const val ACTION_START = "cz.mia.app.START_DRIVING_SERVICE"
 		const val ACTION_STOP = "cz.mia.app.STOP_DRIVING_SERVICE"
@@ -343,7 +383,8 @@ interface DrivingServiceEntryPoint {
 	fun anprManager(): ANPRManager
 	fun dvrManager(): DVRManager
 	fun voiceManager(): VoiceManager
-	fun rulesEngine(): RulesEngine
+	fun carWarnings(): CarWarningAnnouncer
+	fun cycle1Source(): Cycle1TelemetrySource
 	fun events(): EventRepository
 	fun connectivityObserver(): ConnectivityObserver
 	fun systemPolicyManager(): SystemPolicyManager

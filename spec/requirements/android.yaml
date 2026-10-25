@@ -89,21 +89,30 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/core/networking/ConnectivityObserver.kt
 - id: REQ-AND-009
   title: Spoken feedback
-  statement: The app shall speak prompts through text-to-speech with a bounded priority queue in Czech or English.
+  statement: The app shall speak prompts through text-to-speech with a bounded queue in Czech or English, and shall be
+    able to interrupt current speech for an urgent prompt.
   evidence: implemented_and_ci_tested
   acceptance:
-  - Speech requests queue by priority up to the maximum size
-  - Rate and pitch are clamped
+  - A request is added to the engine's queue behind what is already being said
+  - An immediate request flushes the queue and is spoken at once
+  - At most 20 unfinished utterances are handed to the engine; later requests are dropped
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/voice/VoiceManager.kt
+  not_proven: Never heard on a phone; whether the phone has a Czech voice installed is not checked. Priority sets only
+    the volume, not the order; rate and pitch clamping has no test against the real class.
 - id: REQ-AND-010
   title: Rules engine
-  statement: The app shall evaluate client-side automation rules.
+  statement: The app shall evaluate client-side rules on the BLE OBD readings and on the Pi's Cycle 1 telemetry.
   evidence: implemented_and_ci_tested
   acceptance:
   - Rules fire only when their conditions hold
+  - Coolant above 105 °C, battery below 11.5 V or above 14.8 V, engine speed above 6000 rpm and fuel below 20 % are past
+    their limits; each clears only past its clear value (100 °C, 11.8 V, 14.5 V, 5700 rpm, 25 %)
+  - A Cycle 1 value counts only with ignition on, a fresh envelope and a confidence of at least 0.8
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/rules/RulesEngine.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarLimits.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarRules.kt
 - id: REQ-AND-011
   title: Local database and repositories
   statement: The app shall store alerts, ANPR events, telemetry, clips and audit records locally.
@@ -121,8 +130,12 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - The canonical envelope parses into typed signal values
+  - The dashboard and the driving service share one connection, open while either needs it, which follows a change of
+    the Pi address or key
+  - An envelope whose timestamp has not changed for 10 s counts as stale
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/data/remote/dto/Cycle1Telemetry.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/Cycle1TelemetrySource.kt
   - apps/android/app/src/main/java/cz/mia/app/ui/components/Cycle1TelemetryCard.kt
   - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
   decisions:
@@ -201,4 +214,33 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/features/settings/SettingsViewModel.kt
   decisions:
   - ADR-0016
-  not_proven: The Settings screen has not been rendered or used on a device, and no phone has reached a Pi that has keys configured. The key is stored unencrypted in the app's private preferences and travels in cleartext on the Pi's network (ADR-0016). A new address applies when the Dashboard, LED or Voice screen is next opened, not to a connection that is already open. The ANPR stream URL (ANPRRepository, not reachable from any screen) still uses the build's default.
+  not_proven: The Settings screen has not been rendered or used on a device, and no phone has reached a Pi that has keys configured. The key is stored unencrypted in the app's private preferences and travels in cleartext on the Pi's network (ADR-0016). A new address applies at once to the Cycle 1 telemetry (Dashboard and driving service), and to the LED and Voice screens only when they are next opened. The ANPR stream URL (ANPRRepository, not reachable from any screen) still uses the build's default.
+- id: REQ-AND-019
+  title: Spoken car warnings
+  statement: While the driving service runs, the app shall warn by voice and notification when a Cycle 1 signal from
+    the Pi or a BLE OBD reading passes a limit, once per occurrence until it clears, with the value and unit first and a
+    recommendation after; a critical warning interrupts other speech.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A condition warns only after it has held for its dwell time (coolant 10 s, battery 60 s, engine speed 3 s, fuel 30 s),
+    and a dip below the limit restarts the wait
+  - A warned condition does not warn again until it has been back past its clear value for 5 s; a minute without data
+    withdraws it
+  - One occurrence raises one alert, under a notification id that is fixed per condition, and one utterance, whichever
+    source reported it
+  - Every Czech and English text names the value and unit in its first sentence and gives a recommendation after it
+  - A critical warning is spoken at once and flushes the queue; a warning is queued with high priority
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/AlertThrottle.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/WarningText.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarWarningAnnouncer.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/Cycle1TelemetrySource.kt
+  decisions:
+  - ADR-0006
+  - ADR-0009
+  safety: Read-only. The warnings use telemetry the app already receives; nothing is sent to the car (ADR-0006).
+  not_proven: Never spoken on a phone or heard in the car, and never driven by a real Pi stream. The limits are repo
+    defaults, not checked against the A4 8H engine. Warnings run only after the user starts the driving service. The
+    DrivingService wiring (independent collectors, the alert record, MQTT alert, notification and clip behind each
+    raised alert) has no unit test of its own; it compiles and the parts it calls are tested.

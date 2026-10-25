@@ -61,7 +61,7 @@ All events use JSON format with the following structure:
   "event_type": "vehicle.alerts",
   "payload": {
     "severity": "warning|error|critical",
-    "code": "FUEL_LOW|ENGINE_OVERHEAT|DTC_DETECTED",
+    "code": "FUEL_LOW|ENGINE_OVERHEAT|BATTERY_LOW|BATTERY_HIGH|RPM_HIGH|DTC_DETECTED",
     "message": "Palivo dochází. Nejbližší čerpačka 4km.",
     "action_required": true,
     "timestamp": "2025-01-15T10:30:00Z"

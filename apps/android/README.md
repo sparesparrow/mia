@@ -158,7 +158,8 @@ address in **Settings → Pi connection**:
   `10.0.2.2:8000`, the host machine, in debug builds).
 - **API key**: required once the Pi has `MIA_API_KEY` set. It is sent only in the `X-API-Key` header, only to the
   address entered with it, and is never written to the audit log. A key typed without an address is ignored.
-- A new address applies when you next open the Dashboard, LED or Voice screen.
+- A new address applies at once to the Dashboard's Cycle 1 telemetry, and to the LED and Voice screens when you next
+  open them.
 
 The Pi serves plain HTTP, so the app allows cleartext traffic and the key travels unencrypted on the Pi's
 network (ADR-0016).
