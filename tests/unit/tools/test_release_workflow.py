@@ -82,3 +82,16 @@ def test_a_pushed_tag_builds_a_draft_and_only_a_manual_run_can_opt_out():
     assert (
         "== 'workflow_dispatch' &&" not in expression
     )  # the old rule: draft only when run by hand
+
+
+def test_the_cpp_job_installs_the_library_behind_every_unconditional_include():
+    """core/MQTTReader.h includes <mosquitto.h> even with WITH_HARDWARE=OFF, which the release uses."""
+    core = ROOT / "apps" / "rpi-backend" / "cpp-audio" / "core"
+    includes_mosquitto = any(
+        "#include <mosquitto.h>" in path.read_text(encoding="utf-8", errors="ignore")
+        for path in core.rglob("*.h")
+    )
+    assert (
+        includes_mosquitto
+    ), "no core header includes <mosquitto.h> any more; drop this check"
+    assert "libmosquitto-dev" in _step("cpp", "Install build dependencies")["run"]
