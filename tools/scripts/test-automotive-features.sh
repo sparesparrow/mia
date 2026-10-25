@@ -120,29 +120,6 @@ test_dashboard() {
     sleep 2
     log_success "Stop service button tapped"
 
-    # Test Citroen C4 controls
-    log_info "Testing Citroen C4 controls..."
-
-    # DPF Check button (if visible)
-    adb_cmd shell input tap 300 1400  # Check DPF
-    sleep 1
-
-    # DPF Regenerate button
-    adb_cmd shell input tap 700 1400  # Regenerate
-    sleep 1
-
-    # AdBlue Check button
-    adb_cmd shell input tap 500 1600  # Check AdBlue
-    sleep 1
-
-    # Run Diagnostics button
-    adb_cmd shell input tap 300 1700  # Run Diag
-    sleep 1
-
-    # Check DTC button
-    adb_cmd shell input tap 700 1700  # Check DTC
-    sleep 1
-
     log_success "Dashboard features tested"
 }
 

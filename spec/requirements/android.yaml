@@ -32,7 +32,9 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
   - apps/android/app/src/main/java/cz/mia/app/ui/components/Gauges.kt
   - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt
-  notes: The emulator dashboard scenario in android-test.yml only checks that the screen opens.
+  notes: The emulator dashboard scenario in android-test.yml only checks that the screen opens. The Citroën values
+    (DPF soot, status, filter efficiency, AdBlue) are text only, with no button that starts a regeneration or
+    any other action (ADR-0006); JVM and instrumented tests cover which rows appear, not the WebSocket gauges.
 - id: REQ-AND-004
   title: ANPR on Android
   statement: The app shall recognise number plates from the camera and store only salted plate hashes.
