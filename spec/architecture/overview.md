@@ -29,9 +29,13 @@ rozhodnutí v [ADR](../decisions/README.md).
 
 ## Soukromí a bezpečnost
 - Zpracování zůstává v autě (edge-only). SPZ se v aplikaci ukládají jen jako HMAC-SHA256 otisk
-  (`apps/android/app/src/main/java/cz/mia/app/core/security/PlateHasher.kt`). Klíč HMAC je dnes konstanta v kódu, takže otisk sám
-  o sobě SPZ nechrání; klíč pro každou instalaci zvlášť je v plánu.
-- Retence záznamů v aplikaci je nastavitelná, výchozí 2 dny.
+  (`apps/android/app/src/main/java/cz/mia/app/core/security/PlateIdentity.kt`). Klíč má každá instalace vlastní,
+  32 náhodných bajtů mimo zálohy; mimo tento telefon otisk nic neznamená
+  ([ADR-0018](../decisions/0018-per-install-plate-key-and-black-book.md)).
+- Černá kniha (SPZ, na které má aplikace upozornit) a upozornění na auto, které se opakovaně objevuje, zůstávají
+  v telefonu: oznámení a hlas, nic přes MQTT.
+- Retence záznamů v aplikaci je nastavitelná, výchozí 2 dny, a platí i v režimu inkognito. Černá kniha retenci
+  nepodléhá; položky maže uživatel.
 - Spojení telefon ↔ Pi je prostý HTTP s API klíčem v hlavičce `X-API-Key` (ADR-0016). TLS na Pi zatím není
   (issue #139), párování přes QR ani připínání certifikátů neexistuje.
 - Hlasová data zůstávají na Pi s omezenou retencí ([ADR-0014](../decisions/0014-voice-data-and-privacy.md)).

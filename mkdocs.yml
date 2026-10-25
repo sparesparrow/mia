@@ -78,6 +78,7 @@ nav:
       - 0015 Personas are data: spec/decisions/0015-personas-are-data.md
       - 0016 Android over plain HTTP: spec/decisions/0016-android-reaches-the-pi-over-plain-http.md
       - 0017 MQTT topic contract: spec/decisions/0017-mqtt-topic-namespace.md
+      - 0018 Plate key and black book: spec/decisions/0018-per-install-plate-key-and-black-book.md
     - Architecture:
       - Architecture Index: spec/architecture/README.md
       - System Overview: spec/architecture/overview.md

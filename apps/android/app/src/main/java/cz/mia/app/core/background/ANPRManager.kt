@@ -23,7 +23,7 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import cz.mia.app.core.camera.AnprPostprocessor
-import cz.mia.app.core.security.PlateHasher
+import cz.mia.app.core.security.PlateIdentity
 import cz.mia.app.core.storage.PreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -125,7 +125,8 @@ data class ANPREvent(
 @Singleton
 class ANPRManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val prefs: PreferencesRepository
+    private val prefs: PreferencesRepository,
+    private val plates: PlateIdentity,
 ) : ANPRManager {
 
     companion object {
@@ -143,9 +144,6 @@ class ANPRManagerImpl @Inject constructor(
         
         // Plate pattern regex (European/CZ plates)
         private val PLATE_PATTERN = Regex("^[A-Z0-9]{4,10}$")
-        
-        // HMAC secret for plate hashing (in production, this would be securely stored)
-        private val HASH_SECRET = "mia-anpr-secret".toByteArray(Charsets.UTF_8)
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -364,8 +362,8 @@ class ANPRManagerImpl @Inject constructor(
                 val (finalPlate, bonus) = AnprPostprocessor.applyRegionHeuristics(plate.normalizedText, region)
                 val finalConfidence = AnprPostprocessor.tuneConfidence(plate.confidence, bonus)
                 
-                // Hash the plate for privacy
-                val plateHash = PlateHasher.hmacSha256(finalPlate, HASH_SECRET)
+                // Hash the plate with this install's key (ADR-0018)
+                val plateHash = plates.hash(finalPlate)
                 
                 // Check debounce
                 val now = System.currentTimeMillis()
@@ -414,7 +412,7 @@ class ANPRManagerImpl @Inject constructor(
         val region = prefs.anprRegion.first()
         val (normPlate, bonus) = AnprPostprocessor.applyRegionHeuristics(rawText, region)
         val tuned = AnprPostprocessor.tuneConfidence(baseConfidence, bonus)
-        val plateHash = PlateHasher.hmacSha256(normPlate, HASH_SECRET)
+        val plateHash = plates.hash(normPlate)
         _events.emit(ANPREvent(plateHash = plateHash, confidence = tuned, snapshotId = snapshotId, region = region))
     }
 }

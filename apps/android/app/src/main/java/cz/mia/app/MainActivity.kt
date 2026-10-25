@@ -55,12 +55,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import cz.mia.app.core.background.DrivingService
 import cz.mia.app.core.background.SamplingMode
 import cz.mia.app.data.db.AlertEntity
-import cz.mia.app.data.db.AnprEventEntity
-import cz.mia.app.data.db.ClipEntity
 import cz.mia.app.data.db.TelemetryEntity
 import cz.mia.app.features.alerts.AlertsViewModel
-import cz.mia.app.features.anpr.AnprViewModel
-import cz.mia.app.features.clips.ClipsViewModel
 import cz.mia.app.features.dashboard.DashboardViewModel
 import cz.mia.app.features.dashboard.PolicyViewModel
 import cz.mia.app.features.settings.SettingsViewModel
@@ -68,7 +64,7 @@ import cz.mia.app.features.led.LEDMonitorViewModel
 import cz.mia.app.ui.components.CitroenReadings
 import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.DashboardGauges
-import cz.mia.app.ui.screens.CameraPreviewScreen
+import cz.mia.app.ui.screens.camera.CameraScreen
 import cz.mia.app.ui.screens.OBDPairingScreen
 import cz.mia.app.ui.screens.VoiceConsoleScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -147,7 +143,7 @@ class MainActivity : ComponentActivity() {
 			when (selected) {
 				0 -> DashboardScreen(Modifier.padding(padding))
 				1 -> AlertsScreen(Modifier.padding(padding))
-				2 -> CameraPreviewScreen(Modifier.padding(padding))
+				2 -> CameraScreen(Modifier.padding(padding))
 				3 -> OBDPairingScreen(Modifier.padding(padding))
 				4 -> LEDMonitorScreen(Modifier.padding(padding))
 				5 -> VoiceConsoleScreen(Modifier.padding(padding))
@@ -273,27 +269,6 @@ class MainActivity : ComponentActivity() {
 		LazyColumn(modifier = modifier.fillMaxSize().padding(16.dp)) {
 			items(vm.recent.value) { alert: AlertEntity ->
 				Text("[${alert.severity}] ${alert.message}")
-			}
-		}
-	}
-
-	@Composable
-	private fun AnprScreen(modifier: Modifier = Modifier) {
-		val vm: AnprViewModel = hiltViewModel()
-		LazyColumn(modifier = modifier.fillMaxSize().padding(16.dp)) {
-			items(vm.recent.value) { ev: AnprEventEntity ->
-				Text("ANPR: ${ev.plateHash.take(8)}…  conf=${ev.confidence}")
-			}
-		}
-	}
-
-	@Composable
-	private fun ClipsScreen(modifier: Modifier = Modifier) {
-		val vm: ClipsViewModel = hiltViewModel()
-		val clips by vm.clips.collectAsState(initial = emptyList())
-		LazyColumn(modifier = modifier.fillMaxSize().padding(16.dp)) {
-			items(clips) { clip: ClipEntity ->
-				Text("Clip: ${clip.reason}  ${clip.filePath}  offloaded=${clip.offloaded}")
 			}
 		}
 	}

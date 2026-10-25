@@ -23,6 +23,7 @@ beyond their status line.
 | [0015](0015-personas-are-data.md) | Personas are data, not code | Proposed |
 | [0016](0016-android-reaches-the-pi-over-plain-http.md) | The Android app reaches the Pi over plain HTTP, with the API key in a header | Accepted |
 | [0017](0017-mqtt-topic-namespace.md) | One MQTT topic contract: `spec/interfaces/topics.md` | Proposed |
+| [0018](0018-per-install-plate-key-and-black-book.md) | Plate hashes use a per-install key; the black book outlives retention | Proposed |
 
 ## Template
 

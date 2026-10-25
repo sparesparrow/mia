@@ -54,9 +54,12 @@ The application follows a clean architecture pattern with the following layers:
 ### ANPR (License Plate Recognition)
 - Real-time camera analysis using CameraX
 - ML Kit text recognition with region-specific heuristics
-- Privacy-preserving plate hashing
+- Plates stored only as HMAC hashes, with a key made per install and kept out of backups (ADR-0018)
 - Confidence-based filtering
 - Support for CZ and EU plate formats
+- Black book: plates to be told about, added by typing or from a recent sighting (Camera → Plates)
+- An alert when the same car turns up again and again; both alerts stay on the phone, never MQTT
+- Camera tab: Live, Plates, Clips and the Pi's plate check, which uses the Pi address and key from Settings
 
 ### DVR Recording
 - Continuous video recording with rolling buffer

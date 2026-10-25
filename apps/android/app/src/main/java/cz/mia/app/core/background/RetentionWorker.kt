@@ -22,8 +22,8 @@ class RetentionWorker @AssistedInject constructor(
 	private val anprDao: AnprEventDao,
 	private val prefs: PreferencesRepository
 ) : CoroutineWorker(appContext, workerParams) {
+	/** Deletes what is older than the retention period, in incognito too: incognito must never keep data longer. */
 	override suspend fun doWork(): Result {
-		if (prefs.incognito().first()) return Result.success()
 		val days = prefs.retentionDays().first().coerceIn(1, 90)
 		val threshold = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(days.toLong())
 		telemetryDao.deleteOlderThan(threshold)

@@ -3,14 +3,13 @@ package cz.mia.app.data.repository
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import cz.mia.app.BuildConfig
+import cz.mia.app.core.networking.PiConnectionProvider
 import cz.mia.app.presentation.screens.anpr.PlateDetection
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import org.json.JSONObject
@@ -20,15 +19,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
+/** The Pi's plate check, at the address and with the key from Settings, read again for every call. */
 @Singleton
-class ANPRRepository @Inject constructor() {
+class ANPRRepository @Inject constructor(
+    private val pi: PiConnectionProvider,
+) {
 
     companion object {
         private const val TAG = "ANPRRepository"
     }
-
-    private val apiBaseUrl = BuildConfig.API_BASE_URL.trimEnd('/')
-    private val wsStreamUrl = "${BuildConfig.WS_BASE_URL.trimEnd('/')}/anpr/stream"
 
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -52,10 +51,7 @@ class ANPRRepository @Inject constructor() {
 
             val body = json.toString().toRequestBody("application/json".toMediaType())
 
-            val request = Request.Builder()
-                .url("$apiBaseUrl/anpr/capture")
-                .post(body)
-                .build()
+            val request = AnprEndpoints.capture(pi.current(), body)
 
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
@@ -79,10 +75,7 @@ class ANPRRepository @Inject constructor() {
                     .addFormDataPart("auto_check_edalnice", autoCheckEdalnice.toString())
                     .build()
 
-                val request = Request.Builder()
-                    .url("$apiBaseUrl/anpr/process")
-                    .post(requestBody)
-                    .build()
+                val request = AnprEndpoints.process(pi.current(), requestBody)
 
                 httpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
@@ -124,10 +117,7 @@ class ANPRRepository @Inject constructor() {
 
     suspend fun getScanHistory(limit: Int = 50, offset: Int = 0) = withContext(Dispatchers.IO) {
         try {
-            val request = Request.Builder()
-                .url("$apiBaseUrl/anpr/history?limit=$limit&offset=$offset")
-                .get()
-                .build()
+            val request = AnprEndpoints.history(pi.current(), limit, offset)
 
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
@@ -144,10 +134,7 @@ class ANPRRepository @Inject constructor() {
 
     suspend fun getAlerts(limit: Int = 20) = withContext(Dispatchers.IO) {
         try {
-            val request = Request.Builder()
-                .url("$apiBaseUrl/anpr/alerts?limit=$limit")
-                .get()
-                .build()
+            val request = AnprEndpoints.alerts(pi.current(), limit)
 
             httpClient.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
@@ -172,7 +159,7 @@ class ANPRRepository @Inject constructor() {
         this@ANPRRepository.onConnected = onConnected
 
         try {
-            val request = Request.Builder().url(wsStreamUrl).build()
+            val request = AnprEndpoints.stream(pi.current())
             val listener = ANPRWebSocketListener(
                 onPlateDetected = onPlateDetected,
                 onError = onError,

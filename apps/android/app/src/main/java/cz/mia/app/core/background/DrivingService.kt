@@ -17,6 +17,7 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import cz.mia.app.MIAApplication.Companion.CHANNEL_ANPR
 import cz.mia.app.MIAApplication.Companion.CHANNEL_DRIVING_SERVICE
 import cz.mia.app.MainActivity
 import cz.mia.app.R
@@ -35,9 +36,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import cz.mia.app.core.anpr.PlateAlert
+import cz.mia.app.core.anpr.PlateAlertText
+import cz.mia.app.core.anpr.PlateWatch
 import cz.mia.app.core.rules.AlertSink
 import cz.mia.app.core.rules.CarRules
 import cz.mia.app.core.rules.CarWarningAnnouncer
+import cz.mia.app.core.voice.SpeechPriority
+import cz.mia.app.core.voice.SpeechRequest
 import cz.mia.app.core.voice.VoiceManager
 import cz.mia.app.data.remote.websocket.Cycle1TelemetrySource
 import cz.mia.app.data.repositories.EventRepository
@@ -58,6 +64,8 @@ class DrivingService : LifecycleService(), AlertSink {
 	lateinit var voiceManager: VoiceManager
 
 	lateinit var carWarnings: CarWarningAnnouncer
+
+	lateinit var plateWatch: PlateWatch
 
 	lateinit var cycle1Source: Cycle1TelemetrySource
 
@@ -95,6 +103,7 @@ class DrivingService : LifecycleService(), AlertSink {
 		dvrManager = entryPoint.dvrManager()
 		voiceManager = entryPoint.voiceManager()
 		carWarnings = entryPoint.carWarnings()
+		plateWatch = entryPoint.plateWatch()
 		cycle1Source = entryPoint.cycle1Source()
 		events = entryPoint.events()
 		connectivityObserver = entryPoint.connectivityObserver()
@@ -297,10 +306,30 @@ class DrivingService : LifecycleService(), AlertSink {
 
 	private suspend fun collectAnprEvents() {
 		anprManager.events.collect { event ->
-			serviceScope.launch { events.recordAnpr(event) }
+			serviceScope.launch {
+				// Stored first, so the repeated-sighting check counts this sighting too (REQ-AND-021).
+				events.recordAnpr(event)
+				plateWatch.check(event.plateHash)?.let { announcePlate(it) }
+			}
 			mqttManager.publishAnprEvent(event)
 			dvrManager.triggerEventClip("anpr_${event.plateHash.take(8)}")
 		}
+	}
+
+	/** Black-book and repeated-plate alerts stay on the phone: a notification and speech, never MQTT. */
+	private suspend fun announcePlate(alert: PlateAlert) {
+		val language = if (voiceManager.activeLocale().language == "cs") "cs" else "en"
+		val text = PlateAlertText.render(alert, language)
+		val notification = NotificationCompat.Builder(this, CHANNEL_ANPR)
+			.setContentTitle(if (language == "cs") "SPZ" else "Plate")
+			.setContentText(text)
+			.setSmallIcon(R.drawable.ic_alert)
+			.setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+			.setAutoCancel(true)
+			.build()
+		(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+			.notify(PlateAlertText.notificationId(alert), notification)
+		voiceManager.speak(SpeechRequest(text, SpeechPriority.HIGH))
 	}
 
 	override suspend fun raise(alert: VehicleAlert, notificationId: Int) {
@@ -388,6 +417,7 @@ interface DrivingServiceEntryPoint {
 	fun dvrManager(): DVRManager
 	fun voiceManager(): VoiceManager
 	fun carWarnings(): CarWarningAnnouncer
+	fun plateWatch(): PlateWatch
 	fun cycle1Source(): Cycle1TelemetrySource
 	fun events(): EventRepository
 	fun connectivityObserver(): ConnectivityObserver
