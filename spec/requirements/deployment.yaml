@@ -32,9 +32,12 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - Connection and deployment checks report failure instead of raising
+  - The Pi API's requirements file lists every third-party package api/main.py imports at startup, including
+    python-multipart for the form routes, and installs the GPIO libraries on 64-bit Raspberry Pi OS (aarch64)
   implemented_in:
   - tools/scripts/deploy-mia-rpi.sh
   - tools/scripts/deploy_rpi.py
+  - apps/rpi-backend/py-api/requirements.txt
   notes: Only deploy_rpi.py is unit-tested; deploy-mia-rpi.sh has no test.
 - id: REQ-DEP-004
   title: mDNS advertisement

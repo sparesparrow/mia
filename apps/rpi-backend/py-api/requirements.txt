@@ -1,4 +1,6 @@
 fastapi>=0.104.0
+python-multipart>=0.0.7  # Form/File uploads in the ANPR and OTA routers; FastAPI refuses to start without it
+PyYAML>=6.0  # imported by api/main.py
 argon2-cffi==25.1.0
 uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
@@ -8,5 +10,6 @@ flatbuffers>=23.5.26
 pyserial>=3.5
 aiohttp>=3.9.0
 ELM327-emulator>=1.1.1
-RPi.GPIO>=0.7.1; platform_machine == "armv7l" or platform_machine == "armv6l"
-gpiozero>=1.6.2; platform_machine == "armv7l" or platform_machine == "armv6l"
+# Pi GPIO: 64-bit Raspberry Pi OS reports aarch64; 32-bit reports armv7l/armv6l
+RPi.GPIO>=0.7.1; platform_machine == "aarch64" or platform_machine == "armv7l" or platform_machine == "armv6l"
+gpiozero>=1.6.2; platform_machine == "aarch64" or platform_machine == "armv7l" or platform_machine == "armv6l"

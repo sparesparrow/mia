@@ -3,6 +3,7 @@ FastAPI Authentication Dependencies
 Provides dependency injection for route protection.
 """
 import logging
+from datetime import datetime
 from typing import Optional
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import APIKeyHeader, APIKeyQuery
@@ -42,7 +43,8 @@ async def get_current_user(
         return APIKeyInfo(
             key_id="disabled",
             name="Auth Disabled",
-            created_at=__import__('datetime').datetime.now(),
+            hashed_key="",
+            created_at=datetime.now(),
             scopes=["admin", "read", "write"]
         )
     
