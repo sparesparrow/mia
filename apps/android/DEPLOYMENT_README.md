@@ -144,7 +144,6 @@ When testing with real Citroën C4 data:
 3. **Monitor DPF Data**:
    - Check DPF soot mass readings
    - Monitor AdBlue levels
-   - Test regeneration commands
 
 4. **Voice Commands**:
    - "Check DPF status"

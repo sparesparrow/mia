@@ -1,5 +1,13 @@
 # MIA MQTT Topics Specification v1.0
 
+> This file is the single MQTT topic contract ([ADR-0017](../decisions/0017-mqtt-topic-namespace.md)). A new
+> publisher or subscriber uses a topic from here, or adds it here in the same change.
+>
+> Legacy publishers that do not follow it yet (to be migrated, #191):
+> `device/health/{vin}` and `device/metrics/{vin}` (Android), `mia/{device_id}/{layer}/{data_type}`
+> (FlatBuffers gateway), `mia/telemetry/…` and `mia/alerts/…` (ESP32 OBD firmware),
+> `mia/camera/service/health` (USB camera service), `hardware/arduino/led/*` (hardware bridge).
+
 ## Topic Structure
 All topics follow the pattern: `{domain}/{action}/{device-id}`
 

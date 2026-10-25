@@ -126,18 +126,16 @@ pip3 install -r requirements.txt
 
 ## Deployment
 
-Use the main deployment script:
+Use the production deployment script (see [docs/install/pi-gateway.md](docs/install/pi-gateway.md)):
 
 ```bash
-sudo ./tools/scripts/deploy-raspberry-pi.sh
+sudo ./tools/scripts/deploy-production-rpi.sh
 ```
 
-This will:
-1. Install all dependencies
-2. Build C++ components
-3. Install Python services
-4. Create systemd services
-5. Enable services to start on boot
+It runs `tools/scripts/deploy-raspberry-pi.sh`, which installs the dependencies, builds the C++ components,
+copies the code to `/opt/mia`, installs the systemd units and enables them; around that it sets up and starts the
+BLE services.
+Set `MIA_API_KEY` in `/etc/mia/environment` before starting the services.
 
 ## Manual Setup
 
@@ -218,6 +216,8 @@ sudo journalctl -u mia-obd-worker -f
 ## Testing
 
 ### Test API endpoints
+
+When `MIA_API_KEY` is set on the Pi, add `-H "X-API-Key: <key>"` to every request below.
 
 ```bash
 # Health check
@@ -336,44 +336,13 @@ Once the FastAPI server is running, visit:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-## Implementation Status
+## Status and open work
 
-### Phase 1: Foundation ✅
-- [x] Project structure
-- [x] ZeroMQ messaging broker (ROUTER-DEALER)
-- [x] Message handlers
-
-### Phase 2: Hardware Integration ✅
-- [x] GPIO control worker
-- [x] Hardware abstraction layer
-
-### Phase 3: FastAPI & Remote Control ✅
-- [x] REST API endpoints
-- [x] WebSocket server
-- [x] Request validation (Pydantic)
-
-### Phase 6: Deployment ✅
-- [x] Systemd services
-- [x] Auto-start on boot
-- [x] Deployment script
-
-### Phase 7: OBD Simulator (Digital Twin) ✅
-- [x] Serial bridge for ESP32/Arduino communication
-- [x] OBD worker with ELM327 emulator integration
-- [x] Dynamic PID responses based on hardware telemetry
-- [x] ZeroMQ PUB/SUB telemetry distribution
-- [x] Hardware-in-the-loop simulation architecture
-
-## Next Steps
-
-- [ ] Complete ELM327-emulator library integration (PTY creation)
-- [ ] Add FlatBuffers schema support
-- [ ] Add sensor drivers (I2C/SPI)
-- [ ] Implement device registry
-- [ ] Add authentication/authorization
-- [ ] Add comprehensive logging
-- [ ] Performance optimization
-- [ ] OBD-II PID response validation
+What is implemented, and how far each part is proven, is in the requirements registry
+([`spec/requirements/`](spec/requirements/), served at `GET /features`): every requirement carries an evidence
+state ([ADR-0010](spec/decisions/0010-evidence-based-requirement-status.md)). Open work is tracked in
+[GitHub Issues](https://github.com/sparesparrow/mia/issues), not in this file
+([ADR-0001](spec/decisions/0001-record-decisions-and-keep-the-backlog-in-issues.md)).
 
 ## Troubleshooting
 

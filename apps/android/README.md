@@ -48,7 +48,7 @@ The application follows a clean architecture pattern with the following layers:
 ### OBD-II Communication
 - Bluetooth LE connection to ELM327/OBD-II adapters
 - Real-time vehicle telemetry (RPM, speed, fuel, coolant, engine load)
-- DTC (Diagnostic Trouble Code) reading and clearing
+- DTC (Diagnostic Trouble Code) reading (clearing writes to the ECU and is not supported, ADR-0006)
 - Adaptive sampling modes (Normal, Reduced, Minimal)
 
 ### ANPR (License Plate Recognition)
@@ -311,7 +311,6 @@ interface OBDManager {
     suspend fun stopMonitoring()
     fun setSamplingMode(mode: SamplingMode)
     suspend fun readDTCs(): List<DTCInfo>
-    suspend fun clearDTCs(): Boolean
 }
 ```
 

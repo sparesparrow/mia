@@ -47,7 +47,7 @@ Cross-cutting concerns:
 - **`tests/unit/`** - Unit tests per platform (Android, RPi, ESP32)
 - **`tests/integration/`** - Integration test scenarios and fixtures (voice→LED, OBD telemetry, etc.)
 - **`tools/ci/`** - CI helper scripts, linting, validation
-- **`tools/local-dev/`** - Developer scripts (build all, sync assets, flash firmware, start stack)
+- **`tools/local-dev/`** - Developer scripts (`build-all.sh`, car-assistant start and deploy helpers)
 
 ## Data Flow
 
@@ -117,37 +117,37 @@ Telemetry flow: MCU → serial bridge → ZMQ PUB → OBD worker → virtual PTY
 FlatBuffers schemas in `schemas/` (main: `mia.fbs`, vehicle wire wrapper: `vehicle.fbs`) define message types (VehicleTelemetry, GPIOCommand, SensorTelemetry). Generated Python bindings in `schemas/generated/python/Mia/`.
 
 ### Testing Strategy
-- **Unit tests**: Per-platform, isolated to `tests/unit/android|rpi|esp32/` (corresponding to `apps/` platforms)
+- **Unit tests**: `tests/unit/<area>/` (`rpi_backend`, `orchestration`, `schemas`, `firmware`, `infra`, `tools`); Android and C++ unit tests sit beside their Gradle and CMake builds
 - **Integration tests**: Named by business flow (e.g., `voice_command_led_brightness/`), located in `tests/integration/scenarios/`
 - **Markers**: `@pytest.mark.hardware`, `.integration`, `.slow` for selective execution
 
 ### CI/CD
 - **Workflows**: Separate files per platform in `.github/workflows/`
 - **Path-based triggers**: Each workflow only runs on changes to its platform
-- **Artifact storage**: Test reports, coverage, build logs in `.artifacts/` (gitignored)
 
 ## Development Workflow
 
 ### Local Setup
 ```bash
 # From repo root:
-./tools/local-dev/start-dev-stack.sh      # Docker + RPi backend
-./tools/ci/lint-all.sh                     # Pre-commit checks
-pytest tests/ -m "not hardware"            # Run non-hardware tests
+docker compose -f infra/docker/docker-compose.dev.yml up   # dev stack with volume mounts
+pre-commit run --all-files                                   # black, isort, flake8, bandit, yaml checks
+pytest tests/ -m "not hardware"                              # non-hardware tests
+python tools/ci/traceability.py check                        # requirement claims
 ```
 
 ### Building a New Feature
 1. Create feature branch: `git checkout -b feature/xyz`
 2. Make changes in relevant `apps/`, `orchestration/`, or `infra/` subdirectory
 3. Write tests in corresponding `tests/` location
-4. Run local validation: `./tools/ci/lint-all.sh && pytest tests/`
+4. Run local validation: `pre-commit run --all-files && pytest tests/ -m "not hardware"`
 5. Push and create PR targeting `main`
 6. CI runs platform-specific jobs based on changed paths
 
 ### Deployment
 - **Development**: `docker compose -f infra/docker/docker-compose.dev.yml up`
-- **Production RPi**: `./infra/deploy/rpi/deploy.sh` (copies to `/opt/mia/`, starts systemd services)
-- **ESP32**: `./infra/deploy/esp32/flash.sh` (uses platformio to upload firmware)
+- **Production RPi**: `sudo ./tools/scripts/deploy-production-rpi.sh` (copies to `/opt/mia/`, installs and enables the systemd units; see `docs/install/pi-gateway.md`)
+- **ESP32**: `pio run` in `apps/esp32/` (PlatformIO); the OBD firmware in `apps/esp32/firmware-obd/` builds with ESP-IDF, and a plain `idf.py build` is the passive build (ADR-0006)
 
 ## Migration Notes
 

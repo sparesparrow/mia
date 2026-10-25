@@ -1,6 +1,7 @@
 package cz.mia.app.core.background
 
-// @req REQ-AND-005
+// Not tagged with a requirement: these cases check copies of DVRManager's formulas, not DVRManagerImpl
+// (see REQ-AND-005 not_proven).
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

@@ -22,6 +22,7 @@ beyond their status line.
 | [0014](0014-voice-data-and-privacy.md) | Voice data stays local, with a bounded retention | Proposed |
 | [0015](0015-personas-are-data.md) | Personas are data, not code | Proposed |
 | [0016](0016-android-reaches-the-pi-over-plain-http.md) | The Android app reaches the Pi over plain HTTP, with the API key in a header | Accepted |
+| [0017](0017-mqtt-topic-namespace.md) | One MQTT topic contract: `spec/interfaces/topics.md` | Proposed |
 
 ## Template
 

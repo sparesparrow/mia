@@ -49,13 +49,16 @@ requirements:
 - id: REQ-AND-005
   title: Dashcam recording
   statement: The app shall record continuously, offload clips, clean up by retention policy and play clips back.
-  evidence: implemented_and_ci_tested
-  acceptance:
-  - Clip naming, the rolling buffer and storage limits behave as specified
+  evidence: implemented_untested
   implemented_in:
   - apps/android/app/src/main/java/cz/mia/app/core/background/DVRManager.kt
   - apps/android/app/src/main/java/cz/mia/app/core/background/DvrOffloadWorker.kt
   - apps/android/app/src/main/java/cz/mia/app/features/clips/ClipsViewModel.kt
+  not_proven: Recording is a stub. Nothing calls CameraPreviewViewModel.bindDVRCamera, so DVRManager.bindCamera
+    never runs; segment rotation is an empty function and the loop that deletes old segments never starts; a saved
+    clip is a copy of the last segment or a text file containing "placeholder"; DvrOffloadWorker is empty and
+    nothing calls cleanupOldClips. DVRManagerTest checks copies of the naming and size formulas, not DVRManagerImpl,
+    so it no longer counts as a test of this requirement.
 - id: REQ-AND-006
   title: MQTT client
   statement: The app shall publish and subscribe over MQTT with configurable topics.
