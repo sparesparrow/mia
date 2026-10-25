@@ -3,11 +3,14 @@ package cz.mia.app.features.led
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cz.mia.app.core.networking.PiConnection
+import cz.mia.app.core.networking.PiConnectionProvider
 import cz.mia.app.data.remote.dto.LEDState
 import cz.mia.app.data.remote.websocket.TelemetryWebSocket
 import cz.mia.app.data.remote.websocket.WebSocketState
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LEDMonitorViewModel @Inject constructor(
-    private val gson: Gson
+    private val gson: Gson,
+    private val piConnection: PiConnectionProvider
 ) : ViewModel() {
 
     companion object {
@@ -25,6 +29,8 @@ class LEDMonitorViewModel @Inject constructor(
     }
 
     private var webSocket: TelemetryWebSocket? = null
+    private var webSocketTarget: PiConnection? = null
+    private var collectors: Job? = null
 
     private val _ledState = MutableStateFlow<LEDState?>(null)
     val ledState: StateFlow<LEDState?> = _ledState.asStateFlow()
@@ -44,39 +50,46 @@ class LEDMonitorViewModel @Inject constructor(
     )
     val serviceStatuses: StateFlow<Map<String, Boolean>> = _serviceStatuses.asStateFlow()
 
-    fun initializeWebSocket(baseUrl: String) {
-        if (webSocket != null) {
+    /** Connects to the Pi in Settings; when the address or key changed since the last call, reconnects to it. */
+    fun initializeWebSocket() {
+        val target = piConnection.current()
+        if (webSocket != null && webSocketTarget == target) {
             Log.d(TAG, "WebSocket already initialized")
             return
         }
+        collectors?.cancel()
+        webSocket?.cleanup()
 
-        webSocket = TelemetryWebSocket(baseUrl, gson)
+        val socket = TelemetryWebSocket(target.wsBaseUrl, gson, target.authHeaders())
+        webSocket = socket
+        webSocketTarget = target
 
-        viewModelScope.launch {
-            webSocket?.stateFlow?.collectLatest { state ->
-                _webSocketState.value = state
-                when (state) {
-                    is WebSocketState.Connected -> {
-                        Log.d(TAG, "WebSocket connected, subscribing to LED updates")
+        collectors = viewModelScope.launch {
+            launch {
+                socket.stateFlow.collectLatest { state ->
+                    _webSocketState.value = state
+                    when (state) {
+                        is WebSocketState.Connected -> {
+                            Log.d(TAG, "WebSocket connected, subscribing to LED updates")
+                        }
+                        is WebSocketState.Disconnected -> {
+                            Log.d(TAG, "WebSocket disconnected")
+                        }
+                        is WebSocketState.Error -> {
+                            Log.e(TAG, "WebSocket error: ${state.message}")
+                        }
+                        else -> {}
                     }
-                    is WebSocketState.Disconnected -> {
-                        Log.d(TAG, "WebSocket disconnected")
-                    }
-                    is WebSocketState.Error -> {
-                        Log.e(TAG, "WebSocket error: ${state.message}")
-                    }
-                    else -> {}
                 }
             }
-        }
-
-        viewModelScope.launch {
-            webSocket?.ledStateFlow?.collectLatest { ledState ->
-                _ledState.value = ledState
-                // Update service statuses from LED state
-                ledState.serviceStatus?.let { statusString ->
-                    val statuses = parseServiceStatus(statusString)
-                    _serviceStatuses.value = statuses
+            launch {
+                socket.ledStateFlow.collectLatest { ledState ->
+                    _ledState.value = ledState
+                    // Update service statuses from LED state
+                    ledState.serviceStatus?.let { statusString ->
+                        val statuses = parseServiceStatus(statusString)
+                        _serviceStatuses.value = statuses
+                    }
                 }
             }
         }

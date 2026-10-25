@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.mia.app.core.background.DrivingService
@@ -307,6 +308,11 @@ class MainActivity : ComponentActivity() {
 		val retention = vm.retentionDays.value.toFloat()
 		val metrics = vm.metricsOptIn.value
 		val region = vm.anprRegion.value
+		val savedPiAddress = vm.piAddress.collectAsState().value
+		val savedPiApiKey = vm.piApiKey.collectAsState().value
+		var piAddressText by remember(savedPiAddress) { mutableStateOf(savedPiAddress) }
+		var piApiKeyText by remember(savedPiApiKey) { mutableStateOf(savedPiApiKey) }
+		var piAddressError by remember { mutableStateOf<String?>(null) }
 		var lastExportPath by remember { mutableStateOf("") }
 
 		Column(modifier = modifier.padding(16.dp)) {
@@ -327,6 +333,32 @@ class MainActivity : ComponentActivity() {
 			Spacer(Modifier.height(16.dp))
 			Text("ANPR Region: ${region}")
 			RowToggle(options = listOf("CZ", "EU"), selected = region, onSelected = { vm.setAnprRegion(it) })
+			Spacer(Modifier.height(16.dp))
+			Text("Pi connection")
+			OutlinedTextField(
+				value = piAddressText,
+				onValueChange = { piAddressText = it; piAddressError = null },
+				label = { Text("Pi address (blank = build default)") },
+				placeholder = { Text("192.168.1.50 or pi.local:8000") },
+				singleLine = true,
+				isError = piAddressError != null,
+				supportingText = piAddressError?.let { message -> { Text(message) } }
+			)
+			Spacer(modifier = Modifier.height(8.dp))
+			OutlinedTextField(
+				value = piApiKeyText,
+				onValueChange = { piApiKeyText = it },
+				label = { Text("API key") },
+				singleLine = true,
+				visualTransformation = PasswordVisualTransformation()
+			)
+			Spacer(modifier = Modifier.height(8.dp))
+			Button(onClick = { piAddressError = vm.savePiConnection(piAddressText, piApiKeyText) }) {
+				Text("Save connection")
+			}
+			val active = vm.preview(savedPiAddress, savedPiApiKey)
+			Text("Using: ${active.apiBaseUrl} (API key ${if (active.apiKey.isBlank()) "none" else "set"})")
+			Text("Takes effect when you open Dashboard, LED or Voice next.")
 			Spacer(Modifier.height(16.dp))
 			Button(onClick = {
 				vm.exportLogs { file -> lastExportPath = file.absolutePath }
@@ -460,7 +492,7 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 
 	// Initialize WebSocket connection
 	androidx.compose.runtime.LaunchedEffect(Unit) {
-		ledVm.initializeWebSocket(BuildConfig.WS_BASE_URL)
+		ledVm.initializeWebSocket()
 	}
 
 	val ledState by ledVm.ledState.collectAsState()

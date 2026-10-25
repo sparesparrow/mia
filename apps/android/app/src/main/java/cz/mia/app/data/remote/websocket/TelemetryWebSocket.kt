@@ -35,7 +35,9 @@ sealed class WebSocketState {
  */
 class TelemetryWebSocket(
     private val wsBaseUrl: String,
-    private val gson: Gson
+    private val gson: Gson,
+    /** Sent with the handshake; the Pi reads the API key from `X-API-Key` (REQ-SEC-001). */
+    private val headers: Map<String, String> = emptyMap()
 ) {
     companion object {
         private const val TAG = "TelemetryWebSocket"
@@ -158,7 +160,7 @@ class TelemetryWebSocket(
     private fun createAndConnectClient() {
         val uri = URI("$wsBaseUrl$TELEMETRY_ENDPOINT")
         
-        webSocketClient = object : WebSocketClient(uri) {
+        webSocketClient = object : WebSocketClient(uri, headers) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 Log.d(TAG, "WebSocket connected")
                 reconnectAttempts = 0

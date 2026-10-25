@@ -21,6 +21,7 @@ beyond their status line.
 | [0013](0013-message-envelope-and-abstract-channel.md) | Message envelope and an abstract channel for voice and console traffic | Proposed |
 | [0014](0014-voice-data-and-privacy.md) | Voice data stays local, with a bounded retention | Proposed |
 | [0015](0015-personas-are-data.md) | Personas are data, not code | Proposed |
+| [0016](0016-android-reaches-the-pi-over-plain-http.md) | The Android app reaches the Pi over plain HTTP, with the API key in a header | Accepted |
 
 ## Template
 
