@@ -75,6 +75,9 @@ struct SpokenBuilder;
 struct Transcript;
 struct TranscriptBuilder;
 
+struct Settings;
+struct SettingsBuilder;
+
 struct VoiceMessage;
 struct VoiceMessageBuilder;
 
@@ -541,11 +544,12 @@ enum class VoiceBody : uint8_t {
   FeedbackCue = 15,
   Spoken = 16,
   Transcript = 17,
+  Settings = 18,
   MIN = NONE,
-  MAX = Transcript
+  MAX = Settings
 };
 
-inline const VoiceBody (&EnumValuesVoiceBody())[18] {
+inline const VoiceBody (&EnumValuesVoiceBody())[19] {
   static const VoiceBody values[] = {
     VoiceBody::NONE,
     VoiceBody::Wake,
@@ -564,13 +568,14 @@ inline const VoiceBody (&EnumValuesVoiceBody())[18] {
     VoiceBody::StateChanged,
     VoiceBody::FeedbackCue,
     VoiceBody::Spoken,
-    VoiceBody::Transcript
+    VoiceBody::Transcript,
+    VoiceBody::Settings
   };
   return values;
 }
 
 inline const char * const *EnumNamesVoiceBody() {
-  static const char * const names[19] = {
+  static const char * const names[20] = {
     "NONE",
     "Wake",
     "Intent",
@@ -589,13 +594,14 @@ inline const char * const *EnumNamesVoiceBody() {
     "FeedbackCue",
     "Spoken",
     "Transcript",
+    "Settings",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameVoiceBody(VoiceBody e) {
-  if (flatbuffers::IsOutRange(e, VoiceBody::NONE, VoiceBody::Transcript)) return "";
+  if (flatbuffers::IsOutRange(e, VoiceBody::NONE, VoiceBody::Settings)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesVoiceBody()[index];
 }
@@ -670,6 +676,10 @@ template<> struct VoiceBodyTraits<MiaVoice::Spoken> {
 
 template<> struct VoiceBodyTraits<MiaVoice::Transcript> {
   static const VoiceBody enum_value = VoiceBody::Transcript;
+};
+
+template<> struct VoiceBodyTraits<MiaVoice::Settings> {
+  static const VoiceBody enum_value = VoiceBody::Settings;
 };
 
 bool VerifyVoiceBody(flatbuffers::Verifier &verifier, const void *obj, VoiceBody type);
@@ -2091,6 +2101,50 @@ inline flatbuffers::Offset<Transcript> CreateTranscriptDirect(
       utterance_id);
 }
 
+struct Settings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef SettingsBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VERBOSITY = 4
+  };
+  MiaVoice::Verbosity verbosity() const {
+    return static_cast<MiaVoice::Verbosity>(GetField<uint8_t>(VT_VERBOSITY, 0));
+  }
+  bool mutate_verbosity(MiaVoice::Verbosity _verbosity = static_cast<MiaVoice::Verbosity>(0)) {
+    return SetField<uint8_t>(VT_VERBOSITY, static_cast<uint8_t>(_verbosity), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_VERBOSITY, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct SettingsBuilder {
+  typedef Settings Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_verbosity(MiaVoice::Verbosity verbosity) {
+    fbb_.AddElement<uint8_t>(Settings::VT_VERBOSITY, static_cast<uint8_t>(verbosity), 0);
+  }
+  explicit SettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<Settings> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Settings>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Settings> CreateSettings(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    MiaVoice::Verbosity verbosity = MiaVoice::Verbosity::Quiet) {
+  SettingsBuilder builder_(_fbb);
+  builder_.add_verbosity(verbosity);
+  return builder_.Finish();
+}
+
 struct VoiceMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VoiceMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -2154,6 +2208,9 @@ struct VoiceMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   const MiaVoice::Transcript *body_as_Transcript() const {
     return body_type() == MiaVoice::VoiceBody::Transcript ? static_cast<const MiaVoice::Transcript *>(body()) : nullptr;
+  }
+  const MiaVoice::Settings *body_as_Settings() const {
+    return body_type() == MiaVoice::VoiceBody::Settings ? static_cast<const MiaVoice::Settings *>(body()) : nullptr;
   }
   void *mutable_body() {
     return GetPointer<void *>(VT_BODY);
@@ -2233,6 +2290,10 @@ template<> inline const MiaVoice::Spoken *VoiceMessage::body_as<MiaVoice::Spoken
 
 template<> inline const MiaVoice::Transcript *VoiceMessage::body_as<MiaVoice::Transcript>() const {
   return body_as_Transcript();
+}
+
+template<> inline const MiaVoice::Settings *VoiceMessage::body_as<MiaVoice::Settings>() const {
+  return body_as_Settings();
 }
 
 struct VoiceMessageBuilder {
@@ -2337,6 +2398,10 @@ inline bool VerifyVoiceBody(flatbuffers::Verifier &verifier, const void *obj, Vo
     }
     case VoiceBody::Transcript: {
       auto ptr = reinterpret_cast<const MiaVoice::Transcript *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case VoiceBody::Settings: {
+      auto ptr = reinterpret_cast<const MiaVoice::Settings *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

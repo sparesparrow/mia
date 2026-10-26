@@ -14,6 +14,7 @@ import MiaVoice.Led
 import MiaVoice.Op
 import MiaVoice.ServiceType
 import MiaVoice.SetVerbosity
+import MiaVoice.Settings
 import MiaVoice.Source
 import MiaVoice.Spoken
 import MiaVoice.State
@@ -74,6 +75,9 @@ sealed class ConsoleEvent {
     ) : ConsoleEvent()
 
     data class Transcript(val text: String, val utteranceId: Long) : ConsoleEvent()
+
+    /** The settings the machine uses now: after the session opens and after every change (ADR-0019). */
+    data class Settings(val verbosity: VerbosityLevel) : ConsoleEvent()
 }
 
 data class WireEnvelope(
@@ -200,6 +204,14 @@ object VoiceWire {
                     val t = Transcript()
                     message.body(t) ?: throw VoiceWireException("voice message has no body")
                     ConsoleEvent.Transcript(t.text ?: "", t.utteranceId.toLong())
+                }
+                VoiceBody.Settings -> {
+                    val t = Settings()
+                    message.body(t) ?: throw VoiceWireException("voice message has no body")
+                    ConsoleEvent.Settings(
+                        VerbosityLevel.values().firstOrNull { it.value == t.verbosity }
+                            ?: throw VoiceWireException("unknown verbosity ${t.verbosity}"),
+                    )
                 }
                 else -> throw VoiceWireException("voice message type ${message.bodyType} is not an event")
             }

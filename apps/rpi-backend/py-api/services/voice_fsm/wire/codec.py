@@ -55,6 +55,7 @@ from MiaVoice import Intent as _WIntent  # noqa: E402
 from MiaVoice import Led as _WLed  # noqa: E402
 from MiaVoice import Part as _WPart  # noqa: E402
 from MiaVoice import SafetyWarning as _WSafetyWarning  # noqa: E402
+from MiaVoice import Settings as _WSettings  # noqa: E402
 from MiaVoice import SetVerbosity as _WSetVerbosity  # noqa: E402
 from MiaVoice import Source as _WSource  # noqa: E402
 from MiaVoice import SpeakingDone as _WSpeakingDone  # noqa: E402
@@ -85,6 +86,7 @@ from ..types import (  # noqa: E402
     Intent,
     Part,
     SafetyWarning,
+    Settings,
     SetVerbosity,
     Source,
     Speak,
@@ -99,7 +101,7 @@ from .messages import FILE_IDENTIFIER, WIRE_VERSION, Envelope, Transcript  # noq
 # vtable slot of field id 6 (`payload`) in voice.fbs; a test pins it to the generated accessor
 _PAYLOAD_VTABLE_OFFSET = 4 + 2 * 6
 
-Event = Union[StateChanged, Feedback, Speak, Transcript]
+Event = Union[StateChanged, Feedback, Speak, Transcript, Settings]
 
 
 class CodecError(ValueError):
@@ -374,11 +376,20 @@ def _build_transcript(b, ev: Transcript):
     return _Body.VoiceBody.Transcript, _WTranscript.TranscriptEnd(b)
 
 
+def _build_settings(b, ev: Settings):
+    _WSettings.SettingsStart(b)
+    _WSettings.SettingsAddVerbosity(
+        b, _lookup(_VERBOSITY[0], ev.verbosity, "verbosity")
+    )
+    return _Body.VoiceBody.Settings, _WSettings.SettingsEnd(b)
+
+
 _EVENT_BUILDERS: Dict[type, Callable[[flatbuffers.Builder, Any], Tuple[int, int]]] = {
     StateChanged: _build_state_changed,
     Feedback: _build_feedback,
     Speak: _build_spoken,
     Transcript: _build_transcript,
+    Settings: _build_settings,
 }
 
 
@@ -526,6 +537,9 @@ def _read_body(body_type: int, body_table) -> Any:
     if body_type == _Body.VoiceBody.Transcript:
         t = _init(_WTranscript.Transcript, body_table)
         return Transcript(_str_of(t.Text()), t.UtteranceId())
+    if body_type == _Body.VoiceBody.Settings:
+        t = _init(_WSettings.Settings, body_table)
+        return Settings(_lookup(_VERBOSITY[1], t.Verbosity(), "verbosity"))
     raise CodecError(f"unknown voice message type {body_type}")
 
 

@@ -225,4 +225,15 @@ class StateChanged:
     current: State
 
 
-Effect = Union[Execute, Abort, Speak, StopSpeaking, MuteMic, Feedback, StateChanged]
+@dataclass(frozen=True)
+class Settings:
+    """The machine's settings as they now stand (ADR-0019). Emitted on every change; also the snapshot a
+    peer gets when its session opens, and what the settings store keeps across restarts.
+    """
+
+    verbosity: Verbosity = Verbosity.NORMAL
+
+
+Effect = Union[
+    Execute, Abort, Speak, StopSpeaking, MuteMic, Feedback, StateChanged, Settings
+]

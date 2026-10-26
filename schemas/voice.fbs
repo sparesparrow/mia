@@ -121,10 +121,15 @@ table Spoken { phrase:string (id: 0); params:[Arg] (id: 1); priority:ubyte (id: 
 // What the user said, as recognised.
 table Transcript { text:string (id: 0); utterance_id:uint (id: 1); }
 
+// The machine's settings as they now stand (ADR-0019): sent to a peer right after its session opens and to
+// every peer whenever a setting changes, so a console shows what the machine uses, not what it last asked for.
+table Settings { verbosity:Verbosity (id: 0); }
+
 union VoiceBody {
   Wake, Intent, GoNow, Cancel, Confirm, Deny, EndDictation, DictationText, SpeakingDone,
   ExecutionDone, SafetyWarning, IncomingMessage, SetVerbosity,
-  StateChanged, FeedbackCue, Spoken, Transcript
+  StateChanged, FeedbackCue, Spoken, Transcript,
+  Settings  // appended: union members are numbered in order and must never move
 }
 
 table VoiceMessage {

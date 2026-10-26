@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016
+// @req REQ-AND-016 REQ-VOICE-017
 
 import cz.mia.app.features.voice.VoiceConsoleViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -154,12 +154,30 @@ class VoiceConsoleClientTest {
     }
 
     @Test
-    fun `the verbosity is shown only after the Pi accepted it`() {
+    fun `the verbosity shown is the one the machine reports, not the one sent`() {
         val socket = connected()
-        client.send(ConsoleCommand.SetVerbosity(VerbosityLevel.CHATTY))
         assertEquals(null, client.state.value.verbosity)
+        socket.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.QUIET))
+        assertEquals(VerbosityLevel.QUIET, client.state.value.verbosity)
+
+        client.send(ConsoleCommand.SetVerbosity(VerbosityLevel.CHATTY))
         socket.reply(socket.sent.last(), WireStatus.OK)
+        assertEquals(VerbosityLevel.QUIET, client.state.value.verbosity)
+        socket.event("console-test", 3, ConsoleEvent.Settings(VerbosityLevel.CHATTY))
         assertEquals(VerbosityLevel.CHATTY, client.state.value.verbosity)
+    }
+
+    @Test
+    fun `a lost or closed connection forgets the verbosity`() {
+        val socket = connected()
+        socket.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.CHATTY))
+        socket.listener.onFailure("reset")
+        assertEquals(null, client.state.value.verbosity)
+
+        val again = connected()
+        again.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.QUIET))
+        client.disconnect()
+        assertEquals(null, client.state.value.verbosity)
     }
 
     @Test

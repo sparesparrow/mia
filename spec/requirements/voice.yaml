@@ -177,9 +177,33 @@ requirements:
 - id: REQ-VOICE-017
   title: Verbosity modes
   statement: MIA shall offer quiet, normal and chatty modes, switchable by voice and by button and remembered across drives.
-  evidence: planned
-  implemented_in: []
-  not_proven: Not yet implemented
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The machine reports its settings on every change, in any state, and a session that opens receives them on its own
+    right after the Ok to its Open; every open session sees a change
+  - The settings are stored on every change and read back at start; a missing, damaged or unknown file gives normal, and
+    a failed write never raises
+  - '"Quiet mode", "normal mode" and "chatty mode", alone or after "switch to", "go to", "set to" or "be", set the
+    verbosity; a sentence that only mentions a mode is routed as a request'
+  - The console's machine starts from the stored level, saves a change, and leaves speaking once its simulated speech ends
+  - The Android console shows the verbosity the machine reports, nothing before the first report and nothing after the
+    connection is lost
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm/settings_store.py
+  - apps/rpi-backend/py-api/services/voice_fsm/machine.py
+  - apps/rpi-backend/py-api/services/voice_fsm/bridge.py
+  - apps/rpi-backend/py-api/services/voice_fsm/wire/router.py
+  - apps/rpi-backend/py-api/services/voice_command_router.py
+  - apps/rpi-backend/py-api/api/voice_console.py
+  - schemas/voice.fbs
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  decisions:
+  - ADR-0011
+  - ADR-0019
+  not_proven: Never run on a Pi, so no setting has survived a real restart or a real drive. No steering-wheel button
+    adapter exists; the console's verbosity chips stand in for it. The console talks to a machine simulated in the API
+    process; it and the voice router share the settings file but learn of each other's changes only when they next
+    start. The spoken commands are English until Czech recognition exists (#179).
 - id: REQ-VOICE-018
   title: Proactive announcements with priority
   statement: MIA shall announce safety warnings, ignition and parking summaries and incoming phone messages by verbosity, with a warning interrupting dictation or the window and a message waiting in a queue.

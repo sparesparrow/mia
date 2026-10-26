@@ -17,6 +17,8 @@ WatchdogSec=0
 StandardOutput=journal
 StandardError=journal
 Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
+# /var/lib/mia, owned by the service user: the voice console keeps its settings there (ADR-0019).
+StateDirectory=mia
 
 [Install]
 WantedBy=multi-user.target

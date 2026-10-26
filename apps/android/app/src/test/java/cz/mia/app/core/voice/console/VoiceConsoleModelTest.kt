@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016
+// @req REQ-AND-016 REQ-VOICE-017
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -68,6 +68,14 @@ class VoiceConsoleModelTest {
         )
         assertEquals("zapni svetla", state.transcript)
         assertEquals(listOf("chain.announce (parts=lights.on, seconds=5.0)", "! warn.coolant (value=112)"), state.spoken.map { it.text })
+    }
+
+    @Test
+    fun `the verbosity is the one the machine reports`() {
+        assertEquals(null, VoiceConsoleState().verbosity)
+        val state = fold(ConsoleEvent.Settings(VerbosityLevel.CHATTY), ConsoleEvent.Settings(VerbosityLevel.QUIET))
+        assertEquals(VerbosityLevel.QUIET, state.verbosity)
+        assertEquals("verbosity quiet", state.log.last().text)
     }
 
     @Test

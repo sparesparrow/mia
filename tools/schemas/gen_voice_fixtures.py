@@ -30,6 +30,7 @@ from services.voice_fsm import (  # noqa: E402
     EndDictation,
     Feedback,
     GoNow,
+    Settings,
     SetVerbosity,
     Source,
     Speak,
@@ -170,6 +171,16 @@ def build() -> List[Dict[str, Any]]:
                 "text": "zapni světla a řekni napětí",
                 "utterance_id": 3,
             },
+        ),
+        (
+            "settings_quiet",
+            Settings(Verbosity.QUIET),
+            {"kind": "settings", "verbosity": "quiet"},
+        ),
+        (
+            "settings_chatty",
+            Settings(Verbosity.CHATTY),
+            {"kind": "settings", "verbosity": "chatty"},
         ),
     ]
     for name, event, expect in events:

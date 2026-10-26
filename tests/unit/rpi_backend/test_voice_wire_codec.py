@@ -33,6 +33,7 @@ from services.voice_fsm import (
     MuteMic,
     Part,
     SafetyWarning,
+    Settings,
     SetVerbosity,
     Source,
     Speak,
@@ -111,6 +112,8 @@ EVENTS = [
     ),
     Speak("empty.list", {"parts": []}),
     Transcript("hello", 2),
+    Settings(Verbosity.QUIET),
+    Settings(Verbosity.CHATTY),
 ]
 
 
@@ -423,3 +426,5 @@ def test_every_committed_voice_fixture_decodes_to_what_it_claims():
             assert _snake_case(type(event).__name__) == {"spoken": "speak"}.get(
                 expect["kind"], expect["kind"]
             )
+            if isinstance(event, Settings):
+                assert event.verbosity.value == expect["verbosity"], case["name"]

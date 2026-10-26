@@ -94,6 +94,7 @@ requirements:
   - The schema, the generated Python and C++ bindings, the enum-only header and the interface table agree, and CI compares them with a fresh flatc run
   - A console can send only the button commands and the verbosity setting; the channel, not the peer, sets the command source
   - Events go to every open session of the service and to no other
+  - A session that opens receives the service's snapshot (the voice settings) on its own, right after the Ok to its Open
   implemented_in:
   - schemas/voice.fbs
   - apps/rpi-backend/py-api/services/voice_fsm/wire
@@ -102,7 +103,9 @@ requirements:
   decisions:
   - ADR-0004
   - ADR-0013
-  not_proven: Only in-process and loopback peers have exchanged envelopes. No Android client or ESP32 firmware reads them, the console endpoint drives a simulated machine rather than the voice pipeline on the Pi, and the numbers were not measured on a Pi.
+  not_proven: Only in-process and loopback peers have exchanged envelopes in tests; the Android console decodes the shared
+    fixtures in its unit tests but has not been connected to a Pi. No ESP32 firmware reads them, the console endpoint drives a
+    simulated machine rather than the voice pipeline on the Pi, and the numbers were not measured on a Pi.
 - id: REQ-NET-009
   title: Abstract channel
   statement: Messages shall be sent and received through a channel interface with in-memory, stream (TCP and unix socket), UDP and WebSocket implementations, with length framing only on stream transports.

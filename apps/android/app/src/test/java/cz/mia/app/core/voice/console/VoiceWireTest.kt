@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016
+// @req REQ-AND-016 REQ-VOICE-017
 
 import MiaVoice.Led
 import MiaVoice.State
@@ -57,7 +57,8 @@ class VoiceWireTest {
     @Test
     fun `events written by the Pi decode to what the fixture says`() {
         val events = fixtures.filter { it.type == "event" }
-        assertTrue(events.size >= 7)
+        assertTrue(events.size >= 9)
+        assertTrue(events.any { it.event["kind"].asString == "settings" })
         for (fixture in events) {
             val envelope = VoiceWire.decodeEnvelope(fixture.bytes)
             assertEquals(fixture.name, fixture.session, envelope.sessionId)
@@ -88,6 +89,11 @@ class VoiceWireTest {
                 "transcript" -> assertEquals(
                     fixture.name,
                     ConsoleEvent.Transcript(expect["text"].asString, expect["utterance_id"].asLong),
+                    decoded,
+                )
+                "settings" -> assertEquals(
+                    fixture.name,
+                    ConsoleEvent.Settings(VerbosityLevel.valueOf(expect["verbosity"].asString.uppercase())),
                     decoded,
                 )
                 else -> fail("unknown fixture kind in ${fixture.name}")

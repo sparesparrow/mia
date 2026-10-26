@@ -5,7 +5,9 @@ keeps the session table. An unknown service, a wrong version or a garbled buffer
 status, never raised. ``VoiceService`` is the one service so far; it feeds peer commands to a
 ``VoiceMachine`` and turns the machine's effects into events.
 
-Replies go to the sender only. Events go to every open session of the service that produced them.
+Replies go to the sender only. Events go to every open session of the service that produced them. A service
+may also have a snapshot for a session that has just opened (``on_open``): it goes to that session alone, right
+after the Open reply, so a console starts from the machine's current settings (ADR-0019).
 A peer can only send the commands in ``VoiceService.allowed``; the rest (``SpeakingDone``,
 ``ExecutionDone``, ``SafetyWarning``, ``IncomingMessage``, typed ``Intent``) enter the machine from
 inside the Pi, never over a console connection.
@@ -26,6 +28,7 @@ from ..types import (
     Deny,
     EndDictation,
     GoNow,
+    Settings,
     SetVerbosity,
     Source,
     Wake,
@@ -58,6 +61,8 @@ class ServiceHandler(Protocol):
     def tick(self) -> List[bytes]:
         """Advance time; return event payloads to broadcast."""
 
+    # Optional: ``on_open(self) -> List[bytes]``, payloads for a session that has just opened.
+
 
 class VoiceService:
     def __init__(
@@ -65,10 +70,13 @@ class VoiceService:
         machine: VoiceMachine,
         peer_source: Source = Source.CONSOLE,
         allowed: Iterable[type] = PEER_COMMANDS,
+        on_settings: Optional[Callable[[Settings], None]] = None,
     ) -> None:
         self.machine = machine
         self.peer_source = peer_source
         self.allowed = frozenset(allowed)
+        # Called for every settings change, before it is broadcast; the Pi persists it here.
+        self.on_settings = on_settings
 
     def handle(self, payload: bytes) -> Tuple[Status, List[bytes]]:
         try:
@@ -90,14 +98,21 @@ class VoiceService:
     def tick(self) -> List[bytes]:
         return self._events(self.machine.tick())
 
+    def on_open(self) -> List[bytes]:
+        """The settings in use now, for a session that has just opened."""
+        return self._events([self.machine.settings()], persist=False)
+
     def _stamp(self, command: Command) -> Command:
         """The channel decides where a command came from, not the peer."""
         if any(f.name == "source" for f in dataclasses.fields(command)):
             return dataclasses.replace(command, source=self.peer_source)
         return command
 
-    @staticmethod
-    def _events(effects) -> List[bytes]:
+    def _events(self, effects, persist: bool = True) -> List[bytes]:
+        if persist and self.on_settings is not None:
+            for effect in effects:
+                if isinstance(effect, Settings):
+                    self.on_settings(effect)
         return [
             payload
             for payload in (encode_event(e) for e in effects)
@@ -245,6 +260,7 @@ class EnvelopeRouter:
                 else:
                     connection.sessions[request.session_id] = request.service
                     self._reply(connection, request, Status.OK)
+                    self._send_snapshot(connection, request, handler)
                 return
             if connection.sessions.get(request.session_id) != request.service:
                 self._reply(connection, request, Status.UNKNOWN_SESSION)
@@ -260,6 +276,24 @@ class EnvelopeRouter:
             status, events = handler.handle(request.payload)
             self._reply(connection, request, status)
             self.broadcast(request.service, events)
+
+    def _send_snapshot(
+        self, connection: Connection, request: Envelope, handler: ServiceHandler
+    ) -> None:
+        on_open = getattr(handler, "on_open", None)
+        if on_open is None:
+            return
+        for payload in on_open():
+            self._seq = (self._seq + 1) & 0xFFFFFFFF
+            self._send(
+                connection,
+                Envelope(
+                    service=request.service,
+                    session_id=request.session_id,
+                    seq=self._seq,
+                    payload=payload,
+                ),
+            )
 
     def _owner(self, session_id: str) -> Optional[Connection]:
         for connection in self._connections:

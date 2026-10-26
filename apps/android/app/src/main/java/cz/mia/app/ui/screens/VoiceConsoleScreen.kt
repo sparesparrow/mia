@@ -94,7 +94,10 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
             OutlinedButton(onClick = { onPress(ConsoleCommand.EndDictation) }, enabled = connected, modifier = Modifier.testTag("voice_end_dictation")) { Text("End note") }
         }
 
-        Text("Verbosity (last one sent)", style = MaterialTheme.typography.titleMedium)
+        Text("Verbosity (from the Pi)", style = MaterialTheme.typography.titleMedium)
+        if (state.verbosity == null) {
+            Text("not reported", style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("voice_verbosity_unknown"))
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             VerbosityLevel.values().forEach { level ->
                 FilterChip(

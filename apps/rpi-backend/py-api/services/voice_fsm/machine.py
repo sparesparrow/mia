@@ -45,6 +45,7 @@ from .types import (
     MuteMic,
     Part,
     SafetyWarning,
+    Settings,
     SetVerbosity,
     Speak,
     SpeakingDone,
@@ -138,6 +139,10 @@ class VoiceMachine:
     @property
     def deadline(self) -> Optional[float]:
         return self._deadline
+
+    def settings(self) -> Settings:
+        """The settings in use now, for a peer that has just connected."""
+        return Settings(verbosity=self.verbosity)
 
     def handle(self, command: Command) -> List[Effect]:
         out: List[Effect] = []
@@ -513,5 +518,7 @@ class VoiceMachine:
         if cmd.level is Verbosity.QUIET:
             # Quiet drops both new and waiting messages.
             self._queue.clear()
+        # In any state, so every peer and the store learn the level the machine now uses.
+        out.append(self.settings())
         if self._state is State.IDLE:
             self._say("verbosity.set", {"level": cmd.level.value}, out)

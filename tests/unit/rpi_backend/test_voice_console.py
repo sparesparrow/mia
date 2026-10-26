@@ -11,6 +11,7 @@ from services.voice_fsm import (
     Cancel,
     Feedback,
     SafetyWarning,
+    Settings,
     SetVerbosity,
     Source,
     State,
@@ -41,8 +42,9 @@ def app_client():
 
 
 @pytest.fixture
-def client(app_client, monkeypatch):
+def client(app_client, monkeypatch, tmp_path):
     monkeypatch.setenv("VOICE_CONSOLE", "1")
+    monkeypatch.setenv("MIA_STATE_DIR", str(tmp_path))
     monkeypatch.setattr(voice_console, "_router", None)
     return app_client
 
@@ -59,6 +61,16 @@ def _next(ws):
     return decode_envelope(ws.receive_bytes())
 
 
+def _open(ws, seq=1, session="console"):
+    """Open a session: the OK reply, then the machine's settings for this session alone."""
+    _send(ws, Op.OPEN, seq=seq, session=session)
+    reply = _next(ws)
+    assert (reply.seq, reply.status) == (seq, Status.OK)
+    snapshot = decode_event(_next(ws).payload)
+    assert isinstance(snapshot, Settings)
+    return snapshot
+
+
 def test_the_console_is_off_unless_enabled(app_client, monkeypatch):
     monkeypatch.delenv("VOICE_CONSOLE", raising=False)
     with pytest.raises(WebSocketDisconnect):
@@ -68,8 +80,7 @@ def test_the_console_is_off_unless_enabled(app_client, monkeypatch):
 
 def test_a_wake_press_changes_the_machine_and_comes_back_as_events(client):
     with client.websocket_connect("/ws/voice") as ws:
-        _send(ws, Op.OPEN, seq=1)
-        assert _next(ws).seq == 1
+        _open(ws)
 
         _send(ws, Op.DATA, encode_command(Wake(Source.CONSOLE)), seq=2)
         reply = _next(ws)
@@ -96,8 +107,7 @@ def test_a_text_frame_is_refused_and_the_connection_closed(client):
 
 def test_commands_only_the_pi_may_report_are_refused_over_the_socket(client):
     with client.websocket_connect("/ws/voice") as ws:
-        _send(ws, Op.OPEN, seq=1)
-        _next(ws)
+        _open(ws)
         _send(ws, Op.DATA, encode_command(SafetyWarning("warn.coolant")), seq=2)
         assert _next(ws).status == Status.NOT_PERMITTED
         _send(ws, Op.DATA, encode_command(SetVerbosity(Verbosity.QUIET)), seq=3)
@@ -108,10 +118,8 @@ def test_a_second_console_sees_the_first_ones_button_presses(client):
     with client.websocket_connect("/ws/voice") as first, client.websocket_connect(
         "/ws/voice"
     ) as second:
-        _send(first, Op.OPEN, seq=1, session="a")
-        _next(first)
-        _send(second, Op.OPEN, seq=1, session="b")
-        _next(second)
+        _open(first, session="a")
+        _open(second, session="b")
         _send(first, Op.DATA, encode_command(Wake()), seq=2, session="a")
         assert _next(first).seq == 2
         seen = decode_event(_next(second).payload)

@@ -36,6 +36,7 @@ console adapter exists yet, so the end-to-end claim belongs to REQ-VOICE-015, no
 | `MuteMic(muted)` | emitted when the microphone state changes | implemented |
 | `Feedback(state, led, tone)` | LED colour and tone for a state or a transient cue | implemented |
 | `StateChanged(previous, current)` | a resting state changed | implemented |
+| `Settings(verbosity)` | the settings now in use; emitted on every `SetVerbosity`, in any state (ADR-0019) | implemented |
 | `Spoken` (a `Speak` for peers), `Transcript` | on the wire as events for the console | implemented |
 | `QueueEntry`, `WindowTick` for the console | | planned |
 
@@ -93,6 +94,17 @@ In `window` and `confirming` the router bridge treats only a short reply (at mos
 no. A longer sentence that contains one, such as "okay so send it to Jana instead", is a correction and is
 routed as a new utterance. A no wins over a yes in the same short reply.
 
+"Quiet mode", "normal mode" and "chatty mode", alone or after "switch to", "go to", "set to" or "be", set the
+verbosity (REQ-VOICE-017). A longer sentence that merely contains one is routed as a request. The words are English
+until Czech recognition exists (#179).
+
+## Settings
+
+The machine's settings live on the Pi (ADR-0019). `services/voice_fsm/settings_store.py` keeps them in
+`$MIA_STATE_DIR/voice_settings.json` (`/var/lib/mia` by default). It replaces the file in one step, and a missing
+or damaged file gives the defaults. The voice router and the console's simulated machine each read the file when
+they start and write it on every change; they do not tell each other about a change while running.
+
 ## Priority and queues
 
 A `SafetyWarning` interrupts dictation, listening, the window and speech. What it cut off is said again
@@ -141,7 +153,8 @@ An **envelope** routes a message and never looks inside it:
 | `payload` | a nested `VoiceMessage` (one `VoiceBody` union member) |
 
 A request is answered with one reply to the sender. Events (the machine's effects) go to every open session
-of the service and to no other. A garbled buffer, a wrong version or an unknown service is answered with a
+of the service and to no other. Right after an `Open` is answered `Ok`, the voice service sends that session
+alone a `Settings` event, so a console shows the machine's settings from the start (ADR-0019). A garbled buffer, a wrong version or an unknown service is answered with a
 status; nothing raises. Messages are at most 64 KiB.
 
 ### Voice messages
@@ -153,6 +166,7 @@ status; nothing raises. Messages are at most 64 KiB.
 | `SpeakingDone`, `ExecutionDone`, `SafetyWarning`, `IncomingMessage` | peer to machine, in-process only | the command of the same name |
 | `StateChanged`, `FeedbackCue`, `Spoken` | machine to peers | `StateChanged`, `Feedback`, `Speak` |
 | `Transcript` | machine side to peers | `wire.Transcript` (not consumed by the machine) |
+| `Settings` | machine to peers; also sent to a session alone right after its `Open` is answered | `Settings` |
 
 `Execute`, `Abort`, `StopSpeaking` and `MuteMic` talk to the machine's own executors and microphone and are not on
 the wire. `WindowTick` and a queue-entry event are planned; the machine does not emit them yet.

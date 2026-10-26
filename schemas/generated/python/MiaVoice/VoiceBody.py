@@ -21,3 +21,4 @@ class VoiceBody(object):
     FeedbackCue = 15
     Spoken = 16
     Transcript = 17
+    Settings = 18

@@ -197,6 +197,7 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - The button commands and the verbosity setting encode to the very bytes the Pi's codec writes, and the events the Pi writes decode to the values in the shared fixture
+  - The verbosity shown is the one the machine reports in its Settings event, not the one last sent, and is cleared when the connection is lost or closed
   - Damaged frames and truncated payloads end as a wire error and never as another exception
   - The client opens a session, becomes connected only after the Pi's ok, sends nothing before that, and shows a refused command as an error
   - A lost connection is retried with growing delays up to a limit, a successful session resets the budget, and disconnect does not reconnect
@@ -209,7 +210,7 @@ requirements:
   decisions:
   - ADR-0011
   - ADR-0013
-  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The verbosity shown is the last one the Pi accepted, not a value read back from the machine. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
 - id: REQ-AND-017
   title: Persona and verbosity setting
   statement: The app shall let the user choose the persona and the verbosity mode.
@@ -217,7 +218,7 @@ requirements:
   implemented_in: []
   decisions:
   - ADR-0015
-  not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016); the persona has no message on the wire yet and no setting.
+  not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016), and it shows the level the machine reports (REQ-VOICE-017); the persona has no message on the wire yet and no setting.
 - id: REQ-AND-018
   title: Pi address and API key setting
   statement: The app shall let the user enter the Pi's address and API key in Settings, and shall send the key in the

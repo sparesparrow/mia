@@ -5,7 +5,11 @@ the verbosity setting and receives the machine's state, feedback cues and spoken
 
 Off unless ``VOICE_CONSOLE=1``. The machine behind it lives in this process on the system clock, so
 the console talks to a simulation, not to the voice pipeline that runs in ``voice_command_router``;
-attaching the two is a separate step.
+attaching the two is a separate step. With no speaker attached, ``SimulatedSpeech`` reports each utterance
+finished after ``SPEAK_SEC``, so the machine leaves ``speaking`` as it would on the Pi.
+
+A console that opens a session first receives the machine's settings (ADR-0019). A change is kept in the
+settings store in ``MIA_STATE_DIR``, the same file the voice router reads when it starts.
 
 Like every WebSocket of this API it needs the ``X-API-Key`` header when keys are configured (REQ-SEC-001).
 That check only needs a read key, so a read-only key can press the buttons; a stricter scope is a follow-up.
@@ -17,7 +21,7 @@ import asyncio
 import logging
 import os
 import time
-from typing import Any, Optional
+from typing import Any, Callable, List, Optional, Tuple
 
 from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
@@ -29,6 +33,7 @@ _CLOSE_POLICY = 1008
 _CLOSE_UNSUPPORTED = 1003
 _CLOSE_TRY_AGAIN = 1013
 OUTBOX_LIMIT = 256
+SPEAK_SEC = 1.5
 
 _router: Optional[Any] = None
 
@@ -42,12 +47,64 @@ def get_router() -> Any:
     global _router
     if _router is None:
         from services.voice_fsm import VoiceMachine
+        from services.voice_fsm.settings_store import SettingsStore
         from services.voice_fsm.wire import EnvelopeRouter, Service, VoiceService
 
+        store = SettingsStore.from_env()
+        machine = VoiceMachine(time.monotonic, verbosity=store.load().verbosity)
+        service = VoiceService(machine, on_settings=store.save)
         router = EnvelopeRouter()
-        router.register(Service.VOICE, VoiceService(VoiceMachine(time.monotonic)))
+        router.register(Service.VOICE, SimulatedSpeech(service, time.monotonic))
         _router = router
     return _router
+
+
+class SimulatedSpeech:
+    """The console's stand-in for TTS: every utterance ends ``speak_sec`` after the previous one, one after the
+    other as a speaker plays them, and the machine hears ``SpeakingDone`` for it. A stopped utterance's late
+    ``SpeakingDone`` is ignored by the machine, as a real one would be."""
+
+    def __init__(
+        self, service: Any, clock: Callable[[], float], speak_sec: float = SPEAK_SEC
+    ) -> None:
+        self.service = service
+        self._clock = clock
+        self._speak_sec = speak_sec
+        self._ends: List[Tuple[float, int]] = []
+
+    def handle(self, payload: bytes):
+        status, events = self.service.handle(payload)
+        self._note(events)
+        return status, events
+
+    def on_open(self) -> List[bytes]:
+        return self.service.on_open()
+
+    def tick(self) -> List[bytes]:
+        from services.voice_fsm import SpeakingDone
+
+        events = self.service.tick()
+        self._note(events)
+        now = self._clock()
+        while self._ends and self._ends[0][0] <= now:
+            _, utterance = self._ends.pop(0)
+            done = self.service.submit(SpeakingDone(utterance))
+            self._note(done)
+            events = events + done
+        return events
+
+    def _note(self, events: List[bytes]) -> None:
+        from services.voice_fsm import Speak
+        from services.voice_fsm.wire import CodecError, decode_event
+
+        for payload in events:
+            try:
+                event = decode_event(payload)
+            except CodecError:
+                continue
+            if isinstance(event, Speak):
+                start = max(self._clock(), self._ends[-1][0] if self._ends else 0.0)
+                self._ends.append((start + self._speak_sec, event.id))
 
 
 class OutboxFull(Exception):

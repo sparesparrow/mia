@@ -350,8 +350,9 @@ def main_fsm():
     global running
 
     from services.voice_fsm.bridge import RouterBridge, parts_from_route
-    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, encode_feedback
+    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, feedback_frames
     from services.voice_fsm.machine import VoiceMachine
+    from services.voice_fsm.settings_store import SettingsStore
 
     def handle_signal(signum, frame):
         global running
@@ -376,13 +377,16 @@ def main_fsm():
     pub = ctx.socket(zmq.PUB)
     pub.bind(f"tcp://*:{ZMQ_PUB_PORT}")
 
-    machine = VoiceMachine(time.monotonic, window_sec=VOICE_WINDOW_SEC)
+    # The setting the driver chose last time (ADR-0019); the console process reads the same file.
+    store = SettingsStore.from_env()
+    machine = VoiceMachine(time.monotonic, window_sec=VOICE_WINDOW_SEC, verbosity=store.load().verbosity)
     bridge = RouterBridge(
         machine,
         classify=lambda text: parts_from_route(route_command(text), CONFIRM_THRESHOLD),
         execute=lambda part: _execute_action(part.args["action"]),
         publish_text=lambda text, utterance_id: _publish_response(pub, text, "", None, utterance_id),
-        publish_feedback=lambda fb: pub.send_multipart(list(encode_feedback(fb.state.value, fb.led, fb.tone))),
+        publish_feedback=lambda fb: pub.send_multipart(list(feedback_frames(fb))),
+        on_settings=store.save,
     )
 
     poller = zmq.Poller()

@@ -46,6 +46,7 @@ data class VoiceConsoleState(
     val spoken: List<LogLine> = emptyList(),
     /** Everything that happened, newest last: the event queue shown on the screen. */
     val log: List<LogLine> = emptyList(),
+    /** The verbosity the machine reported; null until it does, and again once the connection is gone. */
     val verbosity: VerbosityLevel? = null,
     val lastError: String? = null,
 ) {
@@ -72,6 +73,10 @@ data class VoiceConsoleState(
         }
         is ConsoleEvent.Transcript ->
             copy(transcript = event.text).logged(LogLine(LogKind.TRANSCRIPT, event.text, nowMs))
+        is ConsoleEvent.Settings ->
+            copy(verbosity = event.verbosity).logged(
+                LogLine(LogKind.STATE, "verbosity ${event.verbosity.name.lowercase()}", nowMs),
+            )
     }
 
     fun logged(line: LogLine): VoiceConsoleState = copy(log = (log + line).takeLast(MAX_LOG))

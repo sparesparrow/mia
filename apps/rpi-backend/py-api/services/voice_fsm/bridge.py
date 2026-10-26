@@ -27,10 +27,13 @@ from .types import (
     GoNow,
     Intent,
     Part,
+    Settings,
+    SetVerbosity,
     Source,
     Speak,
     SpeakingDone,
     State,
+    Verbosity,
     Wake,
 )
 
@@ -75,6 +78,12 @@ logger = logging.getLogger(__name__)
 
 # The longest reply that still counts as a yes or a no.
 MAX_ANSWER_WORDS = 3
+
+# "quiet mode", "switch to chatty mode": the verbosity setting by voice (REQ-VOICE-017). Only a short
+# sentence that is nothing but the setting counts, so "read the quiet mode settings of the radio" is a request.
+_MODE_COMMAND = re.compile(
+    r"^(?:(?:switch|change|go|set)(?: it)? (?:to|into) |be )?(quiet|normal|chatty) mode[.!]?$"
+)
 
 Route = Optional[Tuple[str, Dict[str, Any], float]]
 
@@ -126,6 +135,7 @@ class RouterBridge:
         publish_text: Callable[[str, int], None],
         publish_feedback: Callable[[Feedback], None] = lambda fb: None,
         phrases: Optional[Dict[str, str]] = None,
+        on_settings: Callable[[Settings], None] = lambda settings: None,
     ) -> None:
         self.machine = machine
         self._classify = classify
@@ -133,6 +143,7 @@ class RouterBridge:
         self._publish_text = publish_text
         self._publish_feedback = publish_feedback
         self._phrases = phrases
+        self._on_settings = on_settings
 
     # ── Inputs ─────────────────────────────────────────────────────────────
 
@@ -157,6 +168,10 @@ class RouterBridge:
                     return self._apply(self.machine.handle(Cancel(Source.VOICE)))
                 if _says(text, YES_WORDS):
                     return self._apply(self.machine.handle(GoNow(Source.VOICE)))
+        mode = _MODE_COMMAND.match(" ".join(text.lower().split()))
+        if mode:
+            level = Verbosity(mode.group(1))
+            return self._apply(self.machine.handle(SetVerbosity(level, Source.VOICE)))
         self._apply(self.machine.handle(Intent(self._classify(text), Source.VOICE)))
 
     def on_speaking(
@@ -183,6 +198,8 @@ class RouterBridge:
                     follow_up.append(SpeakingDone(effect.id))
             elif isinstance(effect, Feedback):
                 self._publish_feedback(effect)
+            elif isinstance(effect, Settings):
+                self._on_settings(effect)
             elif isinstance(effect, Execute):
                 results = [self._execute(part) for part in effect.parts]
                 text = " ".join(r for r in results if r)
