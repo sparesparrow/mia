@@ -62,8 +62,8 @@ site:
           en: Number plate recognition
           cs: Rozpoznávání SPZ
         text:
-          en: Plate recognition in the Android app, with a Czech motorway vignette check.
-          cs: Rozpoznávání SPZ v aplikaci pro Android a kontrola dálniční známky.
+          en: Plate recognition in the Android app; the Czech motorway vignette check runs on the Pi.
+          cs: Rozpoznávání SPZ v aplikaci pro Android; kontrola dálniční známky běží na Pi.
       - title:
           en: Voice commands
           cs: Hlasové ovládání
@@ -74,8 +74,8 @@ site:
           en: Android companion app
           cs: Aplikace pro Android
         text:
-          en: BLE pairing, a live telemetry card, dashcam recording and a local rules engine.
-          cs: Párování přes BLE, živá karta telemetrie, záznam z kamery a místní pravidla.
+          en: BLE pairing, a live telemetry card and a local rules engine. Dashcam recording is still in development.
+          cs: Párování přes BLE, živá karta telemetrie a místní pravidla. Záznam z kamery je zatím ve vývoji.
       - title:
           en: Raspberry Pi gateway
           cs: Brána na Raspberry Pi
@@ -110,8 +110,8 @@ site:
           en: Android companion
           cs: Doprovodná aplikace
         text:
-          en: Dashboard, BLE link, plate recognition and dashcam on the driver's phone.
-          cs: Přehled, spojení přes BLE, rozpoznávání SPZ a kamera v telefonu řidiče.
+          en: Dashboard, BLE link and plate recognition on the driver's phone; the dashcam is in development.
+          cs: Přehled, spojení přes BLE a rozpoznávání SPZ v telefonu řidiče; kamera je ve vývoji.
       - title:
           en: Open specification
           cs: Otevřená specifikace

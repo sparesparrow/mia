@@ -71,6 +71,15 @@ nav:
       - 0008 Audi A4 8H primary: spec/decisions/0008-audi-a4-8h-primary-citroen-secondary.md
       - 0009 Telemetry envelope: spec/decisions/0009-canonical-vehicle-telemetry-envelope.md
       - 0010 Evidence-based status: spec/decisions/0010-evidence-based-requirement-status.md
+      - 0011 Voice state machine: spec/decisions/0011-voice-state-machine-single-source.md
+      - 0012 Voice confirmation window: spec/decisions/0012-voice-confirmation-window-and-action-classes.md
+      - 0013 Message envelope and channel: spec/decisions/0013-message-envelope-and-abstract-channel.md
+      - 0014 Voice data and privacy: spec/decisions/0014-voice-data-and-privacy.md
+      - 0015 Personas are data: spec/decisions/0015-personas-are-data.md
+      - 0016 Android over plain HTTP: spec/decisions/0016-android-reaches-the-pi-over-plain-http.md
+      - 0017 MQTT topic contract: spec/decisions/0017-mqtt-topic-namespace.md
+      - 0018 Plate key and black book: spec/decisions/0018-per-install-plate-key-and-black-book.md
+      - 0019 Voice settings on the Pi: spec/decisions/0019-voice-settings-live-on-the-pi.md
     - Architecture:
       - Architecture Index: spec/architecture/README.md
       - System Overview: spec/architecture/overview.md
@@ -88,13 +97,12 @@ nav:
       - Events: spec/interfaces/events.md
       - BLE GATT: spec/interfaces/ble-gatt.md
       - ZeroMQ Message Formats: spec/interfaces/zeromq-message-formats.md
+      - Voice Messages: spec/interfaces/voice.md
     - Evidence Records: spec/evidence/README.md
 
   - Install:
-    - Phone Edition: install/phone.md
-    - Hybrid Edition: install/hybrid.md
-    - Pro Edition: install/pro.md
-    - Pi Gateway (Standalone): install/pi-gateway.md
+    - Raspberry Pi (supported): install/pi-gateway.md
+    - Phone without a Pi (limited): install/phone.md
     - Dev (No Pi): install/dev-docker.md
     - Installer Checklist: install/installer-checklist.md
     - Wiring & Power: wiring.md

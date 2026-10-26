@@ -48,15 +48,18 @@ The application follows a clean architecture pattern with the following layers:
 ### OBD-II Communication
 - Bluetooth LE connection to ELM327/OBD-II adapters
 - Real-time vehicle telemetry (RPM, speed, fuel, coolant, engine load)
-- DTC (Diagnostic Trouble Code) reading and clearing
+- DTC (Diagnostic Trouble Code) reading (clearing writes to the ECU and is not supported, ADR-0006)
 - Adaptive sampling modes (Normal, Reduced, Minimal)
 
 ### ANPR (License Plate Recognition)
 - Real-time camera analysis using CameraX
 - ML Kit text recognition with region-specific heuristics
-- Privacy-preserving plate hashing
+- Plates stored only as HMAC hashes, with a key made per install and kept out of backups (ADR-0018)
 - Confidence-based filtering
 - Support for CZ and EU plate formats
+- Black book: plates to be told about, added by typing or from a recent sighting (Camera → Plates)
+- An alert when the same car turns up again and again; both alerts stay on the phone, never MQTT
+- Camera tab: Live, Plates, Clips and the Pi's plate check, which uses the Pi address and key from Settings
 
 ### DVR Recording
 - Continuous video recording with rolling buffer
@@ -158,7 +161,8 @@ address in **Settings → Pi connection**:
   `10.0.2.2:8000`, the host machine, in debug builds).
 - **API key**: required once the Pi has `MIA_API_KEY` set. It is sent only in the `X-API-Key` header, only to the
   address entered with it, and is never written to the audit log. A key typed without an address is ignored.
-- A new address applies when you next open the Dashboard, LED or Voice screen.
+- A new address applies at once to the Dashboard's Cycle 1 telemetry, and to the LED and Voice screens when you next
+  open them.
 
 The Pi serves plain HTTP, so the app allows cleartext traffic and the key travels unencrypted on the Pi's
 network (ADR-0016).
@@ -311,7 +315,6 @@ interface OBDManager {
     suspend fun stopMonitoring()
     fun setSamplingMode(mode: SamplingMode)
     suspend fun readDTCs(): List<DTCInfo>
-    suspend fun clearDTCs(): Boolean
 }
 ```
 

@@ -42,12 +42,12 @@ class ANPRViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ANPRUiState())
     val uiState: StateFlow<ANPRUiState> = _uiState.asStateFlow()
 
-    init {
-        // Initialize WebSocket connection
-        connectWebSocket()
-    }
+    private var started = false
 
-    private fun connectWebSocket() {
+    /** Opens the Pi's plate stream while the Pi check is on screen; [stop] closes it. */
+    fun start() {
+        if (started) return
+        started = true
         viewModelScope.launch {
             repository.connectToWebSocket(
                 onPlateDetected = { plate ->
@@ -64,6 +64,12 @@ class ANPRViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    fun stop() {
+        started = false
+        repository.disconnectWebSocket()
+        _uiState.value = _uiState.value.copy(websocketConnected = false)
     }
 
     fun startCapture(deviceId: String = "esp32-camera") {

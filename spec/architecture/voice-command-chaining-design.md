@@ -1,7 +1,7 @@
 # Voice Command Chaining, Automotive UX, and Learning Loop
 
 **Date:** 2026-03-13
-**Status:** Reviewed
+**Status:** Superseded by [ADR-0011](../decisions/0011-voice-state-machine-single-source.md) to [ADR-0015](../decisions/0015-personas-are-data.md) and [voice.md](../interfaces/voice.md) (issue #143). The Redis and PostgreSQL pipeline and the modules named below were never built; the Pi does not run them.
 **Scope:** Features C (command chaining), D (automotive voice UX patterns), E (learning loop wiring)
 
 ## Context

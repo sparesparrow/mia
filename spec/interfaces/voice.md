@@ -23,7 +23,9 @@ console adapter exists yet, so the end-to-end claim belongs to REQ-VOICE-015, no
 | `SetVerbosity(level, source)` | quiet, normal or chatty | implemented |
 | `SpeakingDone(id)` | TTS finished utterance `id` | implemented |
 | `ExecutionDone(phrase, params, batch_id)` | an executor batch finished | implemented |
-| `SwitchPersona`, `Event(kind, data)` for ignition, parking and rules | | planned |
+| `SwitchPersona(persona, source)` | change the persona; an empty name takes the next one, an unknown one is refused aloud | implemented |
+| `SetLanguage(language, source)` | the language MIA speaks (`cs`, `en`); what she understands stays English (#179) | implemented |
+| `Event(kind, data)` for ignition, parking and rules | | planned |
 
 ## Effects (output)
 
@@ -31,11 +33,12 @@ console adapter exists yet, so the end-to-end claim belongs to REQ-VOICE-015, no
 |---|---|---|
 | `Execute(parts, batch_id)` | run these parts; answer with `ExecutionDone(batch_id=...)` | implemented |
 | `Abort(batch_id)` | stop the batch if it still runs; its `ExecutionDone` is ignored | implemented |
-| `Speak(phrase, params, priority, id)` | say a phrase key; a persona turns it into words | implemented |
+| `Speak(phrase, params, priority, id, text)` | say a phrase key; the persona and language in use turn it into words, which the Pi puts in `text` for peers | implemented |
 | `StopSpeaking` | stop the current utterances | implemented (`tts_service` cannot yet stop mid-sentence) |
 | `MuteMic(muted)` | emitted when the microphone state changes | implemented |
 | `Feedback(state, led, tone)` | LED colour and tone for a state or a transient cue | implemented |
 | `StateChanged(previous, current)` | a resting state changed | implemented |
+| `Settings(verbosity, persona, personas, language, languages)` | the settings now in use and the personas and languages this Pi offers; emitted on every settings command, in any state (ADR-0019) | implemented |
 | `Spoken` (a `Speak` for peers), `Transcript` | on the wire as events for the console | implemented |
 | `QueueEntry`, `WindowTick` for the console | | planned |
 
@@ -93,6 +96,37 @@ In `window` and `confirming` the router bridge treats only a short reply (at mos
 no. A longer sentence that contains one, such as "okay so send it to Jana instead", is a correction and is
 routed as a new utterance. A no wins over a yes in the same short reply.
 
+"Quiet mode", "normal mode" and "chatty mode", alone or after "switch to", "go to", "set to" or "be", set the
+verbosity (REQ-VOICE-017). "Change persona" takes the next persona; "switch to holly" or "persona rimmer" names one
+that this Pi has. "Speak czech" and "speak english" set the language MIA speaks. A longer sentence that merely
+contains one of these is routed as a request. The words are English until Czech recognition exists (#179), so in
+Czech the persona and language are switched from the app or the console.
+
+## Settings
+
+The machine's settings live on the Pi (ADR-0019). `services/voice_fsm/settings_store.py` keeps the verbosity, the
+persona and the language in `$MIA_STATE_DIR/voice_settings.json` (`/var/lib/mia` by default). A stored persona or
+language this Pi no longer has falls back to the first one offered. It replaces the file in one step, and a missing
+or damaged file gives the defaults. The voice router and the console's simulated machine each read the file when
+they start and write it on every change; they do not tell each other about a change while running.
+
+## Personas
+
+A persona is a data package (ADR-0015): `services/voice_fsm/personas/<name>.yaml` with lines per language for the
+machine's phrase keys, a speech speed (`tts.length_scale`) and at most one framing sentence per safety warning.
+MIA's own wording (`mia`) is code in `services/voice_fsm/phrases.py`, so a broken package never leaves her silent;
+a package that fails validation is logged and left out. Packages today: `holly` (dry, terse) and `rimmer` (anxious,
+pompous), each in Czech and English, with original lines.
+
+Every safety warning starts with the shared fragment from `services/voice_fsm/safety.py`: the value, the unit and
+what to do, in the language in use. No package can change it or put anything before it; the persona's framing
+sentence follows it and is left out while the car moves (`params.moving`). Warning keys are
+`warning.coolant_high`, `warning.battery_low`, `warning.battery_high` and `warning.rpm_high`.
+
+The voice router sends TTS the text with `language` and `length_scale`. `tts_service` takes the piper model for
+that language from its `PIPER_VOICES` allowlist (`en=en_US-amy-medium,cs=cs_CZ-jirka-medium`), never from the
+message, clamps the speed to 0.5–2 and falls back to espeak in the same language when a model is missing.
+
 ## Priority and queues
 
 A `SafetyWarning` interrupts dictation, listening, the window and speech. What it cut off is said again
@@ -115,7 +149,7 @@ run after the shared window. Message and call parts need an explicit yes. Forbid
 |---|---|---|---|
 | `mia/voice/wake` | 5559 | `wake_word` | wake word detected |
 | `mia/voice/transcript` | 5560 | `stt_service` | recognised text and language |
-| `mia/voice/response` | 5561 | `voice_command_router` | text for TTS, with an `utterance_id` in FSM mode |
+| `mia/voice/response` | 5561 | `voice_command_router` | text for TTS, with an `utterance_id`, `language` and `length_scale` in FSM mode |
 | `mia/voice/feedback` | 5561 | `voice_command_router` (FSM mode) | `{state, led, tone}` for the LED node |
 | `mia/voice/speaking` | 5563 | `tts_service` | `{event: started or finished, ok, timestamp, utterance_id}` |
 
@@ -141,24 +175,26 @@ An **envelope** routes a message and never looks inside it:
 | `payload` | a nested `VoiceMessage` (one `VoiceBody` union member) |
 
 A request is answered with one reply to the sender. Events (the machine's effects) go to every open session
-of the service and to no other. A garbled buffer, a wrong version or an unknown service is answered with a
+of the service and to no other. Right after an `Open` is answered `Ok`, the voice service sends that session
+alone a `Settings` event, so a console shows the machine's settings from the start (ADR-0019). A garbled buffer, a wrong version or an unknown service is answered with a
 status; nothing raises. Messages are at most 64 KiB.
 
 ### Voice messages
 
 | Message | Direction | Dataclass |
 |---|---|---|
-| `Wake`, `GoNow`, `Cancel`, `Confirm`, `Deny`, `EndDictation`, `SetVerbosity` | peer to machine, allowed from a console | the command of the same name |
+| `Wake`, `GoNow`, `Cancel`, `Confirm`, `Deny`, `EndDictation`, `SetVerbosity`, `SwitchPersona`, `SetLanguage` | peer to machine, allowed from a console | the command of the same name |
 | `Intent`, `DictationText` | peer to machine, in-process only | the command of the same name |
 | `SpeakingDone`, `ExecutionDone`, `SafetyWarning`, `IncomingMessage` | peer to machine, in-process only | the command of the same name |
 | `StateChanged`, `FeedbackCue`, `Spoken` | machine to peers | `StateChanged`, `Feedback`, `Speak` |
 | `Transcript` | machine side to peers | `wire.Transcript` (not consumed by the machine) |
+| `Settings` | machine to peers; also sent to a session alone right after its `Open` is answered | `Settings` |
 
 `Execute`, `Abort`, `StopSpeaking` and `MuteMic` talk to the machine's own executors and microphone and are not on
 the wire. `WindowTick` and a queue-entry event are planned; the machine does not emit them yet.
 
 A console can send only the commands in `PEER_COMMANDS`: the two button roles, the answer buttons, wake, end of
-dictation and the verbosity setting. The rest is refused with `NotPermitted`, so a socket cannot report a safety
+dictation and the settings (verbosity, persona, language). The rest is refused with `NotPermitted`, so a socket cannot report a safety
 warning, a finished utterance or a result. **The channel, not the peer, sets `source`**: a console message is
 stamped `console` whatever it claims.
 

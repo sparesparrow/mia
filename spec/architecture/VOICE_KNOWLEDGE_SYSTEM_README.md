@@ -1,5 +1,7 @@
 # Voice Command Knowledge Storage and Retrieval System
 
+> **Status:** design exploration, not implemented. The modules, files and services this document names (for example `modules/knowledge_store/`) do not exist in the repository. The current voice design is [ADR-0011](../decisions/0011-voice-state-machine-single-source.md) to [ADR-0015](../decisions/0015-personas-are-data.md); what exists is listed in `spec/requirements/voice.yaml`.
+
 ## Executive Summary
 
 A comprehensive knowledge storage and retrieval system has been designed for the MIA Universal voice assistant platform. This system enables fast pattern matching, device synchronization, and continuous learning from voice command interactions while maintaining privacy, security, and consistent performance across distributed devices.

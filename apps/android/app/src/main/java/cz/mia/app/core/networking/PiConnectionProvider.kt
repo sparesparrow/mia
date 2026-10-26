@@ -7,6 +7,9 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
@@ -17,6 +20,7 @@ import kotlinx.coroutines.runBlocking
  * [current] is a plain read, so a request interceptor or a view model can use it without suspending. The
  * stored settings are read once when this singleton is first created (a few bytes of preferences) so
  * that the first caller never sees the defaults by mistake; after that a collector keeps it current.
+ * [connections] carries the same value as a flow, for long-lived connections that must follow a change.
  */
 @Singleton
 class PiConnectionProvider @Inject constructor(
@@ -28,22 +32,24 @@ class PiConnectionProvider @Inject constructor(
         apiKey = BuildConfig.API_KEY,
     )
 
-    @Volatile
-    private var snapshot: PiConnection = runBlocking(Dispatchers.IO) {
-        prefs.readPiSettings().let { resolvePiConnection(it.address, it.apiKey, defaults) }
-    }
+    private val _connections = MutableStateFlow(
+        runBlocking(Dispatchers.IO) {
+            prefs.readPiSettings().let { resolvePiConnection(it.address, it.apiKey, defaults) }
+        }
+    )
+    val connections: StateFlow<PiConnection> = _connections.asStateFlow()
 
     init {
         prefs.piSettings
-            .onEach { snapshot = resolvePiConnection(it.address, it.apiKey, defaults) }
+            .onEach { _connections.value = resolvePiConnection(it.address, it.apiKey, defaults) }
             .launchIn(CoroutineScope(SupervisorJob() + Dispatchers.IO))
     }
 
-    fun current(): PiConnection = snapshot
+    fun current(): PiConnection = _connections.value
 
     /** Stores the address and key, and makes them current before returning. */
     suspend fun save(address: String, apiKey: String) {
         prefs.setPiSettings(address, apiKey)
-        snapshot = resolvePiConnection(address, apiKey, defaults)
+        _connections.value = resolvePiConnection(address, apiKey, defaults)
     }
 }

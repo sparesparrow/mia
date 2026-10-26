@@ -57,3 +57,8 @@ def encode_feedback(state: str, led: str, tone: str) -> Tuple[bytes, bytes]:
         FEEDBACK_TOPIC,
         json.dumps({"state": state, "led": led, "tone": tone}).encode(),
     )
+
+
+def feedback_frames(feedback) -> Tuple[bytes, bytes]:
+    """A machine ``Feedback`` effect as topic and payload. Its ``state`` is already the plain name."""
+    return encode_feedback(feedback.state, feedback.led, feedback.tone)

@@ -49,6 +49,26 @@ interface AnprEventDao {
 
 	@Query("DELETE FROM anpr_events WHERE ts < :threshold")
 	suspend fun deleteOlderThan(threshold: Long): Int
+
+	/** When one plate was seen since [since], oldest first. */
+	@Query("SELECT ts FROM anpr_events WHERE plateHash = :plateHash AND ts >= :since ORDER BY ts")
+	suspend fun sightingTimes(plateHash: String, since: Long): List<Long>
+}
+
+@Dao
+interface WatchlistDao {
+	/** Adds a plate, or replaces the label of one already listed. */
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	suspend fun upsert(entity: WatchlistEntity)
+
+	@Query("SELECT * FROM watchlist ORDER BY addedAt DESC")
+	fun all(): Flow<List<WatchlistEntity>>
+
+	@Query("SELECT * FROM watchlist WHERE plateHash = :plateHash")
+	suspend fun find(plateHash: String): WatchlistEntity?
+
+	@Query("DELETE FROM watchlist WHERE plateHash = :plateHash")
+	suspend fun delete(plateHash: String): Int
 }
 
 @Dao

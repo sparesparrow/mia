@@ -37,9 +37,8 @@ object OBDPIDs {
     
     // Mode 03 - Diagnostic Trouble Codes
     const val READ_DTC = "03"
-    
-    // Mode 04 - Clear DTCs
-    const val CLEAR_DTC = "04"
+
+    // Mode 04 (clear DTCs) writes to the ECU and is deliberately absent (ADR-0006).
 }
 
 /**
@@ -78,9 +77,6 @@ interface OBDManager {
     
     /** Read all DTCs from vehicle */
     suspend fun readDTCs(): List<DTCInfo>
-    
-    /** Clear all DTCs */
-    suspend fun clearDTCs(): Boolean
     
     /** Check if monitoring is active */
     fun isMonitoring(): Boolean
@@ -431,23 +427,6 @@ class OBDManagerImpl @Inject constructor(
             "P0128" -> "Coolant Thermostat Below Thermostat Regulating Temperature"
             "P0401" -> "Exhaust Gas Recirculation Flow Insufficient"
             else -> null
-        }
-    }
-
-    override suspend fun clearDTCs(): Boolean = withContext(Dispatchers.IO) {
-        try {
-            val response = bleManager.sendCommand(OBDPIDs.CLEAR_DTC)
-            val success = response != null && !response.contains("ERROR")
-            
-            if (success) {
-                _dtcCodes.value = emptyList()
-                currentDtcCodes = emptyList()
-            }
-            
-            return@withContext success
-        } catch (e: Exception) {
-            Log.e(TAG, "Error clearing DTCs", e)
-            return@withContext false
         }
     }
 }

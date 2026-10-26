@@ -97,6 +97,9 @@ interface VoiceManager {
     
     /** Get available locales */
     fun getAvailableLocales(): Set<Locale>
+
+    /** The locale speech is actually spoken in (Czech, or English when no Czech voice is installed) */
+    fun activeLocale(): Locale = Locale("cs", "CZ")
 }
 
 @Singleton
@@ -340,6 +343,8 @@ class VoiceManagerImpl @Inject constructor(
     override fun getAvailableLocales(): Set<Locale> {
         return tts?.availableLanguages ?: emptySet()
     }
+
+    override fun activeLocale(): Locale = currentLocale
 
     private fun requestAudioFocus() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

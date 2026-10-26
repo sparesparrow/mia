@@ -323,7 +323,15 @@ def _execute_action(action: Dict[str, Any]) -> str:
     return str(api_result)
 
 
-def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[str], utterance_id: Optional[int] = None):
+def _publish_response(
+    pub,
+    text: str,
+    transcript: str,
+    route_endpoint: Optional[str],
+    utterance_id: Optional[int] = None,
+    language: Optional[str] = None,
+    length_scale: Optional[float] = None,
+):
     """Publish a spoken response to the TTS service."""
     event = {
         "text": text,
@@ -334,6 +342,10 @@ def _publish_response(pub, text: str, transcript: str, route_endpoint: Optional[
     if utterance_id is not None:
         # TTS echoes it in its speaking events so the state machine can match them to what it said.
         event["utterance_id"] = utterance_id
+    if language is not None:
+        event["language"] = language
+    if length_scale is not None:
+        event["length_scale"] = length_scale
     pub.send_multipart([
         b"mia/voice/response",
         json.dumps(event).encode()
@@ -350,8 +362,10 @@ def main_fsm():
     global running
 
     from services.voice_fsm.bridge import RouterBridge, parts_from_route
-    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, encode_feedback
+    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, feedback_frames
     from services.voice_fsm.machine import VoiceMachine
+    from services.voice_fsm.personas import Phrasebook
+    from services.voice_fsm.settings_store import SettingsStore
 
     def handle_signal(signum, frame):
         global running
@@ -376,13 +390,35 @@ def main_fsm():
     pub = ctx.socket(zmq.PUB)
     pub.bind(f"tcp://*:{ZMQ_PUB_PORT}")
 
-    machine = VoiceMachine(time.monotonic, window_sec=VOICE_WINDOW_SEC)
+    # The settings the driver chose last time (ADR-0019); the console process reads the same file.
+    store = SettingsStore.from_env()
+    stored = store.load()
+    book = Phrasebook.load()
+    machine = VoiceMachine(
+        time.monotonic,
+        window_sec=VOICE_WINDOW_SEC,
+        verbosity=stored.verbosity,
+        persona=stored.persona,
+        personas=book.names,
+        language=stored.language,
+        languages=book.languages,
+    )
+
+    def speak(text: str, utterance_id: int) -> None:
+        # TTS picks the voice for the language and the speed for the persona (ADR-0015).
+        _publish_response(
+            pub, text, "", None, utterance_id,
+            language=machine.language, length_scale=book.length_scale(machine.persona),
+        )
+
     bridge = RouterBridge(
         machine,
         classify=lambda text: parts_from_route(route_command(text), CONFIRM_THRESHOLD),
         execute=lambda part: _execute_action(part.args["action"]),
-        publish_text=lambda text, utterance_id: _publish_response(pub, text, "", None, utterance_id),
-        publish_feedback=lambda fb: pub.send_multipart(list(encode_feedback(fb.state.value, fb.led, fb.tone))),
+        publish_text=speak,
+        publish_feedback=lambda fb: pub.send_multipart(list(feedback_frames(fb))),
+        on_settings=store.save,
+        phrasebook=book,
     )
 
     poller = zmq.Poller()

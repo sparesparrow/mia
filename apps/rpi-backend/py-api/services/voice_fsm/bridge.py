@@ -13,6 +13,11 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 from .events import FINISHED
 from .machine import VoiceMachine
+from .personas import Phrasebook
+from .phrases import (  # noqa: F401  (re-exported for callers and tests)
+    DEFAULT_PHRASES,
+    render_phrase,
+)
 from .types import (
     Abort,
     ActionClass,
@@ -27,10 +32,15 @@ from .types import (
     GoNow,
     Intent,
     Part,
+    SetLanguage,
+    Settings,
+    SetVerbosity,
     Source,
     Speak,
     SpeakingDone,
     State,
+    SwitchPersona,
+    Verbosity,
     Wake,
 )
 
@@ -58,43 +68,24 @@ NO_WORDS = (
     "negative",
 )
 
-# Default wording. The persona layer (ADR-0015) replaces this table; the machine only knows keys.
-DEFAULT_PHRASES: Dict[str, str] = {
-    "chain.announce": "I will {parts} in {seconds:.0f} seconds. Say stop or press cancel.",
-    "chain.refused": "I can't do that: {part}.",
-    "message.confirm": "Send it? Say yes or no.",
-    "confirm.timeout": "No answer, so I did not send it.",
-    "intent.unknown": "Sorry, I didn't understand.",
-    "note.empty": "The note was empty.",
-    "message.arrived": "New message from {sender}.",
-    "message.read": "Message from {sender}: {text}",
-    "verbosity.set": "Okay, {level}.",
-}
-
 logger = logging.getLogger(__name__)
 
 # The longest reply that still counts as a yes or a no.
 MAX_ANSWER_WORDS = 3
 
+# "quiet mode", "switch to chatty mode": the verbosity setting by voice (REQ-VOICE-017). Only a short
+# sentence that is nothing but the setting counts, so "read the quiet mode settings of the radio" is a request.
+_MODE_COMMAND = re.compile(
+    r"^(?:(?:switch|change|go|set)(?: it)? (?:to|into) |be )?(quiet|normal|chatty) mode[.!]?$"
+)
+# "change persona" takes the next one; "switch to holly" or "persona rimmer" names one (ADR-0015).
+_NEXT_PERSONA = re.compile(r"^(?:change|switch|next)(?: the)? persona[.!]?$")
+_NAMED_PERSONA = re.compile(r"^(?:switch to|persona|be) ([a-z]+)[.!]?$")
+# "speak czech": what MIA says, not what she understands (recognition stays English, #179).
+_LANGUAGE_COMMAND = re.compile(r"^(?:speak|switch to|use) (czech|english)[.!]?$")
+_LANGUAGE_CODES = {"czech": "cs", "english": "en"}
+
 Route = Optional[Tuple[str, Dict[str, Any], float]]
-
-
-def render_phrase(
-    phrase: str, params: Dict[str, Any], table: Optional[Dict[str, str]] = None
-) -> str:
-    """Turn a phrase key and parameters into text. ``raw`` carries ready text from an executor."""
-    if phrase == "raw":
-        return str(params.get("text", ""))
-    template = (table or DEFAULT_PHRASES).get(phrase)
-    if template is None:
-        return phrase
-    values = dict(params)
-    if isinstance(values.get("parts"), (list, tuple)):
-        values["parts"] = ", ".join(str(p) for p in values["parts"])
-    try:
-        return template.format(**values)
-    except (KeyError, ValueError, IndexError):
-        return template
 
 
 def parts_from_route(match: Route, confirm_threshold: float) -> Tuple[Part, ...]:
@@ -126,6 +117,8 @@ class RouterBridge:
         publish_text: Callable[[str, int], None],
         publish_feedback: Callable[[Feedback], None] = lambda fb: None,
         phrases: Optional[Dict[str, str]] = None,
+        on_settings: Callable[[Settings], None] = lambda settings: None,
+        phrasebook: Optional[Phrasebook] = None,
     ) -> None:
         self.machine = machine
         self._classify = classify
@@ -133,6 +126,8 @@ class RouterBridge:
         self._publish_text = publish_text
         self._publish_feedback = publish_feedback
         self._phrases = phrases
+        self._on_settings = on_settings
+        self._phrasebook = phrasebook
 
     # ── Inputs ─────────────────────────────────────────────────────────────
 
@@ -157,7 +152,36 @@ class RouterBridge:
                     return self._apply(self.machine.handle(Cancel(Source.VOICE)))
                 if _says(text, YES_WORDS):
                     return self._apply(self.machine.handle(GoNow(Source.VOICE)))
+        setting = self._setting(" ".join(text.lower().split()))
+        if setting is not None:
+            return self._apply(self.machine.handle(setting))
         self._apply(self.machine.handle(Intent(self._classify(text), Source.VOICE)))
+
+    def _setting(self, said: str) -> Optional[Command]:
+        """A spoken settings command, or None when the sentence is something else."""
+        mode = _MODE_COMMAND.match(said)
+        if mode:
+            return SetVerbosity(Verbosity(mode.group(1)), Source.VOICE)
+        if _NEXT_PERSONA.match(said):
+            return SwitchPersona("", Source.VOICE)
+        named = _NAMED_PERSONA.match(said)
+        if named and named.group(1) in self.machine.personas:
+            return SwitchPersona(named.group(1), Source.VOICE)
+        language = _LANGUAGE_COMMAND.match(said)
+        if language:
+            return SetLanguage(_LANGUAGE_CODES[language.group(1)], Source.VOICE)
+        return None
+
+    def render(self, effect: Speak) -> str:
+        """The words for ``effect`` in the persona and language the machine uses now."""
+        if self._phrasebook is not None:
+            return self._phrasebook.render(
+                effect.phrase,
+                dict(effect.params),
+                self.machine.persona,
+                self.machine.language,
+            )
+        return render_phrase(effect.phrase, dict(effect.params), self._phrases)
 
     def on_speaking(
         self, event: Optional[str], utterance_id: Optional[int] = None
@@ -176,13 +200,15 @@ class RouterBridge:
         follow_up: List[Command] = []
         for effect in effects:
             if isinstance(effect, Speak):
-                text = render_phrase(effect.phrase, dict(effect.params), self._phrases)
+                text = self.render(effect)
                 if text:
                     self._publish_text(text, effect.id)
                 else:  # nothing to say, so nothing will announce that speech ended
                     follow_up.append(SpeakingDone(effect.id))
             elif isinstance(effect, Feedback):
                 self._publish_feedback(effect)
+            elif isinstance(effect, Settings):
+                self._on_settings(effect)
             elif isinstance(effect, Execute):
                 results = [self._execute(part) for part in effect.parts]
                 text = " ".join(r for r in results if r)

@@ -1,5 +1,7 @@
 package cz.mia.app.data.db
 
+// @req REQ-AND-011 REQ-AND-020 REQ-AND-021
+
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -13,6 +15,7 @@ import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -27,6 +30,7 @@ class DatabaseTest {
     private lateinit var anprEventDao: AnprEventDao
     private lateinit var clipsDao: ClipsDao
     private lateinit var auditDao: AuditDao
+    private lateinit var watchlistDao: WatchlistDao
 
     @Before
     fun createDb() {
@@ -40,6 +44,7 @@ class DatabaseTest {
         anprEventDao = db.anpr()
         clipsDao = db.clips()
         auditDao = db.audit()
+        watchlistDao = db.watchlist()
     }
 
     @After
@@ -139,6 +144,40 @@ class DatabaseTest {
         assertEquals(1, results.size)
         assertEquals("abc123hash", results[0].plateHash)
         assertEquals(0.85f, results[0].confidence)
+    }
+
+    @Test
+    fun watchlist_addReplaceFindAndRemove() = runBlocking {
+        watchlistDao.upsert(WatchlistEntity(plateHash = "h1", label = "old", addedAt = 1))
+        watchlistDao.upsert(WatchlistEntity(plateHash = "h2", label = "other", addedAt = 2))
+        watchlistDao.upsert(WatchlistEntity(plateHash = "h1", label = "new", addedAt = 3))
+
+        assertEquals(listOf("h1", "h2"), watchlistDao.all().first().map { it.plateHash })
+        assertEquals("new", watchlistDao.find("h1")?.label)
+
+        assertEquals(1, watchlistDao.delete("h1"))
+        assertNull(watchlistDao.find("h1"))
+        assertEquals(1, watchlistDao.all().first().size)
+    }
+
+    @Test
+    fun watchlist_outlivesRetention() = runBlocking<Unit> {
+        watchlistDao.upsert(WatchlistEntity(plateHash = "h1", label = "", addedAt = 0))
+        anprEventDao.insert(AnprEventEntity(ts = 0, plateHash = "h1", confidence = 0.9f, snapshotId = null))
+        anprEventDao.deleteOlderThan(System.currentTimeMillis())
+
+        assertEquals(0, anprEventDao.snapshotRecent(10).size)
+        assertNotNull(watchlistDao.find("h1"))
+    }
+
+    @Test
+    fun sightingTimes_onePlateSinceATime_oldestFirst() = runBlocking {
+        anprEventDao.insert(AnprEventEntity(ts = 300, plateHash = "a", confidence = 0.9f, snapshotId = null))
+        anprEventDao.insert(AnprEventEntity(ts = 100, plateHash = "a", confidence = 0.9f, snapshotId = null))
+        anprEventDao.insert(AnprEventEntity(ts = 200, plateHash = "b", confidence = 0.9f, snapshotId = null))
+        anprEventDao.insert(AnprEventEntity(ts = 50, plateHash = "a", confidence = 0.9f, snapshotId = null))
+
+        assertEquals(listOf(100L, 300L), anprEventDao.sightingTimes("a", since = 100))
     }
 
     @Test

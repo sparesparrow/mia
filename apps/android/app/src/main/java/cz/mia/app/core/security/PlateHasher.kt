@@ -7,12 +7,14 @@ import javax.crypto.spec.SecretKeySpec
 object PlateHasher {
 	private const val HMAC_ALGO = "HmacSHA256"
 
+	/** Upper case without spaces or dashes; O and B become 0 and 8, so OCR's usual confusions hash alike. */
 	fun normalize(input: String): String = input
 		.trim()
 		.uppercase()
 		.replace("O", "0")
 		.replace("B", "8")
 		.replace(" ", "")
+		.replace("-", "")
 
 	fun hmacSha256(plate: String, secret: ByteArray): String {
 		val normalized = normalize(plate)

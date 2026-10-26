@@ -95,6 +95,8 @@ android {
             // Bindings generated from schemas/voice.fbs by schemas/generate.py (committed, checked in CI).
             java.srcDirs += 'src/main/generated/kotlin'
         }
+        // Room's exported schemas (app/schemas), read by the migration test.
+        androidTest.assets.srcDirs += files("$projectDir/schemas")
     }
     testOptions {
         unitTests.includeAndroidResources = true
@@ -115,6 +117,10 @@ android {
 kapt {
     correctErrorTypes = true
     useBuildCache = false
+    arguments {
+        // Each database version's schema is committed, so a migration can be tested against it.
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 tasks.withType(Test) {

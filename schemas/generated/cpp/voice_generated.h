@@ -63,6 +63,12 @@ struct IncomingMessageBuilder;
 struct SetVerbosity;
 struct SetVerbosityBuilder;
 
+struct SwitchPersona;
+struct SwitchPersonaBuilder;
+
+struct SetLanguage;
+struct SetLanguageBuilder;
+
 struct StateChanged;
 struct StateChangedBuilder;
 
@@ -74,6 +80,9 @@ struct SpokenBuilder;
 
 struct Transcript;
 struct TranscriptBuilder;
+
+struct Settings;
+struct SettingsBuilder;
 
 struct VoiceMessage;
 struct VoiceMessageBuilder;
@@ -541,11 +550,14 @@ enum class VoiceBody : uint8_t {
   FeedbackCue = 15,
   Spoken = 16,
   Transcript = 17,
+  Settings = 18,
+  SwitchPersona = 19,
+  SetLanguage = 20,
   MIN = NONE,
-  MAX = Transcript
+  MAX = SetLanguage
 };
 
-inline const VoiceBody (&EnumValuesVoiceBody())[18] {
+inline const VoiceBody (&EnumValuesVoiceBody())[21] {
   static const VoiceBody values[] = {
     VoiceBody::NONE,
     VoiceBody::Wake,
@@ -564,13 +576,16 @@ inline const VoiceBody (&EnumValuesVoiceBody())[18] {
     VoiceBody::StateChanged,
     VoiceBody::FeedbackCue,
     VoiceBody::Spoken,
-    VoiceBody::Transcript
+    VoiceBody::Transcript,
+    VoiceBody::Settings,
+    VoiceBody::SwitchPersona,
+    VoiceBody::SetLanguage
   };
   return values;
 }
 
 inline const char * const *EnumNamesVoiceBody() {
-  static const char * const names[19] = {
+  static const char * const names[22] = {
     "NONE",
     "Wake",
     "Intent",
@@ -589,13 +604,16 @@ inline const char * const *EnumNamesVoiceBody() {
     "FeedbackCue",
     "Spoken",
     "Transcript",
+    "Settings",
+    "SwitchPersona",
+    "SetLanguage",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameVoiceBody(VoiceBody e) {
-  if (flatbuffers::IsOutRange(e, VoiceBody::NONE, VoiceBody::Transcript)) return "";
+  if (flatbuffers::IsOutRange(e, VoiceBody::NONE, VoiceBody::SetLanguage)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesVoiceBody()[index];
 }
@@ -670,6 +688,18 @@ template<> struct VoiceBodyTraits<MiaVoice::Spoken> {
 
 template<> struct VoiceBodyTraits<MiaVoice::Transcript> {
   static const VoiceBody enum_value = VoiceBody::Transcript;
+};
+
+template<> struct VoiceBodyTraits<MiaVoice::Settings> {
+  static const VoiceBody enum_value = VoiceBody::Settings;
+};
+
+template<> struct VoiceBodyTraits<MiaVoice::SwitchPersona> {
+  static const VoiceBody enum_value = VoiceBody::SwitchPersona;
+};
+
+template<> struct VoiceBodyTraits<MiaVoice::SetLanguage> {
+  static const VoiceBody enum_value = VoiceBody::SetLanguage;
 };
 
 bool VerifyVoiceBody(flatbuffers::Verifier &verifier, const void *obj, VoiceBody type);
@@ -1780,6 +1810,144 @@ inline flatbuffers::Offset<SetVerbosity> CreateSetVerbosity(
   return builder_.Finish();
 }
 
+struct SwitchPersona FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef SwitchPersonaBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PERSONA = 4,
+    VT_SOURCE = 6
+  };
+  const flatbuffers::String *persona() const {
+    return GetPointer<const flatbuffers::String *>(VT_PERSONA);
+  }
+  flatbuffers::String *mutable_persona() {
+    return GetPointer<flatbuffers::String *>(VT_PERSONA);
+  }
+  MiaVoice::Source source() const {
+    return static_cast<MiaVoice::Source>(GetField<uint8_t>(VT_SOURCE, 0));
+  }
+  bool mutate_source(MiaVoice::Source _source = static_cast<MiaVoice::Source>(0)) {
+    return SetField<uint8_t>(VT_SOURCE, static_cast<uint8_t>(_source), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_PERSONA) &&
+           verifier.VerifyString(persona()) &&
+           VerifyField<uint8_t>(verifier, VT_SOURCE, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct SwitchPersonaBuilder {
+  typedef SwitchPersona Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_persona(flatbuffers::Offset<flatbuffers::String> persona) {
+    fbb_.AddOffset(SwitchPersona::VT_PERSONA, persona);
+  }
+  void add_source(MiaVoice::Source source) {
+    fbb_.AddElement<uint8_t>(SwitchPersona::VT_SOURCE, static_cast<uint8_t>(source), 0);
+  }
+  explicit SwitchPersonaBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<SwitchPersona> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<SwitchPersona>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<SwitchPersona> CreateSwitchPersona(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> persona = 0,
+    MiaVoice::Source source = MiaVoice::Source::Voice) {
+  SwitchPersonaBuilder builder_(_fbb);
+  builder_.add_persona(persona);
+  builder_.add_source(source);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<SwitchPersona> CreateSwitchPersonaDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *persona = nullptr,
+    MiaVoice::Source source = MiaVoice::Source::Voice) {
+  auto persona__ = persona ? _fbb.CreateString(persona) : 0;
+  return MiaVoice::CreateSwitchPersona(
+      _fbb,
+      persona__,
+      source);
+}
+
+struct SetLanguage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef SetLanguageBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_LANGUAGE = 4,
+    VT_SOURCE = 6
+  };
+  const flatbuffers::String *language() const {
+    return GetPointer<const flatbuffers::String *>(VT_LANGUAGE);
+  }
+  flatbuffers::String *mutable_language() {
+    return GetPointer<flatbuffers::String *>(VT_LANGUAGE);
+  }
+  MiaVoice::Source source() const {
+    return static_cast<MiaVoice::Source>(GetField<uint8_t>(VT_SOURCE, 0));
+  }
+  bool mutate_source(MiaVoice::Source _source = static_cast<MiaVoice::Source>(0)) {
+    return SetField<uint8_t>(VT_SOURCE, static_cast<uint8_t>(_source), 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_LANGUAGE) &&
+           verifier.VerifyString(language()) &&
+           VerifyField<uint8_t>(verifier, VT_SOURCE, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct SetLanguageBuilder {
+  typedef SetLanguage Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_language(flatbuffers::Offset<flatbuffers::String> language) {
+    fbb_.AddOffset(SetLanguage::VT_LANGUAGE, language);
+  }
+  void add_source(MiaVoice::Source source) {
+    fbb_.AddElement<uint8_t>(SetLanguage::VT_SOURCE, static_cast<uint8_t>(source), 0);
+  }
+  explicit SetLanguageBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<SetLanguage> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<SetLanguage>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<SetLanguage> CreateSetLanguage(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> language = 0,
+    MiaVoice::Source source = MiaVoice::Source::Voice) {
+  SetLanguageBuilder builder_(_fbb);
+  builder_.add_language(language);
+  builder_.add_source(source);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<SetLanguage> CreateSetLanguageDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *language = nullptr,
+    MiaVoice::Source source = MiaVoice::Source::Voice) {
+  auto language__ = language ? _fbb.CreateString(language) : 0;
+  return MiaVoice::CreateSetLanguage(
+      _fbb,
+      language__,
+      source);
+}
+
 struct StateChanged FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef StateChangedBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -1926,7 +2094,8 @@ struct Spoken FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PHRASE = 4,
     VT_PARAMS = 6,
     VT_PRIORITY = 8,
-    VT_UTTERANCE_ID = 10
+    VT_UTTERANCE_ID = 10,
+    VT_TEXT = 12
   };
   const flatbuffers::String *phrase() const {
     return GetPointer<const flatbuffers::String *>(VT_PHRASE);
@@ -1952,6 +2121,12 @@ struct Spoken FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool mutate_utterance_id(uint32_t _utterance_id = 0) {
     return SetField<uint32_t>(VT_UTTERANCE_ID, _utterance_id, 0);
   }
+  const flatbuffers::String *text() const {
+    return GetPointer<const flatbuffers::String *>(VT_TEXT);
+  }
+  flatbuffers::String *mutable_text() {
+    return GetPointer<flatbuffers::String *>(VT_TEXT);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_PHRASE) &&
@@ -1961,6 +2136,8 @@ struct Spoken FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVectorOfTables(params()) &&
            VerifyField<uint8_t>(verifier, VT_PRIORITY, 1) &&
            VerifyField<uint32_t>(verifier, VT_UTTERANCE_ID, 4) &&
+           VerifyOffset(verifier, VT_TEXT) &&
+           verifier.VerifyString(text()) &&
            verifier.EndTable();
   }
 };
@@ -1981,6 +2158,9 @@ struct SpokenBuilder {
   void add_utterance_id(uint32_t utterance_id) {
     fbb_.AddElement<uint32_t>(Spoken::VT_UTTERANCE_ID, utterance_id, 0);
   }
+  void add_text(flatbuffers::Offset<flatbuffers::String> text) {
+    fbb_.AddOffset(Spoken::VT_TEXT, text);
+  }
   explicit SpokenBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1997,8 +2177,10 @@ inline flatbuffers::Offset<Spoken> CreateSpoken(
     flatbuffers::Offset<flatbuffers::String> phrase = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<MiaVoice::Arg>>> params = 0,
     uint8_t priority = 0,
-    uint32_t utterance_id = 0) {
+    uint32_t utterance_id = 0,
+    flatbuffers::Offset<flatbuffers::String> text = 0) {
   SpokenBuilder builder_(_fbb);
+  builder_.add_text(text);
   builder_.add_utterance_id(utterance_id);
   builder_.add_params(params);
   builder_.add_phrase(phrase);
@@ -2011,15 +2193,18 @@ inline flatbuffers::Offset<Spoken> CreateSpokenDirect(
     const char *phrase = nullptr,
     const std::vector<flatbuffers::Offset<MiaVoice::Arg>> *params = nullptr,
     uint8_t priority = 0,
-    uint32_t utterance_id = 0) {
+    uint32_t utterance_id = 0,
+    const char *text = nullptr) {
   auto phrase__ = phrase ? _fbb.CreateString(phrase) : 0;
   auto params__ = params ? _fbb.CreateVector<flatbuffers::Offset<MiaVoice::Arg>>(*params) : 0;
+  auto text__ = text ? _fbb.CreateString(text) : 0;
   return MiaVoice::CreateSpoken(
       _fbb,
       phrase__,
       params__,
       priority,
-      utterance_id);
+      utterance_id,
+      text__);
 }
 
 struct Transcript FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -2091,6 +2276,128 @@ inline flatbuffers::Offset<Transcript> CreateTranscriptDirect(
       utterance_id);
 }
 
+struct Settings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef SettingsBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VERBOSITY = 4,
+    VT_PERSONA = 6,
+    VT_PERSONAS = 8,
+    VT_LANGUAGE = 10,
+    VT_LANGUAGES = 12
+  };
+  MiaVoice::Verbosity verbosity() const {
+    return static_cast<MiaVoice::Verbosity>(GetField<uint8_t>(VT_VERBOSITY, 0));
+  }
+  bool mutate_verbosity(MiaVoice::Verbosity _verbosity = static_cast<MiaVoice::Verbosity>(0)) {
+    return SetField<uint8_t>(VT_VERBOSITY, static_cast<uint8_t>(_verbosity), 0);
+  }
+  const flatbuffers::String *persona() const {
+    return GetPointer<const flatbuffers::String *>(VT_PERSONA);
+  }
+  flatbuffers::String *mutable_persona() {
+    return GetPointer<flatbuffers::String *>(VT_PERSONA);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *personas() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_PERSONAS);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_personas() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_PERSONAS);
+  }
+  const flatbuffers::String *language() const {
+    return GetPointer<const flatbuffers::String *>(VT_LANGUAGE);
+  }
+  flatbuffers::String *mutable_language() {
+    return GetPointer<flatbuffers::String *>(VT_LANGUAGE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *languages() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_LANGUAGES);
+  }
+  flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *mutable_languages() {
+    return GetPointer<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_LANGUAGES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_VERBOSITY, 1) &&
+           VerifyOffset(verifier, VT_PERSONA) &&
+           verifier.VerifyString(persona()) &&
+           VerifyOffset(verifier, VT_PERSONAS) &&
+           verifier.VerifyVector(personas()) &&
+           verifier.VerifyVectorOfStrings(personas()) &&
+           VerifyOffset(verifier, VT_LANGUAGE) &&
+           verifier.VerifyString(language()) &&
+           VerifyOffset(verifier, VT_LANGUAGES) &&
+           verifier.VerifyVector(languages()) &&
+           verifier.VerifyVectorOfStrings(languages()) &&
+           verifier.EndTable();
+  }
+};
+
+struct SettingsBuilder {
+  typedef Settings Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_verbosity(MiaVoice::Verbosity verbosity) {
+    fbb_.AddElement<uint8_t>(Settings::VT_VERBOSITY, static_cast<uint8_t>(verbosity), 0);
+  }
+  void add_persona(flatbuffers::Offset<flatbuffers::String> persona) {
+    fbb_.AddOffset(Settings::VT_PERSONA, persona);
+  }
+  void add_personas(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> personas) {
+    fbb_.AddOffset(Settings::VT_PERSONAS, personas);
+  }
+  void add_language(flatbuffers::Offset<flatbuffers::String> language) {
+    fbb_.AddOffset(Settings::VT_LANGUAGE, language);
+  }
+  void add_languages(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> languages) {
+    fbb_.AddOffset(Settings::VT_LANGUAGES, languages);
+  }
+  explicit SettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<Settings> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Settings>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Settings> CreateSettings(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    MiaVoice::Verbosity verbosity = MiaVoice::Verbosity::Quiet,
+    flatbuffers::Offset<flatbuffers::String> persona = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> personas = 0,
+    flatbuffers::Offset<flatbuffers::String> language = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> languages = 0) {
+  SettingsBuilder builder_(_fbb);
+  builder_.add_languages(languages);
+  builder_.add_language(language);
+  builder_.add_personas(personas);
+  builder_.add_persona(persona);
+  builder_.add_verbosity(verbosity);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Settings> CreateSettingsDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    MiaVoice::Verbosity verbosity = MiaVoice::Verbosity::Quiet,
+    const char *persona = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *personas = nullptr,
+    const char *language = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *languages = nullptr) {
+  auto persona__ = persona ? _fbb.CreateString(persona) : 0;
+  auto personas__ = personas ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*personas) : 0;
+  auto language__ = language ? _fbb.CreateString(language) : 0;
+  auto languages__ = languages ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*languages) : 0;
+  return MiaVoice::CreateSettings(
+      _fbb,
+      verbosity,
+      persona__,
+      personas__,
+      language__,
+      languages__);
+}
+
 struct VoiceMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef VoiceMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
@@ -2154,6 +2461,15 @@ struct VoiceMessage FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   const MiaVoice::Transcript *body_as_Transcript() const {
     return body_type() == MiaVoice::VoiceBody::Transcript ? static_cast<const MiaVoice::Transcript *>(body()) : nullptr;
+  }
+  const MiaVoice::Settings *body_as_Settings() const {
+    return body_type() == MiaVoice::VoiceBody::Settings ? static_cast<const MiaVoice::Settings *>(body()) : nullptr;
+  }
+  const MiaVoice::SwitchPersona *body_as_SwitchPersona() const {
+    return body_type() == MiaVoice::VoiceBody::SwitchPersona ? static_cast<const MiaVoice::SwitchPersona *>(body()) : nullptr;
+  }
+  const MiaVoice::SetLanguage *body_as_SetLanguage() const {
+    return body_type() == MiaVoice::VoiceBody::SetLanguage ? static_cast<const MiaVoice::SetLanguage *>(body()) : nullptr;
   }
   void *mutable_body() {
     return GetPointer<void *>(VT_BODY);
@@ -2233,6 +2549,18 @@ template<> inline const MiaVoice::Spoken *VoiceMessage::body_as<MiaVoice::Spoken
 
 template<> inline const MiaVoice::Transcript *VoiceMessage::body_as<MiaVoice::Transcript>() const {
   return body_as_Transcript();
+}
+
+template<> inline const MiaVoice::Settings *VoiceMessage::body_as<MiaVoice::Settings>() const {
+  return body_as_Settings();
+}
+
+template<> inline const MiaVoice::SwitchPersona *VoiceMessage::body_as<MiaVoice::SwitchPersona>() const {
+  return body_as_SwitchPersona();
+}
+
+template<> inline const MiaVoice::SetLanguage *VoiceMessage::body_as<MiaVoice::SetLanguage>() const {
+  return body_as_SetLanguage();
 }
 
 struct VoiceMessageBuilder {
@@ -2337,6 +2665,18 @@ inline bool VerifyVoiceBody(flatbuffers::Verifier &verifier, const void *obj, Vo
     }
     case VoiceBody::Transcript: {
       auto ptr = reinterpret_cast<const MiaVoice::Transcript *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case VoiceBody::Settings: {
+      auto ptr = reinterpret_cast<const MiaVoice::Settings *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case VoiceBody::SwitchPersona: {
+      auto ptr = reinterpret_cast<const MiaVoice::SwitchPersona *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case VoiceBody::SetLanguage: {
+      auto ptr = reinterpret_cast<const MiaVoice::SetLanguage *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;

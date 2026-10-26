@@ -28,6 +28,14 @@ sealed class WebSocketState {
     data class Error(val message: String, val throwable: Throwable? = null) : WebSocketState()
 }
 
+/** What [Cycle1TelemetrySource] needs from a telemetry connection, so tests can replace the socket. */
+interface TelemetryStream {
+    val telemetryFlow: SharedFlow<WebSocketMessage>
+    val stateFlow: SharedFlow<WebSocketState>
+    fun connect()
+    fun cleanup()
+}
+
 /**
  * WebSocket client for real-time telemetry data.
  * Note: Not using @Singleton/@Inject to avoid eager initialization issues.
@@ -37,11 +45,14 @@ class TelemetryWebSocket(
     private val wsBaseUrl: String,
     private val gson: Gson,
     /** Sent with the handshake; the Pi reads the API key from `X-API-Key` (REQ-SEC-001). */
-    private val headers: Map<String, String> = emptyMap()
-) {
+    private val headers: Map<String, String> = emptyMap(),
+    /** After this many failed reconnects it stops and reports an error; the shared source passes [Int.MAX_VALUE]. */
+    private val maxReconnectAttempts: Int = MAX_RECONNECT_ATTEMPTS,
+) : TelemetryStream {
     companion object {
         private const val TAG = "TelemetryWebSocket"
         private const val RECONNECT_DELAY_MS = 5000L
+        private const val MAX_RECONNECT_DELAY_MS = 30_000L
         private const val MAX_RECONNECT_ATTEMPTS = 5
         private const val TELEMETRY_ENDPOINT = "/ws/telemetry"
     }
@@ -59,13 +70,13 @@ class TelemetryWebSocket(
         replay = 0,
         extraBufferCapacity = 64
     )
-    val telemetryFlow: SharedFlow<WebSocketMessage> = _telemetryFlow.asSharedFlow()
+    override val telemetryFlow: SharedFlow<WebSocketMessage> = _telemetryFlow.asSharedFlow()
     
     private val _stateFlow = MutableSharedFlow<WebSocketState>(
         replay = 1,
         extraBufferCapacity = 8
     )
-    val stateFlow: SharedFlow<WebSocketState> = _stateFlow.asSharedFlow()
+    override val stateFlow: SharedFlow<WebSocketState> = _stateFlow.asSharedFlow()
 
     private val _ledStateFlow = MutableSharedFlow<LEDState>(
         replay = 1,
@@ -87,7 +98,7 @@ class TelemetryWebSocket(
     /**
      * Connect to the WebSocket server.
      */
-    fun connect() {
+    override fun connect() {
         attemptConnection(resetReconnectAttempts = true)
     }
 
@@ -233,7 +244,7 @@ class TelemetryWebSocket(
     private fun scheduleReconnect() {
         if (isManualDisconnect) return
         
-        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        if (reconnectAttempts >= maxReconnectAttempts) {
             Log.w(TAG, "Max reconnect attempts reached")
             scope.launch {
                 _stateFlow.emit(WebSocketState.Error("Max reconnect attempts reached"))
@@ -242,7 +253,7 @@ class TelemetryWebSocket(
         }
         
         reconnectAttempts++
-        val delayMs = RECONNECT_DELAY_MS * reconnectAttempts
+        val delayMs = (RECONNECT_DELAY_MS * reconnectAttempts).coerceAtMost(MAX_RECONNECT_DELAY_MS)
         
         Log.d(TAG, "Scheduling reconnect attempt $reconnectAttempts in ${delayMs}ms")
         
@@ -306,7 +317,7 @@ class TelemetryWebSocket(
     /**
      * Clean up resources.
      */
-    fun cleanup() {
+    override fun cleanup() {
         reconnectJob?.cancel()
         reconnectJob = null
         disconnect()

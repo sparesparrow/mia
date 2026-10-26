@@ -5,6 +5,10 @@
 !!! warning "Prototype"
     MIA is not certified for road use. It is designed to only read from the vehicle (ADR-0006). No bench, hardware or in-vehicle validation is recorded yet. Install it only on a test vehicle.
 
+!!! danger "Passive access: two rules"
+    - Flash the **default** ESP32 firmware build (`idf.py build`), which has no transmit path. Never put an image from a `build-tx` directory (`-DMIA_ALLOW_TX=1`) in the car.
+    - Leave the CAN transceiver's `TXD` line **physically disconnected**. Listen-only mode is a register a software bug can overwrite; a cut wire cannot.
+
 ## Before you start
 
 - [Installer checklist](../install/installer-checklist.md): OBD/CAN, power and cameras.
@@ -21,8 +25,8 @@
 ## Installing the gateway
 
 - [Automotive quick start](../AUTOMOTIVE_QUICK_START.md).
-- [Raspberry Pi gateway (standalone)](../install/pi-gateway.md) and [Raspberry Pi setup](../RASPBERRY_PI_SETUP.md).
-- Editions: [phone](../install/phone.md), [hybrid](../install/hybrid.md), [pro](../install/pro.md).
+- [Raspberry Pi install](../install/pi-gateway.md) and [Raspberry Pi setup](../RASPBERRY_PI_SETUP.md).
+- [Phone without a Pi](../install/phone.md) (limited, and not passive: BLE OBD polls the car).
 
 ## Legacy vehicle
 

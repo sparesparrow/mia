@@ -23,7 +23,10 @@ class VoiceBody private constructor() {
         const val FeedbackCue: UByte = 15u
         const val Spoken: UByte = 16u
         const val Transcript: UByte = 17u
-        val names : Array<String> = arrayOf("NONE", "Wake", "Intent", "GoNow", "Cancel", "Confirm", "Deny", "EndDictation", "DictationText", "SpeakingDone", "ExecutionDone", "SafetyWarning", "IncomingMessage", "SetVerbosity", "StateChanged", "FeedbackCue", "Spoken", "Transcript")
+        const val Settings: UByte = 18u
+        const val SwitchPersona: UByte = 19u
+        const val SetLanguage: UByte = 20u
+        val names : Array<String> = arrayOf("NONE", "Wake", "Intent", "GoNow", "Cancel", "Confirm", "Deny", "EndDictation", "DictationText", "SpeakingDone", "ExecutionDone", "SafetyWarning", "IncomingMessage", "SetVerbosity", "StateChanged", "FeedbackCue", "Spoken", "Transcript", "Settings", "SwitchPersona", "SetLanguage")
         fun name(e: Int) : String = names[e]
     }
 }

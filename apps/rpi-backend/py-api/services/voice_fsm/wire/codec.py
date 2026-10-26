@@ -55,12 +55,15 @@ from MiaVoice import Intent as _WIntent  # noqa: E402
 from MiaVoice import Led as _WLed  # noqa: E402
 from MiaVoice import Part as _WPart  # noqa: E402
 from MiaVoice import SafetyWarning as _WSafetyWarning  # noqa: E402
+from MiaVoice import SetLanguage as _WSetLanguage  # noqa: E402
+from MiaVoice import Settings as _WSettings  # noqa: E402
 from MiaVoice import SetVerbosity as _WSetVerbosity  # noqa: E402
 from MiaVoice import Source as _WSource  # noqa: E402
 from MiaVoice import SpeakingDone as _WSpeakingDone  # noqa: E402
 from MiaVoice import Spoken as _WSpoken  # noqa: E402
 from MiaVoice import State as _WState  # noqa: E402
 from MiaVoice import StateChanged as _WStateChanged  # noqa: E402
+from MiaVoice import SwitchPersona as _WSwitchPersona  # noqa: E402
 from MiaVoice import Tone as _WTone  # noqa: E402
 from MiaVoice import Transcript as _WTranscript  # noqa: E402
 from MiaVoice import Verbosity as _WVerbosity  # noqa: E402
@@ -85,12 +88,15 @@ from ..types import (  # noqa: E402
     Intent,
     Part,
     SafetyWarning,
+    SetLanguage,
+    Settings,
     SetVerbosity,
     Source,
     Speak,
     SpeakingDone,
     State,
     StateChanged,
+    SwitchPersona,
     Verbosity,
     Wake,
 )
@@ -99,7 +105,7 @@ from .messages import FILE_IDENTIFIER, WIRE_VERSION, Envelope, Transcript  # noq
 # vtable slot of field id 6 (`payload`) in voice.fbs; a test pins it to the generated accessor
 _PAYLOAD_VTABLE_OFFSET = 4 + 2 * 6
 
-Event = Union[StateChanged, Feedback, Speak, Transcript]
+Event = Union[StateChanged, Feedback, Speak, Transcript, Settings]
 
 
 class CodecError(ValueError):
@@ -308,6 +314,24 @@ def _build_verbosity(b, cmd: SetVerbosity):
     return _Body.VoiceBody.SetVerbosity, _WSetVerbosity.SetVerbosityEnd(b)
 
 
+def _build_switch_persona(b, cmd: SwitchPersona):
+    persona = _str(b, cmd.persona)
+    _WSwitchPersona.SwitchPersonaStart(b)
+    if persona:
+        _WSwitchPersona.SwitchPersonaAddPersona(b, persona)
+    _WSwitchPersona.SwitchPersonaAddSource(b, _lookup(_SOURCE[0], cmd.source, "source"))
+    return _Body.VoiceBody.SwitchPersona, _WSwitchPersona.SwitchPersonaEnd(b)
+
+
+def _build_set_language(b, cmd: SetLanguage):
+    language = _str(b, cmd.language)
+    _WSetLanguage.SetLanguageStart(b)
+    if language:
+        _WSetLanguage.SetLanguageAddLanguage(b, language)
+    _WSetLanguage.SetLanguageAddSource(b, _lookup(_SOURCE[0], cmd.source, "source"))
+    return _Body.VoiceBody.SetLanguage, _WSetLanguage.SetLanguageEnd(b)
+
+
 _COMMAND_BUILDERS: Dict[type, Callable[[flatbuffers.Builder, Any], Tuple[int, int]]] = {
     Wake: _simple_command(_WWake, _Body.VoiceBody.Wake),
     Intent: _build_intent,
@@ -322,6 +346,8 @@ _COMMAND_BUILDERS: Dict[type, Callable[[flatbuffers.Builder, Any], Tuple[int, in
     SafetyWarning: _build_warning,
     IncomingMessage: _build_message,
     SetVerbosity: _build_verbosity,
+    SwitchPersona: _build_switch_persona,
+    SetLanguage: _build_set_language,
 }
 
 
@@ -355,6 +381,7 @@ def _build_feedback(b, ev: Feedback):
 def _build_spoken(b, ev: Speak):
     phrase = _str(b, ev.phrase)
     params = _build_args(b, ev.params) if ev.params else 0
+    text = _str(b, ev.text)
     _WSpoken.SpokenStart(b)
     if phrase:
         _WSpoken.SpokenAddPhrase(b, phrase)
@@ -362,6 +389,8 @@ def _build_spoken(b, ev: Speak):
         _WSpoken.SpokenAddParams(b, params)
     _WSpoken.SpokenAddPriority(b, ev.priority)
     _WSpoken.SpokenAddUtteranceId(b, ev.id)
+    if text:
+        _WSpoken.SpokenAddText(b, text)
     return _Body.VoiceBody.Spoken, _WSpoken.SpokenEnd(b)
 
 
@@ -374,11 +403,30 @@ def _build_transcript(b, ev: Transcript):
     return _Body.VoiceBody.Transcript, _WTranscript.TranscriptEnd(b)
 
 
+def _build_settings(b, ev: Settings):
+    persona = _str(b, ev.persona)
+    personas = _vector(b, [b.CreateString(p) for p in ev.personas])
+    language = _str(b, ev.language)
+    languages = _vector(b, [b.CreateString(lang) for lang in ev.languages])
+    _WSettings.SettingsStart(b)
+    _WSettings.SettingsAddVerbosity(
+        b, _lookup(_VERBOSITY[0], ev.verbosity, "verbosity")
+    )
+    if persona:
+        _WSettings.SettingsAddPersona(b, persona)
+    _WSettings.SettingsAddPersonas(b, personas)
+    if language:
+        _WSettings.SettingsAddLanguage(b, language)
+    _WSettings.SettingsAddLanguages(b, languages)
+    return _Body.VoiceBody.Settings, _WSettings.SettingsEnd(b)
+
+
 _EVENT_BUILDERS: Dict[type, Callable[[flatbuffers.Builder, Any], Tuple[int, int]]] = {
     StateChanged: _build_state_changed,
     Feedback: _build_feedback,
     Speak: _build_spoken,
     Transcript: _build_transcript,
+    Settings: _build_settings,
 }
 
 
@@ -522,10 +570,26 @@ def _read_body(body_type: int, body_table) -> Any:
             _read_args(t, "ParamsLength", "Params"),
             t.Priority(),
             t.UtteranceId(),
+            _str_of(t.Text()),
         )
     if body_type == _Body.VoiceBody.Transcript:
         t = _init(_WTranscript.Transcript, body_table)
         return Transcript(_str_of(t.Text()), t.UtteranceId())
+    if body_type == _Body.VoiceBody.Settings:
+        t = _init(_WSettings.Settings, body_table)
+        return Settings(
+            _lookup(_VERBOSITY[1], t.Verbosity(), "verbosity"),
+            _str_of(t.Persona()),
+            tuple(_str_of(t.Personas(i)) for i in range(t.PersonasLength())),
+            _str_of(t.Language()),
+            tuple(_str_of(t.Languages(i)) for i in range(t.LanguagesLength())),
+        )
+    if body_type == _Body.VoiceBody.SwitchPersona:
+        t = _init(_WSwitchPersona.SwitchPersona, body_table)
+        return SwitchPersona(_str_of(t.Persona()), _lookup(S, t.Source(), "source"))
+    if body_type == _Body.VoiceBody.SetLanguage:
+        t = _init(_WSetLanguage.SetLanguage, body_table)
+        return SetLanguage(_str_of(t.Language()), _lookup(S, t.Source(), "source"))
     raise CodecError(f"unknown voice message type {body_type}")
 
 

@@ -8,6 +8,8 @@ import cz.mia.app.core.networking.PiRequestInterceptor
 import cz.mia.app.data.remote.api.DeviceApi
 import cz.mia.app.data.remote.api.SessionApi
 import cz.mia.app.data.remote.api.TelemetryApi
+import cz.mia.app.data.remote.websocket.TelemetryStreamFactory
+import cz.mia.app.data.remote.websocket.TelemetryWebSocket
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -100,4 +102,12 @@ object NetworkModule {
     fun provideSessionApi(retrofit: Retrofit): SessionApi {
         return retrofit.create(SessionApi::class.java)
     }
+
+    /** The shared Cycle 1 source keeps one socket per drive, so it reconnects without giving up. */
+    @Provides
+    @Singleton
+    fun provideTelemetryStreamFactory(gson: Gson): TelemetryStreamFactory =
+        TelemetryStreamFactory { target ->
+            TelemetryWebSocket(target.wsBaseUrl, gson, target.authHeaders(), maxReconnectAttempts = Int.MAX_VALUE)
+        }
 }

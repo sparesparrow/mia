@@ -1,6 +1,7 @@
 package cz.mia.app.data.db
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "telemetry")
@@ -30,13 +31,25 @@ data class AlertEntity(
 	val message: String
 )
 
-@Entity(tableName = "anpr_events")
+/** One camera sighting. Indexed by plate and time for the repeated-sighting lookup (REQ-AND-021). */
+@Entity(tableName = "anpr_events", indices = [Index(value = ["plateHash", "ts"])])
 data class AnprEventEntity(
 	@PrimaryKey(autoGenerate = true) val id: Long = 0,
 	val ts: Long,
 	val plateHash: String,
 	val confidence: Float,
 	val snapshotId: String?
+)
+
+/**
+ * A black-book plate (REQ-AND-020): the hash of a plate the user chose to be told about, and their label for it. The
+ * clear plate is never stored. Entries stay until the user removes them; retention does not apply (ADR-0018).
+ */
+@Entity(tableName = "watchlist")
+data class WatchlistEntity(
+	@PrimaryKey val plateHash: String,
+	val label: String,
+	val addedAt: Long
 )
 
 @Entity(tableName = "clips")

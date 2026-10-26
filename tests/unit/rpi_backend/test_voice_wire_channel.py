@@ -24,6 +24,7 @@ from services.voice_fsm import (
     Intent,
     Part,
     SafetyWarning,
+    Settings,
     SetVerbosity,
     Source,
     Speak,
@@ -280,13 +281,16 @@ def test_open_data_and_close_are_answered_with_the_senders_sequence_number(setup
     _, machine, _, router = setup
     peer = Peer(router, open_session=False)
     peer.send(Op.OPEN, seq=11)
-    (reply,) = peer.take()
+    reply, snapshot = peer.take()
     assert (reply.status, reply.seq, reply.op, reply.session_id) == (
         Status.OK,
         11,
         Op.OPEN,
         "s1",
     )
+    # After the reply, the opener alone gets the machine's settings (ADR-0019).
+    assert (snapshot.op, snapshot.session_id) == (Op.DATA, "s1")
+    assert decode_event(snapshot.payload) == Settings(Verbosity.NORMAL)
 
     peer.command(Wake(), seq=12)
     reply, *events = peer.take()
@@ -368,7 +372,7 @@ def test_a_peer_cannot_send_what_only_the_pi_may_report(setup):
     _, machine, _, router = setup
     peer = Peer(router)
     forbidden = [
-        SafetyWarning("warn.coolant"),
+        SafetyWarning("warning.coolant_high"),
         SpeakingDone(),
         ExecutionDone("read.result"),
         IncomingMessage("Jana", "hi"),

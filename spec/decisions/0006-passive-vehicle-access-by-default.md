@@ -27,5 +27,5 @@ that software can overwrite.
   leave `build/` transmitting.
 
 ## Sources
-`TODO.md` "Audi/VAG read-only pilot" guardrails, `docs/automotive/audi-a4-8h-interface-integration.md`,
+The "Audi/VAG read-only pilot" guardrails of the former `TODO.md` (removed in #161), `docs/automotive/audi-a4-8h-interface-integration.md`,
 `apps/esp32/firmware-obd/components/ai_servis_obd/ai_servis_obd.c`, `infra/systemd/mia-vag-audi-bridge.service`.

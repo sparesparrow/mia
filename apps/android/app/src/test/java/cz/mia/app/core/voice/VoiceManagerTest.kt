@@ -1,6 +1,7 @@
 package cz.mia.app.core.voice
 
-// @req REQ-AND-009
+// Not tagged with a requirement: these cases check copies of VoiceManager's values, not VoiceManagerImpl;
+// VoiceManagerImplTest drives the real class (REQ-AND-009).
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
