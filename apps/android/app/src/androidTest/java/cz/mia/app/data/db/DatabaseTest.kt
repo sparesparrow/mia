@@ -161,7 +161,7 @@ class DatabaseTest {
     }
 
     @Test
-    fun watchlist_outlivesRetention() = runBlocking {
+    fun watchlist_outlivesRetention() = runBlocking<Unit> {
         watchlistDao.upsert(WatchlistEntity(plateHash = "h1", label = "", addedAt = 0))
         anprEventDao.insert(AnprEventEntity(ts = 0, plateHash = "h1", confidence = 0.9f, snapshotId = null))
         anprEventDao.deleteOlderThan(System.currentTimeMillis())
