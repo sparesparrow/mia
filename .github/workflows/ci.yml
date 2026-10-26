@@ -122,7 +122,9 @@ jobs:
     if: needs.changes.outputs.schema == 'true'
     name: Schema Validation
     needs: changes
-    runs-on: ubuntu-latest
+    # Pinned: the committed bindings and the Android runtime (flatbuffers-java) are flatc 2.0.8, which is what
+    # apt installs on 24.04. ubuntu-latest (26.04) installs 23.5.26 and every binding then reads as drift.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -280,7 +282,9 @@ jobs:
   cpp-build:
     if: needs.changes.outputs.cpp == 'true'
     name: C++ Build (${{ matrix.arch }})
-    runs-on: ubuntu-latest
+    # Pinned: HardwareControlServer.cpp uses the libgpiod 1.x API, which 24.04 ships. ubuntu-latest (26.04) has
+    # libgpiod 2.x, which removed it. Unpin once the code is ported to libgpiod 2.
+    runs-on: ubuntu-24.04
     needs: changes
     timeout-minutes: 30
     strategy:

@@ -28,7 +28,7 @@ import argparse
 from pathlib import Path
 
 # FlatBuffers compiler version used for this project
-FLATC_VERSION = "24.3.25"
+FLATC_VERSION = "2.0.8"  # the bindings in schemas/generated and the Android flatbuffers-java runtime
 
 
 def find_flatc():
