@@ -108,7 +108,7 @@ def test_a_text_frame_is_refused_and_the_connection_closed(client):
 def test_commands_only_the_pi_may_report_are_refused_over_the_socket(client):
     with client.websocket_connect("/ws/voice") as ws:
         _open(ws)
-        _send(ws, Op.DATA, encode_command(SafetyWarning("warn.coolant")), seq=2)
+        _send(ws, Op.DATA, encode_command(SafetyWarning("warning.coolant_high")), seq=2)
         assert _next(ws).status == Status.NOT_PERMITTED
         _send(ws, Op.DATA, encode_command(SetVerbosity(Verbosity.QUIET)), seq=3)
         assert _next(ws).status == Status.OK

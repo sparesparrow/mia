@@ -43,6 +43,7 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,9 @@ import cz.mia.app.features.dashboard.DashboardViewModel
 import cz.mia.app.features.dashboard.PolicyViewModel
 import cz.mia.app.features.settings.SettingsViewModel
 import cz.mia.app.features.led.LEDMonitorViewModel
+import cz.mia.app.features.voice.VoiceConsoleViewModel
+import cz.mia.app.core.voice.console.ConnectionState
+import cz.mia.app.ui.components.VoiceSettingsSection
 import cz.mia.app.ui.components.CitroenReadings
 import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.DashboardGauges
@@ -289,7 +293,7 @@ class MainActivity : ComponentActivity() {
 		var piAddressError by remember { mutableStateOf<String?>(null) }
 		var lastExportPath by remember { mutableStateOf("") }
 
-		Column(modifier = modifier.padding(16.dp)) {
+		Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
 			Text(text = "Settings")
 			Spacer(modifier = Modifier.height(12.dp))
 			OutlinedTextField(value = vinText, onValueChange = { vinText = it }, label = { Text("VIN") })
@@ -341,7 +345,30 @@ class MainActivity : ComponentActivity() {
 				Spacer(Modifier.height(8.dp))
 				Text("Exported: ${lastExportPath}")
 			}
+			Spacer(Modifier.height(24.dp))
+			VoiceSettings()
 		}
+	}
+
+	/** MIA's voice settings live on the Pi (ADR-0019); this asks the voice console for them. */
+	@Composable
+	private fun VoiceSettings() {
+		val voiceVm: VoiceConsoleViewModel = hiltViewModel()
+		val voice by voiceVm.state.collectAsState()
+		var wanted by remember { mutableStateOf(false) }
+		DisposableEffect(voiceVm, wanted) {
+			if (wanted) voiceVm.start()
+			onDispose { if (wanted) voiceVm.stop() }
+		}
+		Text("MIA's voice", style = MaterialTheme.typography.titleLarge)
+		if (voice.connection != ConnectionState.CONNECTED) {
+			Text("Read from the Pi's voice console when connected.")
+			OutlinedButton(onClick = { wanted = true }, enabled = voice.connection == ConnectionState.DISCONNECTED) {
+				Text(if (voice.connection == ConnectionState.CONNECTING) "Connecting..." else "Connect")
+			}
+		}
+		Spacer(Modifier.height(8.dp))
+		VoiceSettingsSection(voice, voiceVm::press)
 	}
 }
 @Composable

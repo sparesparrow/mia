@@ -210,15 +210,29 @@ requirements:
   decisions:
   - ADR-0011
   - ADR-0013
-  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. MIA's phrases show as keys and parameters, not as the sentence a persona would say. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
 - id: REQ-AND-017
   title: Persona and verbosity setting
   statement: The app shall let the user choose the persona and the verbosity mode.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The persona and language chips are drawn from what the Pi reports and send the switch command; the selection
+    moves only when the Pi reports the change
+  - The persona and language commands encode to the very bytes the Pi's codec writes, and the reported settings decode
+    to the values in the shared fixture
+  - Without a connection nothing is reported and no chip can be pressed, and a lost connection forgets the settings
+  - MIA's sentences are shown instead of phrase keys when the Pi sends them
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/VoiceSettingsSection.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
   decisions:
   - ADR-0015
-  not_proven: Only the verbosity half exists, as part of the voice console (REQ-AND-016), and it shows the level the machine reports (REQ-VOICE-017); the persona has no message on the wire yet and no setting.
+  - ADR-0019
+  not_proven: Neither screen has been rendered on a phone; the chip test runs on the CI emulator. The settings come
+    from the voice console, which the Pi serves only with VOICE_CONSOLE=1 and which drives a simulated machine
+    (ADR-0019), so no choice made here has reached the voice pipeline. The Settings tab connects only when asked.
 - id: REQ-AND-018
   title: Pi address and API key setting
   statement: The app shall let the user enter the Pi's address and API key in Settings, and shall send the key in the

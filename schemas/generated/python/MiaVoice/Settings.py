@@ -35,12 +35,84 @@ class Settings(object):
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
-def SettingsStart(builder): builder.StartObject(1)
+    # Settings
+    def Persona(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # Settings
+    def Personas(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.String(a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 4))
+        return ""
+
+    # Settings
+    def PersonasLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # Settings
+    def PersonasIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        return o == 0
+
+    # Settings
+    def Language(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # Settings
+    def Languages(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.String(a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 4))
+        return ""
+
+    # Settings
+    def LanguagesLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # Settings
+    def LanguagesIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        return o == 0
+
+def SettingsStart(builder): builder.StartObject(5)
 def Start(builder):
     return SettingsStart(builder)
 def SettingsAddVerbosity(builder, verbosity): builder.PrependUint8Slot(0, verbosity, 0)
 def AddVerbosity(builder, verbosity):
     return SettingsAddVerbosity(builder, verbosity)
+def SettingsAddPersona(builder, persona): builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(persona), 0)
+def AddPersona(builder, persona):
+    return SettingsAddPersona(builder, persona)
+def SettingsAddPersonas(builder, personas): builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(personas), 0)
+def AddPersonas(builder, personas):
+    return SettingsAddPersonas(builder, personas)
+def SettingsStartPersonasVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+def StartPersonasVector(builder, numElems):
+    return SettingsStartPersonasVector(builder, numElems)
+def SettingsAddLanguage(builder, language): builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(language), 0)
+def AddLanguage(builder, language):
+    return SettingsAddLanguage(builder, language)
+def SettingsAddLanguages(builder, languages): builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(languages), 0)
+def AddLanguages(builder, languages):
+    return SettingsAddLanguages(builder, languages)
+def SettingsStartLanguagesVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+def StartLanguagesVector(builder, numElems):
+    return SettingsStartLanguagesVector(builder, numElems)
 def SettingsEnd(builder): return builder.EndObject()
 def End(builder):
     return SettingsEnd(builder)

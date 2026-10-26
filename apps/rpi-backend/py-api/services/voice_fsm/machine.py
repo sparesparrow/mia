@@ -19,11 +19,23 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import replace
 from enum import Enum
-from typing import Callable, Deque, Dict, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Callable,
+    Deque,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 from .classes import ACTION_CLASSES, effective_class
 from .feedback import BUSY_TONE, FEEDBACK
 from .types import (
+    DEFAULT_LANGUAGE,
+    DEFAULT_PERSONA,
     DICTATE,
     SAVE_NOTE,
     Abort,
@@ -45,6 +57,7 @@ from .types import (
     MuteMic,
     Part,
     SafetyWarning,
+    SetLanguage,
     Settings,
     SetVerbosity,
     Speak,
@@ -52,6 +65,7 @@ from .types import (
     State,
     StateChanged,
     StopSpeaking,
+    SwitchPersona,
     Verbosity,
     Wake,
 )
@@ -59,6 +73,12 @@ from .types import (
 # The oldest queued message is dropped when this many are waiting.
 MAX_QUEUED_MESSAGES = 20
 MAX_QUEUED_INTENTS = 3
+
+
+def _offered(wanted: str, offered: Tuple[str, ...], default: str) -> str:
+    if wanted in offered:
+        return wanted
+    return default if default in offered else offered[0]
 
 
 class _After(Enum):
@@ -79,6 +99,10 @@ class VoiceMachine:
         listen_timeout_sec: float = 5.0,
         verbosity: Verbosity = Verbosity.NORMAL,
         action_classes: Optional[Mapping[str, ActionClass]] = None,
+        persona: str = DEFAULT_PERSONA,
+        personas: Sequence[str] = (DEFAULT_PERSONA,),
+        language: str = DEFAULT_LANGUAGE,
+        languages: Sequence[str] = (DEFAULT_LANGUAGE,),
     ) -> None:
         self._clock = clock
         self.window_sec = window_sec
@@ -86,6 +110,11 @@ class VoiceMachine:
         self.listen_timeout_sec = listen_timeout_sec
         self.verbosity = verbosity
         self._classes = ACTION_CLASSES if action_classes is None else action_classes
+        # A stored choice that this Pi no longer has falls back to the default, or the first one offered.
+        self.personas = tuple(personas) or (DEFAULT_PERSONA,)
+        self.persona = _offered(persona, self.personas, DEFAULT_PERSONA)
+        self.languages = tuple(languages) or (DEFAULT_LANGUAGE,)
+        self.language = _offered(language, self.languages, DEFAULT_LANGUAGE)
 
         self._state = State.IDLE
         self._deadline: Optional[float] = None
@@ -128,6 +157,8 @@ class VoiceMachine:
             SafetyWarning: self._on_warning,
             IncomingMessage: self._on_message,
             SetVerbosity: self._on_set_verbosity,
+            SwitchPersona: self._on_switch_persona,
+            SetLanguage: self._on_set_language,
         }
 
     # ── Public API ─────────────────────────────────────────────────────────
@@ -142,7 +173,13 @@ class VoiceMachine:
 
     def settings(self) -> Settings:
         """The settings in use now, for a peer that has just connected."""
-        return Settings(verbosity=self.verbosity)
+        return Settings(
+            verbosity=self.verbosity,
+            persona=self.persona,
+            personas=self.personas,
+            language=self.language,
+            languages=self.languages,
+        )
 
     def handle(self, command: Command) -> List[Effect]:
         out: List[Effect] = []
@@ -522,3 +559,28 @@ class VoiceMachine:
         out.append(self.settings())
         if self._state is State.IDLE:
             self._say("verbosity.set", {"level": cmd.level.value}, out)
+
+    def _on_switch_persona(self, cmd: SwitchPersona, out: List[Effect]) -> None:
+        if not cmd.persona:
+            current = self.personas.index(self.persona)
+            name = self.personas[(current + 1) % len(self.personas)]
+        elif cmd.persona in self.personas:
+            name = cmd.persona
+        else:
+            if self._state is State.IDLE:
+                self._say("persona.unknown", {"persona": cmd.persona}, out)
+            return
+        self.persona = name
+        out.append(self.settings())
+        if self._state is State.IDLE:
+            self._say("persona.set", {"persona": name}, out)
+
+    def _on_set_language(self, cmd: SetLanguage, out: List[Effect]) -> None:
+        if cmd.language not in self.languages:
+            if self._state is State.IDLE:
+                self._say("language.unknown", {"language": cmd.language}, out)
+            return
+        self.language = cmd.language
+        out.append(self.settings())
+        if self._state is State.IDLE:
+            self._say("language.set", {"language": cmd.language}, out)

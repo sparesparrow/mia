@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016 REQ-VOICE-017
+// @req REQ-AND-016 REQ-VOICE-017 REQ-AND-017
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -64,10 +64,10 @@ class VoiceConsoleModelTest {
         val state = fold(
             ConsoleEvent.Transcript("zapni svetla", 1),
             ConsoleEvent.Spoken("chain.announce", mapOf("parts" to "lights.on", "seconds" to "5.0"), 0, 1),
-            ConsoleEvent.Spoken("warn.coolant", mapOf("value" to "112"), 1, 2),
+            ConsoleEvent.Spoken("warning.coolant_high", mapOf("value" to "112"), 1, 2),
         )
         assertEquals("zapni svetla", state.transcript)
-        assertEquals(listOf("chain.announce (parts=lights.on, seconds=5.0)", "! warn.coolant (value=112)"), state.spoken.map { it.text })
+        assertEquals(listOf("chain.announce (parts=lights.on, seconds=5.0)", "! warning.coolant_high (value=112)"), state.spoken.map { it.text })
     }
 
     @Test
@@ -76,6 +76,32 @@ class VoiceConsoleModelTest {
         val state = fold(ConsoleEvent.Settings(VerbosityLevel.CHATTY), ConsoleEvent.Settings(VerbosityLevel.QUIET))
         assertEquals(VerbosityLevel.QUIET, state.verbosity)
         assertEquals("verbosity quiet", state.log.last().text)
+    }
+
+    @Test
+    fun `the sentence MIA said is shown when the Pi sends it, a warning still marked`() {
+        val state = fold(
+            ConsoleEvent.Spoken("persona.set", mapOf("persona" to "holly"), 0, 1, "Holly. Back on duty."),
+            ConsoleEvent.Spoken("warning.rpm_high", mapOf("value" to "6400"), 1, 2, "Engine speed 6400 RPM. Ease off the throttle."),
+        )
+        assertEquals(listOf("Holly. Back on duty.", "! Engine speed 6400 RPM. Ease off the throttle."), state.spoken.map { it.text })
+    }
+
+    @Test
+    fun `persona and language and the choices come from the machine`() {
+        val state = fold(
+            ConsoleEvent.Settings(VerbosityLevel.NORMAL, "rimmer", listOf("mia", "holly", "rimmer"), "cs", listOf("cs", "en")),
+        )
+        assertEquals("rimmer", state.persona)
+        assertEquals(listOf("mia", "holly", "rimmer"), state.personas)
+        assertEquals("cs", state.language)
+        assertEquals(listOf("cs", "en"), state.languages)
+        assertEquals("verbosity normal, persona rimmer, language cs", state.log.last().text)
+
+        val forgotten = state.forgetSettings()
+        assertEquals(null, forgotten.persona)
+        assertEquals(emptyList<String>(), forgotten.personas)
+        assertEquals(null, forgotten.verbosity)
     }
 
     @Test

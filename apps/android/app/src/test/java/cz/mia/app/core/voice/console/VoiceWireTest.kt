@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016 REQ-VOICE-017
+// @req REQ-AND-016 REQ-VOICE-017 REQ-AND-017
 
 import MiaVoice.Led
 import MiaVoice.State
@@ -26,6 +26,9 @@ class VoiceWireTest {
         "verbosity_quiet" -> ConsoleCommand.SetVerbosity(VerbosityLevel.QUIET)
         "verbosity_normal" -> ConsoleCommand.SetVerbosity(VerbosityLevel.NORMAL)
         "verbosity_chatty" -> ConsoleCommand.SetVerbosity(VerbosityLevel.CHATTY)
+        "switch_persona_holly" -> ConsoleCommand.SwitchPersona("holly")
+        "switch_persona_next" -> ConsoleCommand.SwitchPersona()
+        "set_language_cs" -> ConsoleCommand.SetLanguage("cs")
         else -> error("fixture command $name has no console equivalent")
     }
 
@@ -37,7 +40,7 @@ class VoiceWireTest {
     @Test
     fun `console commands encode to the very bytes the Pi codec writes`() {
         val commands = fixtures.filter { it.type == "command" }
-        assertEquals(9, commands.size)
+        assertEquals(12, commands.size)
         for (fixture in commands) {
             val envelope = WireEnvelope(
                 VoiceWire.SERVICE_VOICE, fixture.session, WireOp.DATA, null, fixture.seq,
@@ -83,6 +86,7 @@ class VoiceWireTest {
                         expect["params"].asJsonObject.entrySet().associate { it.key to it.value.asString },
                         expect["priority"].asInt,
                         expect["utterance_id"].asLong,
+                        expect["text"]?.asString ?: "",
                     ),
                     decoded,
                 )
@@ -93,7 +97,13 @@ class VoiceWireTest {
                 )
                 "settings" -> assertEquals(
                     fixture.name,
-                    ConsoleEvent.Settings(VerbosityLevel.valueOf(expect["verbosity"].asString.uppercase())),
+                    ConsoleEvent.Settings(
+                        VerbosityLevel.valueOf(expect["verbosity"].asString.uppercase()),
+                        expect["persona"].asString,
+                        expect["personas"].asJsonArray.map { it.asString },
+                        expect["language"].asString,
+                        expect["languages"].asJsonArray.map { it.asString },
+                    ),
                     decoded,
                 )
                 else -> fail("unknown fixture kind in ${fixture.name}")

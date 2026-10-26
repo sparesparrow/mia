@@ -76,7 +76,7 @@ class VoiceConsoleClient(
             sent.clear()
         }
         toClose?.close()
-        _state.update { it.copy(connection = ConnectionState.DISCONNECTED, verbosity = null) }
+        _state.update { it.forgetSettings().copy(connection = ConnectionState.DISCONNECTED) }
     }
 
     /** Send a button press or the verbosity setting. False if the session is not open. */
@@ -226,7 +226,7 @@ class VoiceConsoleClient(
             if (retry) attempt++
         }
         _state.update {
-            it.copy(connection = ConnectionState.DISCONNECTED, verbosity = null, lastError = message ?: it.lastError)
+            it.forgetSettings().copy(connection = ConnectionState.DISCONNECTED, lastError = message ?: it.lastError)
                 .logged(LogLine(LogKind.ERROR, if (message != null) "connection lost: $message" else "connection closed", now()))
         }
         if (retry) {
@@ -253,5 +253,7 @@ class VoiceConsoleClient(
         is ConsoleCommand.Deny -> "deny"
         is ConsoleCommand.EndDictation -> "end_dictation"
         is ConsoleCommand.SetVerbosity -> "verbosity ${command.level.name.lowercase()}"
+        is ConsoleCommand.SwitchPersona -> "persona ${command.persona.ifEmpty { "next" }}"
+        is ConsoleCommand.SetLanguage -> "language ${command.language}"
     }
 }

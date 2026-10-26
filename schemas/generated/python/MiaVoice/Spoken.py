@@ -74,7 +74,14 @@ class Spoken(object):
             return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
         return 0
 
-def SpokenStart(builder): builder.StartObject(4)
+    # Spoken
+    def Text(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+def SpokenStart(builder): builder.StartObject(5)
 def Start(builder):
     return SpokenStart(builder)
 def SpokenAddPhrase(builder, phrase): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(phrase), 0)
@@ -92,6 +99,9 @@ def AddPriority(builder, priority):
 def SpokenAddUtteranceId(builder, utteranceId): builder.PrependUint32Slot(3, utteranceId, 0)
 def AddUtteranceId(builder, utteranceId):
     return SpokenAddUtteranceId(builder, utteranceId)
+def SpokenAddText(builder, text): builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(text), 0)
+def AddText(builder, text):
+    return SpokenAddText(builder, text)
 def SpokenEnd(builder): return builder.EndObject()
 def End(builder):
     return SpokenEnd(builder)

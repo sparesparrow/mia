@@ -20,7 +20,7 @@ beyond their status line.
 | [0012](0012-voice-confirmation-window-and-action-classes.md) | Uncertain voice commands run after a 5 s window, by action class | Proposed |
 | [0013](0013-message-envelope-and-abstract-channel.md) | Message envelope and an abstract channel for voice and console traffic | Proposed |
 | [0014](0014-voice-data-and-privacy.md) | Voice data stays local, with a bounded retention | Proposed |
-| [0015](0015-personas-are-data.md) | Personas are data, not code | Proposed |
+| [0015](0015-personas-are-data.md) | Personas are data, not code | Accepted |
 | [0016](0016-android-reaches-the-pi-over-plain-http.md) | The Android app reaches the Pi over plain HTTP, with the API key in a header | Accepted |
 | [0017](0017-mqtt-topic-namespace.md) | One MQTT topic contract: `spec/interfaces/topics.md` | Proposed |
 | [0018](0018-per-install-plate-key-and-black-book.md) | Plate hashes use a per-install key; the black book outlives retention | Proposed |

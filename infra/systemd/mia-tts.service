@@ -18,6 +18,9 @@ Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api
 Environment=ZMQ_RESPONSE_PORT=5561
 Environment=ZMQ_SPEAKING_PORT=5563
 Environment=PIPER_MODEL=en_US-amy-medium
+# One model per language MIA speaks (ADR-0015). Put cs_CZ-jirka-medium.onnx and .onnx.json from the piper voices
+# in PIPER_DATA_DIR for Czech; without them Czech is spoken by espeak.
+Environment=PIPER_VOICES=en=en_US-amy-medium,cs=cs_CZ-jirka-medium
 Environment=PIPER_DATA_DIR=/opt/mia/data/piper
 # audio group for ALSA access
 SupplementaryGroups=audio

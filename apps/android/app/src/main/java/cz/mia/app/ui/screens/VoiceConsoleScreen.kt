@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -42,13 +41,13 @@ import cz.mia.app.core.voice.console.LedLook
 import cz.mia.app.core.voice.console.LedPattern
 import cz.mia.app.core.voice.console.LogKind
 import cz.mia.app.core.voice.console.LogLine
-import cz.mia.app.core.voice.console.VerbosityLevel
 import cz.mia.app.core.voice.console.VoiceConsoleState
 import cz.mia.app.features.voice.VoiceConsoleViewModel
+import cz.mia.app.ui.components.VoiceSettingsSection
 
 /**
  * The voice state machine as seen from the phone (REQ-AND-016): the steering-wheel buttons as buttons,
- * the LED, what was heard, what MIA said and the event queue.
+ * the LED, the voice settings (REQ-AND-017), what was heard, what MIA said and the event queue.
  */
 @Composable
 fun VoiceConsoleScreen(modifier: Modifier = Modifier, viewModel: VoiceConsoleViewModel = hiltViewModel()) {
@@ -94,21 +93,7 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
             OutlinedButton(onClick = { onPress(ConsoleCommand.EndDictation) }, enabled = connected, modifier = Modifier.testTag("voice_end_dictation")) { Text("End note") }
         }
 
-        Text("Verbosity (from the Pi)", style = MaterialTheme.typography.titleMedium)
-        if (state.verbosity == null) {
-            Text("not reported", style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("voice_verbosity_unknown"))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            VerbosityLevel.values().forEach { level ->
-                FilterChip(
-                    selected = state.verbosity == level,
-                    onClick = { onPress(ConsoleCommand.SetVerbosity(level)) },
-                    enabled = connected,
-                    label = { Text(level.name.lowercase()) },
-                    modifier = Modifier.testTag("voice_verbosity_${level.name.lowercase()}"),
-                )
-            }
-        }
+        VoiceSettingsSection(state, onPress)
 
         Text("Heard", style = MaterialTheme.typography.titleMedium)
         Text(state.transcript.ifEmpty { "-" }, modifier = Modifier.testTag("voice_transcript"))

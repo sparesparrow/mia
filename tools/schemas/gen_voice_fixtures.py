@@ -30,12 +30,14 @@ from services.voice_fsm import (  # noqa: E402
     EndDictation,
     Feedback,
     GoNow,
+    SetLanguage,
     Settings,
     SetVerbosity,
     Source,
     Speak,
     State,
     StateChanged,
+    SwitchPersona,
     Verbosity,
     Wake,
 )
@@ -82,6 +84,9 @@ def build() -> List[Dict[str, Any]]:
         ("verbosity_quiet", SetVerbosity(Verbosity.QUIET, Source.CONSOLE)),
         ("verbosity_normal", SetVerbosity(Verbosity.NORMAL, Source.CONSOLE)),
         ("verbosity_chatty", SetVerbosity(Verbosity.CHATTY, Source.CONSOLE)),
+        ("switch_persona_holly", SwitchPersona("holly", Source.CONSOLE)),
+        ("switch_persona_next", SwitchPersona("", Source.CONSOLE)),
+        ("set_language_cs", SetLanguage("cs", Source.CONSOLE)),
     ]
     for name, command in commands:
         seq += 1
@@ -154,13 +159,20 @@ def build() -> List[Dict[str, Any]]:
         ),
         (
             "spoken_warning",
-            Speak("warn.coolant", {"value": 112, "unit": "C", "moving": True}, 1, 7),
+            Speak(
+                "warning.coolant_high",
+                {"value": 112, "moving": True},
+                1,
+                7,
+                "Coolant at 112 degrees. Stop when it is safe and switch the engine off.",
+            ),
             {
                 "kind": "spoken",
-                "phrase": "warn.coolant",
-                "params": {"value": "112", "unit": "C", "moving": "true"},
+                "phrase": "warning.coolant_high",
+                "params": {"value": "112", "moving": "true"},
                 "priority": 1,
                 "utterance_id": 7,
+                "text": "Coolant at 112 degrees. Stop when it is safe and switch the engine off.",
             },
         ),
         (
@@ -175,12 +187,32 @@ def build() -> List[Dict[str, Any]]:
         (
             "settings_quiet",
             Settings(Verbosity.QUIET),
-            {"kind": "settings", "verbosity": "quiet"},
+            {
+                "kind": "settings",
+                "verbosity": "quiet",
+                "persona": "mia",
+                "personas": ["mia"],
+                "language": "en",
+                "languages": ["en"],
+            },
         ),
         (
             "settings_chatty",
-            Settings(Verbosity.CHATTY),
-            {"kind": "settings", "verbosity": "chatty"},
+            Settings(
+                Verbosity.CHATTY,
+                "rimmer",
+                ("mia", "holly", "rimmer"),
+                "cs",
+                ("cs", "en"),
+            ),
+            {
+                "kind": "settings",
+                "verbosity": "chatty",
+                "persona": "rimmer",
+                "personas": ["mia", "holly", "rimmer"],
+                "language": "cs",
+                "languages": ["cs", "en"],
+            },
         ),
     ]
     for name, event, expect in events:

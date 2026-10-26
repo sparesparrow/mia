@@ -107,6 +107,10 @@ table ExecutionDone { phrase:string (id: 0); params:[Arg] (id: 1); batch_id:uint
 table SafetyWarning { phrase:string (id: 0); params:[Arg] (id: 1); }
 table IncomingMessage { sender:string (id: 0); text:string (id: 1); }
 table SetVerbosity { level:Verbosity (id: 0); source:Source (id: 1); }
+// An empty persona means "the next one"; an unknown name is refused and said so (ADR-0015).
+table SwitchPersona { persona:string (id: 0); source:Source (id: 1); }
+// The language MIA speaks, as a code such as "cs" or "en". It does not change what MIA understands.
+table SetLanguage { language:string (id: 0); source:Source (id: 1); }
 
 // ── Voice service: events (machine to peer) ───────────────────────────────
 
@@ -115,21 +119,32 @@ table StateChanged { previous:State (id: 0); current:State (id: 1); }
 // The LED colour and tone for a resting state, or for a transient cue when `cue` is not NoCue.
 table FeedbackCue { state:State (id: 0); cue:CueName (id: 1); led:Led (id: 2); tone:Tone (id: 3); }
 
-// MIA says a phrase: a key plus parameters; the persona turns it into words (ADR-0015).
-table Spoken { phrase:string (id: 0); params:[Arg] (id: 1); priority:ubyte (id: 2); utterance_id:uint (id: 3); }
+// MIA says a phrase: a key plus parameters; the persona turns it into words (ADR-0015). `text` is those words,
+// in the persona and language in use, filled in by the Pi for peers that show what was said.
+table Spoken {
+  phrase:string (id: 0); params:[Arg] (id: 1); priority:ubyte (id: 2); utterance_id:uint (id: 3);
+  text:string (id: 4);
+}
 
 // What the user said, as recognised.
 table Transcript { text:string (id: 0); utterance_id:uint (id: 1); }
 
 // The machine's settings as they now stand (ADR-0019): sent to a peer right after its session opens and to
 // every peer whenever a setting changes, so a console shows what the machine uses, not what it last asked for.
-table Settings { verbosity:Verbosity (id: 0); }
+table Settings {
+  verbosity:Verbosity (id: 0);
+  persona:string (id: 1);
+  personas:[string] (id: 2);   // the personas this Pi has, so a console draws its choices from the data
+  language:string (id: 3);
+  languages:[string] (id: 4);
+}
 
 union VoiceBody {
   Wake, Intent, GoNow, Cancel, Confirm, Deny, EndDictation, DictationText, SpeakingDone,
   ExecutionDone, SafetyWarning, IncomingMessage, SetVerbosity,
   StateChanged, FeedbackCue, Spoken, Transcript,
-  Settings  // appended: union members are numbered in order and must never move
+  Settings,  // appended: union members are numbered in order and must never move
+  SwitchPersona, SetLanguage
 }
 
 table VoiceMessage {

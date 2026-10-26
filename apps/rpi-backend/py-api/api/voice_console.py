@@ -8,8 +8,10 @@ the console talks to a simulation, not to the voice pipeline that runs in ``voic
 attaching the two is a separate step. With no speaker attached, ``SimulatedSpeech`` reports each utterance
 finished after ``SPEAK_SEC``, so the machine leaves ``speaking`` as it would on the Pi.
 
-A console that opens a session first receives the machine's settings (ADR-0019). A change is kept in the
-settings store in ``MIA_STATE_DIR``, the same file the voice router reads when it starts.
+A console that opens a session first receives the machine's settings (ADR-0019): verbosity, persona and
+language, with the personas and languages this Pi has. A change is kept in the settings store in
+``MIA_STATE_DIR``, the same file the voice router reads when it starts. Every spoken phrase reaches the console
+with its words, in the persona and language in use (ADR-0015).
 
 Like every WebSocket of this API it needs the ``X-API-Key`` header when keys are configured (REQ-SEC-001).
 That check only needs a read key, so a read-only key can press the buttons; a stricter scope is a follow-up.
@@ -47,12 +49,22 @@ def get_router() -> Any:
     global _router
     if _router is None:
         from services.voice_fsm import VoiceMachine
+        from services.voice_fsm.personas import Phrasebook
         from services.voice_fsm.settings_store import SettingsStore
         from services.voice_fsm.wire import EnvelopeRouter, Service, VoiceService
 
         store = SettingsStore.from_env()
-        machine = VoiceMachine(time.monotonic, verbosity=store.load().verbosity)
-        service = VoiceService(machine, on_settings=store.save)
+        stored = store.load()
+        book = Phrasebook.load()
+        machine = VoiceMachine(
+            time.monotonic,
+            verbosity=stored.verbosity,
+            persona=stored.persona,
+            personas=book.names,
+            language=stored.language,
+            languages=book.languages,
+        )
+        service = VoiceService(machine, on_settings=store.save, render=book.render)
         router = EnvelopeRouter()
         router.register(Service.VOICE, SimulatedSpeech(service, time.monotonic))
         _router = router

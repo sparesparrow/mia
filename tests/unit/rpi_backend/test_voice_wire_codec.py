@@ -33,6 +33,7 @@ from services.voice_fsm import (
     MuteMic,
     Part,
     SafetyWarning,
+    SetLanguage,
     Settings,
     SetVerbosity,
     Source,
@@ -41,6 +42,7 @@ from services.voice_fsm import (
     State,
     StateChanged,
     StopSpeaking,
+    SwitchPersona,
     Verbosity,
     Wake,
 )
@@ -94,9 +96,12 @@ COMMANDS = [
     SpeakingDone(4),
     ExecutionDone("read.result", {"value": 12.4, "name": "voltage"}, 3),
     ExecutionDone(),
-    SafetyWarning("warn.coolant", {"value": 112, "unit": "C"}),
+    SafetyWarning("warning.coolant_high", {"value": 112, "moving": False}),
     IncomingMessage("Jana", "Přijedu později"),
     SetVerbosity(Verbosity.CHATTY, Source.CONSOLE),
+    SwitchPersona("holly", Source.CONSOLE),
+    SwitchPersona(),
+    SetLanguage("cs", Source.CONSOLE),
 ]
 
 EVENTS = [
@@ -113,7 +118,10 @@ EVENTS = [
     Speak("empty.list", {"parts": []}),
     Transcript("hello", 2),
     Settings(Verbosity.QUIET),
-    Settings(Verbosity.CHATTY),
+    Settings(
+        Verbosity.CHATTY, "rimmer", ("mia", "holly", "rimmer"), "cs", ("cs", "en")
+    ),
+    Speak("persona.set", {"persona": "holly"}, 0, 9, "Holly. Back on duty."),
 ]
 
 
@@ -418,6 +426,10 @@ def test_every_committed_voice_fixture_decodes_to_what_it_claims():
             assert command.source is Source.CONSOLE
             if isinstance(command, SetVerbosity):
                 assert case["command"] == f"verbosity_{command.level.value}"
+            elif isinstance(command, SwitchPersona):
+                assert case["command"] == f"switch_persona_{command.persona or 'next'}"
+            elif isinstance(command, SetLanguage):
+                assert case["command"] == f"set_language_{command.language}"
             else:
                 assert case["command"] == _snake_case(type(command).__name__)
         else:
@@ -428,3 +440,13 @@ def test_every_committed_voice_fixture_decodes_to_what_it_claims():
             )
             if isinstance(event, Settings):
                 assert event.verbosity.value == expect["verbosity"], case["name"]
+                assert (event.persona, list(event.personas)) == (
+                    expect["persona"],
+                    expect["personas"],
+                ), case["name"]
+                assert (event.language, list(event.languages)) == (
+                    expect["language"],
+                    expect["languages"],
+                ), case["name"]
+            if isinstance(event, Speak):
+                assert event.text == expect.get("text", ""), case["name"]

@@ -372,7 +372,7 @@ def test_a_peer_cannot_send_what_only_the_pi_may_report(setup):
     _, machine, _, router = setup
     peer = Peer(router)
     forbidden = [
-        SafetyWarning("warn.coolant"),
+        SafetyWarning("warning.coolant_high"),
         SpeakingDone(),
         ExecutionDone("read.result"),
         IncomingMessage("Jana", "hi"),

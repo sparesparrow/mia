@@ -6,6 +6,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Mapping, Optional, Tuple, Union
 
+# The persona that needs no data package: MIA's plain voice, worded in code (bridge.py) so a broken package can
+# never leave her silent (ADR-0015).
+DEFAULT_PERSONA = "mia"
+DEFAULT_LANGUAGE = "en"
+
 
 class State(str, Enum):
     """Resting states: the machine stays in one of these until a command or the clock moves it."""
@@ -151,6 +156,22 @@ class SetVerbosity:
     source: Source = Source.VOICE
 
 
+@dataclass(frozen=True)
+class SwitchPersona:
+    """Change the persona; an empty name means the next one in the list."""
+
+    persona: str = ""
+    source: Source = Source.VOICE
+
+
+@dataclass(frozen=True)
+class SetLanguage:
+    """The language MIA speaks. It does not change what she understands."""
+
+    language: str
+    source: Source = Source.VOICE
+
+
 Command = Union[
     Wake,
     Intent,
@@ -165,6 +186,8 @@ Command = Union[
     SafetyWarning,
     IncomingMessage,
     SetVerbosity,
+    SwitchPersona,
+    SetLanguage,
 ]
 
 
@@ -198,6 +221,8 @@ class Speak:
     params: Mapping[str, Any] = field(default_factory=dict, hash=False)
     priority: int = 0  # 1 = warning
     id: int = 0
+    # The words, in the persona and language in use. The machine leaves it empty; the Pi fills it for peers.
+    text: str = ""
 
 
 @dataclass(frozen=True)
@@ -232,6 +257,10 @@ class Settings:
     """
 
     verbosity: Verbosity = Verbosity.NORMAL
+    persona: str = DEFAULT_PERSONA
+    personas: Tuple[str, ...] = (DEFAULT_PERSONA,)
+    language: str = DEFAULT_LANGUAGE
+    languages: Tuple[str, ...] = (DEFAULT_LANGUAGE,)
 
 
 Effect = Union[

@@ -8,6 +8,9 @@ Falls back to espeak if piper-tts is not installed.
 
 Environment variables:
   PIPER_MODEL         — piper voice model (default: en_US-amy-medium)
+  PIPER_VOICES        — model per language, "en=en_US-amy-medium,cs=cs_CZ-jirka-medium" (default: English is
+                        PIPER_MODEL, Czech is cs_CZ-jirka-medium). A message names a language, never a model, so
+                        only the models listed here are ever loaded. A missing model falls back to espeak.
   PIPER_DATA_DIR      — directory for piper models (default: /opt/mia/data/piper)
   ZMQ_RESPONSE_PORT   — SUB port for response text (default: 5561)
   ZMQ_SPEAKING_PORT   — PUB port for "speaking started/finished" events (default: 5563)
@@ -32,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 # ── Configuration ──────────────────────────────────────────────────────────
 PIPER_MODEL = os.environ.get("PIPER_MODEL", "en_US-amy-medium")
+PIPER_VOICES_SPEC = os.environ.get("PIPER_VOICES", f"en={PIPER_MODEL},cs=cs_CZ-jirka-medium")
 PIPER_DATA_DIR = os.environ.get("PIPER_DATA_DIR", "/opt/mia/data/piper")
 ZMQ_RESPONSE_PORT = int(os.environ.get("ZMQ_RESPONSE_PORT", "5561"))
 ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
@@ -67,11 +71,47 @@ for name in ["espeak-ng", "espeak"]:
 
 running = True
 
+# Speech speed a persona may ask for (piper's length_scale: above 1 is slower).
+MIN_LENGTH_SCALE = 0.5
+MAX_LENGTH_SCALE = 2.0
 
-def speak_with_piper(text: str) -> bool:
+
+def parse_voices(spec: str) -> dict:
+    """``"en=model_a,cs=model_b"`` as ``{"en": "model_a", "cs": "model_b"}``; malformed entries are skipped."""
+    voices = {}
+    for entry in spec.split(","):
+        language, _, model = entry.strip().partition("=")
+        if language.strip() and model.strip() and "/" not in model and ".." not in model:
+            voices[language.strip()] = model.strip()
+    return voices
+
+
+PIPER_VOICES = parse_voices(PIPER_VOICES_SPEC)
+
+
+def choose_voice(message: dict, voices: dict = None, default_model: str = None):
+    """The language, piper model and speed for one response message (ADR-0015).
+
+    The message names a language and a length scale; the model comes only from the allowlist, so a message
+    can never make TTS load an arbitrary file. Anything unusable falls back to English at normal speed.
+    """
+    voices = PIPER_VOICES if voices is None else voices
+    default_model = default_model or PIPER_MODEL
+    language = message.get("language")
+    if not isinstance(language, str) or language not in voices:
+        language = "en"
+    model = voices.get(language, default_model)
+    scale = message.get("length_scale", 1.0)
+    if isinstance(scale, bool) or not isinstance(scale, (int, float)):
+        scale = 1.0
+    scale = min(MAX_LENGTH_SCALE, max(MIN_LENGTH_SCALE, float(scale)))
+    return language, model, scale
+
+
+def speak_with_piper(text: str, model: str = None, length_scale: float = 1.0) -> bool:
     """Synthesize and play speech using piper-tts."""
-    model_path = os.path.join(PIPER_DATA_DIR, f"{PIPER_MODEL}.onnx")
-    config_path = os.path.join(PIPER_DATA_DIR, f"{PIPER_MODEL}.onnx.json")
+    model = model or PIPER_MODEL
+    model_path = os.path.join(PIPER_DATA_DIR, f"{model}.onnx")
 
     if not os.path.exists(model_path):
         logger.warning(f"Piper model not found at {model_path}")
@@ -84,7 +124,7 @@ def speak_with_piper(text: str) -> bool:
             aplay_cmd.extend(["-D", AUDIO_OUTPUT])
 
         piper_proc = subprocess.Popen(
-            [PIPER_BIN, "--model", model_path, "--output-raw"],
+            [PIPER_BIN, "--model", model_path, "--length_scale", str(length_scale), "--output-raw"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
@@ -106,10 +146,11 @@ def speak_with_piper(text: str) -> bool:
         return False
 
 
-def speak_with_espeak(text: str) -> bool:
+def speak_with_espeak(text: str, language: str = "en", length_scale: float = 1.0) -> bool:
     """Fallback TTS using espeak/espeak-ng."""
     try:
-        cmd = [ESPEAK_BIN, "-s", "160", "--stdout", text]
+        speed = str(int(160 / length_scale))
+        cmd = [ESPEAK_BIN, "-v", language, "-s", speed, "--stdout", text]
         espeak_proc = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
@@ -131,15 +172,16 @@ def speak_with_espeak(text: str) -> bool:
         return False
 
 
-def speak(text: str) -> bool:
-    """Speak text using the best available TTS engine."""
+def speak(text: str, message: dict = None) -> bool:
+    """Speak text using the best available TTS engine, in the message's language and speed."""
+    language, model, length_scale = choose_voice(message or {})
     if PIPER_BIN:
-        if speak_with_piper(text):
+        if speak_with_piper(text, model, length_scale):
             return True
         logger.warning("Piper failed, falling back to espeak")
 
     if ESPEAK_BIN:
-        return speak_with_espeak(text)
+        return speak_with_espeak(text, language, length_scale)
 
     logger.warning(f"No TTS engine available — would say: '{text}'")
     return False
@@ -196,7 +238,7 @@ def main():
             announce(STARTED, utterance_id=utterance_id)
             success = False
             try:
-                success = speak(text)
+                success = speak(text, msg)
             finally:
                 # Always announce the end, or the state machine would wait for it forever.
                 announce(FINISHED, success, utterance_id)

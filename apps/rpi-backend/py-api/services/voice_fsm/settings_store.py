@@ -11,15 +11,28 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import tempfile
 from pathlib import Path
+from typing import Any
 
-from .types import Settings, Verbosity
+from .types import DEFAULT_LANGUAGE, DEFAULT_PERSONA, Settings, Verbosity
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_STATE_DIR = "/var/lib/mia"
 FILE_NAME = "voice_settings.json"
+# A persona or language is a short lowercase name; anything else in the file is ignored. Whether this Pi has
+# that persona or language is the machine's check, which falls back to its first one.
+_NAME = re.compile(r"^[a-z][a-z0-9_]{0,23}$")
+
+
+def _name(value: Any, default: str, what: str) -> str:
+    if isinstance(value, str) and _NAME.match(value):
+        return value
+    if value is not None:
+        logger.warning("unusable %s %r, using %s", what, value, default)
+    return default
 
 
 class SettingsStore:
@@ -50,11 +63,20 @@ class SettingsStore:
                 Verbosity.NORMAL.value,
             )
             verbosity = Verbosity.NORMAL
-        return Settings(verbosity=verbosity)
+        return Settings(
+            verbosity=verbosity,
+            persona=_name(data.get("persona"), DEFAULT_PERSONA, "persona"),
+            language=_name(data.get("language"), DEFAULT_LANGUAGE, "language"),
+        )
 
     def save(self, settings: Settings) -> bool:
         """Store ``settings``; False (and a log line) if the file cannot be written."""
-        body = json.dumps({"verbosity": settings.verbosity.value}, indent=2) + "\n"
+        stored = {
+            "verbosity": settings.verbosity.value,
+            "persona": settings.persona,
+            "language": settings.language,
+        }
+        body = json.dumps(stored, indent=2) + "\n"
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             fd, partial = tempfile.mkstemp(

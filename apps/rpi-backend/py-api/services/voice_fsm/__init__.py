@@ -8,6 +8,8 @@ from .classes import ACTION_CLASSES, effective_class
 from .feedback import BUSY_TONE, FEEDBACK, Cue
 from .machine import VoiceMachine
 from .types import (
+    DEFAULT_LANGUAGE,
+    DEFAULT_PERSONA,
     Abort,
     ActionClass,
     Cancel,
@@ -27,6 +29,7 @@ from .types import (
     MuteMic,
     Part,
     SafetyWarning,
+    SetLanguage,
     Settings,
     SetVerbosity,
     Source,
@@ -35,6 +38,7 @@ from .types import (
     State,
     StateChanged,
     StopSpeaking,
+    SwitchPersona,
     Verbosity,
     Wake,
 )
@@ -63,6 +67,9 @@ __all__ = [
     "MuteMic",
     "Part",
     "SafetyWarning",
+    "DEFAULT_LANGUAGE",
+    "DEFAULT_PERSONA",
+    "SetLanguage",
     "Settings",
     "SetVerbosity",
     "Source",
@@ -71,6 +78,7 @@ __all__ = [
     "State",
     "StateChanged",
     "StopSpeaking",
+    "SwitchPersona",
     "Verbosity",
     "VoiceMachine",
     "Wake",

@@ -1,6 +1,6 @@
 package cz.mia.app.core.voice.console
 
-// @req REQ-AND-016 REQ-VOICE-017
+// @req REQ-AND-016 REQ-VOICE-017 REQ-AND-017
 
 import cz.mia.app.features.voice.VoiceConsoleViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,6 +45,11 @@ private class FakeSocket(val url: String, val headers: Map<String, String>, val 
     private fun matches(fixture: VoiceFixture, event: ConsoleEvent): Boolean =
         VoiceWire.decodeEvent(VoiceWire.decodeEnvelope(fixture.bytes).payload) == event
 }
+
+// The two Settings events in the shared fixture; the fake socket sends their bytes.
+private val QUIET_SETTINGS = ConsoleEvent.Settings(VerbosityLevel.QUIET, "mia", listOf("mia"), "en", listOf("en"))
+private val CHATTY_SETTINGS =
+    ConsoleEvent.Settings(VerbosityLevel.CHATTY, "rimmer", listOf("mia", "holly", "rimmer"), "cs", listOf("cs", "en"))
 
 private class FakeFactory : VoiceSocketFactory {
     val sockets = mutableListOf<FakeSocket>()
@@ -157,27 +162,45 @@ class VoiceConsoleClientTest {
     fun `the verbosity shown is the one the machine reports, not the one sent`() {
         val socket = connected()
         assertEquals(null, client.state.value.verbosity)
-        socket.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.QUIET))
+        socket.event("console-test", 2, QUIET_SETTINGS)
         assertEquals(VerbosityLevel.QUIET, client.state.value.verbosity)
 
         client.send(ConsoleCommand.SetVerbosity(VerbosityLevel.CHATTY))
         socket.reply(socket.sent.last(), WireStatus.OK)
         assertEquals(VerbosityLevel.QUIET, client.state.value.verbosity)
-        socket.event("console-test", 3, ConsoleEvent.Settings(VerbosityLevel.CHATTY))
+        socket.event("console-test", 3, CHATTY_SETTINGS)
         assertEquals(VerbosityLevel.CHATTY, client.state.value.verbosity)
     }
 
     @Test
     fun `a lost or closed connection forgets the verbosity`() {
         val socket = connected()
-        socket.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.CHATTY))
+        socket.event(
+            "console-test", 2,
+            CHATTY_SETTINGS,
+        )
+        assertEquals("rimmer", client.state.value.persona)
         socket.listener.onFailure("reset")
         assertEquals(null, client.state.value.verbosity)
+        assertEquals(null, client.state.value.persona)
+        assertEquals(emptyList<String>(), client.state.value.languages)
 
         val again = connected()
-        again.event("console-test", 2, ConsoleEvent.Settings(VerbosityLevel.QUIET))
+        again.event("console-test", 2, QUIET_SETTINGS)
         client.disconnect()
         assertEquals(null, client.state.value.verbosity)
+    }
+
+    @Test
+    fun `persona and language requests are sent and logged, and only the machine's report moves the selection`() {
+        val socket = connected()
+        assertTrue(client.send(ConsoleCommand.SwitchPersona("holly")))
+        assertTrue(client.send(ConsoleCommand.SetLanguage("cs")))
+        val sent = socket.sent.filter { it.op == WireOp.DATA }
+        assertEquals(2, sent.size)
+        sent.forEach { socket.reply(it, WireStatus.OK) }
+        assertEquals(listOf("ok: persona holly", "ok: language cs"), client.state.value.log.takeLast(2).map { it.text })
+        assertEquals(null, client.state.value.persona)
     }
 
     @Test

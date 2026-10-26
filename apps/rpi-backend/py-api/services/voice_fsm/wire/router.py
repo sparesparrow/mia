@@ -18,7 +18,17 @@ from __future__ import annotations
 import dataclasses
 import logging
 import threading
-from typing import Callable, Dict, Iterable, List, Optional, Protocol, Tuple
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Protocol,
+    Tuple,
+)
 
 from ..machine import VoiceMachine
 from ..types import (
@@ -28,9 +38,12 @@ from ..types import (
     Deny,
     EndDictation,
     GoNow,
+    SetLanguage,
     Settings,
     SetVerbosity,
     Source,
+    Speak,
+    SwitchPersona,
     Wake,
 )
 from .channel import Channel, ChannelClosed
@@ -48,10 +61,23 @@ logger = logging.getLogger(__name__)
 Sink = Callable[[bytes], None]
 
 # What a console may send: the two button roles, the answer buttons, wake, end of dictation and the
-# verbosity setting. Not typed text or results that only the Pi's own services may report.
+# settings (verbosity, persona, language). Not typed text or results that only the Pi's own services may report.
 PEER_COMMANDS = frozenset(
-    {Wake, GoNow, Cancel, Confirm, Deny, EndDictation, SetVerbosity}
+    {
+        Wake,
+        GoNow,
+        Cancel,
+        Confirm,
+        Deny,
+        EndDictation,
+        SetVerbosity,
+        SwitchPersona,
+        SetLanguage,
+    }
 )
+
+# Words for a phrase: (phrase, params, persona, language) -> text.
+Render = Callable[[str, Mapping[str, Any], str, str], str]
 
 
 class ServiceHandler(Protocol):
@@ -71,12 +97,15 @@ class VoiceService:
         peer_source: Source = Source.CONSOLE,
         allowed: Iterable[type] = PEER_COMMANDS,
         on_settings: Optional[Callable[[Settings], None]] = None,
+        render: Optional[Render] = None,
     ) -> None:
         self.machine = machine
         self.peer_source = peer_source
         self.allowed = frozenset(allowed)
         # Called for every settings change, before it is broadcast; the Pi persists it here.
         self.on_settings = on_settings
+        # Fills Spoken.text, so a console shows the sentence MIA says rather than its phrase key.
+        self.render = render
 
     def handle(self, payload: bytes) -> Tuple[Status, List[bytes]]:
         try:
@@ -102,6 +131,15 @@ class VoiceService:
         """The settings in use now, for a session that has just opened."""
         return self._events([self.machine.settings()], persist=False)
 
+    def _worded(self, speak: Speak) -> Speak:
+        text = self.render(
+            speak.phrase,
+            dict(speak.params),
+            self.machine.persona,
+            self.machine.language,
+        )
+        return dataclasses.replace(speak, text=text)
+
     def _stamp(self, command: Command) -> Command:
         """The channel decides where a command came from, not the peer."""
         if any(f.name == "source" for f in dataclasses.fields(command)):
@@ -113,6 +151,8 @@ class VoiceService:
             for effect in effects:
                 if isinstance(effect, Settings):
                     self.on_settings(effect)
+        if self.render is not None:
+            effects = [self._worded(e) if isinstance(e, Speak) else e for e in effects]
         return [
             payload
             for payload in (encode_event(e) for e in effects)

@@ -54,7 +54,11 @@ class Clock:
 def test_the_store_keeps_the_verbosity_across_a_restart(tmp_path):
     SettingsStore(tmp_path / FILE_NAME).save(Settings(Verbosity.CHATTY))
     assert SettingsStore(tmp_path / FILE_NAME).load() == Settings(Verbosity.CHATTY)
-    assert json.loads((tmp_path / FILE_NAME).read_text()) == {"verbosity": "chatty"}
+    assert json.loads((tmp_path / FILE_NAME).read_text()) == {
+        "verbosity": "chatty",
+        "persona": "mia",
+        "language": "en",
+    }
     assert [p.name for p in tmp_path.iterdir()] == [
         FILE_NAME
     ]  # no temporary file left behind
@@ -248,7 +252,7 @@ def test_the_console_machine_starts_from_the_store_and_saves_a_change(
     console = Peer(router, "c")
     console.send(Op.OPEN)
     _, snapshot = console.take()
-    assert decode_event(snapshot.payload) == Settings(Verbosity.QUIET)
+    assert decode_event(snapshot.payload).verbosity is Verbosity.QUIET
 
     console.send(
         Op.DATA, encode_command(SetVerbosity(Verbosity.CHATTY, Source.CONSOLE)), seq=2

@@ -22,3 +22,5 @@ class VoiceBody(object):
     Spoken = 16
     Transcript = 17
     Settings = 18
+    SwitchPersona = 19
+    SetLanguage = 20

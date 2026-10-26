@@ -1,6 +1,6 @@
 # 0015. Personas are data, not code
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-12
 - Requirements: REQ-VOICE-019, REQ-AND-017
 

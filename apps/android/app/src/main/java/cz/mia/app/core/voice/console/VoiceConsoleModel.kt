@@ -48,6 +48,11 @@ data class VoiceConsoleState(
     val log: List<LogLine> = emptyList(),
     /** The verbosity the machine reported; null until it does, and again once the connection is gone. */
     val verbosity: VerbosityLevel? = null,
+    /** The persona and language the machine reported, and the ones it offers; null and empty until it does. */
+    val persona: String? = null,
+    val personas: List<String> = emptyList(),
+    val language: String? = null,
+    val languages: List<String> = emptyList(),
     val lastError: String? = null,
 ) {
     val ledLook: LedLook get() = LedLooks.of(led)
@@ -74,22 +79,41 @@ data class VoiceConsoleState(
         is ConsoleEvent.Transcript ->
             copy(transcript = event.text).logged(LogLine(LogKind.TRANSCRIPT, event.text, nowMs))
         is ConsoleEvent.Settings ->
-            copy(verbosity = event.verbosity).logged(
-                LogLine(LogKind.STATE, "verbosity ${event.verbosity.name.lowercase()}", nowMs),
+            copy(
+                verbosity = event.verbosity,
+                persona = event.persona.ifEmpty { null },
+                personas = event.personas,
+                language = event.language.ifEmpty { null },
+                languages = event.languages,
+            ).logged(
+                LogLine(
+                    LogKind.STATE,
+                    listOfNotNull(
+                        "verbosity ${event.verbosity.name.lowercase()}",
+                        event.persona.ifEmpty { null }?.let { "persona $it" },
+                        event.language.ifEmpty { null }?.let { "language $it" },
+                    ).joinToString(", "),
+                    nowMs,
+                ),
             )
     }
 
     fun logged(line: LogLine): VoiceConsoleState = copy(log = (log + line).takeLast(MAX_LOG))
+
+    /** What only the machine can say is unknown again once the connection is gone. */
+    fun forgetSettings(): VoiceConsoleState =
+        copy(verbosity = null, persona = null, personas = emptyList(), language = null, languages = emptyList())
 
     companion object {
         const val MAX_LOG = 100
         const val MAX_SPOKEN = 30
         val TRANSIENT_CUES = setOf("wake_caught", "analysing", "cancelled")
 
-        /** A warning is spoken with priority 1 and must stand out in the list. */
+        /** The sentence MIA said, or its key and parameters from a Pi that sends no words. A warning stands out. */
         private fun describe(event: ConsoleEvent.Spoken): String {
-            val params = if (event.params.isEmpty()) "" else event.params.entries.joinToString(", ", " (", ")") { "${it.key}=${it.value}" }
             val mark = if (event.priority > 0) "! " else ""
+            if (event.text.isNotEmpty()) return "$mark${event.text}"
+            val params = if (event.params.isEmpty()) "" else event.params.entries.joinToString(", ", " (", ")") { "${it.key}=${it.value}" }
             return "$mark${event.phrase}$params"
         }
     }

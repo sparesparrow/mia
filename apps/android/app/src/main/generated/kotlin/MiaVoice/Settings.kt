@@ -21,6 +21,44 @@ class Settings : Table() {
             val o = __offset(4)
             return if(o != 0) bb.get(o + bb_pos).toUByte() else 0u
         }
+    val persona : String?
+        get() {
+            val o = __offset(6)
+            return if (o != 0) __string(o + bb_pos) else null
+        }
+    val personaAsByteBuffer : ByteBuffer get() = __vector_as_bytebuffer(6, 1)
+    fun personaInByteBuffer(_bb: ByteBuffer) : ByteBuffer = __vector_in_bytebuffer(_bb, 6, 1)
+    fun personas(j: Int) : String? {
+        val o = __offset(8)
+        return if (o != 0) {
+            __string(__vector(o) + j * 4)
+        } else {
+            null
+        }
+    }
+    val personasLength : Int
+        get() {
+            val o = __offset(8); return if (o != 0) __vector_len(o) else 0
+        }
+    val language : String?
+        get() {
+            val o = __offset(10)
+            return if (o != 0) __string(o + bb_pos) else null
+        }
+    val languageAsByteBuffer : ByteBuffer get() = __vector_as_bytebuffer(10, 1)
+    fun languageInByteBuffer(_bb: ByteBuffer) : ByteBuffer = __vector_in_bytebuffer(_bb, 10, 1)
+    fun languages(j: Int) : String? {
+        val o = __offset(12)
+        return if (o != 0) {
+            __string(__vector(o) + j * 4)
+        } else {
+            null
+        }
+    }
+    val languagesLength : Int
+        get() {
+            val o = __offset(12); return if (o != 0) __vector_len(o) else 0
+        }
     companion object {
         fun validateVersion() = Constants.FLATBUFFERS_2_0_8()
         fun getRootAsSettings(_bb: ByteBuffer): Settings = getRootAsSettings(_bb, Settings())
@@ -28,13 +66,37 @@ class Settings : Table() {
             _bb.order(ByteOrder.LITTLE_ENDIAN)
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
-        fun createSettings(builder: FlatBufferBuilder, verbosity: UByte) : Int {
-            builder.startTable(1)
+        fun createSettings(builder: FlatBufferBuilder, verbosity: UByte, personaOffset: Int, personasOffset: Int, languageOffset: Int, languagesOffset: Int) : Int {
+            builder.startTable(5)
+            addLanguages(builder, languagesOffset)
+            addLanguage(builder, languageOffset)
+            addPersonas(builder, personasOffset)
+            addPersona(builder, personaOffset)
             addVerbosity(builder, verbosity)
             return endSettings(builder)
         }
-        fun startSettings(builder: FlatBufferBuilder) = builder.startTable(1)
+        fun startSettings(builder: FlatBufferBuilder) = builder.startTable(5)
         fun addVerbosity(builder: FlatBufferBuilder, verbosity: UByte) = builder.addByte(0, verbosity.toByte(), 0)
+        fun addPersona(builder: FlatBufferBuilder, persona: Int) = builder.addOffset(1, persona, 0)
+        fun addPersonas(builder: FlatBufferBuilder, personas: Int) = builder.addOffset(2, personas, 0)
+        fun createPersonasVector(builder: FlatBufferBuilder, data: IntArray) : Int {
+            builder.startVector(4, data.size, 4)
+            for (i in data.size - 1 downTo 0) {
+                builder.addOffset(data[i])
+            }
+            return builder.endVector()
+        }
+        fun startPersonasVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
+        fun addLanguage(builder: FlatBufferBuilder, language: Int) = builder.addOffset(3, language, 0)
+        fun addLanguages(builder: FlatBufferBuilder, languages: Int) = builder.addOffset(4, languages, 0)
+        fun createLanguagesVector(builder: FlatBufferBuilder, data: IntArray) : Int {
+            builder.startVector(4, data.size, 4)
+            for (i in data.size - 1 downTo 0) {
+                builder.addOffset(data[i])
+            }
+            return builder.endVector()
+        }
+        fun startLanguagesVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
         fun endSettings(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

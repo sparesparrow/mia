@@ -46,6 +46,13 @@ class Spoken : Table() {
             val o = __offset(10)
             return if(o != 0) bb.getInt(o + bb_pos).toUInt() else 0u
         }
+    val text : String?
+        get() {
+            val o = __offset(12)
+            return if (o != 0) __string(o + bb_pos) else null
+        }
+    val textAsByteBuffer : ByteBuffer get() = __vector_as_bytebuffer(12, 1)
+    fun textInByteBuffer(_bb: ByteBuffer) : ByteBuffer = __vector_in_bytebuffer(_bb, 12, 1)
     companion object {
         fun validateVersion() = Constants.FLATBUFFERS_2_0_8()
         fun getRootAsSpoken(_bb: ByteBuffer): Spoken = getRootAsSpoken(_bb, Spoken())
@@ -53,15 +60,16 @@ class Spoken : Table() {
             _bb.order(ByteOrder.LITTLE_ENDIAN)
             return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb))
         }
-        fun createSpoken(builder: FlatBufferBuilder, phraseOffset: Int, paramsOffset: Int, priority: UByte, utteranceId: UInt) : Int {
-            builder.startTable(4)
+        fun createSpoken(builder: FlatBufferBuilder, phraseOffset: Int, paramsOffset: Int, priority: UByte, utteranceId: UInt, textOffset: Int) : Int {
+            builder.startTable(5)
+            addText(builder, textOffset)
             addUtteranceId(builder, utteranceId)
             addParams(builder, paramsOffset)
             addPhrase(builder, phraseOffset)
             addPriority(builder, priority)
             return endSpoken(builder)
         }
-        fun startSpoken(builder: FlatBufferBuilder) = builder.startTable(4)
+        fun startSpoken(builder: FlatBufferBuilder) = builder.startTable(5)
         fun addPhrase(builder: FlatBufferBuilder, phrase: Int) = builder.addOffset(0, phrase, 0)
         fun addParams(builder: FlatBufferBuilder, params: Int) = builder.addOffset(1, params, 0)
         fun createParamsVector(builder: FlatBufferBuilder, data: IntArray) : Int {
@@ -74,6 +82,7 @@ class Spoken : Table() {
         fun startParamsVector(builder: FlatBufferBuilder, numElems: Int) = builder.startVector(4, numElems, 4)
         fun addPriority(builder: FlatBufferBuilder, priority: UByte) = builder.addByte(2, priority.toByte(), 0)
         fun addUtteranceId(builder: FlatBufferBuilder, utteranceId: UInt) = builder.addInt(3, utteranceId.toInt(), 0)
+        fun addText(builder: FlatBufferBuilder, text: Int) = builder.addOffset(4, text, 0)
         fun endSpoken(builder: FlatBufferBuilder) : Int {
             val o = builder.endTable()
             return o

@@ -13,6 +13,7 @@ import MiaVoice.GoNow
 import MiaVoice.Led
 import MiaVoice.Op
 import MiaVoice.ServiceType
+import MiaVoice.SetLanguage
 import MiaVoice.SetVerbosity
 import MiaVoice.Settings
 import MiaVoice.Source
@@ -20,6 +21,7 @@ import MiaVoice.Spoken
 import MiaVoice.State
 import MiaVoice.StateChanged
 import MiaVoice.Status
+import MiaVoice.SwitchPersona
 import MiaVoice.Tone
 import MiaVoice.Transcript
 import MiaVoice.Verbosity
@@ -49,7 +51,7 @@ enum class VerbosityLevel(val value: UByte) {
     CHATTY(Verbosity.Chatty),
 }
 
-/** What the console may send. These are the button commands and the verbosity setting (spec/interfaces/voice.md). */
+/** What the console may send: the button commands and the settings (spec/interfaces/voice.md). */
 sealed class ConsoleCommand {
     object Wake : ConsoleCommand()
     object GoNow : ConsoleCommand()
@@ -58,6 +60,12 @@ sealed class ConsoleCommand {
     object Deny : ConsoleCommand()
     object EndDictation : ConsoleCommand()
     data class SetVerbosity(val level: VerbosityLevel) : ConsoleCommand()
+
+    /** An empty name asks for the next persona. */
+    data class SwitchPersona(val persona: String = "") : ConsoleCommand()
+
+    /** The language MIA speaks, such as `cs` or `en`. */
+    data class SetLanguage(val language: String) : ConsoleCommand()
 }
 
 /** What the machine tells the console. Names are the snake_case strings the Pi code uses (`yellow_countdown`). */
@@ -72,12 +80,20 @@ sealed class ConsoleEvent {
         val params: Map<String, String>,
         val priority: Int,
         val utteranceId: Long,
+        /** The words in the persona and language in use; empty from a Pi that does not fill them. */
+        val text: String = "",
     ) : ConsoleEvent()
 
     data class Transcript(val text: String, val utteranceId: Long) : ConsoleEvent()
 
-    /** The settings the machine uses now: after the session opens and after every change (ADR-0019). */
-    data class Settings(val verbosity: VerbosityLevel) : ConsoleEvent()
+    /** The settings the machine uses now, and the choices this Pi offers: after the session opens and after every change (ADR-0019). */
+    data class Settings(
+        val verbosity: VerbosityLevel,
+        val persona: String = "",
+        val personas: List<String> = emptyList(),
+        val language: String = "",
+        val languages: List<String> = emptyList(),
+    ) : ConsoleEvent()
 }
 
 data class WireEnvelope(
@@ -165,6 +181,20 @@ object VoiceWire {
                 SetVerbosity.addSource(b, console)
                 VoiceBody.SetVerbosity to SetVerbosity.endSetVerbosity(b)
             }
+            is ConsoleCommand.SwitchPersona -> {
+                val persona = if (command.persona.isEmpty()) 0 else b.createString(command.persona)
+                SwitchPersona.startSwitchPersona(b)
+                if (persona != 0) SwitchPersona.addPersona(b, persona)
+                SwitchPersona.addSource(b, console)
+                VoiceBody.SwitchPersona to SwitchPersona.endSwitchPersona(b)
+            }
+            is ConsoleCommand.SetLanguage -> {
+                val language = if (command.language.isEmpty()) 0 else b.createString(command.language)
+                SetLanguage.startSetLanguage(b)
+                if (language != 0) SetLanguage.addLanguage(b, language)
+                SetLanguage.addSource(b, console)
+                VoiceBody.SetLanguage to SetLanguage.endSetLanguage(b)
+            }
         }
         VoiceMessage.startVoiceMessage(b)
         VoiceMessage.addBodyType(b, type)
@@ -198,7 +228,7 @@ object VoiceWire {
                 VoiceBody.Spoken -> {
                     val t = Spoken()
                     message.body(t) ?: throw VoiceWireException("voice message has no body")
-                    ConsoleEvent.Spoken(t.phrase ?: "", readArgs(t, payload.size), t.priority.toInt(), t.utteranceId.toLong())
+                    ConsoleEvent.Spoken(t.phrase ?: "", readArgs(t, payload.size), t.priority.toInt(), t.utteranceId.toLong(), t.text ?: "")
                 }
                 VoiceBody.Transcript -> {
                     val t = Transcript()
@@ -208,9 +238,15 @@ object VoiceWire {
                 VoiceBody.Settings -> {
                     val t = Settings()
                     message.body(t) ?: throw VoiceWireException("voice message has no body")
+                    checkCount("personas", t.personasLength, payload.size)
+                    checkCount("languages", t.languagesLength, payload.size)
                     ConsoleEvent.Settings(
-                        VerbosityLevel.values().firstOrNull { it.value == t.verbosity }
+                        verbosity = VerbosityLevel.values().firstOrNull { it.value == t.verbosity }
                             ?: throw VoiceWireException("unknown verbosity ${t.verbosity}"),
+                        persona = t.persona ?: "",
+                        personas = (0 until t.personasLength).map { t.personas(it) ?: "" },
+                        language = t.language ?: "",
+                        languages = (0 until t.languagesLength).map { t.languages(it) ?: "" },
                     )
                 }
                 else -> throw VoiceWireException("voice message type ${message.bodyType} is not an event")
