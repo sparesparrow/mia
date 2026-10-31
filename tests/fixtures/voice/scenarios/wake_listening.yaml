@@ -1,0 +1,6 @@
+name: wake_listening
+description: A Wake press takes the machine from idle to listening and shows the blue cue.
+stimulus: {kind: button, button: Wake}
+expect:
+  - state: listening
+  - {feedback: {state: listening, led: blue}}

@@ -1,0 +1,11 @@
+name: confirm_sends_the_message
+description: A message is never sent on silence; Confirm in the confirmation runs it.
+layers: [machine]
+stimulus:
+  - {kind: setup, intent: send_message}
+  - {kind: await, steps: [{spoken: {phrase: message.confirm}}, {state: confirming}]}
+  - {kind: button, button: Confirm}
+expect:
+  - {spoken: {contains: "send it"}}
+  - state: confirming
+  - state: executing

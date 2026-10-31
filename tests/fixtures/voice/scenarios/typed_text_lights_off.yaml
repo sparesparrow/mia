@@ -1,0 +1,7 @@
+name: typed_text_lights_off
+description: Typed text takes the same path as a recognised utterance (ADR-0020 point 6).
+pending: "REQ-VOICE-025: typed text reaches the machine as a transcript with source typed"
+stimulus: {kind: typed, text: "turn the lights off"}
+expect:
+  - {transcript: {text: "turn the lights off", source: typed}}
+  - state: executing

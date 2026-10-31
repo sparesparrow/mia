@@ -1,0 +1,9 @@
+name: speech_alsa_cancel
+description: A rendered utterance played into snd-aloop on the Pi cancels the pending action.
+pending: "REQ-VOICE-027: Pi only; needs the audio path and speech recognition on the Pi"
+stimulus:
+  - {kind: button, button: Wake}
+  - {kind: speech_alsa, phrase: cancel}
+expect:
+  - {transcript: {contains: cancel}, timeout: 15}
+  - state: idle
