@@ -28,6 +28,7 @@ REST/WebSocket API; Android aplikace je jeho společník. Tento web shrnuje inst
 
 ## Dráty a napájení
 - OBD-II/CAN a napájení 12V→5V: [Wiring & Power](wiring.md)
+- Piny GPIO Raspberry Pi 4B, zapalování, relé, ochranný allowlist (návrh, neověřeno na hardwaru): [GPIO pin map](hardware/gpio-pin-map.md)
 
 ## API & Contracts
 - REST, WebSocket, MQTT topics, BLE GATT: [API & Contracts](api/overview.md)

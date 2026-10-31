@@ -6,11 +6,15 @@ requirements:
 - id: REQ-CAR-001
   title: Graceful shutdown on ignition off
   statement: The Pi shall shut down safely when a GPIO optocoupler input reports ignition loss.
-  evidence: implemented_untested
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - With a mocked RPi.GPIO, a stable low on the ignition pin publishes the shutdown notice and then runs systemctl poweroff once; a glitch that returns high does not
+  - Simulation mode never runs poweroff
   implemented_in:
   - apps/rpi-backend/py-api/services/power_monitor.py
   services:
   - mia-power-monitor
+  not_proven: Optocoupler wiring, real GPIO edges on a Pi, and a real poweroff in a vehicle; the header wiring diagram in power_monitor.py looks inverted (see docs/hardware/gpio-pin-map.md)
 - id: REQ-CAR-002
   title: Hardware watchdog
   statement: The BCM2711 hardware watchdog shall reboot a hung Pi; services themselves shall not use systemd WatchdogSec.

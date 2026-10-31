@@ -41,11 +41,11 @@ class HardwareManager:
         await manager.initialize()
 
         # Register devices
-        await manager.register_gpio_pin(17, GPIOMode.OUTPUT)
+        await manager.register_gpio_pin(22, GPIOMode.OUTPUT)
         await manager.register_sensor("temp1", SensorType.TEMPERATURE)
 
         # Control hardware
-        await manager.set_gpio_pin(17, True)
+        await manager.set_gpio_pin(22, True)
         readings = await manager.read_all_sensors()
     """
 

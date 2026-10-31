@@ -115,3 +115,21 @@ requirements:
   - ADR-0011
   - ADR-0013
   not_proven: Not yet implemented; needs bench validation
+- id: REQ-HW-010
+  title: GPIO pin allowlist
+  statement: The GPIO API, the GPIO worker and the simulation client shall refuse pins and directions outside a configurable allowlist; the ID EEPROM, I2C, SPI and UART pins and any output on the ignition input are always denied.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A denied pin or direction gets HTTP 403, a malformed pin, direction or value gets 422, and a worker timeout or error gets 504 or 502 instead of 200
+  - The worker and the simulation client refuse the same pins when the API check is bypassed
+  - An override file or environment variable replaces the default list, an invalid one denies every pin, and neither can open a reserved pin or make the ignition pin an output
+  implemented_in:
+  - apps/rpi-backend/py-api/hardware/gpio_policy.py
+  - apps/rpi-backend/py-api/hardware/gpio_worker.py
+  - apps/rpi-backend/py-api/hardware/gpio.py
+  - apps/rpi-backend/py-api/api/main.py
+  services:
+  - mia-api
+  - mia-gpio-worker
+  notes: The pin map in docs/hardware/gpio-pin-map.md is design guidance and has not been checked on hardware.
+  not_proven: Behaviour on physical Pi GPIO pins; any wiring in a real vehicle

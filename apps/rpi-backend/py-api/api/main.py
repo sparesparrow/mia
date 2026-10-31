@@ -82,6 +82,7 @@ session_manager = SessionManager()
 from api.routers.ota import router as ota_router
 from api.routers.logs import router as logs_router
 from api.routers.anpr import router as anpr_router
+from hardware import gpio_policy
 
 # ZeroMQ context and socket for messaging
 zmq_context = zmq.Context()
@@ -1012,79 +1013,86 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
         logger.error(f"Telemetry WebSocket error: {e}")
 
 
+def _gpio_policy_guard(check, *args):
+    """Run a gpio_policy check and translate its errors to HTTP 422 / 403."""
+    try:
+        return check(*args)
+    except gpio_policy.PinInvalid as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except gpio_policy.PinDenied as e:
+        raise HTTPException(status_code=403, detail=str(e))
+
+
+def _gpio_roundtrip(message: Dict[str, Any]) -> Dict[str, Any]:
+    """Send a GPIO request to the worker; 504 on timeout, 403/502 on worker errors."""
+    zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+
+    poller = zmq.Poller()
+    poller.register(zmq_socket, zmq.POLLIN)
+
+    if not poller.poll(5000):
+        raise HTTPException(status_code=504, detail="GPIO worker did not answer (timeout)")
+    parts = zmq_socket.recv_multipart()
+    response = json.loads(parts[-1])
+    if response.get("type") == "ERROR" or response.get("success") is False:
+        error = str(response.get("error", "GPIO worker error"))
+        if error.startswith(gpio_policy.DENIED_PREFIX):
+            raise HTTPException(status_code=403, detail=error)
+        raise HTTPException(status_code=502, detail=error)
+    return {"success": True, "response": response}
+
+
 @app.post("/gpio/configure")
 async def configure_gpio(gpio: GPIOCommand):
-    """Configure GPIO pin"""
+    """Configure GPIO pin (pin policy: hardware/gpio_policy.py)"""
+    policy = gpio_policy.get_policy()
+    _gpio_policy_guard(policy.check, gpio.pin, gpio.direction)
     try:
-        message = {
+        return _gpio_roundtrip({
             "type": "GPIO_CONFIGURE",
             "pin": gpio.pin,
             "direction": gpio.direction,
             "timestamp": datetime.now().isoformat()
-        }
-        
-        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
-
-        poller = zmq.Poller()
-        poller.register(zmq_socket, zmq.POLLIN)
-
-        if poller.poll(5000):
-            parts = zmq_socket.recv_multipart()
-            response = json.loads(parts[-1])
-            return {"success": True, "response": response}
-        else:
-            return {"success": False, "error": "Timeout"}
+        })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/gpio/set")
 async def set_gpio(gpio: GPIOCommand):
-    """Set GPIO pin value"""
+    """Set GPIO pin value (output-capable pins only)"""
+    if gpio.value is None:
+        raise HTTPException(status_code=422, detail="value is required")
+    policy = gpio_policy.get_policy()
+    _gpio_policy_guard(policy.check, gpio.pin, gpio_policy.OUTPUT)
     try:
-        message = {
+        return _gpio_roundtrip({
             "type": "GPIO_SET",
             "pin": gpio.pin,
             "value": gpio.value,
             "timestamp": datetime.now().isoformat()
-        }
-
-        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
-
-        poller = zmq.Poller()
-        poller.register(zmq_socket, zmq.POLLIN)
-
-        if poller.poll(5000):
-            parts = zmq_socket.recv_multipart()
-            response = json.loads(parts[-1])
-            return {"success": True, "response": response}
-        else:
-            return {"success": False, "error": "Timeout"}
+        })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/gpio/{pin}")
 async def get_gpio(pin: int):
-    """Get GPIO pin value"""
+    """Get GPIO pin value (any allowlisted pin may be read)"""
+    policy = gpio_policy.get_policy()
+    _gpio_policy_guard(policy.check_read, pin)
     try:
-        message = {
+        return _gpio_roundtrip({
             "type": "GPIO_GET",
             "pin": pin,
             "timestamp": datetime.now().isoformat()
-        }
-
-        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
-
-        poller = zmq.Poller()
-        poller.register(zmq_socket, zmq.POLLIN)
-
-        if poller.poll(5000):
-            parts = zmq_socket.recv_multipart()
-            response = json.loads(parts[-1])
-            return {"success": True, "response": response}
-        else:
-            return {"success": False, "error": "Timeout"}
+        })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
