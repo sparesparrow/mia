@@ -342,6 +342,9 @@ def http_request(
     )
     for key, value in (headers or {}).items():
         request.add_header(key, value)
+    api_key = os.environ.get("MIA_API_KEY")
+    if api_key and not request.has_header("X-api-key"):
+        request.add_header("X-API-Key", api_key)
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             return response.status, response.read().decode("utf-8", "replace")
