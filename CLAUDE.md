@@ -116,6 +116,7 @@ Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `i
 - Every test names the requirements it checks: `pytestmark = pytest.mark.req("REQ-AUTO-010")` in Python, a `// @req REQ-AND-012` comment in Kotlin. An unknown ID stops the pytest run
 - A requirement claims only the evidence that exists (ADR-0010). CI can support up to `simulation_tested`; bench, hardware and vehicle states need a record in `spec/evidence/<REQ-ID>/`
 - Pull requests end with Claim / Proof / Not proven / Safety / Next owner (`.github/pull_request_template.md`)
+- Reusable briefs live in the `mcp-prompts` server (`.mcp.json`): `list_prompts` with tag `mia-dev`, then `apply_template`. `mia-subagent-pr-brief` briefs a PR subagent; `mia-pr-merge-gate` is the checklist to run before any merge. The server is the global `@sparesparrow/mcp-prompts` package (GitHub Packages, needs `read:packages`); the runtime must not depend on it
 - Hardware-dependent code must have simulation fallbacks for CI and non-RPi development
 - Test markers: `@pytest.mark.req(...)` (see above), `@pytest.mark.hardware` for tests requiring physical hardware (they live in `tests/e2e/`), `@pytest.mark.slow`, `@pytest.mark.integration`, `@pytest.mark.automotive`
 - MCP modules follow initialize/shutdown lifecycle pattern
