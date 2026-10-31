@@ -1,0 +1,38 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: security
+title: Security
+description: Authentication and security analysis.
+requirements:
+- id: REQ-SEC-001
+  title: API key authentication
+  statement: API access shall require keys hashed with Argon2 and scoped to read or write, and each key shall be
+    disabled or removed individually.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Keys verify against their stored hash and unknown keys are rejected
+  - Scopes gate access and admin has all of them
+  - Disabled or removed keys stop working
+  - Once a key is configured every HTTP route except /, /auth/status and the docs needs it (read for GET, write otherwise)
+  - Every WebSocket route (/ws, /ws/telemetry, /anpr/stream) is closed without a valid X-API-Key header; a query-string key is not accepted
+  - With no key configured the API stays open and logs a warning; MIA_AUTH_DISABLED=1 opts out explicitly
+  - Browsers are limited to local origins unless MIA_CORS_ORIGINS says otherwise
+  implemented_in:
+  - apps/rpi-backend/py-api/api/auth/api_key.py
+  - apps/rpi-backend/py-api/api/auth/dependencies.py
+  - apps/rpi-backend/py-api/api/main.py
+  - apps/rpi-backend/py-api/api/routers/anpr.py
+  services:
+  - mia-api
+- id: REQ-SEC-002
+  title: Automotive security scanner
+  statement: A scanner shall check automotive security controls against ISO 26262, ISO/SAE 21434, UN R155 (WP.29)
+    and J3061 and flag threats.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/security-scanner/automotive_security.py
+- id: REQ-SEC-003
+  title: Kernun proxy MCP client
+  statement: An MCP client shall integrate the Kernun network proxy for traffic and TLS analysis.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/security/proxy_mcp_client.py

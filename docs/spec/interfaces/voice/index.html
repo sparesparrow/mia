@@ -1,0 +1,3812 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Vehicle telemetry and IoT control on Raspberry Pi, ESP32 and Android">
+      
+      
+      
+        <link rel="canonical" href="https://sparesparrow.github.io/mia/spec/interfaces/voice/">
+      
+      
+        <link rel="prev" href="../zeromq-message-formats/">
+      
+      
+        <link rel="next" href="../../evidence/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.3">
+    
+    
+      
+        <title>Voice Messages - MIA Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#voice-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MIA Documentation" class="md-header__button md-logo" aria-label="MIA Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MIA Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Voice Messages
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sparesparrow/mia" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../for/developers/" class="md-tabs__link">
+          
+  
+    
+  
+  For you
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../getting-started/QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ci-cd-setup/" class="md-tabs__link">
+          
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+    
+  
+  Specification
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../install/pi-gateway/" class="md-tabs__link">
+          
+  
+    
+  
+  Install
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/" class="md-tabs__link">
+          
+  
+    
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api/overview/" class="md-tabs__link">
+          
+  
+    
+  
+  API & Contracts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../AUTOMOTIVE_QUICK_START/" class="md-tabs__link">
+          
+  
+    
+  
+  Automotive
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../privacy/dpia-template/" class="md-tabs__link">
+          
+  
+    
+  
+  Privacy
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../troubleshooting/" class="md-tabs__link">
+        
+  
+    
+  
+  Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MIA Documentation" class="md-nav__button md-logo" aria-label="MIA Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    MIA Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sparesparrow/mia" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sparesparrow/mia
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    For you
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            For you
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/developers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/mechanics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mechanics & installers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../for/testers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../android-device-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Android Device Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ci-cd-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD & Dev Environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../conan-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Conan Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ARM64_BUILD_REQUIREMENTS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ARM64 Build Requirements
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../vm-testing-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VM Testing Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Specification
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Specification
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../decisions/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Decisions (ADRs)
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Decisions (ADRs)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0001-record-decisions-and-keep-the-backlog-in-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0001 Decisions and backlog in issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0002-separate-requirements-code-and-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0002 Requirements, code and tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0003-zeromq-control-plane-and-telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0003 ZeroMQ control plane
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0004-flatbuffers-wire-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0004 FlatBuffers wire format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0005-raspberry-pi-edge-with-fastapi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0005 Raspberry Pi edge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0006-passive-vehicle-access-by-default/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0006 Passive vehicle access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0007-simulation-fallback-for-hardware/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0007 Simulation fallback
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0008-audi-a4-8h-primary-citroen-secondary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0008 Audi A4 8H primary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0009-canonical-vehicle-telemetry-envelope/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0009 Telemetry envelope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0010-evidence-based-requirement-status/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0010 Evidence-based status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0011-voice-state-machine-single-source/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0011 Voice state machine
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0012-voice-confirmation-window-and-action-classes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0012 Voice confirmation window
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0013-message-envelope-and-abstract-channel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0013 Message envelope and channel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0014-voice-data-and-privacy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0014 Voice data and privacy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0015-personas-are-data/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0015 Personas are data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0016-android-reaches-the-pi-over-plain-http/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0016 Android over plain HTTP
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0017-mqtt-topic-namespace/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0017 MQTT topic contract
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0018-per-install-plate-key-and-black-book/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0018 Plate key and black book
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/0019-voice-settings-live-on-the-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    0019 Voice settings on the Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/diagrams/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Diagrams
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/hybrid-messaging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hybrid Messaging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/lean-architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Lean Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/flatbuffers-schema-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FlatBuffers Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/cycle1-passive-telemetry/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cycle 1 Passive Telemetry
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/voice-command-chaining-design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Command Chaining
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/voice-knowledge-mia-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/voice-knowledge-system-implementation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/VOICE_KNOWLEDGE_SYSTEM_README/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Voice Knowledge System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Interfaces
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Interfaces
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MQTT Topics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../events/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Events
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ble-gatt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BLE GATT
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zeromq-message-formats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ZeroMQ Message Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Voice Messages
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Voice Messages
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#commands-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands (input)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#effects-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Effects (output)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effects (output)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#speech-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      Speech contract
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor contract
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#states-and-cues" class="md-nav__link">
+    <span class="md-ellipsis">
+      States and cues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rules-for-the-buttons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rules for the buttons
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spoken-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spoken answers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Personas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority-and-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Priority and queues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeromq-topics-on-the-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZeroMQ topics on the Pi
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#envelope-and-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Envelope and channel
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Envelope and channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voice-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Voice messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-to-router-over-zeromq-adr-0020" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console to router over ZeroMQ (ADR-0020)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interaction-log-record-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interaction log record (planned)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../evidence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evidence Records
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Install
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/pi-gateway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi (supported)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/phone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone without a Pi (limited)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/dev-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dev (No Pi)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../install/installer-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installer Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../wiring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Wiring & Power
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../deployment/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Deployment
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Deployment
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/COMPLETE_DEPLOYMENT_GUIDE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complete Deployment Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/raspberry-pi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PRODUCTION_DEPLOYMENT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production Deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RASPBERRY_PI_SETUP/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Raspberry Pi Setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    API & Contracts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            API & Contracts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/mia-api-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Automotive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Automotive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AUTOMOTIVE_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/citroen-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/citroen-testing-checklist/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Citroën Testing Checklist
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBD_SIMULATOR_AUTOMATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OBD Simulator Automation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ANPR_QUICK_START/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ANPR Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ANPR_IMPLEMENTATION/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ANPR Implementation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/raspberry-pi-audi-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi on Raspberry Pi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../automotive/audi-a4-8h-interface-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Audi A4 8H Interface Integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs/automotive/zapojeni-esp32-moduly/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zapojení ESP32 modulů (CS)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs/automotive/zapojeni-audi-a4-8h/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zapojení Audi A4 8H (CS)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Privacy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Privacy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../privacy/dpia-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DPIA Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#commands-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      Commands (input)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#effects-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Effects (output)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effects (output)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#speech-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      Speech contract
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executor-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executor contract
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#states-and-cues" class="md-nav__link">
+    <span class="md-ellipsis">
+      States and cues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rules-for-the-buttons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rules for the buttons
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spoken-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Spoken answers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Settings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Personas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#priority-and-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Priority and queues
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Action classes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeromq-topics-on-the-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      ZeroMQ topics on the Pi
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#envelope-and-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Envelope and channel
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Envelope and channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voice-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Voice messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Channels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-to-router-over-zeromq-adr-0020" class="md-nav__link">
+    <span class="md-ellipsis">
+      Console to router over ZeroMQ (ADR-0020)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Peers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interaction-log-record-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interaction log record (planned)
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/sparesparrow/mia/edit/master/docs/spec/interfaces/voice.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="voice-interface">Voice interface</h1>
+<p>Contract for the voice state machine (ADR-0011), its commands and effects, the feedback cues and the
+message envelope (ADR-0013). Names here are the names in <code>apps/rpi-backend/py-api/services/voice_fsm/</code>.
+Each item is marked <strong>implemented</strong> (code and tests exist) or <strong>planned</strong> (design only).</p>
+<h2 id="commands-input">Commands (input)</h2>
+<p>Every input is reduced to one typed command before it reaches the machine. A command does not depend on
+its <code>source</code>: a go-now from a button, from speech or from the console has the same effect. No button or
+console adapter exists yet, so the end-to-end claim belongs to REQ-VOICE-015, not to the machine.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Meaning</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Wake(source)</code></td>
+<td>wake word or button accepted</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Intent(parts, source)</code></td>
+<td>a split utterance: parts with a name, class, arguments and certainty</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>GoNow(source)</code></td>
+<td>run the pending part now; in <code>confirming</code> an explicit yes; in <code>dictating</code> end it</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Cancel(source)</code></td>
+<td>drop the chain; silences MIA; during a warning drops the paused chain only</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Confirm</code>, <code>Deny</code></td>
+<td>an explicit yes or no to a message or call question; <code>Deny</code> in <code>window</code> is a cancel</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>EndDictation</code>, <code>DictationText(text)</code></td>
+<td>finish a note; text recognised while dictating</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>SafetyWarning(phrase, params)</code></td>
+<td>a safety warning from the car</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>IncomingMessage(sender, text)</code></td>
+<td>a phone message</td>
+<td>implemented (no source of messages exists on the Pi)</td>
+</tr>
+<tr>
+<td><code>SetVerbosity(level, source)</code></td>
+<td>quiet, normal or chatty</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>SpeakingDone(id)</code></td>
+<td>TTS finished utterance <code>id</code></td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>ExecutionDone(phrase, params, batch_id)</code></td>
+<td>an executor batch finished</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>SwitchPersona(persona, source)</code></td>
+<td>change the persona; an empty name takes the next one, an unknown one is refused aloud</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>SetLanguage(language, source)</code></td>
+<td>the language MIA speaks (<code>cs</code>, <code>en</code>); what she understands stays English (#179)</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Event(kind, data)</code> for ignition, parking and rules</td>
+<td></td>
+<td>planned</td>
+</tr>
+</tbody>
+</table>
+<h2 id="effects-output">Effects (output)</h2>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>Meaning</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Execute(parts, batch_id)</code></td>
+<td>run these parts; answer with <code>ExecutionDone(batch_id=...)</code></td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Abort(batch_id)</code></td>
+<td>stop the batch if it still runs; its <code>ExecutionDone</code> is ignored</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Speak(phrase, params, priority, id, text)</code></td>
+<td>say a phrase key; the persona and language in use turn it into words, which the Pi puts in <code>text</code> for peers</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>StopSpeaking</code></td>
+<td>stop the current utterances</td>
+<td>implemented (<code>tts_service</code> cannot yet stop mid-sentence)</td>
+</tr>
+<tr>
+<td><code>MuteMic(muted)</code></td>
+<td>emitted when the microphone state changes</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Feedback(state, led, tone)</code></td>
+<td>LED colour and tone for a state or a transient cue</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>StateChanged(previous, current)</code></td>
+<td>a resting state changed</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Settings(verbosity, persona, personas, language, languages)</code></td>
+<td>the settings now in use and the personas and languages this Pi offers; emitted on every settings command, in any state (ADR-0019)</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>Spoken</code> (a <code>Speak</code> for peers), <code>Transcript</code></td>
+<td>on the wire as events for the console</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td><code>QueueEntry</code>, <code>WindowTick</code> for the console</td>
+<td></td>
+<td>planned</td>
+</tr>
+</tbody>
+</table>
+<h3 id="speech-contract">Speech contract</h3>
+<p><code>Speak</code> effects play first in, first out. Each one ends with exactly one <code>SpeakingDone(id)</code> carrying its
+<code>id</code>, and none after <code>StopSpeaking</code>. The machine ignores a <code>SpeakingDone</code> whose id is not outstanding, so
+a "finished" callback from an utterance that was stopped changes nothing. A <code>SpeakingDone</code> without an id
+means the oldest outstanding utterance. TTS echoes the id that the router sends in <code>utterance_id</code>.</p>
+<h3 id="executor-contract">Executor contract</h3>
+<p>Each <code>Execute</code> carries a <code>batch_id</code>. The machine stays busy until every outstanding batch has reported
+done, drops a result for an aborted or unknown batch, and emits <code>Abort</code> for each outstanding batch when
+the chain is cancelled.</p>
+<h2 id="states-and-cues">States and cues</h2>
+<p>The table is the code's <code>FEEDBACK</code> in <code>voice_fsm/feedback.py</code>; a test checks that the two agree. Colours
+and tones are defaults to be tuned in the car. A colour must also differ by brightness or pattern, not
+only hue, and the two states where silence means opposite things (<code>window</code> runs, <code>confirming</code> drops) must
+look and sound different.</p>
+<table>
+<thead>
+<tr>
+<th>State or cue</th>
+<th>Meaning</th>
+<th>LED</th>
+<th>Tone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idle</code></td>
+<td>nothing in progress</td>
+<td><code>off</code></td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>listening</code></td>
+<td>the microphone is capturing a command</td>
+<td><code>blue</code></td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>executing</code></td>
+<td>actions are running</td>
+<td><code>green</code></td>
+<td><code>confirm_beep</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td>uncertain part announced; silence runs it after 5 s</td>
+<td><code>yellow_countdown</code></td>
+<td><code>double_beep</code></td>
+</tr>
+<tr>
+<td><code>confirming</code></td>
+<td>a message or call waits for an explicit yes; silence drops it</td>
+<td><code>yellow_solid</code></td>
+<td><code>question_tone</code></td>
+</tr>
+<tr>
+<td><code>speaking</code></td>
+<td>MIA is talking, microphone muted</td>
+<td><code>purple</code></td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>dictating</code></td>
+<td>a note is being recorded</td>
+<td><code>red</code></td>
+<td><code>start_end_beep</code></td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td>a safety warning is being announced</td>
+<td><code>orange_flash</code></td>
+<td><code>warning_tone</code></td>
+</tr>
+<tr>
+<td><code>wake_caught</code></td>
+<td>cue only: wake word or button accepted</td>
+<td><code>white_brief</code></td>
+<td><code>rising_beep</code></td>
+</tr>
+<tr>
+<td><code>analysing</code></td>
+<td>cue only: the transcript is being split</td>
+<td><code>blue_pulse</code></td>
+<td><code>none</code></td>
+</tr>
+<tr>
+<td><code>cancelled</code></td>
+<td>cue only: the chain was cancelled</td>
+<td><code>off</code></td>
+<td><code>falling_beep</code></td>
+</tr>
+</tbody>
+</table>
+<p>Cues are shown and played but are never a state the machine rests in and emit no <code>StateChanged</code>. A
+<code>Feedback</code> with the tone <code>busy_beep</code> means an utterance arrived while the machine could not take it.</p>
+<h2 id="rules-for-the-buttons">Rules for the buttons</h2>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>go now</th>
+<th>cancel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>window</code></td>
+<td>run the pending part now</td>
+<td>drop it</td>
+</tr>
+<tr>
+<td><code>speaking</code> during an announcement</td>
+<td>stop speaking and run the part now</td>
+<td>stop speaking and drop the chain</td>
+</tr>
+<tr>
+<td><code>speaking</code> during a question</td>
+<td>skip the question; a message still needs a second, explicit press</td>
+<td>stop speaking and drop the chain</td>
+</tr>
+<tr>
+<td><code>confirming</code></td>
+<td>explicit yes</td>
+<td>drop the message or call</td>
+</tr>
+<tr>
+<td><code>dictating</code></td>
+<td>end and save the note</td>
+<td>discard it</td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td>nothing (the warning keeps playing)</td>
+<td>drop the chain the warning paused</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spoken-answers">Spoken answers</h2>
+<p>In <code>window</code> and <code>confirming</code> the router bridge treats only a short reply (at most three words) as a yes or a
+no. A longer sentence that contains one, such as "okay so send it to Jana instead", is a correction and is
+routed as a new utterance. A no wins over a yes in the same short reply.</p>
+<p>"Quiet mode", "normal mode" and "chatty mode", alone or after "switch to", "go to", "set to" or "be", set the
+verbosity (REQ-VOICE-017). "Change persona" takes the next persona; "switch to holly" or "persona rimmer" names one
+that this Pi has. "Speak czech" and "speak english" set the language MIA speaks. A longer sentence that merely
+contains one of these is routed as a request. The words are English until Czech recognition exists (#179), so in
+Czech the persona and language are switched from the app or the console.</p>
+<h2 id="settings">Settings</h2>
+<p>The machine's settings live on the Pi (ADR-0019). <code>services/voice_fsm/settings_store.py</code> keeps the verbosity, the
+persona and the language in <code>$MIA_STATE_DIR/voice_settings.json</code> (<code>/var/lib/mia</code> by default). A stored persona or
+language this Pi no longer has falls back to the first one offered. It replaces the file in one step, and a missing
+or damaged file gives the defaults. The voice router and the console's simulated machine each read the file when
+they start and write it on every change; they do not tell each other about a change while running.</p>
+<h2 id="personas">Personas</h2>
+<p>A persona is a data package (ADR-0015): <code>services/voice_fsm/personas/&lt;name&gt;.yaml</code> with lines per language for the
+machine's phrase keys, a speech speed (<code>tts.length_scale</code>) and at most one framing sentence per safety warning.
+MIA's own wording (<code>mia</code>) is code in <code>services/voice_fsm/phrases.py</code>, so a broken package never leaves her silent;
+a package that fails validation is logged and left out. Packages today: <code>holly</code> (dry, terse) and <code>rimmer</code> (anxious,
+pompous), each in Czech and English, with original lines.</p>
+<p>Every safety warning starts with the shared fragment from <code>services/voice_fsm/safety.py</code>: the value, the unit and
+what to do, in the language in use. No package can change it or put anything before it; the persona's framing
+sentence follows it and is left out while the car moves (<code>params.moving</code>). Warning keys are
+<code>warning.coolant_high</code>, <code>warning.battery_low</code>, <code>warning.battery_high</code> and <code>warning.rpm_high</code>.</p>
+<p>The voice router sends TTS the text with <code>language</code> and <code>length_scale</code>. <code>tts_service</code> takes the piper model for
+that language from its <code>PIPER_VOICES</code> allowlist (<code>en=en_US-amy-medium,cs=cs_CZ-jirka-medium</code>), never from the
+message, clamps the speed to 0.5–2 and falls back to espeak in the same language when a model is missing.</p>
+<h2 id="priority-and-queues">Priority and queues</h2>
+<p>A <code>SafetyWarning</code> interrupts dictation, listening, the window and speech. What it cut off is said again
+before the machine goes on, so a part never runs and a message is never confirmed on a question the driver
+did not hear in full. An incoming phone message waits in a queue until the machine is idle, and the queue
+keeps the newest 20 (the oldest is dropped). Quiet mode drops both new and waiting messages. After a
+cancel, queued messages wait for the next time the machine becomes idle. An utterance that arrives while
+MIA is executing, or while a part is announced, waits its turn or corrects it; during dictation or a
+warning it gets the busy cue.</p>
+<h2 id="action-classes">Action classes</h2>
+<p>See ADR-0012. The class of an action comes from a fixed table in <code>voice_fsm/classes.py</code>: a label can only
+make a part stricter, and an unknown action is forbidden. Read, comfort and note parts that are uncertain
+run after the shared window. Message and call parts need an explicit yes. Forbidden parts are refused.</p>
+<h2 id="zeromq-topics-on-the-pi">ZeroMQ topics on the Pi</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Port</th>
+<th>Publisher</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mia/voice/wake</code></td>
+<td>5559</td>
+<td><code>wake_word</code></td>
+<td>wake word detected</td>
+</tr>
+<tr>
+<td><code>mia/voice/transcript</code></td>
+<td>5560</td>
+<td><code>stt_service</code></td>
+<td>recognised text and language</td>
+</tr>
+<tr>
+<td><code>mia/voice/response</code></td>
+<td>5561</td>
+<td><code>voice_command_router</code></td>
+<td>text for TTS, with an <code>utterance_id</code>, <code>language</code> and <code>length_scale</code> in FSM mode</td>
+</tr>
+<tr>
+<td><code>mia/voice/feedback</code></td>
+<td>5561</td>
+<td><code>voice_command_router</code> (FSM mode)</td>
+<td><code>{state, led, tone}</code> for the LED node</td>
+</tr>
+<tr>
+<td><code>mia/voice/listen</code></td>
+<td>5561</td>
+<td><code>voice_command_router</code> (FSM mode)</td>
+<td><code>{event: listen, source, timestamp}</code> when a Wake that was not spoken (console, button) puts the machine into <code>listening</code>; <code>stt_service</code> records on it as on a wake event (ADR-0020, REQ-VOICE-024)</td>
+</tr>
+<tr>
+<td><code>mia/voice/speaking</code></td>
+<td>5563</td>
+<td><code>tts_service</code></td>
+<td><code>{event: started or finished, ok, timestamp, utterance_id}</code></td>
+</tr>
+</tbody>
+</table>
+<p>Audio capture mutes the microphone while an utterance plays and for a short tail after the last one. The gate
+never stays closed more than 30 s after the last speaking event, so a lost <code>finished</code> cannot leave it muted. The
+router runs the machine only when <code>VOICE_FSM=1</code> (off by default). (REQ-VOICE-016)</p>
+<h2 id="envelope-and-channel">Envelope and channel</h2>
+<p>Defined by ADR-0013 in <code>schemas/voice.fbs</code> (namespace <code>MiaVoice</code>, file identifier <code>MIAV</code>); bindings are committed
+in <code>schemas/generated/</code> and compared with a fresh <code>flatc</code> run in CI. (REQ-NET-008, REQ-NET-009)</p>
+<p>An <strong>envelope</strong> routes a message and never looks inside it:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td>wire version, now 1; any other value is answered <code>UnsupportedVersion</code></td>
+</tr>
+<tr>
+<td><code>service</code></td>
+<td>which service owns the payload: <code>Voice</code>; a missing or unknown value is answered <code>UnknownService</code></td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td>chosen by the peer on <code>Open</code>; <code>Data</code> and <code>Close</code> must name a session that peer opened</td>
+</tr>
+<tr>
+<td><code>op</code></td>
+<td><code>Data</code>, <code>Open</code> or <code>Close</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>Ok</code> on requests; on a reply <code>Ok</code>, <code>UnknownService</code>, <code>UnsupportedVersion</code>, <code>Malformed</code>, <code>NotPermitted</code> or <code>UnknownSession</code></td>
+</tr>
+<tr>
+<td><code>seq</code></td>
+<td>chosen by the sender and echoed in the reply; events carry the router's own counter</td>
+</tr>
+<tr>
+<td><code>payload</code></td>
+<td>a nested <code>VoiceMessage</code> (one <code>VoiceBody</code> union member)</td>
+</tr>
+</tbody>
+</table>
+<p>A request is answered with one reply to the sender. Events (the machine's effects) go to every open session
+of the service and to no other. Right after an <code>Open</code> is answered <code>Ok</code>, the voice service sends that session
+alone a <code>Settings</code> event, so a console shows the machine's settings from the start (ADR-0019). A garbled buffer, a wrong version or an unknown service is answered with a
+status; nothing raises. Messages are at most 64 KiB.</p>
+<h3 id="voice-messages">Voice messages</h3>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Direction</th>
+<th>Dataclass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Wake</code>, <code>GoNow</code>, <code>Cancel</code>, <code>Confirm</code>, <code>Deny</code>, <code>EndDictation</code>, <code>SetVerbosity</code>, <code>SwitchPersona</code>, <code>SetLanguage</code></td>
+<td>peer to machine, allowed from a console</td>
+<td>the command of the same name</td>
+</tr>
+<tr>
+<td><code>Intent</code>, <code>DictationText</code></td>
+<td>peer to machine, in-process only</td>
+<td>the command of the same name</td>
+</tr>
+<tr>
+<td><code>SpeakingDone</code>, <code>ExecutionDone</code>, <code>SafetyWarning</code>, <code>IncomingMessage</code></td>
+<td>peer to machine, in-process only</td>
+<td>the command of the same name</td>
+</tr>
+<tr>
+<td><code>StateChanged</code>, <code>FeedbackCue</code>, <code>Spoken</code></td>
+<td>machine to peers</td>
+<td><code>StateChanged</code>, <code>Feedback</code>, <code>Speak</code></td>
+</tr>
+<tr>
+<td><code>Transcript</code></td>
+<td>machine side to peers</td>
+<td><code>wire.Transcript</code> (not consumed by the machine)</td>
+</tr>
+<tr>
+<td><code>Settings</code></td>
+<td>machine to peers; also sent to a session alone right after its <code>Open</code> is answered</td>
+<td><code>Settings</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>Execute</code>, <code>Abort</code>, <code>StopSpeaking</code> and <code>MuteMic</code> talk to the machine's own executors and microphone and are not on
+the wire. <code>WindowTick</code> and a queue-entry event are planned; the machine does not emit them yet.</p>
+<p>A console can send only the commands in <code>PEER_COMMANDS</code>: the two button roles, the answer buttons, wake, end of
+dictation and the settings (verbosity, persona, language). The rest is refused with <code>NotPermitted</code>, so a socket cannot report a safety
+warning, a finished utterance or a result. <strong>The channel, not the peer, sets <code>source</code></strong>: a console message is
+stamped <code>console</code> whatever it claims.</p>
+<p>Enum names in the schema are the CamelCase form of the strings in the code (<code>State.WINDOW = "window"</code> is <code>Window</code>).
+<code>FeedbackCue</code> carries the resting <code>state</code>, or a transient <code>cue</code> when it is not <code>NoCue</code>, with the LED colour and the
+tone as enums. <code>tools/schemas/extract_enums.py</code> writes <code>schemas/generated/cpp/voice_enums.h</code>, which holds only these
+enums, for firmware that cannot use FlatBuffers. Both sides are checked by tests.</p>
+<h3 id="channels">Channels</h3>
+<p>A channel reads and writes whole messages; a listener hands out one channel per connection. Stream transports
+carry a 4-byte big-endian length before each message; datagram transports do not.</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>in-memory pair (<code>LoopbackChannel</code>)</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>length-framed stream over TCP or a unix socket (<code>FramedChannel</code>, <code>SocketListener</code>)</td>
+<td>implemented; a serial line is the same class over a stream with <code>recv</code> and <code>sendall</code></td>
+</tr>
+<tr>
+<td>UDP to one peer (<code>UdpChannel</code>), datagrams from other addresses dropped</td>
+<td>implemented; may lose or reorder messages</td>
+</tr>
+<tr>
+<td>WebSocket <code>/ws/voice</code></td>
+<td>implemented, off unless <code>VOICE_CONSOLE=1</code>, API key required; talks to a machine simulated in the API process</td>
+</tr>
+<tr>
+<td>ZeroMQ ROUTER socket on <code>127.0.0.1:5565</code> (<code>ZmqHub</code>, port <code>VOICE_CONSOLE_PORT</code>), hosted by <code>voice_command_router</code> in FSM mode</td>
+<td>implemented (REQ-VOICE-024); not a general ZeroMQ channel: it carries the console's envelopes between the API's relay and the router</td>
+</tr>
+<tr>
+<td>WebSocket <code>/ws/voice</code> with <code>VOICE_CONSOLE_BACKEND=router</code></td>
+<td>implemented; relays envelopes to the port above and drives the machine in the voice router (default stays <code>sim</code> for now)</td>
+</tr>
+<tr>
+<td>BLE, a real serial line</td>
+<td>planned</td>
+</tr>
+</tbody>
+</table>
+<p>The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.
+<code>/ws/voice</code> requires the <code>X-API-Key</code> header when API keys are configured (a read-scope key is enough) and drops a
+console whose queue of 256 unsent frames fills up.</p>
+<h3 id="console-to-router-over-zeromq-adr-0020">Console to router over ZeroMQ (ADR-0020)</h3>
+<p>With <code>VOICE_CONSOLE_BACKEND=router</code>, <code>api/voice_relay.py</code> opens one DEALER per WebSocket to the router's ROUTER socket
+and forwards binary frames both ways without decoding them. The router's <code>ZmqHub</code> maps each ZeroMQ identity to one
+<code>Connection</code> of the envelope router. Frames that are not envelopes:</p>
+<table>
+<thead>
+<tr>
+<th>Frame</th>
+<th>Direction</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>empty</td>
+<td>relay to hub</td>
+<td>this console is gone; the hub closes its connection</td>
+</tr>
+<tr>
+<td><code>ping</code></td>
+<td>relay to hub, every 2 s</td>
+<td>liveness; the hub answers <code>pong</code></td>
+</tr>
+<tr>
+<td><code>pong</code></td>
+<td>hub to relay</td>
+<td>the router is alive; after 6 s with no frame at all the relay closes the WebSocket with 1013</td>
+</tr>
+</tbody>
+</table>
+<p>A peer silent for 10 s is dropped by the hub. Frames over 64 KiB are dropped. The service behind the hub,
+<code>BridgeVoiceService</code>, applies a permitted command through <code>RouterBridge.submit</code> (once, no second tick) and sends every
+effect and transcript the bridge produces, whatever caused it, to all open sessions. The snapshot on <code>Open</code> is the
+router machine's settings. <code>PEER_COMMANDS</code> is the same list as for the simulated backend.</p>
+<h3 id="peers">Peers</h3>
+<table>
+<thead>
+<tr>
+<th>Peer</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python voice service (<code>services/voice_fsm/wire</code>)</td>
+<td>implemented</td>
+</tr>
+<tr>
+<td>Android console (<code>core/voice/console</code>, tab "Voice")</td>
+<td>implemented; connects to <code>/ws/voice</code> with OkHttp, shows the LED, tone, machine state, transcript, spoken phrases and the event queue, and sends the button commands and the verbosity setting</td>
+</tr>
+<tr>
+<td>ESP32 feedback node</td>
+<td>planned (REQ-HW-009); it will use <code>voice_enums.h</code> and the same envelope</td>
+</tr>
+</tbody>
+</table>
+<p>The Android app compiles the Kotlin bindings that <code>schemas/generate.py</code> writes to
+<code>apps/android/app/src/main/generated/kotlin/MiaVoice</code> (runtime <code>flatbuffers-java</code> 2.0.8, the same version as <code>flatc</code>).
+<code>tests/fixtures/voice/envelopes.json</code> holds envelopes as the Python codec writes them
+(<code>tools/schemas/gen_voice_fixtures.py</code>). The Python tests check the file against the codec, and the Android unit
+tests decode the same bytes and re-encode the console commands to the same bytes.</p>
+<h2 id="interaction-log-record-planned">Interaction log record (planned)</h2>
+<p>Fields stored per interaction (REQ-VOICE-021, ADR-0014): time, chain id, transcript, speech recognition
+figures, context (ignition, moving, roof), rule-based result, model result, what ran, the user's reaction
+in the window, a link to the short audio clip and later a manual "correct split" label. Stored only on
+the Pi.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/sparesparrow/mia" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.expand", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7c377c4.min.js"></script>
+      
+    
+  </body>
+</html>
