@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from .events import FINISHED
 from .machine import VoiceMachine
@@ -39,10 +39,12 @@ from .types import (
     Speak,
     SpeakingDone,
     State,
+    StateChanged,
     SwitchPersona,
     Verbosity,
     Wake,
 )
+from .wire.messages import Transcript
 
 YES_WORDS = (
     "yes",
@@ -85,6 +87,10 @@ _NAMED_PERSONA = re.compile(r"^(?:switch to|persona|be) ([a-z]+)[.!]?$")
 _LANGUAGE_COMMAND = re.compile(r"^(?:speak|switch to|use) (czech|english)[.!]?$")
 _LANGUAGE_CODES = {"czech": "cs", "english": "en"}
 
+# What an observer is told: the machine's effects, and the transcript that caused them.
+Observed = Union[Effect, Transcript]
+Observer = Callable[[Sequence[Observed]], None]
+
 Route = Optional[Tuple[str, Dict[str, Any], float]]
 
 
@@ -119,6 +125,7 @@ class RouterBridge:
         phrases: Optional[Dict[str, str]] = None,
         on_settings: Callable[[Settings], None] = lambda settings: None,
         phrasebook: Optional[Phrasebook] = None,
+        on_listen: Callable[[], None] = lambda: None,
     ) -> None:
         self.machine = machine
         self._classify = classify
@@ -128,48 +135,73 @@ class RouterBridge:
         self._phrases = phrases
         self._on_settings = on_settings
         self._phrasebook = phrasebook
+        # Called when a Wake that did not come from speech has put the machine into ``listening``, so the
+        # recogniser can start recording although no wake word was heard (ADR-0020).
+        self._on_listen = on_listen
+        # Told about every effect list and transcript, whatever started it (speech, a console, TTS, the clock).
+        self.observers: List[Observer] = []
 
     # ── Inputs ─────────────────────────────────────────────────────────────
 
     def on_wake(self) -> None:
         self._apply(self.machine.handle(Wake(Source.VOICE)))
 
-    def on_transcript(self, text: str) -> None:
+    def submit(self, command: Command) -> List[Effect]:
+        """Apply a command that is already trusted and return the effects it produced.
+
+        The effects are applied here exactly once (spoken, published, executed) and observers are told, so the
+        caller only has to encode what it gets back; it must not apply them again.
+        """
+        effects = self.machine.handle(command)
+        self._apply(effects)
+        if (
+            isinstance(command, Wake)
+            and command.source is not Source.VOICE
+            and any(
+                isinstance(e, StateChanged) and e.current is State.LISTENING
+                for e in effects
+            )
+        ):
+            self._on_listen()
+        return effects
+
+    def on_transcript(self, text: str, source: Source = Source.VOICE) -> None:
         text = text.strip()
         if not text:
             return
+        self._notify([Transcript(text)])
         state = self.machine.state
         # Only a short reply is an answer to a question or to the window. A longer sentence that happens to
         # contain "yes" or "no" is a correction ("okay so send it to Jana instead") and is routed anew.
         if len(text.split()) <= MAX_ANSWER_WORDS:
             if state is State.CONFIRMING:
                 if _says(text, NO_WORDS):
-                    return self._apply(self.machine.handle(Deny(Source.VOICE)))
+                    return self._apply(self.machine.handle(Deny(source)))
                 if _says(text, YES_WORDS):
-                    return self._apply(self.machine.handle(Confirm(Source.VOICE)))
+                    return self._apply(self.machine.handle(Confirm(source)))
             elif state is State.WINDOW:
                 if _says(text, NO_WORDS):
-                    return self._apply(self.machine.handle(Cancel(Source.VOICE)))
+                    return self._apply(self.machine.handle(Cancel(source)))
                 if _says(text, YES_WORDS):
-                    return self._apply(self.machine.handle(GoNow(Source.VOICE)))
-        setting = self._setting(" ".join(text.lower().split()))
+                    return self._apply(self.machine.handle(GoNow(source)))
+        setting = self._setting(" ".join(text.lower().split()), source)
         if setting is not None:
             return self._apply(self.machine.handle(setting))
-        self._apply(self.machine.handle(Intent(self._classify(text), Source.VOICE)))
+        self._apply(self.machine.handle(Intent(self._classify(text), source)))
 
-    def _setting(self, said: str) -> Optional[Command]:
+    def _setting(self, said: str, source: Source = Source.VOICE) -> Optional[Command]:
         """A spoken settings command, or None when the sentence is something else."""
         mode = _MODE_COMMAND.match(said)
         if mode:
-            return SetVerbosity(Verbosity(mode.group(1)), Source.VOICE)
+            return SetVerbosity(Verbosity(mode.group(1)), source)
         if _NEXT_PERSONA.match(said):
-            return SwitchPersona("", Source.VOICE)
+            return SwitchPersona("", source)
         named = _NAMED_PERSONA.match(said)
         if named and named.group(1) in self.machine.personas:
-            return SwitchPersona(named.group(1), Source.VOICE)
+            return SwitchPersona(named.group(1), source)
         language = _LANGUAGE_COMMAND.match(said)
         if language:
-            return SetLanguage(_LANGUAGE_CODES[language.group(1)], Source.VOICE)
+            return SetLanguage(_LANGUAGE_CODES[language.group(1)], source)
         return None
 
     def render(self, effect: Speak) -> str:
@@ -194,7 +226,17 @@ class RouterBridge:
 
     # ── Effects ────────────────────────────────────────────────────────────
 
+    def _notify(self, items: Sequence[Observed]) -> None:
+        if not items:
+            return
+        for observer in list(self.observers):
+            try:
+                observer(items)
+            except Exception:  # an observer must never stop the voice loop
+                logger.exception("voice observer failed")
+
     def _apply(self, effects: List[Effect]) -> None:
+        self._notify(effects)
         # Publish everything this step produced before feeding anything back: a command fed back
         # mid-list would make the machine emit newer effects that older ones in this list then overtake.
         follow_up: List[Command] = []

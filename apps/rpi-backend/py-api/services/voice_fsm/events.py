@@ -14,6 +14,9 @@ from typing import Callable, Optional, Tuple
 
 SPEAKING_TOPIC = b"mia/voice/speaking"
 FEEDBACK_TOPIC = b"mia/voice/feedback"
+# Published by the router when the machine starts listening for a reason other than a spoken wake word
+# (a console or steering-wheel Wake): the recogniser records on it as it does on a wake event (ADR-0020).
+LISTEN_TOPIC = b"mia/voice/listen"
 
 STARTED = "started"
 FINISHED = "finished"
@@ -62,3 +65,10 @@ def encode_feedback(state: str, led: str, tone: str) -> Tuple[bytes, bytes]:
 def feedback_frames(feedback) -> Tuple[bytes, bytes]:
     """A machine ``Feedback`` effect as topic and payload. Its ``state`` is already the plain name."""
     return encode_feedback(feedback.state, feedback.led, feedback.tone)
+
+
+def encode_listen(
+    source: str = "console", now: Optional[Callable[[], float]] = None
+) -> Tuple[bytes, bytes]:
+    body = {"event": "listen", "source": source, "timestamp": (now or time.time)()}
+    return LISTEN_TOPIC, json.dumps(body).encode()

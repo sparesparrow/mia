@@ -151,6 +151,7 @@ run after the shared window. Message and call parts need an explicit yes. Forbid
 | `mia/voice/transcript` | 5560 | `stt_service` | recognised text and language |
 | `mia/voice/response` | 5561 | `voice_command_router` | text for TTS, with an `utterance_id`, `language` and `length_scale` in FSM mode |
 | `mia/voice/feedback` | 5561 | `voice_command_router` (FSM mode) | `{state, led, tone}` for the LED node |
+| `mia/voice/listen` | 5561 | `voice_command_router` (FSM mode) | `{event: listen, source, timestamp}` when a Wake that was not spoken (console, button) puts the machine into `listening`; `stt_service` records on it as on a wake event (ADR-0020, REQ-VOICE-024) |
 | `mia/voice/speaking` | 5563 | `tts_service` | `{event: started or finished, ok, timestamp, utterance_id}` |
 
 Audio capture mutes the microphone while an utterance plays and for a short tail after the last one. The gate
@@ -214,11 +215,30 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 | length-framed stream over TCP or a unix socket (`FramedChannel`, `SocketListener`) | implemented; a serial line is the same class over a stream with `recv` and `sendall` |
 | UDP to one peer (`UdpChannel`), datagrams from other addresses dropped | implemented; may lose or reorder messages |
 | WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`, API key required; talks to a machine simulated in the API process |
-| ZeroMQ, BLE, a real serial line | planned |
+| ZeroMQ ROUTER socket on `127.0.0.1:5565` (`ZmqHub`, port `VOICE_CONSOLE_PORT`), hosted by `voice_command_router` in FSM mode | implemented (REQ-VOICE-024); not a general ZeroMQ channel: it carries the console's envelopes between the API's relay and the router |
+| WebSocket `/ws/voice` with `VOICE_CONSOLE_BACKEND=router` | implemented; relays envelopes to the port above and drives the machine in the voice router (default stays `sim` for now) |
+| BLE, a real serial line | planned |
 
 The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.
 `/ws/voice` requires the `X-API-Key` header when API keys are configured (a read-scope key is enough) and drops a
 console whose queue of 256 unsent frames fills up.
+
+### Console to router over ZeroMQ (ADR-0020)
+
+With `VOICE_CONSOLE_BACKEND=router`, `api/voice_relay.py` opens one DEALER per WebSocket to the router's ROUTER socket
+and forwards binary frames both ways without decoding them. The router's `ZmqHub` maps each ZeroMQ identity to one
+`Connection` of the envelope router. Frames that are not envelopes:
+
+| Frame | Direction | Meaning |
+|---|---|---|
+| empty | relay to hub | this console is gone; the hub closes its connection |
+| `ping` | relay to hub, every 2 s | liveness; the hub answers `pong` |
+| `pong` | hub to relay | the router is alive; after 6 s with no frame at all the relay closes the WebSocket with 1013 |
+
+A peer silent for 10 s is dropped by the hub. Frames over 64 KiB are dropped. The service behind the hub,
+`BridgeVoiceService`, applies a permitted command through `RouterBridge.submit` (once, no second tick) and sends every
+effect and transcript the bridge produces, whatever caused it, to all open sessions. The snapshot on `Open` is the
+router machine's settings. `PEER_COMMANDS` is the same list as for the simulated backend.
 
 ### Peers
 

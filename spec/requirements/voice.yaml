@@ -280,3 +280,71 @@ requirements:
   evidence: blocked
   implemented_in: []
   notes: Blocked until real recordings exist to measure model and wake word choices.
+- id: REQ-VOICE-024
+  title: The Android voice console drives the real voice router
+  statement: With VOICE_CONSOLE_BACKEND=router the /ws/voice console shall control the voice machine that runs in the
+    voice router, not a simulation, so a button press, a spoken command and a spoken answer all act on one machine and
+    every connected console sees what any of them caused.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The router binds a loopback ZeroMQ ROUTER socket that hosts the envelope router; each peer identity is one connection and an empty frame disconnects it
+  - The Open snapshot comes from the router's machine, and a command from one console reaches every console as events
+  - Effects of speech, text-to-speech events and the clock reach every console, and a console command is applied once, with no second tick
+  - The bridge tells its observers about every effect list and transcript, and offers submit() for trusted commands
+  - A Wake that did not come from speech and put the machine into listening makes the router publish mia/voice/listen
+  - The API relays frames both ways without decoding, tells the router when a console leaves, and closes with 1013 after six seconds of silence from the router
+  - PEER_COMMANDS is unchanged and the simulated backend stays the default
+  implemented_in:
+  - apps/rpi-backend/py-api/services/voice_fsm/bridge.py
+  - apps/rpi-backend/py-api/services/voice_fsm/events.py
+  - apps/rpi-backend/py-api/services/voice_fsm/wire/bridge_service.py
+  - apps/rpi-backend/py-api/services/voice_fsm/wire/zmq_hub.py
+  - apps/rpi-backend/py-api/services/voice_command_router.py
+  - apps/rpi-backend/py-api/services/stt_service.py
+  - apps/rpi-backend/py-api/api/voice_relay.py
+  - apps/rpi-backend/py-api/api/voice_console.py
+  - infra/systemd/mia-voice-router.service
+  decisions:
+  - ADR-0020
+  - ADR-0013
+  services:
+  - mia-voice-router
+  - mia-stt
+  - mia-api
+  safety: Loopback only, no new authentication step; the API key check stays where it was and a read key can still press the buttons.
+  not_proven: Tested on loopback with a thread standing in for the router loop and fakes for speech and actions. main_fsm,
+    the real services (audio capture, speech to text, text to speech), the stt_service listen subscription and the systemd
+    unit were never run together, and nothing ran on a Pi or a phone. The default backend is still the simulation. The
+    router executes API actions with a blocking HTTP call of up to 5 s, which stalls the console meanwhile.
+- id: REQ-VOICE-025
+  title: Typed voice commands
+  statement: The user shall be able to type a command in the console, handled exactly like a recognised utterance, with a write-scope key.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0020
+  not_proven: Not yet implemented; needs a schema change (a TypedText message and a typed source).
+- id: REQ-VOICE-026
+  title: Steering-wheel presets
+  statement: Steering-wheel buttons shall be able to run a fixed list of named presets as if the phrase had been spoken.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0020
+  not_proven: Not yet implemented; no steering-wheel adapter exists.
+- id: REQ-VOICE-027
+  title: Phone microphone streaming
+  statement: The Pi shall be able to take its voice audio from the phone's microphone, streamed over a write-scope WebSocket, off by default.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0021
+  not_proven: Not yet implemented.
+- id: REQ-VOICE-028
+  title: Voice scenario harness
+  statement: Scenario files shall drive the voice pipeline with buttons, typed text and synthesised speech and check the events that follow, in CI and on the Pi.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0020
+  not_proven: Not yet implemented.

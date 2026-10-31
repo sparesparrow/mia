@@ -14,6 +14,8 @@ Environment variables:
   SILENCE_TIMEOUT_MS  — silence duration to end recording (default: 1500)
   ZMQ_WAKE_PORT       — SUB port for wake events (default: 5559)
   ZMQ_AUDIO_PORT      — SUB port for raw audio (default: 5558)
+  ZMQ_LISTEN_PORT     — SUB port of the router's 'mia/voice/listen' (default: 5561): a console or button
+                        wake starts a recording like a wake word does (ADR-0020)
   ZMQ_PUB_PORT        — PUB port for transcripts (default: 5560)
 """
 
@@ -42,6 +44,7 @@ MAX_RECORDING_SEC = int(os.environ.get("MAX_RECORDING_SEC", "10"))
 SILENCE_TIMEOUT_MS = int(os.environ.get("SILENCE_TIMEOUT_MS", "1500"))
 ZMQ_WAKE_PORT = int(os.environ.get("ZMQ_WAKE_PORT", "5559"))
 ZMQ_AUDIO_PORT = int(os.environ.get("ZMQ_AUDIO_PORT", "5558"))
+ZMQ_LISTEN_PORT = int(os.environ.get("ZMQ_LISTEN_PORT", "5561"))
 ZMQ_PUB_PORT = int(os.environ.get("ZMQ_PUB_PORT", "5560"))
 
 SAMPLE_RATE = 16000
@@ -209,6 +212,12 @@ def main():
     wake_sub.subscribe(b"mia/voice/wake")
     logger.info(f"Subscribed to mia/voice/wake on port {ZMQ_WAKE_PORT}")
 
+    # The router publishes this when the machine starts listening without a spoken wake word (ADR-0020).
+    listen_sub = ctx.socket(zmq.SUB)
+    listen_sub.connect(f"tcp://localhost:{ZMQ_LISTEN_PORT}")
+    listen_sub.subscribe(b"mia/voice/listen")
+    logger.info(f"Subscribed to mia/voice/listen on port {ZMQ_LISTEN_PORT}")
+
     audio_sub = ctx.socket(zmq.SUB)
     audio_sub.connect(f"tcp://localhost:{ZMQ_AUDIO_PORT}")
     audio_sub.subscribe(b"mia/audio/raw")
@@ -219,6 +228,7 @@ def main():
 
     wake_poller = zmq.Poller()
     wake_poller.register(wake_sub, zmq.POLLIN)
+    wake_poller.register(listen_sub, zmq.POLLIN)
 
     audio_poller = zmq.Poller()
     audio_poller.register(audio_sub, zmq.POLLIN)
@@ -227,12 +237,16 @@ def main():
         while running:
             # Wait for wake word event
             events = dict(wake_poller.poll(200))
-            if wake_sub not in events:
+            if wake_sub in events:
+                topic, wake_data = wake_sub.recv_multipart()
+                wake_event = json.loads(wake_data)
+                logger.info(f"Wake event received: {wake_event.get('wake_word')}")
+            elif listen_sub in events:
+                topic, listen_data = listen_sub.recv_multipart()
+                wake_event = {"wake_word": None, "source": json.loads(listen_data).get("source")}
+                logger.info(f"Listen request received from {wake_event['source']}")
+            else:
                 continue
-
-            topic, wake_data = wake_sub.recv_multipart()
-            wake_event = json.loads(wake_data)
-            logger.info(f"Wake event received: {wake_event.get('wake_word')}")
 
             # Record audio until silence
             audio_bytes = record_until_silence(
@@ -271,6 +285,7 @@ def main():
 
     finally:
         wake_sub.close()
+        listen_sub.close()
         audio_sub.close()
         pub.close()
         ctx.term()
