@@ -1070,6 +1070,10 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
             # Send telemetry and LED state updates every 100ms (10Hz)
             await asyncio.sleep(0.1)
 
+            # The receiver ends when the client disconnects; a send after that does not always fail
+            if receiver.done():
+                break
+
             # Prepare data for Android app
             data = {
                 "telemetry": telemetry_cache,
