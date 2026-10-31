@@ -3,12 +3,13 @@
 No audio, no network: a fake clock stands in for time, a fake socket for ZeroMQ.
 """
 
+import importlib
 import json
+import sys
 import textwrap
 import time
 
 import pytest
-import zmq
 from support import voice_stimuli
 from support.voice_rig import MachineRig, run_scenario
 from support.voice_scenarios import ScenarioError, load_all, parse_scenario
@@ -171,7 +172,16 @@ def test_zmq_messages_become_normalized_events():
     assert trace.events[3]["muted"] is True
 
 
-def test_the_zmq_tap_collects_published_messages_on_a_private_context():
+@pytest.fixture
+def real_zmq(monkeypatch):
+    """Other test modules replace sys.modules["zmq"] with a MagicMock; load the real one for this test."""
+    for name in [n for n in sys.modules if n == "zmq" or n.startswith("zmq.")]:
+        monkeypatch.delitem(sys.modules, name)
+    return importlib.import_module("zmq")
+
+
+def test_the_zmq_tap_collects_published_messages_on_a_private_context(real_zmq):
+    zmq = real_zmq
     context = zmq.Context()
     pub = context.socket(zmq.PUB)
     pub.bind("inproc://voice-trace-test")
