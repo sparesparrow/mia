@@ -219,11 +219,23 @@ fun SpeedometerGauge(
             
             Spacer(Modifier.height(4.dp))
             
-            Text(
-                text = "Speed",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // The arc colour is not the only sign: an icon appears in the warning and error zones too.
+                if (value > 120) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Speed over limit",
+                        tint = if (value > 160) MaterialTheme.colorScheme.error else MaterialTheme.mia.warning,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                }
+                Text(
+                    text = "Speed",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -291,11 +303,23 @@ fun RPMGauge(
             
             Spacer(Modifier.height(4.dp))
             
-            Text(
-                text = "RPM",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // The arc colour is not the only sign: an icon appears in the warning and error zones too.
+                if (value >= (maxValue * 0.7).toInt()) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "RPM in warning range",
+                        tint = if (value >= redlineRpm) MaterialTheme.colorScheme.error else MaterialTheme.mia.warning,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                }
+                Text(
+                    text = "RPM",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
