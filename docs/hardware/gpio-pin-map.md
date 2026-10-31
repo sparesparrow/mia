@@ -55,22 +55,22 @@ harness actually uses via the override.
 ## Ignition on BCM17
 
 `services/power_monitor.py` configures BCM17 as an input with the internal pull-up and, on a stable
-falling edge (2 s debounce), publishes a shutdown notice, waits `SHUTDOWN_DELAY` and runs
-`systemctl poweroff`. Pin and delay come from `IGNITION_GPIO_PIN` and `SHUTDOWN_DELAY`.
+edge to the ignition-off level (2 s debounce), publishes a shutdown notice, waits `SHUTDOWN_DELAY` and
+runs `systemctl poweroff`. Pin, delay and polarity come from `IGNITION_GPIO_PIN`, `SHUTDOWN_DELAY` and
+`IGNITION_ON_LEVEL`.
 
-Wiring as described in the `power_monitor.py` header:
+Wiring (matches the `power_monitor.py` header):
 
 ```
 ACC 12 V --[1 kOhm]-- optocoupler LED+ ; LED- -- chassis GND
 Pi 3V3 --[10 kOhm]-- BCM17 --- optocoupler collector ; emitter -- Pi GND
 ```
 
-`power_monitor.py` treats HIGH as ignition on and LOW as ignition off, and fires on the falling edge.
-**That header and this wiring disagree:** with the collector tied to BCM17 and a pull-up, a conducting
-optocoupler (ignition on) pulls the pin LOW, so ignition off reads HIGH and no falling edge happens
-at key-off. Before enabling the service, bench-test the stage you build and make sure the pin reads
-HIGH with ignition on and falls to LOW at key-off (for example an inverting driver stage). Do not
-trust the header diagram.
+A conducting optocoupler (ignition on) pulls BCM17 LOW; with the ignition off the pull-up holds it HIGH.
+The default `IGNITION_ON_LEVEL=low` therefore treats LOW as ignition on and fires on the **rising** edge.
+A driver stage that inverts the signal (ignition on = HIGH) needs `IGNITION_ON_LEVEL=high`, which fires on
+the falling edge. The unit tests check both polarities with a mocked GPIO; the real circuit is still to be
+bench-tested (REQ-CAR-001 keeps its `not_proven`).
 
 Use an optocoupler rated for the 12 V line with a series resistor
 sized for the LED current (a few mA), and a series diode or TVS on the ACC side against reverse
@@ -101,12 +101,12 @@ from a GPIO directly: a pin sources only a few mA and is 3.3 V.
 
 ## Enabling `mia-power-monitor`
 
-`mia-power-monitor` runs `systemctl poweroff` on a stable BCM17 falling edge. With no optocoupler
+`mia-power-monitor` runs `systemctl poweroff` on a stable BCM17 edge to the ignition-off level. With no optocoupler
 wired, the internal pull-up keeps the pin HIGH, but a floating or mis-wired input, a bad ground or
 an inverted stage can power the Pi off on its own, or never. **Enable and start the service only
-once the ignition wiring exists and has been checked.** `tools/scripts/deploy-mia-rpi.sh` enables
-it by default, so run `sudo systemctl disable --now mia-power-monitor` on a bench Pi without that
-wiring.
+once the ignition wiring exists and has been checked.** `tools/scripts/deploy-mia-rpi.sh` leaves it
+off unless `MIA_ENABLE_POWER_MONITOR=1`; on a bench Pi without that wiring run
+`sudo systemctl disable --now mia-power-monitor`.
 
 ## What has and has not been checked
 

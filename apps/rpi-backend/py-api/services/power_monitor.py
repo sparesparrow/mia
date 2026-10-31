@@ -2,7 +2,7 @@
 MIA Power Monitor — graceful shutdown on ignition-off.
 
 Monitors a GPIO pin connected to the car's ACC/ignition wire via an optocoupler.
-When the ignition turns off (falling edge), this service:
+When the ignition turns off (the pin moves to its "off" level), this service:
   1. Publishes a ZMQ shutdown message so all services can flush state
   2. Waits for services to drain (configurable delay)
   3. Triggers systemctl poweroff
@@ -12,11 +12,17 @@ GPIO wiring (optocoupler):
   RPi GPIO{pin} ── optocoupler collector ── 3.3V (with 10kΩ pull-up)
   optocoupler emitter ── GND
 
-  Ignition ON  → GPIO HIGH
-  Ignition OFF → GPIO LOW (falling edge triggers shutdown)
+  A conducting optocoupler (ignition ON) pulls the pin LOW through the collector; with the ignition
+  OFF the 10 kΩ pull-up holds it HIGH. So, with this circuit:
+
+  Ignition ON  → GPIO LOW
+  Ignition OFF → GPIO HIGH (rising edge triggers shutdown)
+
+  A stage that inverts this (ON → HIGH) is supported with IGNITION_ON_LEVEL=high.
 
 Environment variables:
   IGNITION_GPIO_PIN  — BCM pin number (default: 17)
+  IGNITION_ON_LEVEL  — pin level while the ignition is on: low (default, the circuit above) or high
   SHUTDOWN_DELAY     — seconds to wait for services to flush (default: 5)
   ZMQ_BROKER_URL     — broker address (default: tcp://localhost:5555)
 """
@@ -38,6 +44,9 @@ logger = logging.getLogger(__name__)
 
 # ── Configuration ──────────────────────────────────────────────────────────
 IGNITION_PIN = int(os.environ.get("IGNITION_GPIO_PIN", "17"))
+ON_LEVEL = os.environ.get("IGNITION_ON_LEVEL", "low").strip().lower()
+if ON_LEVEL not in ("low", "high"):
+    raise SystemExit(f"IGNITION_ON_LEVEL must be 'low' or 'high', got {ON_LEVEL!r}")
 SHUTDOWN_DELAY = int(os.environ.get("SHUTDOWN_DELAY", "5"))
 ZMQ_BROKER_URL = os.environ.get("ZMQ_BROKER_URL", "tcp://localhost:5555")
 DEBOUNCE_SECONDS = 2  # ignore glitches shorter than this
@@ -91,23 +100,28 @@ def initiate_poweroff():
 
 
 def monitor_gpio():
-    """Main loop: watch the ignition GPIO pin for a falling edge."""
+    """Main loop: watch the ignition GPIO pin for the edge to its "off" level."""
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(IGNITION_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    logger.info(f"Monitoring GPIO {IGNITION_PIN} for ignition-off (falling edge)")
-    logger.info(f"Current state: {'HIGH (ignition ON)' if GPIO.input(IGNITION_PIN) else 'LOW (ignition OFF)'}")
+    on_high = ON_LEVEL == "high"
+    off_level = GPIO.LOW if on_high else GPIO.HIGH
+    off_edge = GPIO.FALLING if on_high else GPIO.RISING
+
+    logger.info(f"Monitoring GPIO {IGNITION_PIN} for ignition-off ({'falling' if on_high else 'rising'} edge)")
+    logger.info(f"Ignition is ON when the pin is {ON_LEVEL.upper()}")
+    logger.info(f"Current state: {'OFF' if GPIO.input(IGNITION_PIN) == off_level else 'ON'}")
 
     shutdown_requested = False
 
-    def on_falling_edge(channel):
+    def on_off_edge(channel):
         nonlocal shutdown_requested
         if shutdown_requested:
             return
-        # Debounce: confirm the pin is still LOW after a short delay
+        # Debounce: confirm the pin is still at the off level after a short delay
         time.sleep(DEBOUNCE_SECONDS)
-        if GPIO.input(IGNITION_PIN) == GPIO.LOW:
-            logger.info("Ignition OFF confirmed (stable low)")
+        if GPIO.input(IGNITION_PIN) == off_level:
+            logger.info("Ignition OFF confirmed (stable)")
             shutdown_requested = True
             publish_shutdown_notice()
             initiate_poweroff()
@@ -115,8 +129,8 @@ def monitor_gpio():
             logger.info("Ignition glitch detected — ignoring")
 
     GPIO.add_event_detect(
-        IGNITION_PIN, GPIO.FALLING,
-        callback=on_falling_edge,
+        IGNITION_PIN, off_edge,
+        callback=on_off_edge,
         bouncetime=int(DEBOUNCE_SECONDS * 1000)
     )
 
