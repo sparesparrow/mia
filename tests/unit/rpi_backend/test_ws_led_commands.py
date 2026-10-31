@@ -19,7 +19,13 @@ pytestmark = pytest.mark.req("REQ-NET-011")
 def client(monkeypatch):
     original = copy.deepcopy(api_main.led_state)
     sent = []
-    monkeypatch.setattr(api_main.zmq_socket, "send_multipart", lambda frames: sent.append(frames))
+
+    class FakeSocket:
+        # Replaces the whole socket: other tests can leave a MagicMock in place of zmq
+        def send_multipart(self, frames):
+            sent.append(frames)
+
+    monkeypatch.setattr(api_main, "zmq_socket", FakeSocket())
     test_client = TestClient(api_main.app)
     test_client.sent = sent
     yield test_client
