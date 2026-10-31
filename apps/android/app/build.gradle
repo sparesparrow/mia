@@ -56,6 +56,30 @@ android {
         }
     }
 
+    // A stable debug key lets a new debug APK install over the old one without an uninstall. Like the release
+    // block, it reads keystore.properties / gradle properties first, then the environment (CI decodes the
+    // MIA_DEBUG_KEYSTORE_B64 secret into a file and exports DEBUG_STORE_FILE and friends). When any value is
+    // missing, the default Android debug key is used. No keystore is committed.
+    def debugProps = new Properties()
+    def debugPropsFile = rootProject.file("keystore.properties")
+    if (debugPropsFile.exists()) {
+        debugProps.load(new FileInputStream(debugPropsFile))
+    }
+    def debugStore = debugProps.getProperty("debugStoreFile") ?: System.getenv("DEBUG_STORE_FILE")
+    def debugStorePass = debugProps.getProperty("debugStorePassword") ?: System.getenv("DEBUG_STORE_PASSWORD")
+    def debugKeyAlias = debugProps.getProperty("debugKeyAlias") ?: System.getenv("DEBUG_KEY_ALIAS")
+    def debugKeyPass = debugProps.getProperty("debugKeyPassword") ?: System.getenv("DEBUG_KEY_PASSWORD")
+    if (debugStore && debugStorePass && debugKeyAlias && debugKeyPass && file(debugStore).exists()) {
+        signingConfigs {
+            debug {
+                storeFile file(debugStore)
+                storePassword debugStorePass
+                keyAlias debugKeyAlias
+                keyPassword debugKeyPass
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true

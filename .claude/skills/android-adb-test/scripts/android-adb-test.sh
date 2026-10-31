@@ -249,6 +249,20 @@ open_nav_tab() {
   fi
 }
 
+# Alerts, OBD pairing and Settings sit under the More tab: open it, tap the entry, wait for the screen.
+open_more_item() {
+  local item="$1"
+  local marker="$2"
+  local marker_mode="${3:-contains}"
+
+  open_nav_tab "More" "$item" exact || return 1
+  tap_ui_text "$item" exact || return 1
+  wait_for_ui_text "$marker" 12 "$marker_mode" || {
+    err "Did not reach expected screen marker '$marker' after opening '$item' from More"
+    return 1
+  }
+}
+
 tap_first_device_entry() {
   local match
   local x
@@ -281,7 +295,10 @@ static_texts = {
     "Alerts",
     "Camera",
     "OBD",
+    "OBD pairing",
     "LED",
+    "Voice",
+    "More",
     "Settings",
 }
 patterns = [
@@ -481,7 +498,7 @@ scenario_dashboard() {
 
 scenario_ble_scan() {
   log "Scenario: BLE scan"
-  open_nav_tab "OBD" "OBD-II Connection" exact || return 1
+  open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
   if ui_has_text "Scan" exact; then
     tap_ui_text "Scan" exact || return 1
     wait_for_ui_text "Scanning..." 10 exact || sleep_ms 3000
@@ -493,7 +510,7 @@ scenario_ble_scan() {
 
 scenario_obd_pairing() {
   log "Scenario: OBD pairing"
-  open_nav_tab "OBD" "OBD-II Connection" exact || return 1
+  open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
   if ui_has_text "Scan" exact; then
     tap_ui_text "Scan" exact || return 1
     sleep_ms 4000
@@ -508,7 +525,7 @@ scenario_obd_pairing() {
 
 scenario_settings() {
   log "Scenario: settings"
-  open_nav_tab "Settings" "Save VIN" exact || return 1
+  open_more_item "Settings" "Save VIN" exact || return 1
   take_screenshot "settings"
 }
 

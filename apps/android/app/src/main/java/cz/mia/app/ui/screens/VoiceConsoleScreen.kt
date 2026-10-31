@@ -43,6 +43,9 @@ import cz.mia.app.core.voice.console.LogKind
 import cz.mia.app.core.voice.console.LogLine
 import cz.mia.app.core.voice.console.VoiceConsoleState
 import cz.mia.app.features.voice.VoiceConsoleViewModel
+import cz.mia.app.ui.components.ErrorLabel
+import cz.mia.app.ui.components.ScreenTitle
+import cz.mia.app.ui.components.SectionCard
 import cz.mia.app.ui.components.VoiceSettingsSection
 
 /**
@@ -66,7 +69,7 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Voice console", style = MaterialTheme.typography.headlineMedium)
+        ScreenTitle("Voice console")
         Text(
             text = connectionText(state),
             style = MaterialTheme.typography.bodyMedium,
@@ -93,16 +96,19 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
             OutlinedButton(onClick = { onPress(ConsoleCommand.EndDictation) }, enabled = connected, modifier = Modifier.testTag("voice_end_dictation")) { Text("End note") }
         }
 
-        VoiceSettingsSection(state, onPress)
+        SectionCard { VoiceSettingsSection(state, onPress) }
 
-        Text("Heard", style = MaterialTheme.typography.titleMedium)
-        Text(state.transcript.ifEmpty { "-" }, modifier = Modifier.testTag("voice_transcript"))
+        SectionCard(title = "Heard") {
+            Text(state.transcript.ifEmpty { "-" }, modifier = Modifier.testTag("voice_transcript"))
+        }
 
-        Text("MIA said", style = MaterialTheme.typography.titleMedium)
-        LogList(state.spoken.takeLast(5), Modifier.testTag("voice_spoken"))
+        SectionCard(title = "MIA said") {
+            LogList(state.spoken.takeLast(5), Modifier.testTag("voice_spoken"))
+        }
 
-        Text("Event queue", style = MaterialTheme.typography.titleMedium)
-        LogList(state.log.takeLast(25).reversed(), Modifier.testTag("voice_log"))
+        SectionCard(title = "Event queue") {
+            LogList(state.log.takeLast(25).reversed(), Modifier.testTag("voice_log"))
+        }
     }
 }
 
@@ -140,11 +146,16 @@ private fun LogList(lines: List<LogLine>, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         if (lines.isEmpty()) Text("-", style = MaterialTheme.typography.bodySmall)
         lines.forEach { line ->
-            Text(
-                text = line.text,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (line.kind == LogKind.ERROR) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-            )
+            if (line.kind == LogKind.ERROR) {
+                // An icon as well as the colour: red alone is not a sign of an error.
+                ErrorLabel(line.text)
+            } else {
+                Text(
+                    text = line.text,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
         Spacer(Modifier.height(2.dp))
     }
