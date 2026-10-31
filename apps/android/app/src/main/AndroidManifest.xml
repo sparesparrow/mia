@@ -32,6 +32,7 @@
 		android:label="@string/app_name"
 		android:icon="@drawable/ic_car"
 		android:roundIcon="@drawable/ic_car"
+		android:theme="@style/Theme.Mia"
 		android:allowBackup="false"
 		android:usesCleartextTraffic="true"
 		android:supportsRtl="true">

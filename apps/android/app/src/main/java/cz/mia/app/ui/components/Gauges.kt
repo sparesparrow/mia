@@ -42,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.mia.app.data.db.TelemetryEntity
+import cz.mia.app.ui.theme.MiaMono
+import cz.mia.app.ui.theme.mia
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -193,9 +195,9 @@ fun SpeedometerGauge(
                     value = animatedValue,
                     maxValue = maxValue.toFloat(),
                     arcColor = when {
-                        value > 160 -> Color(0xFFF44336) // Red for high speed
-                        value > 120 -> Color(0xFFFFC107) // Yellow for moderate
-                        else -> Color(0xFF4CAF50) // Green for normal
+                        value > 160 -> MaterialTheme.colorScheme.error // high speed
+                        value > 120 -> MaterialTheme.mia.warning // moderate
+                        else -> MaterialTheme.mia.success // normal
                     }
                 )
                 
@@ -203,6 +205,7 @@ fun SpeedometerGauge(
                     Text(
                         text = value.toString(),
                         fontSize = 36.sp,
+                        fontFamily = MiaMono,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -262,9 +265,9 @@ fun RPMGauge(
                     value = animatedValue,
                     maxValue = maxValue.toFloat(),
                     arcColor = when {
-                        value >= redlineRpm -> Color(0xFFF44336) // Redline
-                        value >= maxValue * 0.7 -> Color(0xFFFFC107) // Yellow zone
-                        else -> Color(0xFF2196F3) // Normal blue
+                        value >= redlineRpm -> MaterialTheme.colorScheme.error // Redline
+                        value >= maxValue * 0.7 -> MaterialTheme.mia.warning // Yellow zone
+                        else -> MaterialTheme.colorScheme.secondary // Normal cyan
                     },
                     hasRedzone = true,
                     redzoneStart = redlineRpm.toFloat() / maxValue
@@ -274,6 +277,7 @@ fun RPMGauge(
                     Text(
                         text = (value / 100).toString(),
                         fontSize = 36.sp,
+                        fontFamily = MiaMono,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -309,6 +313,7 @@ private fun CircularGauge(
 ) {
     val progress = (value / maxValue).coerceIn(0f, 1f)
     val backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+    val redzoneColor = MaterialTheme.colorScheme.error
     
     Canvas(
         modifier = Modifier
@@ -335,7 +340,7 @@ private fun CircularGauge(
         // Redzone arc (if enabled)
         if (hasRedzone) {
             drawArc(
-                color = Color(0xFFF44336).copy(alpha = 0.3f),
+                color = redzoneColor.copy(alpha = 0.3f),
                 startAngle = startAngle + sweepAngle * redzoneStart,
                 sweepAngle = sweepAngle * (1f - redzoneStart),
                 useCenter = false,
@@ -345,6 +350,28 @@ private fun CircularGauge(
             )
         }
         
+        // Soft glow behind the value arc: two wider, fainter strokes. Static, no animation.
+        if (progress > 0f) {
+            drawArc(
+                color = arcColor.copy(alpha = 0.12f),
+                startAngle = startAngle,
+                sweepAngle = sweepAngle * progress,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(diameter, diameter),
+                style = Stroke(width = strokeWidth * 2.2f, cap = StrokeCap.Round)
+            )
+            drawArc(
+                color = arcColor.copy(alpha = 0.22f),
+                startAngle = startAngle,
+                sweepAngle = sweepAngle * progress,
+                useCenter = false,
+                topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(diameter, diameter),
+                style = Stroke(width = strokeWidth * 1.5f, cap = StrokeCap.Round)
+            )
+        }
+
         // Value arc
         drawArc(
             color = arcColor,
@@ -366,6 +393,13 @@ private fun CircularGauge(
         val needleY = centerY + needleLength * sin(needleRadians).toFloat()
         
         drawLine(
+            color = arcColor.copy(alpha = 0.25f),
+            start = Offset(centerX, centerY),
+            end = Offset(needleX, needleY),
+            strokeWidth = strokeWidth * 0.8f,
+            cap = StrokeCap.Round
+        )
+        drawLine(
             color = arcColor,
             start = Offset(centerX, centerY),
             end = Offset(needleX, needleY),
@@ -374,6 +408,11 @@ private fun CircularGauge(
         )
         
         // Center dot
+        drawCircle(
+            color = arcColor.copy(alpha = 0.25f),
+            radius = strokeWidth * 0.8f,
+            center = Offset(centerX, centerY)
+        )
         drawCircle(
             color = arcColor,
             radius = strokeWidth * 0.4f,
@@ -403,7 +442,7 @@ fun CompactGauge(
     )
     
     val isWarning = if (isWarningAbove) value >= warningThreshold else value <= warningThreshold
-    val gaugeColor = if (isWarning) Color(0xFFF44336) else MaterialTheme.colorScheme.primary
+    val gaugeColor = if (isWarning) MaterialTheme.mia.warning else MaterialTheme.colorScheme.secondary
     
     Card(
         modifier = modifier,
@@ -438,6 +477,7 @@ fun CompactGauge(
             Text(
                 text = "$value$unit",
                 fontSize = 20.sp,
+                fontFamily = MiaMono,
                 fontWeight = FontWeight.Bold,
                 color = gaugeColor
             )

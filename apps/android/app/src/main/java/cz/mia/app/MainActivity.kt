@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,9 +49,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -67,7 +71,14 @@ import cz.mia.app.core.voice.console.ConnectionState
 import cz.mia.app.ui.components.VoiceSettingsSection
 import cz.mia.app.ui.components.CitroenReadings
 import cz.mia.app.ui.components.Cycle1TelemetryCard
-import cz.mia.app.ui.components.DashboardGauges
+import cz.mia.app.ui.components.AlertRow
+import cz.mia.app.ui.components.DashboardTelemetrySection
+import cz.mia.app.ui.components.ScreenTitle
+import cz.mia.app.ui.components.SectionCard
+import cz.mia.app.ui.screens.MoreDestination
+import cz.mia.app.ui.screens.MoreScreen
+import cz.mia.app.ui.theme.MiaTheme
+import cz.mia.app.ui.theme.mia
 import cz.mia.app.ui.screens.camera.CameraScreen
 import cz.mia.app.ui.screens.OBDPairingScreen
 import cz.mia.app.ui.screens.VoiceConsoleScreen
@@ -77,7 +88,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContent { AppRoot() }
+		setContent { MiaTheme { AppRoot() } }
 	}
 
 	private fun startDrivingService() {
@@ -93,67 +104,54 @@ class MainActivity : ComponentActivity() {
 	@OptIn(ExperimentalMaterial3Api::class)
 	@Composable
 	private fun AppRoot() {
-		var selected by remember { mutableStateOf(0) }
+		var selected by rememberSaveable { mutableStateOf(0) }
+		var moreDestination by rememberSaveable { mutableStateOf<MoreDestination?>(null) }
 		val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 		Scaffold(
 			snackbarHost = { SnackbarHost(snackbarHostState) },
 			bottomBar = {
 				NavigationBar {
-					NavigationBarItem(
-						selected = selected == 0,
-						onClick = { selected = 0 },
-						icon = { Icon(Icons.Default.Dashboard, contentDescription = null) },
-						label = { Text("Dashboard") }
-					)
-					NavigationBarItem(
-						selected = selected == 1,
-						onClick = { selected = 1 },
-						icon = { Icon(Icons.Default.Warning, contentDescription = null) },
-						label = { Text("Alerts") }
-					)
-					NavigationBarItem(
-						selected = selected == 2,
-						onClick = { selected = 2 },
-						icon = { Icon(Icons.Default.CameraAlt, contentDescription = null) },
-						label = { Text("Camera") }
-					)
-					NavigationBarItem(
-						selected = selected == 3,
-						onClick = { selected = 3 },
-						icon = { Icon(Icons.Default.Bluetooth, contentDescription = null) },
-						label = { Text("OBD") }
-					)
-					NavigationBarItem(
-						selected = selected == 4,
-						onClick = { selected = 4 },
-						icon = { Icon(Icons.Default.Lightbulb, contentDescription = null) },
-						label = { Text("LED") }
-					)
-					NavigationBarItem(
-						selected = selected == 5,
-						onClick = { selected = 5 },
-						icon = { Icon(Icons.Default.Mic, contentDescription = null) },
-						label = { Text("Voice") }
-					)
-					NavigationBarItem(
-						selected = selected == 6,
-						onClick = { selected = 6 },
-						icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-						label = { Text("Settings") }
-					)
+					NavTab(selected == 0, Icons.Default.Dashboard, "Dashboard") { selected = 0 }
+					NavTab(selected == 1, Icons.Default.CameraAlt, "Camera") { selected = 1 }
+					NavTab(selected == 2, Icons.Default.Mic, "Voice") { selected = 2 }
+					NavTab(selected == 3, Icons.Default.Lightbulb, "LED") { selected = 3 }
+					// Tapping More again returns to its list.
+					NavTab(selected == 4, Icons.Default.MoreHoriz, "More") {
+						selected = 4
+						moreDestination = null
+					}
 				}
 			}
 		) { padding ->
 			when (selected) {
 				0 -> DashboardScreen(Modifier.padding(padding))
-				1 -> AlertsScreen(Modifier.padding(padding))
-				2 -> CameraScreen(Modifier.padding(padding))
-				3 -> OBDPairingScreen(Modifier.padding(padding))
-				4 -> LEDMonitorScreen(Modifier.padding(padding))
-				5 -> VoiceConsoleScreen(Modifier.padding(padding))
-				else -> SettingsScreen(Modifier.padding(padding))
+				1 -> CameraScreen(Modifier.padding(padding))
+				2 -> VoiceConsoleScreen(Modifier.padding(padding))
+				3 -> LEDMonitorScreen(Modifier.padding(padding))
+				else -> MoreScreen(
+					current = moreDestination,
+					onSelect = { moreDestination = it },
+					modifier = Modifier.padding(padding),
+				) { destination, inner ->
+					when (destination) {
+						MoreDestination.Alerts -> AlertsScreen(inner)
+						MoreDestination.ObdPairing -> OBDPairingScreen(inner)
+						MoreDestination.Settings -> SettingsScreen(inner)
+					}
+				}
 			}
 		}
+	}
+
+	@Composable
+	private fun RowScope.NavTab(selected: Boolean, icon: ImageVector, label: String, onClick: () -> Unit) {
+		NavigationBarItem(
+			selected = selected,
+			onClick = onClick,
+			icon = { Icon(icon, contentDescription = null) },
+			label = { Text(label, maxLines = 1, softWrap = false) },
+			modifier = Modifier.heightIn(min = 64.dp),
+		)
 	}
 
 	@Composable
@@ -172,18 +170,18 @@ class MainActivity : ComponentActivity() {
 		
 		// Scrollable so the Cycle 1 card below the service controls stays reachable on small screens.
 		Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-			Text(
-				text = "Dashboard",
-				style = MaterialTheme.typography.headlineMedium
-			)
-			
-			Spacer(Modifier.height(8.dp))
+			ScreenTitle("Dashboard")
 			
 			PolicyAdvisory(policy.advisoryMessage, policy.samplingMode.name, policy.batteryPercent)
 			
 			Spacer(Modifier.height(16.dp))
 			
-			DashboardGauges(latest)
+			// One status chip; the gauges' "No telemetry data" placeholder is skipped while live Cycle 1 data exists.
+			DashboardTelemetrySection(
+				latest = latest,
+				cycle1Telemetry = cycle1Telemetry,
+				cycle1Connection = cycle1Connection,
+			)
 
 			Spacer(Modifier.height(16.dp))
 
@@ -219,7 +217,7 @@ class MainActivity : ComponentActivity() {
 					enabled = isServiceRunning,
 					modifier = Modifier.weight(1f),
 					colors = ButtonDefaults.outlinedButtonColors(
-						contentColor = Color.Red
+						contentColor = MaterialTheme.colorScheme.error
 					)
 				) {
 					Icon(Icons.Default.Stop, contentDescription = null)
@@ -270,9 +268,17 @@ class MainActivity : ComponentActivity() {
 	@Composable
 	private fun AlertsScreen(modifier: Modifier = Modifier) {
 		val vm: AlertsViewModel = hiltViewModel()
-		LazyColumn(modifier = modifier.fillMaxSize().padding(16.dp)) {
-			items(vm.recent.value) { alert: AlertEntity ->
-				Text("[${alert.severity}] ${alert.message}")
+		val alerts = vm.recent.value
+		Column(modifier = modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+			ScreenTitle("Alerts")
+			if (alerts.isEmpty()) {
+				SectionCard { Text("No alerts yet.", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+			} else {
+				LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+					items(alerts) { alert: AlertEntity ->
+						AlertRow(severity = alert.severity, message = alert.message)
+					}
+				}
 			}
 		}
 	}
@@ -293,26 +299,28 @@ class MainActivity : ComponentActivity() {
 		var piAddressError by remember { mutableStateOf<String?>(null) }
 		var lastExportPath by remember { mutableStateOf("") }
 
-		Column(modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp)) {
-			Text(text = "Settings")
-			Spacer(modifier = Modifier.height(12.dp))
+		Column(
+			modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp),
+			verticalArrangement = Arrangement.spacedBy(12.dp),
+		) {
+			ScreenTitle("Settings")
+			SectionCard(title = "Vehicle") {
 			OutlinedTextField(value = vinText, onValueChange = { vinText = it }, label = { Text("VIN") })
-			Spacer(modifier = Modifier.height(8.dp))
 			Button(onClick = { vm.setVin(vinText) }) { Text("Save VIN") }
-			Spacer(modifier = Modifier.height(16.dp))
+			}
+			SectionCard(title = "Privacy") {
 			Text("Incognito")
 			Switch(checked = incognito, onCheckedChange = { vm.setIncognito(it) })
-			Spacer(modifier = Modifier.height(8.dp))
 			Text("Retention: ${retention.toInt()} days")
 			Slider(value = retention, onValueChange = { vm.setRetentionDays(it.toInt()) }, valueRange = 1f..30f)
-			Spacer(Modifier.height(16.dp))
 			Text("Metrics opt-in (health pings)")
 			Switch(checked = metrics, onCheckedChange = { vm.setMetricsOptIn(it) })
-			Spacer(Modifier.height(16.dp))
+			}
+			SectionCard(title = "ANPR") {
 			Text("ANPR Region: ${region}")
 			RowToggle(options = listOf("CZ", "EU"), selected = region, onSelected = { vm.setAnprRegion(it) })
-			Spacer(Modifier.height(16.dp))
-			Text("Pi connection")
+			}
+			SectionCard(title = "Pi connection") {
 			OutlinedTextField(
 				value = piAddressText,
 				onValueChange = { piAddressText = it; piAddressError = null },
@@ -322,7 +330,6 @@ class MainActivity : ComponentActivity() {
 				isError = piAddressError != null,
 				supportingText = piAddressError?.let { message -> { Text(message) } }
 			)
-			Spacer(modifier = Modifier.height(8.dp))
 			OutlinedTextField(
 				value = piApiKeyText,
 				onValueChange = { piApiKeyText = it },
@@ -330,23 +337,22 @@ class MainActivity : ComponentActivity() {
 				singleLine = true,
 				visualTransformation = PasswordVisualTransformation()
 			)
-			Spacer(modifier = Modifier.height(8.dp))
 			Button(onClick = { piAddressError = vm.savePiConnection(piAddressText, piApiKeyText) }) {
 				Text("Save connection")
 			}
 			val active = vm.preview(savedPiAddress, savedPiApiKey)
 			Text("Using: ${active.apiBaseUrl} (API key ${if (active.apiKey.isBlank()) "none" else "set"})")
 			Text("Takes effect when you open Dashboard, LED or Voice next.")
-			Spacer(Modifier.height(16.dp))
+			}
+			SectionCard(title = "Logs") {
 			Button(onClick = {
 				vm.exportLogs { file -> lastExportPath = file.absolutePath }
 			}) { Text("Export Logs") }
 			if (lastExportPath.isNotEmpty()) {
-				Spacer(Modifier.height(8.dp))
 				Text("Exported: ${lastExportPath}")
 			}
-			Spacer(Modifier.height(24.dp))
-			VoiceSettings()
+			}
+			SectionCard { VoiceSettings() }
 		}
 	}
 
@@ -405,36 +411,34 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 	var brightness by remember(ledState?.brightness) { mutableStateOf(ledState?.brightness ?: 0.7f) }
 	var emergencyOverride by remember(ledState?.emergency) { mutableStateOf(ledState?.emergency ?: false) }
 
-	Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-		Text(
-			text = "LED Monitor Control",
-			style = MaterialTheme.typography.headlineMedium
-		)
+	Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+		ScreenTitle("LED Monitor Control")
 
 		// WebSocket connection status
 		Text(
 			text = "WebSocket: ${wsState::class.simpleName}",
 			style = MaterialTheme.typography.bodySmall,
 			color = when (wsState) {
-				is cz.mia.app.data.remote.websocket.WebSocketState.Connected -> Color.Green
-				is cz.mia.app.data.remote.websocket.WebSocketState.Error -> Color.Red
-				else -> Color.Gray
+				is cz.mia.app.data.remote.websocket.WebSocketState.Connected -> MaterialTheme.mia.success
+				is cz.mia.app.data.remote.websocket.WebSocketState.Error -> MaterialTheme.colorScheme.error
+				else -> MaterialTheme.colorScheme.onSurfaceVariant
 			}
 		)
 
 		Spacer(Modifier.height(16.dp))
 
 		// Service Health Dashboard
-		ServiceHealthDashboard(serviceStatuses)
+		SectionCard { ServiceHealthDashboard(serviceStatuses) }
 
 		Spacer(Modifier.height(16.dp))
 
 		// LED Status Visualization
-		LEDStatusVisualization(aiState, selectedMode, brightness, emergencyOverride)
+		SectionCard { LEDStatusVisualization(aiState, selectedMode, brightness, emergencyOverride) }
 
 		Spacer(Modifier.height(16.dp))
 
 		// Control Interface
+		SectionCard {
 		LEDControlInterface(
 			selectedMode = selectedMode,
 			onModeChange = {
@@ -470,11 +474,12 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 				}
 			}
 		)
+		}
 
 		Spacer(Modifier.height(16.dp))
 
 		// Real-time OBD Data Display
-		OBDDataDisplay(latest, ledState?.obdData)
+		SectionCard { OBDDataDisplay(latest, ledState?.obdData) }
 
 		Spacer(Modifier.height(16.dp))
 
@@ -502,7 +507,7 @@ private fun ServiceHealthDashboard(serviceStatuses: Map<String, Boolean>) {
 
 @Composable
 private fun ServiceStatusIndicator(service: String, isHealthy: Boolean) {
-	val color = if (isHealthy) Color.Green else Color.Red
+	val color = if (isHealthy) MaterialTheme.mia.success else MaterialTheme.colorScheme.error
 	val icon = if (isHealthy) Icons.Default.CheckCircle else Icons.Default.Error
 
 	Column(
@@ -616,8 +621,8 @@ private fun LEDControlInterface(
 				checked = emergencyOverride,
 				onCheckedChange = onEmergencyOverride,
 				colors = androidx.compose.material3.SwitchDefaults.colors(
-					checkedThumbColor = Color.Red,
-					checkedTrackColor = Color.Red.copy(alpha = 0.5f)
+					checkedThumbColor = MaterialTheme.colorScheme.error,
+					checkedTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
 				)
 			)
 		}
@@ -650,7 +655,7 @@ private fun OBDDataDisplay(latest: TelemetryEntity?, wsObdData: Map<String, Any>
 @Composable
 private fun OBDMetric(label: String, value: String) {
 	Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-		Text(value, style = MaterialTheme.typography.headlineSmall)
+		Text(value, style = MaterialTheme.typography.titleMedium.copy(fontFamily = cz.mia.app.ui.theme.MiaMono, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold))
 		Text(label, style = MaterialTheme.typography.bodySmall)
 	}
 }
@@ -675,7 +680,7 @@ private fun SystemHeartbeat() {
 		Icon(
 			if (heartbeat) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
 			contentDescription = "System heartbeat",
-			tint = if (heartbeat) Color.Red else Color.Gray,
+			tint = if (heartbeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
 			modifier = Modifier.size(24.dp)
 		)
 		Spacer(Modifier.width(8.dp))

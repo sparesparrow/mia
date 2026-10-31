@@ -341,3 +341,45 @@ requirements:
   not_proven: Never used in the car. The thresholds (5 min, 3 episodes, 15 min, 24 h) are starting values, not tuned
     against real traffic, and a daily commute past the same parked car can trigger it. The daily limit lives in memory.
     Matching needs the driving service and the Live tab, as for REQ-AND-020.
+- id: REQ-AND-022
+  title: Dashboard connection status chip
+  statement: The dashboard shall show one chip that says whether the Pi is online, which source the telemetry comes
+    from and how confident it is, and shall not show the "No telemetry data" placeholder while live Cycle 1 data exists.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The chip says Pi online with the source and confidence when the Pi is connected and has sent telemetry
+  - The chip says Pi offline, with the reason when there is one, when the Pi is disconnected or in error
+  - With live Cycle 1 data and no phone reading, the placeholder is not drawn; with neither, it is
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/ConnectionStatus.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: The dashboard has not been rendered on a phone or against a real Pi. The test draws the section with a
+    constructed telemetry envelope, not one received from the Pi.
+- id: REQ-AND-023
+  title: Five-tab navigation with a More menu
+  statement: The app shall have five bottom tabs (Dashboard, Camera, Voice, LED, More), and the More tab shall list
+    Alerts, OBD pairing and Settings, open the one tapped and return to the list on back.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The More list shows Alerts, OBD pairing and Settings
+  - Tapping an entry shows that screen, and the back row returns to the list
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/MoreScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: The bottom bar itself and the system back button have not been used on a phone; the test covers the More
+    list and its back row only. The emulator scenarios in .claude/skills/android-adb-test were changed to open OBD and
+    Settings through More and are untried until CI runs them.
+- id: REQ-AND-024
+  title: App theme and readable alerts
+  statement: The app shall use one dark theme with bundled fonts, and shall show each alert with its severity as a
+    word and an icon as well as a colour.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The theme is dark with the brand red as primary, whatever the system setting is
+  - Warning is yellow and error is a different red than the brand, so the two are never told apart by colour alone
+  - An alert row shows the severity word and the message as separate texts
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/theme
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Common.kt
+  not_proven: Never looked at on a phone. Bebas Neue and JetBrains Mono are bundled (SIL OFL, licences under
+    assets/licenses) but no test checks that they load, and the JetBrains Mono weight axis applies from Android 8 only.

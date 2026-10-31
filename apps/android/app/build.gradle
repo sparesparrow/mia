@@ -56,6 +56,25 @@ android {
         }
     }
 
+    // A stable debug key lets a new debug APK install over the old one without an uninstall. It is read
+    // from the environment only (CI decodes the MIA_DEBUG_KEYSTORE_B64 secret into a file); when it is not
+    // set, the default Android debug key is used. No keystore is committed.
+    def debugStore = System.getenv("DEBUG_STORE_FILE")
+    def debugStorePass = System.getenv("DEBUG_STORE_PASSWORD")
+    def debugKeyAlias = System.getenv("DEBUG_KEY_ALIAS")
+    def debugKeyPass = System.getenv("DEBUG_KEY_PASSWORD")
+    def hasStableDebugKey = debugStore && debugStorePass && debugKeyAlias && debugKeyPass && file(debugStore).exists()
+    if (hasStableDebugKey) {
+        signingConfigs {
+            debug {
+                storeFile file(debugStore)
+                storePassword debugStorePass
+                keyAlias debugKeyAlias
+                keyPassword debugKeyPass
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true

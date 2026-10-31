@@ -75,6 +75,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.mia.app.core.background.BLEManager
+import cz.mia.app.ui.components.ScreenTitle
+import cz.mia.app.ui.theme.mia
 import cz.mia.app.core.background.BleConnectionState
 import cz.mia.app.core.background.BleDeviceInfo
 import cz.mia.app.core.background.OBDConnectionStatus
@@ -183,13 +185,7 @@ fun OBDPairingScreen(
             .padding(16.dp)
     ) {
         // Header
-        Text(
-            text = "OBD-II Connection",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-        
-        Spacer(Modifier.height(8.dp))
+        ScreenTitle("OBD-II Connection")
         
         // Connection Status Card
         ConnectionStatusCard(
@@ -252,11 +248,11 @@ private fun ConnectionStatusCard(
 ) {
     val statusColor by animateColorAsState(
         targetValue = when (connectionState) {
-            is BleConnectionState.Connected -> Color(0xFF4CAF50)
-            is BleConnectionState.Connecting -> Color(0xFFFFC107)
-            is BleConnectionState.Scanning -> Color(0xFF2196F3)
-            is BleConnectionState.Error -> Color(0xFFF44336)
-            else -> Color.Gray
+            is BleConnectionState.Connected -> MaterialTheme.mia.success
+            is BleConnectionState.Connecting -> MaterialTheme.mia.warning
+            is BleConnectionState.Scanning -> MaterialTheme.mia.info
+            is BleConnectionState.Error -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
         label = "statusColor"
     )
@@ -337,7 +333,7 @@ private fun ConnectionStatusCard(
                     OutlinedButton(
                         onClick = onDisconnect,
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = Color.Red
+                            contentColor = MaterialTheme.colorScheme.error
                         )
                     ) {
                         Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -351,7 +347,7 @@ private fun ConnectionStatusCard(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = connectionState.message,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontSize = 12.sp
                 )
             }

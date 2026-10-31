@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark from the first frame, so there is no white flash before Compose draws. -->
+    <style name="Theme.Mia" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/mia_background</item>
+        <item name="android:statusBarColor">@color/mia_background</item>
+        <item name="android:navigationBarColor">@color/mia_background</item>
+        <item name="android:colorBackground">@color/mia_background</item>
+    </style>
+</resources>
