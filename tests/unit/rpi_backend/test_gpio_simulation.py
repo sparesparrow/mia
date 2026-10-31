@@ -12,6 +12,9 @@ pytestmark = pytest.mark.req("REQ-HW-001", "REQ-NFR-001")
 
 def load_gpio_module():
     """Import the gpio module directly for unit testing, bypassing relative imports."""
+    py_api = Path(__file__).resolve().parents[3] / "apps" / "rpi-backend" / "py-api"
+    if str(py_api) not in sys.path:
+        sys.path.insert(0, str(py_api))
     module_path = Path(__file__).resolve().parents[3] / "apps" / "rpi-backend" / "py-api" / "hardware" / "gpio.py"
     source = module_path.read_text()
     # Patch out the relative import that requires the full package tree
@@ -37,9 +40,9 @@ async def test_simulation_client_configure():
     module = load_gpio_module()
     client = module.SimulationGPIOClient()
 
-    resp = await client.send_gpio_configure_request(17, "output")
+    resp = await client.send_gpio_configure_request(23, "output")
     assert resp["success"] is True
-    assert resp["pin"] == 17
+    assert resp["pin"] == 23
 
 
 @pytest.mark.asyncio
@@ -48,9 +51,9 @@ async def test_simulation_client_set_and_get():
     module = load_gpio_module()
     client = module.SimulationGPIOClient()
 
-    await client.send_gpio_configure_request(17, "output")
-    await client.send_gpio_set_request(17, True)
-    resp = await client.send_gpio_get_request(17)
+    await client.send_gpio_configure_request(23, "output")
+    await client.send_gpio_set_request(23, True)
+    resp = await client.send_gpio_get_request(23)
 
     assert resp["success"] is True
     assert resp["value"] is True
@@ -62,7 +65,7 @@ async def test_simulation_client_status():
     module = load_gpio_module()
     client = module.SimulationGPIOClient()
 
-    await client.send_gpio_configure_request(17, "output")
+    await client.send_gpio_configure_request(23, "output")
     await client.send_gpio_configure_request(18, "input")
 
     resp = await client.send_gpio_status_request()
@@ -109,17 +112,17 @@ async def test_controller_configure_and_set_in_simulation():
     await gpio.connect()
 
     # Configure pin
-    success = await gpio.configure_pin(17, module.GPIOMode.OUTPUT)
+    success = await gpio.configure_pin(23, module.GPIOMode.OUTPUT)
     assert success is True
-    assert gpio.is_pin_configured(17)
-    assert gpio.get_pin_mode(17) == module.GPIOMode.OUTPUT
+    assert gpio.is_pin_configured(23)
+    assert gpio.get_pin_mode(23) == module.GPIOMode.OUTPUT
 
     # Set pin
-    success = await gpio.set_pin(17, True)
+    success = await gpio.set_pin(23, True)
     assert success is True
 
     # Read pin
-    value = await gpio.get_pin(17)
+    value = await gpio.get_pin(23)
     assert value is True
 
     # Get status
@@ -139,18 +142,18 @@ async def test_controller_bulk_operations_in_simulation():
 
     # Bulk configure
     results = await gpio.bulk_configure({
-        17: module.GPIOMode.OUTPUT,
+        23: module.GPIOMode.OUTPUT,
         18: module.GPIOMode.OUTPUT,
         22: module.GPIOMode.INPUT,
     })
     assert all(results.values())
 
     # Bulk set
-    results = await gpio.bulk_set({17: True, 18: False})
+    results = await gpio.bulk_set({23: True, 18: False})
     assert all(results.values())
 
     assert gpio.get_configured_pins() == {
-        17: module.GPIOMode.OUTPUT,
+        23: module.GPIOMode.OUTPUT,
         18: module.GPIOMode.OUTPUT,
         22: module.GPIOMode.INPUT,
     }
@@ -165,6 +168,6 @@ async def test_controller_context_manager_in_simulation():
 
     async with module.GPIOController(simulation=True) as gpio:
         assert gpio.simulation_mode is True
-        await gpio.configure_pin(17, module.GPIOMode.OUTPUT)
-        await gpio.set_pin(17, True)
-        assert await gpio.get_pin(17) is True
+        await gpio.configure_pin(23, module.GPIOMode.OUTPUT)
+        await gpio.set_pin(23, True)
+        assert await gpio.get_pin(23) is True

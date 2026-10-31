@@ -10,6 +10,11 @@ import time
 from typing import Dict, Optional
 from datetime import datetime
 
+try:  # imported as a package (tests) or run as a script from hardware/
+    from . import gpio_policy
+except ImportError:
+    import gpio_policy  # type: ignore[no-redef]
+
 # Try to import GPIO libraries
 GPIO_AVAILABLE = False
 USE_GPIOZERO = False
@@ -145,10 +150,13 @@ class GPIOWorker:
         direction = message.get("direction", "output")
         request_id = message.get("request_id")
         
-        if not pin:
+        if pin is None:
             self._send_error("Missing pin parameter")
             return
-        
+
+        if not self._policy_ok(gpio_policy.get_policy().check, pin, direction):
+            return
+
         try:
             if GPIO_AVAILABLE:
                 if USE_GPIOZERO:
@@ -190,7 +198,13 @@ class GPIOWorker:
         if pin is None or value is None:
             self._send_error("Missing pin or value parameter")
             return
-        
+
+        if not self._policy_ok(gpio_policy.get_policy().check, pin, gpio_policy.OUTPUT):
+            return
+        if self.pin_states.get(pin, {}).get("direction") != gpio_policy.OUTPUT:
+            self._send_error(f"Pin {pin} is not configured as output")
+            return
+
         try:
             if GPIO_AVAILABLE:
                 if USE_GPIOZERO:
@@ -226,7 +240,10 @@ class GPIOWorker:
         if pin is None:
             self._send_error("Missing pin parameter")
             return
-        
+
+        if not self._policy_ok(gpio_policy.get_policy().check_read, pin):
+            return
+
         try:
             value = None
             if GPIO_AVAILABLE:
@@ -271,6 +288,18 @@ class GPIOWorker:
             "request_id": request_id,
         }
         self.socket.send_multipart([b"", json.dumps(response).encode()])
+
+    def _policy_ok(self, check, *args) -> bool:
+        """Run a gpio_policy check; on failure answer with a policy error and return False."""
+        try:
+            check(*args)
+            return True
+        except gpio_policy.PinDenied as e:
+            logger.warning(f"Denied: {e}")
+            self._send_error(str(e))
+        except gpio_policy.PinInvalid as e:
+            self._send_error(f"{gpio_policy.DENIED_PREFIX}invalid request: {e}")
+        return False
 
     def _send_error(self, error: str):
         """Send error response"""

@@ -14,6 +14,14 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from enum import Enum
 
+try:
+    from . import gpio_policy
+except ImportError:  # loaded outside the package (script or isolated test loader)
+    try:
+        from hardware import gpio_policy  # type: ignore[no-redef]
+    except ImportError:
+        import gpio_policy  # type: ignore[no-redef]
+
 logger = logging.getLogger(__name__)
 
 # Try to import the real messaging client; degrade gracefully if unavailable
@@ -49,16 +57,35 @@ class SimulationGPIOClient:
     async def disconnect(self):
         logger.info("SimulationGPIOClient disconnected (no-op)")
 
+    @staticmethod
+    def _denied(check, *args) -> Optional[dict]:
+        try:
+            check(*args)
+        except (gpio_policy.PinDenied, gpio_policy.PinInvalid) as e:
+            return {"success": False, "error": str(e)}
+        return None
+
     async def send_gpio_configure_request(self, pin: int, mode: str) -> dict:
+        denied = self._denied(gpio_policy.get_policy().check, pin, mode)
+        if denied:
+            return denied
         self._pin_configs[pin] = mode
         self._pin_values.setdefault(pin, False)
         return {"success": True, "pin": pin, "mode": mode}
 
     async def send_gpio_set_request(self, pin: int, value: bool) -> dict:
+        denied = self._denied(gpio_policy.get_policy().check, pin, gpio_policy.OUTPUT)
+        if denied:
+            return denied
+        if self._pin_configs.get(pin) != gpio_policy.OUTPUT:
+            return {"success": False, "error": f"Pin {pin} is not configured as output"}
         self._pin_values[pin] = value
         return {"success": True, "pin": pin, "value": value}
 
     async def send_gpio_get_request(self, pin: int) -> dict:
+        denied = self._denied(gpio_policy.get_policy().check_read, pin)
+        if denied:
+            return denied
         value = self._pin_values.get(pin, False)
         return {"success": True, "pin": pin, "value": value}
 
@@ -156,9 +183,12 @@ class GPIOController:
 
         Raises:
             RuntimeError: If not connected or configuration fails
+            gpio_policy.PinDenied / PinInvalid: pin or direction not allowed (hardware/gpio_policy.py)
         """
         if not self._client:
             raise RuntimeError("GPIO controller not connected")
+
+        gpio_policy.get_policy().check(pin, mode.value)
 
         try:
             response = await self._client.send_gpio_configure_request(pin, mode.value)
@@ -199,6 +229,8 @@ class GPIOController:
         if self._configured_pins[pin] != GPIOMode.OUTPUT:
             raise RuntimeError(f"GPIO pin {pin} not configured as output")
 
+        gpio_policy.get_policy().check(pin, gpio_policy.OUTPUT)
+
         try:
             response = await self._client.send_gpio_set_request(pin, value)
 
@@ -229,6 +261,8 @@ class GPIOController:
         """
         if not self._client:
             raise RuntimeError("GPIO controller not connected")
+
+        gpio_policy.get_policy().check_read(pin)
 
         if pin not in self._configured_pins:
             raise RuntimeError(f"GPIO pin {pin} not configured")
