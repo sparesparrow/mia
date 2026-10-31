@@ -131,3 +131,19 @@ requirements:
   decisions:
   - ADR-0013
   not_proven: Not yet implemented; a serial line is expected to be the framed stream channel over pyserial.
+- id: REQ-NET-011
+  title: LED commands over the telemetry WebSocket
+  statement: The gateway shall apply the LED commands the Android app sends on /ws/telemetry (set_mode, set_ai_state,
+    set_brightness, trigger_emergency, clear_emergency, start_animation, stop_animation) to the LED state and forward them
+    to the LED controller, and shall ignore a command that is unknown or invalid.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A valid command changes the LED state that /led/state and the next /ws/telemetry message report
+  - A brightness outside 0..255 is clamped, and an AI state, mode, animation or value of the wrong kind leaves the state unchanged
+  - Text that is not a JSON object is ignored and the stream keeps running
+  implemented_in:
+  - apps/rpi-backend/py-api/api/main.py
+  services:
+  - mia-api
+  not_proven: The LED controller (Arduino/ESP32 strip) was not driven; the commands were checked against the API state
+    only. The Android LED tab has not been seen changing a real LED.
