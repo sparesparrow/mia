@@ -25,6 +25,8 @@ beyond their status line.
 | [0017](0017-mqtt-topic-namespace.md) | One MQTT topic contract: `spec/interfaces/topics.md` | Proposed |
 | [0018](0018-per-install-plate-key-and-black-book.md) | Plate hashes use a per-install key; the black book outlives retention | Proposed |
 | [0019](0019-voice-settings-live-on-the-pi.md) | Voice settings live on the Pi, are read back by peers and persist | Proposed |
+| [0020](0020-the-voice-router-owns-the-machine.md) | The voice router owns the machine; mia-api relays /ws/voice to it over ZeroMQ | Proposed |
+| [0021](0021-phone-microphone-streaming.md) | The car's microphone is the phone's, streamed to the Pi | Proposed |
 
 ## Template
 

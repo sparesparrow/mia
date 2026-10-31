@@ -17,6 +17,7 @@ Environment variables:
   ZMQ_WAKE_PORT       — SUB port for wake events, FSM mode only (default: 5559)
   ZMQ_SPEAKING_PORT   — SUB port for TTS speaking events, FSM mode only (default: 5563)
   VOICE_WINDOW_SEC    — confirmation window in FSM mode (default: 5)
+  VOICE_CONSOLE_PORT  — loopback ROUTER socket the API relays /ws/voice to, FSM mode only (default: 5565, ADR-0020)
 """
 
 import os
@@ -42,6 +43,7 @@ ZMQ_PUB_PORT = int(os.environ.get("ZMQ_PUB_PORT", "5561"))
 ZMQ_WAKE_PORT = int(os.environ.get("ZMQ_WAKE_PORT", "5559"))
 ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
 VOICE_WINDOW_SEC = float(os.environ.get("VOICE_WINDOW_SEC", "5"))
+VOICE_CONSOLE_PORT = int(os.environ.get("VOICE_CONSOLE_PORT", "5565"))
 
 # ── Dependencies ──────────────────────────────────────────────────────────
 try:
@@ -362,10 +364,18 @@ def main_fsm():
     global running
 
     from services.voice_fsm.bridge import RouterBridge, parts_from_route
-    from services.voice_fsm.events import SPEAKING_TOPIC, decode_speaking_event, feedback_frames
+    from services.voice_fsm.events import (
+        SPEAKING_TOPIC,
+        decode_speaking_event,
+        encode_listen,
+        feedback_frames,
+    )
     from services.voice_fsm.machine import VoiceMachine
     from services.voice_fsm.personas import Phrasebook
     from services.voice_fsm.settings_store import SettingsStore
+    from services.voice_fsm.wire import EnvelopeRouter, Service
+    from services.voice_fsm.wire.bridge_service import BridgeVoiceService
+    from services.voice_fsm.wire.zmq_hub import ZmqHub
 
     def handle_signal(signum, frame):
         global running
@@ -419,11 +429,27 @@ def main_fsm():
         publish_feedback=lambda fb: pub.send_multipart(list(feedback_frames(fb))),
         on_settings=store.save,
         phrasebook=book,
+        # No wake word: a console or wheel Wake starts the recogniser through this topic (ADR-0020).
+        on_listen=lambda: pub.send_multipart(list(encode_listen())),
     )
+
+    # The console's side door: the API relays /ws/voice to this machine over loopback (ADR-0020). The router
+    # keeps running without it if the port cannot be bound.
+    hub = None
+    try:
+        envelope_router = EnvelopeRouter()
+        envelope_router.register(Service.VOICE, BridgeVoiceService(bridge))
+        hub = ZmqHub(envelope_router, ctx, VOICE_CONSOLE_PORT)
+        logger.info(f"Voice console hub on 127.0.0.1:{hub.port}")
+    except Exception as exc:
+        logger.error(f"Voice console hub unavailable: {exc}")
+        hub = None
 
     poller = zmq.Poller()
     for sock in (transcripts, wakes, speaking):
         poller.register(sock, zmq.POLLIN)
+    if hub is not None:
+        poller.register(hub.socket, zmq.POLLIN)
 
     try:
         while running:
@@ -439,8 +465,15 @@ def main_fsm():
             if transcripts in ready:
                 _, msg_data = transcripts.recv_multipart()
                 bridge.on_transcript(json.loads(msg_data).get("text", ""))
+            if hub is not None and hub.socket in ready:
+                hub.service()
             bridge.poll()
+            if hub is not None:
+                hub.reap()
+                hub.flush()  # what speech, TTS and the clock produced reaches every console
     finally:
+        if hub is not None:
+            hub.close()
         for sock in (transcripts, wakes, speaking, pub):
             sock.close()
         ctx.term()

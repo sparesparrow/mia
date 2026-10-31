@@ -3,10 +3,13 @@
 Binary frames are envelopes (``schemas/voice.fbs``). A console may send the button commands and
 the verbosity setting and receives the machine's state, feedback cues and spoken phrases.
 
-Off unless ``VOICE_CONSOLE=1``. The machine behind it lives in this process on the system clock, so
-the console talks to a simulation, not to the voice pipeline that runs in ``voice_command_router``;
-attaching the two is a separate step. With no speaker attached, ``SimulatedSpeech`` reports each utterance
-finished after ``SPEAK_SEC``, so the machine leaves ``speaking`` as it would on the Pi.
+Off unless ``VOICE_CONSOLE=1``. ``VOICE_CONSOLE_BACKEND`` chooses what is behind it:
+
+- ``sim`` (the default for now): a machine in this process on the system clock, a simulation that is not the
+  voice pipeline. With no speaker attached, ``SimulatedSpeech`` reports each utterance finished after
+  ``SPEAK_SEC``, so the machine leaves ``speaking`` as it would on the Pi.
+- ``router``: this endpoint only relays frames to the machine in ``voice_command_router`` over ZeroMQ
+  (``voice_relay``, ADR-0020). The default is meant to move to ``router`` once it has run on a Pi.
 
 A console that opens a session first receives the machine's settings (ADR-0019): verbosity, persona and
 language, with the personas and languages this Pi has. A change is kept in the settings store in
@@ -42,6 +45,12 @@ _router: Optional[Any] = None
 
 def console_enabled() -> bool:
     return os.environ.get("VOICE_CONSOLE", "0") == "1"
+
+
+def console_backend() -> str:
+    """``sim`` unless ``VOICE_CONSOLE_BACKEND=router``; an unknown value keeps the simulation."""
+    value = os.environ.get("VOICE_CONSOLE_BACKEND", "sim").strip().lower()
+    return value if value in ("sim", "router") else "sim"
 
 
 def get_router() -> Any:
@@ -149,6 +158,11 @@ async def serve(websocket: WebSocket) -> None:
         return
     if not console_enabled():
         await websocket.close(code=_CLOSE_POLICY)
+        return
+    if console_backend() == "router":
+        from api import voice_relay
+
+        await voice_relay.serve_relay(websocket)
         return
     try:
         router = get_router()

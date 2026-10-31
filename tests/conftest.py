@@ -5,8 +5,26 @@ import importlib.util
 import sys
 from pathlib import Path
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# The real pyzmq modules, captured before any test module can replace ``sys.modules["zmq"]`` with a mock
+# (``tests/unit/orchestration`` does, at import time). A second import of pyzmq makes a second copy of
+# ``zmq.error``, and sockets keep raising the first copy's exceptions, so tests that need real sockets
+# must put these very modules back (see the ``real_zmq`` fixture in tests/unit/rpi_backend/conftest.py).
+try:
+    import zmq  # noqa: F401
+    import zmq.asyncio  # noqa: F401
+except ImportError:  # pragma: no cover - pyzmq is a test requirement
+    pass
+_REAL_ZMQ_MODULES = {n: m for n, m in sys.modules.items() if n == "zmq" or n.startswith("zmq.")}
+
+
+@pytest.fixture(scope="session")
+def real_zmq_modules():
+    return dict(_REAL_ZMQ_MODULES)
 
 
 def _register_namespace_package(name: str, path: Path) -> None:

@@ -395,3 +395,19 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/ui/components/LedBrightness.kt
   - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
   not_proven: Only the conversion is unit tested. The screen crashed on a phone with a live Pi (alpha 128.0 passed to Color.copy) and the fix has not been seen on a phone yet.
+- id: REQ-AND-026
+  title: Typing and presets in the voice console
+  statement: The Voice tab shall let the user type a command and press steering-wheel presets, sending only text or a preset name.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0020
+  not_proven: Not yet implemented.
+- id: REQ-AND-027
+  title: Phone microphone service
+  statement: The app shall stream the phone's microphone to the Pi from a foreground service the user starts, with a notification to stop it.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0021
+  not_proven: Not yet implemented.
