@@ -1,0 +1,6 @@
+name: settings_persona
+description: SwitchPersona comes back as a Settings event naming the persona, and she announces herself.
+stimulus: {kind: setting, persona: holly}
+expect:
+  - {settings: {persona: holly}}
+  - {spoken: {phrase: persona.set}}

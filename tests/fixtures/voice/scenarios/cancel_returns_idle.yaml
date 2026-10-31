@@ -1,0 +1,10 @@
+name: cancel_returns_idle
+description: Cancel while listening drops back to idle with the cancelled cue.
+stimulus:
+  - {kind: button, button: Wake}
+  - {kind: await, steps: [{state: listening}]}
+  - {kind: button, button: Cancel}
+expect:
+  - state: listening
+  - {feedback: {state: cancelled}}
+  - state: idle

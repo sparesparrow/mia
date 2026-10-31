@@ -1,0 +1,14 @@
+# Quote yes and no: YAML reads them as booleans.
+# English utterances the voice scenarios speak (REQ-VOICE-028). Rendered on demand by render_fixtures.py;
+# the audio is never committed. Czech is not here: speech recognition stays English until REQ-VOICE-023.
+phrases:
+  - turn the lights on
+  - turn the lights off
+  - what is the status
+  - be quiet
+  - be chatty
+  - "yes"
+  - "no"
+  - cancel
+  - go now
+  - stop

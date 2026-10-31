@@ -1,0 +1,11 @@
+name: deny_drops_the_message
+description: Deny in the confirmation drops the message and ends at idle with the cancelled cue.
+layers: [machine]
+stimulus:
+  - {kind: setup, intent: send_message}
+  - {kind: await, steps: [{state: confirming}]}
+  - {kind: button, button: Deny}
+expect:
+  - state: confirming
+  - {feedback: {state: cancelled}}
+  - state: idle

@@ -1,0 +1,10 @@
+name: speech_zmq_status
+description: A rendered utterance injected as a transcript on the ZeroMQ topic gets a spoken answer.
+pending: "REQ-VOICE-025: the console relay shows transcripts and effects of every origin; live once the router hosts the machine"
+stimulus:
+  - {kind: button, button: Wake}
+  - {kind: speech_zmq, phrase: what is the status}
+expect:
+  - state: listening
+  - {transcript: {contains: status}}
+  - {spoken: {contains: status}, timeout: 10}
