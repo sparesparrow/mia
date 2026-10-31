@@ -5,7 +5,7 @@
 # Turns a fresh Debian/Raspberry Pi OS install into MIA (packages, venv, voice models, services).
 # Re-running is safe: the venv and downloaded models are reused.
 # Toggles (environment):
-#   MIA_ENABLE_POWER_MONITOR=1  enable mia-power-monitor (BCM17 ignition -> poweroff); off until wired (issue #202)
+#   MIA_ENABLE_POWER_MONITOR=1  enable mia-power-monitor (BCM17 ignition -> poweroff); off until the stage is bench-tested (#202)
 #   MIA_VOICE_WAKEWORD=1        also install openwakeword (push-to-talk is the default, no wake word)
 #   MIA_SND_ALOOP=0             do not load the snd-aloop loopback card (used by the voice tests)
 #   MIA_PIPER_VOICES="..."      Piper voices to download (default: en_US-amy-medium cs_CZ-jirka-medium)
