@@ -982,6 +982,77 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     await voice_console.serve(websocket)
 
 
+_LED_WS_AI_STATES = {"idle", "listening", "speaking", "thinking", "recording", "error"}
+
+
+def _led_updates_from_ws_command(command: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Map one Android /ws/telemetry LED command to led_state fields; None if unknown or invalid."""
+    action = command.get("action")
+    if action == "set_mode":
+        mode = command.get("mode")
+        if isinstance(mode, str) and 0 < len(mode) <= 32:
+            return {"mode": mode}
+    elif action == "set_ai_state":
+        ai_state = command.get("ai_state")
+        if isinstance(ai_state, str) and ai_state in _LED_WS_AI_STATES:
+            return {"ai_state": ai_state}
+    elif action == "set_brightness":
+        brightness = command.get("brightness")
+        if isinstance(brightness, (int, float)) and not isinstance(brightness, bool):
+            try:
+                return {"brightness": max(0, min(255, int(brightness)))}
+            except (ValueError, OverflowError):
+                return None
+    elif action == "trigger_emergency":
+        return {"emergency": True}
+    elif action == "clear_emergency":
+        return {"emergency": False}
+    elif action == "start_animation":
+        animation = command.get("animation")
+        if isinstance(animation, str) and 0 < len(animation) <= 32:
+            return {"animation": animation}
+    elif action == "stop_animation":
+        return {"animation": "none"}
+    return None
+
+
+def _apply_led_updates(updates: Dict[str, Any]) -> None:
+    """Update led_state and forward it to the LED controller like PUT /led/state does."""
+    led_state.update(updates)
+    try:
+        message = {
+            "type": "LED_COMMAND",
+            "command": "set_state",
+            "params": led_state,
+            "timestamp": datetime.now().isoformat()
+        }
+        zmq_socket.send_multipart([b"", json.dumps(message).encode()])
+    except Exception as e:
+        logger.error(f"Error forwarding LED command: {e}")
+
+
+async def _telemetry_ws_receive(websocket: WebSocket) -> None:
+    """Read LED commands the Android app sends on /ws/telemetry."""
+    try:
+        while True:
+            text = await websocket.receive_text()
+            try:
+                command = json.loads(text)
+            except ValueError:
+                continue
+            if not isinstance(command, dict):
+                continue
+            updates = _led_updates_from_ws_command(command)
+            if updates is None:
+                logger.warning("Ignored telemetry WebSocket command: %s", str(command.get("action"))[:40])
+                continue
+            _apply_led_updates(updates)
+    except WebSocketDisconnect:
+        return
+    except Exception as e:
+        logger.error(f"Telemetry WebSocket receive error: {e}")
+
+
 @app.websocket("/ws/telemetry")
 async def telemetry_websocket_endpoint(websocket: WebSocket):
     """
@@ -992,6 +1063,7 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     logger.info("Android telemetry WebSocket client connected")
 
+    receiver = asyncio.create_task(_telemetry_ws_receive(websocket))
     try:
         while True:
             # Send telemetry and LED state updates every 100ms (10Hz)
@@ -1010,6 +1082,8 @@ async def telemetry_websocket_endpoint(websocket: WebSocket):
         logger.info("Android telemetry WebSocket client disconnected")
     except Exception as e:
         logger.error(f"Telemetry WebSocket error: {e}")
+    finally:
+        receiver.cancel()
 
 
 @app.post("/gpio/configure")
