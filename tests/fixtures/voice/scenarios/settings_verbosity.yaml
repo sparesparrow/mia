@@ -1,0 +1,5 @@
+name: settings_verbosity
+description: SetVerbosity comes back as a Settings event with the new level.
+stimulus: {kind: setting, verbosity: quiet}
+expect:
+  - {settings: {verbosity: quiet}}

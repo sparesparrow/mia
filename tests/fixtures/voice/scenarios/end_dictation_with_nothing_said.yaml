@@ -1,0 +1,10 @@
+name: end_dictation_with_nothing_said
+description: A dictation that ends without any words says the note was empty.
+layers: [machine]
+stimulus:
+  - {kind: setup, intent: dictate}
+  - {kind: await, steps: [{state: dictating}]}
+  - {kind: button, button: EndDictation}
+expect:
+  - state: dictating
+  - {spoken: {contains: "note was empty"}}

@@ -1,0 +1,6 @@
+name: settings_language
+description: SetLanguage comes back as a Settings event with the language MIA now speaks.
+stimulus: {kind: setting, language: cs}
+expect:
+  - {settings: {language: cs}}
+  - {spoken: {phrase: language.set}}

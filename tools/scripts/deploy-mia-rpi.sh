@@ -2,6 +2,14 @@
 # deploy-mia-rpi.sh — auto-discover RPi on LAN, sync code, bootstrap MIA services
 # Usage: ./tools/scripts/deploy-mia-rpi.sh [RPI_HOST] [RPI_USER]
 # If RPI_HOST is omitted, scans LAN 192.168.200.0/24 for the RPi.
+# Turns a fresh Debian/Raspberry Pi OS install into MIA (packages, venv, voice models, services).
+# Re-running is safe: the venv and downloaded models are reused.
+# Toggles (environment):
+#   MIA_ENABLE_POWER_MONITOR=1  enable mia-power-monitor (BCM17 ignition -> poweroff); off until wired (issue #202)
+#   MIA_VOICE_WAKEWORD=1        also install openwakeword (push-to-talk is the default, no wake word)
+#   MIA_SND_ALOOP=0             do not load the snd-aloop loopback card (used by the voice tests)
+#   MIA_PIPER_VOICES="..."      Piper voices to download (default: en_US-amy-medium cs_CZ-jirka-medium)
+#   MIA_WHISPER_MODEL=tiny      faster-whisper model to preload
 set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────────
@@ -100,7 +108,7 @@ sync_code() {
 # ── 4. Remote bootstrap ───────────────────────────────────────────────────────
 remote_bootstrap() {
     info "Bootstrapping MIA on $RPI_HOST ..."
-    ssh_rpi bash -s << 'REMOTE'
+    ssh_rpi "MIA_ENABLE_POWER_MONITOR='${MIA_ENABLE_POWER_MONITOR:-0}' MIA_VOICE_WAKEWORD='${MIA_VOICE_WAKEWORD:-0}' MIA_SND_ALOOP='${MIA_SND_ALOOP:-1}' MIA_PIPER_VOICES='${MIA_PIPER_VOICES:-en_US-amy-medium cs_CZ-jirka-medium}' MIA_WHISPER_MODEL='${MIA_WHISPER_MODEL:-tiny}' bash -s" << 'REMOTE'
 set -euo pipefail
 INSTALL_DIR="/opt/mia"
 VENV="$INSTALL_DIR/venv"
@@ -113,11 +121,13 @@ sudo apt-get install -y -qq \
     python3-pydantic python3-pydantic-core python3-aiohttp python3-yaml \
     python3-cryptography python3-jwt python3-psutil python3-serial \
     python3-zmq python3-flatbuffers python3-yaml \
-    espeak-ng alsa-utils 2>&1 | tail -5
+    espeak-ng alsa-utils libportaudio2 sox 2>&1 | tail -5
 
 echo "[remote] Creating venv (--system-site-packages inherits arm64 pydantic)..."
-sudo rm -rf "$VENV"
-python3 -m venv --system-site-packages "$VENV"
+if [[ ! -x "$VENV/bin/python3" ]]; then
+    sudo mkdir -p "$INSTALL_DIR" && sudo chown "$USER:$USER" "$INSTALL_DIR"
+    python3 -m venv --system-site-packages "$VENV"
+fi
 "$VENV/bin/pip" install --quiet --upgrade pip
 
 echo "[remote] Installing remaining Python requirements..."
@@ -128,10 +138,26 @@ echo "[remote] Installing remaining Python requirements..."
     asyncio-mqtt==0.16.1 pyserial pyyaml \
     pytest pytest-asyncio pytest-cov pytest-mock 2>&1 | tail -3
 
-echo "[remote] Installing voice pipeline dependencies (best-effort)..."
-"$VENV/bin/pip" install --quiet \
-    sounddevice faster-whisper piper-tts openwakeword 2>&1 | tail -3 || \
-    echo "  (some voice deps unavailable on this arch — fallbacks will be used)"
+echo "[remote] Installing voice pipeline dependencies..."
+"$VENV/bin/pip" install --quiet numpy sounddevice faster-whisper piper-tts
+if [[ "$MIA_VOICE_WAKEWORD" == "1" ]]; then
+    "$VENV/bin/pip" install --quiet openwakeword || echo "  (openwakeword unavailable on this arch)"
+fi
+
+echo "[remote] Downloading Piper voices and the Whisper model..."
+PIPER_DIR=/opt/mia/data/piper
+sudo mkdir -p "$PIPER_DIR" && sudo chown "$USER:$USER" "$PIPER_DIR"
+# shellcheck disable=SC2086
+"$VENV/bin/python" -m piper.download_voices --download-dir "$PIPER_DIR" $MIA_PIPER_VOICES
+"$VENV/bin/python" -c "from faster_whisper import WhisperModel; WhisperModel('$MIA_WHISPER_MODEL', device='cpu', compute_type='int8')"
+# tts_service looks for piper in /usr/local/bin
+sudo ln -sf "$VENV/bin/piper" /usr/local/bin/piper
+
+if [[ "$MIA_SND_ALOOP" == "1" ]]; then
+    echo "[remote] Loading snd-aloop (loopback sound card for voice tests)..."
+    echo snd-aloop | sudo tee /etc/modules-load.d/mia-snd-aloop.conf >/dev/null
+    sudo modprobe snd-aloop || echo "  (snd-aloop not available in this kernel)"
+fi
 
 echo "[remote] Patching systemd services to use venv..."
 PYTHON_BIN="$VENV/bin/python3"
@@ -196,7 +222,10 @@ if [[ -f "$INSTALL_DIR/infra/deploy/avahi-mia-api.service" ]]; then
 fi
 
 echo "[remote] Enabling + starting core services..."
-sudo systemctl enable zmq-broker mia-api mia-gpio-worker mia-selftest mia-power-monitor 2>/dev/null || true
+sudo systemctl enable zmq-broker mia-api mia-gpio-worker mia-selftest 2>/dev/null || true
+if [[ "$MIA_ENABLE_POWER_MONITOR" == "1" ]]; then
+    sudo systemctl enable mia-power-monitor 2>/dev/null || true
+fi
 sudo systemctl enable mia-serial-bridge mia-obd-worker 2>/dev/null || true
 sudo systemctl enable mia-audio-capture mia-wake-word mia-stt mia-voice-router mia-tts 2>/dev/null || true
 sudo systemctl restart zmq-broker && sleep 2
@@ -204,7 +233,9 @@ sudo systemctl restart mia-api mia-gpio-worker
 sudo systemctl restart mia-serial-bridge 2>/dev/null || true
 sudo systemctl restart mia-obd-worker 2>/dev/null || true
 sudo systemctl restart mia-audio-capture mia-wake-word mia-stt mia-voice-router mia-tts 2>/dev/null || true
-sudo systemctl restart mia-power-monitor 2>/dev/null || true
+if [[ "$MIA_ENABLE_POWER_MONITOR" == "1" ]]; then
+    sudo systemctl restart mia-power-monitor 2>/dev/null || true
+fi
 
 echo "[remote] Service status:"
 sudo systemctl status zmq-broker mia-api --no-pager -l 2>&1 | tail -20

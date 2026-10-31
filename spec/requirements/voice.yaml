@@ -342,9 +342,24 @@ requirements:
   not_proven: Not yet implemented.
 - id: REQ-VOICE-028
   title: Voice scenario harness
-  statement: Scenario files shall drive the voice pipeline with buttons, typed text and synthesised speech and check the events that follow, in CI and on the Pi.
-  evidence: planned
-  implemented_in: []
+  statement: A scenario file shall describe a stimulus and the ordered events the voice pipeline must produce, and one runner shall check the same file against every layer that can run it.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A scenario file is validated on load; a malformed step, an unknown button or a stimulus that is not live yet fails with the file name
+  - The expected events are checked as an ordered subsequence of the trace with a per-step timeout, and a failure prints the expected steps beside the events seen
+  - Recognised or spoken text is compared lower-cased and without punctuation, and `contains` matches a part of it
+  - Scenarios for the buttons, a confirmation, a dictation and the persona, verbosity and language settings pass through /ws/voice and through the machine on a fake clock
+  - Scenarios for typed text and for speech injected over ZeroMQ, snd-aloop and the phone microphone are kept as skipped files that name the requirement they wait for
+  - Test utterances are rendered on demand by tools/voice/render_fixtures.py into a directory outside the repository with a sha256 manifest; no audio file is committed
+  implemented_in:
+  - tests/support/voice_trace.py
+  - tests/support/voice_stimuli.py
+  - tests/support/voice_scenarios.py
+  - tests/support/voice_rig.py
+  - tests/fixtures/voice/scenarios
+  - tools/voice/render_fixtures.py
+  - tools/voice/phrases.yaml
+  - scripts/pi_voice_smoke.sh
   decisions:
-  - ADR-0020
-  not_proven: Not yet implemented.
+  - ADR-0010
+  not_proven: No audio path was exercised. The ZeroMQ tap, play_wav and the Pi smoke script have no CI test against a real router, a sound card or snd-aloop; the speech stimuli are stubs, and the typed-text and speech scenarios are skipped until REQ-VOICE-025 and REQ-VOICE-027 exist. The /ws/voice layer drives the simulated machine in the API process, not the voice router. The harness runs nowhere on a Pi yet.

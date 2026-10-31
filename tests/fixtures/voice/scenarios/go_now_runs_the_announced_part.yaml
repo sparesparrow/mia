@@ -1,0 +1,10 @@
+name: go_now_runs_the_announced_part
+description: An uncertain part is announced; Go now runs it at once instead of waiting out the window.
+layers: [machine]
+stimulus:
+  - {kind: setup, intent: uncertain_lights}
+  - {kind: await, steps: [{spoken: {contains: "I will"}}]}
+  - {kind: button, button: GoNow}
+expect:
+  - {spoken: {contains: "I will"}}
+  - state: executing
