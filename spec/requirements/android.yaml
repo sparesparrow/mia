@@ -383,3 +383,15 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/ui/components/Common.kt
   not_proven: Never looked at on a phone. Bebas Neue and JetBrains Mono are bundled (SIL OFL, licences under
     assets/licenses) but no test checks that they load, and the JetBrains Mono weight axis applies from Android 8 only.
+- id: REQ-AND-025
+  title: LED screen takes the Pi's 0-255 brightness
+  statement: The LED screen shall show the brightness the Pi reports on a 0-255 scale as a fraction between 0 and 1,
+    and shall not fail when the reported value is outside that range.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A Pi value such as 128 or 255 becomes a fraction of 255, and a value above 255, below 0 or not a number stays within 0..1 or falls back to the default
+  - A value already between 0 and 1 is kept as it is
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/LedBrightness.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: Only the conversion is unit tested. The screen crashed on a phone with a live Pi (alpha 128.0 passed to Color.copy) and the fix has not been seen on a phone yet.

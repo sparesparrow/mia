@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
@@ -72,6 +73,7 @@ import cz.mia.app.ui.components.VoiceSettingsSection
 import cz.mia.app.ui.components.CitroenReadings
 import cz.mia.app.ui.components.Cycle1TelemetryCard
 import cz.mia.app.ui.components.AlertRow
+import cz.mia.app.ui.components.normalizeLedBrightness
 import cz.mia.app.ui.components.DashboardTelemetrySection
 import cz.mia.app.ui.components.ScreenTitle
 import cz.mia.app.ui.components.SectionCard
@@ -408,7 +410,7 @@ private fun LEDMonitorScreen(modifier: Modifier = Modifier) {
 	// Use WebSocket data if available, otherwise use local state
 	var selectedMode by remember(ledState?.mode) { mutableStateOf(ledState?.mode ?: "Drive") }
 	var aiState by remember(ledState?.aiState) { mutableStateOf(ledState?.aiState ?: "idle") }
-	var brightness by remember(ledState?.brightness) { mutableStateOf(ledState?.brightness ?: 0.7f) }
+	var brightness by remember(ledState?.brightness) { mutableStateOf(normalizeLedBrightness(ledState?.brightness)) }
 	var emergencyOverride by remember(ledState?.emergency) { mutableStateOf(ledState?.emergency ?: false) }
 
 	Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
@@ -548,7 +550,7 @@ private fun LEDStatusVisualization(aiState: String, mode: String, brightness: Fl
 						aiState == "recording" -> Color.Magenta
 						aiState == "error" -> Color.Red
 						else -> Color.Gray
-					}.copy(alpha = brightness),
+					}.copy(alpha = brightness.coerceIn(0f, 1f)),
 					shape = MaterialTheme.shapes.medium
 				)
 				.padding(8.dp),
@@ -691,6 +693,7 @@ private fun SystemHeartbeat() {
 @Composable
 private fun RowToggle(options: List<String>, selected: String, onSelected: (String) -> Unit) {
 	Row(
+		modifier = Modifier.horizontalScroll(rememberScrollState()),
 		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
 		options.forEach { opt ->
@@ -701,7 +704,7 @@ private fun RowToggle(options: List<String>, selected: String, onSelected: (Stri
 					contentColor = if (opt == selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 				)
 			) {
-				Text(opt)
+				Text(opt, maxLines = 1, softWrap = false)
 			}
 		}
 	}
