@@ -25,26 +25,31 @@ if ! command -v cmake >/dev/null 2>&1; then
 fi
 
 BUILD_DIR="$PROJECT_ROOT/build-raspberry-pi"
-mkdir -p "$BUILD_DIR"
-cd "$BUILD_DIR"
+SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/cpp-audio"
+# OFF, as in CI and CLAUDE.md. ON also builds hardware-server, which needs CMake packages for libgpiod and mosquitto
+# (apt's -dev packages ship only pkg-config files; the Conan recipe is #125) and the libgpiod 1.x API (#197).
+WITH_HARDWARE="${WITH_HARDWARE:-OFF}"
 
 # Configure CMake
 echo "Configuring CMake..."
-cmake "$PROJECT_ROOT/schemas/generated/cpp" \
+cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER=g++ \
-    -DCMAKE_C_COMPILER=gcc
+    -DCMAKE_C_COMPILER=gcc \
+    -DWITH_HARDWARE="$WITH_HARDWARE"
 
 # Build
 echo ""
 echo "Building..."
-cmake --build . --parallel "$(get_cpu_count)"
+cmake --build "$BUILD_DIR" --parallel "$(get_cpu_count)"
 
 echo ""
 echo "Build complete!"
 echo ""
-echo "Binaries:"
-echo "  - mia-rpi: Main Raspberry Pi application"
-echo "  - hardware-server: Hardware control server"
-echo "  - tests: Test suite"
+echo "Binaries in $BUILD_DIR:"
+echo "  - voice-server"
+echo "  - webgrab-client, webgrab-server"
+if [ "$WITH_HARDWARE" = "ON" ]; then
+    echo "  - hardware-server: Hardware control server"
+fi
 echo ""

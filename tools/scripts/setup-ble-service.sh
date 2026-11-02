@@ -15,12 +15,6 @@ SYSTEMD_DIR="${MIA_SYSTEMD_DIR:-/etc/systemd/system}"
 SERVICE_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/py-api/services"
 SYSTEMD_SOURCE_DIR="$PROJECT_ROOT/infra/systemd"
 
-install_pip_packages() {
-    if ! python3 -m pip install "$@"; then
-        python3 -m pip install --break-system-packages "$@"
-    fi
-}
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -69,26 +63,15 @@ do
     fi
 done
 
-# Install system dependencies
+# Install system dependencies. The two services import dbus, gi and zmq: dbus and gi come from apt, and the venv
+# that deploy-raspberry-pi.sh creates sees them through --system-site-packages; pyzmq is in the API's requirements.
 log_info "Installing system dependencies..."
 env DEBIAN_FRONTEND=noninteractive apt-get update
 env DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    python3-pip \
-    python3-dev \
-    libbluetooth-dev \
     bluez \
     bluez-tools \
-    python3-dbus
-
-# Install Python dependencies
-log_info "Installing Python dependencies..."
-install_pip_packages --upgrade pip
-install_pip_packages \
-    bleak \
-    bluepy \
-    dbus-python \
-    pybluez \
-    pygatt
+    python3-dbus \
+    python3-gi
 
 # Create service user if it doesn't exist
 if ! id "$SERVICE_USER" &>/dev/null; then
