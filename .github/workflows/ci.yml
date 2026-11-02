@@ -300,9 +300,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install the API's requirements into a venv, as deploy-raspberry-pi.sh does
+        # ELM327-emulator's setup.py appends GITHUB_RUN_NUMBER to its version when that variable is set, so on a
+        # runner pip rejects the 4.0.0 sdist for an inconsistent version and falls back to 3.0.5, which needs
+        # pkg_resources. A Pi has no GITHUB_RUN_NUMBER; install without it, as the Pi does.
         run: |
           python -m venv "$RUNNER_TEMP/pi-venv"
-          "$RUNNER_TEMP/pi-venv/bin/python" -m pip install --disable-pip-version-check \
+          env -u GITHUB_RUN_NUMBER "$RUNNER_TEMP/pi-venv/bin/python" -m pip install --disable-pip-version-check \
             -r apps/rpi-backend/py-api/requirements.txt
           "$RUNNER_TEMP/pi-venv/bin/python" -m pip check
       - name: Import the API with the PYTHONPATH of mia-api.service
