@@ -31,7 +31,7 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
 2. Set an API key. The units read `/etc/mia/environment`; these commands replace only the `MIA_API_KEY` line and
    keep the `MIA_PYTHON` line the deploy wrote:
    ```bash
-   sudo touch /etc/mia/environment && sudo chmod 600 /etc/mia/environment
+   sudo mkdir -p /etc/mia && sudo touch /etc/mia/environment && sudo chmod 600 /etc/mia/environment
    sudo sed -i '/^MIA_API_KEY=/d' /etc/mia/environment
    python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee -a /etc/mia/environment
    ```

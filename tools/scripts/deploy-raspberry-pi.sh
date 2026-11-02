@@ -84,6 +84,7 @@ install_system_packages() {
         mosquitto-clients
 }
 
+# The same login shell as setup-ble-service.sh gives mia: the repo's tools SSH in as mia@<pi> and run sudo.
 ensure_service_user() {
     local groups=() group joined
     for group in gpio dialout bluetooth audio i2c spi; do
@@ -98,9 +99,9 @@ ensure_service_user() {
             run_privileged usermod -a -G "$joined" "$SERVICE_USER"
         fi
     elif [[ -n "$joined" ]]; then
-        run_privileged useradd -r -m -s /usr/sbin/nologin -G "$joined" "$SERVICE_USER"
+        run_privileged useradd -r -m -s /bin/bash -G "$joined" "$SERVICE_USER"
     else
-        run_privileged useradd -r -m -s /usr/sbin/nologin "$SERVICE_USER"
+        run_privileged useradd -r -m -s /bin/bash "$SERVICE_USER"
     fi
 }
 
@@ -131,24 +132,25 @@ install_python_packages() {
 }
 
 point_units_at_venv() {
-    local tmp
+    local wrapper="$WORK_DIR/mia-python" previous="$WORK_DIR/environment.in" updated="$WORK_DIR/environment"
     echo "Pointing $PYTHON_WRAPPER and MIA_PYTHON at $VENV_DIR..."
-    tmp="$(mktemp)"
     printf '#!/bin/bash\n# MIA Python: the venv tools/scripts/deploy-raspberry-pi.sh installs.\nexec "%s" "$@"\n' \
-        "$VENV_DIR/bin/python" > "$tmp"
+        "$VENV_DIR/bin/python" > "$wrapper"
     run_privileged mkdir -p "$(dirname "$PYTHON_WRAPPER")"
-    run_privileged install -m 755 "$tmp" "$PYTHON_WRAPPER"
+    run_privileged install -m 755 "$wrapper" "$PYTHON_WRAPPER"
 
-    # Keep every line this script does not own. A PYTHONHOME left by ensure-bundled-cpython.sh would make the venv's
-    # Python load that other interpreter's standard library, so it goes.
-    : > "$tmp"
+    # Keep every line this script does not own, MIA_API_KEY included. A failed read stops the install here, before
+    # the file is replaced. A PYTHONHOME left by ensure-bundled-cpython.sh would make the venv's Python load that
+    # other interpreter's standard library, so it goes.
+    : > "$previous"
     if run_privileged test -f "$ENV_FILE"; then
-        run_privileged cat "$ENV_FILE" | grep -v -e '^MIA_PYTHON=' -e '^PYTHONHOME=' > "$tmp" || true
+        run_privileged cat "$ENV_FILE" > "$previous"
     fi
-    printf 'MIA_PYTHON=%s\n' "$VENV_DIR/bin/python" >> "$tmp"
+    # grep exits 1 when no line is left; that is the only failure tolerated.
+    grep -v -e '^MIA_PYTHON=' -e '^PYTHONHOME=' "$previous" > "$updated" || [ $? -eq 1 ]
+    printf 'MIA_PYTHON=%s\n' "$VENV_DIR/bin/python" >> "$updated"
     run_privileged mkdir -p "$(dirname "$ENV_FILE")"
-    run_privileged install -m 600 "$tmp" "$ENV_FILE"
-    rm -f "$tmp"
+    run_privileged install -m 600 "$updated" "$ENV_FILE"
 }
 
 install_units() {
@@ -162,6 +164,10 @@ install_units() {
     run_privileged systemctl daemon-reload
     run_privileged systemctl enable "${CORE_UNITS[@]}"
 }
+
+# One work directory per run, removed on every exit: it holds a copy of the environment file, API key included.
+WORK_DIR="$(mktemp -d)"
+trap 'rm -rf "$WORK_DIR"' EXIT
 
 echo "========================================"
 echo "  MIA Raspberry Pi install"

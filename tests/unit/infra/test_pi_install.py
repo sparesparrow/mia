@@ -2,7 +2,8 @@
 
 Shims on PATH stand in for apt-get, systemctl, useradd, usermod and chown and log their arguments. The venv is
 real: the script creates it from this interpreter, with a requirements file that names nothing, so nothing is
-downloaded. The script runs twice, as a re-deploy would.
+downloaded. The script runs twice, as a re-deploy would, then a third time with a `cat` that cannot read the
+environment file.
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 
 pytestmark = [
     pytest.mark.req("REQ-DEP-008"),
@@ -24,6 +26,7 @@ pytestmark = [
 ]
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 SCRIPTS = REPO_ROOT / "tools" / "scripts"
 INSTALL_SCRIPT = SCRIPTS / "deploy-raspberry-pi.sh"
 ON_PI_SCRIPTS = [
@@ -62,12 +65,17 @@ def pi(tmp_path_factory):
         f"{API_KEY}\nPYTHONHOME=/opt/mia/rpi\nMIA_PYTHON=/opt/mia/rpi/bin/python3\n"
     )
 
+    # The script's work directory, which holds a copy of the environment file, lands here and must not stay.
+    tmpdir = root / "tmp"
+    tmpdir.mkdir()
+
     install_dir = root / "opt" / "mia"
     systemd_dir = root / "systemd"
     wrapper = root / "usr" / "local" / "bin" / "mia-python"
     env = {
         "PATH": f"{shim_dir}{os.pathsep}{os.environ.get('PATH', '')}",
         "HOME": str(root),
+        "TMPDIR": str(tmpdir),
         "MIA_USE_SUDO": "0",
         "MIA_INSTALL_DIR": str(install_dir),
         "MIA_SYSTEMD_DIR": str(systemd_dir),
@@ -77,19 +85,38 @@ def pi(tmp_path_factory):
         "MIA_PY_REQUIREMENTS": str(requirements),
         "MIA_USER": "mia-install-test",
     }
-    runs = [
-        subprocess.run(
+
+    def install(run_env):
+        return subprocess.run(
             ["bash", str(INSTALL_SCRIPT)],
             input="y\n",  # "designed for Raspberry Pi, continue anyway?"
-            env=env,
+            env=run_env,
             capture_output=True,
             text=True,
             timeout=300,
         )
-        for _ in range(2)
-    ]
+
+    runs = [install(env) for _ in range(2)]
+    leftovers_after_success = sorted(p.name for p in tmpdir.iterdir())
+
+    # A read of the environment file that fails, as an unreadable file or a refused sudo would.
+    failing_dir = root / "failing-cat"
+    failing_dir.mkdir()
+    failing_cat = failing_dir / "cat"
+    failing_cat.write_text(
+        f'#!/bin/bash\n[ "$1" = "{env_file}" ] && {{ echo "cat: permission denied" >&2; exit 1; }}\n'
+        'exec /bin/cat "$@"\n'
+    )
+    failing_cat.chmod(0o755)
+    env_before_failure = env_file.read_text()
+    failed = install({**env, "PATH": f"{failing_dir}{os.pathsep}{env['PATH']}"})
+
     return SimpleNamespace(
         runs=runs,
+        failed=failed,
+        env_before_failure=env_before_failure,
+        leftovers_after_success=leftovers_after_success,
+        leftovers_after_failure=sorted(p.name for p in tmpdir.iterdir()),
         install=install_dir,
         venv=install_dir / "venv",
         systemd=systemd_dir,
@@ -216,7 +243,10 @@ def test_the_core_units_are_enabled_and_systemd_reloaded(pi):
 
 
 def test_the_service_user_is_created_and_owns_the_data_directory(pi):
-    assert re.search(r"^useradd -r .*mia-install-test$", pi.calls, re.MULTILINE)
+    # A login shell, as setup-ble-service.sh gives it: the repo's tools SSH in as mia@<pi> and run sudo.
+    assert re.search(
+        r"^useradd -r -m -s /bin/bash .*mia-install-test$", pi.calls, re.MULTILINE
+    )
     assert f"chown mia-install-test:mia-install-test {pi.install}/data" in pi.calls
 
 
@@ -244,3 +274,26 @@ def test_the_install_takes_the_apis_own_requirements():
         in text
     )
     assert "$PROJECT_ROOT/requirements.txt" not in text
+
+
+def test_a_failed_read_of_the_environment_file_stops_the_install_and_keeps_the_key(pi):
+    assert pi.failed.returncode != 0, pi.failed.stdout[-2000:]
+    assert "permission denied" in pi.failed.stderr
+    assert pi.env_file.read_text() == pi.env_before_failure
+    assert API_KEY in pi.env_file.read_text().splitlines()
+
+
+def test_no_copy_of_the_environment_file_is_left_behind(pi):
+    assert pi.leftovers_after_success == []
+    assert pi.leftovers_after_failure == []
+
+
+def test_ci_keeps_the_aarch64_install_check_this_requirement_cites():
+    """REQ-DEP-008 cites the "Pi Python (aarch64)" job; this keeps the job, not its result, which CI shows."""
+    job = yaml.safe_load(CI_WORKFLOW.read_text())["jobs"]["pi-python"]
+    assert job["runs-on"] == "ubuntu-24.04-arm"
+    assert {"3.11", "3.13"} <= set(job["strategy"]["matrix"]["python"])
+    script = "\n".join(step.get("run", "") for step in job["steps"])
+    assert "-r apps/rpi-backend/py-api/requirements.txt" in script
+    assert "pip check" in script
+    assert "import api.main" in script

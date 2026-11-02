@@ -92,7 +92,7 @@ requirements:
     and loses a stale PYTHONHOME
   - A second run succeeds and keeps the venv
   - The API's requirements install and pass pip check on aarch64 with Python 3.11 (Bookworm) and 3.13 (Trixie), and
-    the API imports there
+    the API imports there (CI job "Pi Python (aarch64)" in .github/workflows/ci.yml; a test keeps the job in place)
   implemented_in:
   - tools/scripts/deploy-production-rpi.sh
   - tools/scripts/deploy-raspberry-pi.sh
