@@ -77,3 +77,31 @@ requirements:
   - .github/workflows/release.yml
   not_proven: The workflow has not run end to end since the repository was restructured; only its path list, compile
     check and draft rule are asserted. The Android signing secrets may be absent, which yields a debug APK only.
+- id: REQ-DEP-008
+  title: On-Pi install
+  statement: Run on the Pi from a checkout of the repository, one command shall copy the code the systemd units run
+    to /opt/mia, install the Pi API's own Python requirements into a venv that the units start, and install and enable
+    the core units, without installing into the system Python and without losing the API key on a re-run.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every path the core units name in ExecStart, WorkingDirectory and PYTHONPATH exists in the install, and the API
+    imports from the install with its generated bindings
+  - The venv gets apps/rpi-backend/py-api/requirements.txt; no on-Pi script installs the root requirements.txt, uses
+    pip outside the venv or passes --break-system-packages
+  - /usr/local/bin/mia-python and MIA_PYTHON run the venv; the environment file keeps MIA_API_KEY and its other lines
+    and loses a stale PYTHONHOME
+  - A second run succeeds and keeps the venv
+  - The API's requirements install and pass pip check on aarch64 with Python 3.11 (Bookworm) and 3.13 (Trixie), and
+    the API imports there
+  implemented_in:
+  - tools/scripts/deploy-production-rpi.sh
+  - tools/scripts/deploy-raspberry-pi.sh
+  - tools/scripts/setup-ble-service.sh
+  - .github/workflows/ci.yml
+  decisions:
+  - ADR-0005
+  notes: tools/scripts/deploy-mia-rpi.sh (REQ-DEP-003) deploys from another machine and still installs its own package
+    list and rewrites the units; choosing one entrypoint is #132.
+  not_proven: Never run on a Pi. The test runs the script with apt-get, systemctl, useradd, usermod and chown replaced
+    by stubs and an empty requirements file; the aarch64 CI job installs the requirements on a GitHub runner, not on
+    Raspberry Pi OS. The BLE units have not been started with the venv.

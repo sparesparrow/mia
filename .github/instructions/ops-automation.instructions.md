@@ -15,7 +15,7 @@ applyTo:
 # Ops Automation Guidance
 
 - Treat `infra/` as the canonical home for deployable runtime configuration. Many files under `tools/scripts/` are wrappers or legacy helpers; change the canonical Compose, systemd, or deploy asset first and then update wrappers that depend on it.
-- Preserve the Raspberry Pi deployment anchor points already used across the repo: `/opt/mia`, `infra/systemd/*.service`, and the bundled-Python flow in `tools/scripts/ensure-bundled-cpython.sh`.
+- Preserve the Raspberry Pi deployment anchor points already used across the repo: `/opt/mia`, `infra/systemd/*.service`, and the interpreter the units start through `MIA_PYTHON` or `/usr/local/bin/mia-python`. The on-Pi install (`tools/scripts/deploy-raspberry-pi.sh`) points both at the venv `/opt/mia/venv`; `tools/scripts/ensure-bundled-cpython.sh` points them at a bundled CPython instead.
 - Keep automation rerunnable and explicit about privilege boundaries. Shell scripts should fail fast, log what they changed, and accept host or path overrides through environment variables when the repo already does so.
 - When changing service wiring, update all relevant operational surfaces together:
   - container startup under `infra/docker/`
@@ -30,5 +30,6 @@ applyTo:
   - `docker compose -f tests/env/docker-compose.pi-simulation.yml config`
   - `pre-commit run --all-files`
   - `bash tools/scripts/ensure-bundled-cpython.sh`
+  - `pytest tests/unit/infra/test_pi_install.py` (runs the on-Pi install in a temporary directory)
   - `python3 tools/scripts/validate-mia-deployment.py`
 - Related docs: [docs/PRODUCTION_DEPLOYMENT.md](../../docs/PRODUCTION_DEPLOYMENT.md), [docs/RASPBERRY_PI_SETUP.md](../../docs/RASPBERRY_PI_SETUP.md), [docs/ci-cd-setup.md](../../docs/ci-cd-setup.md), [docs/troubleshooting.md](../../docs/troubleshooting.md), and [../copilot-instructions.md](../copilot-instructions.md).

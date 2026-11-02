@@ -29,21 +29,17 @@ sudo apt-get install -y \
 ./tools/scripts/build-raspberry-pi.sh
 ```
 
-Or manually:
+Or manually, from the repository root:
 ```bash
-mkdir -p build-raspberry-pi
-cd build-raspberry-pi
-cmake ../schemas/generated/cpp -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
+cmake -S apps/rpi-backend/cpp-audio -B build/cpp -DCMAKE_BUILD_TYPE=Release
+cmake --build build/cpp --parallel "$(nproc)"
 ```
 
 ### 3. Deploy
 
-```bash
-sudo ./tools/scripts/deploy-raspberry-pi.sh
-sudo systemctl start mia-api
-sudo systemctl enable mia-api
-```
+`tools/scripts/deploy-raspberry-pi.sh` installs the Python services and their systemd units; it does not build or
+install these C++ binaries, and no unit in `infra/systemd/` runs them. See
+[the Pi install](../../../../docs/install/pi-gateway.md).
 
 ## Services
 

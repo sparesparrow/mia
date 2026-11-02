@@ -14,20 +14,26 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
 
 ## Steps
 
-1. Deploy from a checkout of this repository on the Pi. The script copies the code to `/opt/mia`, installs the
-   systemd units from `infra/systemd/` and enables them:
+1. Deploy from a checkout of this repository on the Pi:
    ```bash
    sudo ./tools/scripts/deploy-production-rpi.sh
    ```
-   Known problem: the script installs the root `requirements.txt`, and some of its pinned packages have no
-   builds for the Python 3.13 that current Raspberry Pi OS ships, so the install step can fail. Until that is
-   fixed ([#190](https://github.com/sparesparrow/mia/issues/190)), check the script's output for pip errors.
+   The script:
+   - copies the code to `/opt/mia`;
+   - installs the API's requirements (`apps/rpi-backend/py-api/requirements.txt`) into the venv
+     `/opt/mia/venv`, never into the system Python;
+   - points `/usr/local/bin/mia-python` and `MIA_PYTHON` in `/etc/mia/environment` at that venv;
+   - installs and enables the systemd units from `infra/systemd/`.
 
-2. Set an API key. The units read `/etc/mia/environment`:
+   It works with the Python of Raspberry Pi OS Bookworm (3.11) and Trixie (3.13). Running it again updates the
+   code and keeps the venv and the API key.
+
+2. Set an API key. The units read `/etc/mia/environment`; these commands replace only the `MIA_API_KEY` line and
+   keep the `MIA_PYTHON` line the deploy wrote:
    ```bash
-   sudo mkdir -p /etc/mia
-   python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee /etc/mia/environment
-   sudo chmod 600 /etc/mia/environment
+   sudo touch /etc/mia/environment && sudo chmod 600 /etc/mia/environment
+   sudo sed -i '/^MIA_API_KEY=/d' /etc/mia/environment
+   python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee -a /etc/mia/environment
    ```
 
 3. Start the broker first, then the API and the workers:
