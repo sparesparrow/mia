@@ -9,7 +9,7 @@ internal tools are maintained by hand.
 
 | Path | Audience | Source |
 |---|---|---|
-| `/` | general public, journalists (Czech "gonzo" manifesto) | `index.html`, hand-written |
+| `/` | general public, journalists (Czech "gonzo" manifesto), with the voice guides | `index.html`, hand-written |
 | `/business/`, `/family/`, `/musicians/`, `/journalists/` | customers and B2B partners | generated: `template.html` + `i18n/<segment>.yaml` + `i18n/site.yaml` |
 | `/<segment>/en/` | the same pages in English | generated |
 | `/press/`, `/press/en/` | press and marketing | generated: `press-template.html` + `i18n/site.yaml` |
@@ -32,6 +32,23 @@ and the pilot text in the gonzo voice.
 These are **not published**: `team/` (a mock status board), `agents/` (needs
 private ElevenLabs agent config), `voice-chat.html` (needs a local backend),
 `shared/formal-template/`, `templates/` and the gonzo monitor tooling.
+
+## Voice guides on the homepage
+
+The homepage embeds one ElevenLabs widget and three public agents: Holly (what MIA
+is), Rimmer (features and the pilot) and Kryten (how it works and safety). The
+`#posadka` section switches the widget between them (REQ-WEB-003). This is separate
+from the unpublished `agents/` portal.
+
+- The agent IDs sit in the inline script at the end of `index.html`. They are public
+  by design: each agent only accepts the origins on its allowlist
+  (`sparesparrow.github.io` and `localhost:8080` for `npm run serve`) and has a daily
+  conversation limit. Prompts, voices and the knowledge base live in the ElevenLabs
+  workspace, not in this repository.
+- The guides answer from a fact sheet that follows the "what works today" rule
+  below. Update that fact sheet in ElevenLabs when `i18n/site.yaml` changes.
+- MIA runs without a cloud; the guides do not. The section says so, and the widget
+  asks for consent before the first conversation.
 
 ## Content rules
 
@@ -87,8 +104,8 @@ npm run serve      # static preview of dist/ at http://localhost:8080
 
 `npm test` fails if a page or language version is missing, a template
 placeholder did not render, a page shows the old name, a price or a removed
-percentage, a page does not link to every audience, a local asset is missing, or
-a redirect points to the wrong place.
+percentage, a page does not link to every audience, a local asset is missing,
+a redirect points to the wrong place, or the homepage loses its voice-guide markup.
 
 To preview the whole site as published, copy the homepage next to `dist/` the way
 the workflow's "Assemble static site" step does, and build the docs with
@@ -97,7 +114,11 @@ the workflow's "Assemble static site" step does, and build the docs with
 ## Known limitations
 
 - The homepage (`index.html`) is hand-written Czech. Its English link goes to
-  `/journalists/en/`, and `build-smoke.js` does not check it.
+  `/journalists/en/`. `build-smoke.js` checks only its voice-guide markup, not its copy.
+- The voice guides are on the homepage only, and their widget script comes from
+  `unpkg.com` unpinned, as ElevenLabs documents it.
+- While one of the homepage's glitch effects runs, the widget moves with the page for
+  the length of the effect, like the menu does: the effect puts a filter on `body`.
 - `customers/journalists/background-music.mp3` (~7.8 MB) is published with the
   homepage. It is not preloaded and only plays from the 🎵 button. It is a gonzo brand asset; clean it
   up only with product sign-off.

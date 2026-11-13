@@ -42,3 +42,26 @@ requirements:
     implemented_and_ci_tested or better; planned features go in the use cases. The hand-written homepage
     (web/index.html) is not covered by the smoke test.
   not_proven: The hand-written homepage is outside the generated-page smoke test.
+- id: REQ-WEB-003
+  title: Homepage voice guides
+  statement: The homepage shall offer three voice guides (Holly, Rimmer, Kryten) that tell a visitor what MIA is,
+    how it works and what works today, through one embedded widget the visitor can switch between guides, and
+    shall say on the page that the guides run in a third-party cloud while MIA itself does not.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The homepage has a crew section with one selectable card per guide, and each card maps to a distinct agent ID
+  - The homepage loads the widget embed script and has a single mount point for the widget
+  - The homepage states that the guides run through ElevenLabs in the cloud
+  implemented_in:
+  - web/index.html
+  - web/customers/journalists/gonzo-styles.css
+  decisions:
+  - ADR-0010
+  notes: The guides are ElevenLabs agents configured outside this repository. Their agent IDs are public by
+    design; each agent only accepts the published site's origin and has a daily conversation limit. The guides
+    answer from a fact sheet that follows the "what works today" rule of REQ-WEB-002. web/scripts/build-smoke.js
+    checks the homepage markup.
+  not_proven: The smoke test checks markup only. A live conversation, the widget rendering in a browser, and the
+    guides' answers are not covered by CI.
+  safety: Nothing here touches a vehicle or hardware. The guides have no tools beyond handing over to each other
+    and ending the call.

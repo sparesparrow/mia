@@ -1103,3 +1103,43 @@ body.panic-mode * {
         cursor: grabbing;
     }
 }
+
+/* CREW VOICE GUIDES (REQ-WEB-003) */
+.crew-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    margin-bottom: 30px;
+}
+
+button.crew-card {
+    display: block;
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+button.crew-card:focus-visible {
+    outline: 3px solid var(--secondary-chaos);
+    outline-offset: 4px;
+}
+
+.crew-card.crew-active {
+    border-color: var(--accent-hell);
+    box-shadow: var(--glow-hell);
+}
+
+.crew-note {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-whisper);
+}
+
+@media (max-width: 768px) {
+    .crew-grid {
+        grid-template-columns: 1fr;
+    }
+}
