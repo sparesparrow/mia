@@ -1,0 +1,413 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: android
+title: Android companion app
+description: Kotlin/Compose client; its unit tests run in CI with testDebugUnitTest.
+requirements:
+- id: REQ-AND-001
+  title: BLE device management
+  statement: The app shall scan for BLE devices, manage connection lifecycle and list devices.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Connection state transitions and OBD adapter name filtering behave as specified
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/BLEManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/devices/BleDevicesViewModel.kt
+  not_proven: A real phone
+- id: REQ-AND-002
+  title: OBD manager
+  statement: The app shall read OBD-II data and pair with a BLE OBD adapter.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - OBD responses parse into RPM, speed, coolant, fuel, engine load and DTCs
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/OBDManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/OBDPairingScreen.kt
+  not_proven: A real adapter
+- id: REQ-AND-003
+  title: Dashboard and telemetry
+  statement: The dashboard shall show real-time gauges from WebSocket telemetry, including Citroën-specific values.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Gauges.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/TelemetryWebSocket.kt
+  notes: The emulator dashboard scenario in android-test.yml only checks that the screen opens. The Citroën values
+    (DPF soot, status, filter efficiency, AdBlue) are text only, with no button that starts a regeneration or
+    any other action (ADR-0006); JVM and instrumented tests cover which rows appear, not the WebSocket gauges.
+- id: REQ-AND-004
+  title: ANPR on Android
+  statement: The app shall recognise number plates from the camera and store only plate hashes made with a key of
+    this install.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Plate candidates are post-processed
+  - Plates are hashed, never stored in clear
+  - The key is 32 random bytes made on first use and kept across restarts; two installs get different keys, and a key
+    file of the wrong size is replaced
+  - A plate read by the camera and the same plate typed with spaces, dashes or lower case give the same hash
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/ANPRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/camera/AnprPostprocessor.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/security/PlateHasher.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/security/PlateKeyStore.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/security/PlateIdentity.kt
+  decisions:
+  - ADR-0018
+  not_proven: The camera path has not read a real plate on a phone in this change. O and 0, B and 8 hash alike, so two
+    plates that differ only there match each other. The key is a file in the app's no-backup storage, not an Android
+    Keystore key (minSdk 22); a rooted phone or a forensic copy can read it. A new install or cleared data makes a new
+    key, after which older hashes no longer match.
+- id: REQ-AND-005
+  title: Dashcam recording
+  statement: The app shall record continuously, offload clips, clean up by retention policy and play clips back.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DVRManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DvrOffloadWorker.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/clips/ClipsViewModel.kt
+  not_proven: Recording is a stub. Nothing calls CameraPreviewViewModel.bindDVRCamera, so DVRManager.bindCamera
+    never runs; segment rotation is an empty function and the loop that deletes old segments never starts; a saved
+    clip is a copy of the last segment or a text file containing "placeholder"; DvrOffloadWorker is empty and
+    nothing calls cleanupOldClips. DVRManagerTest checks copies of the naming and size formulas, not DVRManagerImpl,
+    so it no longer counts as a test of this requirement.
+- id: REQ-AND-006
+  title: MQTT client
+  statement: The app shall publish and subscribe over MQTT with configurable topics.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Topics are built from the configured prefix and device
+  - Broker candidates come only from MIA_MQTT_URL, mDNS and cached LAN hosts; there is no public fallback broker
+  - The app is excluded from Android backups (allowBackup=false)
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/MQTTTopics.kt
+- id: REQ-AND-007
+  title: Driving foreground service
+  statement: A foreground service shall run ANPR, DVR, OBD and BLE during driving with user-visible notifications.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  notes: The emulator instrumented test verifies service creation, the foreground notification and pause/resume state;
+    it does not prove the full ANPR/DVR/OBD/BLE manager lifecycle.
+  not_proven: Full manager lifecycle on a real phone with the vehicle peripherals.
+- id: REQ-AND-008
+  title: Pi discovery
+  statement: The app shall discover the Pi over mDNS (_mia-api._tcp) or Wi-Fi Direct and observe connectivity.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/MdnsDiscovery.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/WifiDirectManager.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/ConnectivityObserver.kt
+- id: REQ-AND-009
+  title: Spoken feedback
+  statement: The app shall speak prompts through text-to-speech with a bounded queue in Czech or English, and shall be
+    able to interrupt current speech for an urgent prompt.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A request is added to the engine's queue behind what is already being said
+  - An immediate request flushes the queue and is spoken at once
+  - At most 20 unfinished utterances are handed to the engine; later requests are dropped
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/VoiceManager.kt
+  not_proven: Never heard on a phone; whether the phone has a Czech voice installed is not checked. Priority sets only
+    the volume, not the order; rate and pitch clamping has no test against the real class.
+- id: REQ-AND-010
+  title: Rules engine
+  statement: The app shall evaluate client-side rules on the BLE OBD readings and on the Pi's Cycle 1 telemetry.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Rules fire only when their conditions hold
+  - Coolant above 105 °C, battery below 11.5 V or above 14.8 V, engine speed above 6000 rpm and fuel below 20 % are past
+    their limits; each clears only past its clear value (100 °C, 11.8 V, 14.5 V, 5700 rpm, 25 %)
+  - A Cycle 1 value counts only with ignition on, a fresh envelope and a confidence of at least 0.8
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/RulesEngine.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarLimits.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarRules.kt
+- id: REQ-AND-011
+  title: Local database and repositories
+  statement: The app shall store alerts, ANPR events, the plate black book, telemetry, clips and audit records locally,
+    and keep them when the database schema is upgraded.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Telemetry entities carry the Citroën-specific fields, nullable when absent
+  - Upgrading a version 1 database to version 2 keeps telemetry, alerts, clips and audit records, deletes the plate
+    sightings hashed with the old built-in key, and matches the exported version 2 schema
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/db/AppDatabase.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Daos.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/db/Entities.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/RetentionWorker.kt
+  - apps/android/app/schemas
+  decisions:
+  - ADR-0018
+  not_proven: The migration tests run on the CI emulator, not on a phone that had version 1 data. Retention now runs in
+    incognito mode too (before, incognito skipped it and kept data longer); RetentionWorker has no test of its own.
+- id: REQ-AND-012
+  title: Cycle 1 telemetry card
+  statement: The dashboard shall deserialise the Cycle 1 envelope and show the four signals below the service controls,
+    with an explicit Pi-offline state.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The canonical envelope parses into typed signal values
+  - The dashboard and the driving service share one connection, open while either needs it, which follows a change of
+    the Pi address or key
+  - An envelope whose timestamp has not changed for 10 s counts as stale
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/dto/Cycle1Telemetry.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/Cycle1TelemetrySource.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Cycle1TelemetryCard.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/dashboard/DashboardViewModel.kt
+  decisions:
+  - ADR-0009
+  not_proven: A real phone connected to the Pi
+- id: REQ-AND-013
+  title: Reconnect backoff
+  statement: Network reconnection attempts shall back off exponentially up to a cap.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Delays grow and stop at the cap
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/Backoff.kt
+- id: REQ-AND-014
+  title: Battery-aware sampling policy
+  statement: The app shall lower its sampling mode as the battery drains and show the advisory on the dashboard.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Low battery or thermal throttling drops the sampling mode to MINIMAL
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/background/SystemPolicyManager.kt
+- id: REQ-AND-015
+  title: Pi API client
+  statement: The app shall call the Pi REST API for devices, status, commands and sessions, unwrapping response
+    envelopes and reporting network failures as errors.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Device and session responses unwrap from their envelopes
+  - A network failure yields an error result
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/DeviceRepository.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/SessionRepository.kt
+  decisions:
+  - ADR-0005
+- id: REQ-AND-016
+  title: Voice console
+  statement: The app shall act as a console for the voice state machine, simulating the steering-wheel buttons and showing the LED, the captured command text, MIA's spoken phrases and the event queue.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The button commands and the verbosity setting encode to the very bytes the Pi's codec writes, and the events the Pi writes decode to the values in the shared fixture
+  - The verbosity shown is the one the machine reports in its Settings event, not the one last sent, and is cleared when the connection is lost or closed
+  - Damaged frames and truncated payloads end as a wire error and never as another exception
+  - The client opens a session, becomes connected only after the Pi's ok, sends nothing before that, and shows a refused command as an error
+  - A lost connection is retried with growing delays up to a limit, a successful session resets the budget, and disconnect does not reconnect
+  - State changes, feedback cues, spoken phrases and transcripts fold into the state, the event queue is bounded, and every LED name of the schema has a look whose pattern, not only its colour, separates window from confirming
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  - apps/android/app/src/main/java/cz/mia/app/features/voice/VoiceConsoleViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
+  - apps/android/app/src/main/generated/kotlin/MiaVoice
+  decisions:
+  - ADR-0011
+  - ADR-0013
+  not_proven: The Compose screen has not been rendered, tapped or screenshot on a device or emulator; only the logic behind it is tested. The console connects to /ws/voice, which today drives a machine simulated in the API process, so nothing here has driven the real voice pipeline, a real LED or a steering-wheel button. The key comes from Settings (REQ-AND-018); a debug build with MIA_API_KEY or miaApiKey set uses that key until Settings holds one.
+- id: REQ-AND-017
+  title: Persona and verbosity setting
+  statement: The app shall let the user choose the persona and the verbosity mode.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The persona and language chips are drawn from what the Pi reports and send the switch command; the selection
+    moves only when the Pi reports the change
+  - The persona and language commands encode to the very bytes the Pi's codec writes, and the reported settings decode
+    to the values in the shared fixture
+  - Without a connection nothing is reported and no chip can be pressed, and a lost connection forgets the settings
+  - MIA's sentences are shown instead of phrase keys when the Pi sends them
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/VoiceSettingsSection.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  decisions:
+  - ADR-0015
+  - ADR-0019
+  not_proven: Neither screen has been rendered on a phone; the chip test runs on the CI emulator. The settings come
+    from the voice console, which the Pi serves only with VOICE_CONSOLE=1 and which drives a simulated machine
+    (ADR-0019), so no choice made here has reached the voice pipeline. The Settings tab connects only when asked.
+- id: REQ-AND-018
+  title: Pi address and API key setting
+  statement: The app shall let the user enter the Pi's address and API key in Settings, and shall send the key in the
+    X-API-Key header on REST calls, the telemetry WebSocket, the voice console and the plate check, only to the Pi that
+    was entered.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A bare IP or host name, a port, an http or https URL and ws or wss are accepted, a path is dropped, and an unusable address is refused with a reason
+  - A blank address means the build's defaults, and a key typed without an address is ignored
+  - REST calls for the build's default host go to the Pi that was entered with the key, and calls to any other host are left untouched and carry no key
+  - Printing a connection, and the HTTP logger, never show the key
+  - The plate check's capture, upload, history and alert requests and its stream go to the Pi that was entered, with its
+    key, and carry no key header when none is set
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiConnection.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiConnectionProvider.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiRequestInterceptor.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/settings/SettingsViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/AnprEndpoints.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/repository/ANPRRepository.kt
+  decisions:
+  - ADR-0016
+  not_proven: The Settings screen has not been rendered or used on a device, and no phone has reached a Pi that has keys
+    configured. The key is stored unencrypted in the app's private preferences and travels in cleartext on the Pi's
+    network (ADR-0016). A new address applies at once to the Cycle 1 telemetry (Dashboard and driving service) and to
+    the plate check's requests, and to the LED and Voice screens and an open plate-check stream only when they are next
+    opened.
+- id: REQ-AND-019
+  title: Spoken car warnings
+  statement: While the driving service runs, the app shall warn by voice and notification when a Cycle 1 signal from
+    the Pi or a BLE OBD reading passes a limit, raise one alert per occurrence until it clears, and repeat the spoken
+    warning while the signal stays past its limit (critical every minute, others every five minutes), with the value and
+    unit first and a recommendation after; a critical warning interrupts other speech.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A condition warns only after it has held for its dwell time (coolant 10 s, battery 60 s, engine speed 3 s, fuel 30 s),
+    and a dip below the limit restarts the wait
+  - A warned condition is not raised again until it has been back past its clear value for 5 s; a minute without data
+    withdraws it
+  - One occurrence raises one alert, under a notification id that is fixed per condition, whichever source reported it
+  - While a warned condition stays past its limit it is spoken again, every 60 s for a critical one and every 5 min for
+    a warning, refreshing the same notification without a new alert; in the band between limit and clear value, while
+    clearing or without data there is no reminder
+  - Every Czech and English text names the value and unit in its first sentence and gives a recommendation after it
+  - A critical warning is spoken at once and flushes the queue; a warning is queued with high priority
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/AlertThrottle.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/WarningText.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/rules/CarWarningAnnouncer.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  - apps/android/app/src/main/java/cz/mia/app/data/remote/websocket/Cycle1TelemetrySource.kt
+  decisions:
+  - ADR-0006
+  - ADR-0009
+  safety: Read-only. The warnings use telemetry the app already receives; nothing is sent to the car (ADR-0006).
+  not_proven: Never spoken on a phone or heard in the car, and never driven by a real Pi stream. The limits are repo
+    defaults, not checked against the A4 8H engine. Warnings run only after the user starts the driving service. The
+    DrivingService wiring (independent collectors, the alert record, MQTT alert, notification and clip behind each
+    raised alert, the notification refresh behind a reminder) has no unit test of its own; it compiles and the parts it
+    calls are tested. The repeat intervals follow #193 and are not tuned in the car.
+- id: REQ-AND-020
+  title: Plate black book
+  statement: The app shall let the user keep a black book of plates, added by typing a plate or by picking a recent
+    sighting and stored only as the hash with an optional label, and shall tell the driver by notification and voice when
+    the camera reads a plate from it.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A typed plate is stored only as the hash a camera reading of it gives, with a trimmed label of at most 40 characters;
+    text that cannot be a plate is refused and nothing is stored
+  - Adding a listed plate again replaces its label; removing deletes it; entries outlive retention
+  - Recent sightings are grouped by plate, newest first, and marked once listed
+  - A black-book plate is announced with its label at most once in 10 minutes and never as a repeated plate
+  - The words name the label, never the plate
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/anpr/PlateWatch.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/anpr/PlateAlertText.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/anpr/PlatesViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/camera/PlatesScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  decisions:
+  - ADR-0018
+  safety: Advisory only; nothing is sent to the car or published over MQTT.
+  not_proven: Never used on a phone or in the car; the Plates screen has not been rendered. Matching runs only while the
+    driving service runs and the Live tab has the camera bound, since the phone's camera is not used in the background.
+    The 10-minute limit is a guess and lives in memory, so it starts over with the app. The DrivingService wiring
+    (notification and speech) has no test of its own. The DPIA (#137) does not yet cover the black book.
+- id: REQ-AND-021
+  title: Repeated sighting alert
+  statement: The app shall tell the driver when a plate that is not in the black book has been read in three or more
+    separate episodes spanning at least 15 minutes within the last 24 hours, at most once a day per plate.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Reads less than 5 minutes apart are one episode, in any order
+  - Three episodes over 15 minutes count; two episodes, or three within less than 15 minutes, do not
+  - A repeated plate is announced at most once a day, and sightings older than 24 hours do not count
+  - The words give the count and the span, never the plate
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/anpr/RepeatSightings.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/anpr/PlateWatch.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/anpr/PlateAlertText.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/background/DrivingService.kt
+  decisions:
+  - ADR-0018
+  safety: Advisory only; nothing is sent to the car or published over MQTT. The camera faces the road ahead, so the
+    words say the car was seen again, not that it follows.
+  not_proven: Never used in the car. The thresholds (5 min, 3 episodes, 15 min, 24 h) are starting values, not tuned
+    against real traffic, and a daily commute past the same parked car can trigger it. The daily limit lives in memory.
+    Matching needs the driving service and the Live tab, as for REQ-AND-020.
+- id: REQ-AND-022
+  title: Dashboard connection status chip
+  statement: The dashboard shall show one chip that says whether the Pi is online, which source the telemetry comes
+    from and how confident it is, and shall not show the "No telemetry data" placeholder while live Cycle 1 data exists.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The chip says Pi online with the source and confidence when the Pi is connected and has sent telemetry
+  - The chip says Pi offline, with the reason when there is one, when the Pi is disconnected or in error
+  - With live Cycle 1 data and no phone reading, the placeholder is not drawn; with neither, it is
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/ConnectionStatus.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: The dashboard has not been rendered on a phone or against a real Pi. The test draws the section with a
+    constructed telemetry envelope, not one received from the Pi.
+- id: REQ-AND-023
+  title: Five-tab navigation with a More menu
+  statement: The app shall have five bottom tabs (Dashboard, Camera, Voice, LED, More), and the More tab shall list
+    Alerts, OBD pairing and Settings, open the one tapped and return to the list on back.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The More list shows Alerts, OBD pairing and Settings
+  - Tapping an entry shows that screen, and the back row returns to the list
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/MoreScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: The bottom bar itself and the system back button have not been used on a phone; the test covers the More
+    list and its back row only. The emulator scenarios in .claude/skills/android-adb-test were changed to open OBD and
+    Settings through More and are untried until CI runs them.
+- id: REQ-AND-024
+  title: App theme and readable alerts
+  statement: The app shall use one dark theme with bundled fonts, and shall show each alert with its severity as a
+    word and an icon as well as a colour.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The theme is dark with the brand red as primary, whatever the system setting is
+  - Warning is yellow and error is a different red than the brand, so the two are never told apart by colour alone
+  - An alert row shows the severity word and the message as separate texts
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/theme
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/Common.kt
+  not_proven: Never looked at on a phone. Bebas Neue and JetBrains Mono are bundled (SIL OFL, licences under
+    assets/licenses) but no test checks that they load, and the JetBrains Mono weight axis applies from Android 8 only.
+- id: REQ-AND-025
+  title: LED screen takes the Pi's 0-255 brightness
+  statement: The LED screen shall show the brightness the Pi reports on a 0-255 scale as a fraction between 0 and 1,
+    and shall not fail when the reported value is outside that range.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A Pi value such as 128 or 255 becomes a fraction of 255, and a value above 255, below 0 or not a number stays within 0..1 or falls back to the default
+  - A value already between 0 and 1 is kept as it is
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/LedBrightness.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  not_proven: Only the conversion is unit tested. The screen crashed on a phone with a live Pi (alpha 128.0 passed to Color.copy) and the fix has not been seen on a phone yet.
+- id: REQ-AND-026
+  title: Typing and presets in the voice console
+  statement: The Voice tab shall let the user type a command and press steering-wheel presets, sending only text or a preset name.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0020
+  not_proven: Not yet implemented.
+- id: REQ-AND-027
+  title: Phone microphone service
+  statement: The app shall stream the phone's microphone to the Pi from a foreground service the user starts, with a notification to stop it.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0021
+  not_proven: Not yet implemented.

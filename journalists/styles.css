@@ -1,0 +1,69 @@
+/* Journalists (gonzo) segment theme for the generated page.
+   Reuses the business layout and swaps in the dark red and cyan gonzo palette.
+   The hand-written homepage uses gonzo-styles.css instead. */
+@import url("../business/styles.css");
+
+:root {
+    --primary-color: #ff0040;
+    --primary-light: #ff4d79;
+    --primary-dark: #b3002d;
+    --accent-color: #00e5ff;
+    --accent-light: #7df3ff;
+    --text-primary: #e8e8f0;
+    --text-secondary: #b8b8c8;
+    --text-light: #8a8aa0;
+    --bg-primary: #0a0a10;
+    --bg-secondary: #12121c;
+    --bg-tertiary: #1a1a28;
+    --border-color: #2a2a3c;
+    --font-family-primary: 'JetBrains Mono', 'Inter', monospace;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.navbar {
+    background: rgba(10, 10, 16, 0.95);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-brand h2,
+.nav-menu a,
+.footer,
+.footer a,
+h1,
+h2,
+h3 {
+    color: var(--text-primary);
+}
+
+.features,
+.technology,
+.use-cases,
+.hero {
+    background: var(--bg-primary);
+}
+
+.feature-card,
+.tech-card {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.feature-card p,
+.tech-card p,
+.hero-subtitle,
+.section-intro {
+    color: var(--text-secondary);
+}
+
+.hero-bg {
+    opacity: 0.25;
+}
+
+.footer {
+    background: #050508;
+}
