@@ -35,18 +35,24 @@ private ElevenLabs agent config), `voice-chat.html` (needs a local backend),
 
 ## Voice guides on the homepage
 
-The homepage embeds one ElevenLabs widget and three public agents: Holly (what MIA
-is), Rimmer (features and the pilot) and Kryten (how it works and safety). The
-`#posadka` section switches the widget between them (REQ-WEB-003). This is separate
-from the unpublished `agents/` portal.
+The homepage embeds one ElevenLabs widget and three public agents. Holly is the
+router: she says in a sentence what MIA is and hands the visitor to Rimmer (features,
+software requirements, documentation, the pilot) or Kryten (architecture, source code,
+protocols, safety design). The `#posadka` section also lets a visitor pick a guide
+directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 - The agent IDs sit in the inline script at the end of `index.html`. They are public
   by design: each agent only accepts the origins on its allowlist
   (`sparesparrow.github.io` and `localhost:8080` for `npm run serve`) and has a daily
   conversation limit. Prompts, voices and the knowledge base live in the ElevenLabs
   workspace, not in this repository.
-- The guides answer from a fact sheet that follows the "what works today" rule
+- Rimmer and Kryten share a fact sheet that follows the "what works today" rule
   below. Update that fact sheet in ElevenLabs when `i18n/site.yaml` changes.
+- The rest of their knowledge is fetched from the public `main` branch and the
+  published docs, and refreshed about weekly: Rimmer reads `spec/requirements/*.yaml`
+  and the documentation guides; Kryten reads a fixed list of source files and the
+  architecture, ADR and interface pages. A new source file or docs page is not picked
+  up until it is added to that list in ElevenLabs.
 - MIA runs without a cloud; the guides do not. The section says so, and the widget
   asks for consent before the first conversation.
 
