@@ -132,9 +132,10 @@ Use the production deployment script (see [docs/install/pi-gateway.md](docs/inst
 sudo ./tools/scripts/deploy-production-rpi.sh
 ```
 
-It runs `tools/scripts/deploy-raspberry-pi.sh`, which installs the dependencies, builds the C++ components,
-copies the code to `/opt/mia`, installs the systemd units and enables them; around that it sets up and starts the
-BLE services.
+It runs `tools/scripts/deploy-raspberry-pi.sh`, which copies the code to `/opt/mia`, installs the API's
+requirements into the venv `/opt/mia/venv`, points `mia-python` at it, and installs and enables the systemd units;
+around that it sets up and starts the BLE services. The C++ components are not part of the deploy (see
+CLAUDE.md for their build).
 Set `MIA_API_KEY` in `/etc/mia/environment` before starting the services.
 
 ## Manual Setup
