@@ -58,10 +58,12 @@ requirements:
   decisions:
   - ADR-0010
   notes: The guides are ElevenLabs agents configured outside this repository. Their agent IDs are public by
-    design; each agent only accepts the published site's origin and has a daily conversation limit. The guides
-    answer from a fact sheet that follows the "what works today" rule of REQ-WEB-002. web/scripts/build-smoke.js
+    design; each agent only accepts the published site's origin and has a daily conversation limit. Holly routes
+    the visitor to Rimmer (features and requirements) or Kryten (architecture and code). Both answer from a fact
+    sheet that follows the "what works today" rule of REQ-WEB-002, plus copies of this registry, the published
+    docs and selected source files that ElevenLabs refreshes from the main branch. web/scripts/build-smoke.js
     checks the homepage markup.
   not_proven: The smoke test checks markup only. A live conversation, the widget rendering in a browser, and the
     guides' answers are not covered by CI.
-  safety: Nothing here touches a vehicle or hardware. The guides have no tools beyond handing over to each other
-    and ending the call.
+  safety: Nothing here touches a vehicle or hardware. The guides can only hand over to each other, switch
+    language, end the call and read their knowledge base.
