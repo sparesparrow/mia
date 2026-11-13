@@ -43,6 +43,7 @@
                 <a href="#weaponry" class="nav-link-hell">ARSENAL</a>
                 <a href="#stories" class="nav-link-hell">PŘÍBĚHY</a>
                 <a href="#pro-koho" class="nav-link-hell">PRO KOHO</a>
+                <a href="#posadka" class="nav-link-hell">POSÁDKA</a>
                 <a href="#resistance" class="nav-link-hell">ODPOR</a>
                 <a href="docs/" class="nav-link-hell">DOKUMENTACE</a>
                 <a href="journalists/en/" class="nav-link-hell" hreflang="en" lang="en">EN</a>
@@ -241,6 +242,45 @@
         </div>
     </section>
 
+    <!-- CREW: VOICE GUIDES (REQ-WEB-003) -->
+    <section id="posadka" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">ZEPTEJ SE POSÁDKY</h2>
+            <p class="pricing-desc-hell">
+                Nechce se ti číst? Tři hlasoví průvodci ti řeknou, co MIA je, jak funguje a co už umí.
+                Vyber si jednoho a mluv, česky nebo anglicky. <span lang="en">Three voice guides, Czech or English.</span>
+            </p>
+
+            <div class="weapon-grid crew-grid">
+                <button type="button" class="weapon-card crew-card" data-crew="holly" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🖥️</div>
+                    <h3>HOLLY</h3>
+                    <p class="weapon-desc">Palubní počítač. Řekne ti, co MIA je, pro koho je a v jakém je stavu.</p>
+                    <div class="paranoia-quote">"O MIA vím všechno. Jen si nevzpomenu, jaký je dnes den."</div>
+                </button>
+
+                <button type="button" class="weapon-card crew-card" data-crew="rimmer" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🎖️</div>
+                    <h3>RIMMER</h3>
+                    <p class="weapon-desc">Samozvaný důstojník. Odříká funkce, co už funguje a co je teprve v plánu, a pošle tě do pilotu.</p>
+                    <div class="paranoia-quote">"Funkce hlásím já. Ostatní je jen vyrobili."</div>
+                </button>
+
+                <button type="button" class="weapon-card crew-card" data-crew="kryten" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🤖</div>
+                    <h3>KRYTEN</h3>
+                    <p class="weapon-desc">Servisní mechanoid. Vysvětlí, jak MIA funguje, co je v autě za hardware a proč do auta jenom poslouchá.</p>
+                    <div class="paranoia-quote">"Jenom čte, pane. Je to mimořádně uklizené řešení."</div>
+                </button>
+            </div>
+
+            <p class="crew-note">
+                Průvodce najdeš vpravo dole. MIA běží v autě bez cloudu, tihle tři ne: hovor jde přes ElevenLabs.
+                Zvuk se neukládá, textový přepis se uchovává 30 dní. Jména posádky jsou fanouškovská pocta bez vazby na jakýkoli pořad.
+            </p>
+        </div>
+    </section>
+
     <!-- RESISTANCE: PILOT -->
     <section id="resistance" class="pricing-hell">
         <div class="container-chaos">
@@ -329,5 +369,48 @@
     </div>
 
     <script src="customers/journalists/gonzo-app.js"></script>
+
+    <!-- CREW VOICE GUIDES (REQ-WEB-003): one ElevenLabs widget, switched between three public agents.
+         The agent IDs are public by design; the agents only accept this site's origin. -->
+    <div id="crew-widget"></div>
+    <script>
+        (function () {
+            'use strict';
+            var CREW = {
+                holly: 'agent_9401m7adnm80eqjry8fgbnvgj0gg',
+                rimmer: 'agent_9701m7adnt26fdcae2hp5ve82xcz',
+                kryten: 'agent_3601m7adp00aer3r588cx6gwvny3'
+            };
+            var mount = document.getElementById('crew-widget');
+            var cards = document.querySelectorAll('.crew-card');
+            var current = null;
+
+            function show(name) {
+                if (!mount || !CREW[name] || name === current) {
+                    return;
+                }
+                current = name;
+                // Replacing the element ends any running conversation with the previous guide.
+                mount.textContent = '';
+                var widget = document.createElement('elevenlabs-convai');
+                widget.setAttribute('agent-id', CREW[name]);
+                mount.appendChild(widget);
+                cards.forEach(function (card) {
+                    var active = card.getAttribute('data-crew') === name;
+                    card.classList.toggle('crew-active', active);
+                    card.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+            }
+
+            cards.forEach(function (card) {
+                card.addEventListener('click', function () {
+                    show(card.getAttribute('data-crew'));
+                });
+            });
+
+            show('holly');
+        })();
+    </script>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
 </body>
 </html>
