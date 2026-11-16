@@ -165,7 +165,7 @@ The deployment script (`tools/scripts/deploy-raspberry-pi.sh`) has been updated 
 1. **OBD Service Installation**:
    - Copies `mia-serial-bridge.service`
    - Copies `mia-obd-worker.service`
-   - Installs Python dependencies from `rpi/requirements.txt`
+   - Installs Python dependencies from `apps/rpi-backend/py-api/requirements.txt` into the venv `/opt/mia/venv`
 
 2. **Service Management**:
    - Enables services to start on boot

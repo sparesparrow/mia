@@ -26,8 +26,10 @@ sudo ./tools/scripts/deploy-production-rpi.sh
 This script will:
 1. Update code from repository
 2. Set up BLE services
-3. Deploy main services
-4. Enable and start all services
+3. Deploy main services (`deploy-raspberry-pi.sh`): copy the code to `/opt/mia`, install
+   `apps/rpi-backend/py-api/requirements.txt` into the venv `/opt/mia/venv`, point `mia-python` and `MIA_PYTHON`
+   at it, and install and enable the core units
+4. Enable and start the BLE services
 5. Verify deployment
 
 ### Manual Deployment Steps
@@ -403,8 +405,8 @@ sudo systemctl restart sshd
 # Update system packages
 sudo apt update && sudo apt upgrade -y
 
-# Update Python packages
-sudo pip3 install --upgrade -r /opt/mia/requirements.txt
+# Update Python packages (the venv the deploy created; never the system Python)
+sudo /opt/mia/venv/bin/python -m pip install --upgrade -r /opt/mia/apps/rpi-backend/py-api/requirements.txt
 ```
 
 ## Performance Optimization
