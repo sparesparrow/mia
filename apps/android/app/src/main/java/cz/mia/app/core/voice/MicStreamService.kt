@@ -27,6 +27,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import okio.ByteString.Companion.toByteString
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -169,7 +170,9 @@ class MicStreamService : Service() {
                 if (offset == frame.size) {
                     // Keep the OkHttp queue bounded to six 30 ms frames when the USB link is congested.
                     if (webSocket.queueSize() < FRAME_BYTES * MAX_QUEUED_FRAMES) {
-                        if (!webSocket.send(frame.copyOf())) throw IllegalStateException("Pi audio link is closed")
+                        if (!webSocket.send(frame.copyOf().toByteString())) {
+                            throw IllegalStateException("Pi audio link is closed")
+                        }
                     }
                 }
             }
