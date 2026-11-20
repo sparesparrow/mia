@@ -334,12 +334,23 @@ requirements:
   not_proven: Not yet implemented; no steering-wheel adapter exists.
 - id: REQ-VOICE-027
   title: Phone microphone streaming
-  statement: The Pi shall be able to take its voice audio from the phone's microphone, streamed over a write-scope WebSocket, off by default.
-  evidence: planned
-  implemented_in: []
+  statement: The Pi shall accept the user's phone microphone over a write-scope WebSocket and feed it into the voice pipeline, off by default.
+  evidence: implemented_untested
+  acceptance:
+  - The WebSocket is disabled unless VOICE_PHONE_MIC=1 and requires a write-scope key when API keys are configured
+  - The phone declares 16 kHz mono PCM16 with 30 ms frames before sending audio; malformed frames are dropped
+  - Only one phone stream is active, and bounded queues drop frames rather than block capture
+  - AUDIO_SOURCE=auto prefers a fresh phone frame, then local USB audio, then silence; phone and USB frames are never mixed
+  - The speaking gate mutes the selected source and buffered phone frames are cleared while closed
+  - Raw microphone frames are not written to disk; logs contain counts and drops only
+  implemented_in:
+  - apps/rpi-backend/py-api/api/audio_ingest.py
+  - apps/rpi-backend/py-api/api/main.py
+  - apps/rpi-backend/py-api/api/auth/dependencies.py
+  - apps/rpi-backend/py-api/services/audio_capture.py
   decisions:
   - ADR-0021
-  not_proven: Not yet implemented.
+  not_proven: No API or capture tests were added or run, and the authenticated WebSocket, USB tether path, echo gate and Pi speaker output have not been exercised on the phone and Pi.
 - id: REQ-VOICE-028
   title: Voice scenario harness
   statement: A scenario file shall describe a stimulus and the ordered events the voice pipeline must produce, and one runner shall check the same file against every layer that can run it.
@@ -349,7 +360,7 @@ requirements:
   - The expected events are checked as an ordered subsequence of the trace with a per-step timeout, and a failure prints the expected steps beside the events seen
   - Recognised or spoken text is compared lower-cased and without punctuation, and `contains` matches a part of it
   - Scenarios for the buttons, a confirmation, a dictation and the persona, verbosity and language settings pass through /ws/voice and through the machine on a fake clock
-  - Scenarios for typed text and for speech injected over ZeroMQ, snd-aloop and the phone microphone are kept as skipped files that name the requirement they wait for
+  - Scenarios for inputs unavailable in CI (typed text, ZeroMQ audio, ALSA loopback and phone microphone) remain skipped with the missing path or hardware stated
   - Test utterances are rendered on demand by tools/voice/render_fixtures.py into a directory outside the repository with a sha256 manifest; no audio file is committed
   implemented_in:
   - tests/support/voice_trace.py
@@ -362,4 +373,4 @@ requirements:
   - scripts/pi_voice_smoke.sh
   decisions:
   - ADR-0010
-  not_proven: No audio path was exercised. The ZeroMQ tap, play_wav and the Pi smoke script have no CI test against a real router, a sound card or snd-aloop; the speech stimuli are stubs, and the typed-text and speech scenarios are skipped until REQ-VOICE-025 and REQ-VOICE-027 exist. The /ws/voice layer drives the simulated machine in the API process, not the voice router. The harness runs nowhere on a Pi yet.
+  not_proven: No audio path was exercised. The ZeroMQ tap, play_wav and the Pi smoke script have no CI test against a real router, a sound card or snd-aloop; the phone WAV stimulus now streams to /ws/audio but has not been run against the Pi audio pipeline. Typed-text and hardware-only scenarios remain skipped. The /ws/voice layer drives the simulated machine in the API process, not the voice router. The harness runs nowhere on a Pi yet.

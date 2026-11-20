@@ -1,6 +1,6 @@
 name: speech_phone_be_quiet
 description: A rendered utterance streamed like the phone microphone sets quiet verbosity.
-pending: "REQ-VOICE-027: needs /ws/audio and the audio arbiter (ADR-0021)"
+pending: "REQ-VOICE-027: needs a live Pi audio pipeline with STT and the phone PCM ingest enabled (ADR-0021)"
 stimulus:
   - {kind: button, button: Wake}
   - {kind: speech_phone, phrase: be quiet}

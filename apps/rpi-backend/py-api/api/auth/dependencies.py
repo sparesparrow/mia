@@ -221,18 +221,22 @@ async def enforce_api_auth(conn: HTTPConnection) -> None:
         )
 
 
-async def authenticate_websocket(websocket) -> bool:
+async def authenticate_websocket(websocket, required_scope: str = "read") -> bool:
     """Call before ``websocket.accept()``; closes the socket and returns False on failure.
 
     Only the ``X-API-Key`` header is accepted: a key in the query string ends up in
-    logs and browser history.
+    logs and browser history. ``required_scope`` defaults to ``read`` for existing
+    WebSocket routes; streaming microphone input requires ``write``.
     """
+    if required_scope not in {"read", "write", "admin"}:
+        await websocket.close(code=1008)
+        return False
     if not auth_configured():
         _warn_open_once()
         return True
     key = websocket.headers.get("x-api-key")
     info = _verify_cached(key) if key else None
-    if info is None or not _has_scope(info, "read"):
+    if info is None or not _has_scope(info, required_scope):
         await websocket.close(code=1008)
         return False
     return True

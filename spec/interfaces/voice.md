@@ -215,6 +215,7 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 | length-framed stream over TCP or a unix socket (`FramedChannel`, `SocketListener`) | implemented; a serial line is the same class over a stream with `recv` and `sendall` |
 | UDP to one peer (`UdpChannel`), datagrams from other addresses dropped | implemented; may lose or reorder messages |
 | WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`, API key required; talks to a machine simulated in the API process |
+| WebSocket `/ws/audio` | implemented, off unless `VOICE_PHONE_MIC=1`, requires a write-scope key; accepts phone PCM for `audio_capture` |
 | ZeroMQ ROUTER socket on `127.0.0.1:5565` (`ZmqHub`, port `VOICE_CONSOLE_PORT`), hosted by `voice_command_router` in FSM mode | implemented (REQ-VOICE-024); not a general ZeroMQ channel: it carries the console's envelopes between the API's relay and the router |
 | WebSocket `/ws/voice` with `VOICE_CONSOLE_BACKEND=router` | implemented; relays envelopes to the port above and drives the machine in the voice router (default stays `sim` for now) |
 | BLE, a real serial line | planned |
@@ -222,6 +223,27 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.
 `/ws/voice` requires the `X-API-Key` header when API keys are configured (a read-scope key is enough) and drops a
 console whose queue of 256 unsent frames fills up.
+
+### Phone microphone over USB tether (ADR-0021)
+
+The Android Voice tab starts `MicStreamService` only after microphone permission is granted. The service opens
+`/ws/audio` on the configured Pi address, sends `X-API-Key` in the header, then declares this format as its first
+text frame:
+
+```json
+{"v":1,"fmt":"s16le","rate":16000,"ch":1,"frame_ms":30}
+```
+
+After `{"ok":true}`, it sends binary frames of 960 bytes each. The API acknowledges that the microphone is open,
+then pushes each whole frame to `127.0.0.1:5564` with a bounded ZeroMQ queue. At most one phone stream is active;
+opening another closes the previous one with code 1008. Invalid frame sizes and full queues are dropped. The API is
+off unless `VOICE_PHONE_MIC=1` and checks for the `write` scope.
+
+`audio_capture.py` binds the PULL socket on loopback and remains the only publisher on `mia/audio/raw` (5558).
+`AUDIO_SOURCE=auto` uses a fresh phone frame for up to 500 ms after the last arrival, then the local USB microphone,
+then silence. `phone` mode emits silence when the phone stream is stale; `usb` ignores the phone. Phone and local
+microphone frames are not mixed. TTS still plays on the Pi's ALSA output. USB tethering itself is enabled in Android
+system settings, and the Pi's address on that USB network is entered in the app's Settings.
 
 ### Console to router over ZeroMQ (ADR-0020)
 

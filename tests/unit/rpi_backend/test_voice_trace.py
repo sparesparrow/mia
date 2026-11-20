@@ -320,6 +320,6 @@ def test_play_wav_runs_aplay_on_the_device_and_refuses_without_it(tmp_path, monk
         voice_stimuli.play_wav(str(tmp_path / "missing.wav"), "default")
 
 
-def test_streaming_over_the_audio_websocket_is_not_available_yet():
-    with pytest.raises(NotImplementedError, match="REQ-VOICE-027"):
-        voice_stimuli.stream_wav_ws("a.wav", "ws://pi/ws/audio")
+def test_streaming_over_the_audio_websocket_requires_a_recorded_wav(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        voice_stimuli.stream_wav_ws(str(tmp_path / "missing.wav"), "ws://pi/ws/audio")

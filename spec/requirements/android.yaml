@@ -405,9 +405,33 @@ requirements:
   not_proven: Not yet implemented.
 - id: REQ-AND-027
   title: Phone microphone service
-  statement: The app shall stream the phone's microphone to the Pi from a foreground service the user starts, with a notification to stop it.
-  evidence: planned
-  implemented_in: []
+  statement: The Voice tab shall let the user start and stop streaming the phone's microphone to the configured Pi from a foreground service.
+  evidence: implemented_untested
+  acceptance:
+  - The app requests microphone permission before starting the stream
+  - On Android 13 and later, the app requests notification permission so the foreground service Stop action is visible
+  - Audio is 16 kHz mono PCM16 in 30 ms frames and is sent to /ws/audio with the Pi API key in the X-API-Key header
+  - The foreground notification identifies the stream and offers a Stop action
+  - The outgoing WebSocket queue is bounded and reconnect delays back off
+  - Stopping the service stops capture and closes the WebSocket
+  implemented_in:
+  - apps/android/app/src/main/AndroidManifest.xml
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/MicStreamService.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
   decisions:
   - ADR-0021
-  not_proven: Not yet implemented.
+  not_proven: Android build and device behaviour have not been verified; service status in the Voice screen reflects the user's request and the notification holds the current link status.
+- id: REQ-AND-028
+  title: USB tether connection to the Pi
+  statement: When the user enables USB tethering on the phone, the Pi shall obtain an internet route and the app shall reach it using its address on the USB network.
+  evidence: implemented_untested
+  acceptance:
+  - The Pi setup script configures DHCP and a preferred route metric for a specified USB tether interface with NetworkManager or dhcpcd
+  - The app can use the Pi USB-network address entered in Settings for the voice console and microphone stream
+  implemented_in:
+  - infra/deploy/rpi/setup-usb-tether.sh
+  - docs/phone-usb-tether-voice-test.md
+  - apps/android/app/src/main/java/cz/mia/app/core/networking/PiConnection.kt
+  decisions:
+  - ADR-0021
+  not_proven: The script, DHCP lease, default route and app-to-Pi reachability have not been verified on the target Pi; the user must enable USB tethering and enter the Pi's USB-network address in app Settings.

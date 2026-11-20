@@ -1,5 +1,10 @@
 package cz.mia.app.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -25,16 +30,22 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import cz.mia.app.core.voice.MicStreamService
 import cz.mia.app.core.voice.console.ConnectionState
 import cz.mia.app.core.voice.console.ConsoleCommand
 import cz.mia.app.core.voice.console.LedLook
@@ -55,15 +66,65 @@ import cz.mia.app.ui.components.VoiceSettingsSection
 @Composable
 fun VoiceConsoleScreen(modifier: Modifier = Modifier, viewModel: VoiceConsoleViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    var micStreamRequested by rememberSaveable { mutableStateOf(false) }
+    val micPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            MicStreamService.start(context)
+            micStreamRequested = true
+        }
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                MicStreamService.start(context)
+                micStreamRequested = true
+            } else {
+                micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
     DisposableEffect(viewModel) {
         viewModel.start()
         onDispose { viewModel.stop() }
     }
-    VoiceConsoleContent(state, viewModel::press, modifier)
+    VoiceConsoleContent(
+        state = state,
+        onPress = viewModel::press,
+        modifier = modifier,
+        micStreamRequested = micStreamRequested,
+        onStartMic = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                MicStreamService.start(context)
+                micStreamRequested = true
+            } else {
+                micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        },
+        onStopMic = {
+            MicStreamService.stop(context)
+            micStreamRequested = false
+        },
+    )
 }
 
 @Composable
-fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> Boolean, modifier: Modifier = Modifier) {
+fun VoiceConsoleContent(
+    state: VoiceConsoleState,
+    onPress: (ConsoleCommand) -> Boolean,
+    modifier: Modifier = Modifier,
+    micStreamRequested: Boolean = false,
+    onStartMic: () -> Unit = {},
+    onStopMic: () -> Unit = {},
+) {
     val connected = state.connection == ConnectionState.CONNECTED
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -94,6 +155,25 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
             OutlinedButton(onClick = { onPress(ConsoleCommand.Confirm) }, enabled = connected, modifier = Modifier.testTag("voice_yes")) { Text("Yes") }
             OutlinedButton(onClick = { onPress(ConsoleCommand.Deny) }, enabled = connected, modifier = Modifier.testTag("voice_no")) { Text("No") }
             OutlinedButton(onClick = { onPress(ConsoleCommand.EndDictation) }, enabled = connected, modifier = Modifier.testTag("voice_end_dictation")) { Text("End note") }
+        }
+
+        SectionCard(title = "Phone microphone") {
+            Text("Connect the phone to the Pi over USB and enable USB tethering in Android settings.")
+            Text("Set the Pi's USB-network address in MIA Settings.")
+            Text("Start the mic, tap Wake, then speak; MIA's reply plays through the Pi speaker.")
+            Text("Allow microphone permission and, on Android 13+, notification permission for the persistent Stop control.", style = MaterialTheme.typography.bodySmall)
+            OutlinedButton(
+                onClick = if (micStreamRequested) onStopMic else onStartMic,
+                modifier = Modifier.testTag("phone_mic_toggle"),
+            ) {
+                Text(if (micStreamRequested) "Stop microphone" else "Start microphone")
+            }
+            Text(
+                if (micStreamRequested) "Microphone service requested; see its notification for the link status."
+                else "Microphone is stopped",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.testTag("phone_mic_status"),
+            )
         }
 
         SectionCard { VoiceSettingsSection(state, onPress) }

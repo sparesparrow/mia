@@ -983,6 +983,14 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     await voice_console.serve(websocket)
 
 
+@app.websocket("/ws/audio")
+async def phone_audio_websocket_endpoint(websocket: WebSocket):
+    """Phone microphone PCM ingest (off unless VOICE_PHONE_MIC=1; requires a write key)."""
+    from api import audio_ingest
+
+    await audio_ingest.serve(websocket)
+
+
 _LED_WS_AI_STATES = {"idle", "listening", "speaking", "thinking", "recording", "error"}
 
 

@@ -2,8 +2,8 @@
 
 Each YAML file is one scenario: a stimulus and the ordered events the pipeline must produce. They run against
 two layers that exist in CI: the /ws/voice endpoint (``ws``) and the router, service and simulated speech
-in-process on a fake clock (``machine``). The files with a ``pending`` reason are skipped until the typed-text
-and audio paths exist; the same files then run on the real router and on the Pi.
+in-process on a fake clock (``machine``). The files with a ``pending`` reason are skipped until their input path
+can run in the selected environment; phone and ALSA scenarios still require a live Pi and audio hardware.
 
 Nothing here touches audio, a microphone or hardware.
 """

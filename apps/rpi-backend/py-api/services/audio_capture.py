@@ -23,6 +23,7 @@ import signal
 import logging
 import struct
 import threading
+from collections import deque
 from datetime import datetime
 
 logging.basicConfig(
@@ -42,6 +43,14 @@ ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
 DEVICE_INDEX = os.environ.get("AUDIO_DEVICE_INDEX", None)
 if DEVICE_INDEX is not None:
     DEVICE_INDEX = int(DEVICE_INDEX)
+AUDIO_SOURCE = os.environ.get("AUDIO_SOURCE", "auto").strip().lower()
+if AUDIO_SOURCE not in {"auto", "usb", "phone"}:
+    logger.warning("Unknown AUDIO_SOURCE=%r; using auto", AUDIO_SOURCE)
+    AUDIO_SOURCE = "auto"
+ZMQ_PHONE_PORT = int(os.environ.get("ZMQ_PHONE_AUDIO_PORT", "5564"))
+PHONE_FRAME_BYTES = 960  # fixed by /ws/audio: 16 kHz, mono, PCM16, 30 ms
+PHONE_FRAME_MS = 30
+PHONE_FRESH_SEC = float(os.environ.get("PHONE_AUDIO_FRESH_SEC", "0.5"))
 
 # ── Dependencies ──────────────────────────────────────────────────────────
 try:
@@ -73,12 +82,112 @@ except ImportError:  # run without the services package on the path: no muting
 running = True
 
 # Closed while MIA speaks (REQ-VOICE-016). None when the gate could not be imported.
-mic_gate = MicGate(time.monotonic) if MicGate is not None else None
+mic_gate = MicGate(
+    time.monotonic,
+    tail_sec=0.8 if AUDIO_SOURCE in {"auto", "phone"} else 0.3,
+) if MicGate is not None else None
+
+
+class PhoneAudioBuffer:
+    """Small jitter buffer for authenticated PCM frames received by mia-api."""
+
+    def __init__(self, capacity: int = 10) -> None:
+        self._frames = deque(maxlen=capacity)
+        self._lock = threading.Lock()
+        self._last_frame_at = 0.0
+        self.dropped_oldest = 0
+
+    def put(self, pcm: bytes) -> bool:
+        if len(pcm) != PHONE_FRAME_BYTES:
+            return False
+        with self._lock:
+            if len(self._frames) == self._frames.maxlen:
+                self.dropped_oldest += 1
+            self._frames.append(pcm)
+            self._last_frame_at = time.monotonic()
+        return True
+
+    def take(self) -> bytes | None:
+        with self._lock:
+            if not self._frames:
+                return None
+            return self._frames.popleft()
+
+    def is_fresh(self, max_age: float = PHONE_FRESH_SEC) -> bool:
+        with self._lock:
+            return self._last_frame_at > 0 and time.monotonic() - self._last_frame_at <= max_age
+
+    def clear(self) -> None:
+        with self._lock:
+            self._frames.clear()
+
+
+phone_audio = PhoneAudioBuffer()
 
 
 def gated(pcm: bytes) -> bytes:
     """Silence the frame while MIA is speaking so it does not hear itself."""
+    if mic_gate is not None and not mic_gate.is_open:
+        phone_audio.clear()
     return mic_gate.apply(pcm) if mic_gate is not None else pcm
+
+
+def select_input(local_pcm: bytes) -> bytes:
+    """Prefer a fresh phone frame in auto mode; phone mode never falls back to the local mic."""
+    if AUDIO_SOURCE == "phone":
+        return phone_audio.take() or b"\x00" * PHONE_FRAME_BYTES
+    if AUDIO_SOURCE == "auto" and phone_audio.is_fresh():
+        return phone_audio.take() or b"\x00" * PHONE_FRAME_BYTES
+    return local_pcm
+
+
+def listen_for_phone_audio(ctx):
+    """Receive PCM from the API process; this service remains the only audio PUB owner."""
+    pull = ctx.socket(zmq.PULL)
+    pull.setsockopt(zmq.RCVHWM, 10)
+    pull.bind(f"tcp://127.0.0.1:{ZMQ_PHONE_PORT}")
+    poller = zmq.Poller()
+    poller.register(pull, zmq.POLLIN)
+    received = 0
+    try:
+        logger.info("Phone PCM ingest bound on tcp://127.0.0.1:%d", ZMQ_PHONE_PORT)
+        while running:
+            if pull in dict(poller.poll(200)):
+                pcm = pull.recv()
+                if phone_audio.put(pcm):
+                    received += 1
+                else:
+                    logger.warning("Dropped phone PCM with unexpected length: %d", len(pcm))
+                if received and received % 1000 == 0:
+                    logger.info(
+                        "Phone PCM frames received=%d dropped_oldest=%d",
+                        received,
+                        phone_audio.dropped_oldest,
+                    )
+    finally:
+        pull.close()
+
+
+def capture_phone(pub_socket):
+    """Pace phone microphone frames into the normal audio topic, using silence on gaps."""
+    global running
+    interval = PHONE_FRAME_MS / 1000.0
+    silence = b"\x00" * PHONE_FRAME_BYTES
+    next_frame_at = time.monotonic()
+    logger.info("Phone microphone source selected (%d ms frames)", PHONE_FRAME_MS)
+    while running:
+        if phone_audio.is_fresh():
+            pcm = phone_audio.take() or silence
+        else:
+            phone_audio.clear()
+            pcm = silence
+        pcm_data = gated(pcm)
+        try:
+            pub_socket.send_multipart([b"mia/audio/raw", pcm_data], zmq.NOBLOCK)
+        except zmq.Again:
+            pass
+        next_frame_at += interval
+        time.sleep(max(0.0, next_frame_at - time.monotonic()))
 
 
 def listen_for_speaking(ctx):
@@ -139,7 +248,8 @@ def capture_with_sounddevice(pub_socket):
             raise sd.CallbackAbort()
         # indata is numpy float32 array, convert to int16 bytes
         import numpy as np
-        pcm_data = gated((indata[:, 0] * 32767).astype(np.int16).tobytes())
+        local_pcm = (indata[:, 0] * 32767).astype(np.int16).tobytes()
+        pcm_data = gated(select_input(local_pcm))
         try:
             pub_socket.send_multipart([
                 b"mia/audio/raw",
@@ -180,7 +290,8 @@ def capture_with_pyaudio(pub_socket):
 
     try:
         while running:
-            pcm_data = gated(stream.read(CHUNK_FRAMES, exception_on_overflow=False))
+            local_pcm = stream.read(CHUNK_FRAMES, exception_on_overflow=False)
+            pcm_data = gated(select_input(local_pcm))
             try:
                 pub_socket.send_multipart([
                     b"mia/audio/raw",
@@ -234,31 +345,49 @@ def main():
     pub.bind(f"tcp://*:{ZMQ_PUB_PORT}")
     logger.info(f"ZMQ PUB bound on tcp://*:{ZMQ_PUB_PORT}")
 
+    threading.Thread(target=listen_for_phone_audio, args=(ctx,), daemon=True).start()
+    logger.info("  Audio source: %s", AUDIO_SOURCE)
+
     if mic_gate is not None:
         threading.Thread(target=listen_for_speaking, args=(ctx,), daemon=True).start()
         logger.info(f"Microphone muted while MIA speaks (events on port {ZMQ_SPEAKING_PORT})")
 
     try:
-        if SOUNDDEVICE_AVAILABLE:
+        if AUDIO_SOURCE == "phone":
+            capture_phone(pub)
+        elif SOUNDDEVICE_AVAILABLE:
             try:
                 capture_with_sounddevice(pub)
             except Exception as e:
                 logger.warning(f"sounddevice capture failed ({e}) — falling back")
                 if PYAUDIO_AVAILABLE:
-                    capture_with_pyaudio(pub)
+                    try:
+                        capture_with_pyaudio(pub)
+                    except Exception as fallback_error:
+                        logger.warning("pyaudio capture failed (%s)", fallback_error)
+                        capture_phone(pub) if AUDIO_SOURCE == "auto" else capture_simulation(pub)
                 else:
-                    logger.warning("No working audio device — running in simulation mode")
-                    capture_simulation(pub)
+                    if AUDIO_SOURCE == "auto":
+                        logger.warning("No local audio device — using phone audio when available")
+                        capture_phone(pub)
+                    else:
+                        logger.warning("No working audio device — running in simulation mode")
+                        capture_simulation(pub)
         elif PYAUDIO_AVAILABLE:
             try:
                 capture_with_pyaudio(pub)
             except Exception as e:
-                logger.warning(f"pyaudio capture failed ({e}) — running in simulation mode")
-                capture_simulation(pub)
+                logger.warning(f"pyaudio capture failed ({e})")
+                capture_phone(pub) if AUDIO_SOURCE == "auto" else capture_simulation(pub)
         else:
-            logger.warning("No audio library available — running in simulation mode")
-            capture_simulation(pub)
+            if AUDIO_SOURCE == "auto":
+                logger.warning("No local audio library — using phone audio when available")
+                capture_phone(pub)
+            else:
+                logger.warning("No audio library available — running in simulation mode")
+                capture_simulation(pub)
     finally:
+        running = False
         pub.close()
         ctx.term()
         logger.info("Audio capture stopped")

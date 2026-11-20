@@ -2,14 +2,17 @@
 
 Only the stimulus and the tap (``voice_trace``) differ between layers. A target for ``press`` is anything with a
 ``send_command(command)`` method (see ``voice_rig``). The audio stimuli are for the Pi: ``play_wav`` needs ``aplay``
-and an ALSA device, and ``stream_wav_ws`` waits for the /ws/audio endpoint (REQ-VOICE-027).
+and an ALSA device, and ``stream_wav_ws`` sends microphone-format frames to a live Pi (REQ-VOICE-027).
 """
 
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
+import time
+import wave
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -65,5 +68,44 @@ def play_wav(path: str, device: str) -> subprocess.CompletedProcess:
 
 
 def stream_wav_ws(path: str, url: str) -> None:
-    """Stream a WAV as 30 ms frames to the phone-microphone endpoint (ADR-0021). Not available yet."""
-    raise NotImplementedError("/ws/audio does not exist yet; this stimulus arrives with REQ-VOICE-027")
+    """Stream a 16 kHz mono PCM16 WAV to ``/ws/audio`` in real-time 30 ms frames (ADR-0021)."""
+    if not Path(path).is_file():
+        raise FileNotFoundError(path)
+
+    with wave.open(path, "rb") as audio:
+        if (audio.getframerate(), audio.getnchannels(), audio.getsampwidth(), audio.getcomptype()) != (
+            16000,
+            1,
+            2,
+            "NONE",
+        ):
+            raise ValueError("phone microphone WAV must be uncompressed 16 kHz mono PCM16")
+
+        try:
+            from websockets.sync.client import connect
+        except ImportError as exc:
+            raise RuntimeError("websockets 12.0 is required for phone microphone stimuli") from exc
+
+        key = os.environ.get("MIA_API_KEY", "").strip()
+        headers = {"X-API-Key": key} if key else {}
+        with connect(url, extra_headers=headers, open_timeout=5, close_timeout=2) as socket:
+            socket.send(json.dumps({"v": 1, "fmt": "s16le", "rate": 16000, "ch": 1, "frame_ms": 30}))
+            try:
+                acknowledgement = json.loads(socket.recv(timeout=5))
+            except (TimeoutError, json.JSONDecodeError) as exc:
+                raise RuntimeError("Pi did not acknowledge the phone microphone format") from exc
+            if acknowledgement.get("ok") is not True:
+                raise RuntimeError("Pi refused the phone microphone format")
+
+            frame_bytes = 960
+            interval = 0.03
+            next_frame_at = time.monotonic()
+            while True:
+                frame = audio.readframes(frame_bytes // 2)
+                if not frame:
+                    break
+                if len(frame) < frame_bytes:
+                    frame += b"\x00" * (frame_bytes - len(frame))
+                socket.send(frame)
+                next_frame_at += interval
+                time.sleep(max(0.0, next_frame_at - time.monotonic()))
