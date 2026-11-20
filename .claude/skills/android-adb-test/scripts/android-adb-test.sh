@@ -244,6 +244,11 @@ open_nav_tab() {
   local marker_mode="${3:-contains}"
 
   bring_app_to_foreground
+  # Chained scenarios may already be on this screen. Avoid tapping a selected tab or menu item
+  # whose accessibility node is not clickable while its destination is active.
+  if [[ -n "$marker" ]] && ui_has_text "$marker" "$marker_mode"; then
+    return 0
+  fi
   wait_for_ui_text "$label" 12 exact bottom-most || {
     err "Navigation label '$label' is not visible"
     return 1
