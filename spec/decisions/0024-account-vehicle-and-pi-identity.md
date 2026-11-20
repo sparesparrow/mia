@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-11-20
-- Requirements: REQ-VOICE-008, REQ-VOICE-030, REQ-VOICE-031, REQ-VOICE-032, REQ-VOICE-033, REQ-VOICE-034
+- Requirements: REQ-VOICE-008, REQ-VOICE-040, REQ-VOICE-041, REQ-VOICE-042, REQ-VOICE-043, REQ-VOICE-044
 
 ## Context
 
@@ -41,5 +41,5 @@ paid speech provider.
 
 ## Sources
 
-`spec/requirements/voice.yaml` (REQ-VOICE-008, REQ-VOICE-030 through REQ-VOICE-034),
+`spec/requirements/voice.yaml` (REQ-VOICE-008, REQ-VOICE-040 through REQ-VOICE-044),
 `apps/rpi-backend/py-api/services/stt_service.py`.

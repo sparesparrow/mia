@@ -414,7 +414,7 @@ requirements:
     repeated independently in the agent's own system prompt.
   not_proven: Not yet adversarially tested against a live dispatch (the pattern was proven this way for a
     different, non-vehicle agent in the quest-rc prototype, not for mia-car specifically).
-- id: REQ-VOICE-030
+- id: REQ-VOICE-040
   title: MIA account identity
   statement: >-
     A future central MIA service shall assign each account an opaque MIA account ID that is not derived from
@@ -424,7 +424,7 @@ requirements:
   decisions:
   - ADR-0024
   not_proven: The central MIA service and account registry are not implemented.
-- id: REQ-VOICE-031
+- id: REQ-VOICE-041
   title: Billing processor identity
   statement: >-
     A future central MIA service shall associate each MIA account with a server-managed payment processor customer
@@ -434,7 +434,7 @@ requirements:
   decisions:
   - ADR-0024
   not_proven: No billing backend, processor integration or server-side ID mapping is implemented.
-- id: REQ-VOICE-032
+- id: REQ-VOICE-042
   title: Vehicle VIN metadata
   statement: >-
     A vehicle VIN shall be stored separately as metadata linked to an MIA account, never used to derive an account
@@ -444,7 +444,7 @@ requirements:
   decisions:
   - ADR-0024
   not_proven: No vehicle registry or account-to-vehicle association is implemented.
-- id: REQ-VOICE-033
+- id: REQ-VOICE-043
   title: Per-install Pi identity
   statement: >-
     Each Pi installation shall use a dedicated key pair whose public-key fingerprint is registered by the server and
@@ -455,7 +455,7 @@ requirements:
   decisions:
   - ADR-0024
   not_proven: Device enrollment, proof-of-possession authentication, key rotation and revocation are not implemented.
-- id: REQ-VOICE-034
+- id: REQ-VOICE-044
   title: Optional paid speech provider
   statement: >-
     Paid speech-to-text provider use shall be optional and separately enabled, while local Whisper remains the default
