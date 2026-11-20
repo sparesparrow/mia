@@ -44,7 +44,7 @@ Options:
   --device SERIAL       Target device serial (auto-detect if omitted)
   --apk PATH            APK path (default: apps/android/.../app-debug.apk)
   --package PACKAGE     Installed application id (default: cz.mia.app.debug; override with MIA_ANDROID_PACKAGE)
-  --scenario NAME       Test scenario: install|dashboard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
+  --scenario NAME       Test scenario: install|dashboard|install-wizard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
   --screenshots         Capture screenshots during test
   --logs                Capture logcat to output directory
   --output DIR          Output directory (default: apps/android/test-artifacts/<timestamp>)
@@ -551,6 +551,20 @@ scenario_obd_pairing() {
   take_screenshot "obd_pairing"
 }
 
+scenario_install_wizard() {
+  log "Scenario: install wizard"
+  open_more_item "Install MIA on a car" "Start" exact || return 1
+  tap_ui_text "Start" exact || return 1
+  # The key screen needs no network; the field label (or, failing that, its explanation) must show.
+  if ! wait_for_ui_text "Activation key" 10 contains; then
+    wait_for_ui_text "Enter the activation key" 4 contains || {
+      err "Activation key screen did not appear after tapping Start"
+      return 1
+    }
+  fi
+  take_screenshot "install_wizard"
+}
+
 scenario_settings() {
   log "Scenario: settings"
   open_more_item "Settings" "Save VIN" exact || return 1
@@ -567,6 +581,7 @@ scenario_anpr() {
 scenario_full_flow() {
   log "Scenario: full-flow (chained)"
   scenario_dashboard || return 1
+  scenario_install_wizard || return 1
   scenario_ble_scan || return 1
   scenario_obd_pairing || return 1
 }
@@ -599,6 +614,7 @@ run_scenario() {
   case "$SCENARIO" in
     install) log "Install only (app already launched)" ;;
     dashboard) scenario_dashboard ;;
+    install-wizard) scenario_install_wizard ;;
     ble-scan) scenario_ble_scan ;;
     obd-pairing) scenario_obd_pairing ;;
     settings) scenario_settings ;;

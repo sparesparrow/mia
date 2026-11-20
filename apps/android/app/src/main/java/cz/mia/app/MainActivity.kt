@@ -83,6 +83,7 @@ import cz.mia.app.ui.theme.MiaTheme
 import cz.mia.app.ui.theme.mia
 import cz.mia.app.ui.screens.camera.CameraScreen
 import cz.mia.app.ui.screens.OBDPairingScreen
+import cz.mia.app.ui.screens.vehicle.InstallMiaScreen
 import cz.mia.app.ui.screens.AudioSettingsScreen
 import cz.mia.app.ui.screens.VoiceConsoleScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -138,6 +139,7 @@ class MainActivity : ComponentActivity() {
 				) { destination, inner ->
 					when (destination) {
 						MoreDestination.Alerts -> AlertsScreen(inner)
+						MoreDestination.InstallMia -> InstallMiaScreen(inner)
 						MoreDestination.ObdPairing -> OBDPairingScreen(inner)
 						MoreDestination.Settings -> SettingsScreen(inner)
 					}

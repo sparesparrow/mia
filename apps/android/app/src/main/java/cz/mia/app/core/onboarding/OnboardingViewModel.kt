@@ -47,9 +47,11 @@ class OnboardingViewModel @Inject constructor(
 	private val dir = File(app.noBackupFilesDir, "update")
 	private val keys = SshKeyStore(dir, SshKeyStore.wrapFor(dir))
 	private val http = OkHttpClient()
-	private val authClient = AuthServerClient(AUTH_SERVER_URL, http)
+	private val authClient = AuthServerClient(BuildConfig.MIA_AUTH_SERVER_URL, http)
 	private val pairingSlot = PairingSlot()
 	private val releases = ReleasePackageSource(File(dir, "release-cache")) { version -> ReleaseDownloader(http).download(version) }
+
+	private val knownStore = KnownPiStore(PrefsKnownPiStorage(app))
 
 	private val machine = OnboardingMachine(
 		// Plain objects, not SAM lambdas: kotlinc 1.9 miscompiled a suspend/Result SAM lambda in the machine test (it hung).
@@ -67,7 +69,7 @@ class OnboardingViewModel @Inject constructor(
 		enroller = EnrollTransport { host, expectedFp, request -> SshEnroller(keys.keyPair()).enroll(host, expectedFp, request) },
 		installer = InstallPort { pi, config, onProgress, onNote -> install(pi, config, onProgress, onNote) },
 		pairing = pairingSlot,
-		known = KnownPiStore(PrefsKnownPiStorage(app)),
+		known = knownStore,
 		phoneKeyLine = { keys.publicLine() },
 		scope = viewModelScope,
 		io = Dispatchers.IO,
@@ -77,6 +79,9 @@ class OnboardingViewModel @Inject constructor(
 	val notes: StateFlow<List<String>> = machine.notes
 	val formProblems: StateFlow<List<String>> = machine.formProblems
 	val pairingIssue: StateFlow<String?> = machine.pairingIssue
+
+	/** Pis that finished the wizard (fingerprint and host only); read once the state is Done. */
+	fun knownPis(): List<KnownPi> = knownStore.known()
 
 	fun begin() = machine.begin()
 	fun restart() = machine.restart()
@@ -111,11 +116,6 @@ class OnboardingViewModel @Inject constructor(
 	}
 
 	private companion object {
-		/**
-		 * Placeholder: the auth server does not exist yet (ADR-0024/0025). The reserved .example name never resolves, so
-		 * the wizard shows its retry state until a real address replaces this.
-		 */
-		const val AUTH_SERVER_URL = "https://auth.mia.example"
 		const val SCAN_MS = 5_000L
 	}
 }
