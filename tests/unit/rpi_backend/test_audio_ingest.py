@@ -162,6 +162,7 @@ def test_no_key_is_refused_even_when_global_auth_is_disabled(ingest_client, monk
     monkeypatch.setattr(api_key_module, "_api_key_auth", api_key_module.APIKeyAuth())
     deps._verified.clear()
     _expect_close(ingest_client, {}, 1008)
+    _expect_close(ingest_client, {"X-API-Key": WRITE_KEY}, 1008)
 
 
 def test_the_endpoint_is_off_unless_enabled(ingest_client, monkeypatch):

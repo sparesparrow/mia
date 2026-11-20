@@ -338,7 +338,7 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - /ws/audio closes with 1008 without a key, with a read-only key and when VOICE_PHONE_MIC is not 1
-  - A configured write-scope key is required even when global API authentication is disabled
+  - When API authentication is disabled or no key is configured, /ws/audio closes with 1008; when authentication is enabled, it requires a write-scope key
   - The first text frame must name 16 kHz mono s16le in 30 ms frames, otherwise the socket closes with 1003; a binary message that is not a whole number of 960-byte frames is dropped and counted
   - Frames go to a ZeroMQ PUSH socket with a high-water mark of 8 and are dropped, never waited for, when it is full or nobody listens
   - A second phone replaces the first, which is closed with 1008
