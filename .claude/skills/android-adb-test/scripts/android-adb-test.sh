@@ -514,25 +514,35 @@ scenario_dashboard() {
   take_screenshot "dashboard_telemetry"
 }
 
+ensure_ble_scanning() {
+  if ui_has_text "Scanning..." exact; then
+    return 0
+  fi
+
+  if ! ui_has_text "Scan" exact; then
+    err "OBD scan control is not visible"
+    return 1
+  fi
+
+  tap_ui_text "Scan" exact || return 1
+  wait_for_ui_text "Scanning..." 10 exact || {
+    err "BLE scan did not start after tapping Scan"
+    return 1
+  }
+}
+
 scenario_ble_scan() {
   log "Scenario: BLE scan"
   open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
-  if ui_has_text "Scan" exact; then
-    tap_ui_text "Scan" exact || return 1
-    wait_for_ui_text "Scanning..." 10 exact || sleep_ms 3000
-  else
-    log "Scan button not visible; capturing current OBD screen"
-  fi
+  ensure_ble_scanning || return 1
   take_screenshot "ble_scan_screen"
 }
 
 scenario_obd_pairing() {
   log "Scenario: OBD pairing"
   open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
-  if ui_has_text "Scan" exact; then
-    tap_ui_text "Scan" exact || return 1
-    sleep_ms 4000
-  fi
+  ensure_ble_scanning || return 1
+  sleep_ms 4000
   if ! tap_first_device_entry; then
     log "No discoverable OBD device found; skipping pairing tap"
   else
@@ -556,9 +566,9 @@ scenario_anpr() {
 
 scenario_full_flow() {
   log "Scenario: full-flow (chained)"
-  scenario_dashboard
-  scenario_ble_scan
-  scenario_obd_pairing
+  scenario_dashboard || return 1
+  scenario_ble_scan || return 1
+  scenario_obd_pairing || return 1
 }
 
 scenario_interactive() {
