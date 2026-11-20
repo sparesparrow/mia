@@ -373,7 +373,7 @@ jobs:
         if: steps.check.outputs.has_pio == 'true'
         with:
           path: ~/.platformio
-          key: pio-${{ hashFiles('apps/esp32/platformio.ini') }}
+          key: pio-${{ hashFiles('apps/esp32/platformio.ini', 'apps/esp32/elm327-emulator/platformio.ini') }}
       - name: Build with PlatformIO
         if: steps.check.outputs.has_pio == 'true'
         run: |
@@ -384,6 +384,15 @@ jobs:
             echo "::error::PlatformIO build failed: $(grep -iE 'error|fatal' /tmp/pio.log | head -n 15 | tr '\n' '~')"
             exit 1
           fi
+      - name: Build ELM327 emulator firmware
+        if: steps.check.outputs.has_pio == 'true'
+        run: |
+          set -o pipefail
+          cd apps/esp32/elm327-emulator
+          if ! pio run 2>&1 | tee /tmp/elm327-pio.log; then
+            echo "::error::ELM327 PlatformIO build failed: $(grep -iE 'error|fatal' /tmp/elm327-pio.log | head -n 15 | tr '\n' '~')"
+            exit 1
+          fi
       - name: Stage firmware
         if: steps.check.outputs.has_pio == 'true'
         run: |
@@ -391,6 +400,10 @@ jobs:
           find apps/esp32/.pio/build -type f \
             \( -name '*.bin' -o -name '*.elf' -o -name '*.hex' \) \
             -exec cp -v {} dist/esp32/ \; || true
+          mkdir -p dist/esp32/elm327-emulator
+          find apps/esp32/elm327-emulator/.pio/build -type f \
+            \( -name '*.bin' -o -name '*.elf' -o -name '*.hex' \) \
+            -exec cp -v {} dist/esp32/elm327-emulator/ \; || true
           ls -la dist/esp32
       - name: Upload ESP32 firmware
         if: steps.check.outputs.has_pio == 'true'
