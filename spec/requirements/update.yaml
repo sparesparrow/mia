@@ -1,0 +1,118 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: update
+title: Phone-driven software update
+description: Updating an already-installed Pi from the Android app over SSH (ADR-0023). A fresh install is a
+  one-time bootstrap (docs/install/pi-gateway.md) and is out of scope.
+requirements:
+- id: REQ-UPD-001
+  title: Verified update package
+  statement: The Pi shall apply an update package only after the backend bundle matches the release SHA256SUMS and the
+    manifest, and shall unpack it without absolute paths, parent paths, links or devices.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A checksum or manifest digest mismatch is refused and nothing is deployed
+  - A bundle member with an unsafe path or a symlink, an unexpected package member, an empty, garbage or oversized
+    package is refused
+  - The result is one JSON line {ok, step, version, error} and a non-zero exit code on failure
+  - Changed Python requirements are refused, because the update runs the install with --skip-packages
+  implemented_in:
+  - bin/mia-apply-update
+  - tools/scripts/deploy-raspberry-pi.sh
+  decisions:
+  - ADR-0023
+  not_proven: Not run as root on a Raspberry Pi, and not through sshd with the forced command.
+- id: REQ-UPD-002
+  title: Schema-hash gate
+  statement: The phone and the Pi shall refuse to push or apply a backend whose FlatBuffers schema_hash differs from
+    the one the phone was built with.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The Pi recomputes the hash from the bundle's schemas/*.fbs and refuses a manifest that disagrees
+  - The hash algorithm has a fixed golden value shared by the Python and Kotlin tests
+  implemented_in:
+  - bin/mia-apply-update
+  - apps/android/app/src/main/java/cz/mia/app/core/update
+  decisions:
+  - ADR-0023
+  not_proven: The Gradle step that computes the phone's own hash has not been built (no Android SDK on the
+    authoring machine); the Kotlin test has not been run.
+- id: REQ-UPD-003
+  title: User configuration is validated data
+  statement: The user's configuration shall travel as YAML, be validated against schemas/json/mia-user-config.schema.json
+    and be stored as JSON under /etc/mia/config.d, and shall never be executed or interpolated into a shell.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Tabs, anchors, tags, flow style, extra documents, duplicate keys and trailing comments are refused
+  - A value outside the schema, an unknown key or a missing version is refused and nothing is deployed
+  - The Pi's validator agrees with the jsonschema library on the shipped schema
+  implemented_in:
+  - bin/mia-apply-update
+  - schemas/json/mia-user-config.schema.json
+  decisions:
+  - ADR-0023
+  not_proven: No Pi service reads /etc/mia/config.d yet; this requirement covers delivery and validation only.
+- id: REQ-UPD-004
+  title: Restricted update access
+  statement: A phone shall be able to run only the update command over SSH, through a dedicated user, a one-command
+    sudoers rule and a forced command on its key, and a key shall be added only by root on the Pi, never by the API.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - bin/mia-update-pair refuses to run unless root and accepts only a bare ed25519 or ECDSA key (no RSA, options or newlines)
+  - The written entry carries restrict, the forced command and no-pty, no forwarding options; repeating a pairing changes nothing
+  - The key list is root-owned, mode 644, and the API has no write route; GET /admin/update/pair (admin scope) lists labels and fingerprints and gives 503 when authentication is disabled
+  - The installer's sudoers rule allows one file with no arguments and is checked with visudo
+  - The sshd drop-in sits only inside Match User mia-update, with ForceCommand, PermitUserRC no and no ssh-rsa
+  implemented_in:
+  - bin/mia-update-pair
+  - apps/rpi-backend/py-api/api/routers/update_pairing.py
+  - infra/deploy/rpi/install-update-access.sh
+  decisions:
+  - ADR-0023
+  not_proven: Not run against a real sshd and sudo; sshd's AuthorizedKeysCommand and ForceCommand behaviour is
+    documented, not tested. A paired key is root on the Pi by design (checksum-only authenticity, REQ-UPD-008).
+- id: REQ-UPD-005
+  title: Rollback and Pi-owned state
+  statement: The Pi shall keep the previous package and return to it on request, and an update or rollback shall
+    never read or overwrite state the Pi owns, such as voice_settings.json.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - After two updates, --rollback redeploys the first package and restores its configuration
+  - A damaged previous package is not rolled back to
+  - voice_settings.json is byte- and mtime-identical after updates, rollback and a refused package
+  implemented_in:
+  - bin/mia-apply-update
+  decisions:
+  - ADR-0023
+  not_proven: Not run on a Pi with live units.
+- id: REQ-UPD-006
+  title: Release bundle carries the updater
+  statement: The release backend bundle shall include the on-Pi deploy script and bin/mia-apply-update, so a verified
+    bundle is enough to update a Pi.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - release.yml archives tools/scripts/deploy-raspberry-pi.sh and bin/mia-apply-update, and both paths exist
+  implemented_in:
+  - .github/workflows/release.yml
+  decisions:
+  - ADR-0023
+  not_proven: The workflow has not run on a tag since this change.
+- id: REQ-UPD-007
+  title: Software update screen in the app
+  statement: The Android app shall let the user edit the configuration, build the package from the same-tag release,
+    push it over SSH with a key it keeps, and show progress and the Pi's result.
+  evidence: implemented_untested
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/update
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/SoftwareUpdateScreen.kt
+  decisions:
+  - ADR-0023
+  not_proven: The app has not been compiled or run (no Android SDK on the authoring machine); the Kotlin unit tests
+    have not been executed, and the SSH upload has not been tried against a Pi.
+- id: REQ-UPD-008
+  title: Signed releases
+  statement: The Pi shall apply an update only if the release bundle carries a signature that verifies against a
+    release key pinned on the Pi, so that a paired phone key alone cannot make the Pi run arbitrary code.
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0023
