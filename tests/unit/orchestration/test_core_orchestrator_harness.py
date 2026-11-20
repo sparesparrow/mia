@@ -4,6 +4,7 @@ Covers NLP intent parsing for 10 known command patterns, SessionContext.is_activ
 timeout logic, and IntentResult construction.
 """
 
+import asyncio
 import importlib
 import importlib.util
 import os
@@ -181,3 +182,65 @@ class TestEnhancedNLPProcessorIntents:
     async def test_result_has_alternatives_list(self):
         result = await self.processor.parse_command("play loud music on spotify")
         assert isinstance(result.alternatives, list)
+
+
+@pytest.mark.unit
+class TestClaudeAgentBridgeRouting:
+    """The opt-in bridge is loaded from its module and uses a fixed agent."""
+
+    @pytest.mark.req("REQ-ORCH-011")
+    def test_lazy_loader_finds_hyphenated_bridge_module(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("CLAUDE_AGENT_BRIDGE_STATE_DIR", str(tmp_path / "state"))
+
+        bridge = _eo_module._load_claude_agent_bridge()
+
+        assert bridge.__class__.__name__ == "ClaudeAgentBridge"
+        assert bridge.state_dir == tmp_path / "state"
+
+    @pytest.mark.req("REQ-ORCH-011")
+    def test_unmatched_intent_uses_fixed_agent(self):
+        class FakeBridge:
+            def __init__(self):
+                self.calls = []
+
+            def dispatch(self, prompt, agent):
+                self.calls.append((prompt, agent))
+                return {"ok": True, "result": "The car is parked."}
+
+        orchestrator = _eo_module.EnhancedCoreOrchestrator.__new__(
+            _eo_module.EnhancedCoreOrchestrator
+        )
+        bridge = FakeBridge()
+        orchestrator._claude_agent_bridge = bridge
+        intent = IntentResult(
+            intent="question_answer",
+            confidence=0.9,
+            parameters={"agent": "untrusted-agent"},
+            original_text="What is the vehicle status?",
+        )
+
+        response = asyncio.run(
+            orchestrator._route_enhanced_command(intent, None, None)
+        )
+
+        assert response == "The car is parked."
+        assert bridge.calls == [("What is the vehicle status?", "mia-car")]
+
+    @pytest.mark.req("REQ-ORCH-011")
+    def test_disabled_bridge_keeps_existing_fallback(self):
+        orchestrator = _eo_module.EnhancedCoreOrchestrator.__new__(
+            _eo_module.EnhancedCoreOrchestrator
+        )
+        orchestrator._claude_agent_bridge = None
+        intent = IntentResult(
+            intent="question_answer",
+            confidence=0.9,
+            parameters={},
+            original_text="What is the vehicle status?",
+        )
+
+        response = asyncio.run(
+            orchestrator._route_enhanced_command(intent, None, None)
+        )
+
+        assert response == "No service available for intent: question_answer"

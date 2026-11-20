@@ -9,6 +9,10 @@ INSTALL_DIR="${MIA_INSTALL_DIR:-/opt/mia}"
 SYSTEMD_SOURCE_DIR="$PROJECT_ROOT/infra/systemd"
 PY_API_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/py-api"
 SHARED_SOURCE_DIR="$PROJECT_ROOT/apps/rpi-backend/shared"
+ORCHESTRATION_SOURCE_DIR="$PROJECT_ROOT/orchestration/mcp/modules"
+ORCHESTRATION_TARGET_DIR="$INSTALL_DIR/orchestration/mcp/modules"
+CLAUDE_AGENT_SOURCE_DIR="$PROJECT_ROOT/.claude/agents"
+CLAUDE_AGENT_TARGET_DIR="$INSTALL_DIR/.claude/agents"
 
 get_cpu_count() {
     if command -v nproc >/dev/null 2>&1; then
@@ -121,6 +125,8 @@ run_privileged mkdir -p "$INSTALL_DIR/logs"
 run_privileged mkdir -p "$RPI_DIR"
 run_privileged mkdir -p "$PY_API_TARGET_DIR"
 run_privileged mkdir -p "$SHARED_TARGET_DIR"
+run_privileged mkdir -p "$ORCHESTRATION_TARGET_DIR"
+run_privileged mkdir -p "$CLAUDE_AGENT_TARGET_DIR"
 run_privileged mkdir -p "$INSTALL_DIR/Mia"
 
 # Copy binaries
@@ -144,6 +150,18 @@ fi
 
 if [ -d "$SHARED_SOURCE_DIR" ]; then
     run_privileged cp -r "$SHARED_SOURCE_DIR/." "$SHARED_TARGET_DIR/"
+fi
+
+if [ -d "$ORCHESTRATION_SOURCE_DIR" ]; then
+    run_privileged cp -r "$ORCHESTRATION_SOURCE_DIR/." "$ORCHESTRATION_TARGET_DIR/"
+fi
+
+if [ -d "$CLAUDE_AGENT_SOURCE_DIR" ]; then
+    run_privileged cp -r "$CLAUDE_AGENT_SOURCE_DIR/." "$CLAUDE_AGENT_TARGET_DIR/"
+fi
+
+if [ -f "$PROJECT_ROOT/.mcp.json" ]; then
+    run_privileged cp "$PROJECT_ROOT/.mcp.json" "$INSTALL_DIR/.mcp.json"
 fi
 
 if [ -d "$PROJECT_ROOT/Mia" ]; then

@@ -374,3 +374,19 @@ requirements:
   decisions:
   - ADR-0010
   not_proven: No audio path was exercised. The ZeroMQ tap, play_wav and the Pi smoke script have no CI test against a real router, a sound card or snd-aloop; the phone WAV stimulus now streams to /ws/audio but has not been run against the Pi audio pipeline. Typed-text and hardware-only scenarios remain skipped. The /ws/voice layer drives the simulated machine in the API process, not the voice router. The harness runs nowhere on a Pi yet.
+- id: REQ-VOICE-029
+  title: Read-only voice dispatch for vehicle control intents
+  statement: An unmatched voice intent dispatched to a Claude Code agent from inside the vehicle shall only be
+    able to perform read-only MIA API calls (telemetry, status, devices), never a write/control action, regardless
+    of what the recognised text says.
+  evidence: implemented_untested
+  implemented_in:
+  - .claude/agents/mia-car.md
+  - orchestration/mcp/modules/claude-agent-bridge/bridge.py
+  decisions:
+  - ADR-0006
+  - ADR-0022
+  safety: Cannot write, control hardware, or run non-curl commands — enforced by --allowedTools at dispatch and
+    repeated independently in the agent's own system prompt.
+  not_proven: Not yet adversarially tested against a live dispatch (the pattern was proven this way for a
+    different, non-vehicle agent in the quest-rc prototype, not for mia-car specifically).
