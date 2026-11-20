@@ -291,3 +291,114 @@ def test_cli_refusal_changes_no_state(world):
     assert junk.returncode == 1 and _last(junk)["ok"] is False
     for name in ("state", "etc"):
         assert not (world.tmp / name).exists() or not any(p.is_file() and p.stat().st_size for p in (world.tmp / name).rglob("*")), name
+
+
+# --- fix round 1 -----------------------------------------------------------------------------------------------------
+
+
+@pytest.mark.req("REQ-ONB-003")
+@pytest.mark.parametrize("jti", ["a b", "a\nb", "a\tb", "a/b", "é", "x" * 129, ""])
+def test_jti_outside_the_allowed_alphabet_is_refused(enroll, world, jti):
+    grant, sig = world.sign(world.claims(jti=jti))
+    with pytest.raises(enroll.GrantError) as err:
+        _verify(enroll, world, grant, sig)
+    assert "jti" in err.value.reason
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_whitespace_jti_refused_and_nothing_stored(world):
+    done = _run(world, _request(world, claims=world.claims(jti="a b")))
+    assert done.returncode == 1 and _last(done)["ok"] is False and "jti" in _last(done)["error"]
+    assert not (world.tmp / "state" / "seen_jti").exists()
+    assert not (world.tmp / "etc").exists()
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_prefix_jti_is_not_a_replay_of_a_longer_one(world):
+    first = _run(world, _request(world, claims=world.claims(jti="ab")))
+    assert first.returncode == 0, first.stderr
+    second = _run(world, _request(world, claims=world.claims(jti="a")))
+    assert second.returncode == 0, _last(second)
+    assert (world.tmp / "state" / "seen_jti").read_text().splitlines() == ["a", "ab"]
+    replay = _run(world, _request(world, claims=world.claims(jti="ab")))
+    assert replay.returncode == 1 and "replay" in _last(replay)["error"]
+
+
+def _failing_pair_tool(world) -> Path:
+    stub = world.tmp / "pair-fails"
+    stub.write_text(PAIR.read_text() + "\n\ndef add(*args, **kwargs):\n    raise OSError(5, 'simulated write failure')\n")
+    return stub
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_failed_pairing_burns_the_grant(world):
+    req = _request(world)
+    bad = _run(world, req, env_extra={"MIA_PAIR_TOOL": str(_failing_pair_tool(world))})
+    assert bad.returncode == 1 and _last(bad)["ok"] is False
+    assert (world.tmp / "state" / "seen_jti").read_text().splitlines() == ["jti-1"]
+    retry = _run(world, req)
+    assert retry.returncode == 1 and "replay" in _last(retry)["error"]
+    assert not (world.tmp / "etc" / "update_authorized_keys").exists()
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_failed_billing_write_burns_the_grant(world):
+    blocker = world.tmp / "blocker"
+    blocker.write_text("a file, not a directory")
+    req = _request(world)
+    bad = _run(world, req, env_extra={"MIA_CONFIG_D": str(blocker / "config.d")})
+    assert bad.returncode == 1 and _last(bad)["ok"] is False
+    retry = _run(world, req)
+    assert retry.returncode == 1 and "replay" in _last(retry)["error"]
+
+
+@pytest.mark.req("REQ-ONB-005")
+@pytest.mark.parametrize("empty", ["MIA_API_KEY=\n", "MIA_API_KEY=\"\"\n", "export MIA_API_KEY=\n"])
+def test_cli_empty_api_key_line_counts_as_absent(world, empty):
+    env_file = world.tmp / "etc" / "environment"
+    env_file.parent.mkdir()
+    env_file.write_text("FOO=bar\n" + empty)
+    done = _run(world, _request(world))
+    assert done.returncode == 0, done.stderr
+    lines = env_file.read_text().splitlines()
+    assert lines[:2] == ["FOO=bar", empty.rstrip("\n")]  # existing lines untouched
+    assert len(lines) == 3 and lines[2].startswith("MIA_API_KEY=") and len(lines[2]) > len("MIA_API_KEY=") + 20
+    assert lines[2].split("=", 1)[1] not in done.stdout + done.stderr
+    assert env_file.stat().st_mode & 0o777 == 0o600
+
+
+@pytest.mark.req("REQ-ONB-005")
+def test_cli_api_key_set_then_blanked_later_gets_a_new_line(world):
+    env_file = world.tmp / "etc" / "environment"
+    env_file.parent.mkdir()
+    env_file.write_text("MIA_API_KEY=old-secret-123\nMIA_API_KEY=\n")
+    done = _run(world, _request(world))
+    assert done.returncode == 0
+    lines = env_file.read_text().splitlines()
+    assert lines[:2] == ["MIA_API_KEY=old-secret-123", "MIA_API_KEY="] and len(lines) == 3
+
+
+@pytest.mark.req("REQ-ONB-002")
+def test_cli_always_ends_with_the_json_line_on_internal_errors(world):
+    env_file = world.tmp / "etc" / "environment"
+    env_file.parent.mkdir()
+    env_file.write_bytes(b"MIA_USER=\xff\xfe\n")
+    bad_env = _run(world, _request(world))
+    assert bad_env.returncode != 0
+    last = _last(bad_env)
+    assert last["ok"] is False and last["step"] in ("internal", "io") and last["error"]
+    bad_now = _run(world, _request(world), env_extra={"MIA_ENROLL_NOW": "not-a-number"})
+    assert bad_now.returncode != 0
+    last = _last(bad_now)
+    assert last["ok"] is False and last["step"] == "internal" and "not-a-number" not in last["error"]
+    assert "Traceback" not in bad_now.stdout
+
+
+@pytest.mark.req("REQ-ONB-002")
+def test_internal_error_message_never_contains_environment_file_content(world):
+    env_file = world.tmp / "etc" / "environment"
+    env_file.parent.mkdir()
+    env_file.write_bytes(b"MIA_API_KEY=topsecretvalue\n\xff\n")
+    done = _run(world, _request(world))
+    assert done.returncode != 0 and _last(done)["ok"] is False
+    assert "topsecretvalue" not in done.stdout + done.stderr

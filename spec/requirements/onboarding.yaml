@@ -41,12 +41,14 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - The same grant used twice is accepted once and refused the second time
+  - A jti outside ^[A-Za-z0-9._:-]{1,128}$ is refused, and a jti that is a prefix of a seen one is not a replay
   - A refused request registers no key and writes no config
+  - The jti is recorded before pairing, so an enrollment that fails after verification burns the grant
   implemented_in:
   - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Not run as root on a Raspberry Pi; concurrency is covered by a lock but only sequential replay is tested.'
+  not_proven: 'Not run as root on a Raspberry Pi; concurrency is covered by a lock but only sequential replay is tested; a crash (power loss) between verification and the jti write is not simulated, only failed pairing and billing writes.'
 - id: REQ-ONB-004
   title: Phone key limited to a forced command
   statement: The mia-enroll user shall be able to run only the one enrollment command, and an enrolled phone shall afterwards
@@ -68,7 +70,7 @@ requirements:
     and never be printed, logged, sent by the phone or placed in phone-edited YAML.
   evidence: implemented_and_ci_tested
   acceptance:
-  - An existing API key line is not rewritten
+  - An existing non-empty API key line is not rewritten; an empty MIA_API_KEY= line counts as absent and a new line is appended
   - The file mode is 600
   - The CLI output and logs do not contain the key
   implemented_in:

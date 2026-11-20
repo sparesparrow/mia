@@ -9,7 +9,7 @@
     "v": {"const": 1},
     "iat": {"type": "integer", "description": "Issued at."},
     "exp": {"type": "integer", "description": "Grant validity ends (minutes after iat). The Pi refuses now >= exp."},
-    "jti": {"type": "string", "minLength": 1, "maxLength": 128, "description": "Unique grant ID; the Pi accepts each once."},
+    "jti": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$", "description": "Unique grant ID; the Pi accepts each once."},
     "account_id": {"type": "string", "minLength": 1, "maxLength": 128, "description": "Opaque MIA account ID (ADR-0024); no Stripe identifier."},
     "plan": {"type": "string", "minLength": 1, "maxLength": 64},
     "entitlement_exp": {"type": "integer", "description": "When the paid entitlement ends; not the grant's validity."},

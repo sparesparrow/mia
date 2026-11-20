@@ -46,7 +46,8 @@ contract so the phone and Pi sides can be built and tested against a fake server
 - **Checks on the Pi, in order.** Signature valid; `iat <= now < exp` (plus a small skew allowance set in code);
   `device_fp` equals this Pi's own identity fingerprint; `phone_fp` equals the fingerprint of the key offered in the
   request; `jti` not seen before. Any failure refuses the request and changes no state (REQ-ONB-002, REQ-ONB-003).
-  `jti` values are persisted so a replay of a still-unexpired grant is refused.
+  `jti` values (`^[A-Za-z0-9._:-]{1,128}$`, one per line) are persisted so a replay of a still-unexpired grant is refused. The
+  `jti` is recorded before the key is paired (fail closed): a failed enrollment burns the grant and the phone requests a new one.
 
 ### Auth server HTTP contract (R3)
 Three endpoints, which the phone client and the fake test server both follow:
@@ -67,7 +68,8 @@ The activation key is the per-user key shipped with the app; it is exchanged for
   After enrollment the phone uses its ordinary ADR-0023 key (`mia-update` user, forced `mia-apply-update`), so the
   phone keeps no general shell (REQ-ONB-004).
 - The device API key is generated on the Pi with `secrets.token_urlsafe(32)` and appended to `/etc/mia/environment`
-  only if absent; existing lines are never rewritten. Secrets (API key, host keys) are never placed in phone-edited
+  unless a non-empty one is set (an empty `MIA_API_KEY=` counts as absent and a new line is appended; the later line
+  wins in a systemd EnvironmentFile); existing lines are never rewritten. Secrets (API key, host keys) are never placed in phone-edited
   YAML, never sent by the phone, and never logged (REQ-ONB-005).
 - The grant's `account_id`, `plan` and `entitlement_exp` are written as data to `/etc/mia/config.d/60-billing.json`.
 
