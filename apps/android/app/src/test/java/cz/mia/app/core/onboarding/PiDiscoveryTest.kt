@@ -105,8 +105,10 @@ class PiDiscoveryTest {
 		assertEquals(hosts.take(8), reader.asked)
 	}
 
+	// The slow probe is an interruptible fake (Thread.sleep): this proves the loop stops at the deadline, not that a
+	// thread blocked in a plain socket connect/read is interrupted (it is not; see PiDiscovery.find KDoc).
 	@Test
-	fun slowProbesAreCutOffAtTheDeadline() = runTest {
+	fun slowInterruptibleProbesAreCutOffAtTheDeadline() = runTest {
 		val asked = java.util.Collections.synchronizedList(mutableListOf<String>())
 		val reader = HostKeyReader { host ->
 			asked += host
@@ -120,6 +122,20 @@ class PiDiscoveryTest {
 		assertEquals(listOf(FoundPi("10.0.0.1", Transport.Hotspot, serverFp)), found)
 		assertEquals(listOf("10.0.0.1", "10.0.0.2"), asked.toList())
 		assertTrue("probe was interrupted, took $elapsedMs ms", elapsedMs < 10_000)
+	}
+
+	@Test
+	fun readerThrowingInterruptedExceptionStopsProbingAndKeepsFoundHosts() = runTest {
+		val asked = java.util.Collections.synchronizedList(mutableListOf<String>())
+		val reader = HostKeyReader { host ->
+			asked += host
+			if (host == "10.0.0.2") throw InterruptedException("simulated")
+			serverFp
+		}
+		val mdns = FakeMdns(listOf("10.0.0.1:8000", "10.0.0.2:8000", "10.0.0.3:8000"))
+		val found = discovery(mdns, reader).find(5_000)
+		assertEquals(listOf(FoundPi("10.0.0.1", Transport.Hotspot, serverFp)), found)
+		assertEquals(listOf("10.0.0.1", "10.0.0.2"), asked.toList())
 	}
 
 	@Test

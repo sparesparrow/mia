@@ -7,6 +7,7 @@ import java.security.Security
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -52,6 +53,15 @@ class PiDiscovery(
 	private val probeGraceMs: Long = MAX_PROBE_GRACE_MS,
 	private val trustedDeviceFps: () -> Set<String>,
 ) {
+	/**
+	 * Probes the mDNS hits one by one and returns those whose fingerprint is trusted.
+	 *
+	 * Deadline: [timeoutMs] plus the probe grace. It is a soft bound. Cancelling interrupts the probing thread, but
+	 * Thread.interrupt does not unblock a plain java.net.Socket connect or read, so a probe already in flight runs on
+	 * until its own limits. Worst case for [find] = timeoutMs + grace + connectTimeout + timeout of the host in flight
+	 * (with [SshHostKeyReader] defaults: timeoutMs + up to 5 s + 5 s + 5 s). No further host is started after the
+	 * deadline. A reader that throws InterruptedException also stops the loop; hosts found so far are returned.
+	 */
 	suspend fun find(timeoutMs: Long): List<FoundPi> {
 		// mDNS gives "host:port" for the API port; the SSH probe below always uses port 22, so only the host is kept.
 		val hosts = mdns.discoverApi(timeoutMs)
@@ -71,7 +81,15 @@ class PiDiscovery(
 			withTimeoutOrNull(deadlineMs) {
 				for (host in hosts) {
 					// runInterruptible interrupts the blocking read when the deadline cancels this scope.
-					val fp = runInterruptible { readOrNull(host) }
+					val fp = try {
+						runInterruptible { readOrNull(host) }
+					} catch (e: CancellationException) {
+						// runInterruptible turns an InterruptedException into a CancellationException. If this scope is
+						// still active (deadline not hit, caller not cancelled) the interrupt came from the reader: stop
+						// probing and keep what was found. Otherwise ensureActive rethrows the real cancellation.
+						ensureActive()
+						break
+					}
 					if (fp != null && fp in trusted) found += FoundPi(host, classify(host), fp)
 				}
 			}
@@ -83,6 +101,8 @@ class PiDiscovery(
 		try {
 			hostKeyReader.fingerprint(host)
 		} catch (e: CancellationException) {
+			throw e
+		} catch (e: InterruptedException) {
 			throw e
 		} catch (_: Exception) {
 			null
@@ -152,6 +172,10 @@ private fun base64NoPadding(data: ByteArray): String {
 /**
  * Production [HostKeyReader]: one SSH handshake to port 22 that stops at the host key. The verifier refuses the key on
  * purpose, so the connection never reaches authentication. Blocking: call it off the main thread.
+ *
+ * Time bound: one call takes at most connectTimeout + timeout of sshj, i.e. 2 * [timeoutMs] (10 s by default). Thread
+ * interrupt does not unblock the plain socket connect/read underneath, so cancelling [PiDiscovery.find] does not shorten
+ * a call already in flight; that remainder is the extra on top of find's deadline.
  */
 class SshHostKeyReader(private val timeoutMs: Int = 5_000) : HostKeyReader {
 	override fun fingerprint(host: String): String? {
