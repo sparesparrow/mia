@@ -20,6 +20,7 @@ import org.junit.Test
 class AuthServerClientTest {
 	private val activationKey = "act-SECRET-0123456789"
 	private val deviceFp = "SHA256:abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG"
+	private val otherFp = "SHA256:" + "b".repeat(43)
 	private val phoneKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFakeFakeFakeFakeFakeFakeFakeFakeFakeFake phone"
 	private val grantJson = """{"v":1,"account_id":"acc1","jti":"j-1","device_fp":"$deviceFp","phone_fp":"SHA256:phone","plan":"pro","entitlement_exp":1900000000,"iat":1,"exp":2,"extra":true}"""
 	private val signature = "-----BEGIN SSH SIGNATURE-----\nAAAA\n-----END SSH SIGNATURE-----\n"
@@ -107,10 +108,56 @@ class AuthServerClientTest {
 	}
 
 	@Test
+	fun requestTimeoutGivesRetryableError() {
+		// Retry-After stops OkHttp from re-sending a 408 on its own. The queued 200 would give Rejected if it were used.
+		server.enqueue(MockResponse().setResponseCode(408).setHeader("Retry-After", "1"))
+		server.enqueue(json("{}"))
+		assertTrue(client().requestGrant(activationKey, deviceFp, phoneKey).exceptionOrNull() is AuthServerError.Retryable)
+	}
+
+	@Test
+	fun tooManyRequestsGivesRetryableError() {
+		server.enqueue(json("{}", 429))
+		assertTrue(client().devices(activationKey).exceptionOrNull() is AuthServerError.Retryable)
+	}
+
+	@Test
+	fun redirectIsNotFollowed() {
+		server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", server.url("/elsewhere").toString()))
+		// If the client followed the redirect, this grant would be served and the call would succeed.
+		server.enqueue(grantResponse())
+		val error = client().requestGrant(activationKey, deviceFp, phoneKey).exceptionOrNull()
+		assertTrue(error is AuthServerError.Rejected)
+		assertEquals(1, server.requestCount)
+		assertFalse(error!!.message!!.contains(activationKey))
+	}
+
+	@Test
+	fun malformedDeviceFingerprintRejectedBeforeAnyRequest() {
+		val malformed = listOf(
+			"SHA256:short",
+			"MD5:" + "a".repeat(43),
+			"SHA256:" + "a".repeat(42) + "=",
+			"SHA256:" + "a".repeat(43) + "\n",
+			"SHA256:" + "a".repeat(44),
+		)
+		malformed.forEach { fp ->
+			assertTrue(client().requestGrant(activationKey, fp, phoneKey).exceptionOrNull() is AuthServerError.Rejected)
+		}
+		assertEquals(0, server.requestCount)
+	}
+
+	@Test
+	fun malformedFingerprintInDeviceListIsRejected() {
+		server.enqueue(json("""{"devices":[{"fp":"$deviceFp","label":"Audi Pi"},{"fp":"SHA256:aaa","label":"Spare"}]}"""))
+		assertTrue(client().devices(activationKey).exceptionOrNull() is AuthServerError.Rejected)
+	}
+
+	@Test
 	fun devicesReturnsFingerprints() {
-		server.enqueue(json("""{"devices":[{"fp":"SHA256:aaa","label":"Audi Pi"},{"fp":"SHA256:bbb","label":"Spare"}]}"""))
+		server.enqueue(json("""{"devices":[{"fp":"$deviceFp","label":"Audi Pi"},{"fp":"$otherFp","label":"Spare"}]}"""))
 		val devices = client().devices(activationKey).getOrThrow()
-		assertEquals(listOf(DeviceRef("SHA256:aaa", "Audi Pi"), DeviceRef("SHA256:bbb", "Spare")), devices)
+		assertEquals(listOf(DeviceRef(deviceFp, "Audi Pi"), DeviceRef(otherFp, "Spare")), devices)
 
 		val request = server.takeRequest(2, TimeUnit.SECONDS)!!
 		assertEquals("GET", request.method)

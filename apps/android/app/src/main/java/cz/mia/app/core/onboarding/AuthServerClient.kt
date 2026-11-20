@@ -28,7 +28,7 @@ sealed class AuthServerError(message: String) : Exception(message) {
 	/** 403: the server does not know this Pi for the account. */
 	class UnknownDevice : AuthServerError("This Pi is not registered to your account.")
 
-	/** Network failure, timeout or a 5xx from the server; trying again later may work. */
+	/** Network failure, timeout, 408, 429 or a 5xx from the server; trying again later may work. */
 	class Retryable(detail: String) : AuthServerError("The MIA server cannot be reached right now ($detail). Try again.")
 
 	/** The server answered, but not as ADR-0025 defines, or the client was configured unsafely. */
@@ -39,11 +39,18 @@ sealed class AuthServerError(message: String) : Exception(message) {
  * Client for the auth server contract of ADR-0025 (REQ-ONB-008): `POST /v1/grants`, `GET /v1/devices`,
  * `POST /v1/checkout`. The activation key travels only in the `Authorization: Bearer` header. Nothing is logged and
  * no method throws; every failure is an [AuthServerError] inside the [Result].
+ *
+ * The calls block the calling thread on network I/O. Callers must run them on `Dispatchers.IO`, never on the main
+ * thread. Redirects are never followed, so the activation key is not sent to a redirect target.
  */
-class AuthServerClient(baseUrl: String, private val client: OkHttpClient, private val gson: Gson = Gson()) {
+class AuthServerClient(baseUrl: String, client: OkHttpClient, private val gson: Gson = Gson()) {
+	private val http: OkHttpClient = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
 	private val base: HttpUrl? = baseUrl.trim().toHttpUrlOrNull()?.takeIf { isAllowed(it) }
 
 	fun requestGrant(activationKey: String, devicePublicFp: String, phonePublicKeyLine: String): Result<Grant> {
+		if (!FINGERPRINT.matches(devicePublicFp)) {
+			return Result.failure(bad("device fingerprint is not SHA256:<base64>"))
+		}
 		val body = JsonObject().apply {
 			addProperty("device_fp", devicePublicFp)
 			addProperty("phone_public_key", phonePublicKeyLine)
@@ -72,6 +79,7 @@ class AuthServerClient(baseUrl: String, private val client: OkHttpClient, privat
 			array.map { element ->
 				val device = element.asJsonObject
 				val fp = device.stringOrNull("fp") ?: throw bad("device without fp")
+				if (!FINGERPRINT.matches(fp)) throw bad("device fingerprint is not SHA256:<base64>")
 				DeviceRef(fp, device.stringOrNull("label").orEmpty())
 			}
 		}
@@ -98,11 +106,12 @@ class AuthServerClient(baseUrl: String, private val client: OkHttpClient, privat
 				.url(root.newBuilder().addPathSegments(path).build())
 				.header("Authorization", "Bearer $activationKey")
 			val request = if (body == null) builder.get().build() else builder.post(body).build()
-			client.newCall(request).execute().use { response ->
+			http.newCall(request).execute().use { response ->
 				when {
 					response.code == 401 -> Result.failure(AuthServerError.Unauthorized())
 					response.code == 403 -> Result.failure(AuthServerError.UnknownDevice())
-					response.code >= 500 -> Result.failure(AuthServerError.Retryable("server error ${response.code}"))
+					response.code == 408 || response.code == 429 || response.code >= 500 ->
+						Result.failure(AuthServerError.Retryable("server status ${response.code}"))
 					!response.isSuccessful -> Result.failure(bad("unexpected status ${response.code}"))
 					else -> Result.success(parse(response.body?.string().orEmpty()))
 				}
@@ -120,6 +129,9 @@ class AuthServerClient(baseUrl: String, private val client: OkHttpClient, privat
 	private companion object {
 		val JSON = "application/json".toMediaType()
 		val LOCAL_HOSTS = setOf("localhost", "127.0.0.1", "10.0.2.2")
+
+		/** The OpenSSH form `ssh-keygen -lf` prints: SHA-256 of the key blob, base64 without padding (43 characters). */
+		val FINGERPRINT = Regex("^SHA256:[A-Za-z0-9+/]{43}\$")
 
 		/** https always; plain http only for the local test server. */
 		fun isAllowed(url: HttpUrl): Boolean = url.isHttps || url.host in LOCAL_HOSTS
