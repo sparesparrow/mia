@@ -1,0 +1,113 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: onboarding
+title: Vehicle onboarding
+description: Enrolling a Pi from the Android app with a server-signed grant, then pairing phone and Pi (ADR-0025). Extends
+  the phone-driven update (ADR-0023).
+requirements:
+- id: REQ-ONB-001
+  title: Grant verified offline
+  statement: The Pi shall accept an enrollment request only if its grant carries a valid SSH ed25519 signature in namespace
+    mia-grant that verifies against a signer key baked into the image, without network access.
+  evidence: planned
+  acceptance:
+  - A grant with a bad or foreign signature is refused and nothing changes
+  - A grant with an unknown claim is accepted; a grant missing a required claim is refused
+  - Verification calls ssh-keygen -Y verify as an argument list, never through a shell
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll, schemas/json/mia-grant.schema.json.'
+- id: REQ-ONB-002
+  title: Grant bound to Pi fingerprint and phone key
+  statement: The Pi shall refuse a grant whose device_fp is not its own identity fingerprint or whose phone_fp differs from
+    the fingerprint of the phone key in the request, and shall refuse an expired grant.
+  evidence: planned
+  acceptance:
+  - A grant for another Pi fingerprint is refused
+  - A grant for another phone key is refused
+  - A grant with now >= exp is refused
+  - Fingerprints use the SHA256:<base64> form printed by ssh-keygen -lf
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+- id: REQ-ONB-003
+  title: Replay refused
+  statement: The Pi shall refuse a grant whose jti it has already accepted, and a refused request shall leave the Pi's state
+    unchanged.
+  evidence: planned
+  acceptance:
+  - The same grant used twice is accepted once and refused the second time
+  - A refused request registers no key and writes no config
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+- id: REQ-ONB-004
+  title: Phone key limited to a forced command
+  statement: The mia-enroll user shall be able to run only the one enrollment command, and an enrolled phone shall afterwards
+    hold only the ADR-0023 forced-command key, never a general shell.
+  evidence: planned
+  acceptance:
+  - The sshd Match User block emits restrict,command="sudo /opt/mia/bin/mia-enroll" for any offered ed25519 or ECDSA key
+  - The sudoers rule matches exactly one command
+  - mia-enroll registers only the key in phone_public_key, through the mia-update-pair logic, with a label matching ^[A-Za-z0-9._-]{1,32}$
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll, infra/deploy/rpi/install-enroll-access.sh.'
+- id: REQ-ONB-005
+  title: Secrets generated on the Pi
+  statement: The device API key shall be generated on the Pi, written to /etc/mia/environment only if absent with mode 600,
+    and never be printed, logged, sent by the phone or placed in phone-edited YAML.
+  evidence: planned
+  acceptance:
+  - An existing API key line is not rewritten
+  - The file mode is 600
+  - The CLI output and logs do not contain the key
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+- id: REQ-ONB-006
+  title: Hotspot with DHCP and DNS
+  statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, and the setup script
+    shall refuse to run without --i-know-this-drops-wlan0.
+  evidence: planned
+  acceptance:
+  - The connection uses ipv4.method shared
+  - The script exits non-zero without the confirmation flag
+  - All paths and the nmcli command are overridable so tests run in a tmp dir
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: infra/deploy/rpi/setup-nm-hotspot.sh, infra/systemd/mia-bt-agent.service.'
+- id: REQ-ONB-007
+  title: Phone registry by key fingerprint
+  statement: The Pi shall keep a registry of enrolled phones keyed by phone key fingerprint, storing the last MAC only for
+    a DHCP reservation, never as authentication, and removing a phone shall delete both its registry entry and its mia-update-pair
+    key.
+  evidence: planned
+  acceptance:
+  - A changed MAC updates the entry found by fingerprint; the old MAC is not trusted
+  - Removing a phone removes the registry entry and calls mia-update-pair remove
+  - Bond state is stored per fingerprint
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-phone-registry.'
+- id: REQ-ONB-008
+  title: Wizard states and resume
+  statement: The Android app shall walk the user through onboarding as a persisted state machine that resumes at the interrupted
+    step and never installs without a verified grant.
+  evidence: planned
+  acceptance:
+  - An unreachable auth server shows a retry state
+  - Cancelling a Bluetooth or Wi-Fi system dialog resumes at that step with no half-registered phone
+  - The Pi's host-key fingerprint is checked against GET /v1/devices before anything is sent
+  - The UI says before triggering a system dialog that the user must approve it
+  implemented_in: []
+  decisions:
+  - ADR-0025
+  not_proven: 'Planned; no implementation or test yet. Planned files: apps/android/app/src/main/java/cz/mia/app/core/onboarding,
+    apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle.'
