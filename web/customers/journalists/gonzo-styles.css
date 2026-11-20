@@ -130,18 +130,31 @@ body.madness-loading {
     margin: 0 auto;
 }
 
-.logo-madness h1 {
-    font-family: var(--font-madness);
-    font-size: 2rem;
-    color: var(--primary-madness);
-    text-shadow: var(--glow-paranoia);
-    animation: logo-glitch 3s infinite;
+.logo-madness {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    flex: 0 0 250px;
+    min-width: 0;
+    text-decoration: none;
+    padding: 2px 10px 4px 0;
+}
+
+.suzmatra-logo {
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    height: 58px;
+    object-fit: contain;
+    object-position: left center;
+    filter: drop-shadow(0 0 5px rgba(255, 0, 64, 0.22));
 }
 
 .subtitle-hell {
     font-family: var(--font-terminal);
-    font-size: 0.7rem;
-    color: var(--secondary-chaos);
+    font-size: 0.64rem;
+    color: #e8e8e8;
     display: block;
     margin-top: -5px;
     letter-spacing: 2px;
@@ -239,6 +252,21 @@ body.madness-loading {
         box-shadow: 0 0 25px var(--accent-hell), 0 0 40px rgba(255, 255, 0, 0.5);
         transform: scale(1.05);
     }
+}
+
+@media (max-width: 900px) {
+    .nav-chaos { flex-wrap: wrap; gap: 12px; padding: 10px 16px; }
+    .logo-madness { flex-basis: 190px; }
+    .suzmatra-logo { height: 46px; }
+    .nav-links-chaos { gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+}
+
+@media (max-width: 600px) {
+    .nav-chaos { justify-content: center; }
+    .logo-madness { flex-basis: 100%; align-items: center; }
+    .suzmatra-logo { object-position: center; max-width: 220px; }
+    .nav-links-chaos { justify-content: center; gap: 12px; }
+    .subtitle-hell { text-align: center; letter-spacing: 1.4px; }
 }
 
 /* HERO MADNESS */
