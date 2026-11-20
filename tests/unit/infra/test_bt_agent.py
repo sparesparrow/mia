@@ -1,4 +1,4 @@
-"""infra/systemd/mia-bt-agent.service and infra/deploy/rpi/mia-bt-window.sh (REQ-ONB-006): static unit checks, and the
+"""infra/systemd/mia-bt-agent.service and infra/deploy/rpi/mia-bt-window.sh (REQ-ONB-009): static unit checks, and the
 window logic run against stub busctl/bt-agent in a tmp dir. Real Bluetooth behaviour is not exercised."""
 
 import configparser
@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-pytestmark = [pytest.mark.req("REQ-ONB-006"), pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")]
+pytestmark = [pytest.mark.req("REQ-ONB-009"), pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")]
 
 ROOT = Path(__file__).resolve().parents[3]
 UNIT = ROOT / "infra" / "systemd" / "mia-bt-agent.service"
@@ -91,3 +91,20 @@ def test_shellcheck_clean():
         pytest.skip("shellcheck not installed")
     done = subprocess.run(["shellcheck", str(SCRIPT)], capture_output=True, text=True)
     assert done.returncode == 0, done.stdout
+
+
+@pytest.mark.skipif(shutil.which("systemd-analyze") is None, reason="systemd-analyze not installed")
+def test_systemd_analyze_verify_accepts_the_unit(tmp_path):
+    """Real, state-free check (R8): the unit is copied and its ExecStart (an /opt/mia path that does not exist here) is
+    pointed at an existing executable, so verify judges the rest of the unit."""
+    true = shutil.which("true") or "/bin/true"
+    lines = [f"ExecStart={true}" if ln.startswith("ExecStart=") else ln for ln in UNIT.read_text(encoding="utf-8").splitlines()]
+    copy = tmp_path / "mia-bt-agent.service"
+    copy.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    done = subprocess.run(["systemd-analyze", "verify", str(copy)], capture_output=True, text=True, timeout=60)
+    assert done.returncode == 0 and done.stderr.strip() == "", done.stderr
+    broken = tmp_path / "broken" / "mia-bt-agent.service"
+    broken.parent.mkdir()
+    broken.write_text(copy.read_text().replace("[Service]", "[Service]\nNoSuchDirective=1\nExecStart=/nonexistent/x"), encoding="utf-8")
+    bad = subprocess.run(["systemd-analyze", "verify", str(broken)], capture_output=True, text=True, timeout=60)
+    assert bad.returncode != 0 or bad.stderr.strip()  # the check does bite

@@ -88,6 +88,24 @@ def test_skip_packages_leaves_apt_and_pip_alone_and_installs_the_update_tool(tmp
     assert tool.read_bytes() == (ROOT / "bin" / "mia-apply-update").read_bytes()
     pair = install / "bin" / "mia-update-pair"
     assert pair.is_file() and pair.stat().st_mode & 0o777 == 0o755
+    # ADR-0025: the enrollment command and the phone registry ship the same way, root-owned 755 (no chown shim call
+    # for them: install -m 755 as root), and the agent unit is copied but not enabled.
+    for name in ("mia-enroll", "mia-phone-registry"):
+        tool = install / "bin" / name
+        assert tool.is_file() and tool.stat().st_mode & 0o777 == 0o755, name
+        assert tool.read_bytes() == (ROOT / "bin" / name).read_bytes(), name
+    unit = tmp_path / "systemd" / "mia-bt-agent.service"
+    assert unit.read_bytes() == (ROOT / "infra" / "systemd" / "mia-bt-agent.service").read_bytes()
+    assert "mia-bt-agent" not in " ".join(ln for ln in log.read_text().splitlines() if "enable" in ln)
+
+
+@pytest.mark.req("REQ-ONB-009")
+def test_the_full_install_names_bluez_tools_and_the_agent_unit_is_not_enabled():
+    text = DEPLOY.read_text(encoding="utf-8")
+    apt = text[text.index("apt-get install"):text.index("mosquitto-clients")]
+    assert "bluez-tools" in apt
+    assert "mia-bt-agent.service" not in text[text.index("CORE_UNITS=("):text.index(")", text.index("CORE_UNITS=("))]
+    assert 'enable "${CORE_UNITS[@]}"' in text
 
 
 def test_an_unknown_option_is_refused():

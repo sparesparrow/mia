@@ -406,7 +406,7 @@ def test_internal_error_message_never_contains_environment_file_content(world):
     assert "topsecretvalue" not in done.stdout + done.stderr
 
 
-# --- phone registry and Bluetooth pairing window (REQ-ONB-007, REQ-ONB-006) ------------------------------------------
+# --- phone registry and Bluetooth pairing window (REQ-ONB-007, REQ-ONB-009) ------------------------------------------
 
 
 def _registry():
@@ -456,7 +456,7 @@ def test_cli_refused_request_registers_nothing(world):
     assert not (world.tmp / "state" / "phones.json").exists()
 
 
-@pytest.mark.req("REQ-ONB-006")
+@pytest.mark.req("REQ-ONB-009")
 def test_cli_opens_a_120_second_pairing_window_after_success(world):
     window = world.tmp / "run" / "pairing-window"
     done = _run(world, _request(world))
@@ -465,14 +465,14 @@ def test_cli_opens_a_120_second_pairing_window_after_success(world):
     assert window.stat().st_mode & 0o777 == 0o644  # the unprivileged agent user must be able to read it
 
 
-@pytest.mark.req("REQ-ONB-006")
+@pytest.mark.req("REQ-ONB-009")
 def test_cli_refusal_opens_no_pairing_window(world):
     done = _run(world, _request(world, world.claims(exp=NOW - 1)))
     assert _last(done)["ok"] is False
     assert not (world.tmp / "run" / "pairing-window").exists()
 
 
-@pytest.mark.req("REQ-ONB-006")
+@pytest.mark.req("REQ-ONB-009")
 def test_cli_window_failure_is_a_warning_not_an_error(world):
     blocker = world.tmp / "blocker"
     blocker.write_text("x")

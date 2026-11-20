@@ -80,24 +80,20 @@ requirements:
   not_proven: 'Not run as root on a Raspberry Pi; an installed unit has not been shown to read the new MIA_API_KEY line.'
 - id: REQ-ONB-006
   title: Hotspot with DHCP and DNS
-  statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, and the setup script
-    shall refuse to run without --i-know-this-drops-wlan0. The Bluetooth pairing agent shall make the adapter discoverable
-    and pairable only while the pairing-window file written by mia-enroll holds a future time.
+  statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, with a fixed address
+    for each registered phone taken from the phone registry, and the setup script shall refuse to run without --i-know-this-drops-wlan0.
   evidence: implemented_and_ci_tested
   acceptance:
-  - The connection uses ipv4.method shared
+  - The connection rendered by nmcli --offline has mode=ap, method=shared and key-mgmt=wpa-psk
   - The script exits non-zero without the confirmation flag
+  - The passphrase is never an argument of any nmcli call, and the keyfile is mode 600
+  - A registry entry with an invalid MAC or fingerprint is skipped with a warning and never reaches the dnsmasq fragment, which passes dnsmasq --test
   - All paths and the nmcli command are overridable so tests run in a tmp dir
-  - mia-enroll opens a 120 s pairing window only after a successful enrollment; a missing, expired or invalid window file closes it
-  - The agent unit runs as the mia user, restarts on failure and allows only AF_UNIX (no network exposure)
   implemented_in:
   - infra/deploy/rpi/setup-nm-hotspot.sh
-  - infra/deploy/rpi/mia-bt-window.sh
-  - infra/systemd/mia-bt-agent.service
-  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Tested only with a stub nmcli and stub busctl/bt-agent in tmp dirs and a static check of the unit file. Not run against a real NetworkManager, so that NM actually serves DHCP and DNS on wlan0, that dnsmasq-shared.d reservations take effect, and that the hotspot reaches GENERAL.STATE activated are unproven. Not run against real BlueZ, so bt-agent registration, the D-Bus permission of the mia user and Just Works bonding are unproven. The /opt/mia/infra path of the unit assumes the installer ships infra/.'
+  not_proven: 'Keyfile rendering is checked with the real nmcli --offline and the fragment with dnsmasq --test, but the script itself runs against a stub nmcli in a tmp dir. Not run against a real NetworkManager, so that NM loads the keyfile, actually serves DHCP and DNS on wlan0, applies the dnsmasq-shared.d reservations and reaches GENERAL.STATE activated are unproven. Not run as root on a Raspberry Pi.'
 - id: REQ-ONB-007
   title: Phone registry by key fingerprint
   statement: The Pi shall keep a registry of enrolled phones keyed by phone key fingerprint, storing the last MAC only for
@@ -130,3 +126,23 @@ requirements:
   - ADR-0025
   not_proven: 'Planned; no implementation or test yet. Planned files: apps/android/app/src/main/java/cz/mia/app/core/onboarding,
     apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle.'
+- id: REQ-ONB-009
+  title: Bluetooth pairing only during the window
+  statement: The Bluetooth pairing agent shall make the adapter discoverable and pairable only while the pairing-window
+    file written by mia-enroll after a verified enrollment holds a future time.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - mia-enroll opens a 120 s pairing window only after a successful enrollment; a missing, expired or invalid window file closes it
+  - The agent unit runs as the mia user, restarts on failure and allows only AF_UNIX (no network exposure)
+  - systemd-analyze verify accepts the unit (run on a copy whose ExecStart points at an existing executable)
+  - The install script copies mia-bt-agent.service without enabling it and installs bluez-tools
+  implemented_in:
+  - infra/deploy/rpi/mia-bt-window.sh
+  - infra/systemd/mia-bt-agent.service
+  - bin/mia-enroll
+  - tools/scripts/deploy-raspberry-pi.sh
+  decisions:
+  - ADR-0025
+  services:
+  - mia-bt-agent.service
+  not_proven: 'The window logic is tested only with stub busctl and bt-agent in a tmp dir; the unit is checked statically and by systemd-analyze verify, not started. Not run against real BlueZ, so bt-agent registration, the D-Bus permission of the mia user and Just Works bonding are unproven. The /opt/mia/infra path of the unit assumes the installer ships infra/ (the install script does copy infra/deploy/rpi); enabling the unit is left to the factory image or the enrollment installer and is not tested.'

@@ -2,7 +2,7 @@
 
 - Status: Proposed
 - Date: 2026-11-20
-- Requirements: REQ-ONB-001, REQ-ONB-002, REQ-ONB-003, REQ-ONB-004, REQ-ONB-005, REQ-ONB-006, REQ-ONB-007, REQ-ONB-008
+- Requirements: REQ-ONB-001, REQ-ONB-002, REQ-ONB-003, REQ-ONB-004, REQ-ONB-005, REQ-ONB-006, REQ-ONB-007, REQ-ONB-008, REQ-ONB-009
 
 ## Context
 
@@ -97,7 +97,13 @@ a Pi that is offline; the registry plus `mia-update-pair remove` is the on-Pi me
 
 ### Network and wizard
 - The Pi's hotspot is a NetworkManager shared connection, so NM's dnsmasq provides DHCP and DNS (REQ-ONB-006). The
-  script refuses to run unless `--i-know-this-drops-wlan0` is given, because `wlan0` may be the Pi's uplink.
+  script refuses to run unless `--i-know-this-drops-wlan0` is given, because `wlan0` may be the Pi's uplink. The
+  connection is rendered with `nmcli --offline` into a root-only keyfile so the passphrase is never on a command line,
+  and registry entries are validated before they become DHCP reservations.
+- Bluetooth pairing is open only during the pairing window: `mia-enroll` writes `/run/mia/pairing-window` (120 s) after a
+  verified enrollment, and `mia-bt-agent.service` makes the adapter discoverable and pairable only while it holds a
+  future time (REQ-ONB-009). The install script copies the unit without enabling it; the factory image or the
+  enrollment installer enables it.
 - The phone's wizard is a state machine (discover Pi, verify against `/v1/devices`, obtain grant, enroll, install or
   update, Bluetooth bond, Wi-Fi, done) that persists its step and resumes there after a cancelled system dialog,
   an unreachable server or a lost connection. It never installs without a verified grant, and it says before
