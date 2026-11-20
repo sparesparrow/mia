@@ -74,6 +74,25 @@ class MicStreamClientTest {
     }
 
     @Test
+    fun `it sends the header when open fires synchronously before the factory returns`() {
+        lateinit var socket: FakeMicSocket
+        val synchronousFactory = object : VoiceSocketFactory {
+            override fun open(url: String, headers: Map<String, String>, listener: VoiceSocketListener): VoiceSocket =
+                FakeMicSocket(url, headers, listener).also {
+                    socket = it
+                    listener.onOpen()
+                }
+        }
+        val synchronousClient = MicStreamClient("ws://pi:8000/ws/audio", emptyMap(), synchronousFactory, scope)
+
+        synchronousClient.start()
+
+        assertEquals(listOf(MicProtocol.HEADER), socket.texts)
+        socket.listener.onOpen()
+        assertEquals(listOf(MicProtocol.HEADER), socket.texts)
+    }
+
+    @Test
     fun `frames are dropped until ready and sent after`() {
         client.start()
         assertFalse(client.sendFrame(frame))

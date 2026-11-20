@@ -87,7 +87,7 @@ def test_frames_are_split_counted_and_dropped_when_the_queue_is_full():
     ingest = audio_ingest.AudioIngest(fake.push)
     assert ingest.accept(FRAME * 2) == 2
     assert ingest.accept(FRAME * 2) == 1  # the third fits, the fourth is dropped, never waited for
-    assert ingest.counts() == {"pushed": 3, "dropped": 1, "bad": 0}
+    assert ingest.counts() == {"pushed": 3, "dropped": 1, "bad": 0, "oversized": 0}
     assert all(len(f) == audio_ingest.FRAME_BYTES for f in fake.frames)
 
 
@@ -97,6 +97,16 @@ def test_a_message_that_is_not_whole_frames_is_dropped_and_counted():
     assert ingest.accept(FRAME[:-2]) == 0
     assert ingest.accept(b"") == 0
     assert ingest.counts()["bad"] == 2 and fake.frames == []
+
+
+def test_a_message_over_the_cap_is_rejected_before_splitting_or_pushing():
+    fake = FakePusher(capacity=100)
+    ingest = audio_ingest.AudioIngest(fake.push)
+    assert audio_ingest.MAX_MESSAGE_BYTES == audio_ingest.FRAME_BYTES * 32
+    assert ingest.accept(FRAME * 32) == 32
+    assert ingest.accept(FRAME * 33) == 0
+    assert len(fake.frames) == 32
+    assert ingest.counts()["oversized"] == 1
 
 
 def test_the_socket_never_blocks_and_drops_when_the_listener_does_not_keep_up(real_zmq):
@@ -125,6 +135,16 @@ def test_a_write_key_streams_frames_to_the_pusher(ingest_client, pusher):
         ws.send_bytes(FRAME * 2)
         ws.send_bytes(FRAME)
     assert len(pusher.frames) == 3
+
+
+def test_an_oversized_message_closes_with_message_too_big(ingest_client):
+    with pytest.raises(WebSocketDisconnect) as closed:
+        with ingest_client.websocket_connect("/ws/audio", headers={"X-API-Key": WRITE_KEY}) as ws:
+            ws.send_text(HEADER)
+            assert ws.receive_json() == {"ok": True}
+            ws.send_bytes(FRAME * 33)
+            ws.receive_text()
+    assert closed.value.code == 1009
 
 
 def test_a_read_only_key_is_refused(ingest_client):

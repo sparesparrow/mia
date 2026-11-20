@@ -3,7 +3,8 @@
 ``/ws/audio`` is off unless ``VOICE_PHONE_MIC=1`` and needs an ``X-API-Key`` with the ``write`` scope (a
 microphone is more than a read). The first frame is text, ``{"v":1,"fmt":"s16le","rate":16000,"ch":1,"frame_ms":30}``;
 the answer is ``{"ok":true}``, or the socket closes with 1003. Then every binary frame must be a whole multiple of
-``FRAME_BYTES`` (960 bytes, 30 ms); anything else is dropped and counted.
+``FRAME_BYTES`` (960 bytes, 30 ms), and each message is capped at 32 frames; malformed frames are dropped and counted,
+oversized messages are rejected with WebSocket close code 1009.
 
 Frames leave through a ZeroMQ PUSH socket to ``services/audio_capture.py`` (loopback, ``AUDIO_INGEST_PORT``,
 default 5566). The socket has a high-water mark of ``SEND_HWM`` frames and is never waited on: when the capture
@@ -29,6 +30,10 @@ FRAME_MS = 30
 FRAME_BYTES = SAMPLE_RATE * FRAME_MS // 1000 * 2  # 960
 SEND_HWM = 8
 HEADER_TIMEOUT_SEC = 5.0
+# One WebSocket message may batch at most 32 30 ms frames (under one second). The
+# app sends individual frames; this allows transport batching while bounding the
+# amount of work and slicing performed for one inbound message.
+MAX_MESSAGE_BYTES = FRAME_BYTES * 32
 DEFAULT_PORT = 5566
 _CLOSE_POLICY = 1008
 _CLOSE_UNSUPPORTED = 1003
@@ -99,9 +104,13 @@ class AudioIngest:
         self.frames_pushed = 0
         self.frames_dropped = 0  # queue full or capture service not listening
         self.bad_frames = 0  # not a whole number of 30 ms frames
+        self.oversized_messages = 0
 
     def accept(self, data: bytes) -> int:
         """Forward one binary message; returns the number of frames that went on."""
+        if len(data) > MAX_MESSAGE_BYTES:
+            self.oversized_messages += 1
+            return 0
         if not data or len(data) % FRAME_BYTES:
             self.bad_frames += 1
             return 0
@@ -119,6 +128,7 @@ class AudioIngest:
             "pushed": self.frames_pushed,
             "dropped": self.frames_dropped,
             "bad": self.bad_frames,
+            "oversized": self.oversized_messages,
         }
 
 
@@ -159,6 +169,12 @@ async def serve(websocket: WebSocket) -> None:
                 break
             data = message.get("bytes")
             if data is not None:
+                if len(data) > MAX_MESSAGE_BYTES:
+                    # accept() records the bounded rejection; 1009 tells the client
+                    # not to retry this payload as a valid audio message.
+                    ingest.accept(data)
+                    await _close_quietly(websocket, 1009)
+                    break
                 ingest.accept(data)
     except (WebSocketDisconnect, RuntimeError):
         pass

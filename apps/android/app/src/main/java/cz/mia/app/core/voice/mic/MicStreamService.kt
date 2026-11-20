@@ -13,6 +13,7 @@ import android.content.pm.ServiceInfo
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -22,6 +23,7 @@ import cz.mia.app.MainActivity
 import cz.mia.app.R
 import cz.mia.app.core.networking.PiConnectionProvider
 import cz.mia.app.core.voice.console.OkHttpVoiceSocketFactory
+import cz.mia.app.utils.PermissionHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,12 +59,22 @@ class MicStreamService : Service() {
             return START_NOT_STICKY
         }
         if (running) return START_NOT_STICKY
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            Log.w(TAG, "RECORD_AUDIO not granted; not starting")
-            stopSelf()
+        val hasRecordPermission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.RECORD_AUDIO,
+        ) == PackageManager.PERMISSION_GRANTED
+        if (!hasRecordPermission || !PermissionHelper.hasNotificationPermission(this)) {
+            Log.w(TAG, "Required microphone service permission missing; not starting")
+            stopSelfResult(startId)
             return START_NOT_STICKY
         }
-        ServiceCompat.startForeground(this, NOTIFICATION_ID, notification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
+        try {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, notification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Android rejected microphone foreground service start", e)
+            stopSelfResult(startId)
+            return START_NOT_STICKY
+        }
         running = true
         MicStreamController.setEnabled(true)
         val target = piConnection.current()
@@ -142,16 +154,23 @@ class MicStreamService : Service() {
 
     private fun notification(): android.app.Notification {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "Phone microphone", NotificationManager.IMPORTANCE_LOW),
-        )
+        val pendingIntentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            0
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.createNotificationChannel(
+                NotificationChannel(CHANNEL_ID, "Phone microphone", NotificationManager.IMPORTANCE_LOW),
+            )
+        }
         val open = PendingIntent.getActivity(
-            this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
+            this, 0, Intent(this, MainActivity::class.java), pendingIntentFlags,
         )
         val stop = PendingIntent.getService(
             this, 1,
             Intent(this, MicStreamService::class.java).setAction(ACTION_STOP),
-            PendingIntent.FLAG_IMMUTABLE,
+            pendingIntentFlags,
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_car)

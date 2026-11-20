@@ -31,6 +31,7 @@ class MicStreamClient(
     // Guarded by lock.
     private var socket: VoiceSocket? = null
     private var generation = 0
+    private var openingGeneration: Int? = null
     private var wanted = false
     private var attempt = 0
     private var dropped = 0L
@@ -42,7 +43,7 @@ class MicStreamClient(
     fun start() {
         synchronized(lock) {
             wanted = true
-            if (socket != null) return
+            if (socket != null || openingGeneration != null) return
             attempt = 0
         }
         open()
@@ -53,6 +54,7 @@ class MicStreamClient(
         synchronized(lock) {
             wanted = false
             generation++
+            openingGeneration = null
             toClose = socket
             socket = null
         }
@@ -81,11 +83,29 @@ class MicStreamClient(
 
     private fun open() {
         val mine: Int
-        synchronized(lock) { mine = ++generation }
+        synchronized(lock) {
+            if (!wanted || socket != null || openingGeneration != null) return
+            mine = ++generation
+            openingGeneration = mine
+        }
         _link.value = MicLink.CONNECTING
+        var openArrivedBeforeSocket = false
+        var headerSent = false
         val listener = object : VoiceSocketListener {
             override fun onOpen() {
-                val target = synchronized(lock) { if (generation == mine) socket else null } ?: return
+                val target = synchronized(lock) {
+                    if (generation != mine) return
+                    val current = socket
+                    if (current == null) {
+                        openArrivedBeforeSocket = true
+                        null
+                    } else if (!headerSent) {
+                        headerSent = true
+                        current
+                    } else {
+                        null
+                    }
+                } ?: return
                 target.sendText(MicProtocol.HEADER)
             }
 
@@ -104,16 +124,27 @@ class MicStreamClient(
 
             override fun onFailure(message: String) = lost(mine)
         }
-        val created = factory.open(url, headers, listener)
+        val created = try {
+            factory.open(url, headers, listener)
+        } catch (e: Exception) {
+            lost(mine)
+            return
+        }
+        var sendHeader = false
         val keep = synchronized(lock) {
-            if (generation == mine) {
+            if (generation == mine && openingGeneration == mine) {
                 socket = created
+                openingGeneration = null
+                if (openArrivedBeforeSocket && !headerSent) {
+                    headerSent = true
+                    sendHeader = true
+                }
                 true
             } else {
                 false
             }
         }
-        if (!keep) created.close()
+        if (!keep) created.close() else if (sendHeader) created.sendText(MicProtocol.HEADER)
     }
 
     private fun lost(mine: Int) {
@@ -121,6 +152,7 @@ class MicStreamClient(
         synchronized(lock) {
             if (generation != mine) return
             socket = null
+            openingGeneration = null
             generation++
             if (!wanted) return
             delayMs = MicProtocol.reconnectDelayMs(attempt)

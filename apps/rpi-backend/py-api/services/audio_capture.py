@@ -126,6 +126,20 @@ def listen_for_ingest(ctx):
         pull.close(0)
 
 
+def phone_ingest_enabled():
+    """The API may only connect when the phone source was explicitly enabled on this service too."""
+    return os.environ.get("VOICE_PHONE_MIC", "0") == "1"
+
+
+def start_phone_ingest_listener(ctx):
+    """Start the loopback PULL listener only when phone audio is explicitly enabled and selected."""
+    if not phone_ingest_enabled() or mic_source is None or not mic_source.wants_phone:
+        return False
+    threading.Thread(target=listen_for_ingest, args=(ctx,), daemon=True).start()
+    logger.info(f"Phone microphone accepted on tcp://127.0.0.1:{ZMQ_INGEST_PORT} (AUDIO_SOURCE={mic_source.mode})")
+    return True
+
+
 def listen_for_speaking(ctx):
     """Follow TTS speaking events and drive the gate (runs in a daemon thread)."""
     sub = ctx.socket(zmq.SUB)
@@ -287,9 +301,7 @@ def main():
         threading.Thread(target=listen_for_speaking, args=(ctx,), daemon=True).start()
         logger.info(f"Microphone muted while MIA speaks (events on port {ZMQ_SPEAKING_PORT})")
 
-    if mic_source is not None and mic_source.wants_phone:
-        threading.Thread(target=listen_for_ingest, args=(ctx,), daemon=True).start()
-        logger.info(f"Phone microphone accepted on tcp://127.0.0.1:{ZMQ_INGEST_PORT} (AUDIO_SOURCE={mic_source.mode})")
+    start_phone_ingest_listener(ctx)
 
     try:
         if SOUNDDEVICE_AVAILABLE:

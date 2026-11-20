@@ -18,8 +18,9 @@ Streaming a microphone raises privacy questions (ADR-0014) and Android has rules
   foreground (an Android 14 rule), with a persistent notification that has a Stop action.
 - `AudioRecord` with `VOICE_RECOGNITION`, 16000 Hz, mono, PCM16, frames of 480 samples (960 bytes, 30 ms). Capture
   never blocks: when the WebSocket queue holds more than 6 frames, frames are dropped. Reconnect after 1, 2, 4 s.
-- Push-to-talk first: stream only from the console Wake until the machine leaves `listening` (driven by
-  `StateChanged`). Always-on streaming comes later.
+- Push-to-talk first: while the user has enabled the phone microphone, `AudioRecord` remains open; audio frames are
+  sent only while the console is connected and the machine is `listening` (driven by `StateChanged`). Always-on
+  streaming to the Pi comes later.
 
 **Wire.**
 - `/ws/audio` in `mia-api`, `X-API-Key` with `write` scope, enabled only with `VOICE_PHONE_MIC=1` (off by default).
@@ -64,15 +65,19 @@ needs, as a decision for the owner because it changes the Pi's system: `pipewire
 probe in `api/routers/audio_settings.py` plus the routing itself. `phone_speaker` is unavailable for a different
 reason: no reply audio is sent to the phone.
 
-**Privacy.** Off by default and per session; the notification is mandatory; the Pi never writes raw audio; logs hold
-counts and drops only.
+**Privacy.** Off by default and per session. While enabled, the phone microphone remains open even when MIA is not
+listening; in that state frames are not sent to the Pi. The app requests runtime microphone permission and, on
+Android 13+, notification permission before starting the foreground service. The persistent notification is
+mandatory and has a Stop action. The Pi never writes raw audio; logs hold counts and drops only.
 
 ## Consequences
 - The pipeline from `mia/audio/raw` on is unchanged, so wake word, recognition and the router need no change.
 - Audio crosses the car Wi-Fi in clear text with the API key (ADR-0016), accepted for the prototype.
 - Latency and echo (the phone hears the Pi's headphone output) are unmeasured; the gate tail is a guess.
-- Implemented for the Wi-Fi microphone with unit tests only. No phone and no Pi were used, so latency, echo and the
-  Android service on a real device are unproven, and the Kotlin was written without an SDK to compile it.
+- Android compilation and unit tests are pending CI; this host has no Android SDK. On-device behavior is unproven:
+  the permission prompts, foreground service, notification, capture lifecycle, WebSocket timing, latency and echo
+  have not been exercised on a phone and Pi together. While enabled, the microphone remains open; only `listening`
+  audio is sent to the Pi.
 - Only the `listening` state streams. Dictation and a spoken yes/no also need audio; adding their states to
   `PushToTalk` is the next step once the first drive shows the delay.
 - Two phones on one Pi take turns closing each other (1008, then reconnect after 1 s); the app does not yet treat 1008

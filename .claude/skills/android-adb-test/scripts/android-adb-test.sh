@@ -11,7 +11,7 @@ ANDROID_DIR="$PROJECT_ROOT/apps/android"
 
 # Defaults
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
-PACKAGE_NAME="cz.mia.app"
+PACKAGE_NAME="${MIA_ANDROID_PACKAGE:-cz.mia.app.debug}"
 MAIN_ACTIVITY=".MainActivity"
 UI_DUMP_PATH="/sdcard/window_dump.xml"
 DEVICE_SERIAL=""
@@ -43,6 +43,7 @@ Commands:
 Options:
   --device SERIAL       Target device serial (auto-detect if omitted)
   --apk PATH            APK path (default: apps/android/.../app-debug.apk)
+  --package PACKAGE     Installed application id (default: cz.mia.app.debug; override with MIA_ANDROID_PACKAGE)
   --scenario NAME       Test scenario: install|dashboard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
   --screenshots         Capture screenshots during test
   --logs                Capture logcat to output directory
@@ -613,6 +614,7 @@ parse_args() {
     case "$1" in
       --device) DEVICE_SERIAL="$2"; shift 2 ;;
       --apk) APK_PATH="$2"; shift 2 ;;
+      --package) PACKAGE_NAME="$2"; shift 2 ;;
       --scenario) SCENARIO="$2"; shift 2 ;;
       --screenshots) DO_SCREENSHOTS=1; shift ;;
       --logs) DO_LOGS=1; shift ;;
