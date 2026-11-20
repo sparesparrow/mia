@@ -93,32 +93,56 @@ class MicStreamService : Service() {
 
     @SuppressLint("MissingPermission") // checked in onStartCommand
     private fun captureLoop(stream: MicStreamClient) {
-        val minimum = AudioRecord.getMinBufferSize(
-            MicProtocol.SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-        )
-        val recorder = AudioRecord(
-            MediaRecorder.AudioSource.VOICE_RECOGNITION,
-            MicProtocol.SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-            maxOf(minimum, MicProtocol.FRAME_BYTES * 8),
-        )
-        if (recorder.state != AudioRecord.STATE_INITIALIZED) {
-            Log.w(TAG, "AudioRecord did not initialise")
-            recorder.release()
-            scope.launch { shutDown() }
-            return
-        }
         val framer = MicFramer()
         val buffer = ByteArray(MicProtocol.FRAME_BYTES)
         var wasTalking = false
+        var recorder: AudioRecord? = null
+        var consecutiveErrors = 0
         try {
-            recorder.startRecording()
             while (running) {
-                val read = recorder.read(buffer, 0, buffer.size)
-                if (read <= 0) continue
+                val current = recorder ?: createAudioRecord().also { recorder = it }
+                if (current == null) {
+                    consecutiveErrors++
+                    if (!retryRecorder(consecutiveErrors)) break
+                    continue
+                }
+                try {
+                    if (current.recordingState != AudioRecord.RECORDSTATE_RECORDING) current.startRecording()
+                } catch (e: IllegalStateException) {
+                    Log.w(TAG, "AudioRecord could not start; recreating it", e)
+                    current.release()
+                    recorder = null
+                    consecutiveErrors++
+                    if (!retryRecorder(consecutiveErrors)) break
+                    continue
+                }
+                val read = try {
+                    current.read(buffer, 0, buffer.size)
+                } catch (e: IllegalStateException) {
+                    Log.w(TAG, "AudioRecord read failed; recreating it", e)
+                    AudioRecord.ERROR_INVALID_OPERATION
+                }
+                if (read < 0) {
+                    // Android reports ERROR_DEAD_OBJECT when the recorder must be recreated. Treat every negative
+                    // result this way, and bound retries so a persistent hardware error cannot spin this thread.
+                    Log.w(TAG, "AudioRecord.read returned $read; recreating recorder")
+                    current.release()
+                    recorder = null
+                    framer.reset()
+                    consecutiveErrors++
+                    if (!retryRecorder(consecutiveErrors)) break
+                    continue
+                }
+                if (read == 0) {
+                    try {
+                        Thread.sleep(10)
+                    } catch (_: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                        break
+                    }
+                    continue
+                }
+                consecutiveErrors = 0
                 val talking = MicStreamController.talking.value
                 if (!talking) {
                     if (wasTalking) framer.reset()
@@ -129,9 +153,53 @@ class MicStreamService : Service() {
                 for (frame in framer.add(buffer, read)) stream.sendFrame(frame)
             }
         } finally {
-            runCatching { recorder.stop() }
-            recorder.release()
+            recorder?.let {
+                runCatching { it.stop() }
+                it.release()
+            }
         }
+        if (running) scope.launch { shutDown() }
+    }
+
+    @SuppressLint("MissingPermission") // checked in onStartCommand
+    private fun createAudioRecord(): AudioRecord? {
+        val minimum = AudioRecord.getMinBufferSize(
+            MicProtocol.SAMPLE_RATE,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT,
+        )
+        val recorder = runCatching {
+            AudioRecord(
+                MediaRecorder.AudioSource.VOICE_RECOGNITION,
+                MicProtocol.SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                maxOf(minimum, MicProtocol.FRAME_BYTES * 8),
+            )
+        }.getOrElse {
+            Log.w(TAG, "AudioRecord construction failed", it)
+            return null
+        }
+        if (recorder.state != AudioRecord.STATE_INITIALIZED) {
+            Log.w(TAG, "AudioRecord did not initialise")
+            recorder.release()
+            return null
+        }
+        return recorder
+    }
+
+    private fun retryRecorder(consecutiveErrors: Int): Boolean {
+        if (consecutiveErrors >= MAX_RECORDER_RETRIES) {
+            Log.e(TAG, "AudioRecord failed $consecutiveErrors consecutive times; stopping microphone service")
+            return false
+        }
+        try {
+            Thread.sleep(RECORDER_RETRY_DELAY_MS * consecutiveErrors)
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
+            return false
+        }
+        return running
     }
 
     private fun shutDown() {
@@ -188,5 +256,7 @@ class MicStreamService : Service() {
         private const val CHANNEL_ID = "phone_mic"
         private const val NOTIFICATION_ID = 4127
         private const val TAG = "MicStreamService"
+        private const val MAX_RECORDER_RETRIES = 3
+        private const val RECORDER_RETRY_DELAY_MS = 100L
     }
 }
