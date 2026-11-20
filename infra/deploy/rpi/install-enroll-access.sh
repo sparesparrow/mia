@@ -34,7 +34,12 @@ if ! id "$ENROLL_USER" >/dev/null 2>&1; then
 fi
 passwd -l "$ENROLL_USER" >/dev/null 2>&1 || true
 
-printf '%s ALL=(root) NOPASSWD: %s ""\n' "$ENROLL_USER" "$TOOL" > "$work/sudoers"
+# env_reset for the tool, like the one-command rule of install-update-access.sh: sudo drops the caller's environment, so
+# the SSH user cannot set the MIA_* test overrides of mia-enroll.
+{
+    printf 'Defaults!%s env_reset\n' "$TOOL"
+    printf '%s ALL=(root) NOPASSWD: %s ""\n' "$ENROLL_USER" "$TOOL"
+} > "$work/sudoers"
 visudo -cf "$work/sudoers"
 install -m 440 "$work/sudoers" "$SUDOERS_FILE"
 

@@ -16,7 +16,7 @@
 #
 # Overrides (tests use a tmp dir and a stub nmcli on PATH): MIA_HOTSPOT_PSK_FILE (/etc/mia/hotspot.psk),
 # MIA_NM_CONNECTIONS_DIR (/etc/NetworkManager/system-connections),
-# MIA_DNSMASQ_SHARED_DIR (/etc/NetworkManager/dnsmasq-shared.d), MIA_PHONES_FILE (/var/lib/mia/phones.json),
+# MIA_DNSMASQ_SHARED_DIR (/etc/NetworkManager/dnsmasq-shared.d), MIA_PHONES_FILE (/var/lib/mia-enroll/phones.json),
 # MIA_HOTSPOT_IFNAME (wlan0), MIA_HOTSPOT_ADDRESS (192.168.4.1/24).
 set -euo pipefail
 
@@ -26,7 +26,7 @@ IFNAME="${MIA_HOTSPOT_IFNAME:-wlan0}"
 ADDRESS="${MIA_HOTSPOT_ADDRESS:-192.168.4.1/24}"
 PSK_FILE="${MIA_HOTSPOT_PSK_FILE:-/etc/mia/hotspot.psk}"
 FRAGMENT_DIR="${MIA_DNSMASQ_SHARED_DIR:-/etc/NetworkManager/dnsmasq-shared.d}"
-PHONES_FILE="${MIA_PHONES_FILE:-/var/lib/mia/phones.json}"
+PHONES_FILE="${MIA_PHONES_FILE:-/var/lib/mia-enroll/phones.json}"
 FRAGMENT="$FRAGMENT_DIR/mia-phones.conf"
 KEYFILE_DIR="${MIA_NM_CONNECTIONS_DIR:-/etc/NetworkManager/system-connections}"
 KEYFILE="$KEYFILE_DIR/$CON.nmconnection"

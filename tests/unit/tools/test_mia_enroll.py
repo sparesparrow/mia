@@ -479,3 +479,104 @@ def test_cli_window_failure_is_a_warning_not_an_error(world):
     done = _run(world, _request(world), env_extra={"MIA_PAIRING_WINDOW": str(blocker / "pairing-window")})
     last = _last(done)
     assert done.returncode == 0 and last["ok"] is True and "pairing window" in last["warning"]
+
+
+# --- root boundary (I-1): state outside the mia user's reach ---------------------------------------------------------
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_defaults_are_root_owned_directories_outside_the_mia_state_dir(enroll):
+    assert enroll.DEFAULT_ENROLL_DIR == "/var/lib/mia-enroll"
+    assert enroll.DEFAULT_PAIRING_WINDOW == "/run/mia-enroll/pairing-window"
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_ensure_dir_creates_a_private_directory_and_fixes_the_mode(enroll, tmp_path):
+    target = tmp_path / "state"
+    enroll.ensure_dir(target, 0o700, os.getuid())
+    assert target.stat().st_mode & 0o777 == 0o700
+    target.chmod(0o755)
+    enroll.ensure_dir(target, 0o700, os.getuid())  # fchmod on the directory descriptor
+    assert target.stat().st_mode & 0o777 == 0o700
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_ensure_dir_refuses_a_symlink_and_a_foreign_owner(enroll, tmp_path):
+    real = tmp_path / "real"
+    real.mkdir()
+    link = tmp_path / "link"
+    link.symlink_to(real)
+    with pytest.raises(enroll.GrantError):
+        enroll.ensure_dir(link, 0o700, os.getuid())
+    with pytest.raises(enroll.GrantError):
+        enroll.ensure_dir(real, 0o700, os.getuid() + 1)  # not owned by the expected uid (root in production)
+    enroll.ensure_dir(real, 0o700, None)  # an override skips only the owner check
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_refuses_a_state_directory_that_is_a_symlink(world):
+    real = world.tmp / "elsewhere"
+    real.mkdir()
+    (world.tmp / "state").symlink_to(real)
+    done = _run(world, _request(world))
+    assert done.returncode == 1 and _last(done)["ok"] is False
+    assert list(real.iterdir()) == []
+
+
+@pytest.mark.req("REQ-ONB-003")
+def test_cli_refuses_a_symlinked_lock_and_truncates_nothing(world):
+    state = world.tmp / "state"
+    state.mkdir()
+    victim = world.tmp / "victim"
+    victim.write_text("precious")
+    (state / "lock").symlink_to(victim)
+    done = _run(world, _request(world))
+    assert done.returncode == 1 and _last(done)["ok"] is False and "lock" in _last(done)["error"]
+    assert victim.read_text() == "precious"
+    assert not (state / "seen_jti").exists()
+
+
+@pytest.mark.req("REQ-ONB-003", "REQ-ONB-007")
+def test_written_files_get_their_mode_by_fchmod_not_by_path(enroll, tmp_path, monkeypatch):
+    def no_path_chmod(*a, **k):
+        raise AssertionError("chmod by path")
+
+    monkeypatch.setattr(os, "chmod", no_path_chmod)
+    for mode in (0o600, 0o644):
+        target = tmp_path / f"f{mode:o}"
+        enroll._atomic_write(target, "x\n", mode)
+        assert target.stat().st_mode & 0o777 == mode
+    modes = []
+    real_fchmod = os.fchmod
+    monkeypatch.setattr(os, "fchmod", lambda fd, m: (modes.append((m, os.fstat(fd).st_size)), real_fchmod(fd, m))[1])
+    enroll._atomic_write(tmp_path / "g", "data\n", 0o640)
+    assert modes == [(0o640, 0)]  # the mode is set before any data is written
+
+
+@pytest.mark.req("REQ-ONB-003", "REQ-ONB-007")
+def test_cli_state_files_are_private(world):
+    assert _last(_run(world, _request(world)))["ok"] is True
+    state = world.tmp / "state"
+    assert state.stat().st_mode & 0o777 == 0o700
+    for name in ("seen_jti", "lock", "phones.json"):
+        assert (state / name).stat().st_mode & 0o777 == 0o600, name
+
+
+@pytest.mark.req("REQ-ONB-009")
+def test_cli_window_dir_is_world_readable_and_the_window_lands_in_it(world):
+    run = world.tmp / "run"
+    done = _run(world, _request(world))
+    assert _last(done)["ok"] is True
+    assert run.stat().st_mode & 0o777 == 0o755
+    assert (run / "pairing-window").read_text().strip() == str(NOW + 120)
+
+
+@pytest.mark.req("REQ-ONB-009")
+def test_cli_window_dir_symlink_is_a_warning_and_writes_nothing(world):
+    real = world.tmp / "elsewhere"
+    real.mkdir()
+    (world.tmp / "run").symlink_to(real)
+    done = _run(world, _request(world))
+    last = _last(done)
+    assert last["ok"] is True and "pairing window" in last["warning"]
+    assert list(real.iterdir()) == []

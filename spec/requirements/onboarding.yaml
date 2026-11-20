@@ -63,7 +63,7 @@ requirements:
   - infra/deploy/rpi/install-enroll-access.sh
   decisions:
   - ADR-0025
-  not_proven: 'The sshd drop-in and the key helper are not exercised by a running sshd, and the sudoers rule is not run under real sudo; the installer was run only against shims in a tmp dir.'
+  not_proven: 'REQ-ONB-004 means no general shell, not no code execution: an enrolled phone key can run mia-apply-update, which installs a package whose checksums travel inside the same package and runs its deploy script as root, so a valid grant amounts to root on that Pi. The sshd drop-in and the key helper are not exercised by a running sshd, and the sudoers rule is not run under real sudo; the installer was run only against shims in a tmp dir.'
 - id: REQ-ONB-005
   title: Secrets generated on the Pi
   statement: The device API key shall be generated on the Pi, written to /etc/mia/environment only if absent with mode 600,
@@ -110,24 +110,39 @@ requirements:
   - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Not run as root on a Raspberry Pi with the real /var/lib/mia. Nothing sets bonded=true yet (the Bluetooth bond step is in the wizard, task 5), and the hotspot script reads the registry only as a file. Concurrency is covered by flock but only sequential use is tested.'
+  not_proven: 'Not run as root on a Raspberry Pi with the real /var/lib/mia-enroll. Nothing sets bonded=true yet (the Bluetooth bond step is in the wizard, task 5), and the hotspot script reads the registry only as a file. Concurrency is covered by flock but only sequential use is tested.'
 - id: REQ-ONB-008
   title: Wizard states and resume
   statement: The Android app shall walk the user through onboarding as an in-memory state machine that re-offers an interrupted
     step after a cancelled dialog or a failure and never installs without a verified grant. After process death the wizard restarts
     at EnterActivationKey; only KnownPiStore persists (after Done) and the activation key is never persisted.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - An unreachable auth server shows a retry state
   - Cancelling a Bluetooth or Wi-Fi system dialog resumes at that step with no half-registered phone
   - The wizard keeps its step in memory and restarts at EnterActivationKey after process death; only KnownPiStore persists (after Done) and the activation key is never persisted
   - The Pi's host-key fingerprint is checked against GET /v1/devices before anything is sent
   - The UI says before triggering a system dialog that the user must approve it
-  implemented_in: []
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingMachine.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingState.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/KnownPiStore.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/SshEnroller.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/Ed25519Ssh.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/PiDiscovery.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/AuthServerClient.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/ReleasePackageSource.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/SystemPairing.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/AndroidSystemPairing.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/PairingSlot.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/InstallMiaScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/PairVehicleScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/VehicleUiModel.kt
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: apps/android/app/src/main/java/cz/mia/app/core/onboarding,
-    apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle.'
+  notes: 'Linked by the // @req REQ-ONB-008 tag (the registry has no tests field, as for the other Android requirements) in apps/android/app/src/test/java/cz/mia/app/core/onboarding/{AuthServerClientTest,OnboardingMachineTest,PiDiscoveryTest,SshEnrollerTest}.kt and ui/screens/vehicle/VehicleUiModelTest.kt.'
+  not_proven: 'Not run on a device: no run of the install wizard on a phone, no real auth server. No real Bluetooth or Wi-Fi system dialogs: the Bluetooth address and the Wi-Fi password are not delivered by any defined channel, so both steps are skipped. Compose rendering is covered only by the CI emulator scenarios, not by a screenshot or tap-through of the wizard. The tests are JVM unit tests of the state machine, clients and UI model.'
 - id: REQ-ONB-009
   title: Bluetooth pairing only during the window
   statement: The Bluetooth pairing agent shall make the adapter discoverable and pairable only while the pairing-window

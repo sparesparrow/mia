@@ -10,11 +10,11 @@
 #   mia-bt-window.sh          run the agent and watch the window (the service)
 #   mia-bt-window.sh --once   apply the window state once and exit (tests; starts no agent)
 #
-# Overrides: MIA_PAIRING_WINDOW (/run/mia/pairing-window), MIA_BT_ADAPTER (/org/bluez/hci0), MIA_BT_POLL (1, seconds),
+# Overrides: MIA_PAIRING_WINDOW (/run/mia-enroll/pairing-window), MIA_BT_ADAPTER (/org/bluez/hci0), MIA_BT_POLL (1, seconds),
 # MIA_BT_NOW (fixed clock for tests). Uses busctl (system D-Bus), not bluetoothctl, which is unreliable without a tty.
 set -euo pipefail
 
-WINDOW="${MIA_PAIRING_WINDOW:-/run/mia/pairing-window}"
+WINDOW="${MIA_PAIRING_WINDOW:-/run/mia-enroll/pairing-window}"
 ADAPTER="${MIA_BT_ADAPTER:-/org/bluez/hci0}"
 POLL="${MIA_BT_POLL:-1}"
 MAX_AHEAD=300

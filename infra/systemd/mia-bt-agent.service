@@ -11,12 +11,12 @@ Group=mia
 # bluez's D-Bus policy lets the bluetooth group talk to org.bluez
 SupplementaryGroups=bluetooth
 # bt-agent (bluez-tools) registers the agent; the script opens discoverable/pairable only while
-# /run/mia/pairing-window (written by mia-enroll, valid 120 s) holds a future time.
+# /run/mia-enroll/pairing-window (written by mia-enroll, valid 120 s) holds a future time.
 ExecStart=/opt/mia/infra/deploy/rpi/mia-bt-window.sh
 Restart=on-failure
 RestartSec=5
-RuntimeDirectory=mia
-RuntimeDirectoryPreserve=yes
+# No RuntimeDirectory: /run/mia-enroll is created by mia-enroll (root:root 0755), so this user can read the window file but
+# cannot create or replace it.
 StandardOutput=journal
 StandardError=journal
 

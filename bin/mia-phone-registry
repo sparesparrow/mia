@@ -11,7 +11,8 @@ authenticates with it (Android randomizes MACs per SSID). An empty MAC on upsert
 one; a MAC already held by another phone is taken from it (one reservation per MAC). Prints fingerprints, MACs and
 bond state only, never keys or the environment.
 
-Store: $MIA_PHONES_FILE (default /var/lib/mia/phones.json), mode 600, written atomically under fcntl.flock.
+Store: $MIA_PHONES_FILE (default /var/lib/mia-enroll/phones.json), mode 600, written atomically under fcntl.flock.
+The default directory is root:root 0700, not the mia service user's; it is checked (real directory, uid 0) before use.
 Revocation uses $MIA_PAIR_TOOL (default the sibling mia-update-pair); MIA_ENROLL_SKIP_CHOWN=1 is for tests.
 Python standard library only.
 """
@@ -29,7 +30,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_STORE = "/var/lib/mia/phones.json"
+DEFAULT_STORE = "/var/lib/mia-enroll/phones.json"
 FP_RE = re.compile(r"^SHA256:[A-Za-z0-9+/]{43}$")
 MAC_RE = re.compile(r"^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$")
 MAX_PHONES = 64
@@ -69,10 +70,29 @@ def normalize_mac(mac) -> str:
     return low
 
 
+def ensure_dir(path: Path, mode: int = 0o700, expect_uid=0) -> None:
+    """Create path and refuse unless it is a real directory (not a symlink) owned by expect_uid (None: skip owner)."""
+    os.makedirs(path, mode=mode, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    except OSError:
+        raise RegistryError("registry directory is not a real directory") from None
+    try:
+        if expect_uid is not None and os.fstat(fd).st_uid != expect_uid:
+            raise RegistryError("registry directory is not owned by root")
+        os.fchmod(fd, mode)
+    finally:
+        os.close(fd)
+
+
 class _Locked:
     def __init__(self, path: Path):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self.handle = open(str(path) + ".lock", "w")
+        ensure_dir(path.parent, 0o700, None if "MIA_PHONES_FILE" in os.environ else 0)
+        try:
+            fd = os.open(str(path) + ".lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        except OSError:
+            raise RegistryError("lock file cannot be opened") from None
+        self.handle = os.fdopen(fd, "r+")
         fcntl.flock(self.handle, fcntl.LOCK_EX)
 
     def __enter__(self):
@@ -102,13 +122,13 @@ def _read(path: Path) -> dict:
 
 def _write(path: Path, phones: dict) -> None:
     text = json.dumps({"version": 1, "phones": phones}, sort_keys=True, indent=2) + "\n"
-    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")  # mkstemp creates the file mode 600
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
     try:
+        os.fchmod(fd, 0o600)  # on the descriptor, before any data is written; never chmod by path
         with os.fdopen(fd, "w", encoding="utf-8") as out:
             out.write(text)
             out.flush()
             os.fsync(out.fileno())
-        os.chmod(tmp, 0o600)
         os.replace(tmp, path)
     except BaseException:
         Path(tmp).unlink(missing_ok=True)

@@ -39,7 +39,9 @@ def _install(tmp_path):
 
 def test_the_installer_writes_a_one_command_sudoers_rule_and_one_match_block(tmp_path):
     log = _install(tmp_path)
-    assert (tmp_path / "sudoers.d" / "mia-enroll").read_text() == 'mia-enroll ALL=(root) NOPASSWD: /opt/mia/bin/mia-enroll ""\n'
+    sudoers = (tmp_path / "sudoers.d" / "mia-enroll").read_text()
+    assert sudoers == 'Defaults!/opt/mia/bin/mia-enroll env_reset\nmia-enroll ALL=(root) NOPASSWD: /opt/mia/bin/mia-enroll ""\n'
+    assert "Defaults!/opt/mia/bin/mia-enroll env_reset" in sudoers.splitlines()
     assert "useradd -r -m -s /bin/sh mia-enroll" in log.read_text()
     sshd = (tmp_path / "sshd_config.d" / "mia-enroll.conf").read_text()
     assert f"AuthorizedKeysCommand {tmp_path}/sbin/mia-enroll-authkeys %t %k" in sshd

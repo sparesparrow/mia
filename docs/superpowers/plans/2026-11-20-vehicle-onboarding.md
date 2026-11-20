@@ -48,7 +48,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - `spec/decisions/0025-vehicle-onboarding.md`, `spec/requirements/onboarding.yaml` — decision + REQs.
 - `schemas/json/mia-grant.schema.json` — grant claims (shared by Pi test and Android test fixtures).
 - `bin/mia-enroll` — Pi: verify grant, register phone via `mia-update-pair` logic, write device config. Stdlib only.
-- `bin/mia-phone-registry` — Pi: JSON store `/var/lib/mia/phones.json` {label, key fingerprint, last MAC, bond state}.
+- `bin/mia-phone-registry` — Pi: JSON store `/var/lib/mia-enroll/phones.json` {label, key fingerprint, last MAC, bond state}.
 - `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service` — NM shared hotspot (DHCP+DNS), Bluetooth pairing agent.
 - `apps/android/app/src/main/java/cz/mia/app/core/onboarding/` — `AuthServerClient.kt`, `PiDiscovery.kt`, `OnboardingState.kt`, `OnboardingViewModel.kt`, `KnownPiStore.kt`.
 - `apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/` — `InstallMiaScreen.kt`, `PairVehicleScreen.kt`; `OBDPairingScreen.kt` stays as the adapter step.
@@ -68,7 +68,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 **Interfaces:** Produces `verify_grant(grant: bytes, signature: bytes, allowed_signers: Path, device_fp: str, phone_fp: str, now: int, seen_jti: set[str]) -> Claims` raising `GrantError(reason: str)`; `Claims` fields `account_id, jti, plan, entitlement_exp, exp, phone_fp, device_fp`. CLI reads `{grant, signature, phone_public_key}` as one JSON line on stdin and prints `{"ok","step","error"}` as its last line (same convention as `mia-apply-update`).
 - [ ] Step 1: Write failing tests (with a throwaway key made by `ssh-keygen -t ed25519` in a tmp dir): `test_valid_grant_accepted`, `test_expired_grant_refused` (now > exp), `test_wrong_device_fingerprint_refused`, `test_wrong_phone_fingerprint_refused`, `test_replayed_jti_refused`, `test_bad_signature_refused`, `test_unknown_claim_ignored_but_missing_claim_refused`, each `@pytest.mark.req("REQ-ONB-00x")`.
 - [ ] Step 2: Run `pytest tests/unit/tools/test_mia_enroll.py -v` — Expected: FAIL (module missing).
-- [ ] Step 3: Implement `verify_grant` using `subprocess.run(["ssh-keygen","-Y","verify",...], shell=False)` with namespace `mia-grant`; JSON parsed with `json`, claims validated against the schema's required list by hand (stdlib only). `jti` list persisted at `/var/lib/mia/enroll/seen_jti`.
+- [ ] Step 3: Implement `verify_grant` using `subprocess.run(["ssh-keygen","-Y","verify",...], shell=False)` with namespace `mia-grant`; JSON parsed with `json`, claims validated against the schema's required list by hand (stdlib only). `jti` list persisted at `/var/lib/mia-enroll/seen_jti`.
 - [ ] Step 4: Implement CLI path: on success call the pairing function of `bin/mia-update-pair` (import by path, label from `phone_fp[:12]`), generate the device API key with `secrets.token_urlsafe(32)` into `/etc/mia/environment` (mode 600, never printed), write `/etc/mia/config.d/60-billing.json` `{account_id, plan, entitlement_exp}`.
 - [ ] Step 5: Run tests — Expected: PASS. Commit `feat(rpi): mia-enroll verifies server grant`.
 
@@ -78,7 +78,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - [ ] Step 1: Tests: `test_upsert_new_phone`, `test_mac_change_updates_same_entry` (same fp, new MAC → one entry), `test_unknown_mac_not_trusted` (lookup by MAC alone returns none), file mode 600, atomic write.
 - [ ] Step 2: Run — Expected FAIL. Step 3: Implement (JSON file under `/var/lib/mia/`, `fcntl.flock`, atomic rename). Step 4: Run — PASS.
 - [ ] Step 5: `setup-nm-hotspot.sh`: `nmcli connection add type wifi … 802-11-wireless.mode ap ipv4.method shared` (shared = NM-run DHCP+DNS), SSID `MIA-Car`, PSK generated on the Pi and written to `/etc/mia/hotspot.psk` (mode 600); reads `phones.json` to add a `dnsmasq` reservation fragment in `/etc/NetworkManager/dnsmasq-shared.d/`; refuses without `--i-know-this-drops-wlan0`; `--disable` reverts. Verify: `shellcheck infra/deploy/rpi/setup-nm-hotspot.sh` clean; on a test Pi `nmcli -g GENERAL.STATE con show MIA-Car` = `activated`.
-- [ ] Step 6: `mia-bt-agent.service`: `bluetoothctl` NoInputNoOutput agent running as the `mia` user, discoverable only while `/run/mia/pairing-window` exists (created by `mia-enroll`, removed after 120 s). Commit.
+- [ ] Step 6: `mia-bt-agent.service`: `bluetoothctl` NoInputNoOutput agent running as the `mia` user, discoverable only while `/run/mia-enroll/pairing-window` exists (created by `mia-enroll`, removed after 120 s). Commit.
 
 ### Task 4: Android auth client with fake server
 **Files:** Create `core/onboarding/AuthServerClient.kt`, test `core/onboarding/AuthServerClientTest.kt` (MockWebServer).

@@ -24,8 +24,15 @@ exception still ends in the JSON line with step "internal" and no exception text
 Overrides (sudo resets the environment, so the SSH user cannot set them): MIA_ALLOWED_SIGNERS, MIA_DEVICE_PUB (the
 Pi's identity public key, default the ed25519 SSH host key), MIA_ENROLL_DIR, MIA_ENV_FILE, MIA_CONFIG_D,
 MIA_PAIR_TOOL, MIA_AUTHORIZED_KEYS (read by mia-update-pair), MIA_REGISTRY_TOOL and MIA_PHONES_FILE (the phone
-registry, bin/mia-phone-registry), MIA_PAIRING_WINDOW (default /run/mia/pairing-window), and for tests MIA_ENROLL_NOW, MIA_ENROLL_SKIP_CHOWN.
+registry, bin/mia-phone-registry), MIA_PAIRING_WINDOW (default /run/mia-enroll/pairing-window), and for tests MIA_ENROLL_NOW, MIA_ENROLL_SKIP_CHOWN.
 Python standard library only.
+
+Root boundary (ADR-0025): the state (seen_jti, lock, phones.json) lives in /var/lib/mia-enroll, root:root 0700, and the
+pairing window in /run/mia-enroll, root:root 0755 (the mia user of mia-bt-agent can read the file, not create or
+replace it). Neither directory is under the mia service user's StateDirectory/RuntimeDirectory. Each is created with
+os.makedirs, then opened with O_NOFOLLOW and refused unless it is a real directory owned by uid 0 (the owner check is
+skipped only when the MIA_* override points elsewhere, i.e. in tests). Temp files get their mode through os.fchmod on
+the descriptor before anything is written; the lock is opened with O_NOFOLLOW.
 
 After the phone key is paired, the phone is recorded in the registry by key fingerprint (REQ-ONB-007; the optional
 stdin field `phone_mac` is stored only if it is a valid MAC, for a DHCP reservation, never as authentication; bonded
@@ -53,10 +60,10 @@ from pathlib import Path
 
 DEFAULT_ALLOWED_SIGNERS = "/etc/mia/allowed_signers"
 DEFAULT_DEVICE_PUB = "/etc/ssh/ssh_host_ed25519_key.pub"
-DEFAULT_ENROLL_DIR = "/var/lib/mia/enroll"
+DEFAULT_ENROLL_DIR = "/var/lib/mia-enroll"  # root:root 0700; never the mia service user's StateDirectory
 DEFAULT_ENV_FILE = "/etc/mia/environment"
 DEFAULT_CONFIG_D = "/etc/mia/config.d"
-DEFAULT_PAIRING_WINDOW = "/run/mia/pairing-window"
+DEFAULT_PAIRING_WINDOW = "/run/mia-enroll/pairing-window"  # dir root:root 0755: mia may read, not create
 PAIRING_WINDOW_SECONDS = 120
 NAMESPACE = "mia-grant"
 SIGNER_IDENTITY = "mia-auth-server"  # the principal in allowed_signers: <principal> namespaces="mia-grant" <key>
@@ -169,13 +176,32 @@ def _fingerprint_of(pub: Path) -> str:
     return parts[1]
 
 
+def ensure_dir(path: Path, mode: int, expect_uid=0) -> None:
+    """Create path (os.makedirs, mode) and refuse unless it is a real directory, not a symlink, owned by expect_uid.
+
+    expect_uid None skips the owner check (tests with an MIA_* override). The directory is opened with O_NOFOLLOW and
+    its mode is set with fchmod on that descriptor, so a swapped symlink cannot redirect either step.
+    """
+    os.makedirs(path, mode=mode, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    except OSError:
+        raise GrantError("state directory is not a real directory") from None
+    try:
+        if expect_uid is not None and os.fstat(fd).st_uid != expect_uid:
+            raise GrantError("state directory is not owned by root")
+        os.fchmod(fd, mode)
+    finally:
+        os.close(fd)
+
+
 def _atomic_write(path: Path, text: str, mode: int) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
     try:
+        os.fchmod(fd, mode)  # on the descriptor, before any data: no path to swap for a symlink
         with os.fdopen(fd, "w", encoding="utf-8") as out:
             out.write(text)
-        os.chmod(tmp, mode)
         os.replace(tmp, path)
     except OSError:
         Path(tmp).unlink(missing_ok=True)
@@ -232,9 +258,13 @@ def enroll(req: dict) -> list:
     phone_fp = pair.fingerprint(body)
     device_fp = _fingerprint_of(Path(env.get("MIA_DEVICE_PUB", DEFAULT_DEVICE_PUB)))
     warnings = []
-    state.mkdir(parents=True, exist_ok=True)
+    ensure_dir(state, 0o700, None if "MIA_ENROLL_DIR" in env else 0)
     seen_file = state / "seen_jti"
-    with open(state / "lock", "w") as lock:
+    try:
+        lock_fd = os.open(state / "lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    except OSError:
+        raise GrantError("lock file cannot be opened") from None
+    with os.fdopen(lock_fd, "r+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         seen = set(seen_file.read_text(encoding="utf-8").splitlines()) if seen_file.exists() else set()
         claims = verify_grant(req["grant"].encode("utf-8"), req["signature"].encode("utf-8"),
@@ -260,8 +290,10 @@ def enroll(req: dict) -> list:
         _atomic_write(Path(env.get("MIA_CONFIG_D", DEFAULT_CONFIG_D)) / "60-billing.json",
                       json.dumps(billing, sort_keys=True, indent=2) + "\n", 0o644)
     try:
-        _atomic_write(Path(env.get("MIA_PAIRING_WINDOW", DEFAULT_PAIRING_WINDOW)), f"{now + PAIRING_WINDOW_SECONDS}\n", 0o644)
-    except OSError:
+        window = Path(env.get("MIA_PAIRING_WINDOW", DEFAULT_PAIRING_WINDOW))
+        ensure_dir(window.parent, 0o755, None if "MIA_PAIRING_WINDOW" in env else 0)
+        _atomic_write(window, f"{now + PAIRING_WINDOW_SECONDS}\n", 0o644)
+    except (OSError, GrantError):
         warnings.append("pairing window not opened")
     return warnings
 

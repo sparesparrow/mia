@@ -196,3 +196,42 @@ def test_remove_also_removes_the_update_pair_key(tmp_path):
 def test_cli_never_prints_the_environment_or_keys(tmp_path):
     done = _cli(tmp_path, "upsert", FP_A, "--mac", MAC_1, extra={"MIA_API_KEY": "s3cret-value"})
     assert "s3cret-value" not in done.stdout + done.stderr
+
+
+# --- root boundary (I-1) ---------------------------------------------------------------------------------------------
+
+
+def test_default_store_is_in_the_root_owned_enroll_directory(reg):
+    assert reg.DEFAULT_STORE == "/var/lib/mia-enroll/phones.json"
+
+
+def test_registry_refuses_a_symlinked_lock(reg, tmp_path):
+    victim = tmp_path / "victim"
+    victim.write_text("precious")
+    (tmp_path / "state").mkdir()
+    (tmp_path / "state" / "phones.json.lock").symlink_to(victim)
+    with pytest.raises(reg.RegistryError):
+        reg.upsert(FP_A, MAC_1, False)
+    assert victim.read_text() == "precious"
+
+
+def test_registry_ensure_dir_refuses_symlink_and_foreign_owner(reg, tmp_path):
+    real = tmp_path / "real"
+    real.mkdir()
+    link = tmp_path / "link"
+    link.symlink_to(real)
+    with pytest.raises(reg.RegistryError):
+        reg.ensure_dir(link, 0o700, os.getuid())
+    with pytest.raises(reg.RegistryError):
+        reg.ensure_dir(real, 0o700, os.getuid() + 1)
+    reg.ensure_dir(real, 0o700, None)
+
+
+def test_registry_file_mode_is_set_by_fchmod_before_writing(reg, tmp_path, monkeypatch):
+    seen = []
+    real_fchmod = os.fchmod
+    monkeypatch.setattr(os, "fchmod", lambda fd, m: (seen.append((m, os.fstat(fd).st_size)), real_fchmod(fd, m))[1])
+    monkeypatch.setattr(os, "chmod", lambda *a, **k: (_ for _ in ()).throw(AssertionError("chmod by path")))
+    reg.upsert(FP_A, MAC_1, False)
+    assert (0o600, 0) in seen
+    assert _store(tmp_path).stat().st_mode & 0o777 == 0o600

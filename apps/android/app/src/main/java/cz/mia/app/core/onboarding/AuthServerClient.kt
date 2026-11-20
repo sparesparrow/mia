@@ -26,7 +26,7 @@ data class DeviceRef(val fp: String, val label: String)
  */
 sealed class AuthServerError(message: String) : Exception(message) {
 	/** 401: the activation key was not accepted. */
-	class Unauthorized : AuthServerError("The activation key was not accepted. Check the key in the app settings.")
+	class Unauthorized : AuthServerError("The activation key was not accepted. Enter it again on this screen.")
 
 	/** 403: the server does not know this Pi for the account. */
 	class UnknownDevice : AuthServerError("This Pi is not registered to your account.")

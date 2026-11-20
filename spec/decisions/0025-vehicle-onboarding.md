@@ -86,7 +86,7 @@ only opens the `url` from `/v1/checkout`. The Pi and the grant carry no Stripe i
 
 ### Phone MAC rule
 The phone's MAC is stored only to give its DHCP lease a stable address. It is never authentication: Android
-randomizes MACs per SSID and an attacker can copy one. The phone registry (`/var/lib/mia/phones.json`) is keyed by the
+randomizes MACs per SSID and an attacker can copy one. The phone registry (`/var/lib/mia-enroll/phones.json`) is keyed by the
 phone key fingerprint; when the MAC changes the reservation is updated for that fingerprint, and the old MAC is not
 trusted (REQ-ONB-007).
 
@@ -100,7 +100,7 @@ a Pi that is offline; the registry plus `mia-update-pair remove` is the on-Pi me
   script refuses to run unless `--i-know-this-drops-wlan0` is given, because `wlan0` may be the Pi's uplink. The
   connection is rendered with `nmcli --offline` into a root-only keyfile so the passphrase is never on a command line,
   and registry entries are validated before they become DHCP reservations.
-- Bluetooth pairing is open only during the pairing window: `mia-enroll` writes `/run/mia/pairing-window` (120 s) after a
+- Bluetooth pairing is open only during the pairing window: `mia-enroll` writes `/run/mia-enroll/pairing-window` (120 s) after a
   verified enrollment, and `mia-bt-agent.service` makes the adapter discoverable and pairable only while it holds a
   future time (REQ-ONB-009). The install script copies the unit without enabling it; the factory image or the
   enrollment installer enables it.
@@ -119,6 +119,13 @@ a Pi that is offline; the registry plus `mia-update-pair remove` is the on-Pi me
 - `mia-enroll` is a second SSH entry point to the Pi, reachable by any ed25519 or ECDSA key. It is safe only because
   the command takes no arguments and refuses everything without a valid grant; its input handling must stay minimal
   and is the part to review.
+- A valid grant amounts to root on that Pi. The enrolled phone key can run `mia-apply-update` (ADR-0023), which installs
+  a package whose checksums travel inside the same package and runs its deploy script as root. REQ-ONB-004 therefore
+  means "no general shell", not "no code execution"; the only barrier is the server-signed grant and the phone key it names.
+- `mia-enroll` runs as root, so its state is kept out of reach of the network-facing `mia` user: `/var/lib/mia-enroll`
+  (root:root 0700: `seen_jti`, `lock`, `phones.json`) and the pairing window in `/run/mia-enroll` (root:root 0755, file
+  0644: `mia-bt-agent` can read it, not create or replace it). Directories are checked to be real, root-owned
+  directories, files get their mode by `fchmod` on the descriptor and the lock is opened with `O_NOFOLLOW`.
 - Replay protection needs durable `jti` state on the Pi; a reflashed Pi forgets it, but then `exp` still bounds the
   window.
 - The Pi's clock must be roughly right to check `exp`. A Pi without an RTC and network may reject a fresh grant; the
