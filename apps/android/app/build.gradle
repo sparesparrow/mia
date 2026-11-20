@@ -23,6 +23,9 @@ android {
         }
 
         // Build config fields
+        // Fingerprint of schemas/*.fbs (same algorithm as SchemaHash.kt and bin/mia-apply-update): the app pushes a
+        // backend only when its schemas hash to this value (ADR-0023).
+        buildConfigField "String", "MIA_SCHEMA_HASH", "\"${getMiaSchemaHash()}\""
         buildConfigField "String", "BUILD_TIME", "\"${getBuildTime()}\""
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
         buildConfigField "String", "GIT_BRANCH", "\"${getGitBranch()}\""
@@ -131,6 +134,8 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
             excludes += '/META-INF/LICENSE.md'
             excludes += '/META-INF/LICENSE-notice.md'
+            excludes += '/META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+            excludes += '/META-INF/DEPENDENCIES'
         }
     }
     androidResources {
@@ -266,6 +271,10 @@ dependencies {
     implementation 'androidx.media3:media3-exoplayer:1.2.0'
     implementation 'androidx.media3:media3-ui:1.2.0'
 
+    // Software update over SSH (ADR-0023): sshj runs on API 22; it needs the full BouncyCastle provider.
+    implementation 'com.hierynomus:sshj:0.38.0'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.77'
+
     // ElevenLabs TTS
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.10.1'
@@ -327,6 +336,34 @@ dependencies {
 }
 
 // Versioning functions
+def getMiaSchemaHash() {
+    // CI or a Docker build whose context lacks ../../schemas supplies the hash instead (env or -P property).
+    def supplied = System.getenv("MIA_SCHEMA_HASH") ?: (project.findProperty("MIA_SCHEMA_HASH") as String)
+    if (supplied) {
+        if (!(supplied ==~ /[0-9a-f]{64}/)) {
+            throw new GradleException("MIA_SCHEMA_HASH must be 64 lowercase hex characters (SHA-256 of schemas/*.fbs)")
+        }
+        return supplied
+    }
+    def schemaDir = new File(rootDir, "../../schemas")
+    if (!schemaDir.isDirectory()) {
+        throw new GradleException("${schemaDir.canonicalPath} is missing, so the schema hash that the software-update gate " +
+            "compares (ADR-0023) cannot be computed. Build from the full repository, or set MIA_SCHEMA_HASH " +
+            "(env or -PMIA_SCHEMA_HASH): python3 tools/ci/schema_hash.py")
+    }
+    if (!(schemaDir.listFiles({ File f -> f.name.endsWith(".fbs") } as FileFilter) ?: new File[0])) {
+        throw new GradleException("${schemaDir.canonicalPath} has no *.fbs files; the schema hash would be meaningless")
+    }
+    def md = java.security.MessageDigest.getInstance("SHA-256")
+    def hex = { byte[] bytes -> bytes.collect { String.format("%02x", it & 0xff) }.join("") }
+    def schemas = schemaDir.listFiles({ File f -> f.isFile() && f.name.endsWith(".fbs") } as FileFilter)
+    (schemas ?: new File[0]).sort { it.name }.each { File f ->
+        def contentHash = hex(java.security.MessageDigest.getInstance("SHA-256").digest(f.bytes))
+        md.update("${f.name}\n${contentHash}\n".getBytes("UTF-8"))
+    }
+    return hex(md.digest())
+}
+
 def getVersionCode() {
     def versionCode = System.getenv("VERSION_CODE") as Integer
     if (versionCode != null) {

@@ -300,6 +300,11 @@ class MainActivity : ComponentActivity() {
 		var piApiKeyText by remember(savedPiApiKey) { mutableStateOf(savedPiApiKey) }
 		var piAddressError by remember { mutableStateOf<String?>(null) }
 		var lastExportPath by remember { mutableStateOf("") }
+		var showSoftwareUpdate by remember { mutableStateOf(false) }
+		if (showSoftwareUpdate) {
+			cz.mia.app.ui.screens.SoftwareUpdateScreen(onBack = { showSoftwareUpdate = false }, modifier = modifier)
+			return
+		}
 
 		Column(
 			modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp),
@@ -345,6 +350,10 @@ class MainActivity : ComponentActivity() {
 			val active = vm.preview(savedPiAddress, savedPiApiKey)
 			Text("Using: ${active.apiBaseUrl} (API key ${if (active.apiKey.isBlank()) "none" else "set"})")
 			Text("Takes effect when you open Dashboard, LED or Voice next.")
+			}
+			SectionCard(title = "Software update") {
+			Text("Configure the Pi and update it from this phone.")
+			OutlinedButton(onClick = { showSoftwareUpdate = true }) { Text("Software update") }
 			}
 			SectionCard(title = "Logs") {
 			Button(onClick = {

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/sparesparrow/mia/schemas/json/mia-user-config.schema.json",
+  "title": "MIA user configuration pushed from the phone",
+  "description": "The settings the Android app's Software update screen edits (ADR-0023). Data only: it is validated on the phone and again on the Pi by bin/mia-apply-update, written to /etc/mia/config.d/50-phone.json and never executed or interpolated into a shell. Pi-owned state such as voice_settings.json (ADR-0019) is not part of it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "description": "Schema version of this document.",
+      "const": 1
+    },
+    "device_name": {
+      "description": "Name the Pi shows to consoles.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._-]*$"
+    },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "level": {"type": "string", "enum": ["error", "warning", "info", "debug"]},
+        "retention_days": {"type": "integer", "minimum": 1, "maximum": 90}
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interval_ms": {"type": "integer", "minimum": 100, "maximum": 60000},
+        "enabled": {"type": "boolean"}
+      }
+    }
+  }
+}

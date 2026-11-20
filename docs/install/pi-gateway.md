@@ -14,20 +14,26 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
 
 ## Steps
 
-1. Deploy from a checkout of this repository on the Pi. The script copies the code to `/opt/mia`, installs the
-   systemd units from `infra/systemd/` and enables them:
+1. Deploy from a checkout of this repository on the Pi:
    ```bash
    sudo ./tools/scripts/deploy-production-rpi.sh
    ```
-   Known problem: the script installs the root `requirements.txt`, and some of its pinned packages have no
-   builds for the Python 3.13 that current Raspberry Pi OS ships, so the install step can fail. Until that is
-   fixed ([#190](https://github.com/sparesparrow/mia/issues/190)), check the script's output for pip errors.
+   The script:
+   - copies the code to `/opt/mia`;
+   - installs the API's requirements (`apps/rpi-backend/py-api/requirements.txt`) into the venv
+     `/opt/mia/venv`, never into the system Python;
+   - points `/usr/local/bin/mia-python` and `MIA_PYTHON` in `/etc/mia/environment` at that venv;
+   - installs and enables the systemd units from `infra/systemd/`.
 
-2. Set an API key. The units read `/etc/mia/environment`:
+   It works with the Python of Raspberry Pi OS Bookworm (3.11) and Trixie (3.13). Running it again updates the
+   code and keeps the venv and the API key.
+
+2. Set an API key. The units read `/etc/mia/environment`; these commands replace only the `MIA_API_KEY` line and
+   keep the `MIA_PYTHON` line the deploy wrote:
    ```bash
-   sudo mkdir -p /etc/mia
-   python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee /etc/mia/environment
-   sudo chmod 600 /etc/mia/environment
+   sudo mkdir -p /etc/mia && sudo touch /etc/mia/environment && sudo chmod 600 /etc/mia/environment
+   sudo sed -i '/^MIA_API_KEY=/d' /etc/mia/environment
+   python3 -c "import secrets; print('MIA_API_KEY=mia_api_' + secrets.token_hex(16))" | sudo tee -a /etc/mia/environment
    ```
 
 3. Start the broker first, then the API and the workers:
@@ -45,6 +51,27 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
 5. On the phone, open Settings in the MIA app and enter the Pi's address and the same key
    ([ADR-0016](../spec/decisions/0016-android-reaches-the-pi-over-plain-http.md)). The Cycle 1 card on the
    Dashboard then shows the Pi's telemetry.
+
+## Updating an installed Pi from the phone
+
+The steps above are the one-time bootstrap. Once a Pi is installed, the app can update it
+([ADR-0023](../spec/decisions/0023-phone-driven-software-update.md)):
+
+1. On the Pi, once: `sudo bash infra/deploy/rpi/install-update-access.sh`, then `sudo systemctl reload ssh`.
+   It creates the `mia-update` user, its one-command sudoers rule and the sshd block. The release you update to
+   must contain `bin/mia-apply-update` (it is in the backend bundle from the first release after this change); install
+   that file once by hand (`sudo install -m 755 bin/mia-apply-update /opt/mia/bin/`) or re-run the deploy script.
+2. Pair the phone. A paired key is root on the Pi by design (it runs the update tool as root), so pairing is done
+   by an administrator on the Pi, not through the API. In the app: Settings > Software update shows the phone's public key
+   and the command; run it in your SSH session:
+   `sudo /opt/mia/bin/mia-update-pair add pixel '<public key>'` (also `list` and `remove <label>`).
+   The app can check the result with `GET /admin/update/pair` (admin API key; labels and fingerprints only).
+3. In the app: edit the configuration, then Update the Pi.
+4. To go back: `sudo /opt/mia/bin/mia-apply-update --rollback` on the Pi. If an update fails during the deploy
+   step, files may be half-copied and there is no automatic rollback; `--rollback` returns to the package before
+   the current one, so re-run the update with the version you had instead.
+
+An update that changes `apps/rpi-backend/py-api/requirements.txt` is refused; run the full install once.
 
 ## Not covered here
 

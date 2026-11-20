@@ -1,5 +1,5 @@
 // Smoke test for the MIA web page generator.
-// @req REQ-WEB-001 REQ-WEB-002
+// @req REQ-WEB-001 REQ-WEB-002 REQ-WEB-003
 //
 // Run via `npm test` (which calls `npm run build` first via the `pretest`
 // hook). CI runs it in .github/workflows/publish-pages.yml. Exit code 0 means
@@ -18,6 +18,9 @@
 //   6. Every local stylesheet and image a page references exists in dist/.
 //   7. No page carries the old prototype status banner, and on every segment page the
 //      use cases (#scenarios) come before "what works today" (#today).
+//   8. The hand-written homepage (web/index.html) offers the three voice guides: a crew
+//      section with one card per guide, a distinct agent ID for each, one widget mount
+//      point, the embed script and the cloud disclosure (REQ-WEB-003).
 
 'use strict';
 
@@ -130,6 +133,29 @@ for (const segment of SEGMENTS) {
 for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
     const html = read(`${role}/index.html`);
     check(html.includes(`url=${target}"`), `${role}/ redirects to ${target.replace('../', '')}`);
+}
+
+// 8. Homepage voice guides (REQ-WEB-003). The homepage is not generated, so read it from web/.
+{
+    let home = '';
+    try {
+        home = fs.readFileSync(path.join(WEB_ROOT, 'index.html'), 'utf8');
+    } catch (_err) {
+        home = '';
+    }
+    const guides = ['holly', 'rimmer', 'kryten'];
+    check(home.includes('id="posadka"'), 'index.html has the crew section (#posadka)');
+    const missingCards = guides.filter((g) => !home.includes(`data-crew="${g}"`));
+    check(missingCards.length === 0, 'index.html has a card for every voice guide' +
+        (missingCards.length ? ` (missing: ${missingCards.join(', ')})` : ''));
+    const ids = guides.map((g) => (home.match(new RegExp(`${g}:\\s*'(agent_[a-z0-9]+)'`)) || [])[1]);
+    check(ids.every(Boolean) && new Set(ids).size === guides.length,
+        'index.html maps every voice guide to a distinct agent ID');
+    check((home.match(/id="crew-widget"/g) || []).length === 1, 'index.html has one widget mount point');
+    check(home.includes('https://unpkg.com/@elevenlabs/convai-widget-embed'),
+        'index.html loads the widget embed script');
+    check(/ElevenLabs/.test(home) && home.includes('class="crew-note"'),
+        'index.html says the guides run through ElevenLabs');
 }
 
 if (failures > 0) {

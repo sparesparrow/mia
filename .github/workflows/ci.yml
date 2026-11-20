@@ -13,6 +13,7 @@ on:
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
+      - 'infra/systemd/**'
       - 'infra/conan/**'
       - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'orchestration/**'
@@ -32,6 +33,7 @@ on:
       - 'agents/**'
       - 'apps/esp32/**'
       - 'apps/rpi-backend/**'
+      - 'infra/systemd/**'
       - 'infra/conan/**'
       - 'apps/rpi-backend/cpp-mcp-bridge/**'
       - 'orchestration/**'
@@ -78,6 +80,7 @@ jobs:
               - 'agents/**'
               - 'apps/rpi-backend/py-api/**'
               - 'apps/rpi-backend/shared/**'
+              - 'infra/systemd/**'
               - 'orchestration/**'
               - 'schemas/**'
               - 'tools/scripts/**'
@@ -278,6 +281,41 @@ jobs:
           assert envelope["signals"]["engine_rpm"]["value"] == 1750.0
           assert envelope["signals"]["coolant_temp_c"]["value"] == 86.0
           PY
+
+  pi-python:
+    if: needs.changes.outputs.python == 'true'
+    # The Pi API's requirements on the Pythons of 64-bit Raspberry Pi OS: 3.11 (Bookworm) and 3.13 (Trixie). This
+    # is a GitHub arm64 runner, not Raspberry Pi OS; RPi.GPIO builds here as it does on the Pi (REQ-DEP-008).
+    name: Pi Python ${{ matrix.python }} (aarch64)
+    runs-on: ubuntu-24.04-arm
+    needs: changes
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install the API's requirements into a venv, as deploy-raspberry-pi.sh does
+        # ELM327-emulator's setup.py appends GITHUB_RUN_NUMBER to its version when that variable is set, so on a
+        # runner pip rejects the 4.0.0 sdist for an inconsistent version and falls back to 3.0.5, which needs
+        # pkg_resources. A Pi has no GITHUB_RUN_NUMBER; install without it, as the Pi does.
+        run: |
+          python -m venv "$RUNNER_TEMP/pi-venv"
+          env -u GITHUB_RUN_NUMBER "$RUNNER_TEMP/pi-venv/bin/python" -m pip install --disable-pip-version-check \
+            -r apps/rpi-backend/py-api/requirements.txt
+          "$RUNNER_TEMP/pi-venv/bin/python" -m pip check
+      - name: Import the API with the PYTHONPATH of mia-api.service
+        working-directory: apps/rpi-backend/py-api
+        run: |
+          PYTHONPATH="$PWD" "$RUNNER_TEMP/pi-venv/bin/python" -c "
+          import api.main as m
+          assert m.parse_citroen_telemetry is not None and m.validate_cycle1_envelope is not None
+          print('api.main imports on', m.__file__)
+          "
 
   cpp-build:
     if: needs.changes.outputs.cpp == 'true'
