@@ -99,6 +99,6 @@ def test_the_cpp_job_installs_the_library_behind_every_unconditional_include():
 
 def test_the_bundle_ships_the_deploy_script_and_the_update_tool():
     paths = _bundle_paths()
-    for required in ("tools/scripts/deploy-raspberry-pi.sh", "bin/mia-apply-update"):
+    for required in ("tools/scripts/deploy-raspberry-pi.sh", "bin/mia-apply-update", "bin/mia-update-pair"):
         assert required in paths
         assert (ROOT / required).is_file()

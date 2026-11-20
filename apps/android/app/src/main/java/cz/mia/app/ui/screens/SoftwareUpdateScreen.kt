@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,7 @@ import cz.mia.app.core.update.UpdateProgress
 import cz.mia.app.core.update.UpdateViewModel
 
 /**
- * Settings > Software update (ADR-0023, REQ-UPD-007): edit the configuration, pair once, then build and send the
+ * Settings > Software update (ADR-0023, REQ-UPD-007): edit the configuration, pair once on the Pi (administrator command), then build and send the
  * update. After a config edit the screen offers to update the Pi, because the config only reaches it that way.
  */
 @Composable
@@ -71,13 +72,14 @@ fun SoftwareUpdateScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 		Text("Release", style = MaterialTheme.typography.titleMedium)
 		OutlinedTextField(state.version, vm::setVersion, label = { Text("Version to install") }, modifier = Modifier.fillMaxWidth())
 		Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-			OutlinedButton(enabled = !busy, onClick = vm::pair) { Text("Pair with the Pi") }
+			OutlinedButton(enabled = !busy, onClick = vm::showPairing) { Text("Show pairing command") }
+			OutlinedButton(enabled = !busy, onClick = vm::checkPaired) { Text("Check paired") }
 			Button(enabled = !busy, onClick = vm::update) { Text("Update the Pi") }
 		}
 		if (state.configChanged) {
 			Text("Configuration changed. Update the Pi to apply it.", color = MaterialTheme.colorScheme.primary)
 		}
-		state.message?.let { Text(it) }
+		state.message?.let { SelectionContainer { Text(it) } }
 		when (val p = state.progress) {
 			is UpdateProgress.Idle -> Unit
 			is UpdateProgress.Working -> {

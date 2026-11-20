@@ -61,9 +61,15 @@ The steps above are the one-time bootstrap. Once a Pi is installed, the app can 
    It creates the `mia-update` user, its one-command sudoers rule and the sshd block. The release you update to
    must contain `bin/mia-apply-update` (it is in the backend bundle from the first release after this change); install
    that file once by hand (`sudo install -m 755 bin/mia-apply-update /opt/mia/bin/`) or re-run the deploy script.
-2. In the app: Settings > Software update > Pair with the Pi (needs the admin API key), edit the
-   configuration, then Update the Pi.
-3. To go back: `sudo /opt/mia/bin/mia-apply-update --rollback` on the Pi.
+2. Pair the phone. A paired key is root on the Pi by design (it runs the update tool as root), so pairing is done
+   by an administrator on the Pi, not through the API. In the app: Settings > Software update shows the phone's public key
+   and the command; run it in your SSH session:
+   `sudo /opt/mia/bin/mia-update-pair add pixel '<public key>'` (also `list` and `remove <label>`).
+   The app can check the result with `GET /admin/update/pair` (admin API key; labels and fingerprints only).
+3. In the app: edit the configuration, then Update the Pi.
+4. To go back: `sudo /opt/mia/bin/mia-apply-update --rollback` on the Pi. If an update fails during the deploy
+   step, files may be half-copied and there is no automatic rollback; `--rollback` returns to the package before
+   the current one, so re-run the update with the version you had instead.
 
 An update that changes `apps/rpi-backend/py-api/requirements.txt` is refused; run the full install once.
 

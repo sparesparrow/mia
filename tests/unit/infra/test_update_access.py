@@ -46,7 +46,17 @@ def test_the_access_installer_writes_a_one_command_sudoers_rule(tmp_path):
     sshd = (tmp_path / "sshd_config.d" / "mia-update.conf").read_text()
     assert "Match User mia-update" in sshd and "PermitTTY no" in sshd and "AllowTcpForwarding no" in sshd
     assert "useradd -r -m -s /bin/sh mia-update" in log.read_text()
-    assert (tmp_path / "mia" / "update_authorized_keys").stat().st_mode & 0o777 == 0o600
+    # Root-owned, world-readable: the service user and the API can read the list but never change it.
+    assert (tmp_path / "mia" / "update_authorized_keys").stat().st_mode & 0o777 == 0o644
+    assert "chown root:root" in log.read_text()
+    assert "AuthorizedKeysCommandUser nobody" in sshd
+    assert "ForceCommand /usr/bin/sudo /opt/mia/bin/mia-apply-update" in sshd and "PermitUserRC no" in sshd
+    assert "ssh-rsa" not in sshd and "PubkeyAcceptedAlgorithms ssh-ed25519" in sshd
+    # Everything is scoped to the one Match block: nothing may sit before it and no second Match may follow.
+    lines = [ln for ln in sshd.splitlines() if ln.strip() and not ln.lstrip().startswith("#")]
+    assert lines[0] == "Match User mia-update"
+    assert all(ln.startswith("    ") for ln in lines[1:])
+    assert sum(ln.startswith("Match ") for ln in lines) == 1
 
 
 def test_skip_packages_leaves_apt_and_pip_alone_and_installs_the_update_tool(tmp_path):
@@ -76,6 +86,8 @@ def test_skip_packages_leaves_apt_and_pip_alone_and_installs_the_update_tool(tmp
     tool = install / "bin" / "mia-apply-update"
     assert tool.is_file() and tool.stat().st_mode & 0o777 == 0o755
     assert tool.read_bytes() == (ROOT / "bin" / "mia-apply-update").read_bytes()
+    pair = install / "bin" / "mia-update-pair"
+    assert pair.is_file() and pair.stat().st_mode & 0o777 == 0o755
 
 
 def test_an_unknown_option_is_refused():

@@ -9,15 +9,17 @@
 #   `sudo /opt/mia/bin/mia-apply-update`, with no pty, forwarding or agent;
 # - /etc/sudoers.d/mia-update: that user may run that one file as root, with no arguments (the empty "" in the
 #   rule), checked with visudo -cf before it is put in place;
-# - /etc/mia/update_authorized_keys, owned by the API's service user, written by POST /admin/update/pair;
-# - /etc/ssh/sshd_config.d/mia-update.conf: sshd reads that file for this user through AuthorizedKeysCommand,
-#   so no file in the user's home can add a key.
+# - /etc/mia/update_authorized_keys, owned by root, mode 644: only root writes it, through
+#   `sudo /opt/mia/bin/mia-update-pair` (bin/mia-update-pair). The API and the service user can read it, not change
+#   it: a paired key is root on the Pi by design (it runs the update tool as root), so pairing is an administrator
+#   action and no network-reachable service may add a key;
+# - /etc/ssh/sshd_config.d/mia-update.conf: sshd reads that file for this user through AuthorizedKeysCommand
+#   (run as the unprivileged user `nobody`), so no file in the user's home can add a key.
 #
 # The MIA_* variables let tests/unit/infra/test_update_access.py run it in a temporary directory.
 set -euo pipefail
 
 UPDATE_USER="${MIA_UPDATE_USER:-mia-update}"
-SERVICE_USER="${MIA_USER:-mia}"
 SUDOERS_FILE="${MIA_SUDOERS_FILE:-/etc/sudoers.d/mia-update}"
 SSHD_DROPIN="${MIA_SSHD_DROPIN:-/etc/ssh/sshd_config.d/mia-update.conf}"
 KEYS_FILE="${MIA_AUTHORIZED_KEYS:-/etc/mia/update_authorized_keys}"
@@ -37,16 +39,19 @@ install -m 440 "$work/sudoers" "$SUDOERS_FILE"
 
 mkdir -p "$(dirname "$KEYS_FILE")"
 touch "$KEYS_FILE"
-chown "$SERVICE_USER:$SERVICE_USER" "$KEYS_FILE"
-chmod 600 "$KEYS_FILE"
+chown root:root "$KEYS_FILE"
+chmod 644 "$KEYS_FILE"
 
 cat > "$work/sshd.conf" <<CONF
-# MIA phone updates (ADR-0023): keys come from the list the API manages; the only thing they can run is the
-# forced command written into each entry.
+# MIA phone updates (ADR-0023): keys come from the root-owned list that mia-update-pair manages; the only thing
+# they can run is the forced command. Every line below sits inside the Match block, so no other user is affected.
 Match User $UPDATE_USER
     AuthorizedKeysFile none
     AuthorizedKeysCommand /bin/cat $KEYS_FILE
-    AuthorizedKeysCommandUser $SERVICE_USER
+    AuthorizedKeysCommandUser nobody
+    PubkeyAcceptedAlgorithms ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+    ForceCommand /usr/bin/sudo $TOOL
+    PermitUserRC no
     PasswordAuthentication no
     KbdInteractiveAuthentication no
     PermitTTY no
@@ -58,4 +63,5 @@ mkdir -p "$(dirname "$SSHD_DROPIN")"
 install -m 644 "$work/sshd.conf" "$SSHD_DROPIN"
 if command -v sshd >/dev/null 2>&1; then sshd -t; fi
 
-echo "Done. Reload sshd (systemctl reload ssh), then pair the phone from the app: Settings > Software update."
+echo "Done. Reload sshd (systemctl reload ssh). Pair a phone: copy its public key from the app (Settings > Software update), then run on the Pi:"
+echo "  sudo /opt/mia/bin/mia-update-pair add <label> '<public key>'"

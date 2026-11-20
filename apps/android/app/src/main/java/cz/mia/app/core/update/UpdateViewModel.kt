@@ -58,11 +58,21 @@ class UpdateViewModel @Inject constructor(
 		_state.update { it.copy(config = config, configChanged = true, message = "Saved. Update the Pi now to apply it.") }
 	}
 
-	fun pair() = launchWork("Pairing with the Pi") {
+	/** Shows the command the administrator runs on the Pi; the app cannot pair itself (ADR-0023). */
+	fun showPairing() {
+		val command = UpdatePairing().command("phone", keys.publicLine())
+		_state.update { it.copy(message = "Run this on the Pi, as an administrator:\n$command") }
+	}
+
+	/** Lists the phones the Pi has paired (read-only). */
+	fun checkPaired() = launchWork("Asking the Pi") {
 		val pi = connection.current()
-		val result = UpdatePairing().pair(pi.apiBaseUrl, pi.apiKey, keys.publicLine(), "phone")
+		val result = UpdatePairing().paired(pi.apiBaseUrl, pi.apiKey)
 		_state.update {
-			it.copy(progress = UpdateProgress.Idle, message = result.getOrElse { e -> "Pairing failed: ${e.message}" }.toString())
+			it.copy(
+				progress = UpdateProgress.Idle,
+				message = result.fold({ list -> if (list.isEmpty()) "No phone is paired yet." else "Paired:\n" + list.joinToString("\n") }, { e -> "Check failed: ${e.message}" }),
+			)
 		}
 	}
 

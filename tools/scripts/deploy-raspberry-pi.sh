@@ -146,6 +146,10 @@ install_update_tool() {
     [[ -f "$tool" ]] || return 0
     run_privileged mkdir -p "$INSTALL_DIR/bin"
     run_privileged install -m 755 "$tool" "$INSTALL_DIR/bin/mia-apply-update"
+    # The administrator's pairing tool (root only, writes the root-owned key list).
+    if [[ -f "$PROJECT_ROOT/bin/mia-update-pair" ]]; then
+        run_privileged install -m 755 "$PROJECT_ROOT/bin/mia-update-pair" "$INSTALL_DIR/bin/mia-update-pair"
+    fi
 }
 
 install_python_packages() {

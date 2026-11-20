@@ -1,6 +1,6 @@
 package cz.mia.app.core.update
 
-// @req REQ-UPD-002 REQ-UPD-003 REQ-UPD-007
+// @req REQ-UPD-002 REQ-UPD-003 REQ-UPD-004 REQ-UPD-007
 
 import java.io.ByteArrayOutputStream
 import java.math.BigInteger
@@ -10,6 +10,7 @@ import java.security.spec.ECGenParameterSpec
 import java.util.zip.GZIPOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -154,5 +155,13 @@ class UpdateTest {
 		assertEquals(4, blob[blob.size - 65].toInt())
 		assertEquals(key.w.affineX, BigInteger(1, blob.copyOfRange(blob.size - 64, blob.size - 32)))
 		assertTrue(OpenSshKey.publicLine(key).startsWith("ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTY"))
+	}
+
+	@Test
+	fun pairingIsACommandForTheAdministratorNotAnApiCall() {
+		val line = "ecdsa-sha2-nistp256 AAAA"
+		assertEquals("sudo /opt/mia/bin/mia-update-pair add pixel 'ecdsa-sha2-nistp256 AAAA'", UpdatePairing().command("pixel", line))
+		assertThrows(IllegalArgumentException::class.java) { UpdatePairing().command("a b", line) }
+		assertThrows(IllegalArgumentException::class.java) { UpdatePairing().command("pixel", "x' ; rm -rf / '") }
 	}
 }

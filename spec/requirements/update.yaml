@@ -53,19 +53,23 @@ requirements:
   not_proven: No Pi service reads /etc/mia/config.d yet; this requirement covers delivery and validation only.
 - id: REQ-UPD-004
   title: Restricted update access
-  statement: A phone shall be able to run only the update command over SSH, paired with an admin API key, through a
-    dedicated user, a one-command sudoers rule and a forced command on its key.
+  statement: A phone shall be able to run only the update command over SSH, through a dedicated user, a one-command
+    sudoers rule and a forced command on its key, and a key shall be added only by root on the Pi, never by the API.
   evidence: implemented_and_ci_tested
   acceptance:
-  - The pairing endpoint needs the admin scope and accepts only a bare ed25519, ECDSA or RSA key
-  - The written entry carries the forced command and no-pty, no forwarding options, and repeating a pairing changes nothing
+  - bin/mia-update-pair refuses to run unless root and accepts only a bare ed25519 or ECDSA key (no RSA, options or newlines)
+  - The written entry carries restrict, the forced command and no-pty, no forwarding options; repeating a pairing changes nothing
+  - The key list is root-owned, mode 644, and the API has no write route; GET /admin/update/pair (admin scope) lists labels and fingerprints and gives 503 when authentication is disabled
   - The installer's sudoers rule allows one file with no arguments and is checked with visudo
+  - The sshd drop-in sits only inside Match User mia-update, with ForceCommand, PermitUserRC no and no ssh-rsa
   implemented_in:
+  - bin/mia-update-pair
   - apps/rpi-backend/py-api/api/routers/update_pairing.py
   - infra/deploy/rpi/install-update-access.sh
   decisions:
   - ADR-0023
-  not_proven: Not run against a real sshd and sudo; sshd's AuthorizedKeysCommand path is documented, not tested.
+  not_proven: Not run against a real sshd and sudo; sshd's AuthorizedKeysCommand and ForceCommand behaviour is
+    documented, not tested. A paired key is root on the Pi by design (checksum-only authenticity, REQ-UPD-008).
 - id: REQ-UPD-005
   title: Rollback and Pi-owned state
   statement: The Pi shall keep the previous package and return to it on request, and an update or rollback shall
@@ -104,3 +108,10 @@ requirements:
   - ADR-0023
   not_proven: The app has not been compiled or run (no Android SDK on the authoring machine); the Kotlin unit tests
     have not been executed, and the SSH upload has not been tried against a Pi.
+- id: REQ-UPD-008
+  title: Signed releases
+  statement: The Pi shall apply an update only if the release bundle carries a signature that verifies against a
+    release key pinned on the Pi, so that a paired phone key alone cannot make the Pi run arbitrary code.
+  evidence: planned
+  decisions:
+  - ADR-0023

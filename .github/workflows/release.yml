@@ -225,6 +225,7 @@ jobs:
               requirements-ci.txt \
               tools/scripts/deploy-raspberry-pi.sh \
               bin/mia-apply-update \
+              bin/mia-update-pair \
               .claude/agents \
               VERSION.txt
           ls -la dist

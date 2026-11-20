@@ -30,6 +30,11 @@ RUN sdkmanager --version \
 
 WORKDIR /workspace
 
+# The build context is apps/android, so ../../schemas is not in it. The Gradle build fails without the schema hash
+# (ADR-0023): pass it with --build-arg MIA_SCHEMA_HASH=$(python3 tools/ci/schema_hash.py)
+ARG MIA_SCHEMA_HASH
+ENV MIA_SCHEMA_HASH=${MIA_SCHEMA_HASH}
+
 # Copy settings and top-level build files
 COPY settings.gradle settings.gradle
 COPY build.gradle build.gradle
