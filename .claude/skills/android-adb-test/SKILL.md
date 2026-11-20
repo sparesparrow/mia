@@ -1,6 +1,6 @@
 ---
 name: android-adb-test
-description: MIA Android app testing via ADB. Build APK, deploy to device/emulator, run test scenarios with UI automation (tap, swipe, screenshots). Orchestrate logcat analysis and adb command monitoring via readonly subagents. Use when testing MIA Android features end-to-end: dashboard telemetry, BLE pairing, OBD flows, ANPR detection, or full user journeys. Supports interactive mode for manual debugging.
+description: "MIA Android app testing via ADB. Build APK, deploy to device/emulator, run test scenarios with UI automation (tap, swipe, screenshots). Orchestrate logcat analysis and adb command monitoring via readonly subagents. Use when testing MIA Android features end-to-end: dashboard telemetry, BLE pairing, OBD flows, ANPR detection, or full user journeys. Supports interactive mode for manual debugging."
 ---
 
 # Android ADB Test Skill for MIA
