@@ -63,15 +63,16 @@ class MicStreamService : Service() {
             this,
             Manifest.permission.RECORD_AUDIO,
         ) == PackageManager.PERMISSION_GRANTED
-        if (!hasRecordPermission || !PermissionHelper.hasNotificationPermission(this)) {
-            Log.w(TAG, "Required microphone service permission missing; not starting")
-            stopSelfResult(startId)
-            return START_NOT_STICKY
-        }
         try {
             ServiceCompat.startForeground(this, NOTIFICATION_ID, notification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
         } catch (e: SecurityException) {
             Log.w(TAG, "Android rejected microphone foreground service start", e)
+            stopSelfResult(startId)
+            return START_NOT_STICKY
+        }
+        if (!hasRecordPermission || !PermissionHelper.hasNotificationPermission(this)) {
+            Log.w(TAG, "Required microphone service permission missing; stopping foreground service")
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelfResult(startId)
             return START_NOT_STICKY
         }
