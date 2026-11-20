@@ -19,7 +19,7 @@ object PackageBuilder {
 
 	fun bundleName(version: String) = "mia-rpi-backend-$version.tar.gz"
 
-	/** The schema hash of a release bundle, from the schemas/*.fbs inside it. */
+	/** The schema hash of a release bundle, from the .fbs files under schemas/ inside it. */
 	fun bundleSchemaHash(bundle: ByteArray): String {
 		val files = Tar.readGz(bundle) { Regex("^schemas/[^/]+\\.fbs$").matches(it) }
 			.mapKeys { it.key.removePrefix("schemas/") }

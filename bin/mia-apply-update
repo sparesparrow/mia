@@ -1,0 +1,520 @@
+#!/usr/bin/env python3
+"""Apply a phone-built software update package on the Pi (ADR-0023, REQ-UPD-001..005).
+
+    sudo /opt/mia/bin/mia-apply-update < package.miapkg      the phone's SSH forced command
+    sudo /opt/mia/bin/mia-apply-update --rollback             an administrator, on the Pi
+
+The package is an uncompressed tar with exactly four members:
+
+    mia-rpi-backend-<version>.tar.gz   the release backend bundle
+    SHA256SUMS                         the release's checksum file for that tag
+    config.yaml                        the user's settings (data only)
+    manifest.json                      {version, package, package_sha256, schema_hash}
+
+Nothing is trusted until it is verified, and nothing on the Pi changes before every check has passed:
+
+1. read stdin into a staging directory under $MIA_UPDATE_DIR (size capped); take only the four named members;
+2. the bundle must match SHA256SUMS and the manifest's package_sha256, and the manifest's schema_hash must equal
+   the hash recomputed from the bundle's own schemas/*.fbs;
+3. config.yaml is parsed by a strict YAML subset (no tags, anchors, flow style or multiple documents), checked
+   against the bundle's schemas/json/mia-user-config.schema.json and turned into JSON;
+4. the bundle is unpacked member by member (regular files and directories only, no absolute or `..` paths, no
+   links or devices) and the requirements file must be unchanged, because the install runs --skip-packages;
+5. only then the bundle's own tools/scripts/deploy-raspberry-pi.sh runs, as an argument list and never through a
+   shell, the config JSON goes to $MIA_CONFIG_D/50-phone.json and the units restart.
+
+The previous package stays in $MIA_UPDATE_DIR/previous; --rollback applies it again. Pi-owned state under
+$MIA_STATE_DIR (voice_settings.json, ADR-0019) is never read or written here. The last line on stdout is one JSON
+object {"ok", "step", "version", "error", ...}; the deploy script's own output goes to stderr. Exit code 0 means ok.
+
+Environment overrides (a sudo call resets the environment, so the SSH user cannot set them): MIA_UPDATE_DIR,
+MIA_CONFIG_D, MIA_INSTALL_DIR, MIA_MAX_PACKAGE_MB, MIA_NO_RESTART. Standard library only.
+"""
+
+from __future__ import annotations
+
+import fcntl
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+from pathlib import Path
+
+DEFAULT_UPDATE_DIR = "/var/lib/mia/update"
+DEFAULT_CONFIG_D = "/etc/mia/config.d"
+DEFAULT_INSTALL_DIR = "/opt/mia"
+CONFIG_FILE = "50-phone.json"
+DEPLOY_SCRIPT = "tools/scripts/deploy-raspberry-pi.sh"
+SCHEMA_FILE = "schemas/json/mia-user-config.schema.json"
+REQUIREMENTS_FILE = "apps/rpi-backend/py-api/requirements.txt"
+# Same order as CORE_UNITS in the deploy script; a test keeps the two lists equal.
+CORE_UNITS = (
+    "zmq-broker.service",
+    "mia-api.service",
+    "mia-gpio-worker.service",
+    "mia-serial-bridge.service",
+    "mia-obd-worker.service",
+)
+
+VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]{1,32})?$")
+HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+MAX_CONFIG_BYTES = 16 * 1024
+MAX_MANIFEST_BYTES = 4 * 1024
+MAX_SUMS_BYTES = 16 * 1024
+MAX_UNPACKED_BYTES = 600 * 1024 * 1024
+MAX_MEMBERS = 20000
+
+
+class Fail(Exception):
+    """A check failed: `step` says where, the message says why. Never carries file contents beyond a name."""
+
+    def __init__(self, step: str, message: str):
+        super().__init__(message)
+        self.step = step
+        self.message = message
+
+
+# --- schema hash -----------------------------------------------------------------------------------------------
+
+
+def schema_hash(files: dict[str, bytes]) -> str:
+    """SHA-256 over the FlatBuffers schemas: for each name in sorted order, `name\\n<sha256 of content>\\n`.
+
+    The phone computes the same value over the schemas/*.fbs it was built with (SchemaHash.kt); a package is only
+    pushed, and only applied, when both agree.
+    """
+    digest = hashlib.sha256()
+    for name in sorted(files):
+        digest.update(f"{name}\n{hashlib.sha256(files[name]).hexdigest()}\n".encode())
+    return digest.hexdigest()
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+# --- config: strict YAML subset -> JSON -------------------------------------------------------------------------
+
+_KEY = r"[A-Za-z_][A-Za-z0-9_]*"
+_LINE_RE = re.compile(rf"^( {{0,2}})({_KEY}):(?: (.*))?$")
+_QUOTED_RE = re.compile(r'^"(?:[^"\\\x00-\x1f]|\\["\\/bfnrt]|\\u[0-9a-fA-F]{4})*"$')
+_PLAIN_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+_INT_RE = re.compile(r"^-?[0-9]+$")
+
+
+def parse_config_yaml(text: str) -> dict:
+    """Parse the one YAML shape the phone writes: `key: scalar` lines and one level of `key:` sections.
+
+    Scalars are true, false, integers, double-quoted strings (JSON escapes) or bare words of [A-Za-z0-9._-].
+    Anything else (tabs, tags, anchors, flow style, block scalars, `---`, trailing comments) is an error.
+    """
+    if len(text.encode("utf-8")) > MAX_CONFIG_BYTES:
+        raise Fail("config", "config.yaml is too large")
+    result: dict = {}
+    section: dict | None = None
+    for number, line in enumerate(text.splitlines(), start=1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if "\t" in line:
+            raise Fail("config", f"config.yaml line {number}: tabs are not allowed")
+        match = _LINE_RE.match(line)
+        if not match:
+            raise Fail("config", f"config.yaml line {number}: not a `key: value` line")
+        indent, key, raw = len(match.group(1)), match.group(2), match.group(3)
+        if indent not in (0, 2):
+            raise Fail("config", f"config.yaml line {number}: indent must be 0 or 2 spaces")
+        if indent == 2 and section is None:
+            raise Fail("config", f"config.yaml line {number}: indented line outside a section")
+        target = section if indent == 2 else result
+        assert target is not None
+        if key in target:
+            raise Fail("config", f"config.yaml line {number}: duplicate key {key!r}")
+        if raw is None or raw == "":
+            if indent == 2:
+                raise Fail("config", f"config.yaml line {number}: sections nest one level only")
+            section = {}
+            target[key] = section
+            continue
+        if indent == 0:
+            section = None
+        target[key] = _scalar(raw, number)
+    return result
+
+
+def _scalar(raw: str, number: int):
+    if raw == "true":
+        return True
+    if raw == "false":
+        return False
+    if _INT_RE.match(raw):
+        return int(raw)
+    if raw.startswith('"'):
+        if not _QUOTED_RE.match(raw):
+            raise Fail("config", f"config.yaml line {number}: bad quoted string")
+        return json.loads(raw)
+    if _PLAIN_RE.match(raw):
+        return raw
+    raise Fail("config", f"config.yaml line {number}: unsupported value (quote strings with double quotes)")
+
+
+# --- config: JSON Schema subset ---------------------------------------------------------------------------------
+
+_ANNOTATIONS = {"$schema", "$id", "title", "description"}
+_KEYWORDS = _ANNOTATIONS | {
+    "type", "enum", "const", "minimum", "maximum", "minLength", "maxLength", "pattern",
+    "properties", "required", "additionalProperties",
+}
+
+
+def validate(value, schema: dict, path: str = "$") -> None:
+    """Check `value` against the JSON Schema keywords the user-config schema uses; any other keyword fails closed."""
+    unknown = set(schema) - _KEYWORDS
+    if unknown:
+        raise Fail("config", f"schema uses unsupported keyword(s) {sorted(unknown)}")
+    if "const" in schema and (value != schema["const"] or type(value) is not type(schema["const"])):
+        raise Fail("config", f"{path}: must be {schema['const']!r}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise Fail("config", f"{path}: must be one of {schema['enum']}")
+    kind = schema.get("type")
+    if kind is not None:
+        ok = {
+            "object": isinstance(value, dict),
+            "string": isinstance(value, str),
+            "integer": isinstance(value, int) and not isinstance(value, bool),
+            "boolean": isinstance(value, bool),
+        }.get(kind)
+        if ok is None:
+            raise Fail("config", f"schema uses unsupported type {kind!r}")
+        if not ok:
+            raise Fail("config", f"{path}: must be of type {kind}")
+    if isinstance(value, str):
+        if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", 1 << 30):
+            raise Fail("config", f"{path}: length out of range")
+        if "pattern" in schema and not re.search(schema["pattern"], value):
+            raise Fail("config", f"{path}: does not match the allowed pattern")
+    if isinstance(value, int) and not isinstance(value, bool):
+        if "minimum" in schema and value < schema["minimum"]:
+            raise Fail("config", f"{path}: below the minimum {schema['minimum']}")
+        if "maximum" in schema and value > schema["maximum"]:
+            raise Fail("config", f"{path}: above the maximum {schema['maximum']}")
+    if isinstance(value, dict):
+        props = schema.get("properties", {})
+        for name in schema.get("required", []):
+            if name not in value:
+                raise Fail("config", f"{path}: missing required key {name!r}")
+        for name, item in value.items():
+            if name in props:
+                validate(item, props[name], f"{path}.{name}")
+            elif schema.get("additionalProperties") is False:
+                raise Fail("config", f"{path}: unknown key {name!r}")
+
+
+# --- package handling -------------------------------------------------------------------------------------------
+
+
+def read_stdin_to(path: Path, limit: int) -> None:
+    total = 0
+    with open(path, "wb") as out:
+        for chunk in iter(lambda: sys.stdin.buffer.read(1 << 20), b""):
+            total += len(chunk)
+            if total > limit:
+                raise Fail("receive", f"package is larger than {limit // (1024 * 1024)} MiB")
+            out.write(chunk)
+    if total == 0:
+        raise Fail("receive", "empty package")
+
+
+def split_package(package: Path, dest: Path) -> dict[str, Path]:
+    """Copy the four named members out of the outer tar. Anything else in it is an error."""
+    found: dict[str, Path] = {}
+    limits = {"SHA256SUMS": MAX_SUMS_BYTES, "config.yaml": MAX_CONFIG_BYTES, "manifest.json": MAX_MANIFEST_BYTES}
+    try:
+        archive = tarfile.open(package, mode="r:")
+    except tarfile.TarError as exc:
+        raise Fail("extract", f"not a tar package: {exc}") from None
+    with archive:
+        for member in archive:
+            name = member.name
+            is_bundle = re.fullmatch(r"mia-rpi-backend-[0-9A-Za-z.+-]{1,40}\.tar\.gz", name) is not None
+            if not member.isreg() or not (name in limits or is_bundle):
+                raise Fail("extract", f"unexpected package member {name!r}")
+            if name in found:
+                raise Fail("extract", f"duplicate package member {name!r}")
+            if name in limits and member.size > limits[name]:
+                raise Fail("extract", f"{name} is too large")
+            target = dest / name
+            source = archive.extractfile(member)
+            assert source is not None
+            with open(target, "wb") as out:
+                shutil.copyfileobj(source, out)
+            found[name] = target
+    bundles = [n for n in found if n.startswith("mia-rpi-backend-")]
+    if len(bundles) != 1 or not {"SHA256SUMS", "config.yaml", "manifest.json"} <= set(found):
+        raise Fail("extract", "package must hold SHA256SUMS, config.yaml, manifest.json and one backend bundle")
+    return found
+
+
+def parse_sums(text: str) -> dict[str, str]:
+    sums: dict[str, str] = {}
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        match = re.fullmatch(r"([0-9a-f]{64}) [ *]([^/\0]+)", line.strip())
+        if not match:
+            raise Fail("verify", "SHA256SUMS has a malformed line")
+        sums[match.group(2)] = match.group(1)
+    return sums
+
+
+def read_manifest(path: Path) -> dict:
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        raise Fail("manifest", "manifest.json is not valid JSON") from None
+    keys = {"version", "package", "package_sha256", "schema_hash"}
+    if not isinstance(manifest, dict) or set(manifest) != keys:
+        raise Fail("manifest", f"manifest.json must have exactly the keys {sorted(keys)}")
+    if not isinstance(manifest["version"], str) or not VERSION_RE.match(manifest["version"]):
+        raise Fail("manifest", "manifest version is not a release version")
+    for key in ("package_sha256", "schema_hash"):
+        if not isinstance(manifest[key], str) or not HASH_RE.match(manifest[key]):
+            raise Fail("manifest", f"manifest {key} is not a SHA-256 hex digest")
+    if manifest["package"] != f"mia-rpi-backend-{manifest['version']}.tar.gz":
+        raise Fail("manifest", "manifest package name does not match its version")
+    return manifest
+
+
+def safe_extract(bundle: Path, dest: Path) -> None:
+    """Unpack the bundle member by member: regular files and directories only, always below `dest`."""
+    root = dest.resolve()
+    total = 0
+    try:
+        with tarfile.open(bundle, mode="r:gz") as archive:
+            for count, member in enumerate(archive, start=1):
+                if count > MAX_MEMBERS:
+                    raise Fail("unpack", "bundle has too many members")
+                name = member.name
+                parts = Path(name).parts
+                if name.startswith("/") or ".." in parts or "\0" in name:
+                    raise Fail("unpack", f"unsafe path in bundle: {name!r}")
+                target = (root / name).resolve()
+                if root != target and root not in target.parents:
+                    raise Fail("unpack", f"unsafe path in bundle: {name!r}")
+                if member.isdir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                if not member.isreg():
+                    raise Fail("unpack", f"bundle member {name!r} is not a regular file or directory")
+                total += member.size
+                if total > MAX_UNPACKED_BYTES:
+                    raise Fail("unpack", "bundle unpacks to more than the allowed size")
+                target.parent.mkdir(parents=True, exist_ok=True)
+                source = archive.extractfile(member)
+                assert source is not None
+                with open(target, "wb") as out:
+                    shutil.copyfileobj(source, out)
+                os.chmod(target, member.mode & 0o755 | 0o600)
+    except (tarfile.TarError, EOFError, OSError) as exc:
+        raise Fail("unpack", f"cannot unpack the backend bundle: {exc.__class__.__name__}") from None
+
+
+def read_schema_files(tree: Path) -> dict[str, bytes]:
+    files = {p.name: p.read_bytes() for p in sorted((tree / "schemas").glob("*.fbs")) if p.is_file()}
+    if not files:
+        raise Fail("schema", "the bundle holds no schemas/*.fbs")
+    return files
+
+
+def verify_package(parts: dict[str, Path], workdir: Path) -> tuple[dict, Path, dict]:
+    """Checks 2 to 4: returns (manifest, unpacked tree, validated config)."""
+    manifest = read_manifest(parts["manifest.json"])
+    bundle = parts[manifest["package"]] if manifest["package"] in parts else None
+    if bundle is None:
+        raise Fail("manifest", "the manifest names a bundle the package does not hold")
+    try:
+        sums = parse_sums(parts["SHA256SUMS"].read_text(encoding="utf-8"))
+    except UnicodeDecodeError:
+        raise Fail("verify", "SHA256SUMS is not text") from None
+    actual = sha256_file(bundle)
+    if sums.get(bundle.name) != actual:
+        raise Fail("verify", f"{bundle.name} does not match SHA256SUMS")
+    if manifest["package_sha256"] != actual:
+        raise Fail("verify", "the manifest's package_sha256 does not match the bundle")
+
+    tree = workdir / "tree"
+    tree.mkdir()
+    safe_extract(bundle, tree)
+    if schema_hash(read_schema_files(tree)) != manifest["schema_hash"]:
+        raise Fail("schema", "schema_hash differs: the package was built against other FlatBuffers schemas")
+    for required in (DEPLOY_SCRIPT, SCHEMA_FILE, REQUIREMENTS_FILE):
+        if not (tree / required).is_file():
+            raise Fail("unpack", f"the bundle lacks {required}")
+
+    try:
+        text = parts["config.yaml"].read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        raise Fail("config", "config.yaml is not UTF-8") from None
+    config = parse_config_yaml(text)
+    try:
+        schema = json.loads((tree / SCHEMA_FILE).read_text(encoding="utf-8"))
+    except ValueError:
+        raise Fail("config", "the bundle's user-config schema is not valid JSON") from None
+    validate(config, schema)
+    return manifest, tree, config
+
+
+# --- apply ------------------------------------------------------------------------------------------------------
+
+
+def check_requirements(tree: Path, install_dir: Path) -> None:
+    installed = install_dir / REQUIREMENTS_FILE
+    if not installed.is_file():
+        raise Fail("requirements", f"{installed} not found: this Pi has no install to update (run the one-time install)")
+    if sha256_file(installed) != sha256_file(tree / REQUIREMENTS_FILE):
+        raise Fail("requirements", "the Python requirements changed: run the full install on the Pi once, then update")
+
+
+def run_deploy(tree: Path) -> None:
+    script = tree / DEPLOY_SCRIPT
+    # An argument list, no shell. stdin answers the script's "not a Raspberry Pi, continue?" prompt only; on a Pi
+    # the prompt never appears. The script's stdout goes to our stderr so that stdout stays one JSON line.
+    try:
+        completed = subprocess.run(
+            ["bash", str(script), "--skip-packages"],
+            input=b"y\n",
+            stdout=sys.stderr,
+            stderr=sys.stderr,
+            check=False,
+            env=os.environ.copy(),
+        )
+    except OSError as exc:
+        raise Fail("deploy", f"cannot run the deploy script: {exc.__class__.__name__}") from None
+    if completed.returncode != 0:
+        raise Fail("deploy", f"the deploy script exited with status {completed.returncode}")
+
+
+def restart_units() -> None:
+    if os.environ.get("MIA_NO_RESTART"):
+        return
+    try:
+        completed = subprocess.run(["systemctl", "restart", *CORE_UNITS], stdout=sys.stderr, stderr=sys.stderr, check=False)
+    except OSError as exc:
+        raise Fail("restart", f"cannot run systemctl: {exc.__class__.__name__}") from None
+    if completed.returncode != 0:
+        raise Fail("restart", "systemctl restart failed; the new code is installed, run --rollback to return")
+
+
+def write_config(config_json: Path, config_d: Path) -> None:
+    config_d.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=config_d, prefix=".50-phone.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "wb") as out:
+            out.write(config_json.read_bytes())
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, config_d / CONFIG_FILE)
+    except OSError as exc:
+        Path(tmp).unlink(missing_ok=True)
+        raise Fail("config_write", f"cannot write {config_d / CONFIG_FILE}: {exc.__class__.__name__}") from None
+
+
+def activate(update_dir: Path, pkg_dir: Path, tree: Path, config_d: Path, install_dir: Path) -> None:
+    check_requirements(tree, install_dir)
+    run_deploy(tree)
+    write_config(pkg_dir / "config.json", config_d)
+    restart_units()
+    current, previous = update_dir / "current", update_dir / "previous"
+    shutil.rmtree(previous, ignore_errors=True)
+    if current.exists():
+        os.replace(current, previous)
+    os.replace(pkg_dir, current)
+
+
+def apply_from_stdin(update_dir: Path, config_d: Path, install_dir: Path) -> dict:
+    staging = update_dir / "staging"
+    shutil.rmtree(staging, ignore_errors=True)
+    staging.mkdir(parents=True)
+    try:
+        limit = int(os.environ.get("MIA_MAX_PACKAGE_MB", "200")) * 1024 * 1024
+        package = staging / "package.miapkg"
+        read_stdin_to(package, limit)
+        pkg_dir = staging / "pkg"
+        pkg_dir.mkdir()
+        parts = split_package(package, pkg_dir)
+        package.unlink()
+        manifest, tree, config = verify_package(parts, staging)
+        (pkg_dir / "config.json").write_text(json.dumps(config, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        activate(update_dir, pkg_dir, tree, config_d, install_dir)
+        return {"ok": True, "step": "done", "version": manifest["version"], "error": None}
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+
+
+def rollback(update_dir: Path, config_d: Path, install_dir: Path) -> dict:
+    previous = update_dir / "previous"
+    if not previous.is_dir():
+        raise Fail("rollback", "there is no previous package to return to")
+    staging = update_dir / "staging"
+    shutil.rmtree(staging, ignore_errors=True)
+    staging.mkdir(parents=True)
+    try:
+        parts = {p.name: p for p in previous.iterdir() if p.is_file()}
+        manifest, tree, _config = verify_package(parts, staging)
+        if not (previous / "config.json").is_file():
+            raise Fail("rollback", "the previous package has no config.json")
+        # activate() moves the pkg dir into place: swap current and previous through a scratch name.
+        current = update_dir / "current"
+        swapped = update_dir / "swap"
+        shutil.rmtree(swapped, ignore_errors=True)
+        check_requirements(tree, install_dir)
+        run_deploy(tree)
+        write_config(previous / "config.json", config_d)
+        restart_units()
+        if current.exists():
+            os.replace(current, swapped)
+        os.replace(previous, current)
+        if swapped.exists():
+            os.replace(swapped, previous)
+        return {"ok": True, "step": "rollback", "version": manifest["version"], "error": None}
+    finally:
+        shutil.rmtree(staging, ignore_errors=True)
+
+
+def main(argv: list[str]) -> int:
+    update_dir = Path(os.environ.get("MIA_UPDATE_DIR", DEFAULT_UPDATE_DIR))
+    config_d = Path(os.environ.get("MIA_CONFIG_D", DEFAULT_CONFIG_D))
+    install_dir = Path(os.environ.get("MIA_INSTALL_DIR", DEFAULT_INSTALL_DIR))
+    if argv not in ([], ["--rollback"]):
+        print(json.dumps({"ok": False, "step": "args", "version": None, "error": "usage: mia-apply-update [--rollback]"}))
+        return 2
+    try:
+        update_dir.mkdir(parents=True, exist_ok=True)
+        os.chmod(update_dir, 0o700)
+        with open(update_dir / "lock", "w") as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError:
+                raise Fail("lock", "another update is running") from None
+            result = (
+                rollback(update_dir, config_d, install_dir)
+                if argv == ["--rollback"]
+                else apply_from_stdin(update_dir, config_d, install_dir)
+            )
+    except Fail as failure:
+        result = {"ok": False, "step": failure.step, "version": None, "error": failure.message}
+    except OSError as exc:
+        result = {"ok": False, "step": "io", "version": None, "error": f"{exc.__class__.__name__}: {exc.strerror}"}
+    print(json.dumps(result))
+    return 0 if result["ok"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
