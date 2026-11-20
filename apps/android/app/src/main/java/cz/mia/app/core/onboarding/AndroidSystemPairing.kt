@@ -33,12 +33,13 @@ class AndroidSystemPairing(
 
 	@SuppressLint("MissingPermission") // checked in hasConnectPermission() before any call
 	override suspend fun bondBluetooth(): StepOutcome {
+		// No address, no permission prompt: the prompt would not be used.
+		val address = piBluetoothAddress() ?: return StepOutcome.Unavailable("The Pi's Bluetooth address is not delivered to the phone yet")
 		if (!hasConnectPermission() && !requestConnectPermission()) return StepOutcome.Cancelled("permission")
 		if (!hasConnectPermission()) return StepOutcome.Cancelled("permission")
 		val adapter: BluetoothAdapter = ContextCompat.getSystemService(context, BluetoothManager::class.java)?.adapter
 			?: return StepOutcome.Unavailable("This phone has no Bluetooth")
 		if (!adapter.isEnabled) return StepOutcome.Failed("Bluetooth is turned off")
-		val address = piBluetoothAddress() ?: return StepOutcome.Unavailable("The Pi's Bluetooth address is not delivered to the phone yet")
 		val device = try {
 			adapter.getRemoteDevice(address)
 		} catch (e: IllegalArgumentException) {

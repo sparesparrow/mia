@@ -53,8 +53,9 @@ fun uiModelFor(state: OnboardingState): VehicleUi = when (state) {
 	)
 	OnboardingState.PairingPhone -> VehicleUi(
 		PAIR_TITLE,
-		"Android will ask you to confirm Bluetooth pairing and to add the MIA Wi-Fi network. " +
-			"These prompts come from Android. If you cancel one you can try again here.",
+		"Android may ask for permission or confirmation to pair Bluetooth and to add the MIA Wi-Fi network. " +
+			"These prompts come from Android. If you cancel one you can try again here. " +
+			"If the Pi has not provided its Bluetooth or Wi-Fi details yet, that step is skipped with a note.",
 		"Continue", null, busy = false,
 	)
 	OnboardingState.PairAdapter -> VehicleUi(

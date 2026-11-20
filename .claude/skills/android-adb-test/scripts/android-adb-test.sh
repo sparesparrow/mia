@@ -555,12 +555,15 @@ scenario_install_wizard() {
   log "Scenario: install wizard"
   open_more_item "Install MIA on a car" "Start" exact || return 1
   tap_ui_text "Start" exact || return 1
-  # The key screen needs no network; the field label (or, failing that, its explanation) must show.
-  if ! wait_for_ui_text "Activation key" 10 contains; then
-    wait_for_ui_text "Enter the activation key" 4 contains || {
-      err "Activation key screen did not appear after tapping Start"
-      return 1
-    }
+  # The key screen needs no network. "Enter the activation key" is its body text only; the Welcome body says
+  # "your MIA activation key", so a looser marker would pass even if the Start tap did nothing.
+  wait_for_ui_text "Enter the activation key" 10 contains || {
+    err "Activation key screen did not appear after tapping Start"
+    return 1
+  }
+  if ui_has_text "sets up MIA on the Raspberry Pi" contains; then
+    err "Welcome text is still on screen after tapping Start"
+    return 1
   fi
   take_screenshot "install_wizard"
 }

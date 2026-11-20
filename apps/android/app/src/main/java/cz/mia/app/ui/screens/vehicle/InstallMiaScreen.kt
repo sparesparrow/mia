@@ -69,7 +69,7 @@ fun InstallMiaScreen(modifier: Modifier = Modifier) {
 			modifier = modifier.fillMaxSize().padding(16.dp),
 		)
 		OnboardingState.PairAdapter -> PairAdapter(ui, notes, onFinish = vm::finishAdapterStep, modifier = modifier)
-		OnboardingState.Done -> Done(ui, notes, pis = vm.knownPis().map { it.host }, onAnother = vm::restart, modifier = modifier)
+		OnboardingState.Done -> Done(ui, notes, pis = remember { vm.knownPis().map { it.host } }, onAnother = vm::restart, modifier = modifier)
 		else -> Plain(
 			ui, notes,
 			onPrimary = {

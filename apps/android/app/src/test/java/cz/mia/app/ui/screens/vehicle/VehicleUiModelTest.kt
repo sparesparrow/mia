@@ -46,7 +46,7 @@ class VehicleUiModelTest {
 		val phone = uiModelFor(OnboardingState.PairingPhone)
 		assertEquals("Pair vehicle", phone.title)
 		assertEquals("Continue", phone.primaryLabel)
-		assertTrue(phone.body.contains("Android will ask you to confirm Bluetooth pairing and to add the MIA Wi-Fi network"))
+		assertTrue(phone.body.contains("Android may ask for permission or confirmation to pair Bluetooth and to add the MIA Wi-Fi network"))
 		assertTrue(phone.body.contains("If you cancel one you can try again here."))
 		val adapter = uiModelFor(OnboardingState.PairAdapter)
 		assertEquals("Pair vehicle", adapter.title)
