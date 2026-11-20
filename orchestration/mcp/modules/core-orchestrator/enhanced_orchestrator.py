@@ -48,6 +48,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _load_claude_agent_bridge():
+    """Lazily load the hyphenated claude-agent-bridge module by path (same
+    pattern as claudepy-bridge's own loader/tests) — only when
+    CLAUDE_AGENT_BRIDGE=1, so this never costs anything for deployments that
+    don't enable it. See spec/decisions/0022-claude-agent-dispatch.md."""
+    import importlib.util
+    import sys as _sys
+
+    path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "claude-agent-bridge", "bridge.py",
+    )
+    spec = importlib.util.spec_from_file_location("claude_agent_bridge", path)
+    module = importlib.util.module_from_spec(spec)
+    _sys.modules["claude_agent_bridge"] = module
+    spec.loader.exec_module(module)
+    return module.ClaudeAgentBridge()
+
+
 @dataclass
 class ServiceInfo:
     """Enhanced service information"""
@@ -835,6 +854,17 @@ class EnhancedCoreOrchestrator(MCPServer):
         # Background tasks
         self._cleanup_task = None
         self._health_check_task = None
+
+        # Claude Agent Bridge (ADR-0022) — gated behind CLAUDE_AGENT_BRIDGE=1,
+        # same convention as VOICE_PHONE_MIC (ADR-0021). Lazy: only loaded
+        # (and the bridge directory only imported) if enabled, so deployments
+        # that don't opt in pay nothing for this.
+        self._claude_agent_bridge = None
+        if os.environ.get("CLAUDE_AGENT_BRIDGE") == "1":
+            try:
+                self._claude_agent_bridge = _load_claude_agent_bridge()
+            except Exception as e:
+                logger.warning(f"CLAUDE_AGENT_BRIDGE=1 but bridge failed to load: {e}")
     
     def setup_tools(self):
         """Setup enhanced orchestrator tools"""
@@ -1204,6 +1234,20 @@ class EnhancedCoreOrchestrator(MCPServer):
         
         service_name = service_mapping.get(intent)
         if not service_name:
+            if self._claude_agent_bridge is not None:
+                # REQ-ORCH-010/011/012: fixed-in-code agent, never taken from
+                # the intent/parameters/transcript. "mia-car" is the only
+                # agent wired here today — read-only per ADR-0006.
+                result = await asyncio.to_thread(
+                    self._claude_agent_bridge.dispatch,
+                    intent_result.original_text,
+                    "mia-car",
+                )
+                if result["ok"]:
+                    return result["result"]
+                if result["error"] == "uplink unreachable":
+                    return f"No service available for intent: {intent} (and the voice assistant is offline)"
+                logger.warning(f"Claude Agent Bridge dispatch failed: {result['error']}")
             return f"No service available for intent: {intent}"
         
         # Enhanced service call with retry logic

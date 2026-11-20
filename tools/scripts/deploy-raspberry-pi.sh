@@ -36,6 +36,7 @@ INSTALL_PATHS=(
     orchestration/mcp/modules
     infra/systemd
     infra/deploy/rpi
+    .claude/agents
 )
 
 # The broker starts first; the units order themselves after it (REQ-DEP-001).
@@ -116,6 +117,11 @@ install_code() {
             run_privileged mkdir -p "$INSTALL_DIR/$path"
             run_privileged cp -a "$PROJECT_ROOT/$path/." "$INSTALL_DIR/$path/"
         done
+        # The MCP server config (mcp-prompts) that the Claude agents under
+        # .claude/agents rely on when `claude` runs from $INSTALL_DIR.
+        if [[ -f "$PROJECT_ROOT/.mcp.json" ]]; then
+            run_privileged cp "$PROJECT_ROOT/.mcp.json" "$INSTALL_DIR/.mcp.json"
+        fi
     fi
     # Piper voices and other run-time data (mia-tts reads $INSTALL_DIR/data/piper).
     run_privileged mkdir -p "$INSTALL_DIR/data"
@@ -151,6 +157,25 @@ point_units_at_venv() {
     printf 'MIA_PYTHON=%s\n' "$VENV_DIR/bin/python" >> "$updated"
     run_privileged mkdir -p "$(dirname "$ENV_FILE")"
     run_privileged install -m 600 "$updated" "$ENV_FILE"
+}
+
+update_claude_tooling() {
+    # Keeps the Pi's Claude Code CLI, and the mcp-prompts server the
+    # .claude/agents files (e.g. mia-car.md) depend on, current. Best-effort:
+    # a failure here must not fail the whole install — the voice/telemetry
+    # stack doesn't depend on it, only the Claude Agent Bridge path
+    # (CLAUDE_AGENT_BRIDGE=1, ADR-0022) does.
+    if ! command -v claude >/dev/null 2>&1; then
+        echo "claude CLI not found on this Pi; skipping Claude tooling update (ADR-0022 bridge path won't work without it)."
+        return 0
+    fi
+    echo "Updating Claude Code CLI..."
+    claude update || echo -e "${YELLOW}claude update failed; continuing (non-fatal)${NC}"
+    if command -v npm >/dev/null 2>&1; then
+        echo "Updating mcp-prompts server..."
+        npm update -g @sparesparrow/mcp-prompts 2>&1 || \
+            echo -e "${YELLOW}mcp-prompts update failed (may need npm login for GitHub Packages, read:packages scope); continuing (non-fatal)${NC}"
+    fi
 }
 
 install_units() {
@@ -189,6 +214,7 @@ install_code
 install_python_packages
 point_units_at_venv
 install_units
+update_claude_tooling
 
 echo ""
 echo -e "${GREEN}Install complete.${NC}"
