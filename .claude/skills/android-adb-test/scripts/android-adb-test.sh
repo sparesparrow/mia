@@ -12,7 +12,7 @@ ANDROID_DIR="$PROJECT_ROOT/apps/android"
 # Defaults
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
 PACKAGE_NAME="${MIA_ANDROID_PACKAGE:-cz.mia.app.debug}"
-MAIN_ACTIVITY=".MainActivity"
+MAIN_ACTIVITY="cz.mia.app.MainActivity"
 UI_DUMP_PATH="/sdcard/window_dump.xml"
 DEVICE_SERIAL=""
 SCENARIO="install"
