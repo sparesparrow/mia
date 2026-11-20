@@ -235,6 +235,10 @@ jobs:
               infra/deploy \
               requirements.txt \
               requirements-ci.txt \
+              tools/scripts/deploy-raspberry-pi.sh \
+              bin/mia-apply-update \
+              bin/mia-update-pair \
+              .claude/agents \
               VERSION.txt
           ls -la dist
       - uses: actions/upload-artifact@v4

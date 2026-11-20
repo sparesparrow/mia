@@ -83,6 +83,7 @@ from api.routers.ota import router as ota_router
 from api.routers.logs import router as logs_router
 from api.routers.anpr import router as anpr_router
 from api.routers.audio_settings import router as audio_settings_router
+from api.routers.update_pairing import router as update_pairing_router
 from hardware import gpio_policy
 
 # ZeroMQ context and socket for messaging
@@ -182,6 +183,7 @@ app.include_router(ota_router)
 app.include_router(logs_router)
 app.include_router(anpr_router)
 app.include_router(audio_settings_router)
+app.include_router(update_pairing_router)
 # Browsers may only call the API from local/LAN origins by default. Set
 # MIA_CORS_ORIGINS to a comma-separated allow-list (or "*" to restore the old
 # wide-open behaviour). Native clients (Android) are not subject to CORS.

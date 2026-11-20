@@ -41,6 +41,11 @@ RUN pip3 install --no-cache-dir \
     apkutils \
     androguard
 
+# Gradle needs the schema hash (ADR-0023); the context lacks ../../schemas:
+#   docker build --build-arg MIA_SCHEMA_HASH=$(python3 tools/ci/schema_hash.py) -f Dockerfile.test .
+ARG MIA_SCHEMA_HASH
+ENV MIA_SCHEMA_HASH=${MIA_SCHEMA_HASH}
+
 # Create workspace
 WORKDIR /workspace
 
