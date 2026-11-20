@@ -221,7 +221,9 @@ async def enforce_api_auth(conn: HTTPConnection) -> None:
         )
 
 
-async def authenticate_websocket(websocket, scope: str = "read") -> bool:
+async def authenticate_websocket(
+    websocket, scope: str = "read", *, require_configured: bool = False
+) -> bool:
     """Call before ``websocket.accept()``; closes the socket and returns False on failure.
 
     Only the ``X-API-Key`` header is accepted: a key in the query string ends up in
@@ -229,6 +231,9 @@ async def authenticate_websocket(websocket, scope: str = "read") -> bool:
     does more than read, as ``/ws/audio`` does).
     """
     if not auth_configured():
+        if require_configured:
+            await websocket.close(code=1008)
+            return False
         _warn_open_once()
         return True
     key = websocket.headers.get("x-api-key")

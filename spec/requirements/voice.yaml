@@ -338,6 +338,7 @@ requirements:
   evidence: implemented_and_ci_tested
   acceptance:
   - /ws/audio closes with 1008 without a key, with a read-only key and when VOICE_PHONE_MIC is not 1
+  - A configured write-scope key is required even when global API authentication is disabled
   - The first text frame must name 16 kHz mono s16le in 30 ms frames, otherwise the socket closes with 1003; a binary message that is not a whole number of 960-byte frames is dropped and counted
   - Frames go to a ZeroMQ PUSH socket with a high-water mark of 8 and are dropped, never waited for, when it is full or nobody listens
   - A second phone replaces the first, which is closed with 1008
@@ -351,7 +352,7 @@ requirements:
   - apps/rpi-backend/py-api/services/audio_capture.py
   decisions:
   - ADR-0021
-  not_proven: No phone and no Pi were used. The ZeroMQ hop from the API to audio_capture is tested only up to the push; the capture service's PULL side runs only in its own thread on the Pi. Latency, jitter and echo (the phone hears the Pi's speaker) are unmeasured and MIC_TAIL_SEC is a guess. The mic open/muted text frames to the phone are not sent. Audio crosses the car Wi-Fi in clear text (ADR-0016).
+  not_proven: No phone and no Pi have exercised the merged flow together. Unit tests verify feature-off, auth, format, size, queue and source-selection behavior; CI verifies the API and capture changes compile. The ZeroMQ hop from the API to audio_capture is tested only up to the push; the capture service's PULL side runs only in its own thread on the Pi. Latency, jitter and echo (the phone hears the Pi's speaker) are unmeasured and MIC_TAIL_SEC is a guess. The mic open/muted text frames to the phone are not sent. Audio crosses the car Wi-Fi in clear text (ADR-0016).
 - id: REQ-VOICE-030
   title: Audio routing settings owned by the Pi
   statement: The Pi shall store where the microphone comes from and where replies are heard, report what it can really do, and refuse a choice it cannot serve.

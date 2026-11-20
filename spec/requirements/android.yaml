@@ -425,7 +425,7 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
   decisions:
   - ADR-0021
-  not_proven: Android compilation and Kotlin unit tests are pending CI; this host has no Android SDK. The service, AudioRecord, runtime microphone and notification permission prompts, notification and Voice tab switch have not been tried on a phone. The microphone remains open while enabled, but audio is sent only while MIA is listening. Dictation and confirmation by voice get no audio yet (only listening streams). The Pi's mic open/muted texts are ignored.
+  not_proven: Android compilation and Kotlin unit tests pass in GitHub Actions, but the service, AudioRecord, runtime microphone and notification permission prompts, notification and Voice tab switch have not been tried on a phone. The microphone remains open while enabled, but audio is sent only while MIA is listening. Dictation and confirmation by voice get no audio yet (only listening streams). The Pi's mic open/muted texts are ignored.
 - id: REQ-AND-028
   title: Audio settings screen
   statement: The app shall show where the Pi takes its microphone from and where it plays replies, read from the Pi, and let the user change them only to options the Pi reports as available.
@@ -443,4 +443,4 @@ requirements:
   decisions:
   - ADR-0021
   - ADR-0019
-  not_proven: Android compilation and Kotlin unit tests are pending CI; this host has no Android SDK. Only the report codec has unit-test coverage. The screen and repository have not been run on a phone. Bluetooth audio does not exist on the Pi, so only Wi-Fi and the Pi speaker can be chosen.
+  not_proven: Android compilation and Kotlin unit tests pass in GitHub Actions, but only the report codec has unit-test coverage. The screen and repository have not been run on a phone. Bluetooth audio does not exist on the Pi, so only Wi-Fi and the Pi speaker can be chosen.

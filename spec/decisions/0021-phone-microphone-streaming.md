@@ -74,10 +74,10 @@ mandatory and has a Stop action. The Pi never writes raw audio; logs hold counts
 - The pipeline from `mia/audio/raw` on is unchanged, so wake word, recognition and the router need no change.
 - Audio crosses the car Wi-Fi in clear text with the API key (ADR-0016), accepted for the prototype.
 - Latency and echo (the phone hears the Pi's headphone output) are unmeasured; the gate tail is a guess.
-- Android compilation and unit tests are pending CI; this host has no Android SDK. On-device behavior is unproven:
-  the permission prompts, foreground service, notification, capture lifecycle, WebSocket timing, latency and echo
-  have not been exercised on a phone and Pi together. While enabled, the microphone remains open; only `listening`
-  audio is sent to the Pi.
+- Android compilation and unit tests pass in GitHub Actions; this host has no Android SDK. On-device microphone
+  behavior remains unproven: the permission prompts, foreground service, notification, capture lifecycle, WebSocket
+  timing, latency and echo have not been exercised on a phone and Pi together. While enabled, the microphone remains
+  open; only `listening` audio is sent to the Pi.
 - Only the `listening` state streams. Dictation and a spoken yes/no also need audio; adding their states to
   `PushToTalk` is the next step once the first drive shows the delay.
 - Two phones on one Pi take turns closing each other (1008, then reconnect after 1 s); the app does not yet treat 1008

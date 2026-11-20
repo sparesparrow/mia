@@ -1,7 +1,8 @@
 """The phone's microphone arrives here and goes on to the audio capture service (ADR-0021, REQ-VOICE-027).
 
-``/ws/audio`` is off unless ``VOICE_PHONE_MIC=1`` and needs an ``X-API-Key`` with the ``write`` scope (a
-microphone is more than a read). The first frame is text, ``{"v":1,"fmt":"s16le","rate":16000,"ch":1,"frame_ms":30}``;
+``/ws/audio`` is off unless ``VOICE_PHONE_MIC=1`` and always requires a configured ``X-API-Key`` with the ``write``
+scope, even when the rest of the API is in its global auth-disabled mode (a microphone can inject voice commands).
+The first frame is text, ``{"v":1,"fmt":"s16le","rate":16000,"ch":1,"frame_ms":30}``;
 the answer is ``{"ok":true}``, or the socket closes with 1003. Then every binary frame must be a whole multiple of
 ``FRAME_BYTES`` (960 bytes, 30 ms), and each message is capped at 32 frames; malformed frames are dropped and counted,
 oversized messages are rejected with WebSocket close code 1009.
@@ -141,7 +142,7 @@ async def serve(websocket: WebSocket) -> None:
     # Authenticate before anything else, so an unauthenticated probe cannot tell whether the feature is on.
     from api.auth import authenticate_websocket
 
-    if not await authenticate_websocket(websocket, "write"):  # closes with 1008 on failure
+    if not await authenticate_websocket(websocket, "write", require_configured=True):  # closes with 1008 on failure
         return
     if not phone_mic_enabled():
         await websocket.close(code=_CLOSE_POLICY)
