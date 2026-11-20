@@ -93,18 +93,39 @@ def test_shellcheck_clean():
     assert done.returncode == 0, done.stdout
 
 
-@pytest.mark.skipif(shutil.which("systemd-analyze") is None, reason="systemd-analyze not installed")
-def test_systemd_analyze_verify_accepts_the_unit(tmp_path):
-    """Real, state-free check (R8): the unit is copied and its ExecStart (an /opt/mia path that does not exist here) is
-    pointed at an existing executable, so verify judges the rest of the unit."""
+needs_analyze = pytest.mark.skipif(shutil.which("systemd-analyze") is None, reason="systemd-analyze not installed")
+
+
+def _verify_lines(directory: Path, text: str):
+    """Run the real `systemd-analyze verify` on a copy named mia-bt-agent.service and return only the output lines that
+    concern OUR unit. The exit code and the other lines are ignored on purpose: on a CI runner verify also reports
+    warnings about unrelated system units (e.g. xfs_scrub_all.service), which says nothing about this unit."""
+    directory.mkdir(parents=True, exist_ok=True)
+    copy = directory / "mia-bt-agent.service"
+    copy.write_text(text, encoding="utf-8")
+    done = subprocess.run(["systemd-analyze", "verify", str(copy)], capture_output=True, text=True, timeout=60)
+    return [ln for ln in (done.stdout + done.stderr).splitlines() if "mia-bt-agent" in ln]
+
+
+def _unit_text_with_runnable_execstart() -> str:
+    # ExecStart (an /opt/mia path that does not exist here) is pointed at an existing executable (R8).
     true = shutil.which("true") or "/bin/true"
     lines = [f"ExecStart={true}" if ln.startswith("ExecStart=") else ln for ln in UNIT.read_text(encoding="utf-8").splitlines()]
-    copy = tmp_path / "mia-bt-agent.service"
-    copy.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    done = subprocess.run(["systemd-analyze", "verify", str(copy)], capture_output=True, text=True, timeout=60)
-    assert done.returncode == 0 and done.stderr.strip() == "", done.stderr
-    broken = tmp_path / "broken" / "mia-bt-agent.service"
-    broken.parent.mkdir()
-    broken.write_text(copy.read_text().replace("[Service]", "[Service]\nNoSuchDirective=1\nExecStart=/nonexistent/x"), encoding="utf-8")
-    bad = subprocess.run(["systemd-analyze", "verify", str(broken)], capture_output=True, text=True, timeout=60)
-    assert bad.returncode != 0 or bad.stderr.strip()  # the check does bite
+    return "\n".join(lines) + "\n"
+
+
+@needs_analyze
+def test_systemd_analyze_verify_reports_nothing_about_the_unit(tmp_path):
+    """Real, state-free check (R8), environment-independent: only lines that mention our unit count."""
+    ours = _verify_lines(tmp_path, _unit_text_with_runnable_execstart())
+    assert ours == [], "\n".join(ours)
+
+
+@needs_analyze
+def test_systemd_analyze_verify_flags_a_broken_copy_of_the_unit(tmp_path):
+    """The check can fail: an unknown directive and a non-absolute ExecStart are reported against our unit."""
+    text = _unit_text_with_runnable_execstart().replace("[Service]", "[Service]\nNoSuchDirective=1", 1)
+    text = text.replace(f"ExecStart={shutil.which('true') or '/bin/true'}", "ExecStart=relative/x")
+    ours = _verify_lines(tmp_path, text)
+    assert any("NoSuchDirective" in ln for ln in ours), ours
+    assert any("relative/x" in ln for ln in ours), ours

@@ -3,6 +3,7 @@ forwards only `nmcli --offline ...` (prints a keyfile, touches nothing, ruling R
 other subcommand is only recorded. dnsmasq --test validates the generated fragment."""
 
 import base64
+import configparser
 import hashlib
 import json
 import os
@@ -129,11 +130,16 @@ def test_real_nmcli_offline_renders_the_hotspot_keyfile(tmp_path):
     box = Box(tmp_path, use_real_offline=True)
     done = box.run(FLAG)
     assert done.returncode == 0, done.stderr
-    text = box.keyfile.read_text()
     assert box.keyfile.stat().st_mode & 0o777 == 0o600
-    for line in ("id=MIA-Car", "type=wifi", "mode=ap", "ssid=MIA-Car", "key-mgmt=wpa-psk", "method=shared"):
-        assert line in text.splitlines(), line
-    assert f"psk={box.psk.read_text().strip()}" in text.splitlines()
+    # parsed, not line-matched: key order, comments and extra keys differ between NetworkManager versions
+    keyfile = configparser.ConfigParser(strict=False, interpolation=None)
+    keyfile.optionxform = str
+    keyfile.read(box.keyfile, encoding="utf-8")
+    want = {"connection": {"id": "MIA-Car", "type": "wifi"}, "wifi": {"mode": "ap", "ssid": "MIA-Car"},
+            "wifi-security": {"key-mgmt": "wpa-psk", "psk": box.psk.read_text().strip()}, "ipv4": {"method": "shared"}}
+    for section, keys in want.items():
+        for key, value in keys.items():
+            assert keyfile.get(section, key) == value, (section, key)
     assert all(box.psk.read_text().strip() not in call for call in box.calls())
 
 
@@ -227,9 +233,24 @@ def test_the_generated_fragment_passes_dnsmasq_test(box):
                         GOOD_FP: {"mac": MAC, "bonded": True, "updated": 1}, _fp("b"): {"mac": "aa:bb:cc:00:11:44", "bonded": False, "updated": 1}})
     assert box.run(FLAG).returncode == 0
     fragment = box.dnsmasq / "mia-phones.conf"
+    ours, ok = _dnsmasq_test(fragment)
+    assert ours == [] and ok, ours  # lines that name the fragment are errors/warnings about it; the exit code is not used
+
+
+def _dnsmasq_test(fragment: Path):
+    """Real `dnsmasq --test`: returns (output lines that name our fragment, whether a 'syntax check OK' line was printed).
+    Other stderr noise and the exit code are ignored (they vary by dnsmasq version and host)."""
     done = subprocess.run(["dnsmasq", "--test", f"--conf-file={fragment}"], capture_output=True, text=True, timeout=30)
-    assert done.returncode == 0, done.stderr
-    assert "syntax check OK" in done.stderr + done.stdout
+    lines = (done.stdout + done.stderr).splitlines()
+    return [ln for ln in lines if str(fragment) in ln], any("syntax check OK" in ln for ln in lines)
+
+
+@pytest.mark.skipif(shutil.which("dnsmasq") is None, reason="dnsmasq not installed")
+def test_dnsmasq_test_flags_a_broken_fragment(tmp_path):
+    bad = tmp_path / "bad.conf"
+    bad.write_text("dhcp-host=zz:zz,bogus\n")
+    ours, ok = _dnsmasq_test(bad)
+    assert ours and not ok
 
 
 def test_shellcheck_clean():
