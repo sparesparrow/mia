@@ -160,6 +160,7 @@ if not xml_text:
     sys.exit(1)
 
 root = ET.fromstring(xml_text)
+parents = {child: parent for parent in root.iter("node") for child in parent}
 candidates = []
 
 for node in root.iter("node"):
@@ -174,7 +175,13 @@ for node in root.iter("node"):
     if not matched:
         continue
 
-    bounds = [int(value) for value in re.findall(r"\d+", node.attrib.get("bounds", ""))]
+    # Compose often exposes the label as a non-clickable TextView inside a clickable Card/NavigationBar item.
+    # Tap the nearest clickable ancestor so the gesture lands on the actual action container.
+    target = node
+    while target in parents and target.attrib.get("clickable") != "true":
+        target = parents[target]
+
+    bounds = [int(value) for value in re.findall(r"\d+", target.attrib.get("bounds", ""))]
     if len(bounds) != 4:
         continue
 
@@ -209,6 +216,7 @@ tap_ui_text() {
   }
 
   read -r x y <<<"$coords"
+  log "Tapping '$needle' at $x,$y"
   adb -s "$DEVICE_SERIAL" shell input tap "$x" "$y"
   sleep_ms
 }
