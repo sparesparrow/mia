@@ -566,6 +566,13 @@ scenario_install_wizard() {
     return 1
   fi
   take_screenshot "install_wizard"
+  # Leave the wizard through the top-left "← More" back row, not the bottom tab: the selected tab does not
+  # leave the sub-screen. Back at the More list, the next scenario can open its entries.
+  tap_ui_text "More" exact || return 1
+  wait_for_ui_text "OBD pairing" 12 exact || {
+    err "Could not return to the More list after the install wizard"
+    return 1
+  }
 }
 
 scenario_settings() {
