@@ -66,11 +66,6 @@ requirements:
   - apps/rpi-backend/py-api/services/stt_service.py
   services:
   - mia-stt
-  decisions:
-  - ADR-0023
-  notes: >-
-    Local Whisper remains the default speech-to-text path. Optional paid speech-provider use is separately configured
-    and does not follow from account or billing identity (REQ-VOICE-034).
 - id: REQ-VOICE-009
   title: On-device text-to-speech
   statement: The Pi shall synthesise speech on-device, falling back to espeak.
@@ -395,54 +390,3 @@ requirements:
     repeated independently in the agent's own system prompt.
   not_proven: Not yet adversarially tested against a live dispatch (the pattern was proven this way for a
     different, non-vehicle agent in the quest-rc prototype, not for mia-car specifically).
-- id: REQ-VOICE-030
-  title: MIA account identity
-  statement: >-
-    A future central MIA service shall assign each account an opaque MIA account ID that is not derived from
-    personal, vehicle or device data.
-  evidence: planned
-  implemented_in: []
-  decisions:
-  - ADR-0023
-  not_proven: The central MIA service and account registry are not implemented.
-- id: REQ-VOICE-031
-  title: Billing processor identity
-  statement: >-
-    A future central MIA service shall associate each MIA account with a server-managed payment processor customer
-    ID, kept distinct from the account ID, while leaving the processor choice open.
-  evidence: planned
-  implemented_in: []
-  decisions:
-  - ADR-0023
-  not_proven: No billing backend, processor integration or server-side ID mapping is implemented.
-- id: REQ-VOICE-032
-  title: Vehicle VIN metadata
-  statement: >-
-    A vehicle VIN shall be stored separately as metadata linked to an MIA account, never used to derive an account
-    ID or included in the Pi hostname.
-  evidence: planned
-  implemented_in: []
-  decisions:
-  - ADR-0023
-  not_proven: No vehicle registry or account-to-vehicle association is implemented.
-- id: REQ-VOICE-033
-  title: Per-install Pi identity
-  statement: >-
-    Each Pi installation shall use a dedicated key pair whose public-key fingerprint is registered by the server and
-    associated with an MIA account; authentication shall prove possession of the private key, and key rotation and
-    revocation shall be supported.
-  evidence: planned
-  implemented_in: []
-  decisions:
-  - ADR-0023
-  not_proven: Device enrollment, proof-of-possession authentication, key rotation and revocation are not implemented.
-- id: REQ-VOICE-034
-  title: Optional paid speech provider
-  statement: >-
-    Paid speech-to-text provider use shall be optional and separately enabled, while local Whisper remains the default
-    speech-to-text path.
-  evidence: planned
-  implemented_in: []
-  decisions:
-  - ADR-0023
-  not_proven: The local Whisper path exists, but no paid provider selection or explicit enablement path is implemented.

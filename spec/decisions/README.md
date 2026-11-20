@@ -28,7 +28,7 @@ beyond their status line.
 | [0020](0020-the-voice-router-owns-the-machine.md) | The voice router owns the machine; mia-api relays /ws/voice to it over ZeroMQ | Proposed |
 | [0021](0021-phone-microphone-streaming.md) | The phone supplies internet and microphone audio over USB tethering | Accepted |
 | [0022](0022-claude-agent-dispatch.md) | Fixed, read-only Claude Code dispatch for unmatched voice intents | Accepted |
-| [0023](0023-account-vehicle-and-pi-identity.md) | MIA account, vehicle and Pi identity boundaries | Accepted |
+| [0022](0022-claude-agent-dispatch.md) | Fixed, read-only Claude Code dispatch for unmatched voice intents | Accepted |
 
 ## Template
 
