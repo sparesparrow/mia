@@ -37,7 +37,7 @@ requirements:
 - id: REQ-ONB-003
   title: Replay refused
   statement: The Pi shall refuse a grant whose jti it has already accepted, and a refused request shall leave the Pi's state
-    unchanged.
+    unchanged, except that a failure after verification burns the jti.
   evidence: implemented_and_ci_tested
   acceptance:
   - The same grant used twice is accepted once and refused the second time
@@ -81,30 +81,40 @@ requirements:
 - id: REQ-ONB-006
   title: Hotspot with DHCP and DNS
   statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, and the setup script
-    shall refuse to run without --i-know-this-drops-wlan0.
-  evidence: planned
+    shall refuse to run without --i-know-this-drops-wlan0. The Bluetooth pairing agent shall make the adapter discoverable
+    and pairable only while the pairing-window file written by mia-enroll holds a future time.
+  evidence: implemented_and_ci_tested
   acceptance:
   - The connection uses ipv4.method shared
   - The script exits non-zero without the confirmation flag
   - All paths and the nmcli command are overridable so tests run in a tmp dir
-  implemented_in: []
+  - mia-enroll opens a 120 s pairing window only after a successful enrollment; a missing, expired or invalid window file closes it
+  - The agent unit runs as the mia user, restarts on failure and allows only AF_UNIX (no network exposure)
+  implemented_in:
+  - infra/deploy/rpi/setup-nm-hotspot.sh
+  - infra/deploy/rpi/mia-bt-window.sh
+  - infra/systemd/mia-bt-agent.service
+  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: infra/deploy/rpi/setup-nm-hotspot.sh, infra/systemd/mia-bt-agent.service.'
+  not_proven: 'Tested only with a stub nmcli and stub busctl/bt-agent in tmp dirs and a static check of the unit file. Not run against a real NetworkManager, so that NM actually serves DHCP and DNS on wlan0, that dnsmasq-shared.d reservations take effect, and that the hotspot reaches GENERAL.STATE activated are unproven. Not run against real BlueZ, so bt-agent registration, the D-Bus permission of the mia user and Just Works bonding are unproven. The /opt/mia/infra path of the unit assumes the installer ships infra/.'
 - id: REQ-ONB-007
   title: Phone registry by key fingerprint
   statement: The Pi shall keep a registry of enrolled phones keyed by phone key fingerprint, storing the last MAC only for
     a DHCP reservation, never as authentication, and removing a phone shall delete both its registry entry and its mia-update-pair
     key.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - A changed MAC updates the entry found by fingerprint; the old MAC is not trusted
   - Removing a phone removes the registry entry and calls mia-update-pair remove
   - Bond state is stored per fingerprint
-  implemented_in: []
+  - mia-enroll records the phone after pairing; a registry failure does not undo the pairing and is reported as a warning
+  implemented_in:
+  - bin/mia-phone-registry
+  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-phone-registry.'
+  not_proven: 'Not run as root on a Raspberry Pi with the real /var/lib/mia. Nothing sets bonded=true yet (the Bluetooth bond step is in the wizard, task 5), and the hotspot script reads the registry only as a file. Concurrency is covered by flock but only sequential use is tested.'
 - id: REQ-ONB-008
   title: Wizard states and resume
   statement: The Android app shall walk the user through onboarding as a persisted state machine that resumes at the interrupted

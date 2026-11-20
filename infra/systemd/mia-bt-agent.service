@@ -1,0 +1,34 @@
+[Unit]
+Description=MIA Bluetooth pairing agent (NoInputNoOutput; discoverable only during the enrollment pairing window)
+Documentation=file:///opt/mia/spec/decisions/0025-vehicle-onboarding.md
+After=bluetooth.service
+Requires=bluetooth.service
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+# bluez's D-Bus policy lets the bluetooth group talk to org.bluez
+SupplementaryGroups=bluetooth
+# bt-agent (bluez-tools) registers the agent; the script opens discoverable/pairable only while
+# /run/mia/pairing-window (written by mia-enroll, valid 120 s) holds a future time.
+ExecStart=/opt/mia/infra/deploy/rpi/mia-bt-window.sh
+Restart=on-failure
+RestartSec=5
+RuntimeDirectory=mia
+RuntimeDirectoryPreserve=yes
+StandardOutput=journal
+StandardError=journal
+
+# No network exposure: D-Bus (AF_UNIX) only, no listening sockets.
+RestrictAddressFamilies=AF_UNIX
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+CapabilityBoundingSet=
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

@@ -23,8 +23,16 @@ exception still ends in the JSON line with step "internal" and no exception text
 
 Overrides (sudo resets the environment, so the SSH user cannot set them): MIA_ALLOWED_SIGNERS, MIA_DEVICE_PUB (the
 Pi's identity public key, default the ed25519 SSH host key), MIA_ENROLL_DIR, MIA_ENV_FILE, MIA_CONFIG_D,
-MIA_PAIR_TOOL, MIA_AUTHORIZED_KEYS (read by mia-update-pair), and for tests MIA_ENROLL_NOW, MIA_ENROLL_SKIP_CHOWN.
+MIA_PAIR_TOOL, MIA_AUTHORIZED_KEYS (read by mia-update-pair), MIA_REGISTRY_TOOL and MIA_PHONES_FILE (the phone
+registry, bin/mia-phone-registry), MIA_PAIRING_WINDOW (default /run/mia/pairing-window), and for tests MIA_ENROLL_NOW, MIA_ENROLL_SKIP_CHOWN.
 Python standard library only.
+
+After the phone key is paired, the phone is recorded in the registry by key fingerprint (REQ-ONB-007; the optional
+stdin field `phone_mac` is stored only if it is a valid MAC, for a DHCP reservation, never as authentication; bonded
+is false until the Bluetooth bond exists). When everything succeeded, the Bluetooth pairing window is opened: the file
+$MIA_PAIRING_WINDOW holds the Unix time it expires, 120 s from now; infra/systemd/mia-bt-agent.service makes the Pi
+discoverable and pairable only until then (REQ-ONB-006). A registry or window failure never undoes the pairing; it
+is reported as a "warning" field in the final JSON line (absent when there is nothing to warn about).
 """
 
 import base64
@@ -48,6 +56,8 @@ DEFAULT_DEVICE_PUB = "/etc/ssh/ssh_host_ed25519_key.pub"
 DEFAULT_ENROLL_DIR = "/var/lib/mia/enroll"
 DEFAULT_ENV_FILE = "/etc/mia/environment"
 DEFAULT_CONFIG_D = "/etc/mia/config.d"
+DEFAULT_PAIRING_WINDOW = "/run/mia/pairing-window"
+PAIRING_WINDOW_SECONDS = 120
 NAMESPACE = "mia-grant"
 SIGNER_IDENTITY = "mia-auth-server"  # the principal in allowed_signers: <principal> namespaces="mia-grant" <key>
 SKEW_SECONDS = 60
@@ -140,6 +150,14 @@ def _load_pair(path: Path):
     return mod
 
 
+def _load_registry(env):
+    path = env.get("MIA_REGISTRY_TOOL", str(Path(__file__).resolve().with_name("mia-phone-registry")))
+    loader = importlib.machinery.SourceFileLoader("mia_phone_registry", path)
+    mod = importlib.util.module_from_spec(importlib.util.spec_from_loader("mia_phone_registry", loader))
+    loader.exec_module(mod)
+    return mod
+
+
 def _fingerprint_of(pub: Path) -> str:
     try:
         done = subprocess.run(["ssh-keygen", "-lf", str(pub)], capture_output=True, text=True, shell=False, timeout=15)
@@ -198,7 +216,8 @@ def _read_request(stream) -> dict:
     return req
 
 
-def enroll(req: dict) -> None:
+def enroll(req: dict) -> list:
+    """Enroll the phone; returns warnings (strings) for follow-up steps that failed without undoing the pairing."""
     env = os.environ
     state = Path(env.get("MIA_ENROLL_DIR", DEFAULT_ENROLL_DIR))
     pair_tool = Path(env.get("MIA_PAIR_TOOL", str(Path(__file__).resolve().with_name("mia-update-pair"))))
@@ -212,6 +231,7 @@ def enroll(req: dict) -> None:
         raise GrantError(f"phone key refused: {exc}") from None
     phone_fp = pair.fingerprint(body)
     device_fp = _fingerprint_of(Path(env.get("MIA_DEVICE_PUB", DEFAULT_DEVICE_PUB)))
+    warnings = []
     state.mkdir(parents=True, exist_ok=True)
     seen_file = state / "seen_jti"
     with open(state / "lock", "w") as lock:
@@ -225,15 +245,33 @@ def enroll(req: dict) -> None:
             pair.add(pair.keys_path(), phone_label(body), req["phone_public_key"])
         except pair.PairError as exc:
             raise GrantError(f"pairing refused: {exc}") from None
+        try:  # the key is paired; a registry problem must not undo that
+            registry = _load_registry(env)
+            mac = req.get("phone_mac")
+            try:
+                mac = registry.normalize_mac(mac) if isinstance(mac, str) else ""
+            except registry.RegistryError:
+                mac = ""
+            registry.upsert(phone_fp, mac, False)
+        except Exception:  # noqa: BLE001 - reported as a warning, without exception text
+            warnings.append("phone registry not updated")
         ensure_api_key(Path(env.get("MIA_ENV_FILE", DEFAULT_ENV_FILE)))
         billing = {"account_id": claims.account_id, "plan": claims.plan, "entitlement_exp": claims.entitlement_exp}
         _atomic_write(Path(env.get("MIA_CONFIG_D", DEFAULT_CONFIG_D)) / "60-billing.json",
                       json.dumps(billing, sort_keys=True, indent=2) + "\n", 0o644)
+    try:
+        _atomic_write(Path(env.get("MIA_PAIRING_WINDOW", DEFAULT_PAIRING_WINDOW)), f"{now + PAIRING_WINDOW_SECONDS}\n", 0o644)
+    except OSError:
+        warnings.append("pairing window not opened")
+    return warnings
 
 
 def main(argv: list) -> int:
-    def finish(ok: bool, step: str, error) -> int:
-        print(json.dumps({"ok": ok, "step": step, "error": error}))
+    def finish(ok: bool, step: str, error, warnings=()) -> int:
+        result = {"ok": ok, "step": step, "error": error}
+        if warnings:
+            result["warning"] = "; ".join(warnings)
+        print(json.dumps(result))
         return 0 if ok else 1
 
     if argv:
@@ -246,14 +284,14 @@ def main(argv: list) -> int:
     except ValueError as exc:
         return finish(False, "input", str(exc))
     try:
-        enroll(req)
+        warnings = enroll(req)
     except GrantError as exc:
         return finish(False, "grant", exc.reason)
     except OSError as exc:
         return finish(False, "io", f"{exc.__class__.__name__}: {exc.strerror}")
     except Exception as exc:  # noqa: BLE001 - the last stdout line must always be the JSON result; never echo exc text
         return finish(False, "internal", f"unexpected {exc.__class__.__name__}")
-    return finish(True, "enrolled", None)
+    return finish(True, "enrolled", None, warnings)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,236 @@
+#!/usr/bin/env python3
+"""Registry of enrolled phones on the Pi, keyed by the phone key fingerprint (ADR-0025, REQ-ONB-007).
+
+    mia-phone-registry upsert <SHA256:fp> [--mac aa:bb:cc:dd:ee:ff] [--bonded]
+    mia-phone-registry list
+    mia-phone-registry remove <SHA256:fp>      deletes the entry and the phone's key via mia-update-pair remove
+
+The identity of a phone is its key fingerprint, exactly as `ssh-keygen -lf` prints it (SHA256:<base64>). The last MAC
+is stored only so the hotspot can write a DHCP reservation; there is deliberately no lookup by MAC, and nothing here
+authenticates with it (Android randomizes MACs per SSID). An empty MAC on upsert means "unknown" and keeps a known
+one; a MAC already held by another phone is taken from it (one reservation per MAC). Prints fingerprints, MACs and
+bond state only, never keys or the environment.
+
+Store: $MIA_PHONES_FILE (default /var/lib/mia/phones.json), mode 600, written atomically under fcntl.flock.
+Revocation uses $MIA_PAIR_TOOL (default the sibling mia-update-pair); MIA_ENROLL_SKIP_CHOWN=1 is for tests.
+Python standard library only.
+"""
+
+import base64
+import fcntl
+import importlib.machinery
+import importlib.util
+import json
+import os
+import re
+import sys
+import tempfile
+import time
+from dataclasses import dataclass
+from pathlib import Path
+
+DEFAULT_STORE = "/var/lib/mia/phones.json"
+FP_RE = re.compile(r"^SHA256:[A-Za-z0-9+/]{43}$")
+MAC_RE = re.compile(r"^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$")
+MAX_PHONES = 64
+
+
+class RegistryError(Exception):
+    pass
+
+
+@dataclass(frozen=True)
+class Entry:
+    phone_fp: str
+    mac: str
+    bonded: bool
+    updated: int
+
+
+def store_path() -> Path:
+    return Path(os.environ.get("MIA_PHONES_FILE", DEFAULT_STORE))
+
+
+def _check_fp(phone_fp) -> str:
+    if not isinstance(phone_fp, str) or not FP_RE.fullmatch(phone_fp):
+        raise RegistryError("phone fingerprint must look like SHA256:<43 base64 characters>")
+    return phone_fp
+
+
+def normalize_mac(mac) -> str:
+    """Return the MAC in lower case, or "" for no MAC; raise RegistryError for anything else."""
+    if not isinstance(mac, str):
+        raise RegistryError("MAC must be a string")
+    if mac == "":
+        return ""
+    low = mac.lower()
+    if not MAC_RE.fullmatch(low):
+        raise RegistryError("MAC must look like aa:bb:cc:dd:ee:ff")
+    return low
+
+
+class _Locked:
+    def __init__(self, path: Path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.handle = open(str(path) + ".lock", "w")
+        fcntl.flock(self.handle, fcntl.LOCK_EX)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        self.handle.close()  # closing releases the flock
+
+
+def _read(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        phones = data["phones"]
+        if data.get("version") != 1 or not isinstance(phones, dict):
+            raise ValueError
+        for fp, rec in phones.items():
+            _check_fp(fp)
+            normalize_mac(rec["mac"])
+            if not isinstance(rec["bonded"], bool) or type(rec["updated"]) is not int:
+                raise ValueError
+    except (OSError, ValueError, KeyError, TypeError, RegistryError):
+        raise RegistryError("phone registry is unreadable; not overwriting it") from None
+    return phones
+
+
+def _write(path: Path, phones: dict) -> None:
+    text = json.dumps({"version": 1, "phones": phones}, sort_keys=True, indent=2) + "\n"
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")  # mkstemp creates the file mode 600
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as out:
+            out.write(text)
+            out.flush()
+            os.fsync(out.fileno())
+        os.chmod(tmp, 0o600)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def _entry(fp: str, rec: dict) -> Entry:
+    return Entry(fp, rec["mac"], rec["bonded"], rec["updated"])
+
+
+def upsert(phone_fp: str, mac: str, bonded: bool) -> None:
+    """Create or update the entry for phone_fp (the only key). Sets bonded exactly; an empty mac keeps a known one."""
+    _check_fp(phone_fp)
+    mac = normalize_mac(mac)
+    if not isinstance(bonded, bool):
+        raise RegistryError("bonded must be true or false")
+    path = store_path()
+    with _Locked(path):
+        phones = _read(path)
+        if phone_fp not in phones and len(phones) >= MAX_PHONES:
+            raise RegistryError(f"at most {MAX_PHONES} phones; remove one first")
+        old = phones.get(phone_fp, {}).get("mac", "")
+        if mac:
+            for other, rec in phones.items():
+                if other != phone_fp and rec["mac"] == mac:
+                    rec["mac"] = ""
+        phones[phone_fp] = {"mac": mac or old, "bonded": bonded, "updated": int(time.time())}
+        _write(path, phones)
+
+
+def lookup_by_fp(phone_fp: str):
+    """The Entry for this key fingerprint, or None. There is no lookup by MAC."""
+    if not isinstance(phone_fp, str) or not FP_RE.fullmatch(phone_fp):
+        return None
+    path = store_path()
+    with _Locked(path):
+        rec = _read(path).get(phone_fp)
+    return _entry(phone_fp, rec) if rec else None
+
+
+def entries() -> list:
+    path = store_path()
+    with _Locked(path):
+        return [_entry(fp, rec) for fp, rec in sorted(_read(path).items())]
+
+
+def remove(phone_fp: str) -> bool:
+    """Delete the registry entry only; returns whether there was one. revoke() also removes the update key."""
+    _check_fp(phone_fp)
+    path = store_path()
+    with _Locked(path):
+        phones = _read(path)
+        if phone_fp not in phones:
+            return False
+        del phones[phone_fp]
+        _write(path, phones)
+    return True
+
+
+def pair_label(phone_fp: str) -> str:
+    """The mia-update-pair label: phone- plus the first 12 hex of the key blob's SHA-256 (the digest inside the fp)."""
+    digest = base64.b64decode(_check_fp(phone_fp)[len("SHA256:"):] + "=")
+    return "phone-" + digest.hex()[:12]
+
+
+def _load_pair():
+    default = Path(__file__).resolve().with_name("mia-update-pair")
+    path = Path(os.environ.get("MIA_PAIR_TOOL", str(default)))
+    loader = importlib.machinery.SourceFileLoader("mia_update_pair", str(path))
+    mod = importlib.util.module_from_spec(importlib.util.spec_from_loader("mia_update_pair", loader))
+    loader.exec_module(mod)
+    if os.environ.get("MIA_ENROLL_SKIP_CHOWN") == "1":
+        mod._chown_root = lambda p: None
+    return mod
+
+
+def revoke(phone_fp: str) -> list:
+    """Remove the registry entry and the phone's mia-update-pair key; returns what was removed."""
+    done = []
+    pair = _load_pair()
+    try:
+        pair.remove(pair.keys_path(), pair_label(phone_fp))
+        done.append("update key")
+    except pair.PairError:
+        pass  # no such key: already gone
+    if remove(phone_fp):
+        done.append("registry entry")
+    return done
+
+
+def main(argv: list) -> int:
+    try:
+        if argv[:1] == ["list"] and len(argv) == 1:
+            for e in entries():
+                print(f"{e.phone_fp} mac={e.mac or '-'} {'bonded' if e.bonded else 'not-bonded'}")
+            return 0
+        if argv[:1] == ["upsert"] and len(argv) >= 2:
+            rest, mac, bonded = argv[2:], "", False
+            while rest:
+                if rest[0] == "--bonded":
+                    bonded, rest = True, rest[1:]
+                elif rest[0] == "--mac" and len(rest) >= 2:
+                    mac, rest = rest[1], rest[2:]
+                else:
+                    break
+            if not rest:
+                upsert(argv[1], mac, bonded)
+                print(f"upserted: {argv[1]}")
+                return 0
+        if argv[:1] == ["remove"] and len(argv) == 2:
+            done = revoke(argv[1])
+            print("removed: " + (", ".join(done) if done else "nothing found"))
+            return 0
+    except RegistryError as exc:
+        print(f"mia-phone-registry: {exc}", file=sys.stderr)
+        return 1
+    except OSError as exc:
+        print(f"mia-phone-registry: {exc.__class__.__name__}: {exc.strerror}", file=sys.stderr)
+        return 1
+    print("usage: mia-phone-registry upsert <fp> [--mac MAC] [--bonded] | list | remove <fp>", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

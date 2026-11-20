@@ -45,7 +45,7 @@ contract so the phone and Pi sides can be built and tested against a fake server
   blob, and must match `^[A-Za-z0-9._-]{1,32}$`.
 - **Checks on the Pi, in order.** Signature valid; `iat <= now < exp` (plus a small skew allowance set in code);
   `device_fp` equals this Pi's own identity fingerprint; `phone_fp` equals the fingerprint of the key offered in the
-  request; `jti` not seen before. Any failure refuses the request and changes no state (REQ-ONB-002, REQ-ONB-003).
+  request; `jti` not seen before. Any failure refuses the request and changes no state, except that a failure after verification burns the `jti` (REQ-ONB-002, REQ-ONB-003).
   `jti` values (`^[A-Za-z0-9._:-]{1,128}$`, one per line) are persisted so a replay of a still-unexpired grant is refused. The
   `jti` is recorded before the key is paired (fail closed): a failed enrollment burns the grant and the phone requests a new one.
 

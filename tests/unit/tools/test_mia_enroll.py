@@ -220,6 +220,8 @@ def _run(world, request, env_extra=None, **over):
         "MIA_PAIR_TOOL": str(PAIR),
         "MIA_ENROLL_NOW": str(NOW),
         "MIA_ENROLL_SKIP_CHOWN": "1",
+        "MIA_PHONES_FILE": str(tmp / "state" / "phones.json"),
+        "MIA_PAIRING_WINDOW": str(tmp / "run" / "pairing-window"),
     }
     env.update(env_extra or {})
     return subprocess.run([sys.executable, str(TOOL)], input=json.dumps(request) + "\n", env=env, capture_output=True,
@@ -402,3 +404,78 @@ def test_internal_error_message_never_contains_environment_file_content(world):
     done = _run(world, _request(world))
     assert done.returncode != 0 and _last(done)["ok"] is False
     assert "topsecretvalue" not in done.stdout + done.stderr
+
+
+# --- phone registry and Bluetooth pairing window (REQ-ONB-007, REQ-ONB-006) ------------------------------------------
+
+
+def _registry():
+    return _load("mia_phone_registry", ROOT / "bin" / "mia-phone-registry")
+
+
+@pytest.mark.req("REQ-ONB-007")
+def test_cli_registers_the_phone_by_fingerprint_with_its_mac(world):
+    request = _request(world)
+    request["phone_mac"] = "AA:BB:CC:00:11:22"
+    done = _run(world, request)
+    assert done.returncode == 0, done.stderr
+    assert _last(done) == {"ok": True, "step": "enrolled", "error": None}  # no warning key when all went well
+    stored = json.loads((world.tmp / "state" / "phones.json").read_text())["phones"]
+    assert stored[world.phone_fp]["mac"] == "aa:bb:cc:00:11:22" and stored[world.phone_fp]["bonded"] is False
+    assert list(stored) == [world.phone_fp]
+
+
+@pytest.mark.req("REQ-ONB-007")
+@pytest.mark.parametrize("mac", [None, "not-a-mac", 5, "aa:bb:cc:00:11"])
+def test_cli_missing_or_invalid_mac_registers_with_an_empty_mac(world, mac):
+    request = _request(world)
+    if mac is not None:
+        request["phone_mac"] = mac
+    done = _run(world, request)
+    assert _last(done)["ok"] is True
+    stored = json.loads((world.tmp / "state" / "phones.json").read_text())["phones"]
+    assert stored[world.phone_fp]["mac"] == ""
+
+
+@pytest.mark.req("REQ-ONB-007")
+def test_cli_registry_failure_keeps_the_pairing_and_warns(world):
+    blocker = world.tmp / "blocker"
+    blocker.write_text("a file, so the registry directory cannot be made")
+    done = _run(world, _request(world), env_extra={"MIA_PHONES_FILE": str(blocker / "phones.json")})
+    last = _last(done)
+    assert done.returncode == 0 and last["ok"] is True and last["step"] == "enrolled" and last["error"] is None
+    assert "registry" in last["warning"]
+    assert "mia-phone:phone-" in (world.tmp / "etc" / "update_authorized_keys").read_text()  # pairing not undone
+    assert (world.tmp / "state" / "seen_jti").read_text().split() == ["jti-1"]
+
+
+@pytest.mark.req("REQ-ONB-007")
+def test_cli_refused_request_registers_nothing(world):
+    done = _run(world, _request(world, world.claims(exp=NOW - 1)))
+    assert _last(done)["ok"] is False
+    assert not (world.tmp / "state" / "phones.json").exists()
+
+
+@pytest.mark.req("REQ-ONB-006")
+def test_cli_opens_a_120_second_pairing_window_after_success(world):
+    window = world.tmp / "run" / "pairing-window"
+    done = _run(world, _request(world))
+    assert _last(done)["ok"] is True
+    assert window.read_text().strip() == str(NOW + 120)
+    assert window.stat().st_mode & 0o777 == 0o644  # the unprivileged agent user must be able to read it
+
+
+@pytest.mark.req("REQ-ONB-006")
+def test_cli_refusal_opens_no_pairing_window(world):
+    done = _run(world, _request(world, world.claims(exp=NOW - 1)))
+    assert _last(done)["ok"] is False
+    assert not (world.tmp / "run" / "pairing-window").exists()
+
+
+@pytest.mark.req("REQ-ONB-006")
+def test_cli_window_failure_is_a_warning_not_an_error(world):
+    blocker = world.tmp / "blocker"
+    blocker.write_text("x")
+    done = _run(world, _request(world), env_extra={"MIA_PAIRING_WINDOW": str(blocker / "pairing-window")})
+    last = _last(done)
+    assert done.returncode == 0 and last["ok"] is True and "pairing window" in last["warning"]
