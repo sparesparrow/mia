@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
@@ -39,6 +40,7 @@ import cz.mia.app.ui.components.ScreenTitle
 /** The screens behind the More tab. */
 enum class MoreDestination(val title: String, val description: String, val icon: ImageVector) {
     Alerts("Alerts", "Warnings and errors the app has raised", Icons.Default.Warning),
+    InstallMia("Install MIA on a car", "Set up MIA on your car's Raspberry Pi", Icons.Default.DirectionsCar),
     ObdPairing("OBD pairing", "Find and connect a Bluetooth OBD adapter", Icons.Default.Bluetooth),
     Settings("Settings", "Pi address, API key, privacy and voice", Icons.Default.Settings),
 }

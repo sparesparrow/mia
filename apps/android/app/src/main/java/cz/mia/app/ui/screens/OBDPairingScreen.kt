@@ -67,6 +67,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -373,7 +375,7 @@ private fun ScanControlsCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Find OBD Adapters",
                     fontWeight = FontWeight.Medium
@@ -398,6 +400,9 @@ private fun ScanControlsCard(
                 }
             } else {
                 Button(
+                    modifier = Modifier.semantics {
+                        contentDescription = "Scan"
+                    },
                     onClick = onStartScan,
                     enabled = !isConnecting && !isConnected
                 ) {

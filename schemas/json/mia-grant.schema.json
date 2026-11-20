@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mia.local/schemas/mia-grant.schema.json",
+  "title": "MIA enrollment grant (ADR-0025)",
+  "description": "The exact UTF-8 bytes of this object are signed with ssh-keygen -Y sign, namespace mia-grant. Unknown claims are ignored; a missing claim is refused. Every *_fp is the OpenSSH form SHA256:<base64> printed by ssh-keygen -lf. Times are Unix seconds.",
+  "type": "object",
+  "required": ["v", "iat", "exp", "jti", "account_id", "plan", "entitlement_exp", "phone_fp", "device_fp"],
+  "properties": {
+    "v": {"const": 1},
+    "iat": {"type": "integer", "description": "Issued at."},
+    "exp": {"type": "integer", "description": "Grant validity ends (minutes after iat). The Pi refuses now >= exp."},
+    "jti": {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$", "description": "Unique grant ID; the Pi accepts each once."},
+    "account_id": {"type": "string", "minLength": 1, "maxLength": 128, "description": "Opaque MIA account ID (ADR-0024); no Stripe identifier."},
+    "plan": {"type": "string", "minLength": 1, "maxLength": 64},
+    "entitlement_exp": {"type": "integer", "description": "When the paid entitlement ends; not the grant's validity."},
+    "phone_fp": {"type": "string", "pattern": "^SHA256:[A-Za-z0-9+/]{43}$"},
+    "device_fp": {"type": "string", "pattern": "^SHA256:[A-Za-z0-9+/]{43}$"}
+  },
+  "additionalProperties": true
+}

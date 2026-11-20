@@ -5,8 +5,9 @@
 # - copies what the systemd units and the code read into $INSTALL_DIR (default /opt/mia), mirroring the repo;
 # - installs the Pi API's own requirements (apps/rpi-backend/py-api/requirements.txt) into $INSTALL_DIR/venv;
 # - points /usr/local/bin/mia-python and MIA_PYTHON in /etc/mia/environment at that venv;
-# - installs and enables the core units;
-# - installs bin/mia-apply-update to $INSTALL_DIR/bin (--skip-packages leaves apt and pip alone).
+# - installs and enables the core units, and copies mia-bt-agent.service next to them without enabling it;
+# - installs bin/mia-apply-update, mia-update-pair, mia-enroll and mia-phone-registry to $INSTALL_DIR/bin
+#   (--skip-packages leaves apt and pip alone).
 #
 # Running it again is safe: the venv and $INSTALL_DIR/data are kept, nothing is deleted, and the environment file
 # keeps every line it does not own, MIA_API_KEY included.
@@ -84,6 +85,7 @@ install_system_packages() {
     # python3-dev and build-essential: RPi.GPIO has no wheels and builds on the Pi.
     # python3-dbus and python3-gi: the BLE services; the venv sees them through --system-site-packages.
     # espeak-ng: the speech fallback when piper is missing.
+    # bluez-tools: bt-agent, which mia-bt-agent.service (ADR-0025) runs as the Bluetooth pairing agent.
     run_privileged env DEBIAN_FRONTEND=noninteractive apt-get install -y \
         python3 \
         python3-venv \
@@ -92,6 +94,7 @@ install_system_packages() {
         python3-dbus \
         python3-gi \
         espeak-ng \
+        bluez-tools \
         mosquitto \
         mosquitto-clients
 }
@@ -146,10 +149,15 @@ install_update_tool() {
     [[ -f "$tool" ]] || return 0
     run_privileged mkdir -p "$INSTALL_DIR/bin"
     run_privileged install -m 755 "$tool" "$INSTALL_DIR/bin/mia-apply-update"
-    # The administrator's pairing tool (root only, writes the root-owned key list).
-    if [[ -f "$PROJECT_ROOT/bin/mia-update-pair" ]]; then
-        run_privileged install -m 755 "$PROJECT_ROOT/bin/mia-update-pair" "$INSTALL_DIR/bin/mia-update-pair"
-    fi
+    # The administrator's pairing tool (root only, writes the root-owned key list), the enrollment command the
+    # sudoers rule of install-enroll-access.sh names, and the phone registry that both call as a sibling file
+    # (ADR-0025). All root-owned and not writable by anyone else, like mia-apply-update.
+    local name
+    for name in mia-update-pair mia-enroll mia-phone-registry; do
+        if [[ -f "$PROJECT_ROOT/bin/$name" ]]; then
+            run_privileged install -m 755 "$PROJECT_ROOT/bin/$name" "$INSTALL_DIR/bin/$name"
+        fi
+    done
 }
 
 install_python_packages() {
@@ -218,6 +226,10 @@ install_units() {
         run_privileged cp "$PROJECT_ROOT/infra/systemd/$unit" "$SYSTEMD_DIR/"
         echo "  - Installed $unit"
     done
+    # The Bluetooth pairing agent is copied but NOT enabled here: enabling it is the job of the factory image or the
+    # enrollment installer, because the adapter must stay closed until a verified enrollment opens the window.
+    run_privileged cp "$PROJECT_ROOT/infra/systemd/mia-bt-agent.service" "$SYSTEMD_DIR/"
+    echo "  - Installed mia-bt-agent.service (not enabled)"
     run_privileged systemctl daemon-reload
     run_privileged systemctl enable "${CORE_UNITS[@]}"
 }

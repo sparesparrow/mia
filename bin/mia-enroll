@@ -1,0 +1,330 @@
+#!/usr/bin/env python3
+"""Enroll a phone on the Pi from a server-signed grant (ADR-0025, REQ-ONB-001..005). Root only, via sudo.
+
+    sudo /opt/mia/bin/mia-enroll < request.json      the forced command of the `mia-enroll` SSH user
+
+stdin is one JSON line {"grant": <the signed JSON text>, "signature": <armored SSH signature>, "phone_public_key":
+<one OpenSSH public key line>}. The last line on stdout is {"ok", "step", "error"} (same convention as
+mia-apply-update); exit code 0 means enrolled. Nothing changes on the Pi unless every check passes:
+
+1. `ssh-keygen -Y verify -n mia-grant` against allowed_signers (baked into the image), on the exact grant bytes;
+2. every required claim present with the right type (schemas/json/mia-grant.schema.json; unknown claims ignored);
+3. iat <= now + 60 s (clock-skew allowance) and now < exp;
+4. device_fp equals this Pi's own identity fingerprint, phone_fp equals the fingerprint of phone_public_key;
+5. jti not seen before (persisted in $MIA_ENROLL_DIR/seen_jti).
+
+Then, under one lock and in this order: the jti is recorded (fail closed: if anything later fails the grant stays
+burned and the phone asks for a new one), the phone key is registered through bin/mia-update-pair (label phone-<12 hex
+of the SHA-256 of the key blob>), MIA_API_KEY (secrets.token_urlsafe(32)) is appended to the environment file unless a
+non-empty one is set (an empty `MIA_API_KEY=` counts as absent; existing lines are never rewritten, the later line wins
+in a systemd EnvironmentFile; the key is never printed), and {account_id, plan, entitlement_exp} go to
+$MIA_CONFIG_D/60-billing.json. jti must match ^[A-Za-z0-9._:-]{1,128}$ (one per line in seen_jti). Any unexpected
+exception still ends in the JSON line with step "internal" and no exception text.
+
+Overrides (sudo resets the environment, so the SSH user cannot set them): MIA_ALLOWED_SIGNERS, MIA_DEVICE_PUB (the
+Pi's identity public key, default the ed25519 SSH host key), MIA_ENROLL_DIR, MIA_ENV_FILE, MIA_CONFIG_D,
+MIA_PAIR_TOOL, MIA_AUTHORIZED_KEYS (read by mia-update-pair), MIA_REGISTRY_TOOL and MIA_PHONES_FILE (the phone
+registry, bin/mia-phone-registry), MIA_PAIRING_WINDOW (default /run/mia-enroll/pairing-window), and for tests MIA_ENROLL_NOW, MIA_ENROLL_SKIP_CHOWN.
+Python standard library only.
+
+Root boundary (ADR-0025): the state (seen_jti, lock, phones.json) lives in /var/lib/mia-enroll, root:root 0700, and the
+pairing window in /run/mia-enroll, root:root 0755 (the mia user of mia-bt-agent can read the file, not create or
+replace it). Neither directory is under the mia service user's StateDirectory/RuntimeDirectory. Each is created with
+os.makedirs, then opened with O_NOFOLLOW and refused unless it is a real directory owned by uid 0 (the owner check is
+skipped only when the MIA_* override points elsewhere, i.e. in tests). Temp files get their mode through os.fchmod on
+the descriptor before anything is written; the lock is opened with O_NOFOLLOW.
+
+After the phone key is paired, the phone is recorded in the registry by key fingerprint (REQ-ONB-007; the optional
+stdin field `phone_mac` is stored only if it is a valid MAC, for a DHCP reservation, never as authentication; bonded
+is false until the Bluetooth bond exists). When everything succeeded, the Bluetooth pairing window is opened: the file
+$MIA_PAIRING_WINDOW holds the Unix time it expires, 120 s from now; infra/systemd/mia-bt-agent.service makes the Pi
+discoverable and pairable only until then (REQ-ONB-006). A registry or window failure never undoes the pairing; it
+is reported as a "warning" field in the final JSON line (absent when there is nothing to warn about).
+"""
+
+import base64
+import fcntl
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import re
+import secrets
+import subprocess
+import sys
+import tempfile
+import time
+from dataclasses import dataclass
+from pathlib import Path
+
+DEFAULT_ALLOWED_SIGNERS = "/etc/mia/allowed_signers"
+DEFAULT_DEVICE_PUB = "/etc/ssh/ssh_host_ed25519_key.pub"
+DEFAULT_ENROLL_DIR = "/var/lib/mia-enroll"  # root:root 0700; never the mia service user's StateDirectory
+DEFAULT_ENV_FILE = "/etc/mia/environment"
+DEFAULT_CONFIG_D = "/etc/mia/config.d"
+DEFAULT_PAIRING_WINDOW = "/run/mia-enroll/pairing-window"  # dir root:root 0755: mia may read, not create
+PAIRING_WINDOW_SECONDS = 120
+NAMESPACE = "mia-grant"
+SIGNER_IDENTITY = "mia-auth-server"  # the principal in allowed_signers: <principal> namespaces="mia-grant" <key>
+SKEW_SECONDS = 60
+MAX_INPUT = 64 * 1024
+API_KEY_VAR = "MIA_API_KEY"
+FP_RE = re.compile(r"^SHA256:[A-Za-z0-9+/]{43}$")
+JTI_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")  # also in schemas/json/mia-grant.schema.json; one jti per line in seen_jti
+KEY_LINE_RE = re.compile(rf"^\s*(?:export\s+)?{API_KEY_VAR}=(.*)$")
+
+STR_CLAIMS = ("account_id", "jti", "plan", "phone_fp", "device_fp")
+INT_CLAIMS = ("iat", "exp", "entitlement_exp")
+
+
+class GrantError(Exception):
+    def __init__(self, reason: str):
+        super().__init__(reason)
+        self.reason = reason
+
+
+@dataclass(frozen=True)
+class Claims:
+    account_id: str
+    jti: str
+    plan: str
+    entitlement_exp: int
+    exp: int
+    phone_fp: str
+    device_fp: str
+
+
+def _check_signature(grant: bytes, signature: bytes, allowed_signers: Path) -> None:
+    with tempfile.TemporaryDirectory(prefix="mia-enroll.") as tmp:
+        sig_file = Path(tmp) / "grant.sig"
+        sig_file.write_bytes(signature)
+        cmd = ["ssh-keygen", "-Y", "verify", "-f", str(allowed_signers), "-I", SIGNER_IDENTITY, "-n", NAMESPACE,
+               "-s", str(sig_file)]
+        try:
+            done = subprocess.run(cmd, input=grant, capture_output=True, shell=False, timeout=15)
+        except (OSError, subprocess.SubprocessError):
+            raise GrantError("signature could not be checked") from None
+    if done.returncode != 0:
+        raise GrantError("bad signature")
+
+
+def verify_grant(grant: bytes, signature: bytes, allowed_signers: Path, device_fp: str, phone_fp: str, now: int,
+                 seen_jti: set) -> Claims:
+    """Return the claims of a valid grant or raise GrantError; changes no state (the caller records the jti)."""
+    _check_signature(grant, signature, allowed_signers)
+    try:
+        data = json.loads(grant.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        raise GrantError("grant is not JSON") from None
+    if not isinstance(data, dict):
+        raise GrantError("grant is not a JSON object")
+    for name in ("v",) + STR_CLAIMS + INT_CLAIMS:
+        if name not in data:
+            raise GrantError(f"missing claim: {name}")
+    if type(data["v"]) is not int or data["v"] != 1:
+        raise GrantError("unsupported grant version")
+    for name in STR_CLAIMS:
+        if not isinstance(data[name], str) or not data[name] or len(data[name]) > 128:
+            raise GrantError(f"claim has the wrong type: {name}")
+    if not JTI_RE.fullmatch(data["jti"]):
+        raise GrantError("invalid jti")
+    for name in INT_CLAIMS:
+        if type(data[name]) is not int:
+            raise GrantError(f"claim has the wrong type: {name}")
+    if data["iat"] > now + SKEW_SECONDS:
+        raise GrantError("grant issued in the future")
+    if now >= data["exp"]:
+        raise GrantError("grant expired")
+    if data["device_fp"] != device_fp:
+        raise GrantError("grant is for another device")
+    if data["phone_fp"] != phone_fp:
+        raise GrantError("grant is for another phone key")
+    if data["jti"] in seen_jti:
+        raise GrantError("replayed grant")
+    return Claims(**{k: data[k] for k in Claims.__dataclass_fields__})
+
+
+def phone_label(body: str) -> str:
+    """phone- plus the first 12 hex characters of the SHA-256 of the raw public-key blob."""
+    return "phone-" + hashlib.sha256(base64.b64decode(body)).hexdigest()[:12]
+
+
+def _load_pair(path: Path):
+    loader = importlib.machinery.SourceFileLoader("mia_update_pair", str(path))
+    mod = importlib.util.module_from_spec(importlib.util.spec_from_loader("mia_update_pair", loader))
+    loader.exec_module(mod)
+    return mod
+
+
+def _load_registry(env):
+    path = env.get("MIA_REGISTRY_TOOL", str(Path(__file__).resolve().with_name("mia-phone-registry")))
+    loader = importlib.machinery.SourceFileLoader("mia_phone_registry", path)
+    mod = importlib.util.module_from_spec(importlib.util.spec_from_loader("mia_phone_registry", loader))
+    loader.exec_module(mod)
+    return mod
+
+
+def _fingerprint_of(pub: Path) -> str:
+    try:
+        done = subprocess.run(["ssh-keygen", "-lf", str(pub)], capture_output=True, text=True, shell=False, timeout=15)
+    except (OSError, subprocess.SubprocessError):
+        raise GrantError("cannot read the device identity key") from None
+    parts = done.stdout.split()
+    if done.returncode != 0 or len(parts) < 2 or not FP_RE.match(parts[1]):
+        raise GrantError("cannot read the device identity key")
+    return parts[1]
+
+
+def ensure_dir(path: Path, mode: int, expect_uid=0) -> None:
+    """Create path (os.makedirs, mode) and refuse unless it is a real directory, not a symlink, owned by expect_uid.
+
+    expect_uid None skips the owner check (tests with an MIA_* override). The directory is opened with O_NOFOLLOW and
+    its mode is set with fchmod on that descriptor, so a swapped symlink cannot redirect either step.
+    """
+    os.makedirs(path, mode=mode, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    except OSError:
+        raise GrantError("state directory is not a real directory") from None
+    try:
+        if expect_uid is not None and os.fstat(fd).st_uid != expect_uid:
+            raise GrantError("state directory is not owned by root")
+        os.fchmod(fd, mode)
+    finally:
+        os.close(fd)
+
+
+def _atomic_write(path: Path, text: str, mode: int) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
+    try:
+        os.fchmod(fd, mode)  # on the descriptor, before any data: no path to swap for a symlink
+        with os.fdopen(fd, "w", encoding="utf-8") as out:
+            out.write(text)
+        os.replace(tmp, path)
+    except OSError:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
+def ensure_api_key(env_file: Path) -> bool:
+    """Append MIA_API_KEY=<new key> unless a non-empty one is set; never rewrite a line. Returns True if added.
+
+    An empty `MIA_API_KEY=` (or `=""`) counts as absent. systemd's EnvironmentFile lets the later line win, so the
+    last MIA_API_KEY line decides.
+    """
+    existing = env_file.read_text(encoding="utf-8") if env_file.exists() else ""
+    values = [m.group(1).strip().strip("\"'").strip() for m in map(KEY_LINE_RE.match, existing.splitlines()) if m]
+    if values and values[-1]:
+        return False
+    env_file.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(env_file, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+    with os.fdopen(fd, "a", encoding="utf-8") as out:
+        if existing and not existing.endswith("\n"):
+            out.write("\n")
+        out.write(f"{API_KEY_VAR}={secrets.token_urlsafe(32)}\n")
+    os.chmod(env_file, 0o600)
+    return True
+
+
+def _read_request(stream) -> dict:
+    raw = stream.read(MAX_INPUT + 1)
+    if len(raw) > MAX_INPUT:
+        raise ValueError("request too large")
+    try:
+        req = json.loads(raw.strip().splitlines()[0] if raw.strip() else "")
+    except (ValueError, IndexError):
+        raise ValueError("request is not one JSON line") from None
+    if not isinstance(req, dict) or not all(isinstance(req.get(k), str) and req[k] for k in
+                                            ("grant", "signature", "phone_public_key")):
+        raise ValueError("request needs grant, signature and phone_public_key")
+    return req
+
+
+def enroll(req: dict) -> list:
+    """Enroll the phone; returns warnings (strings) for follow-up steps that failed without undoing the pairing."""
+    env = os.environ
+    state = Path(env.get("MIA_ENROLL_DIR", DEFAULT_ENROLL_DIR))
+    pair_tool = Path(env.get("MIA_PAIR_TOOL", str(Path(__file__).resolve().with_name("mia-update-pair"))))
+    now = int(env["MIA_ENROLL_NOW"]) if "MIA_ENROLL_NOW" in env else int(time.time())
+    pair = _load_pair(pair_tool)
+    if env.get("MIA_ENROLL_SKIP_CHOWN") == "1":
+        pair._chown_root = lambda path: None
+    try:
+        _, body = pair.parse_public_key(req["phone_public_key"])
+    except pair.PairError as exc:
+        raise GrantError(f"phone key refused: {exc}") from None
+    phone_fp = pair.fingerprint(body)
+    device_fp = _fingerprint_of(Path(env.get("MIA_DEVICE_PUB", DEFAULT_DEVICE_PUB)))
+    warnings = []
+    ensure_dir(state, 0o700, None if "MIA_ENROLL_DIR" in env else 0)
+    seen_file = state / "seen_jti"
+    try:
+        lock_fd = os.open(state / "lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    except OSError:
+        raise GrantError("lock file cannot be opened") from None
+    with os.fdopen(lock_fd, "r+") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        seen = set(seen_file.read_text(encoding="utf-8").splitlines()) if seen_file.exists() else set()
+        claims = verify_grant(req["grant"].encode("utf-8"), req["signature"].encode("utf-8"),
+                              Path(env.get("MIA_ALLOWED_SIGNERS", DEFAULT_ALLOWED_SIGNERS)), device_fp, phone_fp, now, seen)
+        # Fail closed: the grant is burned before anything else changes, so a failed enrollment needs a new grant.
+        _atomic_write(seen_file, "".join(f"{j}\n" for j in sorted(seen | {claims.jti})), 0o600)
+        try:
+            pair.add(pair.keys_path(), phone_label(body), req["phone_public_key"])
+        except pair.PairError as exc:
+            raise GrantError(f"pairing refused: {exc}") from None
+        try:  # the key is paired; a registry problem must not undo that
+            registry = _load_registry(env)
+            mac = req.get("phone_mac")
+            try:
+                mac = registry.normalize_mac(mac) if isinstance(mac, str) else ""
+            except registry.RegistryError:
+                mac = ""
+            registry.upsert(phone_fp, mac, False)
+        except Exception:  # noqa: BLE001 - reported as a warning, without exception text
+            warnings.append("phone registry not updated")
+        ensure_api_key(Path(env.get("MIA_ENV_FILE", DEFAULT_ENV_FILE)))
+        billing = {"account_id": claims.account_id, "plan": claims.plan, "entitlement_exp": claims.entitlement_exp}
+        _atomic_write(Path(env.get("MIA_CONFIG_D", DEFAULT_CONFIG_D)) / "60-billing.json",
+                      json.dumps(billing, sort_keys=True, indent=2) + "\n", 0o644)
+    try:
+        window = Path(env.get("MIA_PAIRING_WINDOW", DEFAULT_PAIRING_WINDOW))
+        ensure_dir(window.parent, 0o755, None if "MIA_PAIRING_WINDOW" in env else 0)
+        _atomic_write(window, f"{now + PAIRING_WINDOW_SECONDS}\n", 0o644)
+    except (OSError, GrantError):
+        warnings.append("pairing window not opened")
+    return warnings
+
+
+def main(argv: list) -> int:
+    def finish(ok: bool, step: str, error, warnings=()) -> int:
+        result = {"ok": ok, "step": step, "error": error}
+        if warnings:
+            result["warning"] = "; ".join(warnings)
+        print(json.dumps(result))
+        return 0 if ok else 1
+
+    if argv:
+        finish(False, "args", "usage: mia-enroll < request.json")
+        return 2
+    try:
+        req = _read_request(sys.stdin)
+    except UnicodeDecodeError:
+        return finish(False, "input", "request is not UTF-8")
+    except ValueError as exc:
+        return finish(False, "input", str(exc))
+    try:
+        warnings = enroll(req)
+    except GrantError as exc:
+        return finish(False, "grant", exc.reason)
+    except OSError as exc:
+        return finish(False, "io", f"{exc.__class__.__name__}: {exc.strerror}")
+    except Exception as exc:  # noqa: BLE001 - the last stdout line must always be the JSON result; never echo exc text
+        return finish(False, "internal", f"unexpected {exc.__class__.__name__}")
+    return finish(True, "enrolled", None, warnings)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

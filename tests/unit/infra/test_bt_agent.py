@@ -1,0 +1,158 @@
+"""infra/systemd/mia-bt-agent.service and infra/deploy/rpi/mia-bt-window.sh (REQ-ONB-009): static unit checks, and the
+window logic run against stub busctl/bt-agent in a tmp dir. Real Bluetooth behaviour is not exercised."""
+
+import configparser
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import pytest
+
+pytestmark = [pytest.mark.req("REQ-ONB-009"), pytest.mark.skipif(shutil.which("bash") is None, reason="needs bash")]
+
+ROOT = Path(__file__).resolve().parents[3]
+UNIT = ROOT / "infra" / "systemd" / "mia-bt-agent.service"
+SCRIPT = ROOT / "infra" / "deploy" / "rpi" / "mia-bt-window.sh"
+NOW = 1_800_000_000
+
+
+def _unit():
+    parser = configparser.ConfigParser(strict=False, interpolation=None)
+    parser.optionxform = str
+    parser.read(UNIT, encoding="utf-8")
+    return parser
+
+
+def test_unit_runs_as_mia_with_the_window_script_and_restarts():
+    service = _unit()["Service"]
+    assert service["User"] == "mia"
+    assert service["ExecStart"].split()[0] == "/opt/mia/infra/deploy/rpi/mia-bt-window.sh"
+    assert service["Restart"] in ("always", "on-failure")
+    assert "bluetooth.service" in _unit()["Unit"]["Requires"]
+    assert "bluetooth" in service["SupplementaryGroups"].split()
+
+
+def test_unit_exposes_no_network():
+    text = UNIT.read_text(encoding="utf-8")
+    service = _unit()["Service"]
+    assert service["RestrictAddressFamilies"] == "AF_UNIX"  # D-Bus only: no IP, no Bluetooth socket
+    assert service["NoNewPrivileges"] == "true"
+    assert not any(word in text for word in ("ListenStream", "ListenDatagram", "BindTo", "IPAddressAllow", "Environment=MIA_API"))
+    assert "bluetoothctl" not in service["ExecStart"]  # unreliable without a tty
+
+
+def _box(tmp: Path):
+    bindir = tmp / "bin"
+    bindir.mkdir()
+    log = tmp / "calls.log"
+    for name in ("busctl", "bt-agent"):
+        stub = bindir / name
+        stub.write_text(f'#!/bin/bash\nprintf "{name} %s\\n" "$*" >> "{log}"\nexit 0\n')
+        stub.chmod(0o755)
+    env = {"PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}", "MIA_PAIRING_WINDOW": str(tmp / "pairing-window"),
+           "MIA_BT_NOW": str(NOW), "MIA_BT_ADAPTER": "/org/bluez/hci9"}
+    return env, log
+
+
+def _once(env):
+    return subprocess.run(["bash", str(SCRIPT), "--once"], env=env, capture_output=True, text=True, timeout=30)
+
+
+def _sets(log):
+    calls = log.read_text().splitlines() if log.exists() else []
+    return [c for c in calls if c.startswith("busctl")]
+
+
+def test_window_open_makes_the_adapter_discoverable_and_pairable(tmp_path):
+    env, log = _box(tmp_path)
+    (tmp_path / "pairing-window").write_text(f"{NOW + 100}\n")
+    assert _once(env).returncode == 0
+    sets = _sets(log)
+    assert any("Discoverable b true" in c and "/org/bluez/hci9" in c for c in sets)
+    assert any("Pairable b true" in c for c in sets)
+    assert (tmp_path / "pairing-window").exists()
+
+
+@pytest.mark.parametrize("content", [None, f"{NOW}\n", f"{NOW - 5}\n", "garbage\n", f"{NOW + 100000}\n", ""])
+def test_window_closed_when_missing_expired_or_invalid(tmp_path, content):
+    env, log = _box(tmp_path)
+    if content is not None:
+        (tmp_path / "pairing-window").write_text(content)
+    assert _once(env).returncode == 0
+    sets = _sets(log)
+    assert any("Discoverable b false" in c for c in sets) and any("Pairable b false" in c for c in sets)
+    assert not any("b true" in c for c in sets)
+    assert not (tmp_path / "pairing-window").exists()  # an expired or bogus window file is removed
+
+
+def test_shellcheck_clean():
+    if shutil.which("shellcheck") is None:
+        pytest.skip("shellcheck not installed")
+    done = subprocess.run(["shellcheck", str(SCRIPT)], capture_output=True, text=True)
+    assert done.returncode == 0, done.stdout
+
+
+needs_analyze = pytest.mark.skipif(shutil.which("systemd-analyze") is None, reason="systemd-analyze not installed")
+
+
+def _verify_lines(directory: Path, text: str):
+    """Run the real `systemd-analyze verify` on a copy named mia-bt-agent.service and return only the output lines that
+    concern OUR unit. The exit code and the other lines are ignored on purpose: on a CI runner verify also reports
+    warnings about unrelated system units (e.g. xfs_scrub_all.service), which says nothing about this unit."""
+    directory.mkdir(parents=True, exist_ok=True)
+    copy = directory / "mia-bt-agent.service"
+    copy.write_text(text, encoding="utf-8")
+    done = subprocess.run(["systemd-analyze", "verify", str(copy)], capture_output=True, text=True, timeout=60)
+    return [ln for ln in (done.stdout + done.stderr).splitlines() if "mia-bt-agent" in ln]
+
+
+_DEPENDENCY_KEYS = ("Requires", "Wants", "After", "Before", "BindsTo", "PartOf", "Conflicts", "Requisite", "Upholds",
+                    "BoundBy", "ConsistsOf", "PropagatesReloadTo", "ReloadPropagatedFrom", "OnFailure", "OnSuccess")
+
+
+def _is_outside_dependency(line: str) -> bool:
+    key = line.split("=", 1)[0].strip() if "=" in line else ""
+    return key in _DEPENDENCY_KEYS or ("bluetooth.service" in line and not line.lstrip().startswith("#"))
+
+
+def _unit_text_with_runnable_execstart(keep_dependencies: bool = False) -> str:
+    """Copy of the unit for `systemd-analyze verify`. ExecStart (an /opt/mia path that does not exist here) is pointed
+    at an existing executable (R8). Unless keep_dependencies, every directive naming a unit outside the copy
+    (Requires=bluetooth.service etc.) is dropped: verify reports a missing dependency as a line that names OUR unit
+    ("mia-bt-agent.service: Failed to create ... Unit X not found"), which depends on the host, not on the file."""
+    true = shutil.which("true") or "/bin/true"
+    out = []
+    for ln in UNIT.read_text(encoding="utf-8").splitlines():
+        if not keep_dependencies and _is_outside_dependency(ln):
+            continue
+        out.append(f"ExecStart={true}" if ln.startswith("ExecStart=") else ln)
+    return "\n".join(out) + "\n"
+
+
+@needs_analyze
+def test_systemd_analyze_verify_reports_nothing_about_the_unit(tmp_path):
+    """Real, state-free check (R8), environment-independent: only lines that mention our unit count."""
+    ours = _verify_lines(tmp_path, _unit_text_with_runnable_execstart())
+    assert ours == [], "\n".join(ours)
+
+
+@needs_analyze
+def test_systemd_analyze_verify_flags_a_broken_copy_of_the_unit(tmp_path):
+    """The check can fail: an unknown directive and a non-absolute ExecStart are reported against our unit."""
+    text = _unit_text_with_runnable_execstart().replace("[Service]", "[Service]\nNoSuchDirective=1", 1)
+    text = text.replace(f"ExecStart={shutil.which('true') or '/bin/true'}", "ExecStart=relative/x")
+    ours = _verify_lines(tmp_path, text)
+    assert any("NoSuchDirective" in ln for ln in ours), ours
+    assert any("relative/x" in ln for ln in ours), ours
+
+
+@needs_analyze
+def test_a_missing_dependency_is_reported_against_our_unit_so_the_copy_strips_dependencies(tmp_path):
+    """Documents why _unit_text_with_runnable_execstart drops Requires=/After=/...: a dependency absent on the host
+    (here a fake one) yields a line naming our unit; the stripped copy yields none."""
+    kept = _unit_text_with_runnable_execstart().replace("[Unit]", "[Unit]\nRequires=nosuchdep.service", 1)
+    assert any("nosuchdep" in ln for ln in _verify_lines(tmp_path / "kept", kept))
+    stripped = _unit_text_with_runnable_execstart()
+    assert "bluetooth.service" not in stripped and "Requires=" not in stripped and "After=" not in stripped
+    assert _verify_lines(tmp_path / "stripped", stripped) == []

@@ -44,7 +44,7 @@ Options:
   --device SERIAL       Target device serial (auto-detect if omitted)
   --apk PATH            APK path (default: apps/android/.../app-debug.apk)
   --package PACKAGE     Installed application id (default: cz.mia.app.debug; override with MIA_ANDROID_PACKAGE)
-  --scenario NAME       Test scenario: install|dashboard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
+  --scenario NAME       Test scenario: install|dashboard|install-wizard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
   --screenshots         Capture screenshots during test
   --logs                Capture logcat to output directory
   --output DIR          Output directory (default: apps/android/test-artifacts/<timestamp>)
@@ -514,31 +514,65 @@ scenario_dashboard() {
   take_screenshot "dashboard_telemetry"
 }
 
+ensure_ble_scanning() {
+  if ui_has_text "Scanning..." exact; then
+    return 0
+  fi
+
+  if ! ui_has_text "Scan" exact; then
+    err "OBD scan control is not visible"
+    return 1
+  fi
+
+  tap_ui_text "Scan" exact || return 1
+  wait_for_ui_text "Scanning..." 10 exact || {
+    err "BLE scan did not start after tapping Scan"
+    return 1
+  }
+}
+
 scenario_ble_scan() {
   log "Scenario: BLE scan"
   open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
-  if ui_has_text "Scan" exact; then
-    tap_ui_text "Scan" exact || return 1
-    wait_for_ui_text "Scanning..." 10 exact || sleep_ms 3000
-  else
-    log "Scan button not visible; capturing current OBD screen"
-  fi
+  ensure_ble_scanning || return 1
   take_screenshot "ble_scan_screen"
 }
 
 scenario_obd_pairing() {
   log "Scenario: OBD pairing"
   open_more_item "OBD pairing" "OBD-II Connection" exact || return 1
-  if ui_has_text "Scan" exact; then
-    tap_ui_text "Scan" exact || return 1
-    sleep_ms 4000
-  fi
+  ensure_ble_scanning || return 1
+  sleep_ms 4000
   if ! tap_first_device_entry; then
     log "No discoverable OBD device found; skipping pairing tap"
   else
     wait_for_ui_text "Connected" 20 exact || sleep_ms 5000
   fi
   take_screenshot "obd_pairing"
+}
+
+scenario_install_wizard() {
+  log "Scenario: install wizard"
+  open_more_item "Install MIA on a car" "Start" exact || return 1
+  tap_ui_text "Start" exact || return 1
+  # The key screen needs no network. "Enter the activation key" is its body text only; the Welcome body says
+  # "your MIA activation key", so a looser marker would pass even if the Start tap did nothing.
+  wait_for_ui_text "Enter the activation key" 10 contains || {
+    err "Activation key screen did not appear after tapping Start"
+    return 1
+  }
+  if ui_has_text "sets up MIA on the Raspberry Pi" contains; then
+    err "Welcome text is still on screen after tapping Start"
+    return 1
+  fi
+  take_screenshot "install_wizard"
+  # Leave the wizard through the top-left "← More" back row, not the bottom tab: the selected tab does not
+  # leave the sub-screen. Back at the More list, the next scenario can open its entries.
+  tap_ui_text "More" exact || return 1
+  wait_for_ui_text "OBD pairing" 12 exact || {
+    err "Could not return to the More list after the install wizard"
+    return 1
+  }
 }
 
 scenario_settings() {
@@ -556,9 +590,10 @@ scenario_anpr() {
 
 scenario_full_flow() {
   log "Scenario: full-flow (chained)"
-  scenario_dashboard
-  scenario_ble_scan
-  scenario_obd_pairing
+  scenario_dashboard || return 1
+  scenario_install_wizard || return 1
+  scenario_ble_scan || return 1
+  scenario_obd_pairing || return 1
 }
 
 scenario_interactive() {
@@ -589,6 +624,7 @@ run_scenario() {
   case "$SCENARIO" in
     install) log "Install only (app already launched)" ;;
     dashboard) scenario_dashboard ;;
+    install-wizard) scenario_install_wizard ;;
     ble-scan) scenario_ble_scan ;;
     obd-pairing) scenario_obd_pairing ;;
     settings) scenario_settings ;;

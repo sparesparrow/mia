@@ -129,7 +129,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        scenario: [dashboard, ble-scan, obd-pairing, settings, full-flow]
+        scenario: [dashboard, install-wizard, ble-scan, obd-pairing, settings, full-flow]
 
     steps:
       - uses: actions/checkout@v4
@@ -279,7 +279,7 @@ jobs:
           echo "| Scenario | Status |" >> test-summary.md
           echo "|----------|--------|" >> test-summary.md
 
-          for scenario in dashboard ble-scan obd-pairing settings full-flow; do
+          for scenario in dashboard install-wizard ble-scan obd-pairing settings full-flow; do
             status_file="test-results/test-artifacts-$scenario/status.txt"
             if [ -f "$status_file" ]; then
               status=$(cat "$status_file")

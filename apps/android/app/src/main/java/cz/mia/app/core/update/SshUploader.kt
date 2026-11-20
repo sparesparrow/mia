@@ -36,12 +36,16 @@ class PinnedHostKeys(private val file: File) : HostKeyVerifier {
  * Streams the package to `mia-apply-update` on the Pi (ADR-0023). The server runs the key's forced command whatever
  * is asked for, so the command text is only a label. Needs the Pi's `mia-update` user and a paired key.
  */
-class SshUploader(private val hostKeys: HostKeyVerifier) {
+class SshUploader(
+	private val hostKeys: HostKeyVerifier,
+	/** Builds the SSH client; the onboarding wizard passes one that offers only ssh-ed25519 host keys. */
+	private val newClient: () -> SSHClient = { SSHClient() },
+) {
 	fun upload(host: String, keys: KeyPair, pkg: ByteArray, onProgress: (sent: Int, total: Int) -> Unit): UpdateResult {
 		// sshj needs the full BouncyCastle, not the cut-down copy Android ships under the same name.
 		Security.removeProvider("BC")
 		Security.insertProviderAt(BouncyCastleProvider(), 1)
-		val client = SSHClient()
+		val client = newClient()
 		try {
 			client.addHostKeyVerifier(hostKeys)
 			client.connectTimeout = 10_000
