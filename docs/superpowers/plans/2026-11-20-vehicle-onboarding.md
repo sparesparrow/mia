@@ -18,6 +18,12 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - **The auth server and Stripe integration do not exist** (ADR-0024: no enrollment service). They are a separate plan. This plan builds the client contract, a fake server for tests, and the Pi/phone sides. Anything needing the real server stays "unverified".
 
 ## Global Constraints
+- Ruling R2 (fingerprints): every `*_fp` is the OpenSSH form `SHA256:<base64>` exactly as `ssh-keygen -lf` prints it. The `mia-update-pair` label is `phone-` + first 12 hex chars of the SHA-256 of the raw public-key blob, and must match `^[A-Za-z0-9._-]{1,32}$` (test it).
+- Ruling R3 (auth server HTTP contract, written into ADR-0025, client and fake server follow it): `POST /v1/grants` (Bearer activation key) body `{device_fp, phone_public_key}` → `200 {grant, signature}` | `401` | `403` unknown device; `GET /v1/devices` → `{devices:[{fp, label}]}`; `POST /v1/checkout` → `{url}`. T4 therefore also exposes `fun devices(activationKey: String): Result<List<DeviceRef>>`; T5 compares the Pi's SSH host-key fingerprint against it.
+- Ruling R4 (bare Pi): `mia-apply-update` refuses a Pi with no install (`check_requirements`). So the factory image carries the MIA base install (OS, `/opt/mia` baseline with venv, device host key, `mia-enroll` access, grant-signer public key in `allowed_signers`); the phone enrolls and updates only. ADR-0025 requires the image NOT to regenerate SSH host keys on first boot (the server registered that fingerprint).
+- Ruling R5 (mia-enroll sshd): `AuthorizedKeysCommand` under `Match User mia-enroll` only, emitting `restrict,command="sudo /opt/mia/bin/mia-enroll" <offered key>` for any ed25519/ECDSA key (`%t %k`). `mia-enroll` registers only the key in stdin's `phone_public_key`, whose fingerprint must equal the grant's `phone_fp`; `jti` stops replay. `/etc/mia/environment`: add the API key only if absent, never rewrite existing lines.
+- Ruling R6 (verification): no Android SDK on this PC (`ANDROID_HOME` empty). Android tasks are verified by CI on PR #275 (controller pushes after each task and reads `gh pr checks 275`); executors report "compiles: unverified" and never claim PASS. Pi tools take every path from an overridable argument/env (pattern in `bin/mia-update-pair`), tests use tmp dirs only. T7 step 2 (phone run) is unverified by design.
+- Ruling R7: new area file `spec/requirements/onboarding.yaml` (area `onboarding`); `REQ-ONB-nnn` fits `traceability.py`'s `REQ-[A-Z]+-\d{3}`. Revocation (registry remove + `mia-update-pair remove`) is covered in ADR-0025 and REQ-ONB-007.
 - Ruling R1: ADR-0023 says pairing is an administrator action; ADR-0025 must state that a verified server grant now also authorizes pairing, and only through `mia-enroll`.
 - ADR-0023: config is data (YAML on phone → JSON on Pi), never executed, never interpolated into a command line; Pi-owned state (`voice_settings.json`) is never written by install/update.
 - ADR-0023: phone key can run only `sudo /opt/mia/bin/mia-apply-update` (forced command); the phone never keeps a general shell.
@@ -45,7 +51,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service` — NM shared hotspot (DHCP+DNS), Bluetooth pairing agent.
 - `apps/android/app/src/main/java/cz/mia/app/core/onboarding/` — `AuthServerClient.kt`, `PiDiscovery.kt`, `OnboardingState.kt`, `OnboardingViewModel.kt`, `KnownPiStore.kt`.
 - `apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/` — `InstallMiaScreen.kt`, `PairVehicleScreen.kt`; `OBDPairingScreen.kt` stays as the adapter step.
-- `apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py`, `.../test_phone_registry.py`; `apps/android/app/src/test/java/cz/mia/app/core/onboarding/*Test.kt`.
+- `tests/unit/tools/test_mia_enroll.py`, `.../test_phone_registry.py`; `apps/android/app/src/test/java/cz/mia/app/core/onboarding/*Test.kt`.
 
 ---
 
@@ -57,16 +63,16 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - [ ] Step 3: Commit `docs(adr): 0025 vehicle onboarding`.
 
 ### Task 2: Grant schema and `bin/mia-enroll`
-**Files:** Create `schemas/json/mia-grant.schema.json`, `bin/mia-enroll`, `infra/deploy/rpi/install-enroll-access.sh` (mirrors `install-update-access.sh`: SSH user `mia-enroll`, forced command `sudo /opt/mia/bin/mia-enroll`, sudoers exact-match, sshd `Match User` block; `shellcheck` clean), test `apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py`.
+**Files:** Create `schemas/json/mia-grant.schema.json`, `bin/mia-enroll`, `infra/deploy/rpi/install-enroll-access.sh` (mirrors `install-update-access.sh`: SSH user `mia-enroll`, forced command `sudo /opt/mia/bin/mia-enroll`, sudoers exact-match, sshd `Match User` block; `shellcheck` clean), test `tests/unit/tools/test_mia_enroll.py`.
 **Interfaces:** Produces `verify_grant(grant: bytes, signature: bytes, allowed_signers: Path, device_fp: str, phone_fp: str, now: int, seen_jti: set[str]) -> Claims` raising `GrantError(reason: str)`; `Claims` fields `account_id, jti, plan, entitlement_exp, exp, phone_fp, device_fp`. CLI reads `{grant, signature, phone_public_key}` as one JSON line on stdin and prints `{"ok","step","error"}` as its last line (same convention as `mia-apply-update`).
 - [ ] Step 1: Write failing tests (with a throwaway key made by `ssh-keygen -t ed25519` in a tmp dir): `test_valid_grant_accepted`, `test_expired_grant_refused` (now > exp), `test_wrong_device_fingerprint_refused`, `test_wrong_phone_fingerprint_refused`, `test_replayed_jti_refused`, `test_bad_signature_refused`, `test_unknown_claim_ignored_but_missing_claim_refused`, each `@pytest.mark.req("REQ-ONB-00x")`.
-- [ ] Step 2: Run `pytest apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py -v` — Expected: FAIL (module missing).
+- [ ] Step 2: Run `pytest tests/unit/tools/test_mia_enroll.py -v` — Expected: FAIL (module missing).
 - [ ] Step 3: Implement `verify_grant` using `subprocess.run(["ssh-keygen","-Y","verify",...], shell=False)` with namespace `mia-grant`; JSON parsed with `json`, claims validated against the schema's required list by hand (stdlib only). `jti` list persisted at `/var/lib/mia/enroll/seen_jti`.
 - [ ] Step 4: Implement CLI path: on success call the pairing function of `bin/mia-update-pair` (import by path, label from `phone_fp[:12]`), generate the device API key with `secrets.token_urlsafe(32)` into `/etc/mia/environment` (mode 600, never printed), write `/etc/mia/config.d/60-billing.json` `{account_id, plan, entitlement_exp}`.
 - [ ] Step 5: Run tests — Expected: PASS. Commit `feat(rpi): mia-enroll verifies server grant`.
 
 ### Task 3: Phone registry and network
-**Files:** Modify `bin/mia-enroll` (call `registry.upsert` after a successful grant); Create `bin/mia-phone-registry`, `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service`, test `.../tests/unit/test_phone_registry.py`.
+**Files:** Modify `bin/mia-enroll` (call `registry.upsert` after a successful grant); Create `bin/mia-phone-registry`, `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service`, test `tests/unit/tools/test_phone_registry.py`.
 **Interfaces:** Consumes `Claims.phone_fp`. Produces `registry.upsert(phone_fp: str, mac: str, bonded: bool) -> None`, `registry.lookup_by_fp(phone_fp: str) -> Entry | None`; CLI `mia-phone-registry upsert|list|remove`.
 - [ ] Step 1: Tests: `test_upsert_new_phone`, `test_mac_change_updates_same_entry` (same fp, new MAC → one entry), `test_unknown_mac_not_trusted` (lookup by MAC alone returns none), file mode 600, atomic write.
 - [ ] Step 2: Run — Expected FAIL. Step 3: Implement (JSON file under `/var/lib/mia/`, `fcntl.flock`, atomic rename). Step 4: Run — PASS.
