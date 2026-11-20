@@ -103,9 +103,22 @@ requirements:
   title: ESP32 ELM327 emulator firmware
   statement: An ESP32 shall emulate an ELM327 adapter and accept vehicle-state updates over Serial2.
   evidence: implemented_untested
+  acceptance:
+  - >-
+    Serial2 accepts newline-delimited S:<speed_kph>:<rpm>:<coolant_temp_c> updates;
+    malformed or out-of-range updates leave the current state unchanged.
+  - >-
+    Serial2 accepts the five-byte U packet emitted by obd_physics.py (little-endian
+    RPM, speed, and a zero checksum marker); invalid RPM or checksum leaves the
+    current state unchanged.
+  - >-
+    ATZ returns the adapter identity, PID 010C returns RPM in quarter-RPM units,
+    PID 010D returns speed in km/h, and unsupported commands return the ELM error marker.
+  - The dedicated PlatformIO firmware target builds in CI, and the host protocol contract test is marked with REQ-HW-008.
   implemented_in:
   - apps/esp32/elm327-emulator/src/main.cpp
-  notes: Not built by CI.
+  - apps/esp32/elm327-emulator/src/elm327_protocol.h
+  not_proven: CI has not run for the new target yet; Serial2 framing and responses have not been checked on a physical ESP32.
 - id: REQ-HW-009
   title: Voice feedback LED and tone on ESP32
   statement: An ESP32 with a dedicated RGB LED and a buzzer shall show the voice state as a colour and play its tone when the state machine emits a feedback cue.

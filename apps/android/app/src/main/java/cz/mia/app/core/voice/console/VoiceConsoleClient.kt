@@ -13,11 +13,21 @@ import kotlinx.coroutines.launch
 interface VoiceSocket {
     fun send(data: ByteArray): Boolean
     fun close()
+
+    /** A text frame; the microphone stream (ADR-0021) opens with one. The console never sends text. */
+    fun sendText(text: String): Boolean = false
+
+    /** Bytes accepted by [send] but not yet on the wire, so a sender that must not lag can drop instead. */
+    fun queuedBytes(): Long = 0
 }
 
 interface VoiceSocketListener {
     fun onOpen()
     fun onMessage(data: ByteArray)
+
+    /** A text frame; the voice console ignores them. */
+    fun onText(text: String) = Unit
+
     fun onClosed()
     fun onFailure(message: String)
 }

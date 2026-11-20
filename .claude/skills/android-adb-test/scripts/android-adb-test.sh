@@ -11,8 +11,8 @@ ANDROID_DIR="$PROJECT_ROOT/apps/android"
 
 # Defaults
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/debug/app-debug.apk"
-PACKAGE_NAME="cz.mia.app"
-MAIN_ACTIVITY=".MainActivity"
+PACKAGE_NAME="${MIA_ANDROID_PACKAGE:-cz.mia.app.debug}"
+MAIN_ACTIVITY="cz.mia.app.MainActivity"
 UI_DUMP_PATH="/sdcard/window_dump.xml"
 DEVICE_SERIAL=""
 SCENARIO="install"
@@ -43,6 +43,7 @@ Commands:
 Options:
   --device SERIAL       Target device serial (auto-detect if omitted)
   --apk PATH            APK path (default: apps/android/.../app-debug.apk)
+  --package PACKAGE     Installed application id (default: cz.mia.app.debug; override with MIA_ANDROID_PACKAGE)
   --scenario NAME       Test scenario: install|dashboard|ble-scan|obd-pairing|settings|anpr|full-flow|interactive
   --screenshots         Capture screenshots during test
   --logs                Capture logcat to output directory
@@ -159,6 +160,7 @@ if not xml_text:
     sys.exit(1)
 
 root = ET.fromstring(xml_text)
+parents = {child: parent for parent in root.iter("node") for child in parent}
 candidates = []
 
 for node in root.iter("node"):
@@ -173,7 +175,13 @@ for node in root.iter("node"):
     if not matched:
         continue
 
-    bounds = [int(value) for value in re.findall(r"\d+", node.attrib.get("bounds", ""))]
+    # Compose often exposes the label as a non-clickable TextView inside a clickable Card/NavigationBar item.
+    # Tap the nearest clickable ancestor so the gesture lands on the actual action container.
+    target = node
+    while target in parents and target.attrib.get("clickable") != "true":
+        target = parents[target]
+
+    bounds = [int(value) for value in re.findall(r"\d+", target.attrib.get("bounds", ""))]
     if len(bounds) != 4:
         continue
 
@@ -208,6 +216,7 @@ tap_ui_text() {
   }
 
   read -r x y <<<"$coords"
+  log "Tapping '$needle' at $x,$y"
   adb -s "$DEVICE_SERIAL" shell input tap "$x" "$y"
   sleep_ms
 }
@@ -235,6 +244,11 @@ open_nav_tab() {
   local marker_mode="${3:-contains}"
 
   bring_app_to_foreground
+  # Chained scenarios may already be on this screen. Avoid tapping a selected tab or menu item
+  # whose accessibility node is not clickable while its destination is active.
+  if [[ -n "$marker" ]] && ui_has_text "$marker" "$marker_mode"; then
+    return 0
+  fi
   wait_for_ui_text "$label" 12 exact bottom-most || {
     err "Navigation label '$label' is not visible"
     return 1
@@ -255,6 +269,10 @@ open_more_item() {
   local marker="$2"
   local marker_mode="${3:-contains}"
 
+  bring_app_to_foreground
+  if [[ -n "$marker" ]] && ui_has_text "$marker" "$marker_mode"; then
+    return 0
+  fi
   open_nav_tab "More" "$item" exact || return 1
   tap_ui_text "$item" exact || return 1
   wait_for_ui_text "$marker" 12 "$marker_mode" || {
@@ -613,6 +631,7 @@ parse_args() {
     case "$1" in
       --device) DEVICE_SERIAL="$2"; shift 2 ;;
       --apk) APK_PATH="$2"; shift 2 ;;
+      --package) PACKAGE_NAME="$2"; shift 2 ;;
       --scenario) SCENARIO="$2"; shift 2 ;;
       --screenshots) DO_SCREENSHOTS=1; shift ;;
       --logs) DO_LOGS=1; shift ;;

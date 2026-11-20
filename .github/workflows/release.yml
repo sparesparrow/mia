@@ -86,7 +86,7 @@ jobs:
           cd apps/android
           chmod +x gradlew
 
-          targets="assembleDebug"
+          targets="assembleDebug assembleDebugAndroidTest"
           # app/build.gradle only populates signingConfigs.release when all four
           # values are present; assembleRelease fails without them, so the signed
           # build is opt-in via repository secrets.
@@ -102,14 +102,26 @@ jobs:
           ./gradlew $targets --no-daemon
       - name: Stage APKs
         run: |
-          mkdir -p dist/android
-          find apps/android -path '*/build/outputs/apk/*' -name '*.apk' \
-            -exec cp -v {} dist/android/ \;
+          set -euo pipefail
+          mkdir -p dist/android dist/device-apks
+          cp -v apps/android/app/build/outputs/apk/debug/app-debug.apk dist/android/mia-app-debug.apk
+          cp -v apps/android/app/build/outputs/apk/debug/app-debug.apk dist/device-apks/app-debug.apk
+          cp -v apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk dist/device-apks/app-debug-androidTest.apk
+          if [ -f apps/android/app/build/outputs/apk/release/app-release.apk ]; then
+            cp -v apps/android/app/build/outputs/apk/release/app-release.apk dist/android/mia-app-release.apk
+          fi
           ls -la dist/android
+          ls -la dist/device-apks
       - uses: actions/upload-artifact@v4
         with:
           name: mia-android-apk
           path: dist/android/
+          if-no-files-found: error
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: device-apks
+          path: dist/device-apks/
           if-no-files-found: error
           retention-days: 90
 
@@ -264,6 +276,12 @@ jobs:
             case "$name" in
               mia-rpi-backend-bundle)
                 cp -v "$dir"*.tar.gz release/
+                ;;
+              mia-android-apk)
+                cp -v "$dir"*.apk release/
+                ;;
+              device-apks)
+                # Kept as a workflow artifact for phone_ci.sh; only installable app APKs go in release assets.
                 ;;
               *)
                 (cd "$dir" && zip -r "$GITHUB_WORKSPACE/release/${name}-${VERSION}.zip" .)

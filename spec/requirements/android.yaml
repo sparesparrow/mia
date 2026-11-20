@@ -406,8 +406,41 @@ requirements:
 - id: REQ-AND-027
   title: Phone microphone service
   statement: The app shall stream the phone's microphone to the Pi from a foreground service the user starts, with a notification to stop it.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_untested
+  acceptance:
+  - A frame is 960 bytes (30 ms of 16 kHz mono PCM16) and any read size is cut into whole frames
+  - A frame is dropped when more than 6 frames are queued or the Pi has not answered ok
+  - The stream sends the format header on open, becomes ready only on the Pi's ok and reconnects after 1, 2 and then 4 s
+  - Audio streams only while the Pi's machine is listening and the console is connected
+  implemented_in:
+  - apps/android/app/src/main/AndroidManifest.xml
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/mic/MicFraming.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/mic/MicStreamClient.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/mic/MicStreamController.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/mic/MicStreamService.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console/OkHttpVoiceSocketFactory.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/voice/console/VoiceConsoleClient.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/voice/VoiceConsoleViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/PhoneMicSection.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/VoiceConsoleScreen.kt
   decisions:
   - ADR-0021
-  not_proven: Not yet implemented.
+  not_proven: Android compilation and Kotlin unit tests pass in GitHub Actions, but the service, AudioRecord, runtime microphone and notification permission prompts, notification and Voice tab switch have not been tried on a phone. The microphone remains open while enabled, but audio is sent only while MIA is listening. Dictation and confirmation by voice get no audio yet (only listening streams). The Pi's mic open/muted texts are ignored.
+- id: REQ-AND-028
+  title: Audio settings screen
+  statement: The app shall show where the Pi takes its microphone from and where it plays replies, read from the Pi, and let the user change them only to options the Pi reports as available.
+  evidence: implemented_untested
+  acceptance:
+  - The Pi's report, including effective choice and capabilities, is parsed; a report that is not understood is not guessed
+  - A change names only the field being changed
+  - Options the Pi reports unavailable are shown greyed out and the screen says Bluetooth audio is unavailable when the Pi says so
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/audio/AudioSettings.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/audio/AudioSettingsRepository.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/voice/AudioSettingsViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/AudioSettingsScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  decisions:
+  - ADR-0021
+  - ADR-0019
+  not_proven: Android compilation and Kotlin unit tests pass in GitHub Actions, but only the report codec has unit-test coverage. The screen and repository have not been run on a phone. Bluetooth audio does not exist on the Pi, so only Wi-Fi and the Pi speaker can be chosen.
