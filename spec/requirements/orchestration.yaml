@@ -83,3 +83,32 @@ requirements:
   - orchestration/mcp/modules/shared/topics.py
   decisions:
   - ADR-0004
+- id: REQ-ORCH-010
+  title: Claude Agent Bridge dispatch
+  statement: The orchestrator shall be able to dispatch a prompt to a fixed-in-code allowlisted Claude Code agent
+    and return its result, with no agent name or tool string accepted from request/transcript data.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/claude-agent-bridge/bridge.py
+  decisions:
+  - ADR-0022
+  not_proven: A live dispatch to the Pi's installed Claude Code; only the standalone quest-rc prototype this
+    design was ported from has been exercised end to end.
+- id: REQ-ORCH-011
+  title: Claude Agent Bridge wired into unmatched-intent routing
+  statement: '`_route_enhanced_command` shall call the Claude Agent Bridge for intents with no `service_mapping`
+    entry, gated behind `CLAUDE_AGENT_BRIDGE=1`, superseding the unwired claudepy-bridge path for this purpose.'
+  evidence: planned
+  implemented_in: []
+  decisions:
+  - ADR-0022
+- id: REQ-ORCH-012
+  title: Uplink-aware dispatch
+  statement: The Claude Agent Bridge shall check reachability before dispatching and skip the call (falling back
+    to the existing no-service response) rather than block a voice turn on a dead uplink.
+  evidence: implemented_untested
+  implemented_in:
+  - orchestration/mcp/modules/claude-agent-bridge/bridge.py
+  decisions:
+  - ADR-0022
+  not_proven: Behaviour has not been exercised with the uplink actually down.
