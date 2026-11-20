@@ -1143,3 +1143,22 @@ button.crew-card:focus-visible {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Calm, accessible presentation: keep the dark terminal aesthetic, remove motion. */
+body.madness-loading { cursor: auto; }
+#paranoia-meter, #glitch-overlay, .panic-button, .panic-overlay { display: none !important; }
+*, *::before, *::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+.logo-madness h1, .hero-title-hell, .highlight-madness, .stat-number-hell,
+.section-title-hell, .weapon-icon, .feature-tag, .price-badge,
+.price-card.featured, .manifesto-paragraph strong, .manifesto-img {
+  text-shadow: none !important;
+}
+.gonzo-nav { box-shadow: none; }
+.weapon-card:hover, .story-card:hover, .story-card:hover .story-img,
+.manifesto-img:hover, .weapon-card:hover .weapon-img {
+  transform: none;
+}

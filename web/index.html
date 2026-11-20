@@ -11,25 +11,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
-<body class="madness-loading">
+<body>
 
     <!-- BACKGROUND MUSIC -->
     <audio id="background-music" loop preload="none">
         <source src="customers/journalists/background-music.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-
-    <!-- PARANOIA METER -->
-    <div id="paranoia-meter">
-        <div class="meter-label">PARANOIA LEVEL</div>
-        <div class="meter-bar">
-            <div id="paranoia-fill"></div>
-        </div>
-        <div class="meter-value">73%</div>
-    </div>
-
-    <!-- GLITCH OVERLAY -->
-    <div id="glitch-overlay"></div>
 
     <!-- NAVIGATION FROM HELL -->
     <nav class="gonzo-nav">
@@ -48,7 +36,7 @@
                 <a href="docs/" class="nav-link-hell">DOKUMENTACE</a>
                 <a href="journalists/en/" class="nav-link-hell" hreflang="en" lang="en">EN</a>
                 <button id="audio-toggle" class="audio-toggle-btn" aria-label="Toggle background music">🎵</button>
-                <button class="panic-button">NOUZOVÝ REŽIM</button>
+
             </div>
         </div>
     </nav>
@@ -355,18 +343,7 @@
         </div>
     </footer>
 
-    <!-- EMERGENCY POPUP -->
-    <div id="panic-mode" class="panic-overlay hidden">
-        <div class="panic-content">
-            <h2>🚨 NOUZOVÝ REŽIM AKTIVOVÁN 🚨</h2>
-            <p>Všechna data jsou okamžitě šifrována a připravena k self-destruction.</p>
-            <div class="panic-countdown">
-                <div id="countdown">10</div>
-                <p>sekund do digital erasure</p>
-            </div>
-            <button id="cancel-panic" class="btn-madness">ZRUŠIT SAMODESTRUKCI</button>
-        </div>
-    </div>
+    
 
     <script src="customers/journalists/gonzo-app.js"></script>
 
