@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sparesparrow/mia/spec/requirements/schema.json",
+  "title": "MIA requirements file",
+  "description": "One file per area under spec/requirements/. See spec/README.md.",
+  "type": "object",
+  "required": ["area", "title", "requirements"],
+  "additionalProperties": false,
+  "properties": {
+    "area": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "title": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "requirements": {"type": "array", "items": {"$ref": "#/$defs/requirement"}}
+  },
+  "$defs": {
+    "evidence": {
+      "description": "How far the claim is proven. Ordered weakest to strongest after the first three.",
+      "enum": [
+        "planned",
+        "blocked",
+        "implemented_untested",
+        "implemented_and_ci_tested",
+        "simulation_tested",
+        "bench_tested",
+        "hardware_tested",
+        "vehicle_installed"
+      ]
+    },
+    "requirement": {
+      "type": "object",
+      "required": ["id", "title", "statement", "evidence", "implemented_in"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^REQ-[A-Z]+-[0-9]{3}$"},
+        "title": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1, "description": "What the system shall do, in one sentence."},
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "acceptance": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Observable criteria the linked tests assert."
+        },
+        "implemented_in": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "description": "Repo-relative files or directories that implement the requirement."
+        },
+        "services": {"type": "array", "items": {"type": "string"}, "description": "systemd units that ship it."},
+        "decisions": {"type": "array", "items": {"type": "string", "pattern": "^ADR-[0-9]{4}$"}},
+        "not_proven": {"type": "string", "description": "What the current evidence does not cover."},
+        "safety": {"type": "string", "description": "What cannot transmit or actuate, where relevant."},
+        "notes": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"evidence": {"not": {"enum": ["planned", "blocked", "implemented_untested"]}}}},
+          "then": {"required": ["acceptance"], "properties": {"acceptance": {"minItems": 1}}}
+        },
+        {
+          "if": {"properties": {"evidence": {"enum": ["planned", "blocked"]}}},
+          "then": {"properties": {"implemented_in": {"minItems": 0}}},
+          "else": {"properties": {"implemented_in": {"minItems": 1}}}
+        }
+      ]
+    }
+  }
+}

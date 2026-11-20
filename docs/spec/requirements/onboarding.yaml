@@ -1,0 +1,165 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: onboarding
+title: Vehicle onboarding
+description: Enrolling a Pi from the Android app with a server-signed grant, then pairing phone and Pi (ADR-0025). Extends
+  the phone-driven update (ADR-0023).
+requirements:
+- id: REQ-ONB-001
+  title: Grant verified offline
+  statement: The Pi shall accept an enrollment request only if its grant carries a valid SSH ed25519 signature in namespace
+    mia-grant that verifies against a signer key baked into the image, without network access.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A grant with a bad or foreign signature is refused and nothing changes
+  - A grant with an unknown claim is accepted; a grant missing a required claim is refused
+  - Verification calls ssh-keygen -Y verify as an argument list, never through a shell
+  implemented_in:
+  - bin/mia-enroll
+  - schemas/json/mia-grant.schema.json
+  decisions:
+  - ADR-0025
+  not_proven: 'Not run as root on a Raspberry Pi, and not through sshd; the signer key is a throwaway test key. No real auth server exists to sign grants.'
+- id: REQ-ONB-002
+  title: Grant bound to Pi fingerprint and phone key
+  statement: The Pi shall refuse a grant whose device_fp is not its own identity fingerprint or whose phone_fp differs from
+    the fingerprint of the phone key in the request, and shall refuse an expired grant.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A grant for another Pi fingerprint is refused
+  - A grant for another phone key is refused
+  - A grant with now >= exp is refused
+  - Fingerprints use the SHA256:<base64> form printed by ssh-keygen -lf
+  implemented_in:
+  - bin/mia-enroll
+  decisions:
+  - ADR-0025
+  not_proven: "Not run on a Raspberry Pi; the device fingerprint comes from a test key, not the Pi's real host key. The 60 s clock-skew allowance on iat is a choice in code, not set by a test against a drifting Pi clock."
+- id: REQ-ONB-003
+  title: Replay refused
+  statement: The Pi shall refuse a grant whose jti it has already accepted, and a refused request shall leave the Pi's state
+    unchanged, except that a failure after verification burns the jti.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The same grant used twice is accepted once and refused the second time
+  - A jti outside ^[A-Za-z0-9._:-]{1,128}$ is refused, and a jti that is a prefix of a seen one is not a replay
+  - A refused request registers no key and writes no config
+  - The jti is recorded before pairing, so an enrollment that fails after verification burns the grant
+  implemented_in:
+  - bin/mia-enroll
+  decisions:
+  - ADR-0025
+  not_proven: 'Not run as root on a Raspberry Pi; concurrency is covered by a lock but only sequential replay is tested; a crash (power loss) between verification and the jti write is not simulated, only failed pairing and billing writes.'
+- id: REQ-ONB-004
+  title: Phone key limited to a forced command
+  statement: The mia-enroll user shall be able to run only the one enrollment command, and an enrolled phone shall afterwards
+    hold only the ADR-0023 forced-command key, never a general shell.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The sshd Match User block emits restrict,command="sudo /opt/mia/bin/mia-enroll" for any offered ed25519 or ECDSA key
+  - The sudoers rule matches exactly one command
+  - mia-enroll registers only the key in phone_public_key, through the mia-update-pair logic, with a label matching ^[A-Za-z0-9._-]{1,32}$
+  implemented_in:
+  - bin/mia-enroll
+  - infra/deploy/rpi/install-enroll-access.sh
+  decisions:
+  - ADR-0025
+  not_proven: 'REQ-ONB-004 means no general shell, not no code execution: an enrolled phone key can run mia-apply-update, which installs a package whose checksums travel inside the same package and runs its deploy script as root, so a valid grant amounts to root on that Pi. The sshd drop-in and the key helper are not exercised by a running sshd, and the sudoers rule is not run under real sudo; the installer was run only against shims in a tmp dir.'
+- id: REQ-ONB-005
+  title: Secrets generated on the Pi
+  statement: The device API key shall be generated on the Pi, written to /etc/mia/environment only if absent with mode 600,
+    and never be printed, logged, sent by the phone or placed in phone-edited YAML.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - An existing non-empty API key line is not rewritten; an empty MIA_API_KEY= line counts as absent and a new line is appended
+  - The file mode is 600
+  - The CLI output and logs do not contain the key
+  implemented_in:
+  - bin/mia-enroll
+  decisions:
+  - ADR-0025
+  not_proven: 'Not run as root on a Raspberry Pi; an installed unit has not been shown to read the new MIA_API_KEY line.'
+- id: REQ-ONB-006
+  title: Hotspot with DHCP and DNS
+  statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, with a fixed address
+    for each registered phone taken from the phone registry, and the setup script shall refuse to run without --i-know-this-drops-wlan0.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The connection rendered by nmcli --offline has mode=ap, method=shared and key-mgmt=wpa-psk
+  - The script exits non-zero without the confirmation flag
+  - The passphrase is never an argument of any nmcli call, and the keyfile is mode 600
+  - A registry entry with an invalid MAC or fingerprint is skipped with a warning and never reaches the dnsmasq fragment, which passes dnsmasq --test
+  - All paths and the nmcli command are overridable so tests run in a tmp dir
+  implemented_in:
+  - infra/deploy/rpi/setup-nm-hotspot.sh
+  decisions:
+  - ADR-0025
+  not_proven: 'Keyfile rendering is checked with the real nmcli --offline and the fragment with dnsmasq --test, but the script itself runs against a stub nmcli in a tmp dir. Not run against a real NetworkManager, so that NM loads the keyfile, actually serves DHCP and DNS on wlan0, applies the dnsmasq-shared.d reservations and reaches GENERAL.STATE activated are unproven. Not run as root on a Raspberry Pi.'
+- id: REQ-ONB-007
+  title: Phone registry by key fingerprint
+  statement: The Pi shall keep a registry of enrolled phones keyed by phone key fingerprint, storing the last MAC only for
+    a DHCP reservation, never as authentication, and removing a phone shall delete both its registry entry and its mia-update-pair
+    key.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - A changed MAC updates the entry found by fingerprint; the old MAC is not trusted
+  - Removing a phone removes the registry entry and calls mia-update-pair remove
+  - Bond state is stored per fingerprint
+  - mia-enroll records the phone after pairing; a registry failure does not undo the pairing and is reported as a warning
+  implemented_in:
+  - bin/mia-phone-registry
+  - bin/mia-enroll
+  decisions:
+  - ADR-0025
+  not_proven: 'Not run as root on a Raspberry Pi with the real /var/lib/mia-enroll. Nothing sets bonded=true yet (the Bluetooth bond step is in the wizard, task 5), and the hotspot script reads the registry only as a file. Concurrency is covered by flock but only sequential use is tested.'
+- id: REQ-ONB-008
+  title: Wizard states and resume
+  statement: The Android app shall walk the user through onboarding as an in-memory state machine that re-offers an interrupted
+    step after a cancelled dialog or a failure and never installs without a verified grant. After process death the wizard restarts
+    at EnterActivationKey; only KnownPiStore persists (after Done) and the activation key is never persisted.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - An unreachable auth server shows a retry state
+  - Cancelling a Bluetooth or Wi-Fi system dialog resumes at that step with no half-registered phone
+  - The wizard keeps its step in memory and restarts at EnterActivationKey after process death; only KnownPiStore persists (after Done) and the activation key is never persisted
+  - The Pi's host-key fingerprint is checked against GET /v1/devices before anything is sent
+  - The UI says before triggering a system dialog that the user must approve it
+  implemented_in:
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingMachine.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingState.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/OnboardingViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/KnownPiStore.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/SshEnroller.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/Ed25519Ssh.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/PiDiscovery.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/AuthServerClient.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/ReleasePackageSource.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/SystemPairing.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/AndroidSystemPairing.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/onboarding/PairingSlot.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/InstallMiaScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/PairVehicleScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/vehicle/VehicleUiModel.kt
+  decisions:
+  - ADR-0025
+  notes: 'Linked by the // @req REQ-ONB-008 tag (the registry has no tests field, as for the other Android requirements) in apps/android/app/src/test/java/cz/mia/app/core/onboarding/{AuthServerClientTest,OnboardingMachineTest,PiDiscoveryTest,SshEnrollerTest}.kt and ui/screens/vehicle/VehicleUiModelTest.kt.'
+  not_proven: 'Not run on a device: no run of the install wizard on a phone, no real auth server. No real Bluetooth or Wi-Fi system dialogs: the Bluetooth address and the Wi-Fi password are not delivered by any defined channel, so both steps are skipped. Compose rendering is covered only by the CI emulator scenarios, not by a screenshot or tap-through of the wizard. The tests are JVM unit tests of the state machine, clients and UI model.'
+- id: REQ-ONB-009
+  title: Bluetooth pairing only during the window
+  statement: The Bluetooth pairing agent shall make the adapter discoverable and pairable only while the pairing-window
+    file written by mia-enroll after a verified enrollment holds a future time.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - mia-enroll opens a 120 s pairing window only after a successful enrollment; a missing, expired or invalid window file closes it
+  - The agent unit runs as the mia user, restarts on failure and allows only AF_UNIX (no network exposure)
+  - systemd-analyze verify accepts the unit (run on a copy whose ExecStart points at an existing executable)
+  - The install script copies mia-bt-agent.service without enabling it and installs bluez-tools
+  implemented_in:
+  - infra/deploy/rpi/mia-bt-window.sh
+  - infra/systemd/mia-bt-agent.service
+  - bin/mia-enroll
+  - tools/scripts/deploy-raspberry-pi.sh
+  decisions:
+  - ADR-0025
+  services:
+  - mia-bt-agent.service
+  not_proven: 'The window logic is tested only with stub busctl and bt-agent in a tmp dir; the unit is checked statically and by systemd-analyze verify, not started. Not run against real BlueZ, so bt-agent registration, the D-Bus permission of the mia user and Just Works bonding are unproven. The /opt/mia/infra path of the unit assumes the installer ships infra/ (the install script does copy infra/deploy/rpi); enabling the unit is left to the factory image or the enrollment installer and is not tested.'

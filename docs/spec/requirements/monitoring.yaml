@@ -1,0 +1,12 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: monitoring
+title: Monitoring
+description: Metrics and alerting.
+requirements:
+- id: REQ-MON-001
+  title: Automotive monitoring rules
+  statement: Prometheus shall scrape the automotive, voice and security services and alert on their failure conditions.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/monitoring/prometheus-automotive.yml
+  - infra/monitoring/rules
