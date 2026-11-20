@@ -5,6 +5,7 @@ package cz.mia.app.core.onboarding
 import java.util.Base64
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -32,8 +33,12 @@ class PiDiscoveryTest {
 		}
 	}
 
-	private fun discovery(mdns: MdnsSource, reader: HostKeyReader, trusted: Set<String> = setOf(serverFp)) =
-		PiDiscovery(mdns, reader) { trusted }
+	private fun discovery(
+		mdns: MdnsSource,
+		reader: HostKeyReader,
+		trusted: Set<String> = setOf(serverFp),
+		graceMs: Long = 5_000,
+	) = PiDiscovery(mdns, reader, graceMs) { trusted }
 
 	@Test
 	fun findsPiByMdnsOnHotspot() = runTest {
@@ -75,11 +80,55 @@ class PiDiscoveryTest {
 	}
 
 	@Test
+	fun nonEd25519FingerprintIsNeverTheDeviceFingerprint() {
+		val ed25519 = "AAAAC3NzaC1lZDI1NTE5AAAAIDJKjSr5pRN7/1whkiT/EK19tRzb8EU0hEng4Ghz87/p"
+		val ecdsa = "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGE5ONQtgU1d1qxMMoYihyI7lqoayGhnOKJNeeQr489I+M1XaJ8oDbVqWwCg9MP/RLxKd+CwtnYGfPh6Z3KPXg8="
+		assertEquals(serverFp, ed25519FingerprintOrNull(Base64.getDecoder().decode(ed25519)))
+		assertNull(ed25519FingerprintOrNull(Base64.getDecoder().decode(ecdsa)))
+		assertNull(ed25519FingerprintOrNull(ByteArray(0)))
+	}
+
+	@Test
+	fun readerThatFailsOrIsMissingClassesCountsAsUnreadable() = runTest {
+		val reader = HostKeyReader { host ->
+			if (host == "192.168.4.10") throw NoClassDefFoundError("x") else throw IllegalStateException("boom")
+		}
+		val found = discovery(FakeMdns(listOf("192.168.4.10:8000", "192.168.4.11:8000")), reader).find(2_000)
+		assertTrue(found.isEmpty())
+	}
+
+	@Test
+	fun probesAtMostEightHosts() = runTest {
+		val hosts = (1..12).map { "10.0.0.$it" }
+		val reader = FakeReader(hosts.associateWith { serverFp })
+		discovery(FakeMdns(hosts.map { "$it:8000" }), reader).find(2_000)
+		assertEquals(hosts.take(8), reader.asked)
+	}
+
+	@Test
+	fun slowProbesAreCutOffAtTheDeadline() = runTest {
+		val asked = java.util.Collections.synchronizedList(mutableListOf<String>())
+		val reader = HostKeyReader { host ->
+			asked += host
+			if (host == "10.0.0.2") Thread.sleep(30_000)
+			serverFp
+		}
+		val mdns = FakeMdns(listOf("10.0.0.1:8000", "10.0.0.2:8000", "10.0.0.3:8000"))
+		val start = System.nanoTime()
+		val found = discovery(mdns, reader, graceMs = 0).find(300)
+		val elapsedMs = (System.nanoTime() - start) / 1_000_000
+		assertEquals(listOf(FoundPi("10.0.0.1", Transport.Hotspot, serverFp)), found)
+		assertEquals(listOf("10.0.0.1", "10.0.0.2"), asked.toList())
+		assertTrue("probe was interrupted, took $elapsedMs ms", elapsedMs < 10_000)
+	}
+
+	@Test
 	fun classifyUsesAddressRanges() {
 		assertEquals(Transport.MiaWifi, classify("192.168.4.1"))
 		assertEquals(Transport.MiaWifi, classify("192.168.4.254"))
 		assertEquals(Transport.Usb, classify("192.168.42.129"))
-		assertEquals(Transport.Usb, classify("172.20.10.2"))
+		assertEquals(Transport.Hotspot, classify("172.20.10.2"))
+		assertEquals(Transport.Hotspot, classify("172.16.0.9"))
 		assertEquals(Transport.Hotspot, classify("10.15.60.23"))
 		assertEquals(Transport.Hotspot, classify("192.168.43.5"))
 		assertEquals(Transport.Hotspot, classify("192.168.1.20"))
