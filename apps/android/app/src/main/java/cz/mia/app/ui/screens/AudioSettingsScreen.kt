@@ -48,29 +48,29 @@ fun AudioSettingsContent(
                 text = if (ui.loading) "Asking the Pi..." else ui.message ?: "Not read from the Pi yet",
                 modifier = Modifier.testTag("audio_status"),
             )
-            return@Column
-        }
-        SectionCard(title = "Microphone") {
-            MicTransport.values().forEach { option ->
-                Option(
-                    label = option.label,
-                    selected = report.micTransport == option,
-                    available = report.available(option),
-                    tag = "audio_mic_${option.wire}",
-                ) { onMic(option) }
+        } else {
+            SectionCard(title = "Microphone") {
+                MicTransport.values().forEach { option ->
+                    Option(
+                        label = option.label,
+                        selected = report.micTransport == option,
+                        available = report.available(option),
+                        tag = "audio_mic_${option.wire}",
+                    ) { onMic(option) }
+                }
             }
-        }
-        SectionCard(title = "Replies") {
-            ReplyOutput.values().forEach { option ->
-                Option(
-                    label = option.label,
-                    selected = report.replyOutput == option,
-                    available = report.available(option),
-                    tag = "audio_reply_${option.wire}",
-                ) { onReply(option) }
+            SectionCard(title = "Replies") {
+                ReplyOutput.values().forEach { option ->
+                    Option(
+                        label = option.label,
+                        selected = report.replyOutput == option,
+                        available = report.available(option),
+                        tag = "audio_reply_${option.wire}",
+                    ) { onReply(option) }
+                }
             }
+            Text(footnote(report), style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("audio_footnote"))
         }
-        Text(footnote(report), style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("audio_footnote"))
         ui.message?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("audio_status")) }
     }
 }
