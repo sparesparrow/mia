@@ -3,15 +3,28 @@ package cz.mia.app.core.onboarding
 // @req REQ-ONB-008
 
 import com.google.gson.JsonParser
+import cz.mia.app.core.update.PackageBuilder
+import cz.mia.app.core.update.ReleaseDownloader
 import cz.mia.app.core.update.UpdateConfig
 import cz.mia.app.core.update.UpdateResult
 import java.io.File
+import java.nio.file.Files
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.fail
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -30,9 +43,15 @@ class OnboardingMachineTest {
 
 	private class FakeAuth(var result: Result<Grant>) : AuthPort {
 		val calls = mutableListOf<Triple<String, String, String>>()
+		var throwable: Throwable? = null
+
+		/** When set, every success carries a different signature, like a server issuing a fresh grant per request. */
+		var freshEachTime = false
 		override fun requestGrant(activationKey: String, devicePublicFp: String, phonePublicKeyLine: String): Result<Grant> {
 			calls += Triple(activationKey, devicePublicFp, phonePublicKeyLine)
-			return result
+			throwable?.let { throw it }
+			val grant = result.getOrNull()
+			return if (freshEachTime && grant != null) Result.success(grant.copy(signature = grant.signature + "#" + calls.size)) else result
 		}
 	}
 
@@ -43,13 +62,22 @@ class OnboardingMachineTest {
 
 	private class FakeEnroller(var outcome: EnrollOutcome) : EnrollTransport {
 		val requests = mutableListOf<Pair<String, String>>()
-		override fun enroll(host: String, requestJson: String): EnrollOutcome { requests += host to requestJson; return outcome }
+		val pins = mutableListOf<String>()
+		override fun enroll(host: String, expectedFp: String, requestJson: String): EnrollOutcome {
+			requests += host to requestJson
+			pins += expectedFp
+			return outcome
+		}
 	}
 
 	private class FakeInstaller(var result: UpdateResult) : InstallPort {
 		val installs = mutableListOf<UpdateConfig>()
-		override suspend fun install(pi: FoundPi, config: UpdateConfig, onProgress: (Int, Int) -> Unit): UpdateResult {
+		val pis = mutableListOf<FoundPi>()
+		var note: String? = null
+		override suspend fun install(pi: FoundPi, config: UpdateConfig, onProgress: (Int, Int) -> Unit, onNote: (String) -> Unit): UpdateResult {
 			installs += config
+			pis += pi
+			note?.let(onNote)
 			onProgress(10, 100)
 			return result
 		}
@@ -62,7 +90,7 @@ class OnboardingMachineTest {
 		override suspend fun suggestWifi(): StepOutcome { wifiCalls++; return wifi.removeAt(0) }
 	}
 
-	private inner class Rig(scope: TestScope) {
+	private inner class Rig(scope: TestScope, slot: SystemPairing? = null) {
 		val storage = FakeStorage()
 		val store = KnownPiStore(storage)
 		val auth = FakeAuth(Result.success(Grant(grantJson, "-----BEGIN SSH SIGNATURE-----\nAAAA\n-----END SSH SIGNATURE-----", "pro", 1_900_000_000L)))
@@ -71,7 +99,7 @@ class OnboardingMachineTest {
 		val installer = FakeInstaller(UpdateResult(true, "done", "2.3.0", null))
 		val pairing = FakePairing(mutableListOf(StepOutcome.Done), mutableListOf(StepOutcome.Done))
 		val machine = OnboardingMachine(
-			auth, discovery, enroller, installer, pairing, store, { phoneKey },
+			auth, discovery, enroller, installer, slot ?: pairing, store, { phoneKey },
 			scope, UnconfinedTestDispatcher(scope.testScheduler),
 		)
 
@@ -166,6 +194,25 @@ class OnboardingMachineTest {
 		assertEquals(1, r.pairing.wifiCalls)
 		assertEquals(OnboardingState.PairAdapter, r.machine.state.value)
 		assertEquals(null, r.machine.pairingIssue.value)
+	}
+
+	@Test
+	fun cancelledSystemDialogResumedDirectlyAsksForTheSameStep() = runTest {
+		val r = Rig(this)
+		r.pairing.bluetooth.clear()
+		r.pairing.bluetooth += StepOutcome.Cancelled("user dismissed")
+		r.pairing.bluetooth += StepOutcome.Done
+		r.toFirstSetup()
+		r.machine.submitFirstSetup(UpdateConfig())
+		r.machine.resume()
+		assertEquals(OnboardingState.PairingPhone, r.machine.state.value)
+		assertNotNull(r.machine.pairingIssue.value)
+		r.machine.resume() // the screen's button: same dialog again
+		assertEquals(2, r.pairing.bluetoothCalls)
+		assertEquals(1, r.pairing.wifiCalls)
+		assertEquals(OnboardingState.PairAdapter, r.machine.state.value)
+		assertEquals(null, r.machine.pairingIssue.value)
+		assertEquals(1, r.enroller.requests.size)
 	}
 
 	@Test
@@ -284,6 +331,358 @@ class OnboardingMachineTest {
 		r.machine.submitActivationKey(secretKey); snap()
 		assertTrue(seen.none { it.contains(secretKey) })
 		assertTrue(r.machine.state.value is OnboardingState.Failed)
+	}
+
+	private fun requestSignature(request: String) = JsonParser.parseString(request).asJsonObject.get("signature").asString
+
+	@Test
+	fun retryAfterRetryablePiRefusalAsksForANewGrantNeverResubmitsTheBurnedOne() = runTest {
+		val r = Rig(this)
+		r.auth.freshEachTime = true
+		r.enroller.outcome = EnrollOutcome(false, "grant", "replayed grant", null)
+		r.toFirstSetup()
+		val failed = r.machine.state.value as OnboardingState.Failed
+		assertTrue(failed.retryable)
+		assertEquals(1, r.auth.calls.size)
+		r.enroller.outcome = EnrollOutcome(true, "enrolled", null, null)
+		r.machine.retry()
+		assertEquals(2, r.auth.calls.size)
+		assertEquals(2, r.enroller.requests.size)
+		assertNotEquals(requestSignature(r.enroller.requests[0].second), requestSignature(r.enroller.requests[1].second))
+		assertEquals(1, r.discovery.calls)
+		assertEquals(OnboardingState.FirstSetup, r.machine.state.value)
+		assertEquals(listOf(piFp, piFp), r.enroller.pins) // the machine hands the vouched fingerprint to the transport
+	}
+
+	@Test
+	fun permanentPiRefusalsAreNotRetryableAndTransientOnesAre() = runTest {
+		val permanent = listOf(
+			EnrollOutcome(false, "grant", "grant is for another device", null),
+			EnrollOutcome(false, "grant", "grant is for another phone key", null),
+			EnrollOutcome(false, "grant", "bad signature", null),
+			EnrollOutcome(false, "grant", "phone key refused: x", null),
+			EnrollOutcome(false, "input", "request is not UTF-8", null),
+		)
+		for (outcome in permanent) {
+			val r = Rig(this)
+			r.enroller.outcome = outcome
+			r.toFirstSetup()
+			assertFalse(outcome.error, (r.machine.state.value as OnboardingState.Failed).retryable)
+			r.machine.retry()
+			assertEquals(1, r.auth.calls.size) // retry does nothing: no second grant is requested
+		}
+		val transient = listOf(
+			EnrollOutcome(false, "grant", "grant expired", null),
+			EnrollOutcome(false, "grant", "replayed grant", null),
+			EnrollOutcome(false, "grant", "grant issued in the future", null),
+			EnrollOutcome(false, "io", "OSError: x", null),
+			EnrollOutcome(false, "internal", "unexpected KeyError", null),
+			EnrollOutcome(false, "ssh", "SSH to the Pi failed (ConnectException).", null),
+		)
+		for (outcome in transient) {
+			val r = Rig(this)
+			r.enroller.outcome = outcome
+			r.toFirstSetup()
+			assertTrue(outcome.error, (r.machine.state.value as OnboardingState.Failed).retryable)
+		}
+	}
+
+	@Test
+	fun retryAfterInstallFailureDoesNotEnrollAgain() = runTest {
+		val r = Rig(this)
+		r.toFirstSetup()
+		r.installer.result = UpdateResult(false, "verify", null, "bad checksum")
+		r.machine.submitFirstSetup(UpdateConfig())
+		assertEquals(OnboardingState.Failed("installing", true, "bad checksum"), r.machine.state.value)
+		r.installer.result = UpdateResult(true, "done", "2.3.0", null)
+		r.machine.retry()
+		assertEquals(1, r.enroller.requests.size)
+		assertEquals(1, r.auth.calls.size)
+		assertEquals(2, r.installer.installs.size)
+		assertEquals(OnboardingState.PairingPhone, r.machine.state.value)
+		assertEquals(listOf(pi, pi), r.installer.pis)
+	}
+
+	@Test
+	fun downloadFailureIsReportedAsTheDownloadStepAndRetryable() = runTest {
+		val r = Rig(this)
+		r.toFirstSetup()
+		r.installer.result = UpdateResult(false, "download", null, ReleaseUnavailable.MESSAGE)
+		r.machine.submitFirstSetup(UpdateConfig())
+		assertEquals(OnboardingState.Failed("download", true, ReleaseUnavailable.MESSAGE), r.machine.state.value)
+		r.installer.result = UpdateResult(true, "done", "2.3.0", null)
+		r.installer.note = ReleasePackageSource.USING_SAVED_NOTE
+		r.machine.retry()
+		assertEquals(OnboardingState.PairingPhone, r.machine.state.value)
+		assertEquals(listOf(ReleasePackageSource.USING_SAVED_NOTE), r.machine.notes.value)
+	}
+
+	@Test
+	fun missingPairingImplementationWaitsAtPairingPhoneAndALateAttachContinues() = runTest {
+		val slot = PairingSlot()
+		val r = Rig(this, slot)
+		r.toFirstSetup()
+		r.machine.submitFirstSetup(UpdateConfig())
+		r.machine.resume()
+		assertEquals(OnboardingState.PairingPhone, r.machine.state.value)
+		assertEquals("Pairing is not ready yet", r.machine.pairingIssue.value)
+		assertTrue(r.machine.notes.value.isEmpty()) // not skipped
+		slot.attach(r.pairing)
+		r.machine.resume()
+		assertEquals(OnboardingState.PairAdapter, r.machine.state.value)
+		assertEquals(null, r.machine.pairingIssue.value)
+		assertEquals(1, r.pairing.bluetoothCalls)
+		assertEquals(1, r.pairing.wifiCalls)
+	}
+
+	@Test
+	fun unavailableReturnedByAnAttachedImplementationStillSkipsWithANote() = runTest {
+		val slot = PairingSlot()
+		val r = Rig(this, slot)
+		r.pairing.bluetooth.clear()
+		r.pairing.bluetooth += StepOutcome.Unavailable("no adapter")
+		slot.attach(r.pairing)
+		r.toFirstSetup()
+		r.machine.submitFirstSetup(UpdateConfig())
+		r.machine.resume()
+		assertEquals(OnboardingState.PairAdapter, r.machine.state.value)
+		assertTrue(r.machine.notes.value.single().contains("Bluetooth skipped"))
+	}
+
+	@Test
+	fun linkageErrorsBecomeAnInternalFailureWithoutTheirText() = runTest {
+		for (error in listOf<LinkageError>(NoClassDefFoundError("secret-class-text"), UnsatisfiedLinkError("secret-link-text"))) {
+			val r = Rig(this)
+			r.auth.throwable = error
+			r.toFirstSetup()
+			val failed = r.machine.state.value as OnboardingState.Failed
+			assertEquals("internal", failed.step)
+			assertFalse(failed.retryable)
+			assertFalse(failed.message.contains("secret"))
+			assertTrue(r.enroller.requests.isEmpty())
+		}
+	}
+
+	@Test
+	fun grantToStringRedactsTheGrantAndTheSignature() {
+		val grant = Grant("{\"jti\":\"j-secret\"}", "SIGNATURE-SECRET", "pro", 1_900_000_000L)
+		val text = grant.toString()
+		assertFalse(text.contains("j-secret"))
+		assertFalse(text.contains("SIGNATURE-SECRET"))
+		assertTrue(text.contains("pro"))
+		assertEquals(grant, grant.copy()) // equality still compares the real content
+	}
+
+	// ---- restart races: a real thread pool, jobs blocked on latches (the machine's blocking calls ignore cancellation) ----
+
+	private val piA = FoundPi("192.168.4.1", Transport.MiaWifi, "SHA256:" + "A".repeat(43))
+	private val piB = FoundPi("192.168.4.2", Transport.MiaWifi, "SHA256:" + "B".repeat(43))
+
+	private inner class Threaded {
+		val pool = Executors.newFixedThreadPool(4)
+		val rootJob: Job = SupervisorJob()
+		val scope = CoroutineScope(rootJob + pool.asCoroutineDispatcher())
+		val discoveryResults = mutableListOf<List<FoundPi>>()
+		val entered = CountDownLatch(1)
+		val release = CountDownLatch(1)
+		var blockedOutcome = EnrollOutcome(true, "enrolled", null, null)
+		val enrolledHosts = java.util.Collections.synchronizedList(mutableListOf<String>())
+		val installedPis = java.util.Collections.synchronizedList(mutableListOf<FoundPi>())
+		val grantRefusedFor = mutableSetOf<String>()
+		val store = KnownPiStore(FakeStorage())
+
+		val machine = OnboardingMachine(
+			auth = object : AuthPort {
+				override fun requestGrant(activationKey: String, devicePublicFp: String, phonePublicKeyLine: String): Result<Grant> =
+					if (devicePublicFp in grantRefusedFor) Result.failure(AuthServerError.UnknownDevice())
+					else Result.success(Grant(grantJson, "sig-for-$devicePublicFp", "pro", 1L))
+			},
+			discovery = object : DiscoveryPort {
+				override suspend fun find(activationKey: String): Result<List<FoundPi>> =
+					Result.success(synchronized(discoveryResults) { discoveryResults.removeAt(0) })
+			},
+			enroller = EnrollTransport { host, _, _ ->
+				enrolledHosts += host
+				if (host == piA.host) { // Pi A: the call hangs until the test lets it end
+					entered.countDown()
+					assertTrue(release.await(10, TimeUnit.SECONDS))
+					blockedOutcome
+				} else EnrollOutcome(true, "enrolled", null, null)
+			},
+			installer = InstallPort { target, _, _, _ -> installedPis += target; UpdateResult(true, "done", "2.3.0", null) },
+			pairing = FakePairing(mutableListOf(StepOutcome.Done), mutableListOf(StepOutcome.Done)),
+			known = store,
+			phoneKeyLine = { phoneKey },
+			scope = scope,
+			io = pool.asCoroutineDispatcher(),
+		)
+
+		fun awaitState(what: String, test: (OnboardingState) -> Boolean) {
+			val end = System.nanoTime() + TimeUnit.SECONDS.toNanos(10)
+			while (System.nanoTime() < end) {
+				if (test(machine.state.value)) return
+				Thread.sleep(5)
+			}
+			fail("timeout waiting for $what, state is ${machine.state.value}")
+		}
+
+		/** Lets the blocked job end and waits until every job of the scope has finished. */
+		fun drain() {
+			release.countDown()
+			runBlocking { rootJob.children.toList().forEach { it.join() } }
+		}
+
+		fun close() { release.countDown(); pool.shutdownNow() }
+	}
+
+	@Test
+	fun reviewersSequenceEndsFailedAndNeverInstallsOnTheOtherPi() {
+		val t = Threaded()
+		try {
+			t.discoveryResults += listOf(piA)
+			t.discoveryResults += listOf(piB)
+			t.grantRefusedFor += piB.deviceFp!!
+			t.machine.begin()
+			t.machine.submitActivationKey(secretKey)
+			assertTrue("state ${t.machine.state.value}", t.entered.await(10, TimeUnit.SECONDS)) // the job is inside enroll(A)
+			t.machine.restart()
+			t.machine.submitActivationKey(secretKey) // Pi B: the server refuses the grant
+			t.awaitState("Failed for B") { it is OnboardingState.Failed }
+			assertFalse((t.machine.state.value as OnboardingState.Failed).retryable)
+			t.drain() // the old job's enroll on A now succeeds
+			assertTrue(t.machine.state.value is OnboardingState.Failed) // nothing of the old job was written
+			t.machine.submitFirstSetup(UpdateConfig()) // not in FirstSetup
+			t.machine.retry() // not retryable
+			assertTrue(t.installedPis.isEmpty())
+			assertEquals(listOf(piA.host), t.enrolledHosts.toList()) // B was never enrolled either
+			assertTrue(t.store.known().isEmpty())
+		} finally { t.close() }
+	}
+
+	@Test
+	fun staleJobAfterRestartWritesNothingNotEvenItsFailure() {
+		val t = Threaded()
+		try {
+			t.discoveryResults += listOf(piA)
+			t.blockedOutcome = EnrollOutcome(false, "grant", "grant expired", null)
+			t.machine.begin()
+			t.machine.submitActivationKey(secretKey)
+			assertTrue("state ${t.machine.state.value}", t.entered.await(10, TimeUnit.SECONDS))
+			t.machine.restart()
+			t.drain()
+			assertEquals(OnboardingState.EnterActivationKey, t.machine.state.value)
+			t.machine.retry() // nothing failed in this run
+			assertEquals(OnboardingState.EnterActivationKey, t.machine.state.value)
+		} finally { t.close() }
+	}
+
+	@Test
+	fun staleSuccessCannotEnrollTheNewRunsPiForAnotherPi() {
+		val t = Threaded()
+		try {
+			t.discoveryResults += listOf(piA)
+			t.discoveryResults += listOf(piB)
+			t.machine.begin()
+			t.machine.submitActivationKey(secretKey)
+			assertTrue("state ${t.machine.state.value}", t.entered.await(10, TimeUnit.SECONDS))
+			t.machine.restart()
+			t.machine.submitActivationKey(secretKey) // B enrolls normally
+			t.awaitState("FirstSetup for B") { it == OnboardingState.FirstSetup }
+			t.drain() // the stale A success arrives late
+			assertEquals(OnboardingState.FirstSetup, t.machine.state.value)
+			t.machine.submitFirstSetup(UpdateConfig())
+			t.awaitState("PairingPhone") { it == OnboardingState.PairingPhone }
+			assertEquals(listOf(piB), t.installedPis.toList()) // only the Pi this run enrolled
+		} finally { t.close() }
+	}
+
+	@Test
+	fun secondSubmitWhileTheFirstRunIsBlockedStartsNoSecondJob() {
+		// A second submit while the first run is blocked must not start another job.
+		val t = Threaded()
+		try {
+			t.discoveryResults += listOf(piA)
+			t.machine.begin()
+			t.machine.submitActivationKey(secretKey)
+			assertTrue("state ${t.machine.state.value}", t.entered.await(10, TimeUnit.SECONDS))
+			t.machine.submitActivationKey("other") // state is Authorizing: ignored
+			t.machine.retry()
+			t.drain()
+			t.awaitState("FirstSetup") { it == OnboardingState.FirstSetup }
+			assertEquals(listOf(piA.host), t.enrolledHosts.toList())
+		} finally { t.close() }
+	}
+
+	// ---- release package cache ----
+
+	private fun release(version: String, tamper: Boolean = false): ReleaseDownloader.Downloaded {
+		val bundle = "bundle-$version".toByteArray()
+		val digest = cz.mia.app.core.update.SchemaHash.sha256Hex(if (tamper) "other".toByteArray() else bundle)
+		return ReleaseDownloader.Downloaded(bundle, "$digest  ${PackageBuilder.bundleName(version)}\n")
+	}
+
+	private fun tempDir(): File = Files.createTempDirectory("mia-release-cache").toFile().also { it.deleteOnExit() }
+
+	@Test
+	fun releaseDownloadIsSavedAndUsedWhenTheNetworkFailsLater() {
+		val dir = tempDir()
+		val online = ReleasePackageSource(dir) { release(it) }.obtain("2.3.0")
+		assertEquals(null, online.note)
+		var calls = 0
+		val offline = ReleasePackageSource(dir) { calls++; throw java.io.IOException("secret-url") }
+		val got = offline.obtain("2.3.0")
+		assertEquals(1, calls)
+		assertEquals(ReleasePackageSource.USING_SAVED_NOTE, got.note)
+		assertTrue(online.release.bundle.contentEquals(got.release.bundle))
+	}
+
+	@Test
+	fun noNetworkAndNoSavedCopyForThatVersionIsAReadableFailure() {
+		val dir = tempDir()
+		ReleasePackageSource(dir) { release(it) }.obtain("2.3.0")
+		val offline = ReleasePackageSource(dir) { throw java.io.IOException("secret-url") }
+		try {
+			offline.obtain("2.4.0") // only 2.3.0 is saved
+			fail("expected ReleaseUnavailable")
+		} catch (e: ReleaseUnavailable) {
+			assertEquals("The release package cannot be downloaded and none is saved on this phone", e.message)
+			assertFalse(e.message!!.contains("secret-url"))
+		}
+	}
+
+	@Test
+	fun aTamperedSavedCopyIsNotUsedAndIsDropped() {
+		val dir = tempDir()
+		ReleasePackageSource(dir) { release(it) }.obtain("2.3.0")
+		File(dir, "release-2.3.0/bundle.tar.gz").writeBytes("tampered".toByteArray())
+		val offline = ReleasePackageSource(dir) { throw java.io.IOException("down") }
+		try {
+			offline.obtain("2.3.0")
+			fail("expected ReleaseUnavailable")
+		} catch (_: ReleaseUnavailable) {
+		}
+		assertFalse(File(dir, "release-2.3.0").exists())
+	}
+
+	@Test
+	fun aDownloadThatFailsItsChecksumIsRefusedAndNeverSaved() {
+		val dir = tempDir()
+		try {
+			ReleasePackageSource(dir) { release(it, tamper = true) }.obtain("2.3.0")
+			fail("expected UpdateRefused")
+		} catch (_: cz.mia.app.core.update.UpdateRefused) {
+		}
+		assertFalse(File(dir, "release-2.3.0").exists())
+	}
+
+	@Test
+	fun aVersionThatIsNotAReleaseNumberNeverTouchesThePath() {
+		val dir = tempDir()
+		try {
+			ReleasePackageSource(dir) { release("1.0.0") }.obtain("../../etc")
+			fail("expected UpdateRefused")
+		} catch (_: cz.mia.app.core.update.UpdateRefused) {
+		}
 	}
 
 	private fun schemaFile(): File {

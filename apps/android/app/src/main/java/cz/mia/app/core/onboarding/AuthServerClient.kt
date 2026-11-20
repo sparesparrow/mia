@@ -12,7 +12,10 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 /** A server-signed grant: [json] and [signature] are forwarded to the Pi unchanged (the exact bytes are signed). */
-data class Grant(val json: String, val signature: String, val plan: String, val entitlementExp: Long)
+data class Grant(val json: String, val signature: String, val plan: String, val entitlementExp: Long) {
+	/** The grant and its signature are credentials: they never appear in a log line or an assertion message. */
+	override fun toString() = "Grant(plan=$plan, entitlementExp=$entitlementExp, json=<redacted>, signature=<redacted>)"
+}
 
 /** A Pi registered to the account; [fp] is the OpenSSH form `SHA256:<base64>`. */
 data class DeviceRef(val fp: String, val label: String)

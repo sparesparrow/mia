@@ -113,12 +113,14 @@ requirements:
   not_proven: 'Not run as root on a Raspberry Pi with the real /var/lib/mia. Nothing sets bonded=true yet (the Bluetooth bond step is in the wizard, task 5), and the hotspot script reads the registry only as a file. Concurrency is covered by flock but only sequential use is tested.'
 - id: REQ-ONB-008
   title: Wizard states and resume
-  statement: The Android app shall walk the user through onboarding as a persisted state machine that resumes at the interrupted
-    step and never installs without a verified grant.
+  statement: The Android app shall walk the user through onboarding as an in-memory state machine that re-offers an interrupted
+    step after a cancelled dialog or a failure and never installs without a verified grant. After process death the wizard restarts
+    at EnterActivationKey; only KnownPiStore persists (after Done) and the activation key is never persisted.
   evidence: planned
   acceptance:
   - An unreachable auth server shows a retry state
   - Cancelling a Bluetooth or Wi-Fi system dialog resumes at that step with no half-registered phone
+  - The wizard keeps its step in memory and restarts at EnterActivationKey after process death; only KnownPiStore persists (after Done) and the activation key is never persisted
   - The Pi's host-key fingerprint is checked against GET /v1/devices before anything is sent
   - The UI says before triggering a system dialog that the user must approve it
   implemented_in: []

@@ -5,14 +5,11 @@ import java.io.IOException
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.security.Security
 import java.util.concurrent.TimeUnit
-import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.common.Buffer
 import net.schmizz.sshj.common.KeyType
 import net.schmizz.sshj.transport.verification.HostKeyVerifier
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 /** What `mia-enroll` reported on its last stdout line: {"ok","step","error"[,"warning"]}. */
 data class EnrollOutcome(val ok: Boolean, val step: String, val error: String?, val warning: String?) {
@@ -39,7 +36,8 @@ data class EnrollOutcome(val ok: Boolean, val step: String, val error: String?, 
 
 /** Sends the enroll request to the Pi and returns its answer. Blocking; never throws for network failures. */
 fun interface EnrollTransport {
-	fun enroll(host: String, requestJson: String): EnrollOutcome
+	/** [expectedFp] is the host-key fingerprint the auth server vouched for ([FoundPi.deviceFp]); the Pi must present it. */
+	fun enroll(host: String, expectedFp: String, requestJson: String): EnrollOutcome
 }
 
 /**
@@ -61,18 +59,15 @@ class FingerprintPinVerifier(private val expectedFp: String) : HostKeyVerifier {
 }
 
 /**
- * Production [EnrollTransport]: SSH user `mia-enroll`, public-key auth with the phone key, the request JSON line on
+ * Production [EnrollTransport]: SSH user `mia-enroll`, public-key auth with the phone key, the host key pinned to the fingerprint the machine passes (ed25519 only), the request JSON line on
  * the command's stdin, the last stdout line as the answer. The server runs its forced command whatever is asked, so
  * the command text is only a label. The request holds the signed grant: it is never logged and never put in an error.
  */
-class SshEnroller(private val hostKeys: HostKeyVerifier, private val keys: KeyPair) : EnrollTransport {
-	override fun enroll(host: String, requestJson: String): EnrollOutcome {
-		// sshj needs the full BouncyCastle, not the cut-down copy Android ships under the same name.
-		Security.removeProvider("BC")
-		Security.insertProviderAt(BouncyCastleProvider(), 1)
-		val client = SSHClient()
+class SshEnroller(private val keys: KeyPair) : EnrollTransport {
+	override fun enroll(host: String, expectedFp: String, requestJson: String): EnrollOutcome {
+		val client = newEd25519SshClient()
 		try {
-			client.addHostKeyVerifier(hostKeys)
+			client.addHostKeyVerifier(FingerprintPinVerifier(expectedFp))
 			client.connectTimeout = TIMEOUT_MS
 			client.timeout = TIMEOUT_MS
 			client.connect(host, 22)

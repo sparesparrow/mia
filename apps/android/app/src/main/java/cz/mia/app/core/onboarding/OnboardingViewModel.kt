@@ -16,7 +16,6 @@ import cz.mia.app.core.update.UpdateResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
@@ -36,17 +35,6 @@ class PrefsKnownPiStorage(context: Context) : KnownPiStorage {
 	private companion object { const val KEY = "pis" }
 }
 
-/** Until the screens attach the real dialogs, system pairing is reported as unavailable (the wizard skips it). */
-private class PairingSlot : SystemPairing {
-	@Volatile var target: SystemPairing? = null
-
-	override suspend fun bondBluetooth(): StepOutcome =
-		target?.bondBluetooth() ?: StepOutcome.Unavailable("the Bluetooth dialog is not available in this screen")
-
-	override suspend fun suggestWifi(): StepOutcome =
-		target?.suggestWifi() ?: StepOutcome.Unavailable("the Wi-Fi dialog is not available in this screen")
-}
-
 /**
  * The wizard's ViewModel: wires [OnboardingMachine] to the production ports (auth server, mDNS plus host-key check,
  * SSH enroll, release download and upload). All logic is in the machine; screens only render [state] and call it.
@@ -61,27 +49,23 @@ class OnboardingViewModel @Inject constructor(
 	private val http = OkHttpClient()
 	private val authClient = AuthServerClient(AUTH_SERVER_URL, http)
 	private val pairingSlot = PairingSlot()
-
-	/** Host to the host-key fingerprint the server vouched for; the SSH steps pin to it and refuse unknown hosts. */
-	private val vouched = ConcurrentHashMap<String, String>()
+	private val releases = ReleasePackageSource(File(dir, "release-cache")) { version -> ReleaseDownloader(http).download(version) }
 
 	private val machine = OnboardingMachine(
-		auth = AuthPort { key, fp, phoneKey -> authClient.requestGrant(key, fp, phoneKey) },
-		discovery = DiscoveryPort { key ->
-			withContext(Dispatchers.IO) {
-				val devices = authClient.devices(key).getOrElse { return@withContext Result.failure<List<FoundPi>>(it) }
+		// Plain objects, not SAM lambdas: kotlinc 1.9 miscompiled a suspend/Result SAM lambda in the machine test (it hung).
+		auth = object : AuthPort {
+			override fun requestGrant(activationKey: String, devicePublicFp: String, phonePublicKeyLine: String): Result<Grant> =
+				authClient.requestGrant(activationKey, devicePublicFp, phonePublicKeyLine)
+		},
+		discovery = object : DiscoveryPort {
+			override suspend fun find(activationKey: String): Result<List<FoundPi>> = withContext(Dispatchers.IO) {
+				val devices = authClient.devices(activationKey).getOrElse { return@withContext Result.failure<List<FoundPi>>(it) }
 				val trusted = devices.map { it.fp }.toSet()
-				val found = PiDiscovery(MdnsApiSource(mdns), SshHostKeyReader(), trustedDeviceFps = { trusted }).find(SCAN_MS)
-				found.forEach { pi -> pi.deviceFp?.let { vouched[pi.host] = it } }
-				Result.success(found)
+				Result.success(PiDiscovery(MdnsApiSource(mdns), SshHostKeyReader(), trustedDeviceFps = { trusted }).find(SCAN_MS))
 			}
 		},
-		enroller = EnrollTransport { host, request ->
-			val fp = vouched[host]
-				?: return@EnrollTransport EnrollOutcome(false, "ssh", "The Pi's fingerprint was not vouched for.", null)
-			SshEnroller(FingerprintPinVerifier(fp), keys.keyPair()).enroll(host, request)
-		},
-		installer = InstallPort { pi, config, onProgress -> install(pi, config, onProgress) },
+		enroller = EnrollTransport { host, expectedFp, request -> SshEnroller(keys.keyPair()).enroll(host, expectedFp, request) },
+		installer = InstallPort { pi, config, onProgress, onNote -> install(pi, config, onProgress, onNote) },
 		pairing = pairingSlot,
 		known = KnownPiStore(PrefsKnownPiStorage(app)),
 		phoneKeyLine = { keys.publicLine() },
@@ -104,21 +88,26 @@ class OnboardingViewModel @Inject constructor(
 
 	/** The screen supplies the Activity-bound Bluetooth and Wi-Fi dialogs; null detaches them. */
 	fun attachPairing(pairing: SystemPairing?) {
-		pairingSlot.target = pairing
+		pairingSlot.attach(pairing)
 	}
 
-	private fun install(pi: FoundPi, config: UpdateConfig, onProgress: (Int, Int) -> Unit): UpdateResult {
+	private fun install(pi: FoundPi, config: UpdateConfig, onProgress: (Int, Int) -> Unit, onNote: (String) -> Unit): UpdateResult {
 		val fp = pi.deviceFp ?: return UpdateResult(false, "ssh", null, "The Pi's fingerprint was not vouched for.")
 		val version = BuildConfig.VERSION_NAME.substringBefore("-debug")
 		val pkg = try {
-			val release = ReleaseDownloader(http).download(version)
-			PackageBuilder.build(version, release.bundle, release.sha256sums, config, BuildConfig.MIA_SCHEMA_HASH)
+			// Downloads and saves the release, or uses the verified copy saved earlier when the network fails.
+			val got = releases.obtain(version)
+			got.note?.let(onNote)
+			PackageBuilder.build(version, got.release.bundle, got.release.sha256sums, config, BuildConfig.MIA_SCHEMA_HASH)
 		} catch (e: UpdateRefused) {
 			return UpdateResult(false, "build", null, e.message)
-		} catch (e: IOException) {
+		} catch (e: ReleaseUnavailable) {
 			return UpdateResult(false, "download", null, e.message)
+		} catch (e: IOException) {
+			return UpdateResult(false, "download", null, ReleaseUnavailable.MESSAGE)
 		}
-		return SshUploader(FingerprintPinVerifier(fp)).upload(pi.host, keys.keyPair(), pkg, onProgress)
+		// Same pin as the enroll step (the fingerprint the machine holds for this Pi), ed25519 host keys only.
+		return SshUploader(FingerprintPinVerifier(fp), ::newEd25519SshClient).upload(pi.host, keys.keyPair(), pkg, onProgress)
 	}
 
 	private companion object {

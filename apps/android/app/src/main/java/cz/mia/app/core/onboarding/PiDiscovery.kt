@@ -3,7 +3,6 @@ package cz.mia.app.core.onboarding
 import cz.mia.app.core.networking.MdnsDiscovery
 import java.security.MessageDigest
 import java.security.PublicKey
-import java.security.Security
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +10,8 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import com.hierynomus.sshj.key.KeyAlgorithms
-import net.schmizz.sshj.DefaultConfig
-import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.common.Buffer
 import net.schmizz.sshj.transport.verification.HostKeyVerifier
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 /** How the phone reaches a Pi. [classify] derives the Wi-Fi and USB variants from the address; Bluetooth has none. */
 sealed interface Transport {
@@ -180,14 +175,9 @@ private fun base64NoPadding(data: ByteArray): String {
 class SshHostKeyReader(private val timeoutMs: Int = 5_000) : HostKeyReader {
 	override fun fingerprint(host: String): String? {
 		try {
-			// sshj needs the full BouncyCastle, not the cut-down copy Android ships under the same name (as SshUploader).
-			Security.removeProvider("BC")
-			Security.insertProviderAt(BouncyCastleProvider(), 1)
-			// Only ssh-ed25519 is offered as host-key algorithm: a Pi without that key fails negotiation, which is null.
-			val config = DefaultConfig()
-			config.keyAlgorithms = listOf(KeyAlgorithms.EdDSA25519())
 			val seen = AtomicReference<String?>(null) // written on sshj's reader thread, read here
-			val client = SSHClient(config)
+			// Only ssh-ed25519 is offered as host-key algorithm: a Pi without that key fails negotiation, which is null.
+			val client = newEd25519SshClient()
 			client.addHostKeyVerifier(object : HostKeyVerifier {
 				override fun verify(hostname: String, port: Int, key: PublicKey): Boolean {
 					seen.set(ed25519FingerprintOrNull(Buffer.PlainBuffer().putPublicKey(key).compactData))

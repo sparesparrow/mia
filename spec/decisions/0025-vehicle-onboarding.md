@@ -105,8 +105,10 @@ a Pi that is offline; the registry plus `mia-update-pair remove` is the on-Pi me
   future time (REQ-ONB-009). The install script copies the unit without enabling it; the factory image or the
   enrollment installer enables it.
 - The phone's wizard is a state machine (discover Pi, verify against `/v1/devices`, obtain grant, enroll, install or
-  update, Bluetooth bond, Wi-Fi, done) that persists its step and resumes there after a cancelled system dialog,
-  an unreachable server or a lost connection. It never installs without a verified grant, and it says before
+  update, Bluetooth bond, Wi-Fi, done) that keeps its step in memory and offers the same step again after a cancelled
+  system dialog, an unreachable server or a lost connection. After process death it restarts at the activation-key
+  entry; only the known-Pi list persists (after Done) and the activation key is never persisted. It never installs
+  without a verified grant, and it says before
   triggering Android 10+ dialogs that the user must approve them (REQ-ONB-008).
 
 ## Consequences

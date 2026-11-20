@@ -11,6 +11,9 @@ sealed interface StepOutcome {
 	data class Unavailable(val why: String) : StepOutcome
 
 	data class Failed(val msg: String) : StepOutcome
+
+	/** No dialog implementation is attached yet (the screen is not showing); the wizard waits and does not skip the step. */
+	object NotReady : StepOutcome
 }
 
 /**
