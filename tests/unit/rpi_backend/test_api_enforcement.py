@@ -122,7 +122,7 @@ def test_a_verified_key_is_cached(configure_auth, monkeypatch):
 
 def test_every_websocket_route_is_known():
     # Guards the parametrised tests below: a new WebSocket route must be authenticated too.
-    assert _websocket_paths() == ["/anpr/stream", "/ws", "/ws/telemetry", "/ws/voice"]
+    assert _websocket_paths() == ["/anpr/stream", "/ws", "/ws/audio", "/ws/telemetry", "/ws/voice"]
 
 
 @pytest.mark.parametrize("path", _websocket_paths())
