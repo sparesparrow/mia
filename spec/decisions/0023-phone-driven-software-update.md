@@ -59,7 +59,7 @@ Scope: **updating an already-installed Pi**. A fresh Pi is a one-time bootstrap 
 - **Pairing.** The phone makes its own key pair and sends the public key to `POST /admin/update/pair` with an
   `admin` API key (`require_scope("admin")`). Only a bare ed25519, ECDSA or RSA key is accepted, at most eight
   phones, `DELETE /admin/update/pair/{label}` revokes. The phone pairs once, over the API it already uses.
-- **Phone key storage.** minSdk is 22. The key is an ed25519 pair made with BouncyCastle (which sshj bundles) and kept
+- **Phone key storage.** minSdk is 22. The key is an EC P-256 pair (`ecdsa-sha2-nistp256`) made with the platform's `KeyPairGenerator` and kept
   encrypted in the app's no-backup storage; on API 23 and later the encryption key is an Android Keystore AES
   key, on API 22 a random key held in app-private no-backup files (software-held: root or a debugger
   on the phone can read it). The Keystore cannot hold the SSH private key itself in a form sshj can use. Either
