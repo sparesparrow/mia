@@ -269,6 +269,10 @@ open_more_item() {
   local marker="$2"
   local marker_mode="${3:-contains}"
 
+  bring_app_to_foreground
+  if [[ -n "$marker" ]] && ui_has_text "$marker" "$marker_mode"; then
+    return 0
+  fi
   open_nav_tab "More" "$item" exact || return 1
   tap_ui_text "$item" exact || return 1
   wait_for_ui_text "$marker" 12 "$marker_mode" || {
