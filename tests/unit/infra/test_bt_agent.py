@@ -107,11 +107,27 @@ def _verify_lines(directory: Path, text: str):
     return [ln for ln in (done.stdout + done.stderr).splitlines() if "mia-bt-agent" in ln]
 
 
-def _unit_text_with_runnable_execstart() -> str:
-    # ExecStart (an /opt/mia path that does not exist here) is pointed at an existing executable (R8).
+_DEPENDENCY_KEYS = ("Requires", "Wants", "After", "Before", "BindsTo", "PartOf", "Conflicts", "Requisite", "Upholds",
+                    "BoundBy", "ConsistsOf", "PropagatesReloadTo", "ReloadPropagatedFrom", "OnFailure", "OnSuccess")
+
+
+def _is_outside_dependency(line: str) -> bool:
+    key = line.split("=", 1)[0].strip() if "=" in line else ""
+    return key in _DEPENDENCY_KEYS or ("bluetooth.service" in line and not line.lstrip().startswith("#"))
+
+
+def _unit_text_with_runnable_execstart(keep_dependencies: bool = False) -> str:
+    """Copy of the unit for `systemd-analyze verify`. ExecStart (an /opt/mia path that does not exist here) is pointed
+    at an existing executable (R8). Unless keep_dependencies, every directive naming a unit outside the copy
+    (Requires=bluetooth.service etc.) is dropped: verify reports a missing dependency as a line that names OUR unit
+    ("mia-bt-agent.service: Failed to create ... Unit X not found"), which depends on the host, not on the file."""
     true = shutil.which("true") or "/bin/true"
-    lines = [f"ExecStart={true}" if ln.startswith("ExecStart=") else ln for ln in UNIT.read_text(encoding="utf-8").splitlines()]
-    return "\n".join(lines) + "\n"
+    out = []
+    for ln in UNIT.read_text(encoding="utf-8").splitlines():
+        if not keep_dependencies and _is_outside_dependency(ln):
+            continue
+        out.append(f"ExecStart={true}" if ln.startswith("ExecStart=") else ln)
+    return "\n".join(out) + "\n"
 
 
 @needs_analyze
@@ -129,3 +145,14 @@ def test_systemd_analyze_verify_flags_a_broken_copy_of_the_unit(tmp_path):
     ours = _verify_lines(tmp_path, text)
     assert any("NoSuchDirective" in ln for ln in ours), ours
     assert any("relative/x" in ln for ln in ours), ours
+
+
+@needs_analyze
+def test_a_missing_dependency_is_reported_against_our_unit_so_the_copy_strips_dependencies(tmp_path):
+    """Documents why _unit_text_with_runnable_execstart drops Requires=/After=/...: a dependency absent on the host
+    (here a fake one) yields a line naming our unit; the stripped copy yields none."""
+    kept = _unit_text_with_runnable_execstart().replace("[Unit]", "[Unit]\nRequires=nosuchdep.service", 1)
+    assert any("nosuchdep" in ln for ln in _verify_lines(tmp_path / "kept", kept))
+    stripped = _unit_text_with_runnable_execstart()
+    assert "bluetooth.service" not in stripped and "Requires=" not in stripped and "After=" not in stripped
+    assert _verify_lines(tmp_path / "stripped", stripped) == []
