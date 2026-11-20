@@ -113,5 +113,6 @@ requirements:
   statement: The Pi shall apply an update only if the release bundle carries a signature that verifies against a
     release key pinned on the Pi, so that a paired phone key alone cannot make the Pi run arbitrary code.
   evidence: planned
+  implemented_in: []
   decisions:
   - ADR-0023
