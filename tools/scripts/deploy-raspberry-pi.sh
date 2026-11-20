@@ -165,16 +165,24 @@ update_claude_tooling() {
     # a failure here must not fail the whole install — the voice/telemetry
     # stack doesn't depend on it, only the Claude Agent Bridge path
     # (CLAUDE_AGENT_BRIDGE=1, ADR-0022) does.
-    if ! command -v claude >/dev/null 2>&1; then
-        echo "claude CLI not found on this Pi; skipping Claude tooling update (ADR-0022 bridge path won't work without it)."
+    #
+    # Claude Code is a per-user native install (SERVICE_USER's own
+    # ~/.local/bin), not a system package — this whole script runs under
+    # sudo/root (see run_privileged), so `claude` must be run explicitly as
+    # SERVICE_USER, not root, or it misdetects a broken root-level install
+    # and tries to repair one that was never there. A timeout is a safety
+    # net regardless: network tooling must never hang the whole install.
+    if ! sudo -u "$SERVICE_USER" -H bash -lc 'command -v claude' >/dev/null 2>&1; then
+        echo "claude CLI not found for $SERVICE_USER on this Pi; skipping Claude tooling update (ADR-0022 bridge path won't work without it)."
         return 0
     fi
-    echo "Updating Claude Code CLI..."
-    claude update || echo -e "${YELLOW}claude update failed; continuing (non-fatal)${NC}"
-    if command -v npm >/dev/null 2>&1; then
-        echo "Updating mcp-prompts server..."
-        npm update -g @sparesparrow/mcp-prompts 2>&1 || \
-            echo -e "${YELLOW}mcp-prompts update failed (may need npm login for GitHub Packages, read:packages scope); continuing (non-fatal)${NC}"
+    echo "Updating Claude Code CLI (as $SERVICE_USER)..."
+    timeout 60 sudo -u "$SERVICE_USER" -H bash -lc 'claude update' || \
+        echo -e "${YELLOW}claude update failed or timed out; continuing (non-fatal)${NC}"
+    if sudo -u "$SERVICE_USER" -H bash -lc 'command -v npm' >/dev/null 2>&1; then
+        echo "Updating mcp-prompts server (as $SERVICE_USER)..."
+        timeout 60 sudo -u "$SERVICE_USER" -H bash -lc 'npm update -g @sparesparrow/mcp-prompts' 2>&1 || \
+            echo -e "${YELLOW}mcp-prompts update failed or timed out (may need npm login for GitHub Packages, read:packages scope); continuing (non-fatal)${NC}"
     fi
 }
 
