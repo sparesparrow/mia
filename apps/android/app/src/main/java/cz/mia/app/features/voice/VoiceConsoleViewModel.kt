@@ -8,6 +8,8 @@ import cz.mia.app.core.voice.console.ConsoleCommand
 import cz.mia.app.core.voice.console.OkHttpVoiceSocketFactory
 import cz.mia.app.core.voice.console.VoiceConsoleClient
 import cz.mia.app.core.voice.console.VoiceConsoleState
+import cz.mia.app.core.voice.mic.MicStreamController
+import cz.mia.app.core.voice.mic.PushToTalk
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +45,7 @@ class VoiceConsoleViewModel @Inject constructor(
             )
             client = fresh
             clientTarget = target
-            stateJob = viewModelScope.launch { fresh.state.collect { _state.value = it } }
+            stateJob = viewModelScope.launch { fresh.state.collect { onState(it) } }
         }
         client?.connect()
     }
@@ -51,12 +53,20 @@ class VoiceConsoleViewModel @Inject constructor(
     /** Called when the screen goes away, so a hidden console does not hold the session open. */
     fun stop() {
         client?.disconnect()
+        MicStreamController.setTalking(false)
+    }
+
+    /** Push-to-talk (ADR-0021): the phone's microphone streams only while the Pi's machine is `listening`. */
+    private fun onState(state: VoiceConsoleState) {
+        _state.value = state
+        MicStreamController.setTalking(PushToTalk.streaming(state.machineState, state.connection))
     }
 
     fun press(command: ConsoleCommand): Boolean = client?.send(command) ?: false
 
     override fun onCleared() {
         client?.disconnect()
+        MicStreamController.setTalking(false)
     }
 
     companion object {

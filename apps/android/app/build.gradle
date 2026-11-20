@@ -59,10 +59,11 @@ android {
         }
     }
 
-    // A stable debug key lets a new debug APK install over the old one without an uninstall. Like the release
-    // block, it reads keystore.properties / gradle properties first, then the environment (CI decodes the
-    // MIA_DEBUG_KEYSTORE_B64 secret into a file and exports DEBUG_STORE_FILE and friends). When any value is
-    // missing, the default Android debug key is used. No keystore is committed.
+    // A stable debug key lets a new debug APK update an existing debug install. The .debug application id keeps
+    // device-test builds separate from the production app. Like the release block, it reads keystore.properties
+    // or Gradle properties first, then the environment (CI decodes MIA_DEBUG_KEYSTORE_B64 into a file and exports
+    // DEBUG_STORE_FILE and friends). When any value is missing, the default Android debug key is used.
+    // No keystore is committed.
     def debugProps = new Properties()
     def debugPropsFile = rootProject.file("keystore.properties")
     if (debugPropsFile.exists()) {
@@ -94,7 +95,8 @@ android {
             buildConfigField 'String', 'API_KEY', '""'
         }
         debug {
-            // applicationIdSuffix '.debug'
+            // Keep device-test builds side-by-side with the installed production app and its data.
+            applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
             buildConfigField 'String', 'API_BASE_URL', "\"${getApiBaseUrl(false)}\""
             buildConfigField 'String', 'WS_BASE_URL', "\"${getWsBaseUrl(false)}\""

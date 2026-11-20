@@ -82,6 +82,7 @@ session_manager = SessionManager()
 from api.routers.ota import router as ota_router
 from api.routers.logs import router as logs_router
 from api.routers.anpr import router as anpr_router
+from api.routers.audio_settings import router as audio_settings_router
 from api.routers.update_pairing import router as update_pairing_router
 from hardware import gpio_policy
 
@@ -181,6 +182,7 @@ app = FastAPI(
 app.include_router(ota_router)
 app.include_router(logs_router)
 app.include_router(anpr_router)
+app.include_router(audio_settings_router)
 app.include_router(update_pairing_router)
 # Browsers may only call the API from local/LAN origins by default. Set
 # MIA_CORS_ORIGINS to a comma-separated allow-list (or "*" to restore the old
@@ -983,6 +985,14 @@ async def voice_websocket_endpoint(websocket: WebSocket):
     from api import voice_console
 
     await voice_console.serve(websocket)
+
+
+@app.websocket("/ws/audio")
+async def audio_websocket_endpoint(websocket: WebSocket):
+    """Phone microphone: PCM16 frames pushed to the audio capture service (off unless VOICE_PHONE_MIC=1)."""
+    from api import audio_ingest
+
+    await audio_ingest.serve(websocket)
 
 
 _LED_WS_AI_STATES = {"idle", "listening", "speaking", "thinking", "recording", "error"}

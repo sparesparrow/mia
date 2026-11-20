@@ -25,8 +25,8 @@ class OkHttpVoiceSocketFactory(client: OkHttpClient) : VoiceSocketFactory {
 
                 override fun onMessage(webSocket: WebSocket, bytes: ByteString) = listener.onMessage(bytes.toByteArray())
 
-                // Envelopes are binary; a text frame is not one of ours and is ignored.
-                override fun onMessage(webSocket: WebSocket, text: String) = Unit
+                // Envelopes are binary; the listener decides what a text frame means (the console ignores it).
+                override fun onMessage(webSocket: WebSocket, text: String) = listener.onText(text)
 
                 override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                     webSocket.close(code, reason)
@@ -40,6 +40,8 @@ class OkHttpVoiceSocketFactory(client: OkHttpClient) : VoiceSocketFactory {
         )
         return object : VoiceSocket {
             override fun send(data: ByteArray): Boolean = socket.send(data.toByteString())
+            override fun sendText(text: String): Boolean = socket.send(text)
+            override fun queuedBytes(): Long = socket.queueSize()
             override fun close() {
                 socket.close(1000, "console closed")
             }

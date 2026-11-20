@@ -9,6 +9,7 @@ on:
       - 'schemas/voice.fbs'
       - 'tests/fixtures/voice/**'
       - '.claude/skills/android-adb-test/**'
+      - '.claude/skills/android-test/**'
       - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
   pull_request:
@@ -19,6 +20,7 @@ on:
       - 'schemas/voice.fbs'
       - 'tests/fixtures/voice/**'
       - '.claude/skills/android-adb-test/**'
+      - '.claude/skills/android-test/**'
       - 'tools/scripts/test-orchestrator.sh'
       - '.github/workflows/android-test.yml'
 
@@ -81,7 +83,7 @@ jobs:
         run: |
           cd apps/android
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug assembleDebugAndroidTest --no-daemon
 
       - name: Run lint checks
         continue-on-error: true
@@ -106,6 +108,18 @@ jobs:
         with:
           name: android-apk
           path: apps/android/app/build/outputs/apk/
+          if-no-files-found: error
+
+      - name: Upload Device Test APKs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: device-apks
+          path: |
+            apps/android/app/build/outputs/apk/debug/app-debug.apk
+            apps/android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          if-no-files-found: error
+          retention-days: 14
 
   test:
     runs-on: ubuntu-latest
@@ -165,8 +179,8 @@ jobs:
           # first line then passes a literal "\" and the rest never runs.
           # `test` does not install the app, so deploy the downloaded APK first.
           script: |
-            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" deploy --device emulator-5554
-            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" test --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
+            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" deploy --package cz.mia.app.debug --device emulator-5554
+            bash "$GITHUB_WORKSPACE/.claude/skills/android-adb-test/scripts/android-adb-test.sh" test --package cz.mia.app.debug --scenario ${{ matrix.scenario }} --screenshots --logs --device emulator-5554
 
       - name: Parse Test Results
         if: always()
