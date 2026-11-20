@@ -19,6 +19,10 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
 
+	<!-- Phone microphone streamed to the Pi, only when the user switches it on in the Voice tab (ADR-0021) -->
+	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
 	<!-- Wi‑Fi Direct (P2P) -->
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -67,6 +71,11 @@
 			android:name=".core.background.DrivingService"
 			android:exported="false"
 			android:foregroundServiceType="dataSync|connectedDevice|camera" />
+
+		<service
+			android:name=".core.voice.mic.MicStreamService"
+			android:exported="false"
+			android:foregroundServiceType="microphone" />
 
 		<!-- Paho MQTT Android Service -->
 		<service

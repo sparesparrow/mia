@@ -217,6 +217,9 @@ carry a 4-byte big-endian length before each message; datagram transports do not
 | WebSocket `/ws/voice` | implemented, off unless `VOICE_CONSOLE=1`, API key required; talks to a machine simulated in the API process |
 | ZeroMQ ROUTER socket on `127.0.0.1:5565` (`ZmqHub`, port `VOICE_CONSOLE_PORT`), hosted by `voice_command_router` in FSM mode | implemented (REQ-VOICE-024); not a general ZeroMQ channel: it carries the console's envelopes between the API's relay and the router |
 | WebSocket `/ws/voice` with `VOICE_CONSOLE_BACKEND=router` | implemented; relays envelopes to the port above and drives the machine in the voice router (default stays `sim` for now) |
+| WebSocket `/ws/audio` (ADR-0021) | implemented, off unless `VOICE_PHONE_MIC=1`, `X-API-Key` with `write` scope; text header `{"v":1,"fmt":"s16le","rate":16000,"ch":1,"frame_ms":30}`, answer `{"ok":true}` or close 1003, then binary frames of whole 960-byte multiples; one phone at a time (a new one closes the old with 1008) |
+| ZeroMQ PUSH (API) to PULL (`audio_capture`) on `127.0.0.1:5566` (`AUDIO_INGEST_PORT`) | implemented (REQ-VOICE-027); one 960-byte frame per message, high-water mark 8, dropped when full; `audio_capture` publishes the chosen source on `mia/audio/raw` (`AUDIO_SOURCE=auto\|usb\|phone`, `MIC_TAIL_SEC`) |
+| REST `GET`/`PUT /audio/settings` (REQ-VOICE-030) | implemented; `mic_transport`, `reply_output`, `effective` and `capabilities`; an unavailable choice is refused with 409 |
 | BLE, a real serial line | planned |
 
 The stream and UDP channels do not authenticate their peers: bind their listeners to loopback or a trusted link.

@@ -1,7 +1,7 @@
 """
 MIA Audio Capture Service — microphone input to ZMQ pipeline.
 
-Captures audio from a USB microphone and publishes raw PCM chunks
+Captures audio from a USB microphone, or takes it from the phone's microphone (ADR-0021), and publishes raw PCM chunks
 to ZMQ PUB topic 'mia/audio/raw' for downstream consumers
 (wake word detector, VAD, STT).
 
@@ -13,6 +13,9 @@ Environment variables:
   ZMQ_SPEAKING_PORT   — TTS "speaking" events; the microphone is muted while MIA talks (default: 5563)
   CHUNK_DURATION_MS   — audio chunk size in ms (default: 30)
   SAMPLE_RATE         — sample rate in Hz (default: 16000)
+  AUDIO_SOURCE        — auto | usb | phone (default: auto): the phone while it streams, else the local device
+  AUDIO_INGEST_PORT   — loopback PULL port the API pushes the phone's frames to (default: 5566)
+  MIC_TAIL_SEC        — how long the phone path stays muted after MIA stops speaking (default: 0.8)
 """
 
 import os
@@ -39,6 +42,7 @@ CHUNK_DURATION_MS = int(os.environ.get("CHUNK_DURATION_MS", "30"))
 CHUNK_FRAMES = int(SAMPLE_RATE * CHUNK_DURATION_MS / 1000)
 ZMQ_PUB_PORT = int(os.environ.get("ZMQ_PUB_PORT", "5558"))
 ZMQ_SPEAKING_PORT = int(os.environ.get("ZMQ_SPEAKING_PORT", "5563"))
+ZMQ_INGEST_PORT = int(os.environ.get("AUDIO_INGEST_PORT", "5566"))
 DEVICE_INDEX = os.environ.get("AUDIO_DEVICE_INDEX", None)
 if DEVICE_INDEX is not None:
     DEVICE_INDEX = int(DEVICE_INDEX)
@@ -70,15 +74,56 @@ try:
 except ImportError:  # run without the services package on the path: no muting
     MicGate = None
 
+try:
+    from services.mic_source import MicSource, source_mode, tail_seconds
+except ImportError:  # pragma: no cover - same package as this file
+    MicSource = None
+
 running = True
 
 # Closed while MIA speaks (REQ-VOICE-016). None when the gate could not be imported.
 mic_gate = MicGate(time.monotonic) if MicGate is not None else None
+# The phone's audio is late by the network delay, so its gate stays shut longer after speech (ADR-0021).
+phone_gate = None
+mic_source = None
+if MicGate is not None and MicSource is not None:
+    phone_gate = MicGate(time.monotonic, tail_sec=max(tail_seconds(), 0.3))
+if MicSource is not None:
+    mic_source = MicSource(
+        source_mode(),
+        time.monotonic,
+        mic_gate,
+        phone_gate,
+        frame_bytes=CHUNK_FRAMES * SAMPLE_WIDTH,
+    )
 
 
 def gated(pcm: bytes) -> bytes:
-    """Silence the frame while MIA is speaking so it does not hear itself."""
+    """The frame to publish for the local ``pcm`` (None: no device), muted while MIA speaks.
+
+    With a phone streaming, the phone's frame replaces it (AUDIO_SOURCE, ADR-0021).
+    """
+    if mic_source is not None:
+        return mic_source.next_frame(pcm)
     return mic_gate.apply(pcm) if mic_gate is not None else pcm
+
+
+def listen_for_ingest(ctx):
+    """Collect the phone's frames from the API into the jitter buffer (runs in a daemon thread)."""
+    pull = ctx.socket(zmq.PULL)
+    pull.setsockopt(zmq.RCVHWM, 16)
+    pull.bind(f"tcp://127.0.0.1:{ZMQ_INGEST_PORT}")
+    poller = zmq.Poller()
+    poller.register(pull, zmq.POLLIN)
+    frame_bytes = CHUNK_FRAMES * SAMPLE_WIDTH
+    try:
+        while running:
+            if pull in dict(poller.poll(200)):
+                frame = pull.recv()
+                if len(frame) == frame_bytes:  # anything else is not 30 ms of our format
+                    mic_source.push_phone(frame)
+    finally:
+        pull.close(0)
 
 
 def listen_for_speaking(ctx):
@@ -95,6 +140,8 @@ def listen_for_speaking(ctx):
                 event = decode_speaking(payload)
                 if event:
                     mic_gate.on_event(event)
+                    if phone_gate is not None:
+                        phone_gate.on_event(event)
     finally:
         sub.close()
 
@@ -200,10 +247,12 @@ def capture_simulation(pub_socket):
     silence = b'\x00' * (CHUNK_FRAMES * SAMPLE_WIDTH)
     interval = CHUNK_DURATION_MS / 1000.0
 
-    logger.info(f"SIMULATION: Publishing silence on mia/audio/raw ({CHUNK_DURATION_MS}ms chunks)")
+    # This loop is the 30 ms pacer when the Pi has no capture device; the phone's frames, if any, replace the silence.
+    logger.info(f"SIMULATION: silence, or the phone's microphone, on mia/audio/raw ({CHUNK_DURATION_MS}ms chunks)")
     while running:
         try:
-            pub_socket.send_multipart([b"mia/audio/raw", silence], zmq.NOBLOCK)
+            frame = gated(None) if mic_source is not None else silence
+            pub_socket.send_multipart([b"mia/audio/raw", frame], zmq.NOBLOCK)
         except zmq.Again:
             pass
         time.sleep(interval)
@@ -237,6 +286,10 @@ def main():
     if mic_gate is not None:
         threading.Thread(target=listen_for_speaking, args=(ctx,), daemon=True).start()
         logger.info(f"Microphone muted while MIA speaks (events on port {ZMQ_SPEAKING_PORT})")
+
+    if mic_source is not None and mic_source.wants_phone:
+        threading.Thread(target=listen_for_ingest, args=(ctx,), daemon=True).start()
+        logger.info(f"Phone microphone accepted on tcp://127.0.0.1:{ZMQ_INGEST_PORT} (AUDIO_SOURCE={mic_source.mode})")
 
     try:
         if SOUNDDEVICE_AVAILABLE:

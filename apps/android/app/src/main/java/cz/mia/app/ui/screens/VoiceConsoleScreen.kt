@@ -44,6 +44,7 @@ import cz.mia.app.core.voice.console.LogLine
 import cz.mia.app.core.voice.console.VoiceConsoleState
 import cz.mia.app.features.voice.VoiceConsoleViewModel
 import cz.mia.app.ui.components.ErrorLabel
+import cz.mia.app.ui.components.PhoneMicSection
 import cz.mia.app.ui.components.ScreenTitle
 import cz.mia.app.ui.components.SectionCard
 import cz.mia.app.ui.components.VoiceSettingsSection
@@ -59,11 +60,16 @@ fun VoiceConsoleScreen(modifier: Modifier = Modifier, viewModel: VoiceConsoleVie
         viewModel.start()
         onDispose { viewModel.stop() }
     }
-    VoiceConsoleContent(state, viewModel::press, modifier)
+    VoiceConsoleContent(state, viewModel::press, modifier, extra = { PhoneMicSection() })
 }
 
 @Composable
-fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> Boolean, modifier: Modifier = Modifier) {
+fun VoiceConsoleContent(
+    state: VoiceConsoleState,
+    onPress: (ConsoleCommand) -> Boolean,
+    modifier: Modifier = Modifier,
+    extra: @Composable () -> Unit = {},
+) {
     val connected = state.connection == ConnectionState.CONNECTED
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -95,6 +101,8 @@ fun VoiceConsoleContent(state: VoiceConsoleState, onPress: (ConsoleCommand) -> B
             OutlinedButton(onClick = { onPress(ConsoleCommand.Deny) }, enabled = connected, modifier = Modifier.testTag("voice_no")) { Text("No") }
             OutlinedButton(onClick = { onPress(ConsoleCommand.EndDictation) }, enabled = connected, modifier = Modifier.testTag("voice_end_dictation")) { Text("End note") }
         }
+
+        extra()
 
         SectionCard { VoiceSettingsSection(state, onPress) }
 

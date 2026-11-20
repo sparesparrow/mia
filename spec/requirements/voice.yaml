@@ -335,11 +335,39 @@ requirements:
 - id: REQ-VOICE-027
   title: Phone microphone streaming
   statement: The Pi shall be able to take its voice audio from the phone's microphone, streamed over a write-scope WebSocket, off by default.
-  evidence: planned
-  implemented_in: []
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - /ws/audio closes with 1008 without a key, with a read-only key and when VOICE_PHONE_MIC is not 1
+  - The first text frame must name 16 kHz mono s16le in 30 ms frames, otherwise the socket closes with 1003; a binary message that is not a whole number of 960-byte frames is dropped and counted
+  - Frames go to a ZeroMQ PUSH socket with a high-water mark of 8 and are dropped, never waited for, when it is full or nobody listens
+  - A second phone replaces the first, which is closed with 1008
+  - AUDIO_SOURCE=usb never plays the phone, phone plays only the phone, auto plays the phone while its last frame is under 500 ms old and else the local device, and sources are never mixed
+  - The phone path stays muted for MIC_TAIL_SEC after MIA stops speaking, and phone frames buffered while it is muted are discarded
+  implemented_in:
+  - apps/rpi-backend/py-api/api/audio_ingest.py
+  - apps/rpi-backend/py-api/api/auth/dependencies.py
+  - apps/rpi-backend/py-api/api/main.py
+  - apps/rpi-backend/py-api/services/mic_source.py
+  - apps/rpi-backend/py-api/services/audio_capture.py
   decisions:
   - ADR-0021
-  not_proven: Not yet implemented.
+  not_proven: No phone and no Pi were used. The ZeroMQ hop from the API to audio_capture is tested only up to the push; the capture service's PULL side runs only in its own thread on the Pi. Latency, jitter and echo (the phone hears the Pi's speaker) are unmeasured and MIC_TAIL_SEC is a guess. The mic open/muted text frames to the phone are not sent. Audio crosses the car Wi-Fi in clear text (ADR-0016).
+- id: REQ-VOICE-030
+  title: Audio routing settings owned by the Pi
+  statement: The Pi shall store where the microphone comes from and where replies are heard, report what it can really do, and refuse a choice it cannot serve.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - GET /audio/settings returns the stored choice, the effective choice and a capabilities map
+  - Bluetooth microphone, Bluetooth to phone and phone speaker are reported unavailable and a request for them is refused with 409 and not stored
+  - The choice is kept in audio_settings.json in MIA_STATE_DIR and a damaged file gives the defaults
+  - The voice settings file is never rewritten by this endpoint
+  implemented_in:
+  - apps/rpi-backend/py-api/api/routers/audio_settings.py
+  - apps/rpi-backend/py-api/api/main.py
+  decisions:
+  - ADR-0021
+  - ADR-0019
+  not_proven: Only Wi-Fi microphone and Pi speaker exist. No Bluetooth audio path was built or tried on the Pi, which has BlueZ 5.82 but no bluealsa, PipeWire or PulseAudio; the availability probe (daemon binary or socket) was not run on a Pi, and nothing routes replies to the phone.
 - id: REQ-VOICE-028
   title: Voice scenario harness
   statement: A scenario file shall describe a stimulus and the ordered events the voice pipeline must produce, and one runner shall check the same file against every layer that can run it.
