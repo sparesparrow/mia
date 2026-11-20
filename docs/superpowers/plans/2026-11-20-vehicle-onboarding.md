@@ -18,6 +18,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - **The auth server and Stripe integration do not exist** (ADR-0024: no enrollment service). They are a separate plan. This plan builds the client contract, a fake server for tests, and the Pi/phone sides. Anything needing the real server stays "unverified".
 
 ## Global Constraints
+- Ruling R1: ADR-0023 says pairing is an administrator action; ADR-0025 must state that a verified server grant now also authorizes pairing, and only through `mia-enroll`.
 - ADR-0023: config is data (YAML on phone → JSON on Pi), never executed, never interpolated into a command line; Pi-owned state (`voice_settings.json`) is never written by install/update.
 - ADR-0023: phone key can run only `sudo /opt/mia/bin/mia-apply-update` (forced command); the phone never keeps a general shell.
 - ADR-0024: account ID, billing (Stripe customer) ID, VIN and Pi identity are separate; no VIN in the hostname; local Whisper stays default; Stripe never touches the Pi.
@@ -56,7 +57,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - [ ] Step 3: Commit `docs(adr): 0025 vehicle onboarding`.
 
 ### Task 2: Grant schema and `bin/mia-enroll`
-**Files:** Create `schemas/json/mia-grant.schema.json`, `bin/mia-enroll`, test `apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py`.
+**Files:** Create `schemas/json/mia-grant.schema.json`, `bin/mia-enroll`, `infra/deploy/rpi/install-enroll-access.sh` (mirrors `install-update-access.sh`: SSH user `mia-enroll`, forced command `sudo /opt/mia/bin/mia-enroll`, sudoers exact-match, sshd `Match User` block; `shellcheck` clean), test `apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py`.
 **Interfaces:** Produces `verify_grant(grant: bytes, signature: bytes, allowed_signers: Path, device_fp: str, phone_fp: str, now: int, seen_jti: set[str]) -> Claims` raising `GrantError(reason: str)`; `Claims` fields `account_id, jti, plan, entitlement_exp, exp, phone_fp, device_fp`. CLI reads `{grant, signature, phone_public_key}` as one JSON line on stdin and prints `{"ok","step","error"}` as its last line (same convention as `mia-apply-update`).
 - [ ] Step 1: Write failing tests (with a throwaway key made by `ssh-keygen -t ed25519` in a tmp dir): `test_valid_grant_accepted`, `test_expired_grant_refused` (now > exp), `test_wrong_device_fingerprint_refused`, `test_wrong_phone_fingerprint_refused`, `test_replayed_jti_refused`, `test_bad_signature_refused`, `test_unknown_claim_ignored_but_missing_claim_refused`, each `@pytest.mark.req("REQ-ONB-00x")`.
 - [ ] Step 2: Run `pytest apps/rpi-backend/py-api/tests/unit/test_mia_enroll.py -v` — Expected: FAIL (module missing).
@@ -65,7 +66,7 @@ Branch: `fix/obd-scan-full-flow`. Step 0, before Task 1: `gh pr create --draft` 
 - [ ] Step 5: Run tests — Expected: PASS. Commit `feat(rpi): mia-enroll verifies server grant`.
 
 ### Task 3: Phone registry and network
-**Files:** Create `bin/mia-phone-registry`, `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service`, test `.../tests/unit/test_phone_registry.py`.
+**Files:** Modify `bin/mia-enroll` (call `registry.upsert` after a successful grant); Create `bin/mia-phone-registry`, `infra/deploy/rpi/setup-nm-hotspot.sh`, `infra/systemd/mia-bt-agent.service`, test `.../tests/unit/test_phone_registry.py`.
 **Interfaces:** Consumes `Claims.phone_fp`. Produces `registry.upsert(phone_fp: str, mac: str, bonded: bool) -> None`, `registry.lookup_by_fp(phone_fp: str) -> Entry | None`; CLI `mia-phone-registry upsert|list|remove`.
 - [ ] Step 1: Tests: `test_upsert_new_phone`, `test_mac_change_updates_same_entry` (same fp, new MAC → one entry), `test_unknown_mac_not_trusted` (lookup by MAC alone returns none), file mode 600, atomic write.
 - [ ] Step 2: Run — Expected FAIL. Step 3: Implement (JSON file under `/var/lib/mia/`, `fcntl.flock`, atomic rename). Step 4: Run — PASS.
