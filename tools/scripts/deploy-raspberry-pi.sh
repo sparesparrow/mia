@@ -5,7 +5,8 @@
 # - copies what the systemd units and the code read into $INSTALL_DIR (default /opt/mia), mirroring the repo;
 # - installs the Pi API's own requirements (apps/rpi-backend/py-api/requirements.txt) into $INSTALL_DIR/venv;
 # - points /usr/local/bin/mia-python and MIA_PYTHON in /etc/mia/environment at that venv;
-# - installs and enables the core units.
+# - installs and enables the core units;
+# - installs bin/mia-apply-update to $INSTALL_DIR/bin (--skip-packages leaves apt and pip alone).
 #
 # Running it again is safe: the venv and $INSTALL_DIR/data are kept, nothing is deleted, and the environment file
 # keeps every line it does not own, MIA_API_KEY included.
@@ -16,6 +17,16 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+SKIP_PACKAGES=0
+for arg in "$@"; do
+    case "$arg" in
+        # bin/mia-apply-update (ADR-0023) updates an installed Pi without apt or pip; it checks the requirements
+        # file is unchanged before it passes this flag.
+        --skip-packages) SKIP_PACKAGES=1 ;;
+        *) echo "Unknown option: $arg (supported: --skip-packages)" >&2; exit 2 ;;
+    esac
+done
 
 INSTALL_DIR="${MIA_INSTALL_DIR:-/opt/mia}"
 SYSTEMD_DIR="${MIA_SYSTEMD_DIR:-/etc/systemd/system}"
@@ -128,6 +139,15 @@ install_code() {
     run_privileged chown "$SERVICE_USER:$SERVICE_USER" "$INSTALL_DIR/data"
 }
 
+# The phone's SSH key may run only `sudo /opt/mia/bin/mia-apply-update` (ADR-0023). The target must not be
+# replaceable by the service user, so it is installed root-owned and not writable by anyone else.
+install_update_tool() {
+    local tool="$PROJECT_ROOT/bin/mia-apply-update"
+    [[ -f "$tool" ]] || return 0
+    run_privileged mkdir -p "$INSTALL_DIR/bin"
+    run_privileged install -m 755 "$tool" "$INSTALL_DIR/bin/mia-apply-update"
+}
+
 install_python_packages() {
     if [[ ! -x "$VENV_DIR/bin/python" ]]; then
         echo "Creating $VENV_DIR..."
@@ -216,10 +236,17 @@ if [ ! -f /proc/device-tree/model ] || ! grep -q "Raspberry Pi" /proc/device-tre
     fi
 fi
 
-install_system_packages
+if [[ "$SKIP_PACKAGES" -eq 1 ]]; then
+    echo "--skip-packages: leaving the system packages and the venv's Python packages as they are."
+else
+    install_system_packages
+fi
 ensure_service_user
 install_code
-install_python_packages
+install_update_tool
+if [[ "$SKIP_PACKAGES" -eq 0 ]]; then
+    install_python_packages
+fi
 point_units_at_venv
 install_units
 update_claude_tooling

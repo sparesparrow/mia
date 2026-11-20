@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-pytestmark = pytest.mark.req("REQ-DEP-007")
+pytestmark = pytest.mark.req("REQ-DEP-007", "REQ-UPD-006")
 
 ROOT = Path(__file__).resolve().parents[3]
 WORKFLOW = yaml.safe_load(
@@ -95,3 +95,10 @@ def test_the_cpp_job_installs_the_library_behind_every_unconditional_include():
         includes_mosquitto
     ), "no core header includes <mosquitto.h> any more; drop this check"
     assert "libmosquitto-dev" in _step("cpp", "Install build dependencies")["run"]
+
+
+def test_the_bundle_ships_the_deploy_script_and_the_update_tool():
+    paths = _bundle_paths()
+    for required in ("tools/scripts/deploy-raspberry-pi.sh", "bin/mia-apply-update"):
+        assert required in paths
+        assert (ROOT / required).is_file()

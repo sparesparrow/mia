@@ -52,6 +52,21 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
    ([ADR-0016](../spec/decisions/0016-android-reaches-the-pi-over-plain-http.md)). The Cycle 1 card on the
    Dashboard then shows the Pi's telemetry.
 
+## Updating an installed Pi from the phone
+
+The steps above are the one-time bootstrap. Once a Pi is installed, the app can update it
+([ADR-0023](../spec/decisions/0023-phone-driven-software-update.md)):
+
+1. On the Pi, once: `sudo bash infra/deploy/rpi/install-update-access.sh`, then `sudo systemctl reload ssh`.
+   It creates the `mia-update` user, its one-command sudoers rule and the sshd block. The release you update to
+   must contain `bin/mia-apply-update` (it is in the backend bundle from the first release after this change); install
+   that file once by hand (`sudo install -m 755 bin/mia-apply-update /opt/mia/bin/`) or re-run the deploy script.
+2. In the app: Settings > Software update > Pair with the Pi (needs the admin API key), edit the
+   configuration, then Update the Pi.
+3. To go back: `sudo /opt/mia/bin/mia-apply-update --rollback` on the Pi.
+
+An update that changes `apps/rpi-backend/py-api/requirements.txt` is refused; run the full install once.
+
 ## Not covered here
 
 `infra/edge/pi-gateway` is an older Docker stack (Mosquitto, mDNS advertiser and simulators) from before
