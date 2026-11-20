@@ -8,67 +8,74 @@ requirements:
   title: Grant verified offline
   statement: The Pi shall accept an enrollment request only if its grant carries a valid SSH ed25519 signature in namespace
     mia-grant that verifies against a signer key baked into the image, without network access.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - A grant with a bad or foreign signature is refused and nothing changes
   - A grant with an unknown claim is accepted; a grant missing a required claim is refused
   - Verification calls ssh-keygen -Y verify as an argument list, never through a shell
-  implemented_in: []
+  implemented_in:
+  - bin/mia-enroll
+  - schemas/json/mia-grant.schema.json
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll, schemas/json/mia-grant.schema.json.'
+  not_proven: 'Not run as root on a Raspberry Pi, and not through sshd; the signer key is a throwaway test key. No real auth server exists to sign grants.'
 - id: REQ-ONB-002
   title: Grant bound to Pi fingerprint and phone key
   statement: The Pi shall refuse a grant whose device_fp is not its own identity fingerprint or whose phone_fp differs from
     the fingerprint of the phone key in the request, and shall refuse an expired grant.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - A grant for another Pi fingerprint is refused
   - A grant for another phone key is refused
   - A grant with now >= exp is refused
   - Fingerprints use the SHA256:<base64> form printed by ssh-keygen -lf
-  implemented_in: []
+  implemented_in:
+  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+  not_proven: "Not run on a Raspberry Pi; the device fingerprint comes from a test key, not the Pi's real host key. The 60 s clock-skew allowance on iat is a choice in code, not set by a test against a drifting Pi clock."
 - id: REQ-ONB-003
   title: Replay refused
   statement: The Pi shall refuse a grant whose jti it has already accepted, and a refused request shall leave the Pi's state
     unchanged.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - The same grant used twice is accepted once and refused the second time
   - A refused request registers no key and writes no config
-  implemented_in: []
+  implemented_in:
+  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+  not_proven: 'Not run as root on a Raspberry Pi; concurrency is covered by a lock but only sequential replay is tested.'
 - id: REQ-ONB-004
   title: Phone key limited to a forced command
   statement: The mia-enroll user shall be able to run only the one enrollment command, and an enrolled phone shall afterwards
     hold only the ADR-0023 forced-command key, never a general shell.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - The sshd Match User block emits restrict,command="sudo /opt/mia/bin/mia-enroll" for any offered ed25519 or ECDSA key
   - The sudoers rule matches exactly one command
   - mia-enroll registers only the key in phone_public_key, through the mia-update-pair logic, with a label matching ^[A-Za-z0-9._-]{1,32}$
-  implemented_in: []
+  implemented_in:
+  - bin/mia-enroll
+  - infra/deploy/rpi/install-enroll-access.sh
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll, infra/deploy/rpi/install-enroll-access.sh.'
+  not_proven: 'The sshd drop-in and the key helper are not exercised by a running sshd, and the sudoers rule is not run under real sudo; the installer was run only against shims in a tmp dir.'
 - id: REQ-ONB-005
   title: Secrets generated on the Pi
   statement: The device API key shall be generated on the Pi, written to /etc/mia/environment only if absent with mode 600,
     and never be printed, logged, sent by the phone or placed in phone-edited YAML.
-  evidence: planned
+  evidence: implemented_and_ci_tested
   acceptance:
   - An existing API key line is not rewritten
   - The file mode is 600
   - The CLI output and logs do not contain the key
-  implemented_in: []
+  implemented_in:
+  - bin/mia-enroll
   decisions:
   - ADR-0025
-  not_proven: 'Planned; no implementation or test yet. Planned files: bin/mia-enroll.'
+  not_proven: 'Not run as root on a Raspberry Pi; an installed unit has not been shown to read the new MIA_API_KEY line.'
 - id: REQ-ONB-006
   title: Hotspot with DHCP and DNS
   statement: The Pi shall offer a NetworkManager shared hotspot that serves DHCP and DNS to the phone, and the setup script
