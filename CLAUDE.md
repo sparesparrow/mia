@@ -98,7 +98,7 @@ Key runtime boundaries (quick reference for AI agents):
 - **FastAPI**: port 8000 — REST/WebSocket gateway (`apps/rpi-backend/py-api/api/main.py`)
 - **MCP modules**: `orchestration/mcp/modules/` — domain microservices (automotive, audio, hardware)
 - **OBD Digital Twin**: `apps/rpi-backend/py-api/services/obd_worker.py` — ELM327 emulator for the Audi A4 Cabriolet 8H
-- **Voice**: `services/voice_command_router.py` (run with `VOICE_FSM=1`) is the only process that holds a `VoiceMachine` (`services/voice_fsm/`). `mia-api` holds none: it relays `/ws/voice` to the router over a loopback ZeroMQ ROUTER socket on `127.0.0.1:5565` (`VOICE_CONSOLE_PORT`). `VOICE_CONSOLE_BACKEND=sim` keeps a simulated machine for development only. There is no wake word by default: a console or steering-wheel Wake is the push-to-talk route (ADR-0011, ADR-0020)
+- **Voice**: `services/voice_command_router.py` (started with `VOICE_FSM=1`) owns the live `VoiceMachine` for the production voice pipeline. In router mode, `mia-api` relays `/ws/voice` to it through the router's loopback ZeroMQ ROUTER endpoint at `127.0.0.1:5565` (`VOICE_CONSOLE_PORT`). The console defaults to `VOICE_CONSOLE_BACKEND=sim`; with `VOICE_CONSOLE=1`, that mode creates a separate simulation-only machine in `mia-api`, outside the live voice pipeline. There is no wake word by default: a console or steering-wheel Wake is the push-to-talk route (ADR-0011, ADR-0020)
 
 ### Schemas and generated code
 
