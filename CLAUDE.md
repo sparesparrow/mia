@@ -61,9 +61,11 @@ python tools/ci/traceability.py check --pytest-report req-report.json
 # Lint & format
 black . && isort . --profile black && flake8 . --max-line-length=120 --extend-ignore=E203,W503
 
-# Pre-commit (runs black, isort, flake8, bandit, yaml checks)
+# Pre-commit (runs black, isort, flake8, bandit, yaml checks, schema drift)
 pre-commit run --all-files
 ```
+
+What blocks a merge in CI (`.github/workflows/ci.yml`): the pytest run, the `.coveragerc` gate, the traceability check, and the strict voice schema drift check. The flake8/black/isort steps run with `continue-on-error`. There is no `pyproject.toml`, so the pre-commit black hook uses black's default line length (88), while CI's black check uses `--line-length 120`. Don't reformat files you aren't changing.
 
 ### C++ (Conan + CMake)
 
@@ -96,6 +98,11 @@ Key runtime boundaries (quick reference for AI agents):
 - **FastAPI**: port 8000 — REST/WebSocket gateway (`apps/rpi-backend/py-api/api/main.py`)
 - **MCP modules**: `orchestration/mcp/modules/` — domain microservices (automotive, audio, hardware)
 - **OBD Digital Twin**: `apps/rpi-backend/py-api/services/obd_worker.py` — ELM327 emulator for the Audi A4 Cabriolet 8H
+- **Voice**: `services/voice_command_router.py` (run with `VOICE_FSM=1`) is the only process that holds a `VoiceMachine` (`services/voice_fsm/`). `mia-api` holds none: it relays `/ws/voice` to the router over a loopback ZeroMQ ROUTER socket on `127.0.0.1:5565` (`VOICE_CONSOLE_PORT`). `VOICE_CONSOLE_BACKEND=sim` keeps a simulated machine for development only. There is no wake word by default: a console or steering-wheel Wake is the push-to-talk route (ADR-0011, ADR-0020)
+
+### Schemas and generated code
+
+FlatBuffers sources live in `schemas/*.fbs`. Never hand-edit the generated bindings: `schemas/generated/python/`, `schemas/generated/cpp/`, and the Kotlin copy in `apps/android/app/src/main/generated/kotlin/MiaVoice/`. Regenerate them with `python schemas/generate.py --all` (needs `flatc`), plus `python tools/schemas/extract_enums.py` for the firmware enum header. CI regenerates `voice.fbs` and fails on any diff; drift in the other schemas only raises a warning. `schemas/baseline/voice.fbs` is the compatibility baseline (ADR-0004). When a schema changes, update `spec/interfaces/` (`events.md`, `topics.md`, `voice.md`) in the same PR.
 
 ## Key Configuration
 
@@ -108,7 +115,7 @@ Key runtime boundaries (quick reference for AI agents):
 
 ## Deployment
 
-Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `infra/systemd/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, etc.). Deploy on the Pi with `sudo ./tools/scripts/deploy-production-rpi.sh` (see `docs/PRODUCTION_DEPLOYMENT.md`); consolidating the overlapping deploy scripts is issue #132. The ZMQ broker must start before other services.
+Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `infra/systemd/*.service` (zmq-broker, mia-api, mia-gpio-worker, mia-serial-bridge, mia-obd-worker, etc.). There are two entry points. `sudo ./tools/scripts/deploy-production-rpi.sh` runs on the Pi (see `docs/PRODUCTION_DEPLOYMENT.md`). `./tools/scripts/deploy-mia-rpi.sh [RPI_HOST] [RPI_USER]` runs from a dev machine: it finds the Pi on the LAN, syncs the code and installs the full voice stack, and its `MIA_*` environment toggles are listed in its header. `mia-power-monitor` stays off unless `MIA_ENABLE_POWER_MONITOR=1`, because the ignition stage is not bench-tested yet (#202). Consolidating the overlapping deploy scripts is issue #132. The ZMQ broker must start before other services.
 
 ## Conventions
 
@@ -118,7 +125,10 @@ Production target is `/opt/mia/` on Raspberry Pi. Systemd services defined in `i
 - Pull requests end with Claim / Proof / Not proven / Safety / Next owner (`.github/pull_request_template.md`)
 - Reusable briefs live in the `mcp-prompts` server (`.mcp.json`): `list_prompts` with tag `mia-dev`, then `apply_template`. `mia-subagent-pr-brief` briefs a PR subagent; `mia-pr-merge-gate` is the checklist to run before any merge. The server is the global `@sparesparrow/mcp-prompts` package (GitHub Packages, needs `read:packages`); the runtime must not depend on it
 - Hardware-dependent code must have simulation fallbacks for CI and non-RPi development
-- Test markers: `@pytest.mark.req(...)` (see above), `@pytest.mark.hardware` for tests requiring physical hardware (they live in `tests/e2e/`), `@pytest.mark.slow`, `@pytest.mark.integration`, `@pytest.mark.automotive`
+- Test markers are strict (`--strict-markers`): `req(...)` (see above), `hardware` (physical hardware; only in `tests/e2e/`, never run in CI), `slow`, `integration`, and the grouping-only `unit`, `automotive`, `android` and `meta_harness`
+- Test file basenames must be unique across `tests/`, because pytest imports them by base name. `tests/conftest.py` puts the source roots on `sys.path`. Hyphenated directories (`rpi-backend`, `py-api`) can't be imported normally, so load them with `importlib` the way neighbouring tests do. See `tests/README.md`
+- Work follows the Orchestrator / Evaluator / Executor split in `agents/` (`spec/README.md`): each PR is one approved slice and touches nothing outside it
+- Path-scoped area guidance lives in `.github/instructions/*.instructions.md`; each file's `applyTo` lists the paths it covers. Claude Code doesn't load these files automatically, so read the matching one before changing code in its area
 - MCP modules follow initialize/shutdown lifecycle pattern
 - Error handling returns structured dicts with `status` and `message` keys
 - Environment config via `.env` (see `.env.example`)
