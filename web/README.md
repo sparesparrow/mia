@@ -4,7 +4,11 @@ Static web surfaces for MIA, published to <https://sparesparrow.github.io/mia/>
 by `.github/workflows/publish-pages.yml`. The same files are mirrored at
 <https://mia-suzmatra.vercel.app/>: the Vercel project `citadela-resort/mia-suzmatra`
 deploys the `gh-pages` branch of this repository (root directory `.`, no build step),
-so every push to `gh-pages` by the workflow also redeploys Vercel. The audience landing pages and the
+so every push to `gh-pages` by the workflow also redeploys Vercel. The generator writes
+`dist/vercel.json`, which gives the Vercel copy its security headers (REQ-WEB-005): nosniff,
+referrer and framing rules, and a report-only Content-Security-Policy with the hash of every
+inline script. Rebuild after editing an inline script so its hash is updated; GitHub Pages
+ignores the file. The audience landing pages and the
 press kit are generated from shared templates. The gonzo homepage and a few
 internal tools are maintained by hand.
 
@@ -119,6 +123,8 @@ a redirect points to the wrong place, or the homepage loses its voice-guide mark
 It also fails if a page (homepage included) loses its skip link, its single `<main id="main">`,
 its single `<h1>` or its Open Graph tags, if a homepage image below the hero is not lazy-loaded,
 or if `robots.txt` or `sitemap.xml` is missing a page (REQ-WEB-004).
+It also fails if `vercel.json` loses a security header or misses the hash of an inline script
+(REQ-WEB-005).
 
 To preview the whole site as published, copy the homepage next to `dist/` the way
 the workflow's "Assemble static site" step does, and build the docs with

@@ -1,5 +1,5 @@
 // Smoke test for the MIA web page generator.
-// @req REQ-WEB-001 REQ-WEB-002 REQ-WEB-003 REQ-WEB-004
+// @req REQ-WEB-001 REQ-WEB-002 REQ-WEB-003 REQ-WEB-004 REQ-WEB-005
 //
 // Run via `npm test` (which calls `npm run build` first via the `pretest`
 // hook). CI runs it in .github/workflows/publish-pages.yml. Exit code 0 means
@@ -25,9 +25,12 @@
 //      <main id="main">, exactly one <h1> and Open Graph tags whose image exists; the
 //      homepage lazy-loads the images below the hero; robots.txt points to sitemap.xml,
 //      which lists every generated page in both languages (REQ-WEB-004).
+//  10. dist/vercel.json sets the security headers for the Vercel mirror, and its report-only
+//      Content-Security-Policy allows the sha256 of every inline script on the site (REQ-WEB-005).
 
 'use strict';
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -204,6 +207,39 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
     const unlisted = expected.filter((rel) => !sitemap.includes(`<loc>${SITE_URL}${rel}</loc>`));
     check(sitemap.startsWith('<?xml') && unlisted.length === 0, 'sitemap.xml lists the homepage and every page' +
         (unlisted.length ? ` (missing: ${unlisted.join(', ')})` : ''));
+}
+
+// 10. Security headers for the Vercel mirror (REQ-WEB-005).
+{
+    let config = null;
+    try {
+        config = JSON.parse(read('vercel.json'));
+    } catch (_err) {
+        config = null;
+    }
+    check(config && Array.isArray(config.headers), 'vercel.json exists and has a headers list');
+    const headersFor = (source) => {
+        const rule = ((config && config.headers) || []).find((r) => r.source === source);
+        return Object.fromEntries(((rule && rule.headers) || []).map((h) => [h.key, h.value]));
+    };
+    const all = headersFor('/(.*)');
+    check(all['X-Content-Type-Options'] === 'nosniff', 'vercel.json sets X-Content-Type-Options: nosniff');
+    check(Boolean(all['Referrer-Policy']), 'vercel.json sets a Referrer-Policy');
+    check(all['X-Frame-Options'] === 'SAMEORIGIN' && /frame-ancestors 'self'/.test(all['Content-Security-Policy'] || ''),
+        'vercel.json forbids framing by other sites');
+    check(!/microphone/.test(all['Permissions-Policy'] || ''), 'vercel.json leaves the microphone to the voice guides');
+    const reportOnly = headersFor('/((?!docs/).*)')['Content-Security-Policy-Report-Only'] || '';
+    const listHtml = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => e.isDirectory()
+        ? listHtml(path.join(dir, e.name))
+        : (e.name.endsWith('.html') ? [path.join(dir, e.name)] : []));
+    const files = listHtml(DIST).concat(['index.html', '404.html'].map((f) => path.join(WEB_ROOT, f)));
+    const missingHashes = files.flatMap((file) => [...fs.readFileSync(file, 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)]
+        .map((m) => crypto.createHash('sha256').update(m[1], 'utf8').digest('base64'))
+        .filter((hash) => !reportOnly.includes(`'sha256-${hash}'`))
+        .map(() => path.relative(WEB_ROOT, file)));
+    check(reportOnly.includes("script-src 'self'") && missingHashes.length === 0,
+        'vercel.json report-only CSP allows every inline script' +
+            (missingHashes.length ? ` (missing: ${[...new Set(missingHashes)].join(', ')})` : ''));
 }
 
 if (failures > 0) {

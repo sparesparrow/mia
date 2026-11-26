@@ -8,6 +8,7 @@
 // Output goes to dist/, which .github/workflows/publish-pages.yml copies to the
 // site root. See web/README.md for the full site map.
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
@@ -442,5 +443,71 @@ writeFile('sitemap.xml', [
     ''
 ].join('\n'));
 writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}sitemap.xml\n`);
+
+// Security headers for the Vercel mirror (REQ-WEB-005). Vercel deploys the gh-pages branch, whose root is
+// web/dist/ plus the homepage, so dist/vercel.json lands at the deployment root. GitHub Pages ignores it.
+// The full Content-Security-Policy is report-only: it lists every host the pages and the ElevenLabs widget
+// load from, and the sha256 of every inline script, so violations show in the browser console without
+// breaking the voice guides. Only the directives that cannot break the pages are enforced.
+function inlineScriptHashes(html) {
+    return [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+        .map((m) => `'sha256-${crypto.createHash('sha256').update(m[1], 'utf8').digest('base64')}'`);
+}
+
+function listHtml(dir) {
+    return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            return listHtml(full);
+        }
+        return entry.name.endsWith('.html') ? [full] : [];
+    });
+}
+
+const scriptHashes = [...new Set(
+    listHtml(distDir)
+        .concat(['index.html', '404.html'].map((file) => path.join(WEB_ROOT, file)))
+        .flatMap((file) => inlineScriptHashes(fs.readFileSync(file, 'utf8')))
+)].sort();
+
+const ELEVENLABS = ['https://api.elevenlabs.io', 'https://api.us.elevenlabs.io', 'https://*.elevenlabs.io',
+    'wss://api.elevenlabs.io', 'wss://api.us.elevenlabs.io', 'wss://*.elevenlabs.io',
+    'https://*.livekit.cloud', 'wss://*.livekit.cloud'];
+const reportOnlyPolicy = [
+    "default-src 'self'",
+    `script-src 'self' ${scriptHashes.join(' ')} https://unpkg.com`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+    "img-src 'self' data: blob: https://storage.googleapis.com",
+    `connect-src 'self' https://unpkg.com ${ELEVENLABS.join(' ')}`,
+    "media-src 'self' blob: data:",
+    "worker-src 'self' blob:",
+    "frame-ancestors 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+].join('; ');
+
+writeFile('vercel.json', JSON.stringify({
+    headers: [
+        {
+            source: '/(.*)',
+            headers: [
+                { key: 'X-Content-Type-Options', value: 'nosniff' },
+                { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+                { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+                { key: 'Permissions-Policy', value: 'camera=(), geolocation=(), payment=(), usb=()' },
+                { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; object-src 'none'; base-uri 'self'" }
+            ]
+        },
+        {
+            // MkDocs pages under docs/ have their own inline scripts; the report-only policy covers the site pages.
+            source: '/((?!docs/).*)',
+            headers: [
+                { key: 'Content-Security-Policy-Report-Only', value: reportOnlyPolicy }
+            ]
+        }
+    ]
+}, null, 2) + '\n');
 
 console.log('🎉 All pages generated successfully!');
