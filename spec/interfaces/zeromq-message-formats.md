@@ -241,18 +241,28 @@ Telemetry uses PUB/SUB pattern with topic-based filtering.
 
 **Topic**: `obd/telemetry`
 
-**Publisher**: OBD Worker
+**Publisher**: OBD Worker, on its own PUB socket bound to `OBD_TELEMETRY_PUB_ENDPOINT` at 10 Hz. Not on port 5556,
+which the serial bridge owns. When the variable is not set, the worker publishes nothing. No port is assigned and no
+consumer is wired yet.
 
 **Message Format**:
 ```json
 {
-  "rpm": 2500,
-  "speed": 60,
-  "coolant_temp": 85,
-  "load": 45,
-  "timestamp": "2025-01-15T10:30:00Z"
+  "engine_rpm": 2500,
+  "speed_kmh": 60,
+  "coolant_temp_c": 85,
+  "device_id": "obd_worker",
+  "timestamp": "2025-01-15T10:30:00",
+  "adapter_capabilities": {
+    "adapter_kind": "elm327_emulator",
+    "transport": "virtual_pty",
+    "connection_state": "connected",
+    "active_protocol": "ISO 15765-4 CAN 11-bit 500kbps"
+  }
 }
 ```
+
+`adapter_capabilities` is present only once a CAN protocol has been detected.
 
 ## Error Messages
 

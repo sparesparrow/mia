@@ -6,6 +6,9 @@ This service integrates with the MIA ZeroMQ messaging bus:
 - Subscribes to hardware telemetry (from serial_bridge) via PUB/SUB on port 5556
 - Registers with ZeroMQ broker (port 5555) for command/control
 - Runs ELM327 emulator with dynamic PID values based on real-time hardware input
+- Publishes obd/telemetry on its own PUB socket, only when OBD_TELEMETRY_PUB_ENDPOINT is set
+  (for example tcp://*:<port>). Port 5556 belongs to the serial bridge; nothing consumes the
+  stream yet, so there is no default endpoint and publishing is off by default.
 """
 import sys
 import os
@@ -35,6 +38,37 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Where the OBD worker binds its obd/telemetry PUB socket. Unset or empty: publishing is off.
+TELEMETRY_PUB_ENDPOINT_ENV = "OBD_TELEMETRY_PUB_ENDPOINT"
+
+
+class ErrorLogThrottle:
+    """Log the first error, then at most one per window with the number of repeats suppressed since.
+
+    A loop that fails on every iteration would otherwise write thousands of identical lines an hour
+    to the Pi's SD card.
+    """
+
+    def __init__(self, log: logging.Logger, window_sec: float = 60.0, clock=time.monotonic):
+        self._log = log
+        self._window_sec = window_sec
+        self._clock = clock
+        self._last_logged: Optional[float] = None
+        self._suppressed = 0
+
+    def error(self, message: str) -> None:
+        now = self._clock()
+        if self._last_logged is not None and now - self._last_logged < self._window_sec:
+            self._suppressed += 1
+            return
+        if self._suppressed:
+            message = (
+                f"{message} ({self._suppressed} repeats suppressed in the last {now - self._last_logged:.0f}s)"
+            )
+        self._log.error(message)
+        self._last_logged = now
+        self._suppressed = 0
 
 
 class DynamicCarState:
@@ -111,9 +145,14 @@ class MIAOBDWorker:
 
     def __init__(self,
                  broker_url: str = "tcp://localhost:5555",
-                 telemetry_url: str = "tcp://localhost:5556"):
+                 telemetry_url: str = "tcp://localhost:5556",
+                 telemetry_pub_endpoint: Optional[str] = None):
         self.broker_url = broker_url
         self.telemetry_url = telemetry_url
+        # obd/telemetry goes out on its own PUB socket; telemetry_socket is a SUB and cannot send.
+        if telemetry_pub_endpoint is None:
+            telemetry_pub_endpoint = os.environ.get(TELEMETRY_PUB_ENDPOINT_ENV, "")
+        self.telemetry_pub_endpoint: Optional[str] = telemetry_pub_endpoint.strip() or None
         self.context = zmq.Context()
         self.broker_socket: Optional[zmq.Socket] = None
         self.telemetry_socket: Optional[zmq.Socket] = None
@@ -172,9 +211,14 @@ class MIAOBDWorker:
         broker_thread = threading.Thread(target=self._broker_message_loop, daemon=True)
         broker_thread.start()
 
-        # Start telemetry publishing thread
-        telemetry_pub_thread = threading.Thread(target=self._telemetry_publish_loop, daemon=True)
-        telemetry_pub_thread.start()
+        # Start telemetry publishing thread, only when there is somewhere to publish
+        if self.telemetry_pub_endpoint:
+            telemetry_pub_thread = threading.Thread(target=self._telemetry_publish_loop, daemon=True)
+            telemetry_pub_thread.start()
+        else:
+            logger.info(
+                f"OBD telemetry publishing is off ({TELEMETRY_PUB_ENDPOINT_ENV} is not set)"
+            )
 
         # Start ELM327 emulator with init sequence
         self._start_elm_emulator()
@@ -319,43 +363,63 @@ class MIAOBDWorker:
         }
         self.broker_socket.send_json(response)
 
+    def _telemetry_payload(self) -> Dict:
+        """The normalized obd/telemetry payload for the current car state."""
+        telemetry_data = {
+            "engine_rpm": self.car_state.get_rpm(),
+            "speed_kmh": self.car_state.get_speed(),
+            "coolant_temp_c": self.car_state.get_coolant_temp(),
+            "device_id": "obd_worker",
+            "timestamp": datetime.now().isoformat(),
+        }
+
+        if self._active_protocol:
+            telemetry_data["adapter_capabilities"] = {
+                "adapter_kind": "elm327_emulator",
+                "transport": "virtual_pty",
+                "connection_state": "connected" if self._elm_initialized else "initializing",
+                "active_protocol": self._active_protocol,
+            }
+        return telemetry_data
+
     def _telemetry_publish_loop(self):
-        """Publish OBD telemetry data periodically using the normalized payload shape."""
-        if not self.telemetry_socket:
+        """Publish obd/telemetry at 10 Hz on a PUB socket bound to telemetry_pub_endpoint.
+
+        The PUB socket is created, used and closed in this thread only (ZeroMQ sockets are not
+        thread-safe). Without an endpoint there is nothing to do.
+        """
+        if not self.telemetry_pub_endpoint:
             return
 
-        while self.running:
-            try:
-                current_time = time.time()
-                if current_time - self.last_telemetry_publish >= self.telemetry_interval:
-                    telemetry_data = {
-                        "engine_rpm": self.car_state.get_rpm(),
-                        "speed_kmh": self.car_state.get_speed(),
-                        "coolant_temp_c": self.car_state.get_coolant_temp(),
-                        "device_id": "obd_worker",
-                        "timestamp": datetime.now().isoformat(),
-                    }
+        pub = self.context.socket(zmq.PUB)
+        pub.setsockopt(zmq.LINGER, 0)
+        try:
+            pub.bind(self.telemetry_pub_endpoint)
+        except zmq.ZMQError as e:
+            logger.error(f"OBD telemetry publishing is off: cannot bind {self.telemetry_pub_endpoint}: {e}")
+            pub.close(0)
+            return
+        logger.info(f"Publishing obd/telemetry on {self.telemetry_pub_endpoint}")
 
-                    if self._active_protocol:
-                        telemetry_data["adapter_capabilities"] = {
-                            "adapter_kind": "elm327_emulator",
-                            "transport": "virtual_pty",
-                            "connection_state": "connected" if self._elm_initialized else "initializing",
-                            "active_protocol": self._active_protocol,
-                        }
+        errors = ErrorLogThrottle(logger, window_sec=60.0)
+        topic = "obd/telemetry".encode('utf-8')
+        try:
+            while self.running:
+                try:
+                    current_time = time.time()
+                    if current_time - self.last_telemetry_publish >= self.telemetry_interval:
+                        message = json.dumps(self._telemetry_payload()).encode('utf-8')
+                        pub.send_multipart([topic, message])
+                        self.last_telemetry_publish = current_time
 
-                    topic = "obd/telemetry"
-                    message = json.dumps(telemetry_data).encode('utf-8')
-                    self.telemetry_socket.send_multipart([topic.encode('utf-8'), message])
+                    time.sleep(0.01)  # Small sleep to prevent CPU hogging
 
-                    self.last_telemetry_publish = current_time
+                except Exception as e:
+                    errors.error(f"Error in telemetry publish loop: {e}")
+                    time.sleep(0.1)
+        finally:
+            pub.close(0)
 
-                time.sleep(0.01)  # Small sleep to prevent CPU hogging
-
-            except Exception as e:
-                logger.error(f"Error in telemetry publish loop: {e}")
-                time.sleep(0.1)
-    
     def _send_error(self, request_id: Optional[str], error: str):
         """Send error response"""
         response = {
