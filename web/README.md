@@ -112,7 +112,8 @@ web/
 
 ```bash
 cd web
-npm ci             # only js-yaml is required
+npm ci             # js-yaml builds the pages; Cypress is a devDependency (set
+                   # CYPRESS_INSTALL_BINARY=0 to skip its browser binary when not running e2e)
 npm run build      # generate dist/
 npm test           # rebuilds and runs scripts/build-smoke.js
 npm run serve      # static preview of dist/ at http://localhost:8080
