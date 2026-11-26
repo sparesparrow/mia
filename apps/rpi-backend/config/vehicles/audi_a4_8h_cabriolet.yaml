@@ -16,7 +16,21 @@ vehicle:
     MY2004 cabriolet is the 8H body on B6 running gear; the cabriolet moved to B7
     running gear for MY2006. Look up wiring under 8H/8E, never B3.
   model_year: 2004
-  vin: null                      # fill from UDS DID F190 once read
+  # Verified from the prototype car's registration certificate on 2026-11-26.
+  type_code: "8H"
+  variant: KBCZF1FAV
+  type_approval: "e1*2001/116*0177"
+  engine:
+    displacement_cm3: 2496
+    fuel: diesel
+    power_kw: 120
+    power_rpm: 4000
+    description: "2.5 TDI V6"
+  emission_standard: "Euro 3"
+  seats: 4
+  max_speed_kmh: 217
+  first_registration_year: 2004
+  vin: null                      # never committed: the install's VIN is set on the Pi as MIA_VEHICLE_VIN in /etc/mia/environment
   head_unit: unknown             # chorus_ii | concert_ii | symphony_ii | aftermarket
   amplifier: unknown
   transmission: unknown
