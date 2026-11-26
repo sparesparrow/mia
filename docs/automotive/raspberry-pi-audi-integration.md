@@ -17,7 +17,8 @@ Key characteristics:
 - Powertrain CAN at 500 kbps; comfort and infotainment CAN at 100 kbps
 - The instrument cluster acts as the diagnostic gateway — there is no separate gateway module as on MQB/MLB,
   but comfort-domain traffic is still not rebroadcast onto the powertrain bus
-- Common engine variants: 1.8T (AMB/BFB), 2.4 V6 (BDV), 3.0 V6 (ASN/BBJ)
+- Engine: the prototype car is the 2.5 TDI V6 diesel (2496 cm³, 120 kW at 4000 rpm, Euro 3). Other variants of
+  the 8H cabriolet: 1.8T (AMB/BFB), 2.4 V6 (BDV), 3.0 V6 (ASN/BBJ)
 - Standard OBD-II PIDs fully supported
 - Read-only UDS diagnostics achievable without complex gateway negotiation
 
@@ -98,15 +99,34 @@ The repository already contains a first-pass Audi path.
 ### 1. Bench Validation Without a Car
 
 ```bash
-/bin/python3.13 -m unittest tests.test_vag_audi_bridge tests.test_automotive_mcp_bridge_vag
+pytest tests/unit/orchestration/test_vag_audi_bridge.py tests/unit/orchestration/test_automotive_mcp_bridge_vag.py
 ```
 
 ### 2. Raspberry Pi Runtime Validation
 
 ```bash
-sudo systemctl status zmq-broker mia-api mia-serial-bridge mia-obd-worker
-curl http://localhost:8000/status
+sudo systemctl status zmq-broker mia-api mia-serial-bridge mia-obd-worker mia-vag-audi-bridge
+curl -H "X-API-Key: <key>" http://localhost:8000/status
 ```
+
+The API requires a key, so `/status` needs the `X-API-Key` header.
+
+The VAG bridge reads its configuration from the unit's environment (`mia-vag-audi-bridge.service` and
+`/etc/mia/environment`):
+
+| Variable | Maps to | Notes |
+|---|---|---|
+| `VAG_ENABLE_UDS_POLLING` | `enable_uds_polling` | `true`, `1` or `yes` enable it; anything else leaves it off |
+| `VAG_ALLOWED_READ_SERVICES` | `allowed_read_services` | Comma list; only `19` and `22` are ever kept |
+| `VAG_DEFAULT_IDENTIFIERS` | `default_identifiers` | Comma list of DIDs, e.g. `F190` |
+| `ZMQ_TELEMETRY_SUB` | `transport_endpoint` | Telemetry PUB/SUB endpoint |
+| `MIA_VEHICLE_VIN` | `expected_vin` | The install's VIN; invalid values are ignored with a warning that does not print them |
+| `MIA_VEHICLE_MODEL` | `model_hint` | |
+| `MIA_VEHICLE_MODEL_YEAR` | `model_year` | Integer; anything else is ignored with a warning |
+
+Set the car's identity only in `/etc/mia/environment` on the Pi and never commit it. Once a VIN has been read
+from the car, the bridge's vehicle status reports `vin_match`. No variable can turn off read-only mode or enable
+writes, extended sessions or security access (REQ-AUTO-014, REQ-NFR-002).
 
 ### 3. In-Vehicle Passive Monitoring (Audi A4 Cabriolet 8H)
 
