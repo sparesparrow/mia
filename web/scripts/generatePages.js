@@ -282,6 +282,8 @@ function sharedValues(lang, pageDir, s = site) {
         url_cs: `${SITE_URL}${pageDir}/`,
         url_en: `${SITE_URL}${pageDir}/en/`,
         language_switch: t(s.language_switch, 'language_switch'),
+        skip_link: t(s.skip_link, 'skip_link'),
+        og_locale: lang === 'cs' ? 'cs_CZ' : 'en_GB',
         site_tagline: t(s.tagline, 'tagline'),
         nav_all_pages: t(s.nav.all_pages, 'nav.all_pages'),
         docs_button: t(s.pilot.docs, 'pilot.docs'),
@@ -317,6 +319,7 @@ function renderSegment(segment, lang) {
         description: text('page.description'),
         tagline: text(segment.tagline),
         hero_image: segment.heroImage,
+        og_image: `${SITE_URL}assets/site/${segment.heroImage}`,
         hero_title: text(segment.heroTitle),
         hero_subtitle: text(segment.heroSubtitle),
         facts_html: s.facts
@@ -366,6 +369,7 @@ function renderPress(lang) {
     const values = Object.assign(sharedValues(lang, 'press'), {
         title: t(press.title, 'title'),
         description: t(press.description, 'description'),
+        og_image: `${SITE_URL}assets/site/${pressImages[0]}`,
         lead: t(press.lead, 'lead'),
         facts_title: t(press.facts_title, 'facts_title'),
         facts_html: press.facts
@@ -421,5 +425,22 @@ const siteAssets = path.join(WEB_ROOT, 'assets', 'site');
 for (const file of fs.readdirSync(siteAssets)) {
     copyFile(path.join('assets', 'site', file), path.join('assets', 'site', file));
 }
+
+// robots.txt and sitemap.xml for the published site. URLs use the canonical host (SITE_URL).
+const sitemapPaths = [
+    '',
+    'docs/',
+    ...segments.map((seg) => seg.name).concat('press')
+        .flatMap((page) => LANGUAGES.map((lang) => `${page}/${langSuffix(lang)}`)),
+    ...Object.values(roleRedirects)
+];
+writeFile('sitemap.xml', [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...sitemapPaths.map((rel) => `  <url><loc>${escapeHtml(SITE_URL + rel)}</loc></url>`),
+    '</urlset>',
+    ''
+].join('\n'));
+writeFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}sitemap.xml\n`);
 
 console.log('🎉 All pages generated successfully!');

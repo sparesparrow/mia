@@ -1190,3 +1190,37 @@ body.madness-loading { cursor: auto; }
 .manifesto-img:hover, .weapon-card:hover .weapon-img {
   transform: none;
 }
+
+/* Skip link (REQ-WEB-004): hidden until it receives keyboard focus. */
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -100px;
+    z-index: 10001;
+    padding: 0.75rem 1rem;
+    background: var(--bg-darkness);
+    color: var(--secondary-chaos);
+    font-family: var(--font-terminal);
+    text-decoration: none;
+    border: 2px solid var(--secondary-chaos);
+}
+
+.skip-link:focus {
+    top: 1rem;
+    outline: 3px solid var(--secondary-chaos);
+    outline-offset: 2px;
+}
+
+/* Target size (WCAG 2.2 SC 2.5.8, REQ-WEB-004): navigation and footer links are at least 24x24 px. */
+.nav-link-hell {
+    display: inline-block;
+    min-width: 24px;
+    min-height: 24px;
+    text-align: center;
+}
+
+.footer-madness p a {
+    display: inline-block;
+    min-height: 24px;
+    line-height: 24px;
+}

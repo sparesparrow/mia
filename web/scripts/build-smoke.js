@@ -1,5 +1,5 @@
 // Smoke test for the MIA web page generator.
-// @req REQ-WEB-001 REQ-WEB-002 REQ-WEB-003
+// @req REQ-WEB-001 REQ-WEB-002 REQ-WEB-003 REQ-WEB-004
 //
 // Run via `npm test` (which calls `npm run build` first via the `pretest`
 // hook). CI runs it in .github/workflows/publish-pages.yml. Exit code 0 means
@@ -21,6 +21,10 @@
 //   8. The hand-written homepage (web/index.html) offers the three voice guides: a crew
 //      section with one card per guide, a distinct agent ID for each, one widget mount
 //      point, the embed script and the cloud disclosure (REQ-WEB-003).
+//   9. Every published page (generated pages and the homepage) has a skip link to one
+//      <main id="main">, exactly one <h1> and Open Graph tags whose image exists; the
+//      homepage lazy-loads the images below the hero; robots.txt points to sitemap.xml,
+//      which lists every generated page in both languages (REQ-WEB-004).
 
 'use strict';
 
@@ -42,6 +46,8 @@ const FORBIDDEN = [
     { pattern: /\b(300|93|70-93)\s?%/, label: 'unsourced percentages' },
     { pattern: /id="pricing"|href="#pricing"/, label: 'pricing section' }
 ];
+const SITE_URL = 'https://sparesparrow.github.io/mia/';
+const OG_PROPERTIES = ['og:title', 'og:description', 'og:url', 'og:image'];
 // Text that may legitimately mention the old name (the press kit explains the rename).
 const ALLOWED_OLD_NAME = /dříve pod názvem AI-SERVIS|previously called AI-SERVIS|starý název AI-SERVIS|old AI-SERVIS name/g;
 
@@ -70,6 +76,22 @@ function read(relPath) {
     } catch (_err) {
         return '';
     }
+}
+
+// 9. Landmarks, headings, skip link and Open Graph tags (REQ-WEB-004).
+function checkStructure(rel, html) {
+    const mains = html.match(/<main\b[^>]*>/g) || [];
+    check(mains.length === 1 && mains[0].includes('id="main"'), `${rel} has one <main id="main">`);
+    check((html.match(/<h1\b/g) || []).length === 1, `${rel} has exactly one <h1>`);
+    const firstLink = (html.match(/<body\b[^>]*>[\s\S]*?(<a\b[^>]*>)/) || [])[1] || '';
+    check(firstLink.includes('class="skip-link"') && firstLink.includes('href="#main"'),
+        `${rel} starts with a skip link to #main`);
+    const missingOg = OG_PROPERTIES.filter((prop) => !new RegExp(`<meta property="${prop}" content="[^"]+">`).test(html));
+    check(missingOg.length === 0, `${rel} has Open Graph tags` +
+        (missingOg.length ? ` (missing: ${missingOg.join(', ')})` : ''));
+    const image = (html.match(/<meta property="og:image" content="([^"]+)">/) || [])[1] || '';
+    check(image.startsWith(SITE_URL) && fs.existsSync(path.join(WEB_ROOT, image.slice(SITE_URL.length))),
+        `${rel} og:image points to a published image (${image.slice(SITE_URL.length)})`);
 }
 
 console.log('Smoke test: MIA web build');
@@ -116,6 +138,8 @@ for (const page of PAGES) {
                 `${rel} shows #scenarios before #today`);
         }
 
+        checkStructure(rel, html);
+
         // 6. Local assets exist.
         const pageDir = path.dirname(path.join(DIST, rel));
         const refs = [...html.matchAll(/(?:href|src)="([^"#:]+\.(?:css|jpg|png))"/g)].map((m) => m[1]);
@@ -156,6 +180,30 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
         'index.html loads the widget embed script');
     check(/ElevenLabs/.test(home) && home.includes('class="crew-note"'),
         'index.html says the guides run through ElevenLabs');
+}
+
+// 9. Homepage structure, lazy images, robots.txt and sitemap.xml (REQ-WEB-004).
+{
+    let home = '';
+    try {
+        home = fs.readFileSync(path.join(WEB_ROOT, 'index.html'), 'utf8');
+    } catch (_err) {
+        home = '';
+    }
+    checkStructure('index.html', home);
+    // The logo and the hero image are above the fold; every other image waits until it is needed.
+    const eager = (home.match(/<img\b[^>]*>/g) || [])
+        .filter((img) => !/suzmatra-brand\.svg|hero-dashboard\.jpg/.test(img) && !img.includes('loading="lazy"'));
+    check(eager.length === 0, 'index.html lazy-loads every image below the hero' +
+        (eager.length ? ` (eager: ${eager.length})` : ''));
+
+    const robots = read('robots.txt');
+    check(robots.includes(`Sitemap: ${SITE_URL}sitemap.xml`), 'robots.txt points to sitemap.xml');
+    const sitemap = read('sitemap.xml');
+    const expected = [''].concat(PAGES.flatMap((page) => [`${page}/`, `${page}/en/`]));
+    const unlisted = expected.filter((rel) => !sitemap.includes(`<loc>${SITE_URL}${rel}</loc>`));
+    check(sitemap.startsWith('<?xml') && unlisted.length === 0, 'sitemap.xml lists the homepage and every page' +
+        (unlisted.length ? ` (missing: ${unlisted.join(', ')})` : ''));
 }
 
 if (failures > 0) {

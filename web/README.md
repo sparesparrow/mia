@@ -1,7 +1,10 @@
 # MIA Web Pages
 
 Static web surfaces for MIA, published to <https://sparesparrow.github.io/mia/>
-by `.github/workflows/publish-pages.yml`. The audience landing pages and the
+by `.github/workflows/publish-pages.yml`. The same files are mirrored at
+<https://mia-suzmatra.vercel.app/>: the Vercel project `citadela-resort/mia-suzmatra`
+deploys the `gh-pages` branch of this repository (root directory `.`, no build step),
+so every push to `gh-pages` by the workflow also redeploys Vercel. The audience landing pages and the
 press kit are generated from shared templates. The gonzo homepage and a few
 internal tools are maintained by hand.
 
@@ -18,6 +21,7 @@ internal tools are maintained by hand.
 | `/developers/`, `/mechanics/`, `/testers/` | short aliases | generated redirects to `/docs/for/<role>/` |
 | `/customers/<segment>.html` | old URLs | generated redirects to `/<segment>/` |
 | any other missing path | | `404.html` redirects moved pages and lists the rest |
+| `/robots.txt`, `/sitemap.xml` | search engines | generated; the sitemap lists every page in both languages |
 
 Czech is the default language. Every generated page is rendered once per
 language, so the language switch is a plain link and the pages need no runtime
@@ -43,8 +47,8 @@ directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 - The agent IDs sit in the inline script at the end of `index.html`. They are public
   by design: each agent only accepts the origins on its allowlist
-  (`sparesparrow.github.io` and `localhost:8080` for `npm run serve`) and has a daily
-  conversation limit. Prompts, voices and the knowledge base live in the ElevenLabs
+  (`sparesparrow.github.io`, `mia-suzmatra.vercel.app`, and `localhost:8080` and
+  `127.0.0.1:8080` for local previews) and has a daily conversation limit. Prompts, voices and the knowledge base live in the ElevenLabs
   workspace, not in this repository.
 - Rimmer and Kryten share a fact sheet that follows the "what works today" rule
   below. Update that fact sheet in ElevenLabs when `i18n/site.yaml` changes.
@@ -112,6 +116,9 @@ npm run serve      # static preview of dist/ at http://localhost:8080
 placeholder did not render, a page shows the old name, a price or a removed
 percentage, a page does not link to every audience, a local asset is missing,
 a redirect points to the wrong place, or the homepage loses its voice-guide markup.
+It also fails if a page (homepage included) loses its skip link, its single `<main id="main">`,
+its single `<h1>` or its Open Graph tags, if a homepage image below the hero is not lazy-loaded,
+or if `robots.txt` or `sitemap.xml` is missing a page (REQ-WEB-004).
 
 To preview the whole site as published, copy the homepage next to `dist/` the way
 the workflow's "Assemble static site" step does, and build the docs with
@@ -120,7 +127,11 @@ the workflow's "Assemble static site" step does, and build the docs with
 ## Known limitations
 
 - The homepage (`index.html`) is hand-written Czech. Its English link goes to
-  `/journalists/en/`. `build-smoke.js` checks only its voice-guide markup, not its copy.
+  `/journalists/en/`. `build-smoke.js` checks its voice-guide markup and its page
+  structure (REQ-WEB-004), not its copy.
+- Canonical URLs and the sitemap use the GitHub Pages host. `robots.txt` only takes effect at
+  a host root, so it works on the Vercel mirror but not under `/mia/` on GitHub Pages; submit
+  the sitemap to search engines directly.
 - The voice guides are on the homepage only, and their widget script comes from
   `unpkg.com` unpinned, as ElevenLabs documents it.
 - While one of the homepage's glitch effects runs, the widget moves with the page for

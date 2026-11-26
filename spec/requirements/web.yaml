@@ -67,3 +67,31 @@ requirements:
     guides' answers are not covered by CI.
   safety: Nothing here touches a vehicle or hardware. The guides can only hand over to each other, switch
     language, end the call and read their knowledge base.
+- id: REQ-WEB-004
+  title: Accessible and indexable page structure
+  statement: Every published page (the generated audience pages, the press kit and the homepage) shall start
+    with a skip link to a single main landmark, have exactly one top-level heading and carry Open Graph tags, and
+    the site shall publish robots.txt and a sitemap that lists every page in both languages.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - "Every generated page and the homepage has one <main id=\"main\">, exactly one <h1> and a skip link to the
+    main landmark as its first link"
+  - Every generated page and the homepage has og:title, og:description, og:url and an og:image that exists in the
+    published assets
+  - The homepage lazy-loads every image below the hero
+  - robots.txt points to sitemap.xml, which lists the homepage and every generated page in Czech and English
+  implemented_in:
+  - web/template.html
+  - web/press-template.html
+  - web/index.html
+  - web/scripts/generatePages.js
+  - web/i18n/site.yaml
+  - web/site.css
+  - web/customers/journalists/gonzo-styles.css
+  notes: web/scripts/build-smoke.js checks the markup, robots.txt and sitemap.xml in CI. The sitemap and canonical
+    URLs use the GitHub Pages host; the Vercel mirror (mia-suzmatra.vercel.app) serves the same gh-pages files.
+    robots.txt only takes effect at a host root, so on GitHub Pages it is informational and the sitemap has to be
+    submitted to search engines directly.
+  not_proven: The smoke test checks markup only. Screen-reader output, keyboard focus order beyond the skip link,
+    colour contrast and the 24 px target size are checked by hand in a browser, not in CI.
+  safety: n/a. Static pages only; nothing touches a vehicle or hardware.

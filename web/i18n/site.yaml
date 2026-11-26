@@ -12,6 +12,9 @@ site:
   language_switch:
     en: Česky
     cs: English
+  skip_link:
+    en: Skip to content
+    cs: Přeskočit na obsah
   facts:
     - en: Built on an Audi A4 Cabriolet 8H
       cs: Vyvíjeno na Audi A4 Cabriolet 8H
