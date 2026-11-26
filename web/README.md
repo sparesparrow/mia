@@ -178,8 +178,12 @@ the workflow's "Assemble static site" step does, and build the docs with
   `unpkg.com` unpinned, as ElevenLabs documents it.
 - While one of the homepage's glitch effects runs, the widget moves with the page for
   the length of the effect, like the menu does: the effect puts a filter on `body`.
-- `customers/journalists/background-music.mp3` (~7.8 MB) is published with the
-  homepage. It is not preloaded and only plays from the 🎵 button. It is a gonzo brand asset; clean it
-  up only with product sign-off.
+- `customers/journalists/background-music.mp3` (~3.2 MB, 80 kb/s stereo MP3, no cover art or tags) is
+  published with the homepage. It is a gonzo brand asset; replace it only with product sign-off.
+  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click, tap or key
+  press. The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
+  guide pauses it and never starts it. `preload="none"` means nothing is downloaded until it actually plays.
+  Re-encode from a source with
+  `ffmpeg -i <src> -map 0:a:0 -vn -map_metadata -1 -c:a libmp3lame -b:a 80k -ac 2 -ar 44100 background-music.mp3`.
 - `customers/journalists/index-gonzo.html` is an older copy of `index.html`
   that the gonzo monitor tooling (`monitor-gonzo.py`) still uses.
