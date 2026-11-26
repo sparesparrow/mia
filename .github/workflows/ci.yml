@@ -236,7 +236,13 @@ jobs:
           python -m pip install --upgrade pip "setuptools<82" wheel
           python -m pip install -r requirements-ci.txt
       - name: Install mosquitto (broker ACL tests, REQ-SEC-004)
-        run: sudo apt-get update -q && sudo apt-get install -y -q mosquitto mosquitto-clients
+        # Ubuntu's package confines /usr/sbin/mosquitto with an AppArmor profile that cannot read the
+        # test's config under /tmp ("Unable to open config file"); unload it on this throwaway runner.
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q mosquitto mosquitto-clients
+          for p in /etc/apparmor.d/*mosquitto*; do
+            [ -e "$p" ] && echo "unloading AppArmor profile $p" && sudo apparmor_parser -R "$p" || true
+          done
       - name: Run tests
         run: python -m pytest tests/ -m "not hardware" --tb=short -q --cov --req-report=req-report.json
       - name: Check requirement traceability
