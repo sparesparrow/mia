@@ -169,6 +169,10 @@ const roleRedirects = {
 // Press kit images and their descriptions (web/i18n/site.yaml press.images); the first is the og:image.
 const pressImages = site.press.images.map((image) => image.file);
 
+// Link previews use a 1200x630 copy of an image (<name>-og.jpg next to it in assets/site), the size
+// X, LinkedIn and Facebook show uncropped.
+const ogImage = (file) => `${SITE_URL}assets/site/${file.replace(/\.jpg$/, '-og.jpg')}`;
+
 function escapeHtml(value) {
     return String(value)
         .replace(/&/g, '&amp;')
@@ -319,7 +323,7 @@ function renderSegment(segment, lang) {
         description: text('page.description'),
         tagline: text(segment.tagline),
         hero_image: segment.heroImage,
-        og_image: `${SITE_URL}assets/site/${segment.heroImage}`,
+        og_image: ogImage(segment.heroImage),
         hero_title: text(segment.heroTitle),
         hero_subtitle: text(segment.heroSubtitle),
         facts_html: s.facts
@@ -369,7 +373,7 @@ function renderPress(lang) {
     const values = Object.assign(sharedValues(lang, 'press'), {
         title: t(press.title, 'title'),
         description: t(press.description, 'description'),
-        og_image: `${SITE_URL}assets/site/${pressImages[0]}`,
+        og_image: ogImage(pressImages[0]),
         lead: t(press.lead, 'lead'),
         facts_title: t(press.facts_title, 'facts_title'),
         facts_html: press.facts
