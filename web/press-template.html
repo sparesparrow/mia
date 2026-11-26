@@ -6,6 +6,14 @@
     <title>{{title}}</title>
     <meta name="description" content="{{description}}">
     <link rel="canonical" href="{{canonical}}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MIA by SUZMATRA">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{description}}">
+    <meta property="og:url" content="{{canonical}}">
+    <meta property="og:image" content="{{og_image}}">
+    <meta property="og:locale" content="{{og_locale}}">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="alternate" hreflang="cs" href="{{url_cs}}">
     <link rel="alternate" hreflang="en" href="{{url_en}}">
     <link rel="stylesheet" href="{{root}}business/styles.css">
@@ -16,6 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="site-page segment-press">
+    <a class="skip-link" href="#main">{{skip_link}}</a>
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
@@ -31,6 +40,8 @@
             </div>
         </div>
     </nav>
+
+    <main id="main">
 
     <section class="press-section">
         <div class="container">
@@ -91,6 +102,8 @@
             </div>
         </div>
     </section>
+
+    </main>
 
     <footer class="footer" id="site-footer">
         <div class="container">
