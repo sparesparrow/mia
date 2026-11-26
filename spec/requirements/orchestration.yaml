@@ -46,6 +46,8 @@ requirements:
   - Recurring patterns gain confidence in the knowledge base
   implemented_in:
   - orchestration/ai_self_improvement
+  not_proven: Real improvement; phase metrics are simulated in phase_executor.py (fixed gains, seeded random.Random
+    noise), not measured from test or CI results, so convergence shows the loop's bookkeeping
 - id: REQ-ORCH-006
   title: Learning loop agents
   statement: Error-coordinator, knowledge-synthesiser and performance-monitor agents shall support the learning
