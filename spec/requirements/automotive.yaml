@@ -11,6 +11,8 @@ requirements:
   acceptance:
   - Car state follows the MCU telemetry it is fed
   - Car state maps onto the OBD PIDs the emulator serves
+  - obd/telemetry goes out on the worker's own PUB socket, only when OBD_TELEMETRY_PUB_ENDPOINT is set, and repeated
+    publish errors are logged at most once a minute
   implemented_in:
   - apps/rpi-backend/py-api/services/obd_worker.py
   services:
