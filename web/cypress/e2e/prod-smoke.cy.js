@@ -37,7 +37,11 @@ const isVercel = /vercel\.app/.test(Cypress.config('baseUrl') || '');
             expect(res.status).to.be.oneOf([307, 308]);
             expect(res.headers.location).to.match(/^(https:\/\/mia-suzmatra\.vercel\.app)?\/business\/$/);
         });
-        cy.request({ url: '/mia', followRedirect: false }).its('headers.location').should('match', /^(https:\/\/[^/]+)?\/$/);
+        // Page URLs end in a slash; the first rule (`:path*`) missed exactly those.
+        [['/mia', '/'], ['/mia/', '/'], ['/mia/journalists/en/', '/journalists/en/']].forEach(([from, to]) => {
+            cy.request({ url: from, followRedirect: false }).its('headers.location')
+                .should('match', new RegExp(`^(https://[^/]+)?${to.replace(/\//g, '\\/')}$`));
+        });
     });
 
     (isVercel ? it : it.skip)('Vercel sends the security headers', () => {
