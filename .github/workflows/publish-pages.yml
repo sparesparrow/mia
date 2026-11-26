@@ -71,6 +71,9 @@ jobs:
 
       - name: Install web dependencies
         working-directory: web
+        # The Cypress binary is only needed by the e2e-web job.
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
         run: npm ci
 
       - name: Generate and smoke-test audience pages
@@ -102,10 +105,58 @@ jobs:
           path: _site_web/
           retention-days: 1
 
+  e2e-web:
+    name: Browser Tests (Cypress)
+    runs-on: ubuntu-latest
+    needs: [build-web]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Cache the Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('web/package-lock.json') }}
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Download web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-site
+          path: _site_web
+
+      - name: Serve the assembled site
+        # The same files the deploy job publishes, without MkDocs (built separately).
+        run: |
+          python3 -m http.server 8080 --bind 127.0.0.1 --directory _site_web > /tmp/http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS -o /dev/null http://localhost:8080/ && exit 0; sleep 1; done
+          cat /tmp/http.log; exit 1
+
+      - name: Run Cypress
+        working-directory: web
+        run: npx cypress run --headless
+
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: web/cypress/screenshots/
+          retention-days: 7
+
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    needs: [build-docs, build-web]
+    needs: [build-docs, build-web, e2e-web]
     if: github.event_name != 'pull_request'
     steps:
       - name: Download docs artifact
@@ -138,7 +189,7 @@ jobs:
   build-check:
     name: Build Check (PR)
     runs-on: ubuntu-latest
-    needs: [build-docs, build-web]
+    needs: [build-docs, build-web, e2e-web]
     if: github.event_name == 'pull_request'
     steps:
-      - run: echo "Both docs and web builds succeeded. Ready to merge."
+      - run: echo "Docs and web builds and the browser tests succeeded. Ready to merge."

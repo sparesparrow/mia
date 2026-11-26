@@ -90,6 +90,8 @@ web/
   scripts/
     generatePages.js         generator entry point (`npm run build`)
     build-smoke.js           smoke test (`npm test`)
+  cypress/                   browser tests (`npm run e2e`, `npm run e2e:prod`)
+  cypress.config.js          Cypress settings (baseUrl http://localhost:8080)
   i18n/
     site.yaml                shared site strings: what works today, nav, pilot, press kit
     business.yaml            fleet / commercial segment
@@ -125,6 +127,29 @@ its single `<h1>` or its Open Graph tags, if a homepage image below the hero is 
 or if `robots.txt` or `sitemap.xml` is missing a page (REQ-WEB-004).
 It also fails if `vercel.json` loses a security header or misses the hash of an inline script
 (REQ-WEB-005).
+
+### Browser tests
+
+`cypress/e2e/` holds Cypress tests for the assembled site: page structure, skip link and Open
+Graph tags on every page, a 390 px phone width, local links, the language switch, the mobile
+menu, the voice-guide switcher and the sitemap. Third-party scripts and fonts are stubbed, so
+no test starts a voice conversation. The publish-pages workflow runs them in the
+`Browser Tests (Cypress)` job, and the deploy waits for it.
+
+```bash
+npm run build
+rm -rf /tmp/mia-site && mkdir -p /tmp/mia-site/customers/journalists
+cp -r dist/. /tmp/mia-site/ && cp index.html 404.html /tmp/mia-site/
+cp customers/journalists/gonzo-styles.css customers/journalists/gonzo-app.js \
+   customers/journalists/background-music.mp3 /tmp/mia-site/customers/journalists/
+python3 -m http.server 8080 --bind 127.0.0.1 --directory /tmp/mia-site &
+npm run e2e         # all local specs; prod-smoke.cy.js is skipped
+npm run e2e:prod    # read-only smoke test against https://mia-suzmatra.vercel.app
+```
+
+`prod-smoke.cy.js` only sends GET requests and visits pages. It also runs against GitHub Pages
+with `--config baseUrl=https://sparesparrow.github.io/mia`; the security-header test runs on
+Vercel only.
 
 To preview the whole site as published, copy the homepage next to `dist/` the way
 the workflow's "Assemble static site" step does, and build the docs with

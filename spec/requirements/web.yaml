@@ -63,8 +63,9 @@ requirements:
     sheet that follows the "what works today" rule of REQ-WEB-002, plus copies of this registry, the published
     docs and selected source files that ElevenLabs refreshes from the main branch. web/scripts/build-smoke.js
     checks the homepage markup.
-  not_proven: The smoke test checks markup only. A live conversation, the widget rendering in a browser, and the
-    guides' answers are not covered by CI.
+  not_proven: In CI, the smoke test checks the markup and web/cypress/e2e/homepage.cy.js checks in a browser that
+    each guide card swaps the widget to a distinct agent, with the ElevenLabs script stubbed. A live conversation,
+    the real widget rendering and the guides' answers are not covered by CI.
   safety: Nothing here touches a vehicle or hardware. The guides can only hand over to each other, switch
     language, end the call and read their knowledge base.
 - id: REQ-WEB-004
@@ -92,8 +93,9 @@ requirements:
     URLs use the GitHub Pages host; the Vercel mirror (mia-suzmatra.vercel.app) serves the same gh-pages files.
     robots.txt only takes effect at a host root, so on GitHub Pages it is informational and the sitemap has to be
     submitted to search engines directly.
-  not_proven: The smoke test checks markup only. Screen-reader output, keyboard focus order beyond the skip link,
-    colour contrast and the 24 px target size are checked by hand in a browser, not in CI.
+  not_proven: The smoke test checks markup; web/cypress/e2e/structure.cy.js also checks in a browser that the
+    skip link shows when focused and that every page fits a 390 px screen. Screen-reader output, the full focus
+    order, colour contrast and the 24 px target size are checked by hand, not in CI.
   safety: n/a. Static pages only; nothing touches a vehicle or hardware.
 - id: REQ-WEB-005
   title: Security headers on the Vercel mirror
