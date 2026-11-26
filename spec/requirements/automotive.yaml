@@ -177,6 +177,8 @@ requirements:
     year; unset variables keep the defaults
   - An invalid VIN (not 17 characters of A-Z and 0-9 without I, O, Q) is ignored with a warning that does not echo it
   - The vehicle status reports expected_vin and vin_match, which stays null until a VIN has been read
+  - An unusable VIN read (empty, malformed, or only NUL or space padding) gives vin_match null, never false; a VIN
+    read as bytes or padded with NULs or spaces is decoded and trimmed before it is compared
   - No environment variable can turn off read_only or enable writes, extended sessions, security access, or a read
     service other than 0x19 and 0x22
   implemented_in:
