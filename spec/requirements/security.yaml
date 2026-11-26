@@ -46,6 +46,7 @@ requirements:
   - The phone assistant can publish mia/lights/* but not vehicle/cmd/{vin}/io or other mia/ topics
   - The Android app and the ESP32 firmware can publish their own telemetry topics but not vehicle commands
   - Only pi-backend can publish vehicle/cmd/{vin}/io
+  - The phone assistant's writable topics are exactly the topics spec/interfaces/topics.md classifies as direct
   implemented_in:
   - infra/edge/pi-gateway/services/mosquitto/acl
   - infra/edge/pi-gateway/services/mosquitto/secure.conf

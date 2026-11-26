@@ -118,6 +118,42 @@ system/session/{session-id}
 - **Payload**: Session state changes (created, handoff, resumed, ended)
 - **Direction**: RPi → all clients
 
+## Home Lights and the Phone Assistant
+
+These topics drive the home lights through the light engine (OpenClaw home-auto, outside this
+repository) and zigbee2mqtt. The phone assistant (android-assistant `mqtt_publish`) and the
+voice pipeline's light feedback publish them. They keep their `mia/lights/…` names: no MIA
+service publishes or reads them, and renaming would break the light engine.
+
+| Topic | Payload | Publisher | Consumer | Safety class |
+|---|---|---|---|---|
+| `mia/lights/mood` | `{"mood": "<name>"}`, names from the mcp-prompts prompt `openclaw-home-command-interpreter` | phone assistant | light engine | `direct` |
+| `mia/lights/effect` | `{"effect": "rainbow\|pulse\|breathe\|flash\|wave", "duration": <s>}` | phone assistant | light engine | `direct` |
+| `mia/lights/off` | empty | phone assistant | light engine | `direct` |
+| `mia/lights/sound` | `{"enabled": <bool>, "mode": "<name>", "sensitivity": <0..1>}` | phone assistant | light engine | `direct` |
+| `zigbee2mqtt/{ieee-address}/set` | zigbee2mqtt set payload, e.g. `{"state": "ON", "brightness": 200}` | phone assistant | zigbee2mqtt | `confirm` |
+| `vehicle/cmd/{vin}/io` | see IO Commands | Pi backend only | ESP32 | `confirm`, never from the phone |
+
+- **QoS**: 0 for lights (a lost light change is harmless and the next one replaces it)
+- **Retained**: false
+
+## Command Safety Classes
+
+Every topic that makes something happen has one class. Clients that act on natural language
+(the phone assistant, voice) must follow it:
+
+- **`direct`**: harmless and idempotent; publish without asking. Only the four `mia/lights/…`
+  topics above.
+- **`confirm`**: needs a human yes for that exact topic and payload first. Every other command
+  topic, including `zigbee2mqtt/…/set` and any other `mia/…` topic.
+
+The phone assistant publishes `direct` topics right away and `confirm` topics only with a
+one-time confirmation token. Anything outside `mia/…` and `zigbee2mqtt/…` is refused. On the
+secure broker the ACL goes further ([ADR-0026](../decisions/0026-mqtt-broker-users-and-topic-acl.md)):
+the `phone-assistant` user may write only `mia/lights/#`. A confirmed command for the car goes
+through the Pi API, which alone may publish `vehicle/cmd/{vin}/io`. Tests check that the ACL
+and this table agree: `tests/unit/infra/test_topic_safety_classes.py`.
+
 ## Topic Examples
 
 ### OBD Data Example
@@ -173,8 +209,11 @@ system/session/{session-id}
 - **QoS 2**: Commands, alerts, security events
 
 ## Security Considerations
-- All topics require authentication
-- Device-specific topics use device certificates
-- Sensitive data is encrypted in transit
-- Topic access is controlled by device roles
+- The secure broker (`SECURE=1`, ADR-0026) refuses anonymous clients and gives each client
+  role only its topics (`infra/edge/pi-gateway/services/mosquitto/acl`). The development
+  brokers (`infra/containers/mosquitto`, the default gateway config, `mia-sim`) still allow
+  anonymous clients; the authentication decision is #139.
+- Device-specific topics use device certificates (planned)
+- Sensitive data is encrypted in transit (planned: TLS listener)
+- Command topics carry a safety class (see Command Safety Classes)
 
