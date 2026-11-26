@@ -82,7 +82,7 @@ requirements:
   statement: Run on the Pi from a checkout of the repository, one command shall copy the code the systemd units run
     to /opt/mia, install the Pi API's own Python requirements into a venv that the units start, and install and enable
     the core units, without installing into the system Python and without losing the API key on a re-run.
-  evidence: implemented_and_ci_tested
+  evidence: hardware_tested
   acceptance:
   - Every path the core units name in ExecStart, WorkingDirectory and PYTHONPATH exists in the install, and the API
     imports from the install with its generated bindings
@@ -109,6 +109,7 @@ requirements:
   - ADR-0005
   notes: tools/scripts/deploy-mia-rpi.sh (REQ-DEP-003) deploys from another machine and still installs its own package
     list and rewrites the units; choosing one entrypoint is #132.
-  not_proven: Never run on a Pi. The test runs the script with apt-get, systemctl, useradd, usermod and chown replaced
-    by stubs and an empty requirements file; the aarch64 CI job installs the requirements on a GitHub runner, not on
-    Raspberry Pi OS. The BLE units have not been started with the venv.
+  not_proven: Run once on the target Pi (Raspberry Pi 4B, Debian 13, Python 3.13; spec/evidence/REQ-DEP-008), as an
+    update of an existing install, not a first install on a clean card, and on Bookworm (3.11) only in CI. The failure
+    paths (fetch error, differing local changes, a crash-looping unit) were not exercised on the Pi. The adapter is still
+    discoverable after a deploy because mia-ble-advertiser runs piscan itself.
