@@ -95,3 +95,26 @@ requirements:
   not_proven: The smoke test checks markup only. Screen-reader output, keyboard focus order beyond the skip link,
     colour contrast and the 24 px target size are checked by hand in a browser, not in CI.
   safety: n/a. Static pages only; nothing touches a vehicle or hardware.
+- id: REQ-WEB-005
+  title: Security headers on the Vercel mirror
+  statement: The Vercel mirror of the site shall send nosniff, referrer, framing and permissions headers, and a
+    report-only Content-Security-Policy that names every host the pages load from and the hash of every inline
+    script.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - dist/vercel.json sets X-Content-Type-Options nosniff, a Referrer-Policy, X-Frame-Options SAMEORIGIN and an
+    enforced frame-ancestors 'self' policy for every path
+  - The Permissions-Policy does not restrict the microphone the voice guides need
+  - The report-only Content-Security-Policy contains the sha256 of every inline script in the generated pages,
+    the homepage and 404.html
+  implemented_in:
+  - web/scripts/generatePages.js
+  decisions:
+  - ADR-0010
+  notes: Vercel project citadela-resort/mia-suzmatra deploys the gh-pages branch, whose root is web/dist/ plus the
+    homepage, so the generated dist/vercel.json lands at the deployment root. GitHub Pages cannot send custom
+    headers and ignores the file. The full policy stays report-only until a complete voice-guide conversation has
+    been tested under it; MkDocs pages under docs/ are excluded from it. web/scripts/build-smoke.js checks the file.
+  not_proven: CI checks the generated file, not the live response headers, and no voice conversation has been run
+    under the policy.
+  safety: n/a. Static pages only; nothing touches a vehicle or hardware.
