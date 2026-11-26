@@ -33,6 +33,7 @@ ON_PI_SCRIPTS = [
     INSTALL_SCRIPT,
     SCRIPTS / "deploy-production-rpi.sh",
     SCRIPTS / "setup-ble-service.sh",
+    SCRIPTS / "mia-update-checkout.sh",
 ]
 SHIMMED = ("apt-get", "systemctl", "useradd", "usermod", "chown")
 CORE_UNITS = (
@@ -43,6 +44,10 @@ CORE_UNITS = (
     "mia-obd-worker.service",
 )
 API_KEY = "MIA_API_KEY=mia_api_0123456789abcdef"
+STALE_UNIT = "mia-tts.service"
+NOT_INSTALLED_UNIT = "mia-power-monitor.service"
+PRODUCTION_SCRIPT = SCRIPTS / "deploy-production-rpi.sh"
+BLE_SCRIPT = SCRIPTS / "setup-ble-service.sh"
 
 
 @pytest.fixture(scope="module")
@@ -71,6 +76,9 @@ def pi(tmp_path_factory):
 
     install_dir = root / "opt" / "mia"
     systemd_dir = root / "systemd"
+    # A voice unit an earlier install put in place, now stale; the update must refresh it without enabling it.
+    systemd_dir.mkdir()
+    (systemd_dir / STALE_UNIT).write_text("[Service]\nExecStart=/bin/false stale\n")
     wrapper = root / "usr" / "local" / "bin" / "mia-python"
     env = {
         "PATH": f"{shim_dir}{os.pathsep}{os.environ.get('PATH', '')}",
@@ -96,7 +104,7 @@ def pi(tmp_path_factory):
             timeout=300,
         )
 
-    runs = [install(env) for _ in range(2)]
+    runs = [install(env), install({**env, "MIA_SKIP_CLAUDE_TOOLING": "1"})]
     leftovers_after_success = sorted(p.name for p in tmpdir.iterdir())
 
     # A read of the environment file that fails, as an unreadable file or a refused sudo would.
@@ -297,3 +305,39 @@ def test_ci_keeps_the_aarch64_install_check_this_requirement_cites():
     assert "-r apps/rpi-backend/py-api/requirements.txt" in script
     assert "pip check" in script
     assert "import api.main" in script
+
+
+def test_installed_units_outside_the_core_set_are_refreshed_not_enabled(pi):
+    repo_unit = REPO_ROOT / "infra" / "systemd" / STALE_UNIT
+    assert (pi.systemd / STALE_UNIT).read_bytes() == repo_unit.read_bytes()
+    assert not (pi.systemd / NOT_INSTALLED_UNIT).exists()
+    assert STALE_UNIT not in "".join(line for line in pi.calls.splitlines(True) if line.startswith("systemctl enable"))
+
+
+def test_the_update_tool_directory_is_root_owned(pi):
+    """ADR-0023: whoever can write bin/ can replace the tool the phone's sudo rule runs as root."""
+    assert f"chown root:root {pi.install}/bin" in pi.calls
+
+
+def test_the_claude_tooling_update_can_be_skipped(pi):
+    assert "MIA_SKIP_CLAUDE_TOOLING=1" not in pi.runs[0].stdout
+    assert "MIA_SKIP_CLAUDE_TOOLING=1: leaving the Claude Code CLI" in pi.runs[1].stdout
+
+
+def test_the_ble_setup_neither_chowns_the_install_nor_opens_bluetooth():
+    text = BLE_SCRIPT.read_text()
+    assert 'chown -R "$SERVICE_USER:$SERVICE_USER" "$INSTALL_DIR"' not in text
+    # ADR-0025: discoverable only during the enrollment pairing window, which mia-bt-agent.service opens.
+    assert "piscan" not in [word for line in text.splitlines() if not line.lstrip().startswith("#") for word in line.split()]
+
+
+def test_the_production_deploy_updates_the_checkout_and_restarts_the_broker_first():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert 'bash "$SCRIPT_DIR/mia-update-checkout.sh" "$PROJECT_ROOT" "$DEPLOY_REF"' in text
+    # The updated copy of the script continues after the checkout.
+    assert "exec env MIA_DEPLOY_CHECKOUT_DONE=1 bash" in text
+    assert "git pull" not in text
+    broker = text.index("systemctl restart zmq-broker.service")
+    others = text.index('systemctl restart "${restart_units[@]}"')
+    assert broker < others
+    assert "deployed.json" in text
