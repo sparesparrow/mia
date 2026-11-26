@@ -27,6 +27,8 @@ requirements:
   acceptance:
   - Every published generated page links to every supported audience and its alternate language
   - Generated audience pages contain no unsupported prices, performance figures or retired AI-SERVIS branding
+  - The hand-written homepage and 404 page pass the same price, figure and branding checks, and link to every
+    audience page
   implemented_in:
   - web/scripts/generatePages.js
   - web/i18n/site.yaml
@@ -39,9 +41,15 @@ requirements:
   notes: web/scripts/build-smoke.js checks that every generated page links to every audience, and that it has no
     AI-SERVIS name, currency or the removed percentages. The "what works today" list in web/i18n/site.yaml, and
     a segment's own `site:` override of it (web/i18n/gonzo.yaml), must only name requirements that are
-    implemented_and_ci_tested or better; planned features go in the use cases. The hand-written homepage
-    (web/index.html) is not covered by the smoke test.
-  not_proven: The hand-written homepage is outside the generated-page smoke test.
+    implemented_and_ci_tested or better; planned features go in the use cases. The smoke test applies the same
+    name, currency and percentage checks to the hand-written web/index.html and web/404.html, checks that the
+    homepage links to every audience, and that the 404 page links to the homepage and every audience page. The
+    404 page links with /mia/ paths that its inline script rewrites to the host's base; the generated
+    vercel.json also redirects /mia/... to the root, so the links work on the Vercel mirror without
+    JavaScript. web/cypress/e2e/prod-smoke.cy.js checks both on the live hosts.
+  not_proven: Free-text claims on the hand-written homepage (beyond prices, percentages and the old name) are
+    reviewed by hand against the registry, not by CI. The Vercel redirect is checked by the read-only production
+    smoke test, which is run by hand, not in CI.
 - id: REQ-WEB-003
   title: Homepage voice guides
   statement: The homepage shall offer three voice guides (Holly, Rimmer, Kryten) that tell a visitor what MIA is,

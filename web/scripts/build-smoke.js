@@ -27,6 +27,11 @@
 //      which lists every generated page in both languages (REQ-WEB-004).
 //  10. dist/vercel.json sets the security headers for the Vercel mirror, and its report-only
 //      Content-Security-Policy allows the sha256 of every inline script on the site (REQ-WEB-005).
+//      It also redirects /mia/... to the root, so the shared 404 page's /mia/ links work on Vercel
+//      without JavaScript and from GitHub-Pages-style URLs.
+//  11. The hand-written pages (web/index.html, web/404.html) pass check 3 too; the homepage links
+//      to every audience and the documentation, and the 404 page links to the homepage and every
+//      audience page with /mia/ paths plus the data-path its script rewrites them from (REQ-WEB-002).
 
 'use strict';
 
@@ -237,9 +242,50 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
         .map((m) => crypto.createHash('sha256').update(m[1], 'utf8').digest('base64'))
         .filter((hash) => !reportOnly.includes(`'sha256-${hash}'`))
         .map(() => path.relative(WEB_ROOT, file)));
+    const redirects = (config && config.redirects) || [];
+    check(redirects.some((r) => r.source === '/mia/:path*' && r.destination === '/:path*')
+        && redirects.some((r) => r.source === '/mia' && r.destination === '/'),
+    'vercel.json redirects /mia/... to the root (404 page links without JavaScript)');
     check(reportOnly.includes("script-src 'self'") && missingHashes.length === 0,
         'vercel.json report-only CSP allows every inline script' +
             (missingHashes.length ? ` (missing: ${[...new Set(missingHashes)].join(', ')})` : ''));
+}
+
+// 11. Hand-written pages (REQ-WEB-002). They are copied next to dist/ by the publish workflow, so read them
+// from web/.
+{
+    const readWeb = (file) => {
+        try {
+            return fs.readFileSync(path.join(WEB_ROOT, file), 'utf8');
+        } catch (_err) {
+            return '';
+        }
+    };
+    const home = readWeb('index.html');
+    const notFound = readWeb('404.html');
+    for (const [file, html] of [['index.html', home], ['404.html', notFound]]) {
+        check(html.length > 0, `${file} exists and is non-empty`);
+        const scrubbed = html.replace(ALLOWED_OLD_NAME, '');
+        for (const { pattern, label } of FORBIDDEN) {
+            check(!pattern.test(scrubbed), `${file} has no ${label}`);
+        }
+    }
+    const homeAudiences = PAGES.map((s) => `${s}/`)
+        .concat(Object.values(ROLE_REDIRECTS).map((t) => t.replace('../', '')));
+    const homeMissing = homeAudiences.filter((a) => !home.includes(`href="${a}"`) && !home.includes(`href="${a}en/"`));
+    check(homeMissing.length === 0 && home.includes('href="docs/"'),
+        'index.html links to every audience and the documentation' +
+            (homeMissing.length ? ` (missing: ${homeMissing.join(', ')})` : ''));
+    // 404.html is served at any depth, so it links with absolute /mia/ paths. Its inline script rewrites each
+    // link from data-path to the host's base; without JavaScript, vercel.json maps /mia/... to the root.
+    const notFoundMissing = ['', ...PAGES.map((s) => `${s}/`)]
+        .filter((rel) => !notFound.includes(`data-path="${rel}" href="/mia/${rel}"`));
+    check(notFoundMissing.length === 0, '404.html links to the homepage and every audience page' +
+        (notFoundMissing.length ? ` (missing: ${notFoundMissing.map((r) => `/mia/${r}`).join(', ')})` : ''));
+    const relative = [...notFound.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1])
+        .filter((ref) => !/^(\/mia\/|https?:|#|mailto:|data:)/.test(ref));
+    check(relative.length === 0, '404.html uses only /mia/ paths for local links' +
+        (relative.length ? ` (found: ${relative.join(', ')})` : ''));
 }
 
 if (failures > 0) {
