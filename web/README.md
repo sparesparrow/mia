@@ -180,8 +180,8 @@ the workflow's "Assemble static site" step does, and build the docs with
   the length of the effect, like the menu does: the effect puts a filter on `body`.
 - `customers/journalists/background-music.mp3` (~3.2 MB, 80 kb/s stereo MP3, no cover art or tags) is
   published with the homepage. It is a gonzo brand asset; replace it only with product sign-off.
-  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click, tap or key
-  press. The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
+  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click or tap (never
+  on a key press, so it can't talk over a screen reader). The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
   guide pauses it and never starts it. `preload="none"` means nothing is downloaded until it actually plays.
   Re-encode from a source with
   `ffmpeg -i <src> -map 0:a:0 -vn -map_metadata -1 -c:a libmp3lame -b:a 80k -ac 2 -ar 44100 background-music.mp3`.
