@@ -46,7 +46,7 @@ function mergeSite(base, override) {
 }
 
 // Segment pages. Text paths point into the segment's YAML namespace; each scenario
-// has a title and either bullet `items` or a `text` paragraph.
+// has a title, an optional Font Awesome `icon` and either bullet `items` or a `text` paragraph.
 const segments = [
     {
         name: 'business',
@@ -59,17 +59,17 @@ const segments = [
         scenariosTitle: 'solutions.business_solutions',
         scenarios: [
             {
-                title: 'solutions.sales_teams',
+                title: 'solutions.sales_teams', icon: 'fas fa-handshake',
                 items: ['solutions.handsfree_crm_access', 'solutions.voicetotext_meeting_notes',
                     'solutions.lead_tracking_and_routing', 'solutions.territory_optimization']
             },
             {
-                title: 'solutions.field_service_professionals',
+                title: 'solutions.field_service_professionals', icon: 'fas fa-screwdriver-wrench',
                 items: ['solutions.job_dispatch_integration', 'solutions.voiceactivated_checklists',
                     'solutions.realtime_eta_updates', 'solutions.service_report_generation']
             },
             {
-                title: 'solutions.executive_transportation',
+                title: 'solutions.executive_transportation', icon: 'fas fa-user-tie',
                 items: ['solutions.secure_voice_encryption', 'solutions.executive_calendar_sync',
                     'solutions.document_voice_review', 'solutions.privacyfirst_design']
             }
@@ -87,17 +87,17 @@ const segments = [
         scenariosTitle: 'content.protection_scenarios',
         scenarios: [
             {
-                title: 'scenarios.parent_child_safety',
+                title: 'scenarios.parent_child_safety', icon: 'fas fa-child',
                 items: ['scenarios.teen_driver_monitoring', 'scenarios.family_arrival_notifications',
                     'scenarios.safe_driving_alerts', 'scenarios.emergency_contact_system']
             },
             {
-                title: 'scenarios.partner_safety',
+                title: 'scenarios.partner_safety', icon: 'fas fa-heart',
                 items: ['scenarios.coupled_location_sharing', 'scenarios.mutual_safety_alerts',
                     'scenarios.trusted_partner_network', 'scenarios.privacy_controls']
             },
             {
-                title: 'scenarios.senior_family_care',
+                title: 'scenarios.senior_family_care', icon: 'fas fa-hand-holding-heart',
                 items: ['scenarios.independence_monitoring', 'scenarios.health_safety_alerts',
                     'scenarios.battery_system_monitoring', 'scenarios.trusted_caregiver_network']
             }
@@ -116,17 +116,17 @@ const segments = [
         scenariosTitle: 'navigation.performances',
         scenarios: [
             {
-                title: 'features.mobile_dj_revolution',
+                title: 'features.mobile_dj_revolution', icon: 'fas fa-headphones',
                 items: ['features.remote_deck_synchronization', 'features.live_streaming_capabilities',
                     'features.multicar_collaboration', 'features.emergency_backup_systems']
             },
             {
-                title: 'features.band_collaboration',
+                title: 'features.band_collaboration', icon: 'fas fa-users',
                 items: ['features.realtime_audio_sync', 'features.distributed_recording',
                     'features.cloud_collaboration', 'features.mobile_mixing_desk']
             },
             {
-                title: 'features.solo_artist_freedom',
+                title: 'features.solo_artist_freedom', icon: 'fas fa-guitar',
                 items: ['features.creative_access_247', 'features.instant_recording_setup',
                     'features.mobile_performance_rig', 'features.creative_freedom']
             }
@@ -145,14 +145,14 @@ const segments = [
         heroSubtitle: 'hero.description',
         scenariosTitle: 'weaponry.title',
         scenarios: [
-            { title: 'weaponry.anti_stalker_protocol.title', text: 'weaponry.anti_stalker_protocol.description' },
-            { title: 'weaponry.covert_ops_interface.title', text: 'weaponry.covert_ops_interface.description' },
-            { title: 'weaponry.gonzo_command_center.title', text: 'weaponry.gonzo_command_center.description' },
-            { title: 'weaponry.matrix_tracking_map.title', text: 'weaponry.matrix_tracking_map.description' },
-            { title: 'weaponry.obd_whisperer.title', text: 'weaponry.obd_whisperer.description' },
-            { title: 'weaponry.dashcam.title', text: 'weaponry.dashcam.description' },
-            { title: 'stories.gonzo_investigator.title', text: 'stories.gonzo_investigator.description' },
-            { title: 'stories.mobile_dj_revolution.title', text: 'stories.mobile_dj_revolution.description' }
+            { title: 'weaponry.anti_stalker_protocol.title', icon: 'fas fa-eye', text: 'weaponry.anti_stalker_protocol.description' },
+            { title: 'weaponry.covert_ops_interface.title', icon: 'fas fa-book', text: 'weaponry.covert_ops_interface.description' },
+            { title: 'weaponry.gonzo_command_center.title', icon: 'fas fa-user-secret', text: 'weaponry.gonzo_command_center.description' },
+            { title: 'weaponry.matrix_tracking_map.title', icon: 'fas fa-microphone', text: 'weaponry.matrix_tracking_map.description' },
+            { title: 'weaponry.obd_whisperer.title', icon: 'fas fa-car', text: 'weaponry.obd_whisperer.description' },
+            { title: 'weaponry.dashcam.title', icon: 'fas fa-video', text: 'weaponry.dashcam.description' },
+            { title: 'stories.gonzo_investigator.title', icon: 'fas fa-hand-pointer', text: 'stories.gonzo_investigator.description' },
+            { title: 'stories.mobile_dj_revolution.title', icon: 'fas fa-volume-high', text: 'stories.mobile_dj_revolution.description' }
         ],
         pilotTitle: 'cta.ready_to_investigate'
     }
@@ -165,10 +165,8 @@ const roleRedirects = {
     testers: 'docs/for/testers/'
 };
 
-const pressImages = [
-    'telemetry-flow.jpg', 'pi-wiring.jpg', 'business.jpg', 'family.jpg',
-    'hero-dashboard.jpg', 'investigator.jpg', 'mobile-dj.jpg', 'command-center.jpg'
-];
+// Press kit images and their descriptions (web/i18n/site.yaml press.images); the first is the og:image.
+const pressImages = site.press.images.map((image) => image.file);
 
 function escapeHtml(value) {
     return String(value)
@@ -344,7 +342,7 @@ function renderSegment(segment, lang) {
                 const body = scenario.items
                     ? `<ul>${scenario.items.map((item) => `<li>${text(item)}</li>`).join('')}</ul>`
                     : `<p>${text(scenario.text)}</p>`;
-                return card('fas fa-route', text(scenario.title), body);
+                return card(scenario.icon || 'fas fa-route', text(scenario.title), body);
             })
             .join('\n                '),
         technology_title: t(s.technology.title, 'technology.title'),
@@ -388,9 +386,13 @@ function renderPress(lang) {
         privacy_link: t(press.privacy_link, 'privacy_link'),
         images_title: t(press.images_title, 'images_title'),
         images_note: t(press.images_note, 'images_note'),
-        images_html: pressImages
-            .map((file) => `<a href="${root}assets/site/${file}" download>` +
-                `<img src="${root}assets/site/${file}" alt="" loading="lazy"></a>`)
+        images_html: press.images
+            .map((image, i) => {
+                const alt = t(image, `images.${i}`);
+                return `<a href="${root}assets/site/${image.file}" download ` +
+                    `aria-label="${t(press.download_label, 'download_label')} ${alt}">` +
+                    `<img src="${root}assets/site/${image.file}" alt="${alt}" loading="lazy"></a>`;
+            })
             .join('\n                '),
         contact_title: t(press.contact_title, 'contact_title'),
         contact_text: t(press.contact_text, 'contact_text'),

@@ -240,6 +240,34 @@ site:
     images_title:
       en: Images
       cs: Obrázky
+    images:
+    - file: telemetry-flow.jpg
+      en: "Diagram: CAN bus data flows through the OBD-2 port to a Raspberry Pi and out as voice alerts"
+      cs: "Schéma: data ze sběrnice CAN jdou přes port OBD-2 do Raspberry Pi a ven jako hlasová upozornění"
+    - file: pi-wiring.jpg
+      en: "Wiring diagram: Raspberry Pi with an MCP2515 CAN HAT, licence plate camera, ESP32 modules, audio interface and 12 V to 5 V converter"
+      cs: "Schéma zapojení: Raspberry Pi s CAN HAT MCP2515, kamerou na SPZ, moduly ESP32, audio rozhraním a měničem z 12 V na 5 V"
+    - file: business.jpg
+      en: "Car cockpit with a holographic vehicle display above the dashboard"
+      cs: "Kokpit auta s holografickým zobrazením vozu nad palubní deskou"
+    - file: family.jpg
+      en: "Family in a car, with a phone showing the MIA assistant on the dashboard"
+      cs: "Rodina v autě a telefon s asistentem MIA na palubní desce"
+    - file: hero-dashboard.jpg
+      en: "Dark dashboard with fleet monitoring, a map and repeated licence plate alerts"
+      cs: "Tmavý dashboard se sledováním vozidel, mapou a upozorněními na opakované SPZ"
+    - file: investigator.jpg
+      en: "Journalist working on a laptop in a car at night, surrounded by screens"
+      cs: "Novinář v noci pracuje v autě na notebooku mezi obrazovkami"
+    - file: mobile-dj.jpg
+      en: "DJ at a mixing console inside a neon-lit car"
+      cs: "DJ u mixážního pultu v autě osvětleném neonem"
+    - file: command-center.jpg
+      en: "Operations terminal with live alerts, stalker detection and licence plate counts"
+      cs: "Řídicí terminál s živými upozorněními, detekcí sledování a počty SPZ"
+    download_label:
+      en: "Download:"
+      cs: "Stáhnout:"
     images_note:
       en: Illustrative images, AI-generated. Some still show the old AI-SERVIS name. Free to use when writing about MIA.
       cs: Ilustrační obrázky vytvořené AI. Některé ještě nesou starý název AI-SERVIS. Volně k použití při psaní o MIA.

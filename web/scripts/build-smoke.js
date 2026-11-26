@@ -29,6 +29,8 @@
 //      Content-Security-Policy allows the sha256 of every inline script on the site (REQ-WEB-005).
 //      It also redirects /mia/... to the root, so the shared 404 page's /mia/ links work on Vercel
 //      without JavaScript and from GitHub-Pages-style URLs.
+//  12. Every generated page has the mobile menu toggle; the press kit's download links are described
+//      (alt text and an aria-label); each segment's scenario cards use more than one icon (REQ-WEB-004).
 //  11. The hand-written pages (web/index.html, web/404.html) pass check 3 too; the homepage links
 //      to every audience and the documentation, and the 404 page links to the homepage and every
 //      audience page with /mia/ paths plus the data-path its script rewrites them from (REQ-WEB-002).
@@ -286,6 +288,25 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
         .filter((ref) => !/^(\/mia\/|https?:|#|mailto:|data:)/.test(ref));
     check(relative.length === 0, '404.html uses only /mia/ paths for local links' +
         (relative.length ? ` (found: ${relative.join(', ')})` : ''));
+}
+
+// 12. Mobile menu, described press downloads, scenario icons (REQ-WEB-004).
+for (const page of PAGES) {
+    for (const rel of [`${page}/index.html`, `${page}/en/index.html`]) {
+        const html = read(rel);
+        check(html.includes('class="mobile-menu-toggle"') && html.includes("querySelector('.mobile-menu-toggle')"),
+            `${rel} has the mobile menu toggle and its script`);
+        if (page === 'press') {
+            const links = [...html.matchAll(/<a [^>]*download[^>]*>\s*<img [^>]*>/g)].map((m) => m[0]);
+            const bare = links.filter((link) => !/aria-label="[^"]{8,}"/.test(link) || /alt=""/.test(link));
+            check(links.length > 0 && bare.length === 0, `${rel} describes every image download` +
+                (bare.length ? ` (${bare.length} without alt text or aria-label)` : ''));
+        } else {
+            const scenarios = html.slice(html.indexOf('id="scenarios"'), html.indexOf('id="today"'));
+            const icons = new Set([...scenarios.matchAll(/<i class="(fa[^"]+)"/g)].map((m) => m[1]));
+            check(icons.size > 1, `${rel} gives its scenario cards their own icons`);
+        }
+    }
 }
 
 if (failures > 0) {
