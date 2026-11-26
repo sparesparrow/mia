@@ -136,8 +136,9 @@ redirect (REQ-WEB-002).
 
 `cypress/e2e/` holds Cypress tests for the assembled site: page structure, skip link and Open
 Graph tags on every page, a 390 px phone width, local links, the language switch, the mobile
-menu, the voice-guide switcher and the sitemap. Third-party scripts and fonts are stubbed, so
-no test starts a voice conversation. The publish-pages workflow runs them in the
+menu, the voice-guide switcher, the sitemap and WCAG AA text contrast over solid backgrounds
+(`contrast.cy.js`; text over gradients and images is checked by eye). Third-party scripts and
+fonts are stubbed, so no test starts a voice conversation. The publish-pages workflow runs them in the
 `Browser Tests (Cypress)` job, and the deploy waits for it.
 
 ```bash

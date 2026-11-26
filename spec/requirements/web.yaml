@@ -89,6 +89,8 @@ requirements:
     published assets
   - The homepage lazy-loads every image below the hero
   - robots.txt points to sitemap.xml, which lists the homepage and every generated page in Czech and English
+  - Text over a solid background on every published page, and in the open mobile menu, meets WCAG 2.2 AA
+    contrast (4.5:1, or 3:1 for large text)
   implemented_in:
   - web/template.html
   - web/press-template.html
@@ -97,13 +99,18 @@ requirements:
   - web/i18n/site.yaml
   - web/site.css
   - web/customers/journalists/gonzo-styles.css
+  - web/customers/business/styles.css
+  - web/customers/journalists/styles.css
+  - web/customers/musicians/styles.css
   notes: web/scripts/build-smoke.js checks the markup, robots.txt and sitemap.xml in CI. The sitemap and canonical
     URLs use the GitHub Pages host; the Vercel mirror (mia-suzmatra.vercel.app) serves the same gh-pages files.
     robots.txt only takes effect at a host root, so on GitHub Pages it is informational and the sitemap has to be
     submitted to search engines directly.
   not_proven: The smoke test checks markup; web/cypress/e2e/structure.cy.js also checks in a browser that the
-    skip link shows when focused and that every page fits a 390 px screen. Screen-reader output, the full focus
-    order, colour contrast and the 24 px target size are checked by hand, not in CI.
+    skip link shows when focused and that every page fits a 390 px screen, and web/cypress/e2e/contrast.cy.js
+    checks text contrast over solid backgrounds. Contrast of text over gradients and images (the homepage's red
+    gradient tags and buttons, the segment hero and call-to-action sections), screen-reader output, the full
+    focus order and the 24 px target size are checked by hand, not in CI.
   safety: n/a. Static pages only; nothing touches a vehicle or hardware.
 - id: REQ-WEB-005
   title: Security headers on the Vercel mirror
