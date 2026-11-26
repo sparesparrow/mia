@@ -67,3 +67,10 @@ h3 {
 .footer {
     background: #050508;
 }
+
+/* The business buttons put white text on the accent colour; on this cyan it needs dark text. */
+.btn-primary,
+.cta-btn,
+body.site-page .nav-menu a.cta-btn {
+    color: var(--bg-primary);
+}

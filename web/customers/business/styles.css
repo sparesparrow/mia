@@ -6,7 +6,7 @@
     --primary-color: #1a365d;        /* Deep navy blue */
     --primary-light: #2d3748;       /* Dark gray-blue */
     --primary-dark: #0f1419;        /* Almost black */
-    --accent-color: #3182ce;        /* Professional blue */
+    --accent-color: #2c74c0;        /* Professional blue (4.8:1 under white button text) */
     --accent-light: #63b3ed;        /* Light blue */
     --success-color: #38a169;       /* Green */
     --warning-color: #d69e2e;       /* Amber */
@@ -15,7 +15,7 @@
     /* Neutral Colors */
     --text-primary: #1a202c;        /* Dark gray */
     --text-secondary: #4a5568;     /* Medium gray */
-    --text-light: #718096;         /* Light gray */
+    --text-light: #5f6b7e;         /* Light gray (4.5:1 or more on the light backgrounds) */
     --bg-primary: #ffffff;         /* White */
     --bg-secondary: #f7fafc;       /* Light gray */
     --bg-tertiary: #edf2f7;        /* Lighter gray */
