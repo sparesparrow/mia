@@ -1,8 +1,8 @@
 import './commands';
 
-// Every generated page in both languages, plus the hand-written homepage (web/README.md site map).
+// Every generated page in both languages, plus the hand-written Czech and English homepages (web/README.md site map).
 export const PAGES = ['business', 'family', 'musicians', 'journalists', 'press'];
-export const PAGE_URLS = ['/'].concat(PAGES.flatMap((page) => [`/${page}/`, `/${page}/en/`]));
+export const PAGE_URLS = ['/', '/en/'].concat(PAGES.flatMap((page) => [`/${page}/`, `/${page}/en/`]));
 
 const isLocal = () => !/^https:/.test(Cypress.config('baseUrl') || '');
 

@@ -20,6 +20,7 @@ internal tools are maintained by hand.
 |---|---|---|
 | `/` | general public, journalists (Czech "gonzo" manifesto), with the voice guides | `index.html`, hand-written |
 | `/business/`, `/family/`, `/musicians/`, `/journalists/` | customers and B2B partners | generated: `template.html` + `i18n/<segment>.yaml` + `i18n/site.yaml` |
+| `/en/` | the homepage in English | `en/index.html`, hand-written, copied into `dist/en/` by the generator |
 | `/<segment>/en/` | the same pages in English | generated |
 | `/press/`, `/press/en/` | press and marketing | generated: `press-template.html` + `i18n/site.yaml` |
 | `/docs/` | developers, mechanics, testers | MkDocs (`mkdocs.yml`, `docs/`) |
@@ -84,7 +85,8 @@ directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 ```
 web/
-  index.html                 gonzo homepage (root of the site)
+  index.html                 gonzo homepage (root of the site, Czech)
+  en/index.html              the same homepage in English (hand-maintained translation)
   404.html                   redirects moved pages, lists the rest
   template.html              audience page template ({{name}} placeholders)
   press-template.html        press kit template
@@ -163,10 +165,11 @@ the workflow's "Assemble static site" step does, and build the docs with
 
 ## Known limitations
 
-- The homepage (`index.html`) is hand-written Czech. Its English link goes to
-  `/journalists/en/`. `build-smoke.js` checks its voice-guide markup, its page
-  structure (REQ-WEB-004), its audience links and the forbidden name, prices and
-  percentages (REQ-WEB-002); its other claims are reviewed by hand.
+- The homepage is hand-written twice: Czech `index.html` and its English translation
+  `en/index.html`. Change both in the same PR. `build-smoke.js` checks both for voice-guide
+  markup, page structure (REQ-WEB-004), audience links, the language links between them and
+  the forbidden name, prices and percentages (REQ-WEB-002); their other claims are reviewed by
+  hand. The voice guides may still greet in Czech on the English page: their first message is set in ElevenLabs.
 - Canonical URLs and the sitemap use the Vercel host (ADR-0027). The GitHub Pages mirror under
   `/mia/` serves the same files, so its pages also name Vercel as canonical; its `robots.txt` has no
   effect there (not at a host root). Submit `https://mia-suzmatra.vercel.app/sitemap.xml` to
@@ -175,8 +178,12 @@ the workflow's "Assemble static site" step does, and build the docs with
   `unpkg.com` unpinned, as ElevenLabs documents it.
 - While one of the homepage's glitch effects runs, the widget moves with the page for
   the length of the effect, like the menu does: the effect puts a filter on `body`.
-- `customers/journalists/background-music.mp3` (~7.8 MB) is published with the
-  homepage. It is not preloaded and only plays from the 🎵 button. It is a gonzo brand asset; clean it
-  up only with product sign-off.
+- `customers/journalists/background-music.mp3` (~3.2 MB, 80 kb/s stereo MP3, no cover art or tags) is
+  published with the homepage. It is a gonzo brand asset; replace it only with product sign-off.
+  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click, tap or key
+  press. The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
+  guide pauses it and never starts it. `preload="none"` means nothing is downloaded until it actually plays.
+  Re-encode from a source with
+  `ffmpeg -i <src> -map 0:a:0 -vn -map_metadata -1 -c:a libmp3lame -b:a 80k -ac 2 -ar 44100 background-music.mp3`.
 - `customers/journalists/index-gonzo.html` is an older copy of `index.html`
   that the gonzo monitor tooling (`monitor-gonzo.py`) still uses.

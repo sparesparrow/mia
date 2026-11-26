@@ -264,7 +264,7 @@ function sharedValues(lang, pageDir, s = site) {
         .concat(`<li><a href="${root}press/${suffix}">${audience('press')}</a></li>`)
         .join('');
     const projectLinks = [
-        `<li><a href="${root}">${t(s.footer.manifesto, 'footer.manifesto')}</a></li>`,
+        `<li><a href="${root}${suffix}">${t(s.footer.manifesto, 'footer.manifesto')}</a></li>`,
         `<li><a href="${root}docs/">${t(s.footer.documentation, 'footer.documentation')}</a></li>`,
         `<li><a href="https://github.com/sparesparrow/mia">${t(s.footer.source, 'footer.source')}</a></li>`
     ].join('');
@@ -430,9 +430,14 @@ for (const file of fs.readdirSync(siteAssets)) {
     copyFile(path.join('assets', 'site', file), path.join('assets', 'site', file));
 }
 
+// The English homepage is a hand-maintained translation of web/index.html (web/en/index.html). Copying it into
+// dist/ publishes it with the generated pages and puts its inline scripts into the CSP hashes below.
+copyFile(path.join('en', 'index.html'), path.join('en', 'index.html'));
+
 // robots.txt and sitemap.xml for the published site. URLs use the canonical host (SITE_URL).
 const sitemapPaths = [
     '',
+    'en/',
     'docs/',
     ...segments.map((seg) => seg.name).concat('press')
         .flatMap((page) => LANGUAGES.map((lang) => `${page}/${langSuffix(lang)}`)),
