@@ -36,3 +36,19 @@ requirements:
   evidence: implemented_untested
   implemented_in:
   - orchestration/mcp/modules/security/proxy_mcp_client.py
+- id: REQ-SEC-004
+  title: MQTT broker authentication and per-role topic permissions
+  statement: The secure MQTT broker shall refuse anonymous clients and give each client role only the topics it
+    publishes or reads, so that only the Pi may publish vehicle commands.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - An anonymous client cannot connect
+  - The phone assistant can publish mia/lights/* but not vehicle/cmd/{vin}/io or other mia/ topics
+  - The Android app and the ESP32 firmware can publish their own telemetry topics but not vehicle commands
+  - Only pi-backend can publish vehicle/cmd/{vin}/io
+  implemented_in:
+  - infra/edge/pi-gateway/services/mosquitto/acl
+  - infra/edge/pi-gateway/services/mosquitto/secure.conf
+  - infra/edge/pi-gateway/docker-compose.secure.yml
+  - infra/edge/pi-gateway/scripts/mqtt-users.sh
+  - .github/workflows/ci.yml

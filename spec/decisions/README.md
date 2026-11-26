@@ -31,6 +31,7 @@ beyond their status line.
 | [0023](0023-phone-driven-software-update.md) | The phone updates the Pi: a verified package streamed over SSH | Proposed |
 | [0024](0024-account-vehicle-and-pi-identity.md) | MIA account, vehicle and Pi identity boundaries | Accepted |
 | [0025](0025-vehicle-onboarding.md) | Vehicle onboarding: a server-signed grant authorizes first contact and pairing | Proposed |
+| [0026](0026-mqtt-broker-users-and-topic-acl.md) | MQTT broker: one user per client role, with a topic ACL | Proposed |
 
 ## Template
 

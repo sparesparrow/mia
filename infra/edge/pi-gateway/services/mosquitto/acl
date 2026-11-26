@@ -1,0 +1,32 @@
+# Mosquitto ACL for the secure broker (secure.conf). ADR-0026, REQ-SEC-004.
+# One user per client role. A user that is not listed here, or a topic a user is not given,
+# gets nothing: the broker drops the publish and refuses the subscription.
+# Topics: spec/interfaces/topics.md (the contract, ADR-0017) plus the legacy prefixes ADR-0017 lists.
+
+# The Pi: the API, gateways, camera service and hardware bridge. The only role that may send
+# commands (vehicle/cmd/{vin}/io).
+user pi-backend
+topic readwrite vehicle/#
+topic readwrite device/#
+topic readwrite system/#
+topic readwrite mia/#
+topic readwrite hardware/#
+
+# The Android app (MQTTTopics.kt): publishes telemetry, alerts, ANPR, health and sessions.
+user android
+topic write vehicle/telemetry/+/obd
+topic write vehicle/alerts/+
+topic write vehicle/events/+/anpr
+topic write device/health/+
+topic write device/metrics/+
+topic write system/session/+
+
+# ESP32 OBD firmware (legacy mia/ prefixes, ADR-0017).
+user esp32-obd
+topic write mia/telemetry/#
+topic write mia/alerts/#
+
+# The phone assistant (android-assistant mqtt_publish): lights only, which need no confirmation.
+# Its confirm-class topics are refused here; a human-confirmed command goes through the Pi API.
+user phone-assistant
+topic write mia/lights/#
