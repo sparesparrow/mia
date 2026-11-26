@@ -243,7 +243,7 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
         .filter((hash) => !reportOnly.includes(`'sha256-${hash}'`))
         .map(() => path.relative(WEB_ROOT, file)));
     const redirects = (config && config.redirects) || [];
-    check(redirects.some((r) => r.source === '/mia/:path*' && r.destination === '/:path*')
+    check(redirects.some((r) => r.source === '/mia/:path(.*)' && r.destination === '/:path')
         && redirects.some((r) => r.source === '/mia' && r.destination === '/'),
     'vercel.json redirects /mia/... to the root (404 page links without JavaScript)');
     check(reportOnly.includes("script-src 'self'") && missingHashes.length === 0,

@@ -494,7 +494,9 @@ const reportOnlyPolicy = [
 // get only dead links, so Vercel redirects /mia/... to the root (REQ-WEB-002).
 const vercelRedirects = [
     { source: '/mia', destination: '/', permanent: false },
-    { source: '/mia/:path*', destination: '/:path*', permanent: false }
+    // `:path*` does not match a trailing slash on Vercel (/mia/business/ stayed a 404), and every page URL
+    // ends in one, so take the whole rest of the path with a regex parameter instead.
+    { source: '/mia/:path(.*)', destination: '/:path', permanent: false }
 ];
 
 writeFile('vercel.json', JSON.stringify({
