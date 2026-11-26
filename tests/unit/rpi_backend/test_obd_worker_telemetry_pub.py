@@ -100,6 +100,9 @@ def test_start_without_an_endpoint_skips_the_publish_thread_and_says_so_once(
     monkeypatch.setattr(worker, "_start_elm_emulator", lambda: None)
     publish_loop = mock.Mock()
     monkeypatch.setattr(worker, "_telemetry_publish_loop", publish_loop)
+    # The receive and broker loops would poll sockets that teardown closes from this thread (#296): stub them.
+    monkeypatch.setattr(worker, "_telemetry_loop", lambda: None)
+    monkeypatch.setattr(worker, "_broker_message_loop", lambda: None)
 
     with caplog.at_level(logging.INFO):
         assert worker.start() is True
