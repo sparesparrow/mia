@@ -2,8 +2,8 @@ site_name: MIA Documentation
 site_description: Vehicle telemetry and IoT control on Raspberry Pi, ESP32 and Android
 repo_url: https://github.com/sparesparrow/mia
 repo_name: sparesparrow/mia
-# The docs are published under /mia/docs/ (publish-pages.yml), so canonical URLs need the docs/ segment.
-site_url: https://sparesparrow.github.io/mia/docs/
+# The docs are published under docs/ (publish-pages.yml) on the primary host (ADR-0027).
+site_url: https://mia-suzmatra.vercel.app/docs/
 edit_uri: edit/main/docs/
 
 theme:

@@ -15,7 +15,8 @@ const yaml = require('js-yaml');
 
 const WEB_ROOT = path.join(__dirname, '..');
 const distDir = path.join(WEB_ROOT, 'dist');
-const SITE_URL = 'https://sparesparrow.github.io/mia/';
+// Primary address (ADR-0027). GitHub Pages (https://sparesparrow.github.io/mia/) serves the same files as a mirror.
+const SITE_URL = 'https://mia-suzmatra.vercel.app/';
 const LANGUAGES = ['cs', 'en'];
 const DEFAULT_LANGUAGE = 'cs';
 const PILOT_URL = 'https://github.com/sparesparrow/mia/issues/new?title=';

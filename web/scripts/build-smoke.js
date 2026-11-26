@@ -56,7 +56,7 @@ const FORBIDDEN = [
     { pattern: /\b(300|93|70-93)\s?%/, label: 'unsourced percentages' },
     { pattern: /id="pricing"|href="#pricing"/, label: 'pricing section' }
 ];
-const SITE_URL = 'https://sparesparrow.github.io/mia/';
+const SITE_URL = 'https://mia-suzmatra.vercel.app/';
 const OG_PROPERTIES = ['og:title', 'og:description', 'og:url', 'og:image'];
 // Text that may legitimately mention the old name (the press kit explains the rename).
 const ALLOWED_OLD_NAME = /dříve pod názvem AI-SERVIS|previously called AI-SERVIS|starý název AI-SERVIS|old AI-SERVIS name/g;
