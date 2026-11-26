@@ -318,8 +318,8 @@ journalists:
             en: "Phone as a dashboard"
             cs: "Telefon jako palubka"
           text:
-            en: "BLE, live telemetry, dashcam and your own “if this, do that” rules."
-            cs: "BLE, živá telemetrie, dashcam a vlastní pravidla typu „když tohle, udělej tamto“."
+            en: "BLE, live telemetry and your own “if this, do that” rules. The dashcam is still being finished."
+            cs: "BLE, živá telemetrie a vlastní pravidla typu „když tohle, udělej tamto“. Dashcam se teprve dodělává."
         - title:
             en: "Brain under the seat"
             cs: "Mozek pod sedačkou"

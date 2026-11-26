@@ -43,8 +43,8 @@ site:
       en: What works today
       cs: Co funguje dnes
     intro:
-      en: Everything below is implemented and checked by automated tests in CI or in simulation. Bench, hardware and in-vehicle validation is still under way.
-      cs: Vše níže je implementováno a ověřeno automatickými testy v CI nebo v simulaci. Ověření na stole, na hardwaru a ve voze teprve probíhá.
+      en: "No slide deck. This is written and passes automated tests in CI or runs in simulation. Bench, hardware and in-car validation is still under way."
+      cs: "Žádné slajdy. Tohle je napsané a prošlo automatickými testy v CI nebo běží v simulaci. Na stole, na hardwaru a v autě to teprve ověřujeme."
     link:
       en: Evidence state of every requirement
       cs: Stav ověření každého požadavku
@@ -90,41 +90,41 @@ site:
       en: Planned scenarios
       cs: Plánované scénáře
     note:
-      en: Where the product is heading. These scenarios are not finished or validated yet.
-      cs: Kam produkt směřuje. Tyto scénáře zatím nejsou hotové ani ověřené.
+      en: "This is a plan, not a promise. None of it is finished or validated yet."
+      cs: "Tohle je plán, ne slib. Nic z toho zatím není hotové ani ověřené."
   technology:
     title:
       en: Technology
       cs: Technologie
     items:
       - title:
-          en: Raspberry Pi 4B gateway
-          cs: Brána Raspberry Pi 4B
+          en: "Raspberry Pi 4B under the seat"
+          cs: "Raspberry Pi 4B pod sedačkou"
         text:
-          en: Runs the API, messaging and AI services at the edge, in the car.
-          cs: Provozuje API, zprávy a AI služby přímo v autě.
+          en: "The API, messaging and AI services run right in the car, not in someone else's data centre."
+          cs: "API, zprávy a AI služby běží přímo v autě, ne v cizím datacentru."
       - title:
-          en: ESP32 modules
-          cs: Moduly ESP32
+          en: "ESP32s behind the dash"
+          cs: "ESP32 za palubkou"
         text:
-          en: Listen on OBD-II and CAN and drive local inputs and outputs.
-          cs: Poslouchají OBD-II a CAN a obsluhují místní vstupy a výstupy.
+          en: "They listen on OBD-II and CAN and drive local inputs and outputs. They write nothing to the control units."
+          cs: "Poslouchají OBD-II a CAN a obsluhují místní vstupy a výstupy. Do řídicích jednotek nezapisují."
       - title:
-          en: Android companion
-          cs: Doprovodná aplikace
+          en: "Phone in the mount"
+          cs: "Telefon v držáku"
         text:
-          en: Dashboard, BLE link and plate recognition on the driver's phone; the dashcam is in development.
-          cs: Přehled, spojení přes BLE a rozpoznávání SPZ v telefonu řidiče; kamera je ve vývoji.
+          en: "Dashboard, BLE link and plate reading on the driver's phone. The dashcam is still being finished."
+          cs: "Palubka, spojení přes BLE a čtení SPZ v telefonu řidiče. Kamera se teprve dodělává."
       - title:
-          en: Open specification
-          cs: Otevřená specifikace
+          en: "Cards on the table"
+          cs: "Otevřené karty"
         text:
-          en: Requirements, design decisions and validation evidence are public on GitHub.
-          cs: Požadavky, návrhová rozhodnutí a záznamy ověření jsou veřejně na GitHubu.
+          en: "Requirements, design decisions and validation records are public on GitHub. We hide nothing."
+          cs: "Požadavky, návrhová rozhodnutí i záznamy ověření jsou veřejně na GitHubu. Nic neschováváme."
   pilot:
     text:
-      en: MIA is looking for pilot users and partners. There is no price list yet. Tell us what you need and we will work out what makes sense.
-      cs: MIA hledá pilotní uživatele a partnery. Ceník zatím nemáme. Napište nám, co potřebujete, a domluvíme se, co dává smysl.
+      en: "There's no price list and we won't make one up. We're looking for pilot crews and partners who aren't afraid of a screwdriver. Tell us what you need and we'll work it out."
+      cs: "Ceník nemáme a vymýšlet si ho nebudeme. Hledáme pilotní posádky a partnery, kteří se nebojí šroubováku. Napište, co potřebujete, a domluvíme se."
     button:
       en: Join the pilot
       cs: Zapojit se do pilotu
@@ -275,8 +275,8 @@ site:
       en: Two voices
       cs: Dva hlasy
     tone_text:
-      en: The homepage is a deliberately provocative Czech "gonzo" manifesto. The audience pages and this press kit describe the project plainly. Quote facts from here.
-      cs: Úvodní stránka je záměrně provokativní „gonzo“ manifest. Stránky pro jednotlivé skupiny a tyto podklady popisují projekt věcně. Fakta citujte odsud.
+      en: "The homepage is a deliberately cheeky “gonzo” manifesto, and the audience pages speak just as loudly. This press kit sticks to the facts. Quote facts from here."
+      cs: "Úvodní stránka je záměrně drzý „gonzo“ manifest a stránky pro jednotlivé skupiny mluví stejně nahlas. Tyhle podklady jsou věcné. Fakta citujte odsud."
     contact_title:
       en: Contact
       cs: Kontakt
