@@ -17,7 +17,7 @@
     "node": ">=14.14"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.3.2"
   },
   "devDependencies": {
     "cypress": "^15.21.2"
