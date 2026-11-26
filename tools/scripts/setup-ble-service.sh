@@ -100,8 +100,9 @@ log_info "Installing systemd services..."
 cp "$SYSTEMD_SOURCE_DIR/mia-ble-obd.service" "$SYSTEMD_DIR/"
 cp "$SYSTEMD_SOURCE_DIR/mia-ble-advertiser.service" "$SYSTEMD_DIR/"
 
-# Set permissions
-chown -R "$SERVICE_USER:$SERVICE_USER" "$INSTALL_DIR"
+# Set permissions: only what this script installed and the log directory. A recursive chown of $INSTALL_DIR would
+# hand $INSTALL_DIR/bin to the service user, who could then replace the tool the phone's sudo rule runs (ADR-0023).
+chown "$SERVICE_USER:$SERVICE_USER" "$BLE_SERVICE_DIR/ble_obd_service.py" "$BLE_SERVICE_DIR/ble_advertiser.py"
 chown -R "$SERVICE_USER:$SERVICE_USER" "$LOG_DIR"
 
 # Enable Bluetooth
@@ -117,9 +118,8 @@ if ! hciconfig &>/dev/null; then
     log_warning "Bluetooth hardware not detected. Services may not work."
 else
     log_info "Configuring Bluetooth adapter..."
-    # Make Bluetooth discoverable
-    hciconfig hci0 piscan || log_warning "Could not set Bluetooth to discoverable mode"
-    
+    # Not discoverable here: the adapter opens only for the pairing window after a verified enrollment, and
+    # mia-bt-agent.service does that (ADR-0025).
     # Set Bluetooth class (OBD-II adapter)
     hciconfig hci0 class 0x002540 || log_warning "Could not set Bluetooth class"
 fi

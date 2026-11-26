@@ -93,8 +93,15 @@ requirements:
   - A second run succeeds and keeps the venv
   - The API's requirements install and pass pip check on aarch64 with Python 3.11 (Bookworm) and 3.13 (Trixie), and
     the API imports there (CI job "Pi Python (aarch64)" in .github/workflows/ci.yml; a test keeps the job in place)
+  - The production deploy brings the checkout to a pinned commit with git run as the checkout's owner, drops a local
+    change only when its content already equals the target's, stops on any other local change without changing
+    anything, and never touches untracked files the target does not track
+  - An update refreshes every MIA unit already installed without enabling new ones, restarts the enabled units with
+    the broker first, and fails when the API does not answer or a MIA unit has failed
+  - /opt/mia/bin stays root-owned across a deploy, and the deploy does not make the Bluetooth adapter discoverable
   implemented_in:
   - tools/scripts/deploy-production-rpi.sh
+  - tools/scripts/mia-update-checkout.sh
   - tools/scripts/deploy-raspberry-pi.sh
   - tools/scripts/setup-ble-service.sh
   - .github/workflows/ci.yml

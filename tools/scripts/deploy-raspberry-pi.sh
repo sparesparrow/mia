@@ -7,7 +7,9 @@
 # - points /usr/local/bin/mia-python and MIA_PYTHON in /etc/mia/environment at that venv;
 # - installs and enables the core units, and copies mia-bt-agent.service next to them without enabling it;
 # - installs bin/mia-apply-update, mia-update-pair, mia-enroll and mia-phone-registry to $INSTALL_DIR/bin
-#   (--skip-packages leaves apt and pip alone).
+#   (--skip-packages leaves apt and pip alone), root-owned in a root-owned directory;
+# - refreshes every other unit of infra/systemd that is already installed, without enabling it;
+# - updates the Claude Code CLI and mcp-prompts for the service user unless MIA_SKIP_CLAUDE_TOOLING=1.
 #
 # Running it again is safe: the venv and $INSTALL_DIR/data are kept, nothing is deleted, and the environment file
 # keeps every line it does not own, MIA_API_KEY included.
@@ -147,7 +149,15 @@ install_code() {
 install_update_tool() {
     local tool="$PROJECT_ROOT/bin/mia-apply-update"
     [[ -f "$tool" ]] || return 0
+    if [[ "$(cd "$PROJECT_ROOT" && pwd -P)" == "$(cd "$INSTALL_DIR" && pwd -P)" ]]; then
+        # install(1) refuses to copy a file onto itself, and a checkout's bin/ belongs to the checkout's owner.
+        echo -e "${YELLOW}The checkout is $INSTALL_DIR: bin/ cannot be made root-owned there. Deploy from a separate checkout (ADR-0023).${NC}"
+        return 0
+    fi
     run_privileged mkdir -p "$INSTALL_DIR/bin"
+    # The directory too: whoever can write it can replace the tool that the phone's sudo rule runs as root.
+    run_privileged chown root:root "$INSTALL_DIR/bin"
+    run_privileged chmod 755 "$INSTALL_DIR/bin"
     run_privileged install -m 755 "$tool" "$INSTALL_DIR/bin/mia-apply-update"
     # The administrator's pairing tool (root only, writes the root-owned key list), the enrollment command the
     # sudoers rule of install-enroll-access.sh names, and the phone registry that both call as a sibling file
@@ -192,6 +202,10 @@ point_units_at_venv() {
 }
 
 update_claude_tooling() {
+    if [[ "${MIA_SKIP_CLAUDE_TOOLING:-0}" == "1" ]]; then
+        echo "MIA_SKIP_CLAUDE_TOOLING=1: leaving the Claude Code CLI and mcp-prompts as they are."
+        return 0
+    fi
     # Keeps the Pi's Claude Code CLI, and the mcp-prompts server the
     # .claude/agents files (e.g. mia-car.md) depend on, current. Best-effort:
     # a failure here must not fail the whole install — the voice/telemetry
@@ -230,6 +244,17 @@ install_units() {
     # enrollment installer, because the adapter must stay closed until a verified enrollment opens the window.
     run_privileged cp "$PROJECT_ROOT/infra/systemd/mia-bt-agent.service" "$SYSTEMD_DIR/"
     echo "  - Installed mia-bt-agent.service (not enabled)"
+    # Every other unit of this repository that an earlier install or an operator put in place (voice, BLE, bridges)
+    # gets this version's file too, so an update never runs new code under an old unit. None is enabled here.
+    local source name
+    for source in "$PROJECT_ROOT"/infra/systemd/*.service; do
+        name="$(basename "$source")"
+        [[ " ${CORE_UNITS[*]} mia-bt-agent.service " == *" $name "* ]] && continue
+        if run_privileged test -f "$SYSTEMD_DIR/$name"; then
+            run_privileged cp "$source" "$SYSTEMD_DIR/"
+            echo "  - Updated $name"
+        fi
+    done
     run_privileged systemctl daemon-reload
     run_privileged systemctl enable "${CORE_UNITS[@]}"
 }
