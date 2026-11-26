@@ -2,16 +2,15 @@
 family:
   page:
     title:
-      en: MIA - Family Safety & Protection
-      cs: MIA – Bezpečnost a ochrana rodiny
+      en: "MIA for families – safety without snooping"
+      cs: "MIA pro rodiny – bezpečí bez šmírování"
     description:
-      en: Comprehensive family safety and protection with intelligent surveillance
-        and privacy-first design
-      cs: Komplexní bezpečnost rodiny s chytrým hlídáním a důrazem na soukromí
+      en: "MIA notices a car that keeps turning up behind you, says out loud when something is wrong with the car, and keeps it all in the car. No cloud, and no selling data about where you drive your kids."
+      cs: "MIA si všimne auta, které za vámi jede pořád dokola, řekne nahlas, když se autu něco nelíbí, a všechno nechá v autě. Žádný cloud a žádné prodávání dat o tom, kam vozíte děti."
   navigation:
     family_protection_first:
-      en: Family Protection First
-      cs: Ochrana rodiny na prvním místě
+      en: "Family on board, snoops outside"
+      cs: "Rodina na palubě, šmíráci venku"
     safety:
       en: Safety
       cs: Bezpečnost
@@ -38,8 +37,8 @@ family:
       cs: Jak to funguje
   hero:
     comprehensive_family_safety:
-      en: Comprehensive Family Safety
-      cs: Komplexní bezpečnost rodiny
+      en: "She watches out for your people. Not you."
+      cs: "Hlídá vaše lidi. Ne vás."
     stalker_detection:
       en: Stalker Detection
       cs: Detekce stalkera
@@ -57,20 +56,20 @@ family:
       cs: Ochrana, na které záleží
   scenarios:
     parent_child_safety:
-      en: Parent-Child Safety
-      cs: Bezpečnost rodičů a dětí
+      en: "Parents and kids"
+      cs: "Rodiče a děti"
     teen_driver_monitoring:
-      en: Teen Driver Monitoring
-      cs: Sledování mladých řidičů
+      en: "A new driver at the wheel, you calm at home"
+      cs: "Čerstvý řidič za volantem, vy v klidu doma"
     family_arrival_notifications:
-      en: Family Arrival Notifications
-      cs: Upozornění na příjezd rodiny
+      en: "A “we're here” message nobody has to type"
+      cs: "Zpráva „dojeli jsme“, kterou nikdo nemusí psát"
     safe_driving_alerts:
-      en: Safe Driving Alerts
-      cs: Upozornění na bezpečnou jízdu
+      en: "A heads-up when the right foot gets heavy"
+      cs: "Upozornění, když noha na plynu ztěžkne"
     emergency_contact_system:
-      en: Emergency Contact System
-      cs: Systém nouzového kontaktu
+      en: "Emergency contact on a single command"
+      cs: "Nouzový kontakt na jeden povel"
     parent:
       en: Parent
       cs: Rodič
@@ -78,35 +77,35 @@ family:
       en: Teen
       cs: Teenager
     partner_safety:
-      en: Partner Safety
-      cs: Bezpečnost partnera
+      en: "Partners"
+      cs: "Partneři"
     coupled_location_sharing:
-      en: Coupled Location Sharing
-      cs: Sdílení polohy v páru
+      en: "Your location only for whoever you give it to"
+      cs: "Poloha jen pro toho, komu ji dáte"
     mutual_safety_alerts:
-      en: Mutual Safety Alerts
-      cs: Vzájemná bezpečnostní upozornění
+      en: "Alerts for each other when something goes wrong"
+      cs: "Vzájemné upozornění, když se něco pokazí"
     trusted_partner_network:
-      en: Trusted Partner Network
-      cs: Síť důvěryhodných partnerů
+      en: "A circle of people you trust"
+      cs: "Okruh lidí, kterým věříte"
     privacy_controls:
-      en: Privacy Controls
-      cs: Nastavení soukromí
+      en: "Privacy you set yourself"
+      cs: "Soukromí, které si nastavíte sami"
     senior_family_care:
-      en: Senior Family Care
-      cs: Péče o seniory
+      en: "Grandparents behind the wheel"
+      cs: "Babičky a dědové za volantem"
     independence_monitoring:
-      en: Independence Monitoring
-      cs: Podpora samostatnosti
+      en: "Independence without someone watching every move"
+      cs: "Samostatnost bez dozoru na každém kroku"
     health_safety_alerts:
-      en: Health & Safety Alerts
-      cs: Upozornění na zdraví a bezpečnost
+      en: "Alerts when something is up with the driver"
+      cs: "Upozornění, když se něco děje s řidičem"
     battery_system_monitoring:
-      en: Battery & System Monitoring
-      cs: Sledování baterie a systému
+      en: "A weak battery spotted at home, not in a frozen car park"
+      cs: "Slabá baterie zjištěná doma, ne v mrazu na parkovišti"
     trusted_caregiver_network:
-      en: Trusted Caregiver Network
-      cs: Síť důvěryhodných pečovatelů
+      en: "Carers you trust"
+      cs: "Pečovatelé, kterým věříte"
   features:
     stay_connected_stay_safe:
       en: Stay Connected, Stay Safe
@@ -125,8 +124,8 @@ family:
       cs: Chraňte to nejdůležitější
   cta:
     give_your_family_the_protection_they_deserve:
-      en: Give Your Family the Protection They Deserve
-      cs: Dejte své rodině ochranu, kterou si zaslouží
+      en: "Want protection for your family that doesn't snitch on them?"
+      cs: "Chcete pro rodinu ochranu, která na ni nedonáší?"
     start_family_protection:
       en: Start Family Protection
       cs: Začněte ochranu rodiny
@@ -141,8 +140,8 @@ family:
       en: Safety Features
       cs: Bezpečnostní funkce
     protection_scenarios:
-      en: Protection Scenarios
-      cs: Scénáře ochrany
+      en: "What MIA is cooking up for families"
+      cs: "Co MIA chystá pro rodiny"
     family_connection:
       en: Family Connection
       cs: Rodinné spojení
