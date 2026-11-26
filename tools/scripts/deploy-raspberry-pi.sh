@@ -7,7 +7,8 @@
 # - points /usr/local/bin/mia-python and MIA_PYTHON in /etc/mia/environment at that venv;
 # - installs and enables the core units, and copies mia-bt-agent.service next to them without enabling it;
 # - installs bin/mia-apply-update, mia-update-pair, mia-enroll and mia-phone-registry to $INSTALL_DIR/bin
-#   (--skip-packages leaves apt and pip alone), root-owned in a root-owned directory;
+#   (--skip-packages leaves apt and pip alone), root-owned in a root-owned directory, and makes $INSTALL_DIR itself
+#   root-owned (data/ stays the service user's);
 # - refreshes every other unit of infra/systemd that is already installed, without enabling it;
 # - updates the Claude Code CLI and mcp-prompts for the service user unless MIA_SKIP_CLAUDE_TOOLING=1.
 #
@@ -128,6 +129,10 @@ install_code() {
     if [[ "$(cd "$PROJECT_ROOT" && pwd -P)" == "$(cd "$INSTALL_DIR" && pwd -P)" ]]; then
         echo "The checkout is $INSTALL_DIR; nothing to copy."
     else
+        # The install directory itself is root's: an earlier `chown -R mia /opt/mia` left it to the service user, who
+        # could then rename bin/ and put a bin/mia-apply-update of their own in its place (ADR-0023).
+        run_privileged chown root:root "$INSTALL_DIR"
+        run_privileged chmod 755 "$INSTALL_DIR"
         echo "Copying the code to $INSTALL_DIR..."
         for path in "${INSTALL_PATHS[@]}"; do
             run_privileged mkdir -p "$INSTALL_DIR/$path"

@@ -319,6 +319,16 @@ def test_the_update_tool_directory_is_root_owned(pi):
     assert f"chown root:root {pi.install}/bin" in pi.calls
 
 
+def test_the_install_directory_itself_is_root_owned(pi):
+    """An earlier `chown -R mia /opt/mia` left /opt/mia mia-owned: mia could rename bin/ and plant its own tool."""
+    calls = pi.calls.splitlines()
+    assert f"chown root:root {pi.install}" in calls
+    assert stat.S_IMODE(pi.install.stat().st_mode) == 0o755
+    # The run-time data stays the service user's, and is chowned after the directory that holds it.
+    data = f"chown mia-install-test:mia-install-test {pi.install}/data"
+    assert calls.index(f"chown root:root {pi.install}") < calls.index(data)
+
+
 def test_the_claude_tooling_update_can_be_skipped(pi):
     assert "MIA_SKIP_CLAUDE_TOOLING=1" not in pi.runs[0].stdout
     assert "MIA_SKIP_CLAUDE_TOOLING=1: leaving the Claude Code CLI" in pi.runs[1].stdout
@@ -341,3 +351,69 @@ def test_the_production_deploy_updates_the_checkout_and_restarts_the_broker_firs
     others = text.index('systemctl restart "${restart_units[@]}"')
     assert broker < others
     assert "deployed.json" in text
+
+
+# The production deploy needs root and systemd, so CI checks its text; test_production_deploy.py runs it with
+# stubbed systemctl and curl where the tests run as root.
+
+
+def _code_lines(path: Path) -> list[str]:
+    return [line.strip() for line in path.read_text().splitlines() if not line.lstrip().startswith("#")]
+
+
+def test_the_production_deploy_judges_restarted_units_by_state_and_restart_count():
+    """A unit crashing on import sits in `activating (auto-restart)` between attempts, never `failed`."""
+    code = "\n".join(_code_lines(PRODUCTION_SCRIPT))
+    assert 'systemctl is-active "$unit"' in code
+    assert 'systemctl show -p NRestarts --value "$unit"' in code
+    # The broker and what this deploy restarted are judged; a unit left alone is only reported.
+    assert "judged_units=(zmq-broker.service)" in code
+    assert 'judged_units+=("${restart_units[@]}")' in code
+    assert "not restarted by this deploy" in code
+
+
+def test_the_production_deploy_waits_longer_than_any_units_restart_delay():
+    match = re.search(r'MIA_DEPLOY_SETTLE_SECONDS:-(\d+)', PRODUCTION_SCRIPT.read_text())
+    assert match, "the settle time must be overridable"
+    delays = [
+        int(value)
+        for unit in (REPO_ROOT / "infra" / "systemd").glob("*.service")
+        for value in _unit_fields(unit).get("RestartSec", [])
+    ]
+    assert delays and int(match.group(1)) > max(delays)
+
+
+def test_the_production_deploy_runs_only_an_updated_copy_that_has_the_safe_step_one():
+    """A rollback to a commit before #298 must not exec that commit's script (git pull as root, no restart)."""
+    text = PRODUCTION_SCRIPT.read_text()
+    marker_check = text.index('grep -q MIA_DEPLOY_CHECKOUT_DONE "$SCRIPT_DIR/deploy-production-rpi.sh"')
+    assert marker_check < text.index("exec env MIA_DEPLOY_CHECKOUT_DONE=1 bash")
+    assert '[ -f "$SCRIPT_DIR/deploy-production-rpi.sh" ]' in text
+    assert "predates the safe deploy" in text
+    # bash parses a { } group whole before running it, so going on after the checkout replaced the file is safe.
+    code = [line for line in _code_lines(PRODUCTION_SCRIPT) if line]
+    assert code.index("{") < code.index('if [ "${MIA_DEPLOY_CHECKOUT_DONE:-0}" != "1" ]; then')
+    assert code[-2:] == ["exit 0", "}"]
+
+
+def test_the_production_deploy_survives_a_failed_broker_restart_and_unit_listing():
+    code = _code_lines(PRODUCTION_SCRIPT)
+    assert "if ! systemctl restart zmq-broker.service; then" in code
+    assert any(
+        line.startswith("if ! enabled_units=") and "systemctl list-unit-files" in line for line in code
+    ), "a failed listing must fail the deploy, not restart only the broker"
+    assert not any(line.startswith("done < <(systemctl list-unit-files") for line in code)
+
+
+def test_the_production_deploy_keeps_the_api_key_off_the_command_line():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert "printf 'X-API-Key: %s\\n' \"$api_key\" | curl" in text
+    assert "-H @-" in text
+    assert '-H "X-API-Key: $api_key"' not in text
+
+
+def test_the_production_deploy_records_only_a_verified_deploy_as_json():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert "json.dumps" in text
+    assert "printf '{\"ref\"" not in text
+    assert 'deployed_ref="checkout"' in text
