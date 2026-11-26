@@ -9,7 +9,9 @@
     "prebuild": "npm run clean",
     "serve": "node -e \"const h=require('http'),f=require('fs'),p=require('path'),d=p.resolve('dist'),mt={'.html':'text/html;charset=utf-8','.css':'text/css','.js':'application/javascript','.yaml':'text/yaml','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.mp3':'audio/mpeg'};h.createServer((q,r)=>{let u=decodeURIComponent(q.url.split('?')[0]);if(u==='/')u='/index.html';let fp=p.join(d,u);if(f.existsSync(fp)&&f.statSync(fp).isDirectory())fp=p.join(fp,'index.html');f.readFile(fp,(e,b)=>{if(e){r.writeHead(404);return r.end('404 '+u)}r.writeHead(200,{'content-type':mt[p.extname(fp)]||'application/octet-stream'});r.end(b)})}).listen(8080,()=>console.log('serving dist/ on http://localhost:8080'))\"",
     "test": "node scripts/build-smoke.js",
-    "pretest": "npm run build"
+    "pretest": "npm run build",
+    "e2e": "cypress run --headless",
+    "e2e:prod": "cypress run --headless --config baseUrl=https://mia-suzmatra.vercel.app --spec cypress/e2e/prod-smoke.cy.js"
   },
   "engines": {
     "node": ">=14.14"
@@ -17,7 +19,9 @@
   "dependencies": {
     "js-yaml": "^4.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cypress": "^15.21.2"
+  },
   "keywords": [
     "mia",
     "web",

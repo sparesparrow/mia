@@ -40,6 +40,7 @@ CI_TAG_GLOBS = (
     "apps/android/app/src/androidTest/**/*.kt",
     "apps/rpi-backend/cpp-audio/core/tests/**/*.cpp",
     "web/scripts/build-smoke.js",
+    "web/cypress/e2e/**/*.cy.js",
 )
 # Tagged tests that exist but are not executed by a CI workflow.
 OTHER_TAG_GLOBS = ("web/**/*.test.js",)
