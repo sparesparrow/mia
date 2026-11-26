@@ -1,9 +1,10 @@
 # MIA Web Pages
 
-Static web surfaces for MIA, published to <https://sparesparrow.github.io/mia/>
-by `.github/workflows/publish-pages.yml`. The same files are mirrored at
-<https://mia-suzmatra.vercel.app/>: the Vercel project `citadela-resort/mia-suzmatra`
-deploys the `gh-pages` branch of this repository (root directory `.`, no build step),
+Static web surfaces for MIA. The primary address is <https://mia-suzmatra.vercel.app/>
+(ADR-0027): canonical URLs, hreflang, Open Graph URLs, `robots.txt` and `sitemap.xml` all use
+it. `.github/workflows/publish-pages.yml` publishes the site to the `gh-pages` branch, which
+GitHub Pages serves as a mirror at <https://sparesparrow.github.io/mia/>; the Vercel project
+`citadela-resort/mia-suzmatra` deploys the same branch (root directory `.`, no build step),
 so every push to `gh-pages` by the workflow also redeploys Vercel. The generator writes
 `dist/vercel.json`, which gives the Vercel copy its security headers (REQ-WEB-005): nosniff,
 referrer and framing rules, and a report-only Content-Security-Policy with the hash of every
@@ -166,9 +167,10 @@ the workflow's "Assemble static site" step does, and build the docs with
   `/journalists/en/`. `build-smoke.js` checks its voice-guide markup, its page
   structure (REQ-WEB-004), its audience links and the forbidden name, prices and
   percentages (REQ-WEB-002); its other claims are reviewed by hand.
-- Canonical URLs and the sitemap use the GitHub Pages host. `robots.txt` only takes effect at
-  a host root, so it works on the Vercel mirror but not under `/mia/` on GitHub Pages; submit
-  the sitemap to search engines directly.
+- Canonical URLs and the sitemap use the Vercel host (ADR-0027). The GitHub Pages mirror under
+  `/mia/` serves the same files, so its pages also name Vercel as canonical; its `robots.txt` has no
+  effect there (not at a host root). Submit `https://mia-suzmatra.vercel.app/sitemap.xml` to
+  search engines.
 - The voice guides are on the homepage only, and their widget script comes from
   `unpkg.com` unpinned, as ElevenLabs documents it.
 - While one of the homepage's glitch effects runs, the widget moves with the page for

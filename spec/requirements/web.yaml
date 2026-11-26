@@ -102,10 +102,12 @@ requirements:
   - web/customers/business/styles.css
   - web/customers/journalists/styles.css
   - web/customers/musicians/styles.css
+  decisions:
+  - ADR-0027
   notes: web/scripts/build-smoke.js checks the markup, robots.txt and sitemap.xml in CI. The sitemap and canonical
-    URLs use the GitHub Pages host; the Vercel mirror (mia-suzmatra.vercel.app) serves the same gh-pages files.
-    robots.txt only takes effect at a host root, so on GitHub Pages it is informational and the sitemap has to be
-    submitted to search engines directly.
+    URLs use the primary host mia-suzmatra.vercel.app (ADR-0027); the GitHub Pages mirror serves the same gh-pages
+    files. robots.txt only takes effect at a host root, so on the GitHub Pages mirror it is informational, and the
+    sitemap has to be submitted to search engines directly.
   not_proven: The smoke test checks markup; web/cypress/e2e/structure.cy.js also checks in a browser that the
     skip link shows when focused and that every page fits a 390 px screen, and web/cypress/e2e/contrast.cy.js
     checks text contrast over solid backgrounds. Contrast of text over gradients and images (the homepage's red

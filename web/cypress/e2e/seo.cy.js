@@ -1,6 +1,6 @@
 // @req REQ-WEB-004
 // robots.txt and sitemap.xml are published and every listed page exists.
-const SITE_URL = 'https://sparesparrow.github.io/mia/';
+const SITE_URL = 'https://mia-suzmatra.vercel.app/';
 
 describe('robots.txt and sitemap.xml', () => {
     it('robots.txt points to the sitemap', () => {
