@@ -3,7 +3,7 @@ musicians:
   page:
     title:
       en: MIA - Mobile DJ & Music Production AI
-      cs: MIA - AI pro mobilní DJe a hudební produkci
+      cs: MIA – AI pro mobilní DJe a hudební produkci
     description:
       en: Transform your car into a mobile DJ booth and music production studio with
         AI-powered tools
@@ -17,7 +17,7 @@ musicians:
       cs: Funkce
     performances:
       en: Performances
-      cs: Performance
+      cs: Živá vystoupení
     studio:
       en: Studio
       cs: Studio
@@ -70,22 +70,22 @@ musicians:
       cs: Možnosti živého streamování
     multicar_collaboration:
       en: Multi-Car Collaboration
-      cs: Kolaborace více aut
+      cs: Spolupráce více aut
     emergency_backup_systems:
       en: Emergency Backup Systems
       cs: Záložní systémy
     band_collaboration:
       en: Band Collaboration
-      cs: Kapelní kolaborace
+      cs: Spolupráce kapely
     realtime_audio_sync:
       en: Real-Time Audio Sync
-      cs: Real-time audio sync
+      cs: Synchronizace zvuku v reálném čase
     distributed_recording:
       en: Distributed Recording
       cs: Distribuované nahrávání
     cloud_collaboration:
       en: Cloud Collaboration
-      cs: Cloud kolaborace
+      cs: Spolupráce přes cloud
     mobile_mixing_desk:
       en: Mobile Mixing Desk
       cs: Mobilní mixážní pult
@@ -97,13 +97,13 @@ musicians:
       cs: Svoboda sólového umělce
     creative_access_247:
       en: 24/7 Creative Access
-      cs: 24/7 kreativní přístup
+      cs: Tvoření kdykoli, 24/7
     instant_recording_setup:
       en: Instant Recording Setup
-      cs: Okamžité nahrávací setup
+      cs: Nahrávání bez přípravy
     mobile_performance_rig:
       en: Mobile Performance Rig
-      cs: Mobilní performance rig
+      cs: Mobilní aparát na vystoupení
     creative_freedom:
       en: Creative Freedom
       cs: Kreativní svoboda

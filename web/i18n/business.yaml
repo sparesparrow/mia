@@ -3,10 +3,10 @@ business:
   page:
     title:
         en: MIA - Professional AI for Business Vehicles
-        cs: MIA - Profesionální AI pro obchodní vozidla
+        cs: MIA – Profesionální AI pro firemní vozidla
     description:
         en: Professional AI solutions for business vehicles with productivity boost and enterprise security
-        cs: Profesionální AI řešení pro obchodní vozidla s nárůstem produktivity a podnikovou bezpečností
+        cs: Profesionální AI řešení pro firemní vozidla s nárůstem produktivity a podnikovou bezpečností
   navigation:
     business_intelligence_on_wheels:
       en: Business Intelligence on Wheels
@@ -26,7 +26,7 @@ business:
   hero:
     aipowered_business_vehicle_intelligence:
       en: AI-Powered Business Vehicle Intelligence
-      cs: AI poháněná obchodní vozidlová inteligence
+      cs: Firemní vozidla chytřejší díky AI
     productivity_boost:
       en: Productivity Boost
       cs: Nárůst produktivity
@@ -103,13 +103,13 @@ business:
       cs: Vedení společnosti
     secure_voice_encryption:
       en: Secure Voice Encryption
-      cs: Bezpečná hlasová šifrace
+      cs: Šifrovaná hlasová komunikace
     executive_calendar_sync:
       en: Executive Calendar Sync
-      cs: Synchronizace exekutivního kalendáře
+      cs: Synchronizace kalendáře vedení
     document_voice_review:
       en: Document Voice Review
-      cs: Hlasový přezkoumání dokumentů
+      cs: Hlasová kontrola dokumentů
     privacyfirst_design:
       en: Privacy-First Design
       cs: Design zaměřený na soukromí
@@ -132,7 +132,7 @@ business:
   cta:
     ready_to_transform_your_business_fleet:
       en: Ready to Transform Your Business Fleet?
-      cs: Připraveni transformovat váš obchodní vozový park?
+      cs: Připraveni proměnit svůj vozový park?
     schedule_enterprise_demo:
       en: Schedule Enterprise Demo
       cs: Naplánovat podnikové demo
@@ -141,7 +141,7 @@ business:
       cs: Stáhnout případové studie
     enterprise_ai_for_business_vehicles:
       en: Enterprise AI for Business Vehicles
-      cs: Podniková AI pro obchodní vozidla
+      cs: Podniková AI pro firemní vozidla
   footer:
     executives:
       en: Executives
