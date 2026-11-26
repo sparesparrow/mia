@@ -38,6 +38,11 @@
                 <a href="{{other_lang_href}}" class="lang-link" hreflang="{{other_lang}}" lang="{{other_lang}}">{{language_switch}}</a>
                 <a href="#contact" class="cta-btn">{{contact_title}}</a>
             </div>
+            <button class="mobile-menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
@@ -121,5 +126,25 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.querySelector('.nav-menu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                var open = menu.classList.toggle('mobile-open');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (event) {
+                if (event.target.tagName === 'A') {
+                    menu.classList.remove('mobile-open');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

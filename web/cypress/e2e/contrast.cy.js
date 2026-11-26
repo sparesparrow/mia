@@ -11,10 +11,10 @@ describe('Text contrast', () => {
         });
     });
 
-    // The press kit has no mobile menu; the homepage has its own.
-    it('the open mobile menu on the segment pages has readable links', () => {
+    // The homepage has its own menu.
+    it('the open mobile menu on the generated pages has readable links', () => {
         cy.viewport(390, 844);
-        PAGE_URLS.filter((url) => url !== '/' && !url.startsWith('/press/')).forEach((url) => {
+        PAGE_URLS.filter((url) => url !== '/').forEach((url) => {
             cy.visit(url);
             cy.get('.mobile-menu-toggle').click();
             cy.assertTextContrast();

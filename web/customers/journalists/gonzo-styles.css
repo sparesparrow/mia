@@ -1,5 +1,4 @@
 /* GONZO CSS - DIGITAL MADNESS STYLESHEET */
-@import url('https://fonts.googleapis.com/css2?family=Creepster&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap');
 
 :root {
     /* COLORS FROM HELL */
@@ -1116,27 +1115,10 @@ body.panic-mode * {
     animation-duration: 0.1s !important;
 }
 
-/* CURSOR EFFECTS */
-@media (min-width: 768px) {
-    .weapon-card {
-        cursor: crosshair;
-    }
-
-    .story-card {
-        cursor: help;
-    }
-
-    .price-card {
-        cursor: pointer;
-    }
-
-    .nav-link-hell {
-        cursor: grab;
-    }
-
-    .nav-link-hell:active {
-        cursor: grabbing;
-    }
+/* CURSORS: links and linked cards point, static cards keep the default cursor. */
+a.weapon-card,
+.price-card {
+    cursor: pointer;
 }
 
 /* CREW VOICE GUIDES (REQ-WEB-003) */
