@@ -11,10 +11,10 @@ describe('Text contrast', () => {
         });
     });
 
-    // The homepage has its own menu.
+    // The homepages have their own menu.
     it('the open mobile menu on the generated pages has readable links', () => {
         cy.viewport(390, 844);
-        PAGE_URLS.filter((url) => url !== '/').forEach((url) => {
+        PAGE_URLS.filter((url) => url !== '/' && url !== '/en/').forEach((url) => {
             cy.visit(url);
             cy.get('.mobile-menu-toggle').click();
             cy.assertTextContrast();
