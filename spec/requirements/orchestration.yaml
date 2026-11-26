@@ -48,8 +48,8 @@ requirements:
   - orchestration/ai_self_improvement
   not_proven: Real improvement; phase metrics are simulated in phase_executor.py (fixed base gains, seeded
     random.Random noise), not measured from test or CI results, so convergence shows the loop's bookkeeping;
-    loop pattern ids include the cycle number, so within a run none recur and confidence stays low (only tests
-    calling add_pattern directly raise it)
+    loop pattern ids include the cycle number, so within a run none recur and confidence stays low (only direct
+    add_pattern calls, e.g. tests, raise it)
 - id: REQ-ORCH-006
   title: Learning loop agents
   statement: Error-coordinator, knowledge-synthesiser and performance-monitor agents shall support the learning
