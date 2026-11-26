@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+import string
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Mapping, Optional
@@ -19,6 +20,10 @@ SAFE_READ_SERVICES = ("19", "22")
 # ISO 3779: 17 characters, digits and capital letters except I, O and Q.
 _VIN_PATTERN = re.compile(r"[A-HJ-NPR-Z0-9]{17}")
 _TRUE_VALUES = {"true", "1", "yes"}
+# A UDS F190 response often pads the VIN with NULs or spaces.
+_VIN_PADDING = "\x00" + string.whitespace
+# Model years outside this window are typos, not cars: the first VIN standard (ISO 3779) dates from 1980.
+_MIN_MODEL_YEAR = 1980
 
 
 def normalize_vin(value: Any) -> Optional[str]:
@@ -27,6 +32,23 @@ def normalize_vin(value: Any) -> Optional[str]:
         return None
     candidate = value.strip().upper()
     return candidate if _VIN_PATTERN.fullmatch(candidate) else None
+
+
+def normalize_read_vin(value: Any) -> Optional[str]:
+    """Return the VIN read from the car as a valid ISO 3779 VIN, or None if the read is unusable.
+
+    Bytes (as a UDS F190 read returns them) are decoded as ASCII, dropping anything else; NUL and
+    whitespace padding is stripped before the VIN is validated.
+    """
+    if isinstance(value, (bytes, bytearray)):
+        value = bytes(value).decode("ascii", errors="ignore")
+    if not isinstance(value, str):
+        return None
+    return normalize_vin(value.strip(_VIN_PADDING))
+
+
+def _model_year_bounds() -> tuple[int, int]:
+    return _MIN_MODEL_YEAR, datetime.now(timezone.utc).year + 1
 
 
 def _comma_list(value: str) -> list[str]:
@@ -69,10 +91,16 @@ def config_from_env(environ: Mapping[str, str]) -> dict[str, Any]:
     raw_year = environ.get("MIA_VEHICLE_MODEL_YEAR", "").strip()
     if raw_year:
         try:
-            config["model_year"] = int(raw_year)
+            year = int(raw_year)
         except ValueError:
             logger.warning("Ignoring MIA_VEHICLE_MODEL_YEAR: not an integer year")
-            config["model_year"] = None
+            year = None
+        else:
+            low, high = _model_year_bounds()
+            if not low <= year <= high:
+                logger.warning("Ignoring MIA_VEHICLE_MODEL_YEAR: not a year between %d and %d", low, high)
+                year = None
+        config["model_year"] = year
 
     return config
 
@@ -145,9 +173,12 @@ class VagAudiBridge:
         merged_config["allow_security_access"] = False
         merged_config["allow_write_services"] = False
         # Only 0x19 and 0x22 can ever be allowlisted; anything else is dropped.
-        requested_services = [
-            self._normalize_service(service) for service in merged_config.get("allowed_read_services", [])
-        ]
+        raw_services = merged_config.get("allowed_read_services")
+        if not isinstance(raw_services, (list, tuple, set, frozenset)):
+            # A tampered configuration (None, a number, a bare string) fails closed: no read services.
+            logger.warning("Ignoring allowed_read_services: not a list of UDS services; allowing none")
+            raw_services = []
+        requested_services = [self._normalize_service(service) for service in raw_services]
         dropped_services = [service for service in requested_services if service not in SAFE_READ_SERVICES]
         if dropped_services:
             logger.warning(
@@ -399,12 +430,18 @@ class VagAudiBridge:
         }
 
     def _vin_match(self) -> Optional[bool]:
-        """None until a VIN has been read (or when the install has no VIN); then whether it matches."""
-        read_vin = self.telemetry.vin
+        """Whether the VIN read from the car is the install's VIN.
+
+        None (unknown) when the install has no VIN or no usable VIN has been read: an empty, padded-out
+        or malformed read never counts as a different car. Never logs either VIN.
+        """
         expected_vin = self.config["expected_vin"]
-        if read_vin is None or expected_vin is None:
+        if expected_vin is None:
             return None
-        return str(read_vin).strip().upper() == expected_vin
+        read_vin = normalize_read_vin(self.telemetry.vin)
+        if read_vin is None:
+            return None
+        return read_vin == expected_vin
 
     def _build_adapter_capabilities(self) -> dict[str, Any]:
         configured_class = self._normalize_capability_class(self.config.get("capability_class"))
