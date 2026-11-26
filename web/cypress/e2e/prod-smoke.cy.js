@@ -26,6 +26,20 @@ const isVercel = /vercel\.app/.test(Cypress.config('baseUrl') || '');
         cy.assertLocalLinksResolve('link[rel="stylesheet"][href], img[src], script[src]');
     });
 
+    it('the 404 page links lead to real pages', () => {
+        cy.visit('/this-page-does-not-exist/', { failOnStatusCode: false });
+        cy.get('a[href]').should('have.length.at.least', 6);
+        cy.assertLocalLinksResolve('a[href]');
+    });
+
+    (isVercel ? it : it.skip)('Vercel redirects GitHub Pages paths under /mia/ to the root', () => {
+        cy.request({ url: '/mia/business/', followRedirect: false }).then((res) => {
+            expect(res.status).to.be.oneOf([307, 308]);
+            expect(res.headers.location).to.match(/^(https:\/\/mia-suzmatra\.vercel\.app)?\/business\/$/);
+        });
+        cy.request({ url: '/mia', followRedirect: false }).its('headers.location').should('match', /^(https:\/\/[^/]+)?\/$/);
+    });
+
     (isVercel ? it : it.skip)('Vercel sends the security headers', () => {
         cy.request('/').then((res) => {
             expect(res.headers['strict-transport-security']).to.match(/max-age=\d+/);

@@ -7,8 +7,9 @@ deploys the `gh-pages` branch of this repository (root directory `.`, no build s
 so every push to `gh-pages` by the workflow also redeploys Vercel. The generator writes
 `dist/vercel.json`, which gives the Vercel copy its security headers (REQ-WEB-005): nosniff,
 referrer and framing rules, and a report-only Content-Security-Policy with the hash of every
-inline script. Rebuild after editing an inline script so its hash is updated; GitHub Pages
-ignores the file. The audience landing pages and the
+inline script. It also redirects `/mia/...` to the root, so the shared `404.html` links work
+on Vercel without JavaScript. Rebuild after editing an inline script so its hash is updated;
+GitHub Pages ignores the file. The audience landing pages and the
 press kit are generated from shared templates. The gonzo homepage and a few
 internal tools are maintained by hand.
 
@@ -125,8 +126,10 @@ a redirect points to the wrong place, or the homepage loses its voice-guide mark
 It also fails if a page (homepage included) loses its skip link, its single `<main id="main">`,
 its single `<h1>` or its Open Graph tags, if a homepage image below the hero is not lazy-loaded,
 or if `robots.txt` or `sitemap.xml` is missing a page (REQ-WEB-004).
-It also fails if `vercel.json` loses a security header or misses the hash of an inline script
-(REQ-WEB-005).
+It also fails if `vercel.json` loses a security header or the hash of an inline script
+(REQ-WEB-005), or if the hand-written `index.html` or `404.html` shows the old name, a price or a
+removed percentage, stops linking to every audience page, or `vercel.json` loses the `/mia/`
+redirect (REQ-WEB-002).
 
 ### Browser tests
 
@@ -148,8 +151,8 @@ npm run e2e:prod    # read-only smoke test against https://mia-suzmatra.vercel.a
 ```
 
 `prod-smoke.cy.js` only sends GET requests and visits pages. It also runs against GitHub Pages
-with `--config baseUrl=https://sparesparrow.github.io/mia`; the security-header test runs on
-Vercel only.
+with `--config baseUrl=https://sparesparrow.github.io/mia`; the security-header and `/mia/`
+redirect tests run on Vercel only.
 
 To preview the whole site as published, copy the homepage next to `dist/` the way
 the workflow's "Assemble static site" step does, and build the docs with
@@ -158,8 +161,9 @@ the workflow's "Assemble static site" step does, and build the docs with
 ## Known limitations
 
 - The homepage (`index.html`) is hand-written Czech. Its English link goes to
-  `/journalists/en/`. `build-smoke.js` checks its voice-guide markup and its page
-  structure (REQ-WEB-004), not its copy.
+  `/journalists/en/`. `build-smoke.js` checks its voice-guide markup, its page
+  structure (REQ-WEB-004), its audience links and the forbidden name, prices and
+  percentages (REQ-WEB-002); its other claims are reviewed by hand.
 - Canonical URLs and the sitemap use the GitHub Pages host. `robots.txt` only takes effect at
   a host root, so it works on the Vercel mirror but not under `/mia/` on GitHub Pages; submit
   the sitemap to search engines directly.

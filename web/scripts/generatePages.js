@@ -488,7 +488,17 @@ const reportOnlyPolicy = [
     "form-action 'self'"
 ].join('; ');
 
+// GitHub Pages serves the site under /mia/, Vercel at the host root. 404.html is shared: its links use
+// absolute /mia/ paths, and an inline script rewrites them to the right base at runtime. On Vercel, a visitor
+// without JavaScript (or a crawler), or anyone arriving on a GitHub-Pages-style /mia/... URL, would still
+// get only dead links, so Vercel redirects /mia/... to the root (REQ-WEB-002).
+const vercelRedirects = [
+    { source: '/mia', destination: '/', permanent: false },
+    { source: '/mia/:path*', destination: '/:path*', permanent: false }
+];
+
 writeFile('vercel.json', JSON.stringify({
+    redirects: vercelRedirects,
     headers: [
         {
             source: '/(.*)',
