@@ -8,6 +8,7 @@ services:
       - "8883:8883"
     volumes:
       - ./services/mosquitto/secure.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./services/mosquitto/acl:/mosquitto/config/acl:ro
       - ./services/mosquitto/passwords:/mosquitto/passwords
       - ./services/mosquitto/certs:/mosquitto/certs:ro
 

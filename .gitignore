@@ -218,3 +218,6 @@ htmlcov/
 # Compiler output and editor swap files
 *.o
 *.kate-swp
+
+# MQTT broker users made by infra/edge/pi-gateway/scripts/mqtt-users.sh (ADR-0026)
+infra/edge/pi-gateway/services/mosquitto/passwords/
