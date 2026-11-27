@@ -163,6 +163,10 @@ body.madness-loading {
     display: flex;
     align-items: center;
     gap: 30px;
+    /* Ten links no longer fit on one row between 900 and ~1250 px; wrap instead of overflowing. */
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: 8px;
 }
 
 .nav-link-hell {
@@ -1212,4 +1216,84 @@ body.madness-loading { cursor: auto; }
     display: inline-block;
     min-height: 24px;
     line-height: 24px;
+}
+
+/* POSTER: "Your ride. Your rules." banner below the hero. */
+.poster-madness {
+    padding: 80px 0 40px;
+    background: var(--bg-darkness);
+}
+
+.poster-figure {
+    margin: 0;
+}
+
+.poster-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--primary-madness);
+}
+
+.poster-caption {
+    margin-top: 24px;
+    font-family: var(--font-chaos);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    letter-spacing: 2px;
+    color: var(--text-scream);
+}
+
+.poster-sub {
+    display: block;
+    max-width: 760px;
+    margin-top: 8px;
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    letter-spacing: 0;
+    color: var(--text-whisper);
+}
+
+/* DISOBEDIENCE: quotes on freedom. */
+.disobedience-intro {
+    max-width: 760px;
+    margin-bottom: 50px;
+}
+
+.quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 24px;
+}
+
+.quote-card {
+    margin: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--bg-darkness);
+    border-left: 4px solid var(--primary-madness);
+}
+
+.quote-card blockquote {
+    margin: 0;
+}
+
+.quote-card blockquote p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-scream);
+}
+
+.quote-card figcaption {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--accent-hell);
+}
+
+.quote-note {
+    margin-top: 40px;
 }
