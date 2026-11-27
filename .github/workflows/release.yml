@@ -74,6 +74,27 @@ jobs:
         run: |
           yes | sdkmanager --licenses > /dev/null
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
+      # The stable debug key that Android Tests also uses, so a release's debug APK installs over an earlier one
+      # instead of needing an uninstall that wipes the app's data and Keystore keys. Without the secrets the
+      # default Android debug key is used. See the build.gradle comment.
+      - name: Prepare stable debug keystore
+        env:
+          MIA_DEBUG_KEYSTORE_B64: ${{ secrets.MIA_DEBUG_KEYSTORE_B64 }}
+          MIA_DEBUG_STORE_PASSWORD: ${{ secrets.MIA_DEBUG_STORE_PASSWORD }}
+          MIA_DEBUG_KEY_ALIAS: ${{ secrets.MIA_DEBUG_KEY_ALIAS }}
+          MIA_DEBUG_KEY_PASSWORD: ${{ secrets.MIA_DEBUG_KEY_PASSWORD }}
+        run: |
+          if [ -n "$MIA_DEBUG_KEYSTORE_B64" ] && [ -n "$MIA_DEBUG_STORE_PASSWORD" ] && [ -n "$MIA_DEBUG_KEY_ALIAS" ] && [ -n "$MIA_DEBUG_KEY_PASSWORD" ]; then
+            KS="$RUNNER_TEMP/mia-debug.keystore"
+            echo "$MIA_DEBUG_KEYSTORE_B64" | base64 -d > "$KS"
+            echo "DEBUG_STORE_FILE=$KS" >> "$GITHUB_ENV"
+            echo "DEBUG_STORE_PASSWORD=$MIA_DEBUG_STORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "DEBUG_KEY_ALIAS=$MIA_DEBUG_KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "DEBUG_KEY_PASSWORD=$MIA_DEBUG_KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo "Using the stable debug keystore."
+          else
+            echo "::notice::No debug keystore secrets set; the debug APK uses the default Android debug key."
+          fi
       - name: Build APKs
         env:
           VERSION_NAME: ${{ needs.metadata.outputs.version }}
