@@ -69,6 +69,9 @@ directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 ## Content rules
 
+- Images follow the art direction and prompts in [IMAGE-PROMPTS.md](IMAGE-PROMPTS.md): no text in the
+  pixels, only features MIA has, the real car and hardware.
+
 - The product is called **MIA**. The old AI-SERVIS name only appears where the
   press kit explains the rename. Some images still have it in their pixels.
 - No prices and no performance figures (such as "300% productivity") unless the
