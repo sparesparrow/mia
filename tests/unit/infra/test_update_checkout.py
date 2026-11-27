@@ -141,3 +141,118 @@ def test_git_runs_as_the_checkout_owner():
     assert 'OWNER="$(stat -c %U "$CHECKOUT/.git")"' in text
     assert 'runuser -u "$OWNER" --' in text
     assert "safe.directory" not in text
+
+
+def _origin_and_checkout(tmp_path: Path, first: dict, second: dict, force_add=()):
+    """An origin whose two commits hold exactly the given files, and a clone left detached on the first."""
+    origin = tmp_path / "origin"
+    origin.mkdir()
+    _git(origin, "init", "-q", "-b", "main")
+    commits = []
+    for files in (first, second):
+        for old in [p for p in origin.iterdir() if p.name != ".git"]:
+            old.unlink()
+        for name, content in files.items():
+            (origin / name).write_text(content)
+        _git(origin, "add", "-A")
+        for name in force_add:
+            if name in files:
+                _git(origin, "add", "-f", name)
+        _git(origin, "commit", "-qm", f"commit {len(commits) + 1}")
+        commits.append(_git(origin, "rev-parse", "HEAD"))
+    checkout = tmp_path / "checkout"
+    _git(tmp_path, "clone", "-q", str(origin), str(checkout))
+    _git(checkout, "checkout", "-q", "--detach", commits[0])
+    return checkout, commits[0], commits[1]
+
+
+IGNORE_LOCAL = "*.local\n"
+
+
+def test_an_ignored_local_file_the_target_tracks_with_other_content_stops_the_deploy_and_stays(tmp_path):
+    """git checkout overwrites ignored files without asking; an operator's ignored settings file is local work too."""
+    checkout, first, _ = _origin_and_checkout(
+        tmp_path,
+        {".gitignore": IGNORE_LOCAL, "api.py": "v1\n"},
+        {".gitignore": IGNORE_LOCAL, "api.py": "v2\n", "settings.local": "target\n"},
+        force_add=("settings.local",),
+    )
+    (checkout / "settings.local").write_text("the operator's settings\n")
+
+    result = _run(checkout)
+
+    assert result.returncode != 0
+    assert "settings.local" in result.stderr
+    assert "nothing was changed" in result.stderr
+    assert _git(checkout, "rev-parse", "HEAD") == first
+    assert (checkout / "settings.local").read_text() == "the operator's settings\n"
+
+
+def test_an_ignored_local_file_equal_to_the_target_is_dropped_and_other_ignored_files_stay(tmp_path):
+    checkout, _, second = _origin_and_checkout(
+        tmp_path,
+        {".gitignore": IGNORE_LOCAL, "api.py": "v1\n"},
+        {".gitignore": IGNORE_LOCAL, "api.py": "v2\n", "settings.local": "target\n"},
+        force_add=("settings.local",),
+    )
+    (checkout / "settings.local").write_text("target\n")
+    (checkout / "other.local").write_text("ignored, not tracked by the target\n")
+
+    result = _run(checkout)
+
+    assert result.returncode == 0, result.stderr
+    assert _git(checkout, "rev-parse", "HEAD") == second
+    assert (checkout / "settings.local").read_text() == "target\n"
+    assert (checkout / "other.local").read_text() == "ignored, not tracked by the target\n"
+
+
+def test_a_staged_rename_never_leaves_a_file_missing(tmp_path):
+    """A staged `git mv keep.py moved.py`; the target adds moved.py with keep.py's content and keeps keep.py.
+
+    With rename detection the diff lists only moved.py, which equals the target and is dropped; the staged deletion
+    of keep.py is never seen, the checkout carries it over and the deployed tree lacks keep.py.
+    """
+    checkout, first, second = _origin_and_checkout(
+        tmp_path,
+        {"keep.py": "same\n", "api.py": "v1\n"},
+        {"keep.py": "same\n", "moved.py": "same\n", "api.py": "v2\n"},
+    )
+    _git(checkout, "mv", "keep.py", "moved.py")
+
+    result = _run(checkout)
+
+    if result.returncode == 0:
+        assert _git(checkout, "rev-parse", "HEAD") == second
+        assert (checkout / "keep.py").read_text() == "same\n"
+        assert _git(checkout, "status", "--porcelain", "--untracked-files=no") == ""
+    else:
+        # The staged deletion of keep.py is a local change the target does not share: a loud stop, nothing changed.
+        assert "keep.py" in result.stderr
+        assert "nothing was changed" in result.stderr
+        assert _git(checkout, "rev-parse", "HEAD") == first
+        assert (checkout / "moved.py").read_text() == "same\n"
+
+
+def test_a_staged_rename_the_target_also_made_is_dropped_cleanly(tmp_path):
+    checkout, _, second = _origin_and_checkout(
+        tmp_path,
+        {"keep.py": "same\n", "api.py": "v1\n"},
+        {"moved.py": "same\n", "api.py": "v2\n"},
+    )
+    _git(checkout, "mv", "keep.py", "moved.py")
+
+    result = _run(checkout)
+
+    assert result.returncode == 0, result.stderr
+    assert _git(checkout, "rev-parse", "HEAD") == second
+    assert not (checkout / "keep.py").exists()
+    assert (checkout / "moved.py").read_text() == "same\n"
+    assert _git(checkout, "status", "--porcelain", "--untracked-files=no") == ""
+
+
+def test_the_checkout_sees_ignored_files_and_renames_and_checks_its_result():
+    text = SCRIPT.read_text()
+    assert "--exclude-standard" not in text
+    assert "diff --name-only --no-renames -z HEAD" in text
+    # A tree that still differs from the target after the checkout fails the deploy instead of being installed.
+    assert "status --porcelain --untracked-files=no" in text

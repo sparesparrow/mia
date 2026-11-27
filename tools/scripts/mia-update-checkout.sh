@@ -7,9 +7,12 @@
 #   ownership"), and objects written by root would break the owner's own git commands later.
 # - It fetches origin (skipped with MIA_DEPLOY_SKIP_FETCH=1) and checks the ref's commit out detached: a deploy pins a
 #   commit and never creates a merge commit on the Pi.
-# - A local edit, or an untracked file that the target commit tracks, is dropped only when its content already equals
-#   the target's (a fix copied in by hand before it was merged). Anything else stops the deploy and lists the paths,
-#   so local work is never lost. Untracked files the target does not track, such as run-time data, are not touched.
+# - A local edit, or an untracked or ignored file that the target commit tracks, is dropped only when its content
+#   already equals the target's (a fix copied in by hand before it was merged). Anything else stops the deploy and
+#   lists the paths, so local work is never lost. Ignored files count because git checkout overwrites them without
+#   asking. Untracked and ignored files the target does not track, such as run-time data, are not touched.
+# - Renames are compared as a deletion and an addition, so a staged `git mv` cannot hide the deleted path.
+# - After the checkout the tracked files must equal the target commit; otherwise it fails and lists what differs.
 #
 # The last line on stdout is the deployed commit.
 
@@ -56,25 +59,31 @@ conflicts=()
 same_tracked=()
 same_untracked=()
 
-# Tracked paths that differ from HEAD, staged or not (modified, deleted or newly added).
+# Tracked paths that differ from HEAD, staged or not (modified, deleted or newly added). Without rename detection a
+# staged rename lists both the deleted and the added path.
 while IFS= read -r -d '' path; do
     if [[ "$(local_blob "$path")" == "$(target_blob "$path")" ]]; then
         same_tracked+=("$path")
     else
         conflicts+=("$path")
     fi
-done < <(g diff --name-only -z HEAD)
+done < <(g diff --name-only --no-renames -z HEAD)
 
-# Untracked files the target commit would write over.
+# Untracked and ignored files the target commit would write over: those the target adds relative to HEAD. The set is
+# read once, so an ignored directory full of run-time data costs one lookup per file, not one git call.
+declare -A target_adds=()
 while IFS= read -r -d '' path; do
+    target_adds["$path"]=1
+done < <(g diff --name-only --no-renames --diff-filter=A -z HEAD "$TARGET")
+while IFS= read -r -d '' path; do
+    [[ -n "${target_adds[$path]+set}" ]] || continue
     blob="$(target_blob "$path")"
-    [[ -z "$blob" ]] && continue
     if [[ "$(local_blob "$path")" == "$blob" ]]; then
         same_untracked+=("$path")
     else
         conflicts+=("$path")
     fi
-done < <(g ls-files --others --exclude-standard -z)
+done < <(g ls-files --others -z)
 
 if [[ ${#conflicts[@]} -gt 0 ]]; then
     echo "mia-update-checkout: local changes in $CHECKOUT differ from $REF ($TARGET); nothing was changed:" >&2
@@ -99,5 +108,12 @@ fi
 
 PREVIOUS="$(g rev-parse HEAD)"
 g checkout --quiet --detach "$TARGET"
+leftover="$(g status --porcelain --untracked-files=no)"
+if [[ -n "$leftover" ]]; then
+    echo "mia-update-checkout: after the checkout of $REF ($TARGET) the tracked files still differ from it:" >&2
+    echo "$leftover" >&2
+    echo "The deploy stops here; nothing was installed. Inspect $CHECKOUT with git status." >&2
+    exit 1
+fi
 echo "Checkout: $PREVIOUS -> $TARGET ($REF)" >&2
 echo "$TARGET"
