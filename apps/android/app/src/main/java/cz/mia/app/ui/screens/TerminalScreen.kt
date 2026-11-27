@@ -119,7 +119,7 @@ private fun ConnectForm(state: TerminalUiState, vm: TerminalViewModel, modifier:
 				modifier = Modifier.weight(2f).testTag("terminal_user"),
 			)
 			OutlinedTextField(
-				value = state.port.toString(), onValueChange = vm::setPort, label = { Text("Port") }, singleLine = true,
+				value = if (state.port == 0) "" else state.port.toString(), onValueChange = vm::setPort, label = { Text("Port") }, singleLine = true,
 				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.weight(1f),
 			)
 		}

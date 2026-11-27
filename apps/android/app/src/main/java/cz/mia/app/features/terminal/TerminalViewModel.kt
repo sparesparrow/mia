@@ -126,7 +126,8 @@ class TerminalViewModel @Inject constructor(
 	}
 
 	fun setHost(v: String) = _state.update { it.copy(host = v.trim()) }
-	fun setPort(v: String) = _state.update { it.copy(port = v.toIntOrNull() ?: it.port) }
+	/** Digits only; an empty field is 0, which [SshTarget] refuses on Connect. */
+	fun setPort(v: String) = _state.update { it.copy(port = v.filter(Char::isDigit).take(5).toIntOrNull() ?: 0) }
 	fun setUser(v: String) = _state.update { it.copy(user = v.trim()) }
 	fun setUseKey(v: Boolean) = _state.update { it.copy(useKey = v) }
 	fun dismissMessage() = _state.update { it.copy(message = null) }
