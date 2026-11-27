@@ -18,7 +18,7 @@ Environment=PYTHONPATH=/opt/mia/apps/rpi-backend/py-api:/opt/mia
 Environment=VAG_ENABLE_UDS_POLLING=false
 Environment=VAG_ALLOWED_READ_SERVICES=19,22
 Environment=VAG_DEFAULT_IDENTIFIERS=F190
-ExecStart=/bin/bash -c 'exec "${MIA_PYTHON:-/usr/local/bin/mia-python}" /opt/mia/orchestration/mcp/modules/vag-audi-bridge/main.py'
+ExecStart=/bin/bash -c 'exec "$${MIA_PYTHON:-/usr/local/bin/mia-python}" /opt/mia/orchestration/mcp/modules/vag-audi-bridge/main.py'
 Restart=on-failure
 RestartSec=10
 WatchdogSec=0

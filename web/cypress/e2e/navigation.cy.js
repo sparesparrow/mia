@@ -27,11 +27,24 @@ describe('Navigation', () => {
         });
     });
 
-    it('the homepage EN link opens the English journalists page', () => {
+    it('the homepage EN link opens the English homepage, and CS leads back', () => {
         cy.visit('/');
         cy.get('a[hreflang="en"]').first().click();
-        cy.location('pathname').should('eq', '/journalists/en/');
+        cy.location('pathname').should('eq', '/en/');
         cy.get('html').should('have.attr', 'lang', 'en');
+        cy.get('#crew-widget elevenlabs-convai').should('have.length', 1);
+        cy.get('a[hreflang="cs"]').first().click();
+        cy.location('pathname').should('eq', '/');
+        cy.get('html').should('have.attr', 'lang', 'cs');
+    });
+
+    it('the English pages lead to the English homepage', () => {
+        cy.visit('/business/en/');
+        cy.get('.nav-brand a').click();
+        cy.location('pathname').should('eq', '/en/');
+        cy.visit('/en/');
+        cy.get('a.weapon-card[href="../business/en/"]').click();
+        cy.location('pathname').should('eq', '/business/en/');
     });
 
     it('the mobile menu opens and closes on a segment page', () => {

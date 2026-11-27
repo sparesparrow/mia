@@ -2,15 +2,15 @@
 business:
   page:
     title:
-        en: MIA - Professional AI for Business Vehicles
-        cs: MIA - Profesionální AI pro obchodní vozidla
+        en: "MIA for business – a fleet that doesn't snitch"
+        cs: "MIA pro firmy – flotila, která nedonáší"
     description:
-        en: Professional AI solutions for business vehicles with productivity boost and enterprise security
-        cs: Profesionální AI řešení pro obchodní vozidla s nárůstem produktivity a podnikovou bezpečností
+        en: "A new company car tells its manufacturer where and how you drive. MIA reads OBD and Audi diagnostics for you alone, runs on a Raspberry Pi under the seat and takes voice commands, so the driver keeps hold of the wheel. No cloud, and she writes nothing to the car."
+        cs: "Nové firemní auto hlásí výrobci, kudy a jak jezdíte. MIA čte OBD a diagnostiku Audi jen pro vás, běží na Raspberry Pi pod sedačkou a poslouchá hlasové povely, takže řidič drží volant. Žádný cloud a do auta nic nezapisuje."
   navigation:
     business_intelligence_on_wheels:
-      en: Business Intelligence on Wheels
-      cs: Obchodní inteligence na kolech
+      en: "A fleet that doesn't snitch"
+      cs: "Flotila, která nedonáší"
     features:
       en: Features
       cs: Funkce
@@ -25,8 +25,8 @@ business:
       cs: Získat demo
   hero:
     aipowered_business_vehicle_intelligence:
-      en: AI-Powered Business Vehicle Intelligence
-      cs: AI poháněná obchodní vozidlová inteligence
+      en: "Your fleet, your data. Not the manufacturer's."
+      cs: "Vaše flotila, vaše data. Ne výrobcova."
     productivity_boost:
       en: Productivity Boost
       cs: Nárůst produktivity
@@ -60,59 +60,59 @@ business:
       cs: Obchodní analýzy
   solutions:
     business_solutions:
-      en: Business Solutions
-      cs: Obchodní řešení
+      en: "What MIA is cooking up for business"
+      cs: "Co MIA chystá pro firmy"
     sales_teams:
-      en: Sales Teams
-      cs: Obchodní týmy
+      en: "Sales reps on the road"
+      cs: "Obchodníci na cestách"
     handsfree_crm_access:
-      en: Hands-Free CRM Access
-      cs: CRM bez rukou
+      en: "CRM by voice, hands stay on the wheel"
+      cs: "CRM hlasem, ruce zůstanou na volantu"
     voicetotext_meeting_notes:
-      en: Voice-to-Text Meeting Notes
-      cs: Hlasové poznámky ze schůzek
+      en: "Meeting notes dictated on the drive back"
+      cs: "Zápis ze schůzky nadiktovaný cestou zpátky"
     lead_tracking_and_routing:
-      en: Lead Tracking and Routing
-      cs: Sledování a směrování leadů
+      en: "New leads straight to where they belong"
+      cs: "Nové kontakty rovnou tam, kam patří"
     territory_optimization:
-      en: Territory Optimization
-      cs: Optimalizace teritoria
+      en: "Customer rounds without pointless miles"
+      cs: "Objížďka zákazníků bez zbytečných kilometrů"
     sales_excellence:
       en: Sales Excellence
       cs: Obchodní excelence
     field_service_professionals:
-      en: Field Service Professionals
-      cs: Terénní pracovníci
+      en: "Field technicians"
+      cs: "Technici v terénu"
     job_dispatch_integration:
-      en: Job Dispatch Integration
-      cs: Integrace s dispečinkem
+      en: "Jobs from dispatch read out right in the van"
+      cs: "Zakázky z dispečinku nahlas rovnou do auta"
     voiceactivated_checklists:
-      en: Voice-Activated Checklists
-      cs: Hlasové checklisty
+      en: "Checklists ticked off by voice, not greasy fingers"
+      cs: "Checklist odškrtaný hlasem, ne mastnými prsty"
     realtime_eta_updates:
-      en: Real-Time ETA Updates
-      cs: Aktualizace času příjezdu
+      en: "The customer knows when you'll arrive, and nobody phones while driving"
+      cs: "Zákazník ví, kdy dorazíte, a vy kvůli tomu nevoláte za jízdy"
     service_report_generation:
-      en: Service Report Generation
-      cs: Generování servisních zpráv
+      en: "Service reports dictated, not typed at home at night"
+      cs: "Servisní zpráva nadiktovaná, ne psaná večer doma"
     field_service:
       en: Field Service
       cs: Terénní servis
     executive_transportation:
-      en: Executive Transportation
-      cs: Vedení společnosti
+      en: "The boss in the back seat"
+      cs: "Vedení na zadním sedadle"
     secure_voice_encryption:
-      en: Secure Voice Encryption
-      cs: Bezpečná hlasová šifrace
+      en: "Encrypted calls with no one else listening"
+      cs: "Šifrované hovory bez cizích uší"
     executive_calendar_sync:
-      en: Executive Calendar Sync
-      cs: Synchronizace exekutivního kalendáře
+      en: "The calendar in the car, not in someone else's cloud"
+      cs: "Kalendář v autě, ne v cizím cloudu"
     document_voice_review:
-      en: Document Voice Review
-      cs: Hlasový přezkoumání dokumentů
+      en: "Documents read aloud on the way to the meeting"
+      cs: "Dokumenty přečtené nahlas cestou na jednání"
     privacyfirst_design:
-      en: Privacy-First Design
-      cs: Design zaměřený na soukromí
+      en: "What's said in the car stays in the car"
+      cs: "Co se řekne v autě, zůstane v autě"
     executive_transport:
       en: Executive Transport
       cs: Exekutivní doprava
@@ -131,8 +131,8 @@ business:
       cs: 24/7 spolehlivost
   cta:
     ready_to_transform_your_business_fleet:
-      en: Ready to Transform Your Business Fleet?
-      cs: Připraveni transformovat váš obchodní vozový park?
+      en: "Want a fleet that works for you, not for the manufacturer?"
+      cs: "Chcete flotilu, která pracuje pro vás, a ne pro výrobce?"
     schedule_enterprise_demo:
       en: Schedule Enterprise Demo
       cs: Naplánovat podnikové demo
@@ -141,7 +141,7 @@ business:
       cs: Stáhnout případové studie
     enterprise_ai_for_business_vehicles:
       en: Enterprise AI for Business Vehicles
-      cs: Podniková AI pro obchodní vozidla
+      cs: Podniková AI pro firemní vozidla
   footer:
     executives:
       en: Executives

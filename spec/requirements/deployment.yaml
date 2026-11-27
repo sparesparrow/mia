@@ -93,8 +93,24 @@ requirements:
   - A second run succeeds and keeps the venv
   - The API's requirements install and pass pip check on aarch64 with Python 3.11 (Bookworm) and 3.13 (Trixie), and
     the API imports there (CI job "Pi Python (aarch64)" in .github/workflows/ci.yml; a test keeps the job in place)
+  - The production deploy brings the checkout to a pinned commit with git run as the checkout's owner, drops a local
+    change only when its content already equals the target's, stops on any other local change (an ignored file the
+    target tracks and both paths of a staged rename included) without changing anything, fails when the tracked
+    files still differ from the target after the checkout, and never touches untracked or ignored files the target
+    does not track
+  - After the checkout the deploy runs the target's copy of itself only when that copy has the safe checkout step;
+    otherwise it warns and finishes with the current copy
+  - An update refreshes every MIA unit already installed without enabling new ones, restarts the enabled units with
+    the broker first, and fails when the broker restart or the listing of enabled units fails, when the API does not
+    answer, or when, after a wait longer than any unit's RestartSec, the broker or a unit it restarted is not active
+    or has restarted on its own; a failed unit it did not restart is a warning
+  - The API key reaches the health check on curl's stdin, never its command line; deployed.json is written as JSON
+    with the ref actually deployed, and only after a verified deploy
+  - /opt/mia and /opt/mia/bin stay root-owned across a deploy, and the deploy does not make the Bluetooth adapter
+    discoverable
   implemented_in:
   - tools/scripts/deploy-production-rpi.sh
+  - tools/scripts/mia-update-checkout.sh
   - tools/scripts/deploy-raspberry-pi.sh
   - tools/scripts/setup-ble-service.sh
   - .github/workflows/ci.yml
@@ -104,4 +120,6 @@ requirements:
     list and rewrites the units; choosing one entrypoint is #132.
   not_proven: Never run on a Pi. The test runs the script with apt-get, systemctl, useradd, usermod and chown replaced
     by stubs and an empty requirements file; the aarch64 CI job installs the requirements on a GitHub runner, not on
-    Raspberry Pi OS. The BLE units have not been started with the venv.
+    Raspberry Pi OS. The BLE units have not been started with the venv. The production deploy itself
+    (tests/unit/infra/test_production_deploy.py) runs only as root with systemctl and curl stubbed, so CI skips it
+    and checks the script's text; the settle wait and the NRestarts check have not met a real crash-looping unit.

@@ -18,7 +18,7 @@
 //   6. Every local stylesheet and image a page references exists in dist/.
 //   7. No page carries the old prototype status banner, and on every segment page the
 //      use cases (#scenarios) come before "what works today" (#today).
-//   8. The hand-written homepage (web/index.html) offers the three voice guides: a crew
+//   8. The hand-written homepages (web/index.html, web/en/index.html) offer the three voice guides: a crew
 //      section with one card per guide, a distinct agent ID for each, one widget mount
 //      point, the embed script and the cloud disclosure (REQ-WEB-003).
 //   9. Every published page (generated pages and the homepage) has a skip link to one
@@ -29,6 +29,8 @@
 //      Content-Security-Policy allows the sha256 of every inline script on the site (REQ-WEB-005).
 //      It also redirects /mia/... to the root, so the shared 404 page's /mia/ links work on Vercel
 //      without JavaScript and from GitHub-Pages-style URLs.
+//  12. Every generated page has the mobile menu toggle and a brand link to its own homepage; the press kit's download links are described
+//      (alt text and an aria-label); each segment's scenario cards use more than one icon (REQ-WEB-004).
 //  11. The hand-written pages (web/index.html, web/404.html) pass check 3 too; the homepage links
 //      to every audience and the documentation, and the 404 page links to the homepage and every
 //      audience page with /mia/ paths plus the data-path its script rewrites them from (REQ-WEB-002).
@@ -54,7 +56,7 @@ const FORBIDDEN = [
     { pattern: /\b(300|93|70-93)\s?%/, label: 'unsourced percentages' },
     { pattern: /id="pricing"|href="#pricing"/, label: 'pricing section' }
 ];
-const SITE_URL = 'https://sparesparrow.github.io/mia/';
+const SITE_URL = 'https://mia-suzmatra.vercel.app/';
 const OG_PROPERTIES = ['og:title', 'og:description', 'og:url', 'og:image'];
 // Text that may legitimately mention the old name (the press kit explains the rename).
 const ALLOWED_OLD_NAME = /dříve pod názvem AI-SERVIS|previously called AI-SERVIS|starý název AI-SERVIS|old AI-SERVIS name/g;
@@ -86,6 +88,30 @@ function read(relPath) {
     }
 }
 
+// Width and height from a baseline or progressive JPEG's SOF marker; null if the file isn't a JPEG.
+function jpegSize(file) {
+    let buf;
+    try {
+        buf = fs.readFileSync(file);
+    } catch (_err) {
+        return null;
+    }
+    if (buf.readUInt16BE(0) !== 0xffd8) {
+        return null;
+    }
+    for (let i = 2; i + 9 < buf.length;) {
+        if (buf[i] !== 0xff) {
+            return null;
+        }
+        const marker = buf[i + 1];
+        if ([0xc0, 0xc1, 0xc2].includes(marker)) {
+            return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+        }
+        i += 2 + buf.readUInt16BE(i + 2);
+    }
+    return null;
+}
+
 // 9. Landmarks, headings, skip link and Open Graph tags (REQ-WEB-004).
 function checkStructure(rel, html) {
     const mains = html.match(/<main\b[^>]*>/g) || [];
@@ -100,6 +126,11 @@ function checkStructure(rel, html) {
     const image = (html.match(/<meta property="og:image" content="([^"]+)">/) || [])[1] || '';
     check(image.startsWith(SITE_URL) && fs.existsSync(path.join(WEB_ROOT, image.slice(SITE_URL.length))),
         `${rel} og:image points to a published image (${image.slice(SITE_URL.length)})`);
+    const size = jpegSize(path.join(WEB_ROOT, image.slice(SITE_URL.length)));
+    check(size && size.width === 1200 && size.height === 630
+        && html.includes('<meta property="og:image:width" content="1200">')
+        && html.includes('<meta property="og:image:height" content="630">'),
+    `${rel} og:image is a 1200x630 JPEG and says so` + (size ? ` (${size.width}x${size.height})` : ''));
 }
 
 console.log('Smoke test: MIA web build');
@@ -167,48 +198,53 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
     check(html.includes(`url=${target}"`), `${role}/ redirects to ${target.replace('../', '')}`);
 }
 
-// 8. Homepage voice guides (REQ-WEB-003). The homepage is not generated, so read it from web/.
-{
-    let home = '';
+// 8. Homepage voice guides (REQ-WEB-003). The Czech homepage is not generated, so read it from web/; the English
+// homepage (a hand-maintained translation) is copied into dist/en/ by the generator.
+const readWebFile = (file) => {
     try {
-        home = fs.readFileSync(path.join(WEB_ROOT, 'index.html'), 'utf8');
+        return fs.readFileSync(path.join(WEB_ROOT, file), 'utf8');
     } catch (_err) {
-        home = '';
+        return '';
     }
+};
+const HOMEPAGES = [['index.html', readWebFile('index.html')], ['en/index.html', read('en/index.html')]];
+for (const [file, home] of HOMEPAGES) {
     const guides = ['holly', 'rimmer', 'kryten'];
-    check(home.includes('id="posadka"'), 'index.html has the crew section (#posadka)');
+    check(home.includes('id="posadka"'), `${file} has the crew section (#posadka)`);
     const missingCards = guides.filter((g) => !home.includes(`data-crew="${g}"`));
-    check(missingCards.length === 0, 'index.html has a card for every voice guide' +
+    check(missingCards.length === 0, `${file} has a card for every voice guide` +
         (missingCards.length ? ` (missing: ${missingCards.join(', ')})` : ''));
     const ids = guides.map((g) => (home.match(new RegExp(`${g}:\\s*'(agent_[a-z0-9]+)'`)) || [])[1]);
     check(ids.every(Boolean) && new Set(ids).size === guides.length,
-        'index.html maps every voice guide to a distinct agent ID');
-    check((home.match(/id="crew-widget"/g) || []).length === 1, 'index.html has one widget mount point');
+        `${file} maps every voice guide to a distinct agent ID`);
+    check((home.match(/id="crew-widget"/g) || []).length === 1, `${file} has one widget mount point`);
     check(home.includes('https://unpkg.com/@elevenlabs/convai-widget-embed'),
-        'index.html loads the widget embed script');
+        `${file} loads the widget embed script`);
     check(/ElevenLabs/.test(home) && home.includes('class="crew-note"'),
-        'index.html says the guides run through ElevenLabs');
+        `${file} says the guides run through ElevenLabs`);
 }
 
 // 9. Homepage structure, lazy images, robots.txt and sitemap.xml (REQ-WEB-004).
 {
-    let home = '';
-    try {
-        home = fs.readFileSync(path.join(WEB_ROOT, 'index.html'), 'utf8');
-    } catch (_err) {
-        home = '';
+    for (const [file, home] of HOMEPAGES) {
+        checkStructure(file, home);
+        // The logo and the hero image are above the fold; every other image waits until it is needed.
+        const eager = (home.match(/<img\b[^>]*>/g) || [])
+            .filter((img) => !/suzmatra-brand\.svg|hero-dashboard\.jpg/.test(img) && !img.includes('loading="lazy"'));
+        check(eager.length === 0, `${file} lazy-loads every image below the hero` +
+            (eager.length ? ` (eager: ${eager.length})` : ''));
     }
-    checkStructure('index.html', home);
-    // The logo and the hero image are above the fold; every other image waits until it is needed.
-    const eager = (home.match(/<img\b[^>]*>/g) || [])
-        .filter((img) => !/suzmatra-brand\.svg|hero-dashboard\.jpg/.test(img) && !img.includes('loading="lazy"'));
-    check(eager.length === 0, 'index.html lazy-loads every image below the hero' +
-        (eager.length ? ` (eager: ${eager.length})` : ''));
+    const [csHome, enHome] = HOMEPAGES.map(([, html]) => html);
+    check(csHome.includes('href="en/"') && csHome.includes(`hreflang="en" href="${SITE_URL}en/"`),
+        'index.html links to the English homepage');
+    check(enHome.includes('<html lang="en"') && enHome.includes('href="../"')
+        && enHome.includes(`hreflang="cs" href="${SITE_URL}"`) && enHome.includes(`rel="canonical" href="${SITE_URL}en/"`),
+    'en/index.html is English and links back to the Czech homepage');
 
     const robots = read('robots.txt');
     check(robots.includes(`Sitemap: ${SITE_URL}sitemap.xml`), 'robots.txt points to sitemap.xml');
     const sitemap = read('sitemap.xml');
-    const expected = [''].concat(PAGES.flatMap((page) => [`${page}/`, `${page}/en/`]));
+    const expected = ['', 'en/'].concat(PAGES.flatMap((page) => [`${page}/`, `${page}/en/`]));
     const unlisted = expected.filter((rel) => !sitemap.includes(`<loc>${SITE_URL}${rel}</loc>`));
     check(sitemap.startsWith('<?xml') && unlisted.length === 0, 'sitemap.xml lists the homepage and every page' +
         (unlisted.length ? ` (missing: ${unlisted.join(', ')})` : ''));
@@ -262,8 +298,9 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
         }
     };
     const home = readWeb('index.html');
+    const enHome = read('en/index.html');
     const notFound = readWeb('404.html');
-    for (const [file, html] of [['index.html', home], ['404.html', notFound]]) {
+    for (const [file, html] of [['index.html', home], ['en/index.html', enHome], ['404.html', notFound]]) {
         check(html.length > 0, `${file} exists and is non-empty`);
         const scrubbed = html.replace(ALLOWED_OLD_NAME, '');
         for (const { pattern, label } of FORBIDDEN) {
@@ -276,16 +313,43 @@ for (const [role, target] of Object.entries(ROLE_REDIRECTS)) {
     check(homeMissing.length === 0 && home.includes('href="docs/"'),
         'index.html links to every audience and the documentation' +
             (homeMissing.length ? ` (missing: ${homeMissing.join(', ')})` : ''));
+    const enMissing = PAGES.map((s) => `../${s}/en/`)
+        .concat(Object.values(ROLE_REDIRECTS).map((t) => t.replace('../', '../')))
+        .filter((a) => !enHome.includes(`href="${a}"`));
+    check(enMissing.length === 0 && enHome.includes('href="../docs/"'),
+        'en/index.html links to every English audience page and the documentation' +
+            (enMissing.length ? ` (missing: ${enMissing.join(', ')})` : ''));
     // 404.html is served at any depth, so it links with absolute /mia/ paths. Its inline script rewrites each
     // link from data-path to the host's base; without JavaScript, vercel.json maps /mia/... to the root.
-    const notFoundMissing = ['', ...PAGES.map((s) => `${s}/`)]
+    const notFoundMissing = ['', 'en/', ...PAGES.map((s) => `${s}/`)]
         .filter((rel) => !notFound.includes(`data-path="${rel}" href="/mia/${rel}"`));
-    check(notFoundMissing.length === 0, '404.html links to the homepage and every audience page' +
+    check(notFoundMissing.length === 0, '404.html links to both homepages and every audience page' +
         (notFoundMissing.length ? ` (missing: ${notFoundMissing.map((r) => `/mia/${r}`).join(', ')})` : ''));
     const relative = [...notFound.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1])
         .filter((ref) => !/^(\/mia\/|https?:|#|mailto:|data:)/.test(ref));
     check(relative.length === 0, '404.html uses only /mia/ paths for local links' +
         (relative.length ? ` (found: ${relative.join(', ')})` : ''));
+}
+
+// 12. Mobile menu, described press downloads, scenario icons (REQ-WEB-004).
+for (const page of PAGES) {
+    for (const rel of [`${page}/index.html`, `${page}/en/index.html`]) {
+        const html = read(rel);
+        check(html.includes('class="mobile-menu-toggle"') && html.includes("querySelector('.mobile-menu-toggle')"),
+            `${rel} has the mobile menu toggle and its script`);
+        const homeHref = rel.includes('/en/') ? '../../en/' : '../';
+        check(html.includes(`<h2><a href="${homeHref}"`), `${rel} brand links to its homepage (${homeHref})`);
+        if (page === 'press') {
+            const links = [...html.matchAll(/<a [^>]*download[^>]*>\s*<img [^>]*>/g)].map((m) => m[0]);
+            const bare = links.filter((link) => !/aria-label="[^"]{8,}"/.test(link) || /alt=""/.test(link));
+            check(links.length > 0 && bare.length === 0, `${rel} describes every image download` +
+                (bare.length ? ` (${bare.length} without alt text or aria-label)` : ''));
+        } else {
+            const scenarios = html.slice(html.indexOf('id="scenarios"'), html.indexOf('id="today"'));
+            const icons = new Set([...scenarios.matchAll(/<i class="(fa[^"]+)"/g)].map((m) => m[1]));
+            check(icons.size > 1, `${rel} gives its scenario cards their own icons`);
+        }
+    }
 }
 
 if (failures > 0) {

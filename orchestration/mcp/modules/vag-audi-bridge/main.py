@@ -3,12 +3,106 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import re
+import string
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 
 logger = logging.getLogger(__name__)
+
+# UDS read services the bridge may ever use: 0x19 ReadDTCInformation and 0x22 ReadDataByIdentifier.
+# Configuration (including the environment) can narrow this set, never widen it.
+SAFE_READ_SERVICES = ("19", "22")
+
+# ISO 3779: 17 characters, digits and capital letters except I, O and Q.
+_VIN_PATTERN = re.compile(r"[A-HJ-NPR-Z0-9]{17}")
+_TRUE_VALUES = {"true", "1", "yes"}
+# A UDS F190 response often pads the VIN with NULs or spaces.
+_VIN_PADDING = "\x00" + string.whitespace
+# Model years outside this window are typos, not cars: the first VIN standard (ISO 3779) dates from 1980.
+_MIN_MODEL_YEAR = 1980
+
+
+def normalize_vin(value: Any) -> Optional[str]:
+    """Return the VIN stripped and upper-cased if it is a valid ISO 3779 VIN, else None."""
+    if not isinstance(value, str):
+        return None
+    candidate = value.strip().upper()
+    return candidate if _VIN_PATTERN.fullmatch(candidate) else None
+
+
+def normalize_read_vin(value: Any) -> Optional[str]:
+    """Return the VIN read from the car as a valid ISO 3779 VIN, or None if the read is unusable.
+
+    Bytes (as a UDS F190 read returns them) are decoded as ASCII, dropping anything else; NUL and
+    whitespace padding is stripped before the VIN is validated.
+    """
+    if isinstance(value, (bytes, bytearray)):
+        value = bytes(value).decode("ascii", errors="ignore")
+    if not isinstance(value, str):
+        return None
+    return normalize_vin(value.strip(_VIN_PADDING))
+
+
+def _model_year_bounds() -> tuple[int, int]:
+    return _MIN_MODEL_YEAR, datetime.now(timezone.utc).year + 1
+
+
+def _comma_list(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def config_from_env(environ: Mapping[str, str]) -> dict[str, Any]:
+    """Build the bridge configuration from an install's environment.
+
+    Unset variables keep the DEFAULT_CONFIG values. Blank vehicle identity values count as unset; a blank
+    comma list means an empty list. Only the keys below are read: nothing here can loosen the read-only
+    posture, and VagAudiBridge forces it again whatever the configuration says.
+    """
+    config = {
+        key: list(value) if isinstance(value, list) else value
+        for key, value in VagAudiBridge.DEFAULT_CONFIG.items()
+    }
+
+    if "VAG_ENABLE_UDS_POLLING" in environ:
+        config["enable_uds_polling"] = environ["VAG_ENABLE_UDS_POLLING"].strip().lower() in _TRUE_VALUES
+    if "VAG_ALLOWED_READ_SERVICES" in environ:
+        config["allowed_read_services"] = _comma_list(environ["VAG_ALLOWED_READ_SERVICES"])
+    if "VAG_DEFAULT_IDENTIFIERS" in environ:
+        config["default_identifiers"] = _comma_list(environ["VAG_DEFAULT_IDENTIFIERS"])
+    if environ.get("ZMQ_TELEMETRY_SUB", "").strip():
+        config["transport_endpoint"] = environ["ZMQ_TELEMETRY_SUB"].strip()
+
+    raw_vin = environ.get("MIA_VEHICLE_VIN", "")
+    if raw_vin.strip():
+        vin = normalize_vin(raw_vin)
+        if vin is None:
+            # Never echo the value: a VIN identifies a car and its owner.
+            logger.warning("Ignoring MIA_VEHICLE_VIN: not a valid 17-character ISO 3779 VIN")
+        config["expected_vin"] = vin
+
+    model = environ.get("MIA_VEHICLE_MODEL", "").strip()
+    if model:
+        config["model_hint"] = model
+
+    raw_year = environ.get("MIA_VEHICLE_MODEL_YEAR", "").strip()
+    if raw_year:
+        try:
+            year = int(raw_year)
+        except ValueError:
+            logger.warning("Ignoring MIA_VEHICLE_MODEL_YEAR: not an integer year")
+            year = None
+        else:
+            low, high = _model_year_bounds()
+            if not low <= year <= high:
+                logger.warning("Ignoring MIA_VEHICLE_MODEL_YEAR: not a year between %d and %d", low, high)
+                year = None
+        config["model_year"] = year
+
+    return config
 
 
 @dataclass
@@ -65,6 +159,7 @@ class VagAudiBridge:
         "allow_write_services": False,
         "model_hint": None,
         "model_year": None,
+        "expected_vin": None,
     }
 
     def __init__(self, config: Optional[dict[str, Any]] = None) -> None:
@@ -77,9 +172,27 @@ class VagAudiBridge:
         merged_config["allow_extended_session"] = False
         merged_config["allow_security_access"] = False
         merged_config["allow_write_services"] = False
-        merged_config["allowed_read_services"] = [
-            service.upper() for service in merged_config.get("allowed_read_services", [])
-        ]
+        # Only 0x19 and 0x22 can ever be allowlisted; anything else is dropped.
+        raw_services = merged_config.get("allowed_read_services")
+        if not isinstance(raw_services, (list, tuple, set, frozenset)):
+            # A tampered configuration (None, a number, a bare string) fails closed: no read services.
+            logger.warning("Ignoring allowed_read_services: not a list of UDS services; allowing none")
+            raw_services = []
+        requested_services = [self._normalize_service(service) for service in raw_services]
+        dropped_services = [service for service in requested_services if service not in SAFE_READ_SERVICES]
+        if dropped_services:
+            logger.warning(
+                "Ignoring UDS services outside the read-only allowlist %s: %s",
+                ",".join(SAFE_READ_SERVICES),
+                ",".join(str(service) for service in dropped_services),
+            )
+        merged_config["allowed_read_services"] = list(
+            dict.fromkeys(service for service in requested_services if service in SAFE_READ_SERVICES)
+        )
+        expected_vin = merged_config.get("expected_vin")
+        merged_config["expected_vin"] = normalize_vin(expected_vin)
+        if expected_vin is not None and merged_config["expected_vin"] is None:
+            logger.warning("Ignoring expected_vin: not a valid 17-character ISO 3779 VIN")
         merged_config["default_identifiers"] = [
             self._normalize_identifier(identifier)
             for identifier in merged_config.get("default_identifiers", [])
@@ -275,6 +388,8 @@ class VagAudiBridge:
                 "vehicle_family": self.config["vehicle_family"],
                 "model_hint": self.config["model_hint"],
                 "model_year": self.config["model_year"],
+                "expected_vin": self.config["expected_vin"],
+                "vin_match": self._vin_match(),
             },
             "current_state": self.current_state,
             "connection": {
@@ -313,6 +428,20 @@ class VagAudiBridge:
             "adapter_capabilities": dict(self.adapter_capabilities),
             "last_message_at": self.last_message_at.isoformat() if self.last_message_at else None,
         }
+
+    def _vin_match(self) -> Optional[bool]:
+        """Whether the VIN read from the car is the install's VIN.
+
+        None (unknown) when the install has no VIN or no usable VIN has been read: an empty, padded-out
+        or malformed read never counts as a different car. Never logs either VIN.
+        """
+        expected_vin = self.config["expected_vin"]
+        if expected_vin is None:
+            return None
+        read_vin = normalize_read_vin(self.telemetry.vin)
+        if read_vin is None:
+            return None
+        return read_vin == expected_vin
 
     def _build_adapter_capabilities(self) -> dict[str, Any]:
         configured_class = self._normalize_capability_class(self.config.get("capability_class"))
@@ -507,7 +636,7 @@ async def main() -> int:
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    bridge = VagAudiBridge()
+    bridge = VagAudiBridge(config_from_env(os.environ))
     await bridge.initialize()
     logger.info("VAG Audi bridge scaffold initialized in %s mode", bridge.current_state)
 

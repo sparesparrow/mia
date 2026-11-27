@@ -14,19 +14,32 @@ Background and troubleshooting: [Production deployment](../PRODUCTION_DEPLOYMENT
 
 ## Steps
 
-1. Deploy from a checkout of this repository on the Pi:
+1. Deploy from a checkout of this repository on the Pi. Keep the checkout outside `/opt/mia` (for example
+   `~/mia-src`, owned by the `mia` user), so the install can keep `/opt/mia/bin` root-owned
+   ([ADR-0023](../spec/decisions/0023-phone-driven-software-update.md)):
    ```bash
-   sudo ./tools/scripts/deploy-production-rpi.sh
+   git clone https://github.com/sparesparrow/mia.git ~/mia-src
+   sudo ~/mia-src/tools/scripts/deploy-production-rpi.sh
    ```
    The script:
-   - copies the code to `/opt/mia`;
+   - brings the checkout to `origin/main` (or `MIA_DEPLOY_REF`), running git as the checkout's owner. It stops,
+     listing the paths, when local changes (ignored files the commit tracks included) differ from that commit; it
+     never deletes untracked data;
+   - copies the code to `/opt/mia` and makes `/opt/mia` itself root-owned;
    - installs the API's requirements (`apps/rpi-backend/py-api/requirements.txt`) into the venv
      `/opt/mia/venv`, never into the system Python;
    - points `/usr/local/bin/mia-python` and `MIA_PYTHON` in `/etc/mia/environment` at that venv;
-   - installs and enables the systemd units from `infra/systemd/`.
+   - installs and enables the core systemd units from `infra/systemd/`, and refreshes every other MIA unit that is
+     already installed (voice, BLE, bridges) without enabling it;
+   - enables and starts `mia-ble-obd` and `mia-ble-advertiser`;
+   - restarts every enabled MIA unit, the broker first (an enabled unit that was stopped is started), then checks
+     that the API answers and that every restarted unit is still active without an automatic restart 15 s later,
+     and records the commit in `/var/lib/mia/deployed.json`.
 
    It works with the Python of Raspberry Pi OS Bookworm (3.11) and Trixie (3.13). Running it again updates the
-   code and keeps the venv and the API key.
+   code and keeps the venv and the API key. Switches: `MIA_DEPLOY_REF=<tag or commit>`, `MIA_DEPLOY_SKIP_FETCH=1`
+   (deploy the checkout as it is), `MIA_NO_RESTART=1`, `MIA_SKIP_CLAUDE_TOOLING=1`. `sudo` resets the environment,
+   so pass them after it: `sudo MIA_DEPLOY_REF=v2.3.0 ~/mia-src/tools/scripts/deploy-production-rpi.sh`.
 
 2. Set an API key. The units read `/etc/mia/environment`; these commands replace only the `MIA_API_KEY` line and
    keep the `MIA_PYTHON` line the deploy wrote:

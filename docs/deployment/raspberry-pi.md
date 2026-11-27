@@ -1,378 +1,109 @@
-# Raspberry Pi Deployment Guide
+# Raspberry Pi: deploy, update and operate
 
-> **🚀 NEW: Complete Automated Deployment Available!**
->
-> For the easiest deployment experience, use our new comprehensive deployment system:
->
-> ```bash
-> # One-command deployment (recommended)
-> curl -fsSL https://raw.githubusercontent.com/sparesparrow/mia/main/setup-mia.sh | sudo bash
->
-> # Or use the detailed deployment script
-> sudo ./tools/scripts/deploy-complete-system.sh
-> ```
->
-> See **[COMPLETE_DEPLOYMENT_GUIDE.md](COMPLETE_DEPLOYMENT_GUIDE.md)** for full documentation.
->
-> ---
+> **Audience**: Ops engineers working on an installed MIA Pi
 
-This guide covers deploying MIA on a Raspberry Pi 4B using the legacy manual method.
+The first install is [Raspberry Pi install (supported)](../install/pi-gateway.md). This page covers what comes after:
+updating, checking and troubleshooting a running Pi. Earlier revisions of this page described a manual install from
+the old `ai-servis` repository with `rpi/requirements.txt` and `pip --break-system-packages`; none of that applies any
+more.
 
-## Prerequisites
+## Layout on the Pi
 
-### Hardware
-- Raspberry Pi 4B (2GB+ RAM recommended)
-- MicroSD card (32GB+ recommended)
-- Power supply (5V 3A USB-C)
-- Network connection (Ethernet or WiFi)
+| Path | What it is |
+|---|---|
+| `~/mia-src` | Source checkout owned by `mia`. Deploys run from here. |
+| `/opt/mia` | The install, root-owned: code the units run, the venv (`/opt/mia/venv`), run-time data (`/opt/mia/data`, Piper voices, owned by `mia`). |
+| `/opt/mia/bin` | Root-owned tools (`mia-apply-update`, `mia-update-pair`, `mia-enroll`, `mia-phone-registry`), [ADR-0023](../../spec/decisions/0023-phone-driven-software-update.md). |
+| `/etc/mia/environment` | `EnvironmentFile` of every unit: `MIA_API_KEY`, `MIA_PYTHON` and per-install settings. Mode 600. |
+| `/etc/systemd/system/{zmq-broker,mia-*}.service` | Units copied from `infra/systemd/`. |
+| `/var/lib/mia/deployed.json` | `ref`, `sha`, `deployed_at` and `verified` of the last deploy that passed its checks. A `MIA_NO_RESTART=1` run does not write it. |
 
-### Optional Hardware
-- ELM327 OBD-II adapter (USB or Bluetooth)
-- Arduino/ESP32 for GPIO expansion
-- WS2812 LED strip for status indicators
+Do not deploy from a checkout at `/opt/mia` itself: its `bin/` would belong to the checkout's owner, who could then
+replace the tool that the phone's sudo rule runs as root.
 
-## Installation
-
-### 1. Prepare the SD Card
-
-Download and install Raspberry Pi OS Lite (64-bit recommended):
+## Update
 
 ```bash
-# Using Raspberry Pi Imager or:
-sudo dd if=2024-03-15-raspios-bookworm-arm64-lite.img of=/dev/sdX bs=4M status=progress
+ssh mia@<pi>
+sudo ~/mia-src/tools/scripts/deploy-production-rpi.sh
 ```
 
-Enable SSH before first boot:
-```bash
-touch /boot/ssh
-```
+The script brings `~/mia-src` to `origin/main` and installs. It enables and starts `mia-ble-obd` and
+`mia-ble-advertiser`, then restarts every enabled MIA unit, broker first; an enabled unit that was stopped is started.
+It exits non-zero when:
 
-### 2. Initial System Setup
+- the fetch fails;
+- local changes in the checkout differ from the target commit, ignored files the target tracks included (it lists
+  them and changes nothing), or the tracked files still differ from the target after the checkout;
+- the broker restart or the listing of the enabled units fails;
+- the API does not answer within 60 s;
+- 15 s after the restart (`MIA_DEPLOY_SETTLE_SECONDS`, longer than any unit's `RestartSec`) the broker or a unit it
+  restarted is not `active` or has restarted on its own (`NRestarts` is not 0). A unit that crashes on start sits in
+  `activating (auto-restart)`, never `failed`, so this is what catches it.
 
-After first boot, update the system:
+A unit the deploy did not restart, such as the one-shot `mia-selftest` failing at boot, is reported as a warning only.
 
-```bash
-sudo apt update && sudo apt upgrade -y
-```
+| Variable (after `sudo`) | Effect |
+|---|---|
+| `MIA_DEPLOY_REF=v2.3.0` | Deploy a tag, branch or commit instead of `origin/main`. |
+| `MIA_DEPLOY_SKIP_FETCH=1` | Deploy the checkout as it is. |
+| `MIA_NO_RESTART=1` | Install only; restart later yourself, `zmq-broker` first. Nothing is verified and `deployed.json` is not written. |
+| `MIA_DEPLOY_SETTLE_SECONDS=30` | Wait longer before the units are judged (default 15). |
+| `MIA_SKIP_CLAUDE_TOOLING=1` | Do not run `claude update` and `npm update -g @sparesparrow/mcp-prompts`. |
 
-Install required system packages:
+From another machine, `tools/scripts/deploy-mia-rpi.sh` syncs a working tree and installs its own package list
+(REQ-DEP-003); merging the two entry points is issue #132. The phone can update an installed Pi with a release
+package ([pi-gateway.md, "Updating an installed Pi from the phone"](../install/pi-gateway.md)).
 
-```bash
-sudo apt install -y \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    git \
-    libzmq3-dev \
-    i2c-tools \
-    screen
-```
+## Rollback
 
-### 3. Clone the Repository
-
-```bash
-cd /home/mia
-git clone https://github.com/sparesparrow/ai-servis.git
-cd ai-servis
-```
-
-### 4. Install Python Dependencies
+Deploy the previous commit: it is in `/var/lib/mia/deployed.json` before the update, or in `git -C ~/mia-src reflog`.
 
 ```bash
-pip3 install --break-system-packages -r rpi/requirements.txt
+sudo MIA_DEPLOY_REF=<previous sha> ~/mia-src/tools/scripts/deploy-production-rpi.sh
 ```
 
-Or use a virtual environment:
+After the checkout the script runs the target commit's copy of itself, so the target's deploy steps apply. A commit
+from before #298 has a copy without the safe checkout step: it would run `git pull origin main` as root, moving the
+checkout off the commit you asked for, and would start only the BLE units and restart nothing else. The script
+checks the target's copy for that step (the `MIA_DEPLOY_CHECKOUT_DONE` marker); when it is missing, or the commit
+has no `deploy-production-rpi.sh`, it prints a warning that the target predates the safe deploy and finishes with
+the current copy instead. The target's own `setup-ble-service.sh` and `deploy-raspberry-pi.sh` still run. Before
+#298, `setup-ble-service.sh` ran `chown -R mia /opt/mia` and made the adapter discoverable, so after such a rollback
+deploy a current commit again, which puts `/opt/mia` and `/opt/mia/bin` back to root.
+
+## Check
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r rpi/requirements.txt
+systemctl list-units 'mia-*' zmq-broker --no-pager
+systemctl --failed
+sudo sed -n 's/^MIA_API_KEY=/X-API-Key: /p' /etc/mia/environment | curl -H @- http://localhost:8000/status
+cat /var/lib/mia/deployed.json
+journalctl -u mia-api -n 50 --no-pager
 ```
 
-### 5. Install systemd Services
+## Per-vehicle settings
+
+Settings that belong to one car go into `/etc/mia/environment` on that Pi, never into the repository. The car's
+capabilities and survey data live in `apps/rpi-backend/config/vehicles/`. On a car that is not a Citroën, keep
+`mia-citroen-bridge` disabled: it publishes simulated PSA telemetry when no adapter answers.
 
 ```bash
-sudo cp rpi/services/*.service /etc/systemd/system/
-sudo systemctl daemon-reload
-```
-
-Enable services to start on boot:
-
-```bash
-# Core services
-sudo systemctl enable mia-broker
-sudo systemctl enable mia-api
-
-# Hardware services (enable as needed)
-sudo systemctl enable mia-gpio-worker
-sudo systemctl enable mia-serial-bridge
-sudo systemctl enable mia-obd-worker
-
-# Citroën telemetry (if using OBD-II)
-sudo systemctl enable mia-citroen-bridge
-```
-
-## Configuration
-
-### Environment Variables
-
-Create `/etc/mia/environment`:
-
-```bash
-sudo mkdir -p /etc/mia
-sudo tee /etc/mia/environment << 'EOF'
-# API Configuration
-MIA_API_KEY=your_secure_api_key_here
-# MIA_AUTH_DISABLED=1  # Uncomment to disable auth
-
-# ZeroMQ Ports
-ZMQ_BROKER_PORT=5555
-ZMQ_PUB_PORT=5557
-
-# OBD-II Configuration (if using)
-ELM_SERIAL_PORT=/dev/ttyUSB0
-ELM_BAUD_RATE=38400
-# ELM_MOCK=1  # Uncomment for mock mode
-
-# Device Registry
-DEVICE_REGISTRY_PATH=/var/lib/mia/device_registry.json
-EOF
-```
-
-Update service files to use environment file:
-
-```bash
-sudo systemctl edit mia-api --force
-# Add:
-# [Service]
-# EnvironmentFile=/etc/mia/environment
-```
-
-### Serial Port Permissions
-
-Add user to dialout group for serial access:
-
-```bash
-sudo usermod -a -G dialout mia
-```
-
-### GPIO Permissions
-
-For GPIO access without root:
-
-```bash
-sudo usermod -a -G gpio mia
-```
-
-## Starting Services
-
-### Start All Services
-
-```bash
-# Start core services
-sudo systemctl start mia-broker
-sleep 2
-sudo systemctl start mia-api
-
-# Start hardware services
-sudo systemctl start mia-gpio-worker
-
-# Start OBD services (if applicable)
-sudo systemctl start mia-citroen-bridge
-```
-
-### Check Service Status
-
-```bash
-sudo systemctl status mia-*
-```
-
-### View Logs
-
-```bash
-# All MIA logs
-journalctl -u 'mia-*' -f
-
-# Specific service
-journalctl -u mia-api -f
-```
-
-## Testing the Deployment
-
-### Test API
-
-```bash
-# Health check
-curl http://localhost:8000/
-
-# Device list
-curl http://localhost:8000/devices
-
-# System status
-curl http://localhost:8000/status
-```
-
-### Test with Authentication
-
-```bash
-# Set API key header
-curl -H "X-API-Key: your_secure_api_key_here" http://localhost:8000/devices
-```
-
-### Test WebSocket
-
-```python
-import asyncio
-import websockets
-
-async def test():
-    async with websockets.connect("ws://localhost:8000/ws") as ws:
-        msg = await ws.recv()
-        print(msg)
-
-asyncio.run(test())
-```
-
-## OBD-II Setup (Citroën/PSA Vehicles)
-
-### 1. Connect ELM327 Adapter
-
-```bash
-# Check if adapter is detected
-ls -l /dev/ttyUSB*
-```
-
-### 2. Test in Mock Mode
-
-```bash
-ELM_MOCK=1 python3 agents/citroen_bridge.py
-```
-
-### 3. Test Real Connection
-
-```bash
-# Connect to vehicle OBD-II port
-# Turn ignition ON (not necessarily engine running)
-sudo systemctl start mia-citroen-bridge
-journalctl -u mia-citroen-bridge -f
-```
-
-### Verify Telemetry
-
-```bash
-curl http://localhost:8000/telemetry
-```
-
-## Performance Tuning
-
-### Memory Optimization
-
-For 2GB RPi, add swap:
-
-```bash
-sudo dphys-swapfile swapoff
-sudo nano /etc/dphys-swapfile
-# Set CONF_SWAPSIZE=1024
-sudo dphys-swapfile setup
-sudo dphys-swapfile swapon
-```
-
-### CPU Governor
-
-Set performance mode:
-
-```bash
-echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+sudo systemctl disable --now mia-citroen-bridge
 ```
 
 ## Troubleshooting
 
-### Service Won't Start
-
-```bash
-# Check logs
-journalctl -u mia-api -n 50 --no-pager
-
-# Check dependencies
-python3 -c "import zmq; print('ZMQ OK')"
-python3 -c "import fastapi; print('FastAPI OK')"
-```
-
-### Port Already in Use
-
-```bash
-# Check what's using the port
-sudo netstat -tulpn | grep -E "5555|8000"
-
-# Kill conflicting process
-sudo fuser -k 8000/tcp
-```
-
-### Serial Port Issues
-
-```bash
-# Check permissions
-ls -la /dev/ttyUSB*
-
-# Test serial connection
-screen /dev/ttyUSB0 38400
-# Type ATZ and press Enter (should see "ELM327...")
-# Ctrl+A, K to exit
-```
-
-### GPIO Not Working
-
-```bash
-# Check if gpiomem is available
-ls -la /dev/gpiomem
-
-# Test GPIO
-python3 -c "import RPi.GPIO as GPIO; print('GPIO OK')"
-```
-
-## Security Recommendations
-
-1. **Change default passwords**
-2. **Enable firewall**:
-   ```bash
-   sudo apt install ufw
-   sudo ufw allow ssh
-   sudo ufw allow 8000/tcp  # API port
-   sudo ufw enable
-   ```
-3. **Use HTTPS** (see TLS setup guide)
-4. **Set strong API key**
-5. **Regular updates**:
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   ```
+- **A unit fails to start**: `journalctl -u <unit> -n 50 --no-pager`. Python import errors usually mean the deploy
+  was interrupted; run it again.
+- **The API answers 401**: the client's key differs from `MIA_API_KEY` in `/etc/mia/environment`.
+- **Serial adapters**: `ls -l /dev/ttyUSB* /dev/obd2`; the udev rules in `infra/deploy/rpi/udev/` create `/dev/obd2`
+  for known adapters. The `mia` user is in `dialout`.
+- **The journal grows fast**: `journalctl --disk-usage`; a unit that logs in a loop shows in
+  `journalctl --since -10min | awk '{print $5}' | sort | uniq -c | sort -rn | head`.
 
 ## Backup
 
-### Backup Configuration
-
 ```bash
-sudo tar -czvf mia-backup.tar.gz \
-    /etc/mia/ \
-    /var/lib/mia/ \
-    /opt/mia/apps/rpi-backend/config/
-```
-
-### Restore
-
-```bash
-sudo tar -xzvf mia-backup.tar.gz -C /
-sudo systemctl restart mia-*
-```
-
-## Updates
-
-### Update MIA
-
-```bash
-cd /opt/mia
-git pull origin main
-pip3 install --break-system-packages -r rpi/requirements.txt
-sudo systemctl restart mia-*
+sudo tar -czf mia-backup-$(date +%F).tar.gz /etc/mia /var/lib/mia /opt/mia/data
 ```

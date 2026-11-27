@@ -3,7 +3,7 @@ journalists:
   page:
     title:
       en: MIA - Investigative Journalism AI
-      cs: MIA - Digitální Paranoidní Manifestí Na Kolech
+      cs: MIA – Digitální paranoidní manifest na kolech
     description:
       en: Ultimate tool for investigative reporting with real-time surveillance and voice transcription
       cs: Když tě sledujou, budeš sledovat je. Edge AI pro paranoiky, investigativce a rebelující duše s volantem v rukou.
@@ -13,10 +13,10 @@ journalists:
       cs: Gonzo žurnalistika
     manifesto:
       en: Manifesto
-      cs: MANIFESTÍ
+      cs: MANIFEST
     weaponry:
       en: Arsenal
-      cs: ARSENAL
+      cs: ARZENÁL
     stories:
       en: Stories
       cs: PŘÍBĚHY
@@ -73,21 +73,21 @@ journalists:
     buttons:
       join_resistance:
         en: JOIN THE RESISTANCE
-        cs: VSTOUPIT DO RESISTANCE
+        cs: VSTOUPIT DO ODBOJE
       watch_manifesto:
         en: WATCH MANIFESTO
-        cs: SLEDOVAT MANIFESTO
+        cs: ČÍST MANIFEST
   weaponry:
     title:
       en: "Arsenal for Digital Guerrilla"
-      cs: "ARSENAL PRO DIGITÁLNÍ GUERILLU"
+      cs: "ARZENÁL PRO DIGITÁLNÍ GERILU"
     anti_stalker_protocol:
       title:
         en: "Anti-Stalker Protocol"
         cs: "ANTI-STALKER PROTOKOL"
       description:
         en: "When the night fog lifts and your rear wiper catches the same number plate for the sixth time, MIA warns you: Heads up! Someone's riding your ass!"
-        cs: "Když se noční mlha rozplyne a tvůj zadní stěrač zahlédne už pošesté tu stejnou SPZ - MIA tě upozorní: Bacha! Máš sledku za prdelí!"
+        cs: "Když se noční mlha rozplyne a tvůj zadní stěrač zahlédne už pošesté tu stejnou SPZ – MIA tě upozorní: Bacha! Máš sledku za prdelí!"
       quote:
         en: "Once is chance. Twice is coincidence. The sixth time it's a tail."
         cs: "Jednou je to náhoda. Dvakrát souhra okolností. Pošesté je to sledka."
@@ -107,7 +107,7 @@ journalists:
         cs: "DETEKTOR KRIMINÁLKY"
       description:
         en: "Just because you're paranoid doesn't mean they're not after you: every plate you pass is checked against edalnice.cz. Vehicles exempt from the motorway toll are driven by the criminal police!"
-        cs: "Že seš paranoidní neznamená že po tobě nejdou: Všechny potkané SPZ se ověří dotazem na edalnice.cz - vozidla osvobozená od dálničního poplatku řídí kriminálka!"
+        cs: "Že seš paranoidní, neznamená, že po tobě nejdou: všechny potkané SPZ se ověří dotazem na edalnice.cz – vozidla osvobozená od dálničního poplatku řídí kriminálka!"
       quote:
         en: "Only two kinds of people drive without a vignette: the ones who forgot, and the ones who don't have to pay."
         cs: "Bez dálniční známky jezdí jen dva druhy lidí: ti, co zapomněli, a ti, co platit nemusí."
@@ -117,7 +117,7 @@ journalists:
         cs: "RUCE NA VOLANTU"
       description:
         en: "When you drive, your hands are on the wheel and your eyes on the road. Not even an automatic gearbox lets you fiddle with your phone's settings while driving; MIA does it for you, just talk to her. And when they pull you over, MIA will play your pregnant wife on the phone, the one you're speeding to get to the hospital!"
-        cs: "Když řídíš, máš ruce na volantu a oči na silnici. Ani automat ti neposkytne pohodlí sekat se za jízdy v nadstavnení telefonu; MIA to bude dělat za tebe, stačí s ní mluvit. A až tě budou stavět, MIA bude hrát těhotnou manželku na telefonu, pro kterou rychle jedeš abys ji vzal do nemocnice!"
+        cs: "Když řídíš, máš ruce na volantu a oči na silnici. Ani automat ti neposkytne pohodlí sekat se za jízdy v nastavení telefonu; MIA to bude dělat za tebe, stačí s ní mluvit. A až tě budou stavět, MIA bude hrát těhotnou manželku na telefonu, pro kterou rychle jedeš, abys ji vzal do nemocnice!"
       quote:
         en: "Say “Hey Mia” and leave the phone in its mount."
         cs: "Řekni „Hey Mia“ a telefon nech v držáku."
@@ -164,7 +164,7 @@ journalists:
         cs: "TLAČÍTKA NA VOLANTU"
       description:
         en: "MIA maps your steering-wheel buttons to any action you like: read out phone notifications when a message pings, start Waze navigation on a route with no cops, or send \"RDY\" to all your Signal contacts."
-        cs: "MIA ti namapuje tlačítka na volantu na libovolné akce: Přečíst notifikace z telefonu, když ti cinkne zpráva, spustit navigaci přes Waze cestou, kde nejsou policajti, nebo napsat všem kontaktům na Signal \"RDY\"."
+        cs: "MIA ti namapuje tlačítka na volantu na libovolné akce: přečíst notifikace z telefonu, když ti cinkne zpráva, spustit navigaci přes Waze cestou, kde nejsou policajti, nebo napsat všem kontaktům na Signal „RDY“."
       features:
         - en: "Notifications read aloud"
           cs: "Notifikace nahlas"
@@ -189,7 +189,7 @@ journalists:
   manifesto:
     title:
       en: "Digital Guerrilla Manifesto"
-      cs: "MANIFESTÍ DIGITÁLNÍ GUERILLY"
+      cs: "MANIFEST DIGITÁLNÍ GERILY"
     content:
       paragraph1:
         en: "Your car knows more about you than your mum does. How much you drive, where you park, how you brake. A new car sends that to the manufacturer and the insurer. MIA reads it for you alone."
@@ -318,8 +318,8 @@ journalists:
             en: "Phone as a dashboard"
             cs: "Telefon jako palubka"
           text:
-            en: "BLE, live telemetry, dashcam and your own “if this, do that” rules."
-            cs: "BLE, živá telemetrie, dashcam a vlastní pravidla typu „když tohle, udělej tamto“."
+            en: "BLE, live telemetry and your own “if this, do that” rules. The dashcam is still being finished."
+            cs: "BLE, živá telemetrie a vlastní pravidla typu „když tohle, udělej tamto“. Dashcam se teprve dodělává."
         - title:
             en: "Brain under the seat"
             cs: "Mozek pod sedačkou"

@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
 						MoreDestination.InstallMia -> InstallMiaScreen(inner)
 						MoreDestination.ObdPairing -> OBDPairingScreen(inner)
 						MoreDestination.Settings -> SettingsScreen(inner)
+						MoreDestination.Terminal -> cz.mia.app.ui.screens.TerminalScreen(inner)
 					}
 				}
 			}

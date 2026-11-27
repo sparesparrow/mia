@@ -67,6 +67,7 @@ requirements:
   acceptance:
   - The default configuration is read-only and passive, and UDS is disabled in the systemd unit
   - Data identifier reads are blocked unless the transport reports UDS capability
+  - The bridge reads its configuration from its unit's environment (VAG_*, ZMQ_TELEMETRY_SUB, MIA_VEHICLE_*)
   implemented_in:
   - orchestration/mcp/modules/vag-audi-bridge/main.py
   services:
@@ -166,3 +167,25 @@ requirements:
   decisions:
   - ADR-0009
   not_proven: Deployment on the target Raspberry Pi
+- id: REQ-AUTO-014
+  title: Install vehicle identity
+  statement: The VAG bridge shall take the install's VIN, model and model year from its environment, report whether
+    the VIN read from the car matches the install's VIN, and never let the environment loosen its read-only posture.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - MIA_VEHICLE_VIN, MIA_VEHICLE_MODEL and MIA_VEHICLE_MODEL_YEAR map onto the bridge's expected VIN, model and model
+    year; unset variables keep the defaults
+  - An invalid VIN (not 17 characters of A-Z and 0-9 without I, O, Q) is ignored with a warning that does not echo it
+  - The vehicle status reports expected_vin and vin_match, which stays null until a VIN has been read
+  - An unusable VIN read (empty, malformed, or only NUL or space padding) gives vin_match null, never false; a VIN
+    read as bytes or padded with NULs or spaces is decoded and trimmed before it is compared
+  - No environment variable can turn off read_only or enable writes, extended sessions, security access, or a read
+    service other than 0x19 and 0x22
+  implemented_in:
+  - orchestration/mcp/modules/vag-audi-bridge/main.py
+  services:
+  - mia-vag-audi-bridge
+  decisions:
+  - ADR-0006
+  not_proven: A VIN read from the real car and compared with the install's VIN
+  safety: The install's VIN lives only in /etc/mia/environment on the Pi and is never committed

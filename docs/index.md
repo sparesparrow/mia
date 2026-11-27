@@ -7,7 +7,7 @@ REST/WebSocket API; Android aplikace je jeho společník. Tento web shrnuje inst
 - Vývojáři / Developers: [start here](for/developers.md)
 - Automechanici a montáž / Mechanics & installers: [start here](for/mechanics.md)
 - Testeři / Testers: [start here](for/testers.md)
-- Zákazníci, partneři a média / Customers, partners and press: [hlavní web / main site](https://sparesparrow.github.io/mia/)
+- Zákazníci, partneři a média / Customers, partners and press: [hlavní web / main site](https://mia-suzmatra.vercel.app/)
 
 ## Jak MIA funguje
 - **Raspberry Pi 4B je hlavní uzel** ([ADR-0005](spec/decisions/0005-raspberry-pi-edge-with-fastapi-gateway.md)):

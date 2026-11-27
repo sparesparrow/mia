@@ -2,22 +2,21 @@
 musicians:
   page:
     title:
-      en: MIA - Mobile DJ & Music Production AI
-      cs: MIA - AI pro mobilní DJe a hudební produkci
+      en: "MIA for musicians – a rehearsal room on four wheels"
+      cs: "MIA pro muzikanty – zkušebna na čtyřech kolech"
     description:
-      en: Transform your car into a mobile DJ booth and music production studio with
-        AI-powered tools
-      cs: Proměňte auto v mobilní DJ pult a hudební studio s nástroji poháněnými AI
+      en: "The car as a rehearsal room and a DJ booth? That's the plan. Today MIA takes voice commands, reads what the engine is doing and runs on a Raspberry Pi under the seat, not in someone else's cloud."
+      cs: "Auto jako zkušebna a DJ pult? To je plán. Dnes MIA poslouchá hlasové povely, čte, co dělá motor, a běží na Raspberry Pi pod sedačkou, ne v cizím cloudu."
   navigation:
     mobile_music_revolution:
-      en: Mobile Music Revolution
-      cs: Mobilní hudební revoluce
+      en: "Amp on full, cloud switched off"
+      cs: "Zesilovač naplno, cloud vypnutý"
     features:
       en: Features
       cs: Funkce
     performances:
-      en: Performances
-      cs: Performance
+      en: "What MIA is cooking up for musicians"
+      cs: "Co MIA chystá pro muzikanty"
     studio:
       en: Studio
       cs: Studio
@@ -41,8 +40,8 @@ musicians:
       cs: Sledovat performance
   hero:
     studiograde_features:
-      en: Studio-Grade Features
-      cs: Funkce studiové kvality
+      en: "A rehearsal room that drives you to the gig"
+      cs: "Zkušebna, která tě odveze na koncert"
     rtpmidi_network:
       en: RTP-MIDI Network
       cs: RTP-MIDI síť
@@ -60,53 +59,53 @@ musicians:
       cs: Připraveno na živé performance
   features:
     mobile_dj_revolution:
-      en: Mobile DJ Revolution
-      cs: Mobilní DJ revoluce
+      en: "DJ out of the boot"
+      cs: "DJ z kufru"
     remote_deck_synchronization:
-      en: Remote Deck Synchronization
-      cs: Synchronizace vzdálených decků
+      en: "Decks in sync between cars"
+      cs: "Decky sladěné mezi auty"
     live_streaming_capabilities:
-      en: Live Streaming Capabilities
-      cs: Možnosti živého streamování
+      en: "A live stream from the car park"
+      cs: "Živý stream z parkoviště"
     multicar_collaboration:
-      en: Multi-Car Collaboration
-      cs: Kolaborace více aut
+      en: "Several cars, one party"
+      cs: "Víc aut, jeden mejdan"
     emergency_backup_systems:
-      en: Emergency Backup Systems
-      cs: Záložní systémy
+      en: "A backup for when the power cuts out"
+      cs: "Záloha pro chvíli, kdy vypadne proud"
     band_collaboration:
-      en: Band Collaboration
-      cs: Kapelní kolaborace
+      en: "The band"
+      cs: "Kapela"
     realtime_audio_sync:
-      en: Real-Time Audio Sync
-      cs: Real-time audio sync
+      en: "Audio in sync between cars in real time"
+      cs: "Zvuk sladěný mezi auty v reálném čase"
     distributed_recording:
-      en: Distributed Recording
-      cs: Distribuované nahrávání
+      en: "Everyone records from their own car"
+      cs: "Každý nahrává ze svého auta"
     cloud_collaboration:
-      en: Cloud Collaboration
-      cs: Cloud kolaborace
+      en: "Sharing takes without someone else's cloud"
+      cs: "Sdílení nahrávek bez cizího cloudu"
     mobile_mixing_desk:
-      en: Mobile Mixing Desk
-      cs: Mobilní mixážní pult
+      en: "A mixing desk on the passenger seat"
+      cs: "Mixpult na sedadle spolujezdce"
     band_sync:
       en: Band Sync
       cs: Kapelní sync
     solo_artist_freedom:
-      en: Solo Artist Freedom
-      cs: Svoboda sólového umělce
+      en: "Solo artists"
+      cs: "Sólisti"
     creative_access_247:
-      en: 24/7 Creative Access
-      cs: 24/7 kreativní přístup
+      en: "Making music whenever it grabs you"
+      cs: "Tvoření, kdykoli tě to chytne"
     instant_recording_setup:
-      en: Instant Recording Setup
-      cs: Okamžité nahrávací setup
+      en: "Recording on a single command"
+      cs: "Nahrávání na jeden povel"
     mobile_performance_rig:
-      en: Mobile Performance Rig
-      cs: Mobilní performance rig
+      en: "A gig rig you already carry with you"
+      cs: "Aparát na hraní, který už vozíš s sebou"
     creative_freedom:
-      en: Creative Freedom
-      cs: Kreativní svoboda
+      en: "No subscription on your own ideas"
+      cs: "Žádné předplatné na vlastní nápady"
     solo_creation:
       en: Solo Creation
       cs: Sólo tvorba
@@ -131,8 +130,8 @@ musicians:
       cs: Začněte svou hudební revoluci
   cta:
     ready_to_make_music_everywhere:
-      en: Ready to Make Music Everywhere?
-      cs: Připraveni dělat hudbu všude?
+      en: "Want to play wherever you can drive?"
+      cs: "Chceš hrát všude, kam dojedeš?"
     start_creating_music:
       en: Start Creating Music
       cs: Začít tvořit hudbu

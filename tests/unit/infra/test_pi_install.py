@@ -33,6 +33,7 @@ ON_PI_SCRIPTS = [
     INSTALL_SCRIPT,
     SCRIPTS / "deploy-production-rpi.sh",
     SCRIPTS / "setup-ble-service.sh",
+    SCRIPTS / "mia-update-checkout.sh",
 ]
 SHIMMED = ("apt-get", "systemctl", "useradd", "usermod", "chown")
 CORE_UNITS = (
@@ -43,6 +44,10 @@ CORE_UNITS = (
     "mia-obd-worker.service",
 )
 API_KEY = "MIA_API_KEY=mia_api_0123456789abcdef"
+STALE_UNIT = "mia-tts.service"
+NOT_INSTALLED_UNIT = "mia-power-monitor.service"
+PRODUCTION_SCRIPT = SCRIPTS / "deploy-production-rpi.sh"
+BLE_SCRIPT = SCRIPTS / "setup-ble-service.sh"
 
 
 @pytest.fixture(scope="module")
@@ -71,6 +76,9 @@ def pi(tmp_path_factory):
 
     install_dir = root / "opt" / "mia"
     systemd_dir = root / "systemd"
+    # A voice unit an earlier install put in place, now stale; the update must refresh it without enabling it.
+    systemd_dir.mkdir()
+    (systemd_dir / STALE_UNIT).write_text("[Service]\nExecStart=/bin/false stale\n")
     wrapper = root / "usr" / "local" / "bin" / "mia-python"
     env = {
         "PATH": f"{shim_dir}{os.pathsep}{os.environ.get('PATH', '')}",
@@ -96,7 +104,7 @@ def pi(tmp_path_factory):
             timeout=300,
         )
 
-    runs = [install(env) for _ in range(2)]
+    runs = [install(env), install({**env, "MIA_SKIP_CLAUDE_TOOLING": "1"})]
     leftovers_after_success = sorted(p.name for p in tmpdir.iterdir())
 
     # A read of the environment file that fails, as an unreadable file or a refused sudo would.
@@ -297,3 +305,115 @@ def test_ci_keeps_the_aarch64_install_check_this_requirement_cites():
     assert "-r apps/rpi-backend/py-api/requirements.txt" in script
     assert "pip check" in script
     assert "import api.main" in script
+
+
+def test_installed_units_outside_the_core_set_are_refreshed_not_enabled(pi):
+    repo_unit = REPO_ROOT / "infra" / "systemd" / STALE_UNIT
+    assert (pi.systemd / STALE_UNIT).read_bytes() == repo_unit.read_bytes()
+    assert not (pi.systemd / NOT_INSTALLED_UNIT).exists()
+    assert STALE_UNIT not in "".join(line for line in pi.calls.splitlines(True) if line.startswith("systemctl enable"))
+
+
+def test_the_update_tool_directory_is_root_owned(pi):
+    """ADR-0023: whoever can write bin/ can replace the tool the phone's sudo rule runs as root."""
+    assert f"chown root:root {pi.install}/bin" in pi.calls
+
+
+def test_the_install_directory_itself_is_root_owned(pi):
+    """An earlier `chown -R mia /opt/mia` left /opt/mia mia-owned: mia could rename bin/ and plant its own tool."""
+    calls = pi.calls.splitlines()
+    assert f"chown root:root {pi.install}" in calls
+    assert stat.S_IMODE(pi.install.stat().st_mode) == 0o755
+    # The run-time data stays the service user's, and is chowned after the directory that holds it.
+    data = f"chown mia-install-test:mia-install-test {pi.install}/data"
+    assert calls.index(f"chown root:root {pi.install}") < calls.index(data)
+
+
+def test_the_claude_tooling_update_can_be_skipped(pi):
+    assert "MIA_SKIP_CLAUDE_TOOLING=1" not in pi.runs[0].stdout
+    assert "MIA_SKIP_CLAUDE_TOOLING=1: leaving the Claude Code CLI" in pi.runs[1].stdout
+
+
+def test_the_ble_setup_neither_chowns_the_install_nor_opens_bluetooth():
+    text = BLE_SCRIPT.read_text()
+    assert 'chown -R "$SERVICE_USER:$SERVICE_USER" "$INSTALL_DIR"' not in text
+    # ADR-0025: discoverable only during the enrollment pairing window, which mia-bt-agent.service opens.
+    assert "piscan" not in [word for line in text.splitlines() if not line.lstrip().startswith("#") for word in line.split()]
+
+
+def test_the_production_deploy_updates_the_checkout_and_restarts_the_broker_first():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert 'bash "$SCRIPT_DIR/mia-update-checkout.sh" "$PROJECT_ROOT" "$DEPLOY_REF"' in text
+    # The updated copy of the script continues after the checkout.
+    assert "exec env MIA_DEPLOY_CHECKOUT_DONE=1 bash" in text
+    assert "git pull" not in text
+    broker = text.index("systemctl restart zmq-broker.service")
+    others = text.index('systemctl restart "${restart_units[@]}"')
+    assert broker < others
+    assert "deployed.json" in text
+
+
+# The production deploy needs root and systemd, so CI checks its text; test_production_deploy.py runs it with
+# stubbed systemctl and curl where the tests run as root.
+
+
+def _code_lines(path: Path) -> list[str]:
+    return [line.strip() for line in path.read_text().splitlines() if not line.lstrip().startswith("#")]
+
+
+def test_the_production_deploy_judges_restarted_units_by_state_and_restart_count():
+    """A unit crashing on import sits in `activating (auto-restart)` between attempts, never `failed`."""
+    code = "\n".join(_code_lines(PRODUCTION_SCRIPT))
+    assert 'systemctl is-active "$unit"' in code
+    assert 'systemctl show -p NRestarts --value "$unit"' in code
+    # The broker and what this deploy restarted are judged; a unit left alone is only reported.
+    assert "judged_units=(zmq-broker.service)" in code
+    assert 'judged_units+=("${restart_units[@]}")' in code
+    assert "not restarted by this deploy" in code
+
+
+def test_the_production_deploy_waits_longer_than_any_units_restart_delay():
+    match = re.search(r'MIA_DEPLOY_SETTLE_SECONDS:-(\d+)', PRODUCTION_SCRIPT.read_text())
+    assert match, "the settle time must be overridable"
+    delays = [
+        int(value)
+        for unit in (REPO_ROOT / "infra" / "systemd").glob("*.service")
+        for value in _unit_fields(unit).get("RestartSec", [])
+    ]
+    assert delays and int(match.group(1)) > max(delays)
+
+
+def test_the_production_deploy_runs_only_an_updated_copy_that_has_the_safe_step_one():
+    """A rollback to a commit before #298 must not exec that commit's script (git pull as root, no restart)."""
+    text = PRODUCTION_SCRIPT.read_text()
+    marker_check = text.index('grep -q MIA_DEPLOY_CHECKOUT_DONE "$SCRIPT_DIR/deploy-production-rpi.sh"')
+    assert marker_check < text.index("exec env MIA_DEPLOY_CHECKOUT_DONE=1 bash")
+    assert '[ -f "$SCRIPT_DIR/deploy-production-rpi.sh" ]' in text
+    assert "predates the safe deploy" in text
+    # bash parses a { } group whole before running it, so going on after the checkout replaced the file is safe.
+    code = [line for line in _code_lines(PRODUCTION_SCRIPT) if line]
+    assert code.index("{") < code.index('if [ "${MIA_DEPLOY_CHECKOUT_DONE:-0}" != "1" ]; then')
+    assert code[-2:] == ["exit 0", "}"]
+
+
+def test_the_production_deploy_survives_a_failed_broker_restart_and_unit_listing():
+    code = _code_lines(PRODUCTION_SCRIPT)
+    assert "if ! systemctl restart zmq-broker.service; then" in code
+    assert any(
+        line.startswith("if ! enabled_units=") and "systemctl list-unit-files" in line for line in code
+    ), "a failed listing must fail the deploy, not restart only the broker"
+    assert not any(line.startswith("done < <(systemctl list-unit-files") for line in code)
+
+
+def test_the_production_deploy_keeps_the_api_key_off_the_command_line():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert "printf 'X-API-Key: %s\\n' \"$api_key\" | curl" in text
+    assert "-H @-" in text
+    assert '-H "X-API-Key: $api_key"' not in text
+
+
+def test_the_production_deploy_records_only_a_verified_deploy_as_json():
+    text = PRODUCTION_SCRIPT.read_text()
+    assert "json.dumps" in text
+    assert "printf '{\"ref\"" not in text
+    assert 'deployed_ref="checkout"' in text
