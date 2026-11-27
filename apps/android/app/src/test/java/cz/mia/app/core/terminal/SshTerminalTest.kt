@@ -101,4 +101,11 @@ class SshTerminalTest {
 	fun passwordAuth_neverPrintsThePassword() {
 		assertFalse(SshAuth.Password("hunter2").toString().contains("hunter2"))
 	}
+
+	@Test
+	fun terminalClient_offersEd25519First_andCanSignWithTheEcPhoneKey() {
+		// sshj signs the user's key only with an algorithm in this list: without ECDSA P-256 the phone key is never offered.
+		val names = newTerminalSshClient().transport.config.keyAlgorithms.map { it.name }
+		assertEquals(listOf("ssh-ed25519", "ecdsa-sha2-nistp256"), names)
+	}
 }

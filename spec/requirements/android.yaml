@@ -455,6 +455,7 @@ requirements:
   - Cursor keys follow application-cursor mode; Ctrl and Alt map as xterm does; a paste is bracketed only when the shell asked, and cannot close the bracket early
   - Only ssh-ed25519 host keys are accepted; the first key for host:port is pinned, a different one is refused until forgotten, and an onboarded Pi is pinned to its vouched fingerprint
   - The login user must be a plain login name and a password never appears in a string form
+  - The terminal's SSH client offers ssh-ed25519 first and ecdsa-sha2-nistp256, so the phone's EC P-256 key can sign in
   implemented_in:
   - apps/android/app/src/main/AndroidManifest.xml
   - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalEmulator.kt
@@ -462,6 +463,7 @@ requirements:
   - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalPalette.kt
   - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalHostKeys.kt
   - apps/android/app/src/main/java/cz/mia/app/core/terminal/SshTerminalSession.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalSshClient.kt
   - apps/android/app/src/main/java/cz/mia/app/core/update/SshKeyStore.kt
   - apps/android/app/src/main/java/cz/mia/app/features/terminal/TerminalViewModel.kt
   - apps/android/app/src/main/java/cz/mia/app/ui/components/TerminalInputView.kt
