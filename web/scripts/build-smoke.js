@@ -321,9 +321,9 @@ for (const [file, home] of HOMEPAGES) {
             (enMissing.length ? ` (missing: ${enMissing.join(', ')})` : ''));
     // 404.html is served at any depth, so it links with absolute /mia/ paths. Its inline script rewrites each
     // link from data-path to the host's base; without JavaScript, vercel.json maps /mia/... to the root.
-    const notFoundMissing = ['', ...PAGES.map((s) => `${s}/`)]
+    const notFoundMissing = ['', 'en/', ...PAGES.map((s) => `${s}/`)]
         .filter((rel) => !notFound.includes(`data-path="${rel}" href="/mia/${rel}"`));
-    check(notFoundMissing.length === 0, '404.html links to the homepage and every audience page' +
+    check(notFoundMissing.length === 0, '404.html links to both homepages and every audience page' +
         (notFoundMissing.length ? ` (missing: ${notFoundMissing.map((r) => `/mia/${r}`).join(', ')})` : ''));
     const relative = [...notFound.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1])
         .filter((ref) => !/^(\/mia\/|https?:|#|mailto:|data:)/.test(ref));
