@@ -71,6 +71,8 @@ directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 - Images follow the art direction and prompts in [IMAGE-PROMPTS.md](IMAGE-PROMPTS.md): no text in the
   pixels, only features MIA has, the real car and hardware.
+- Every quote on the homepage is listed with its primary source in [QUOTES.md](QUOTES.md). Add or change a
+  quote only after reading it in that source.
 
 - The product is called **MIA**. The old AI-SERVIS name only appears where the
   press kit explains the rename. Some images still have it in their pixels.

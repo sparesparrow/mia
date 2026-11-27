@@ -1262,7 +1262,7 @@ body.madness-loading { cursor: auto; }
 
 .quote-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
     gap: 24px;
 }
 
@@ -1292,6 +1292,14 @@ body.madness-loading { cursor: auto; }
     font-size: 0.9rem;
     line-height: 1.5;
     color: var(--accent-hell);
+}
+
+.quote-card figcaption a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    /* Low enough that the underscore in "#ne_poslušnosti" stays visible above the line. */
+    text-underline-offset: 6px;
 }
 
 .quote-note {
