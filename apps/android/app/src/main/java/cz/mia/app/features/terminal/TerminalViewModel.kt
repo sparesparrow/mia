@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import cz.mia.app.core.networking.PiConnectionProvider
 import cz.mia.app.core.onboarding.KnownPiStore
 import cz.mia.app.core.onboarding.PrefsKnownPiStorage
-import cz.mia.app.core.onboarding.newEd25519SshClient
+import cz.mia.app.core.terminal.newTerminalSshClient
 import cz.mia.app.core.terminal.HostKeyCheck
 import cz.mia.app.core.terminal.SshAuth
 import cz.mia.app.core.terminal.SshTarget
@@ -156,7 +156,7 @@ class TerminalViewModel @Inject constructor(
 		_state.update { it.copy(status = TerminalStatus.Connecting, message = null, passwordSession = !s.useKey) }
 		viewModelScope.launch(Dispatchers.IO) {
 			val auth = if (s.useKey) SshAuth.Key(keyStore.keyPair()) else SshAuth.Password(password)
-			val next = SshTerminalSession({ newEd25519SshClient() }, hostKeys)
+			val next = SshTerminalSession({ newTerminalSshClient() }, hostKeys)
 			emulator = newEmulator()
 			hostKeys.clearLastCheck()
 			session = next // before open: a shell that exits at once reports through onClosed, which checks this
