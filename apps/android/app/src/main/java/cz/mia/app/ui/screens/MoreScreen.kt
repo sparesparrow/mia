@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,6 +44,7 @@ enum class MoreDestination(val title: String, val description: String, val icon:
     InstallMia("Install MIA on a car", "Set up MIA on your car's Raspberry Pi", Icons.Default.DirectionsCar),
     ObdPairing("OBD pairing", "Find and connect a Bluetooth OBD adapter", Icons.Default.Bluetooth),
     Settings("Settings", "Pi address, API key, privacy and voice", Icons.Default.Settings),
+    Terminal("Terminal", "An SSH shell on the Pi", Icons.Default.Terminal),
 }
 
 /**

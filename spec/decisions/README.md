@@ -33,6 +33,7 @@ beyond their status line.
 | [0025](0025-vehicle-onboarding.md) | Vehicle onboarding: a server-signed grant authorizes first contact and pairing | Proposed |
 | [0026](0026-mqtt-broker-users-and-topic-acl.md) | MQTT broker: one user per client role, with a topic ACL | Proposed |
 | [0027](0027-vercel-is-the-primary-web-address.md) | Vercel is the primary web address; GitHub Pages is a mirror | Accepted |
+| [0028](0028-in-app-ssh-terminal.md) | The app has an SSH terminal to the Pi, separate from the update key | Proposed |
 
 ## Template
 

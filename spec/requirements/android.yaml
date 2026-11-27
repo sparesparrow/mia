@@ -444,3 +444,30 @@ requirements:
   - ADR-0021
   - ADR-0019
   not_proven: Android compilation and Kotlin unit tests pass in GitHub Actions, but only the report codec has unit-test coverage. The screen and repository have not been run on a phone. Bluetooth audio does not exist on the Pi, so only Wi-Fi and the Pi speaker can be chosen.
+- id: REQ-AND-029
+  title: SSH terminal to the Pi
+  statement: The app shall open an interactive SSH shell on the Pi as a login user, signed in with a password that is never stored or with a phone terminal key separate from the update key, and refuse a host key that differs from the one pinned.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - The emulator handles cursor movement, erase, insert and delete, scroll regions, SGR colours (16, 256 and RGB), the alternate screen, saved cursor, DEC line drawing and OSC titles, and answers cursor-position and device-attribute queries
+  - Sequences split across reads are parsed, a UTF-8 character split across reads is kept, unknown sequences print nothing
+  - Resizing keeps the text that fits and the cursor row, and the PTY is told the new size
+  - Cursor keys follow application-cursor mode; Ctrl and Alt map as xterm does; a paste is bracketed only when the shell asked, and cannot close the bracket early
+  - Only ssh-ed25519 host keys are accepted; the first key for host:port is pinned, a different one is refused until forgotten, and an onboarded Pi is pinned to its vouched fingerprint
+  - The login user must be a plain login name and a password never appears in a string form
+  implemented_in:
+  - apps/android/app/src/main/AndroidManifest.xml
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalEmulator.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalKeys.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalPalette.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/TerminalHostKeys.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/terminal/SshTerminalSession.kt
+  - apps/android/app/src/main/java/cz/mia/app/core/update/SshKeyStore.kt
+  - apps/android/app/src/main/java/cz/mia/app/features/terminal/TerminalViewModel.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/components/TerminalInputView.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/TerminalScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/ui/screens/MoreScreen.kt
+  - apps/android/app/src/main/java/cz/mia/app/MainActivity.kt
+  decisions:
+  - ADR-0028
+  not_proven: The emulator, keys, host-key policy and UTF-8 reader are unit tested, and SshTerminalSession was run from a JVM against the prototype Pi (login, PTY size and resize, UTF-8, less on the alternate screen, exit status, a changed host key refused). The screen, the soft keyboard input, the Keystore-sealed terminal key and Add phone key have not been tried on a phone. No line reflow, wide characters take one cell, no mouse reporting.
