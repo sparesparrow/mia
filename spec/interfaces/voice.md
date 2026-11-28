@@ -115,8 +115,8 @@ they start and write it on every change; they do not tell each other about a cha
 A persona is a data package (ADR-0015): `services/voice_fsm/personas/<name>.yaml` with lines per language for the
 machine's phrase keys, a speech speed (`tts.length_scale`) and at most one framing sentence per safety warning.
 MIA's own wording (`mia`) is code in `services/voice_fsm/phrases.py`, so a broken package never leaves her silent;
-a package that fails validation is logged and left out. Packages today: `holly` (dry, terse) and `rimmer` (anxious,
-pompous), each in Czech and English, with original lines.
+a package that fails validation is logged and left out. Packages today: `holly` (dry, terse), `kryten` (courteous,
+thorough) and `rimmer` (anxious, pompous), each in Czech and English, with original lines.
 
 Every safety warning starts with the shared fragment from `services/voice_fsm/safety.py`: the value, the unit and
 what to do, in the language in use. No package can change it or put anything before it; the persona's framing

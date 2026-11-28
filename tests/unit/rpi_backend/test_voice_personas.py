@@ -1,4 +1,4 @@
-"""Personas Holly and Rimmer in Czech and English, and the language MIA speaks (REQ-VOICE-019, ADR-0015).
+"""Personas Holly, Kryten and Rimmer in Czech and English, and the language MIA speaks (REQ-VOICE-019, ADR-0015).
 
 Fakes and a fake clock: no ZeroMQ, no audio. Persona packages are read from the repository, and broken ones are
 written to pytest's temporary directory.
@@ -73,13 +73,13 @@ def _machine(**kwargs):
 # ── Packages ──────────────────────────────────────────────────────────────
 
 
-def test_holly_and_rimmer_load_beside_mias_own_wording():
-    assert BOOK.names == ("mia", "holly", "rimmer")
+def test_holly_kryten_and_rimmer_load_beside_mias_own_wording():
+    assert BOOK.names == ("mia", "holly", "kryten", "rimmer")
     assert BOOK.languages == ("cs", "en")
     assert BOOK.display("holly") == "Holly" and BOOK.display("mia") == "MIA"
 
 
-@pytest.mark.parametrize("persona", ["holly", "rimmer"])
+@pytest.mark.parametrize("persona", ["holly", "kryten", "rimmer"])
 @pytest.mark.parametrize("language", LANGUAGES)
 def test_each_package_words_every_phrase_in_both_languages(persona, language):
     for key in DEFAULT_PHRASES:
@@ -193,9 +193,17 @@ def test_switch_persona_names_one_or_takes_the_next_and_reports_settings():
     assert machine.persona == "mia"  # wraps around
 
 
-def test_an_unknown_persona_or_language_is_refused_aloud_and_changes_nothing():
+def test_switch_to_kryten_by_name_reports_settings():
     machine = _machine()
     out = machine.handle(SwitchPersona("kryten"))
+    assert machine.persona == "kryten"
+    assert machine.settings() in out
+    assert any(isinstance(e, Speak) and e.phrase == "persona.set" for e in out)
+
+
+def test_an_unknown_persona_or_language_is_refused_aloud_and_changes_nothing():
+    machine = _machine()
+    out = machine.handle(SwitchPersona("marvin"))
     assert machine.persona == "mia"
     assert not any(isinstance(e, Settings) for e in out)
     assert [e.phrase for e in out if isinstance(e, Speak)] == ["persona.unknown"]
@@ -217,7 +225,7 @@ def test_set_language_reports_settings_and_a_busy_machine_stays_quiet():
 
 
 def test_a_stored_persona_this_pi_no_longer_has_falls_back_to_the_first():
-    machine = _machine(persona="kryten", language="de")
+    machine = _machine(persona="marvin", language="de")
     assert (machine.persona, machine.language) == ("mia", "en")
 
 
@@ -249,7 +257,7 @@ def test_a_console_receives_the_words_in_the_persona_and_language_in_use():
     ]
     spoken = [e for e in events if isinstance(e, Speak)]
     assert spoken[-1].text == "Holly. Back on duty."
-    assert events[0].personas == ("mia", "holly", "rimmer")  # the snapshot after Open
+    assert events[0].personas == ("mia", "holly", "kryten", "rimmer")  # the snapshot after Open
 
 
 # ── Spoken commands ───────────────────────────────────────────────────────
@@ -293,7 +301,7 @@ def test_spoken_persona_and_language_commands_and_the_words_follow():
 
 
 @pytest.mark.parametrize(
-    "sentence", ["switch to kryten", "tell rimmer I am late", "speak german", "persona"]
+    "sentence", ["switch to marvin", "tell rimmer I am late", "speak german", "persona"]
 )
 def test_anything_else_is_still_a_request(sentence):
     machine, bridge, said, classified, saved = _bridge()
