@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mia-suzmatra.vercel.app/sitemap.xml

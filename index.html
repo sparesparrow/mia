@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="cs" class="gonzo-reality">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA by SUZMATRA — Your ride. Your rules.</title>
+    <meta name="description" content="MIA je otevřený palubní systém od SUZMATRA. Tvoje auto, tvoje data, tvoje pravidla. Žádný cloud, žádné předplatné, žádné žádosti o svolení.">
+    <link rel="canonical" href="https://mia-suzmatra.vercel.app/">
+    <link rel="alternate" hreflang="en" href="https://mia-suzmatra.vercel.app/en/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MIA by SUZMATRA">
+    <meta property="og:title" content="MIA by SUZMATRA — Your ride. Your rules.">
+    <meta property="og:description" content="MIA je otevřený palubní systém od SUZMATRA. Tvoje auto, tvoje data, tvoje pravidla. Žádný cloud, žádné předplatné, žádné žádosti o svolení.">
+    <meta property="og:url" content="https://mia-suzmatra.vercel.app/">
+    <meta property="og:image" content="https://mia-suzmatra.vercel.app/assets/site/your-rules-og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="cs_CZ">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="stylesheet" href="customers/journalists/gonzo-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body id="top">
+    <a class="skip-link" href="#main">Přeskočit na obsah</a>
+
+    <!-- BACKGROUND MUSIC -->
+    <audio id="background-music" loop preload="none">
+        <source src="customers/journalists/background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- NAVIGATION FROM HELL -->
+    <nav class="gonzo-nav">
+        <div class="nav-chaos">
+            <a class="logo-madness" href="#top" aria-label="MIA by SUZMATRA — domů">
+                <img class="suzmatra-logo" src="assets/site/suzmatra-brand.svg" alt="SUZMATRA" width="175" height="100">
+                <span class="subtitle-hell" lang="en">Your ride. Your rules.</span>
+            </a>
+            <div class="nav-links-chaos">
+                <a href="#manifesto" class="nav-link-hell">MANIFEST</a>
+                <a href="#neposlusnost" class="nav-link-hell">NEPOSLUŠNOST</a>
+                <a href="#weaponry" class="nav-link-hell">ARZENÁL</a>
+                <a href="#stories" class="nav-link-hell">PŘÍBĚHY</a>
+                <a href="#pro-koho" class="nav-link-hell">PRO KOHO</a>
+                <a href="#posadka" class="nav-link-hell">POSÁDKA</a>
+                <a href="#resistance" class="nav-link-hell">ODPOR</a>
+                <a href="docs/" class="nav-link-hell">DOKUMENTACE</a>
+                <a href="en/" class="nav-link-hell" hreflang="en" lang="en">EN</a>
+                <button id="audio-toggle" class="audio-toggle-btn" aria-label="Toggle background music">🎵</button>
+
+            </div>
+        </div>
+    </nav>
+
+    <main id="main">
+
+    <!-- HERO SECTION OF MADNESS -->
+    <section class="hero-madness">
+        <div class="glitch-bg">
+            <img src="assets/site/hero-dashboard.jpg" alt="Dashboard from Hell" class="hero-bg-img">
+        </div>
+        <div class="hero-content-chaos">
+            <h1 class="hero-title-hell">
+                NEŽÁDEJ O SVOLENÍ.<br>
+                <span class="highlight-madness">UŽÍVEJ SVOBODU.</span>
+            </h1>
+            <p class="hero-text-insane">
+                <strong>Nemusíš hackovat systém. Stačí přestat být jeho zákazníkem.</strong><br>
+                MIA je parťák do auta: vidí, kdo jede za tebou, čte, co se děje pod kapotou, a dělá za tebe všechno, kvůli čemu bys jinak pustil volant. Běží na Raspberry Pi pod sedačkou, ne v cizím cloudu, a data z auta neprodává nikomu.
+            </p>
+            <div class="hero-stats-hell">
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">OBD-II</span>
+                    <span class="stat-text-hell">JEN ČTE,<br>NIC NEPOSÍLÁ</span>
+                </div>
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">PI + ESP32</span>
+                    <span class="stat-text-hell">HARDWARE,<br>KTERÝ VLASTNÍŠ</span>
+                </div>
+                <div class="stat-chaos">
+                    <span class="stat-number-hell">0</span>
+                    <span class="stat-text-hell">ŽÁDOSTÍ<br>O SVOLENÍ</span>
+                </div>
+            </div>
+            <div class="hero-buttons-chaos">
+                <a href="#resistance" class="btn-madness primary" style="text-decoration: none;">VSTOUPIT DO ODBOJE</a>
+                <a href="#manifesto" class="btn-madness secondary" style="text-decoration: none;">ČÍST MANIFEST</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- POSTER: YOUR RIDE. YOUR RULES. -->
+    <section class="poster-madness" aria-label="Your ride. Your rules.">
+        <div class="container-chaos">
+            <figure class="poster-figure">
+                <img src="assets/site/your-rules.jpg" alt="Plakát MIA: stříbrný kabriolet se SPZ „MIA“ projíždí v noci mokrou zatáčkou pod osvíceným kostelem na kopci. Nápis: MIA. Your ride. Your rules. Open technology. Private data. No permission required." class="poster-img" width="1024" height="492" loading="lazy">
+                <figcaption class="poster-caption">
+                    <span lang="en">Free ride.</span> Doslova.
+                    <span class="poster-sub">Stát ti říká, že tě chrání. Korporace, že ti usnadňují život. Oba přitom chtějí vědět, kam jedeš, s kým se bavíš a co vlastníš.</span>
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- PARANOIA FEATURES -->
+    <section id="weaponry" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">ARZENÁL PRO DIGITÁLNÍ GERILU</h2>
+
+            <div class="weapon-grid">
+                <div class="weapon-card stalker-detection">
+                    <div class="weapon-icon">👁️‍🗨️</div>
+                    <h3>ANTI-STALKER PROTOKOL</h3>
+                    <img src="assets/site/anti-stalker.jpg" alt="Sledka za tebou" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Když se noční mlha rozplyne a tvůj zadní stěrač zahlédne už pošesté tu stejnou SPZ – MIA tě upozorní: Bacha! Máš sledku za prdelí!</p>
+                    <div class="paranoia-quote">"Jednou je to náhoda. Dvakrát souhra okolností. Pošesté je to sledka."</div>
+                </div>
+
+                <div class="weapon-card secret-police">
+                    <div class="weapon-icon">🕵️‍♂️</div>
+                    <h3>ČERNÁ KNIHA SPZ</h3>
+                    <img src="assets/site/covert-ops.jpg" alt="Databáze SPZ" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Všechny SPZ aut, co jedou za tebou, se ukládají do databáze. Když se budou opakovat, budeš o tom vědět.</p>
+                    <div class="paranoia-quote">"Kromě SPZ ze zadní kamery si MIA pamatuje i Bluetooth a Wi-Fi adresy okolo. Značky se dají přešroubovat, mobil v kapse sledky už tak snadno ne."</div>
+                </div>
+
+                <div class="weapon-card gonzo-terminal">
+                    <div class="weapon-icon">💻</div>
+                    <h3>DETEKTOR KRIMINÁLKY</h3>
+                    <img src="assets/site/command-center.jpg" alt="Kontrola dálničních známek" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Že seš paranoidní, neznamená, že po tobě nejdou: všechny potkané SPZ se ověří dotazem na edalnice.cz – vozidla osvobozená od dálničního poplatku řídí kriminálka!</p>
+                    <div class="paranoia-quote">"Bez dálniční známky jezdí jen dva druhy lidí: ti, co zapomněli, a ti, co platit nemusí."</div>
+                </div>
+
+                <div class="weapon-card live-tracking">
+                    <div class="weapon-icon">🗺️</div>
+                    <h3>RUCE NA VOLANTU</h3>
+                    <img src="assets/site/tracking-map.jpg" alt="Hlasové ovládání" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Když řídíš, máš ruce na volantu a oči na silnici. Ani automat ti neposkytne pohodlí sekat se za jízdy v nastavení telefonu; MIA to bude dělat za tebe, stačí s ní mluvit. A až tě budou stavět, MIA bude hrát těhotnou manželku na telefonu, pro kterou rychle jedeš, abys ji vzal do nemocnice!</p>
+                    <div class="paranoia-quote">"Řekni „Hey Mia“ a telefon nech v držáku."</div>
+                </div>
+
+                <div class="weapon-card obd-whisperer">
+                    <div class="weapon-icon">🔧</div>
+                    <h3>AUTO MLUVÍ, MIA PŘEKLÁDÁ</h3>
+                    <img src="assets/site/obd-voice.jpg" alt="Řidič se ptá na teplotu motoru" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Otáčky, teplota vody, napětí baterie, chybové kódy. MIA to čte z OBD a CAN, a když se jí něco nelíbí, řekne ti to nahlas, místo aby ses to dozvěděl od odtahovky. Klidně se k ní připoj s Torque nebo Car Scannerem, tváří se jako obyčejný OBD adaptér ELM327.</p>
+                    <div class="paranoia-quote">"Jen poslouchá. ESP32 na CAN sběrnici nemá ani zkompilovanou cestu k vysílání."</div>
+                </div>
+
+                <div class="weapon-card dashcam">
+                    <div class="weapon-icon">📹</div>
+                    <h3>KAMERA, CO NESPÍ</h3>
+                    <img src="assets/site/dashcam.jpg" alt="Záznam z kamery" class="weapon-img" loading="lazy">
+                    <p class="weapon-desc">Telefon nahrává cestu pořád dokola, staré záznamy maže sám a ty důležité odloží stranou. Když ti někdo vletí do zadku a pak tvrdí, že jsi couval, pustíš mu to.</p>
+                    <div class="paranoia-quote">"Paměť je děravá. Video ne."</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GONZO STORIES -->
+    <section id="stories" class="stories-madness">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">PŘÍBĚHY Z FRONTY</h2>
+
+            <div class="story-grid">
+                <div class="story-card journalist">
+                    <img src="assets/site/investigator.jpg" alt="Tlačítka na volantu" class="story-img" loading="lazy">
+                    <div class="story-content">
+                        <h3>TLAČÍTKA NA VOLANTU</h3>
+                        <p class="story-text">
+                            MIA ti namapuje tlačítka na volantu na libovolné akce: přečíst notifikace z telefonu, když ti cinkne zpráva, spustit navigaci přes Waze cestou, kde nejsou policajti, nebo napsat všem kontaktům na Signal „RDY“.
+                        </p>
+                        <div class="story-features">
+                            <span class="feature-tag">Notifikace nahlas</span>
+                            <span class="feature-tag">Waze bez policajtů</span>
+                            <span class="feature-tag">Signal jedním palcem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card dj-madness">
+                    <img src="assets/site/mobile-dj.jpg" alt="Hudba z továrních repráků" class="story-img" loading="lazy">
+                    <div class="story-content">
+                        <h3>MIA V TOVÁRNÍCH REPRÁCÍCH</h3>
+                        <p class="story-text">
+                            Rádio z roku 2004 neumí Bluetooth? Nevadí. MIA se připojí do konektoru pro CD měnič, rádio si myslí, že hraje „CD 1“, a z továrních repráků ti jde hudba, navigace i MIA. Bez řezání kabelů, bez nového rádia. A tlačítka na volantu jí k tomu posílají povely.
+                        </p>
+                        <div class="story-features">
+                            <span class="feature-tag">Konektor CD měniče</span>
+                            <span class="feature-tag">Tovární repráky</span>
+                            <span class="feature-tag">Žádné řezání</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AUDIENCES -->
+    <section id="pro-koho" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">PRO KOHO JE MIA</h2>
+            <p class="pricing-desc-hell">Vyber si svou stránku. / Pick your page.</p>
+
+            <div class="weapon-grid">
+                <a href="business/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">💼</div>
+                    <h3>FIRMY A FLOTILY</h3>
+                    <p class="weapon-desc">Vozový park, terénní servis, hlasové ovládání za jízdy.</p>
+                    <div class="paranoia-quote" lang="en">Business &amp; fleets</div>
+                </a>
+                <a href="family/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">👨‍👩‍👧</div>
+                    <h3>RODINY</h3>
+                    <p class="weapon-desc">Bezpečnost dětí, partnerů i seniorů na cestách.</p>
+                    <div class="paranoia-quote" lang="en">Families</div>
+                </a>
+                <a href="musicians/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">🎛️</div>
+                    <h3>HUDEBNÍCI</h3>
+                    <p class="weapon-desc">Auto jako mobilní DJ pult a studio.</p>
+                    <div class="paranoia-quote" lang="en">Musicians</div>
+                </a>
+                <a href="journalists/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">🕵️</div>
+                    <h3>NOVINÁŘI</h3>
+                    <p class="weapon-desc">Mobilní redakce, hlasové poznámky, anti-stalker.</p>
+                    <div class="paranoia-quote" lang="en">Journalists</div>
+                </a>
+                <a href="docs/for/developers/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">⌨️</div>
+                    <h3>VÝVOJÁŘI</h3>
+                    <p class="weapon-desc">Architektura, API, specifikace a lokální vývoj bez Pi.</p>
+                    <div class="paranoia-quote" lang="en">Developers</div>
+                </a>
+                <a href="docs/for/mechanics/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">🔧</div>
+                    <h3>AUTOMECHANICI</h3>
+                    <p class="weapon-desc">Zapojení OBD-II, ESP32 a Raspberry Pi do vozu.</p>
+                    <div class="paranoia-quote" lang="en">Mechanics &amp; installers</div>
+                </a>
+                <a href="docs/for/testers/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">🧪</div>
+                    <h3>TESTEŘI</h3>
+                    <p class="weapon-desc">Simulátor OBD, testy na Androidu a záznamy ověření.</p>
+                    <div class="paranoia-quote" lang="en">Testers</div>
+                </a>
+                <a href="press/" class="weapon-card" style="display: block; text-decoration: none; color: inherit;">
+                    <div class="weapon-icon">📰</div>
+                    <h3>MÉDIA A MARKETING</h3>
+                    <p class="weapon-desc">Fakta, stav projektu a obrázky ke stažení.</p>
+                    <div class="paranoia-quote" lang="en">Press &amp; marketing</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CREW: VOICE GUIDES (REQ-WEB-003) -->
+    <section id="posadka" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">ZEPTEJ SE POSÁDKY</h2>
+            <p class="pricing-desc-hell">
+                Nechce se ti číst? Tři hlasoví průvodci ti řeknou, co MIA je, jak funguje a co už umí.
+                Začni u Holly, přepojí tě, nebo si rovnou vyber. Mluv česky nebo anglicky. <span lang="en">Three voice guides, Czech or English.</span>
+            </p>
+
+            <div class="weapon-grid crew-grid">
+                <button type="button" class="weapon-card crew-card" data-crew="holly" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🖥️</div>
+                    <h3>HOLLY</h3>
+                    <p class="weapon-desc">Palubní počítač a ústředna. Řekni, co chceš vědět, a přepojí tě na toho, kdo to ví.</p>
+                    <div class="paranoia-quote">"Vím, kdo to ví. Jen si nevzpomenu, jaký je dnes den."</div>
+                </button>
+
+                <button type="button" class="weapon-card crew-card" data-crew="rimmer" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🎖️</div>
+                    <h3>RIMMER</h3>
+                    <p class="weapon-desc">Samozvaný důstojník. Vychválí funkce, odcituje požadavky i s čísly, řekne, co už funguje a co je teprve v plánu, a pošle tě do pilotu.</p>
+                    <div class="paranoia-quote">"Funkce hlásím já. Ostatní je jen vyrobili."</div>
+                </button>
+
+                <button type="button" class="weapon-card crew-card" data-crew="kryten" aria-pressed="false">
+                    <div class="weapon-icon" aria-hidden="true">🤖</div>
+                    <h3>KRYTEN</h3>
+                    <p class="weapon-desc">Servisní mechanoid. Jde do hloubky: architektura, zdrojový kód, protokoly a proč MIA do auta jenom poslouchá.</p>
+                    <div class="paranoia-quote">"Jenom čte, pane. Je to mimořádně uklizené řešení."</div>
+                </button>
+            </div>
+
+            <p class="crew-note">
+                Průvodce najdeš vpravo dole. MIA běží v autě bez cloudu, tihle tři ne: hovor jde přes ElevenLabs.
+                Zvuk se neukládá, textový přepis se uchovává 30 dní. Jména posádky jsou fanouškovská pocta bez vazby na jakýkoli pořad.
+            </p>
+        </div>
+    </section>
+
+    <!-- RESISTANCE: PILOT -->
+    <section id="resistance" class="pricing-hell">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">PŘIPOJ SE K ODBOJI</h2>
+            <p class="pricing-desc-hell">
+                Svoboda nemá cenu. MIA zatím taky ne: ceník nemáme a nebudeme si ho vymýšlet.
+                Hledáme posádky, co ji chtějí v autě mít první a nebojí se šroubováku.
+                Dobrovolně, nebo vůbec: nikoho nenutíme a nikoho se neptáme.
+            </p>
+            <div class="hero-buttons-chaos" style="justify-content: center;">
+                <a href="https://github.com/sparesparrow/mia/issues/new?title=Pilot%3A%20gonzo" class="btn-madness primary" style="text-decoration: none;">VSTOUPIT DO PILOTU</a>
+                <a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements" class="btn-madness secondary" style="text-decoration: none;">CO UŽ FUNGUJE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MANIFESTO -->
+    <section id="manifesto" class="manifesto-madness">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">MANIFEST NEPOSLUŠNOSTI</h2>
+            <div class="manifesto-content">
+                <div class="manifesto-text">
+                    <p class="manifesto-paragraph">
+                        <strong>Nežádej úřady, aby chránily tvoje soukromí. Nežádej korporace, aby respektovaly tvoje vlastnictví.</strong> Jedni ti slibují bezpečí, druzí pohodlí, a obojí platíš svými daty.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong>Tvoje auto o tobě ví víc než tvoje máma.</strong> Kolik jezdíš, kde stojíš, jak brzdíš. Nové auto to pošle výrobci a pojišťovně. MIA to čte jen pro tebe.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong>Postav si vlastní infrastrukturu.</strong> Raspberry Pi pod sedačkou, pár ESP32 za palubkou a telefon v držáku. Žádný cloud, žádné předplatné. Hardware je tvůj, kód je otevřený, data máš pod vlastní kontrolou a nikdo ti to na dálku nevypne.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong lang="en">Read-only. Open. Yours.</strong> Do auta jen poslouchá. Na sběrnici nic neposílá, do řídicích jednotek nezapisuje. MIA ti nezhasne motor ani neodemkne dveře, ani kdyby chtěla.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong>Při plošném sledování jiná cesta není.</strong> Vlastní nástroje, vlastní železo a žádná autorita, které musíš věřit. Ani nám: kód je otevřený, přečti si ho.
+                    </p>
+                    <p class="manifesto-paragraph">
+                        <strong>Připoj se.</strong> Nebo dál jezdi v autě, které donáší na tebe, a ne tobě.
+                    </p>
+                </div>
+                <div class="manifesto-visual">
+                    <img src="assets/site/manifesto.jpg" alt="AI Resistance" class="manifesto-img" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DISOBEDIENCE: FREEDOM FROM BELOW, QUOTES -->
+    <section id="neposlusnost" class="arsenal-section">
+        <div class="container-chaos">
+            <h2 class="section-title-hell">NEPOSLUŠNOST: SVOBODA ZESPODA</h2>
+            <p class="pricing-desc-hell disobedience-intro">
+                Svobodu ti nikdo nedá shora. Volby, petice ani nová regulace ti soukromí nevrátí.
+                Agoristé tomu říkají kontraekonomika, Václav Benda paralelní polis: místo prosby o lepší pravidla
+                si postavíš vlastní struktury a ty staré necháš vyhladovět. MIA je jedna cihla z nich:
+                auto, které poslouchá tebe, ne úřad ani výrobce.
+            </p>
+
+            <div class="quote-grid">
+                <figure class="quote-card">
+                    <blockquote><p>„Rozhodněte se, že už nebudete sloužit, a jste svobodní.“</p></blockquote>
+                    <figcaption>Étienne de La Boétie, <cite><a href="https://hurlus.fr/laboetie1562_servitude/laboetie1562_servitude.pdf">Rozprava o dobrovolném otroctví</a></cite> (kolem 1548)</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„Ať je tvůj život třením, které zastaví stroj.“</p></blockquote>
+                    <figcaption>Henry David Thoreau, <cite><a href="https://www.gutenberg.org/files/71/71-h/71-h.htm">Občanská neposlušnost</a></cite> (1849)</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„Stát je ta velká fikce, skrze kterou se každý snaží žít na úkor všech.“</p></blockquote>
+                    <figcaption>Frédéric Bastiat, <cite><a href="https://oll.libertyfund.org/quotes/145">Stát</a></cite> (1848)</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„Vláda je ve své podstatě negací svobody.“</p></blockquote>
+                    <figcaption>Ludwig von Mises, <cite lang="en"><a href="https://mises.org/online-book/mises-reader-unabridged/chapter-19-importance-liberty">Liberty and Property</a></cite> (1958), část V</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„Žádný člověk ani skupina lidí nesmí napadnout osobu ani majetek nikoho jiného.“</p></blockquote>
+                    <figcaption>Murray N. Rothbard, <cite lang="en"><a href="https://mises.org/online-book/new-liberty-libertarian-manifesto/chapter-2-property-and-exchange/nonaggression-axiom">For a New Liberty</a></cite> (1973), kap. 2</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„(…) čím víc stát ‚plánuje‘, tím těžší je plánování pro jednotlivce.“</p></blockquote>
+                    <figcaption>F. A. Hayek, <cite><a href="https://aspeninstitute.org/wp-content/uploads/files/content/docs/HAYEK_ROAD_TO_SERFDOM_CH._6_(AS08).PDF">Cesta do otroctví</a></cite> (1944), kap. 6</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„Nemůžeme čekat, že nám vlády, korporace nebo jiné velké neosobní organizace dopřejí soukromí ze své dobroty. (…) Pokud chceme mít soukromí, musíme si ho bránit sami.“</p></blockquote>
+                    <figcaption>Eric Hughes, <cite lang="en"><a href="https://www.activism.net/cypherpunk/manifesto.html">A Cypherpunk's Manifesto</a></cite> (1993)</figcaption>
+                </figure>
+                <figure class="quote-card">
+                    <blockquote><p>„(…) společným jmenovatelem #ne_poslušnosti je kontrast mezi respektem k lidem a nerespektem k platné legislativě.“</p></blockquote>
+                    <figcaption>Urza, <cite><a href="https://stoky.urza.cz/nep/">#ne_poslušnosti</a></cite>, Stoky Svobodného přístavu</figcaption>
+                </figure>
+            </div>
+
+            <p class="crew-note quote-note">
+                Překlady jsou naše, Urza píše česky. Název díla vede na text, se kterým jsme citát ověřili.
+                Autoři s MIA nemají nic společného a za nic z toho, co tu píšeme, neručí.
+            </p>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- FOOTER FROM HELL -->
+    <footer class="footer-madness">
+        <div class="container-chaos">
+            <div class="footer-chaos">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>ŽÁDNÝ ÚŘAD. ŽÁDNÝ CLOUD. EST. 2025</p>
+                    <p class="footer-motto">"KDYŽ TĚ SLEDUJOU, SLEDUJ JE ZPĚT"</p>
+                </div>
+                <div class="footer-contact">
+                    <h4>UNDERGROUND KONTAKT</h4>
+                    <p>🐙 <a href="https://github.com/sparesparrow/mia/issues" style="color: inherit;">GitHub issues</a></p>
+                    <p>📚 <a href="docs/" style="color: inherit;">Dokumentace</a></p>
+                    <p>📰 <a href="press/" style="color: inherit;">Pro média</a></p>
+                </div>
+                <div class="footer-legal">
+                    <h4>LEGAL DISCLAIMER</h4>
+                    <p>Use at your own risk. We are not responsible for:</p>
+                    <ul>
+                        <li>• Paranoid episodes</li>
+                        <li>• Government surveillance</li>
+                        <li>• Reality distortion</li>
+                        <li>• Addiction to truth</li>
+                        <li>• Loss of faith in the state</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SUZMATRA – MIA GONZO EDITION. MIT LICENCE, FREEDOM FIGHTERS.</p>
+                <p class="hunter-quote">"In a world of thieves, the only final sin is stupidity." - H.S.T.</p>
+            </div>
+        </div>
+    </footer>
+
+    
+
+    <script src="customers/journalists/gonzo-app.js"></script>
+
+    <!-- CREW VOICE GUIDES (REQ-WEB-003): one ElevenLabs widget, switched between three public agents.
+         The agent IDs are public by design; the agents only accept this site's origin. -->
+    <div id="crew-widget"></div>
+    <script>
+        (function () {
+            'use strict';
+            var CREW = {
+                holly: 'agent_9401m7adnm80eqjry8fgbnvgj0gg',
+                rimmer: 'agent_9701m7adnt26fdcae2hp5ve82xcz',
+                kryten: 'agent_3601m7adp00aer3r588cx6gwvny3'
+            };
+            var mount = document.getElementById('crew-widget');
+            var cards = document.querySelectorAll('.crew-card');
+            var current = null;
+
+            function show(name) {
+                if (!mount || !CREW[name] || name === current) {
+                    return;
+                }
+                current = name;
+                // Replacing the element ends any running conversation with the previous guide.
+                mount.textContent = '';
+                var widget = document.createElement('elevenlabs-convai');
+                widget.setAttribute('agent-id', CREW[name]);
+                mount.appendChild(widget);
+                cards.forEach(function (card) {
+                    var active = card.getAttribute('data-crew') === name;
+                    card.classList.toggle('crew-active', active);
+                    card.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+            }
+
+            cards.forEach(function (card) {
+                card.addEventListener('click', function () {
+                    show(card.getAttribute('data-crew'));
+                });
+            });
+
+            show('holly');
+        })();
+    </script>
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>

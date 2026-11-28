@@ -1,0 +1,124 @@
+# Requirements registry: see spec/README.md for fields and evidence states.
+area: deployment
+title: Deployment and provisioning
+description: How the stack is installed and started.
+requirements:
+- id: REQ-DEP-001
+  title: Systemd service set
+  statement: Every Pi service shall run as a systemd unit with a restart policy and syslog identifier, with the
+    broker starting before the services that need it.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - zmq-broker is ordered before mia-api, the serial bridge and the bridges
+  - All core units restart on failure and set SyslogIdentifier
+  implemented_in:
+  - infra/systemd
+  decisions:
+  - ADR-0003
+  - ADR-0005
+  not_proven: A boot on the target Pi
+- id: REQ-DEP-002
+  title: Docker Compose stacks
+  statement: The orchestration stack shall start with Docker Compose, with separate dev, monitoring and Pi-simulation
+    variants.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/docker
+  - tests/env/docker-compose.pi-simulation.yml
+  notes: deploy.yml validates the compose files with docker compose config, but no test asserts behaviour.
+- id: REQ-DEP-003
+  title: Pi deployment
+  statement: A single command shall discover the Pi on the LAN, push SSH keys, sync code and bootstrap the services.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Connection and deployment checks report failure instead of raising
+  - The Pi API's requirements file lists every third-party package api/main.py imports at startup, including
+    python-multipart for the form routes, and installs the GPIO libraries on 64-bit Raspberry Pi OS (aarch64)
+  implemented_in:
+  - tools/scripts/deploy-mia-rpi.sh
+  - tools/scripts/deploy_rpi.py
+  - apps/rpi-backend/py-api/requirements.txt
+  notes: Only deploy_rpi.py is unit-tested; deploy-mia-rpi.sh has no test.
+- id: REQ-DEP-004
+  title: mDNS advertisement
+  statement: The Pi shall advertise _mia-api._tcp over Avahi so the app can find it.
+  evidence: implemented_untested
+  implemented_in:
+  - infra/deploy/avahi-mia-api.service
+- id: REQ-DEP-005
+  title: Bundled CPython bootstrap
+  statement: A stdlib-only bootstrap shall install a bundled CPython and Conan on a fresh host.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Archive extraction rejects path traversal
+  - The ensure script writes the environment and wrapper in a dry run
+  implemented_in:
+  - tools/complete-bootstrap.py
+  - tools/scripts/ensure-bundled-cpython.sh
+- id: REQ-DEP-006
+  title: Device and network discovery tools
+  statement: Deployment tools shall detect attached devices and scan the LAN for MIA hosts.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Detection and scanning degrade gracefully when a probe fails
+  implemented_in:
+  - tools/scripts/detect_devices.py
+  - tools/scripts/network_scanner.py
+- id: REQ-DEP-007
+  title: Release build inputs
+  statement: The release workflow shall build from paths that exist in the repository and shall publish a release
+    triggered by a pushed tag as a draft, so a release is only made public after its artifacts have been checked.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Every path the Raspberry Pi backend bundle archives, and every path the compile check lists, exists
+  - Every Python source under apps/rpi-backend and orchestration compiles
+  - A tag push builds a draft release, and only a manual run can opt out of the draft
+  implemented_in:
+  - .github/workflows/release.yml
+  not_proven: The workflow has not run end to end since the repository was restructured; only its path list, compile
+    check and draft rule are asserted. The Android signing secrets may be absent, which yields a debug APK only.
+- id: REQ-DEP-008
+  title: On-Pi install
+  statement: Run on the Pi from a checkout of the repository, one command shall copy the code the systemd units run
+    to /opt/mia, install the Pi API's own Python requirements into a venv that the units start, and install and enable
+    the core units, without installing into the system Python and without losing the API key on a re-run.
+  evidence: hardware_tested
+  acceptance:
+  - Every path the core units name in ExecStart, WorkingDirectory and PYTHONPATH exists in the install, and the API
+    imports from the install with its generated bindings
+  - The venv gets apps/rpi-backend/py-api/requirements.txt; no on-Pi script installs the root requirements.txt, uses
+    pip outside the venv or passes --break-system-packages
+  - /usr/local/bin/mia-python and MIA_PYTHON run the venv; the environment file keeps MIA_API_KEY and its other lines
+    and loses a stale PYTHONHOME
+  - A second run succeeds and keeps the venv
+  - The API's requirements install and pass pip check on aarch64 with Python 3.11 (Bookworm) and 3.13 (Trixie), and
+    the API imports there (CI job "Pi Python (aarch64)" in .github/workflows/ci.yml; a test keeps the job in place)
+  - The production deploy brings the checkout to a pinned commit with git run as the checkout's owner, drops a local
+    change only when its content already equals the target's, stops on any other local change (an ignored file the
+    target tracks and both paths of a staged rename included) without changing anything, fails when the tracked
+    files still differ from the target after the checkout, and never touches untracked or ignored files the target
+    does not track
+  - After the checkout the deploy runs the target's copy of itself only when that copy has the safe checkout step;
+    otherwise it warns and finishes with the current copy
+  - An update refreshes every MIA unit already installed without enabling new ones, restarts the enabled units with
+    the broker first, and fails when the broker restart or the listing of enabled units fails, when the API does not
+    answer, or when, after a wait longer than any unit's RestartSec, the broker or a unit it restarted is not active
+    or has restarted on its own; a failed unit it did not restart is a warning
+  - The API key reaches the health check on curl's stdin, never its command line; deployed.json is written as JSON
+    with the ref actually deployed, and only after a verified deploy
+  - /opt/mia and /opt/mia/bin stay root-owned across a deploy, and the deploy does not make the Bluetooth adapter
+    discoverable
+  implemented_in:
+  - tools/scripts/deploy-production-rpi.sh
+  - tools/scripts/mia-update-checkout.sh
+  - tools/scripts/deploy-raspberry-pi.sh
+  - tools/scripts/setup-ble-service.sh
+  - .github/workflows/ci.yml
+  decisions:
+  - ADR-0005
+  notes: tools/scripts/deploy-mia-rpi.sh (REQ-DEP-003) deploys from another machine and still installs its own package
+    list and rewrites the units; choosing one entrypoint is #132.
+  not_proven: Run once on the target Pi (Raspberry Pi 4B, Debian 13, Python 3.13; spec/evidence/REQ-DEP-008), as an
+    update of an existing install, not a first install on a clean card, and on Bookworm (3.11) only in CI. The failure
+    paths (fetch error, differing local changes, a crash-looping unit) were not exercised on the Pi. The adapter is still
+    discoverable after a deploy because mia-ble-advertiser runs piscan itself.

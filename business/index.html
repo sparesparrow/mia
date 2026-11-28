@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA pro firmy – flotila, která nedonáší</title>
+    <meta name="description" content="Nové firemní auto hlásí výrobci, kudy a jak jezdíte. MIA čte OBD a diagnostiku Audi jen pro vás, běží na Raspberry Pi pod sedačkou a poslouchá hlasové povely, takže řidič drží volant. Žádný cloud a do auta nic nezapisuje.">
+    <link rel="canonical" href="https://mia-suzmatra.vercel.app/business/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MIA by SUZMATRA">
+    <meta property="og:title" content="MIA pro firmy – flotila, která nedonáší">
+    <meta property="og:description" content="Nové firemní auto hlásí výrobci, kudy a jak jezdíte. MIA čte OBD a diagnostiku Audi jen pro vás, běží na Raspberry Pi pod sedačkou a poslouchá hlasové povely, takže řidič drží volant. Žádný cloud a do auta nic nezapisuje.">
+    <meta property="og:url" content="https://mia-suzmatra.vercel.app/business/">
+    <meta property="og:image" content="https://mia-suzmatra.vercel.app/assets/site/business-og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="cs_CZ">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="alternate" hreflang="cs" href="https://mia-suzmatra.vercel.app/business/">
+    <link rel="alternate" hreflang="en" href="https://mia-suzmatra.vercel.app/business/en/">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-business ">
+    <a class="skip-link" href="#main">Přeskočit na obsah</a>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="../" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">Flotila, která nedonáší</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#scenarios">Scénáře</a>
+                <a href="#today">Funguje dnes</a>
+                <a href="#tech">Technologie</a>
+                <a href="#site-footer">Všechny stránky</a>
+                <a href="en/" class="lang-link" hreflang="en" lang="en">English</a>
+                <a href="#pilot" class="cta-btn">Zapojit se</a>
+            </div>
+            <button class="mobile-menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main">
+
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="../assets/site/business.jpg" alt="" class="hero-image">
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>Vaše flotila, vaše data. Ne výrobcova.</h1>
+                <p class="hero-subtitle">Nové firemní auto hlásí výrobci, kudy a jak jezdíte. MIA čte OBD a diagnostiku Audi jen pro vás, běží na Raspberry Pi pod sedačkou a poslouchá hlasové povely, takže řidič drží volant. Žádný cloud a do auta nic nezapisuje.</p>
+                <ul class="hero-facts">
+                    <li>Vyvíjeno na Audi A4 Cabriolet 8H</li>
+                    <li>Raspberry Pi 4B + ESP32 + Android</li>
+                    <li>Z vozidla pouze čte</li>
+                </ul>
+                <div class="hero-buttons">
+                    <a href="#pilot" class="btn btn-primary">Zapojit se do pilotu</a>
+                    <a href="../docs/" class="btn btn-secondary">Číst dokumentaci</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="use-cases features" id="scenarios">
+        <div class="container">
+            <span class="section-eyebrow">Plánované scénáře</span>
+            <h2>Co MIA chystá pro firmy</h2>
+            <p class="section-intro">Tohle je plán, ne slib. Nic z toho zatím není hotové ani ověřené.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-handshake" aria-hidden="true"></i></div><h3>Obchodníci na cestách</h3><ul><li>CRM hlasem, ruce zůstanou na volantu</li><li>Zápis ze schůzky nadiktovaný cestou zpátky</li><li>Nové kontakty rovnou tam, kam patří</li><li>Objížďka zákazníků bez zbytečných kilometrů</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></div><h3>Technici v terénu</h3><ul><li>Zakázky z dispečinku nahlas rovnou do auta</li><li>Checklist odškrtaný hlasem, ne mastnými prsty</li><li>Zákazník ví, kdy dorazíte, a vy kvůli tomu nevoláte za jízdy</li><li>Servisní zpráva nadiktovaná, ne psaná večer doma</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-user-tie" aria-hidden="true"></i></div><h3>Vedení na zadním sedadle</h3><ul><li>Šifrované hovory bez cizích uší</li><li>Kalendář v autě, ne v cizím cloudu</li><li>Dokumenty přečtené nahlas cestou na jednání</li><li>Co se řekne v autě, zůstane v autě</li></ul></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="today">
+        <div class="container">
+            <h2>Co funguje dnes</h2>
+            <p class="section-intro">Žádné slajdy. Tohle je napsané a prošlo automatickými testy v CI nebo běží v simulaci. Na stole, na hardwaru a v autě to teprve ověřujeme.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high" aria-hidden="true"></i></div><h3>Telemetrie OBD-II</h3><p>Otáčky, teplota chladicí kapaliny, napětí baterie a stav zapalování z digitálního dvojčete ELM327 a pasivního záznamu CAN na ESP32.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-car" aria-hidden="true"></i></div><h3>Diagnostika Audi jen pro čtení</h3><p>Diagnostický most VAG/Audi, který pouze čte. MIA ve výchozím stavu na sběrnici vozidla nezapisuje.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-id-card" aria-hidden="true"></i></div><h3>Rozpoznávání SPZ</h3><p>Rozpoznávání SPZ v aplikaci pro Android; kontrola dálniční známky běží na Pi.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microphone" aria-hidden="true"></i></div><h3>Hlasové ovládání</h3><p>Zpracování hlasových příkazů na Pi a mluvená zpětná vazba v aplikaci pro Android.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen" aria-hidden="true"></i></div><h3>Aplikace pro Android</h3><p>Párování přes BLE, živá karta telemetrie a místní pravidla. Záznam z kamery je zatím ve vývoji.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microchip" aria-hidden="true"></i></div><h3>Brána na Raspberry Pi</h3><p>REST a WebSocket API, zprávy přes ZeroMQ a služby systemd, se simulací tam, kde hardware chybí.</p></div>
+            </div>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">Stav ověření každého požadavku</a></p>
+        </div>
+    </section>
+
+    <section class="technology" id="tech">
+        <div class="container">
+            <h2>Technologie</h2>
+            <div class="tech-grid">
+                <div class="tech-card"><h3>Raspberry Pi 4B pod sedačkou</h3><p>API, zprávy a AI služby běží přímo v autě, ne v cizím datacentru.</p></div>
+                <div class="tech-card"><h3>ESP32 za palubkou</h3><p>Poslouchají OBD-II a CAN a obsluhují místní vstupy a výstupy. Do řídicích jednotek nezapisují.</p></div>
+                <div class="tech-card"><h3>Telefon v držáku</h3><p>Palubka, spojení přes BLE a čtení SPZ v telefonu řidiče. Kamera se teprve dodělává.</p></div>
+                <div class="tech-card"><h3>Otevřené karty</h3><p>Požadavky, návrhová rozhodnutí i záznamy ověření jsou veřejně na GitHubu. Nic neschováváme.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="pilot">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Chcete flotilu, která pracuje pro vás, a ne pro výrobce?</h2>
+                <p>Ceník nemáme a vymýšlet si ho nebudeme. Hledáme pilotní posádky a partnery, kteří se nebojí šroubováku. Napište, co potřebujete, a domluvíme se.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/sparesparrow/mia/issues/new?title=Pilot%3A%20business" class="btn btn-primary large">Zapojit se do pilotu</a>
+                    <a href="../docs/" class="btn btn-secondary large">Číst dokumentaci</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>Otevřený prototyp telemetrie a hlasového asistenta do auta</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>Pro zákazníky</h4><ul><li><a href="../business/">Firmy a flotily</a></li><li><a href="../family/">Rodiny</a></li><li><a href="../musicians/">Hudebníci</a></li><li><a href="../journalists/">Novináři</a></li></ul></div>
+                    <div class="footer-column"><h4>Pro odborníky</h4><ul><li><a href="../docs/for/developers/">Vývojáři</a></li><li><a href="../docs/for/mechanics/">Automechanici a montáž</a></li><li><a href="../docs/for/testers/">Testeři</a></li><li><a href="../press/">Média a marketing</a></li></ul></div>
+                    <div class="footer-column"><h4>Projekt</h4><ul><li><a href="../">Manifest</a></li><li><a href="../docs/">Dokumentace</a></li><li><a href="https://github.com/sparesparrow/mia">Zdrojový kód</a></li></ul></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SUZMATRA. MIA je produkt společnosti SUZMATRA. Licence MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.querySelector('.nav-menu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                var open = menu.classList.toggle('mobile-open');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (event) {
+                if (event.target.tagName === 'A') {
+                    menu.classList.remove('mobile-open');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

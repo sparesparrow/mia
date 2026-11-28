@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="80 18 840 480" role="img" aria-labelledby="title desc">
+<title id="title">SUZMATRA</title><desc id="desc">Futuristic silver and red SUZMATRA technology emblem</desc>
+<defs>
+ <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".48" stop-color="#c8c8c8"/><stop offset="1" stop-color="#777"/></linearGradient>
+ <linearGradient id="red" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3b3b"/><stop offset="1" stop-color="#b90000"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M500 35 C340 35 235 150 235 265 C235 325 267 370 315 397" stroke="url(#silver)" stroke-width="20"/>
+ <path d="M500 35 C610 35 700 95 746 174" stroke="url(#red)" stroke-width="23"/>
+ <path d="M320 396 C385 448 485 465 575 440 C670 414 735 347 758 264" stroke="url(#red)" stroke-width="22"/>
+ <path d="M500 65 C370 65 270 154 270 263 C270 314 295 350 330 372" stroke="#777" stroke-width="3"/>
+</g>
+<path d="M500 105 H710 Q770 105 770 162 Q770 214 711 214 H454 Q420 214 420 246 Q420 276 455 276 H605 Q670 276 670 330 Q670 382 604 382 H355 L485 307 H552 Q580 307 580 330 Q580 350 552 350 H478 L620 267 Q650 248 620 231 Q596 217 550 217 H430 Q355 217 355 160 Q355 105 430 105 Z" fill="url(#silver)" stroke="#f5f5f5" stroke-width="5"/>
+<path d="M500 105 H710 Q770 105 770 162 Q770 214 711 214 H454" fill="none" stroke="#fff" stroke-width="4"/>
+<text x="500" y="475" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="116" font-weight="900" letter-spacing="7" fill="url(#silver)" stroke="#333" stroke-width="2" paint-order="stroke">SUZMATRA</text>
+<path d="M95 490 H905" stroke="url(#red)" stroke-width="5"/>
+</svg>

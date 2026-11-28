@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIA for musicians – a rehearsal room on four wheels</title>
+    <meta name="description" content="The car as a rehearsal room and a DJ booth? That's the plan. Today MIA takes voice commands, reads what the engine is doing and runs on a Raspberry Pi under the seat, not in someone else's cloud.">
+    <link rel="canonical" href="https://mia-suzmatra.vercel.app/musicians/en/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="MIA by SUZMATRA">
+    <meta property="og:title" content="MIA for musicians – a rehearsal room on four wheels">
+    <meta property="og:description" content="The car as a rehearsal room and a DJ booth? That's the plan. Today MIA takes voice commands, reads what the engine is doing and runs on a Raspberry Pi under the seat, not in someone else's cloud.">
+    <meta property="og:url" content="https://mia-suzmatra.vercel.app/musicians/en/">
+    <meta property="og:image" content="https://mia-suzmatra.vercel.app/assets/site/mobile-dj-og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_GB">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="alternate" hreflang="cs" href="https://mia-suzmatra.vercel.app/musicians/">
+    <link rel="alternate" hreflang="en" href="https://mia-suzmatra.vercel.app/musicians/en/">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../../site.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="site-page segment-musicians theme-dark">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2><a href="../../en/" style="color: inherit; text-decoration: none;">MIA</a></h2>
+                <span class="tagline">Amp on full, cloud switched off</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#scenarios">Scenarios</a>
+                <a href="#today">Works today</a>
+                <a href="#tech">Technology</a>
+                <a href="#site-footer">All pages</a>
+                <a href="../" class="lang-link" hreflang="cs" lang="cs">Česky</a>
+                <a href="#pilot" class="cta-btn">Join the pilot</a>
+            </div>
+            <button class="mobile-menu-toggle" type="button" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main">
+
+    <section class="hero">
+        <div class="hero-bg">
+            <img src="../../assets/site/mobile-dj.jpg" alt="" class="hero-image">
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>A rehearsal room that drives you to the gig</h1>
+                <p class="hero-subtitle">The car as a rehearsal room and a DJ booth? That's the plan. Today MIA takes voice commands, reads what the engine is doing and runs on a Raspberry Pi under the seat, not in someone else's cloud.</p>
+                <ul class="hero-facts">
+                    <li>Built on an Audi A4 Cabriolet 8H</li>
+                    <li>Raspberry Pi 4B + ESP32 + Android</li>
+                    <li>Read-only access to the vehicle</li>
+                </ul>
+                <div class="hero-buttons">
+                    <a href="#pilot" class="btn btn-primary">Join the pilot</a>
+                    <a href="../../docs/" class="btn btn-secondary">Read the documentation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="use-cases features" id="scenarios">
+        <div class="container">
+            <span class="section-eyebrow">Planned scenarios</span>
+            <h2>What MIA is cooking up for musicians</h2>
+            <p class="section-intro">This is a plan, not a promise. None of it is finished or validated yet.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-headphones" aria-hidden="true"></i></div><h3>DJ out of the boot</h3><ul><li>Decks in sync between cars</li><li>A live stream from the car park</li><li>Several cars, one party</li><li>A backup for when the power cuts out</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-users" aria-hidden="true"></i></div><h3>The band</h3><ul><li>Audio in sync between cars in real time</li><li>Everyone records from their own car</li><li>Sharing takes without someone else's cloud</li><li>A mixing desk on the passenger seat</li></ul></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-guitar" aria-hidden="true"></i></div><h3>Solo artists</h3><ul><li>Making music whenever it grabs you</li><li>Recording on a single command</li><li>A gig rig you already carry with you</li><li>No subscription on your own ideas</li></ul></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="today">
+        <div class="container">
+            <h2>What works today</h2>
+            <p class="section-intro">No slide deck. This is written and passes automated tests in CI or runs in simulation. Bench, hardware and in-car validation is still under way.</p>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-gauge-high" aria-hidden="true"></i></div><h3>OBD-II telemetry</h3><p>Engine speed, coolant temperature, battery voltage and ignition state, from an ELM327 digital twin and passive CAN capture on ESP32.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-car" aria-hidden="true"></i></div><h3>Read-only Audi diagnostics</h3><p>A VAG/Audi diagnostics bridge that only reads. MIA does not write to the vehicle bus by default.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-id-card" aria-hidden="true"></i></div><h3>Number plate recognition</h3><p>Plate recognition in the Android app; the Czech motorway vignette check runs on the Pi.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microphone" aria-hidden="true"></i></div><h3>Voice commands</h3><p>Voice command handling on the Pi and spoken feedback in the Android app.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-mobile-screen" aria-hidden="true"></i></div><h3>Android companion app</h3><p>BLE pairing, a live telemetry card and a local rules engine. Dashcam recording is still in development.</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-microchip" aria-hidden="true"></i></div><h3>Raspberry Pi gateway</h3><p>REST and WebSocket API, ZeroMQ messaging and systemd services, with simulation fallbacks when hardware is absent.</p></div>
+            </div>
+            <p class="section-link"><a href="https://github.com/sparesparrow/mia/tree/main/spec/requirements">Evidence state of every requirement</a></p>
+        </div>
+    </section>
+
+    <section class="technology" id="tech">
+        <div class="container">
+            <h2>Technology</h2>
+            <div class="tech-grid">
+                <div class="tech-card"><h3>Raspberry Pi 4B under the seat</h3><p>The API, messaging and AI services run right in the car, not in someone else's data centre.</p></div>
+                <div class="tech-card"><h3>ESP32s behind the dash</h3><p>They listen on OBD-II and CAN and drive local inputs and outputs. They write nothing to the control units.</p></div>
+                <div class="tech-card"><h3>Phone in the mount</h3><p>Dashboard, BLE link and plate reading on the driver's phone. The dashcam is still being finished.</p></div>
+                <div class="tech-card"><h3>Cards on the table</h3><p>Requirements, design decisions and validation records are public on GitHub. We hide nothing.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="pilot">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Want to play wherever you can drive?</h2>
+                <p>There's no price list and we won't make one up. We're looking for pilot crews and partners who aren't afraid of a screwdriver. Tell us what you need and we'll work it out.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/sparesparrow/mia/issues/new?title=Pilot%3A%20musicians" class="btn btn-primary large">Join the pilot</a>
+                    <a href="../../docs/" class="btn btn-secondary large">Read the documentation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <footer class="footer" id="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>MIA</h3>
+                    <p>Open prototype of in-car telemetry and a voice assistant</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>For customers</h4><ul><li><a href="../../business/en/">Business &amp; fleets</a></li><li><a href="../../family/en/">Families</a></li><li><a href="../../musicians/en/">Musicians</a></li><li><a href="../../journalists/en/">Journalists</a></li></ul></div>
+                    <div class="footer-column"><h4>For professionals</h4><ul><li><a href="../../docs/for/developers/">Developers</a></li><li><a href="../../docs/for/mechanics/">Mechanics &amp; installers</a></li><li><a href="../../docs/for/testers/">Testers</a></li><li><a href="../../press/en/">Press &amp; marketing</a></li></ul></div>
+                    <div class="footer-column"><h4>Project</h4><ul><li><a href="../../en/">Manifesto</a></li><li><a href="../../docs/">Documentation</a></li><li><a href="https://github.com/sparesparrow/mia">Source code</a></li></ul></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SUZMATRA. MIA is a SUZMATRA product. MIT licence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.querySelector('.nav-menu');
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', function () {
+                var open = menu.classList.toggle('mobile-open');
+                toggle.classList.toggle('active', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (event) {
+                if (event.target.tagName === 'A') {
+                    menu.classList.remove('mobile-open');
+                    toggle.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
