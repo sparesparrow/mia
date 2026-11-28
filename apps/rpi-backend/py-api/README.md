@@ -134,6 +134,14 @@ Once the FastAPI server is running:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
+## Web console
+
+`http://<pi>:8000/console/` is a small page for when no phone is at hand (ADR-0029, REQ-WEB-006): the Pi's status
+and telemetry, the voice machine live (needs `VOICE_CONSOLE=1`), and the voice and audio settings. It only reads
+the car. With no API key configured it answers only on the Pi itself (`http://localhost:8000/console/`); once
+`MIA_API_KEY` is set, a browser on the car's network may open it and types the key into the page.
+`MIA_WEB_CONSOLE=0` turns it off. The JSON stream it reads is described in `spec/interfaces/voice.md`.
+
 ## Troubleshooting
 
 ### Services won't start

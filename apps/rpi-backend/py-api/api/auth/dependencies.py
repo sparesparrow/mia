@@ -144,7 +144,10 @@ require_read = require_scope("read")
 # out explicitly with MIA_AUTH_DISABLED=1. GET/HEAD need the "read" scope,
 # everything else "write"; "admin" satisfies both.
 
-PUBLIC_PATHS = frozenset({"/", "/auth/status", "/docs", "/redoc", "/openapi.json"})
+# The web console's page is static and holds no data; the browser cannot send a key when it navigates to it.
+# Its data routes (/console/voice/...) are not public. api/web_console.py gates all of them by client address.
+CONSOLE_PAGE_PATHS = frozenset({"/console", "/console/", "/console/console.js", "/console/console.css"})
+PUBLIC_PATHS = frozenset({"/", "/auth/status", "/docs", "/redoc", "/openapi.json"}) | CONSOLE_PAGE_PATHS
 _READ_METHODS = frozenset({"GET", "HEAD"})
 _VERIFIED_TTL_S = 300.0
 _verified: dict = {}

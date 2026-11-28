@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>MIA console</title>
+  <link rel="stylesheet" href="console.css">
+  <script src="console.js" defer></script>
+</head>
+<body>
+  <header class="bar">
+    <h1>MIA console</h1>
+    <span id="link" class="pill" data-state="idle">connecting</span>
+    <form id="key-form" class="key" autocomplete="off">
+      <label for="key">API key</label>
+      <input id="key" type="password" spellcheck="false" placeholder="X-API-Key">
+      <button type="submit">Use</button>
+      <button type="button" id="key-forget">Forget</button>
+    </form>
+  </header>
+  <p id="auth-note" class="note" hidden></p>
+
+  <main class="grid">
+    <section class="card" aria-labelledby="voice-h">
+      <h2 id="voice-h">Voice, live</h2>
+      <div class="voice-now">
+        <span class="label">State</span><span id="voice-state" class="state" data-state="unknown" title="Shown from the first change after the page opened">–</span>
+        <span class="label">LED</span><span id="voice-led">–</span>
+        <span class="label">Tone</span><span id="voice-tone">–</span>
+        <span class="label">Backend</span><span id="voice-backend">–</span>
+      </div>
+      <p class="said"><span class="label">MIA said</span> <q id="voice-said">–</q></p>
+      <p class="said"><span class="label">Heard</span> <q id="voice-heard">–</q></p>
+      <p id="voice-note" class="note" hidden></p>
+      <h3>Events</h3>
+      <ol id="voice-log" class="log" reversed></ol>
+    </section>
+
+    <section class="card" aria-labelledby="settings-h">
+      <h2 id="settings-h">Voice settings</h2>
+      <form id="voice-form" class="form">
+        <label for="verbosity">Verbosity</label>
+        <select id="verbosity" name="verbosity">
+          <option value="quiet">quiet</option>
+          <option value="normal">normal</option>
+          <option value="chatty">chatty</option>
+        </select>
+        <label for="persona">Persona</label>
+        <select id="persona" name="persona"></select>
+        <label for="language">Language</label>
+        <select id="language" name="language"></select>
+        <button type="submit">Save voice settings</button>
+        <output id="voice-form-out" class="out"></output>
+      </form>
+
+      <h2 id="audio-h">Audio</h2>
+      <form id="audio-form" class="form">
+        <label for="mic_transport">Microphone</label>
+        <select id="mic_transport" name="mic_transport">
+          <option value="wifi">phone over Wi-Fi</option>
+          <option value="bluetooth">phone over Bluetooth</option>
+        </select>
+        <label for="reply_output">Replies</label>
+        <select id="reply_output" name="reply_output">
+          <option value="pi_speaker">Pi speaker</option>
+          <option value="bluetooth_phone">phone over Bluetooth</option>
+          <option value="phone_speaker">phone speaker</option>
+        </select>
+        <button type="submit">Save audio settings</button>
+        <output id="audio-form-out" class="out"></output>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="status-h">
+      <h2 id="status-h">Pi status</h2>
+      <dl id="status" class="kv"></dl>
+    </section>
+
+    <section class="card" aria-labelledby="telemetry-h">
+      <h2 id="telemetry-h">Telemetry</h2>
+      <p class="note">Latest reading per source, read only.</p>
+      <div id="telemetry" class="telemetry"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    This page only reads the car. It never sends vehicle, GPIO or LED commands; it changes voice and audio
+    settings only.
+  </footer>
+</body>
+</html>
