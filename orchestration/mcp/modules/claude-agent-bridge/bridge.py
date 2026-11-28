@@ -15,6 +15,9 @@ Safety model (do not weaken without a new ADR):
 - `ASK_LOCK` serializes `claude -p` calls so concurrent requests can't race
   on the same agent's `--resume` session id.
 - Every call is logged to `ask_log.jsonl` as an audit trail.
+- `on_handoff`, if given, hears "orchestrator -> executor" before a dispatch and
+  "executor -> orchestrator" after it, for the Pi's web console (ADR-0029,
+  REQ-WEB-007). It only reports; a failing callback never changes a dispatch.
 """
 
 import json
@@ -26,7 +29,7 @@ import time
 import urllib.request
 import uuid
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 MODULE_DIR = Path(__file__).parent
 
@@ -43,16 +46,63 @@ AGENTS = {
 ANTHROPIC_REACHABILITY_URL = "https://api.anthropic.com"
 REACHABILITY_TIMEOUT_S = 3
 
+# (from_role, to_role, task, summary) -> None
+HandoffCallback = Callable[[str, str, str, str], None]
+HANDOFF_TEXT_MAX = 140
+CONSOLE_URL = "http://127.0.0.1:8000"
+CONSOLE_TIMEOUT_S = 2
+
+
+def console_reporter(base_url: Optional[str] = None, api_key: Optional[str] = None) -> HandoffCallback:
+    """A callback that posts each handoff to the web console's `POST /console/agents/events`.
+
+    The post runs on a daemon thread with a short timeout, so a slow or missing API never delays a voice
+    turn. The key comes from `MIA_API_KEY` unless given; the console needs the write scope.
+    """
+    url = (base_url or os.environ.get("MIA_CONSOLE_URL", CONSOLE_URL)).rstrip("/") + "/console/agents/events"
+    key = api_key if api_key is not None else os.environ.get("MIA_API_KEY", "")
+
+    def post(from_role: str, to_role: str, task: str, summary: str) -> None:
+        body = json.dumps({"from_role": from_role, "to_role": to_role, "task": task, "summary": summary})
+        headers = {"Content-Type": "application/json"}
+        if key:
+            headers["X-API-Key"] = key
+        request = urllib.request.Request(url, data=body.encode("utf-8"), headers=headers, method="POST")
+
+        def send() -> None:
+            try:
+                urllib.request.urlopen(request, timeout=CONSOLE_TIMEOUT_S).close()
+            except Exception:  # noqa: BLE001 - the console is optional; a lost handoff is only a lost line
+                pass
+
+        threading.Thread(target=send, name="mia-handoff-report", daemon=True).start()
+
+    return post
+
+
+def _short(text: str) -> str:
+    text = " ".join(str(text).split())
+    return text if len(text) <= HANDOFF_TEXT_MAX else text[: HANDOFF_TEXT_MAX - 1] + "…"
+
 
 class ClaudeAgentBridge:
     """One instance per deployment (Pi, dev PC, ...). Holds per-agent session
     state so repeated calls continue the same conversation via --resume."""
 
-    def __init__(self, state_dir: Optional[Path] = None):
+    def __init__(self, state_dir: Optional[Path] = None, on_handoff: Optional[HandoffCallback] = None):
         self.state_dir = state_dir or (MODULE_DIR / "state")
+        self.on_handoff = on_handoff
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.ask_log = self.state_dir / "ask_log.jsonl"
         self.lock = threading.Lock()
+
+    def _handoff(self, from_role: str, to_role: str, task: str, summary: str) -> None:
+        if self.on_handoff is None:
+            return
+        try:
+            self.on_handoff(from_role, to_role, task, _short(summary))
+        except Exception:  # noqa: BLE001 - reporting must never change a dispatch
+            pass
 
     def _session_file(self, agent: str) -> Path:
         return self.state_dir / f"session_{agent}.txt"
@@ -103,6 +153,7 @@ class ClaudeAgentBridge:
         cmd += ["--resume", sid] if started else ["--session-id", sid]
 
         entry = {"ts": time.time(), "agent": agent, "prompt": prompt}
+        self._handoff("orchestrator", "executor", agent, prompt)
         try:
             with self.lock:
                 p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
@@ -123,5 +174,7 @@ class ClaudeAgentBridge:
 
         with self.ask_log.open("a") as f:
             f.write(json.dumps(entry) + "\n")
+
+        self._handoff("executor", "orchestrator", agent, result if ok else f"failed: {error}")
 
         return {"ok": ok, "result": result, "error": error}

@@ -132,3 +132,38 @@ button[type="submit"] { background: var(--accent); border-color: var(--accent); 
 .telemetry td:first-child { white-space: nowrap; width: 1%; color: var(--muted); }
 
 .foot { padding: 0 16px 24px; font-size: 13px; color: var(--muted); }
+
+.wide { grid-column: 1 / -1; }
+h2 .out { font-weight: normal; margin-left: 8px; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.steps li { display: grid; grid-template-columns: 1.6em 1fr auto; gap: 0 6px; align-items: start; }
+.steps .mark { font-weight: 700; text-align: center; }
+.steps li[data-done="true"] .mark { color: var(--ok); }
+.steps li[data-done="false"] .mark { color: var(--bad); }
+.steps li[data-done="unknown"] .mark { color: var(--warn); }
+.steps .detail, .steps .how { grid-column: 2 / 4; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.steps .how { font-size: 12px; }
+.steps button { font-size: 12px; padding: 1px 8px; }
+
+.trio { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 8px; }
+.trio li, .handoffs li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.avatar { flex: none; width: 30px; height: 30px; border-radius: 50%; display: inline-grid; place-items: center;
+  font-weight: 700; font-size: 13px; color: #111; background: var(--line); }
+.trio .who { min-width: 0; }
+.trio .who b { display: block; overflow-wrap: anywhere; }
+.trio .who span { font-size: 12px; color: var(--muted); }
+.handoffs { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow-y: auto; display: grid; gap: 6px; }
+.handoffs .avatar { width: 22px; height: 22px; font-size: 11px; }
+.handoffs .text { font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
+.handoffs .time { font-size: 11px; color: var(--muted); }
+
+.roles { grid-column: 1 / -1; border: 1px solid var(--line); border-radius: 8px; margin: 0; padding: 8px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 0.7fr); gap: 6px 8px; align-items: center; }
+.roles legend { font-size: 12px; color: var(--muted); }
+.roles .role { font-size: 12px; color: var(--muted); }
+.roles input[type="color"] { padding: 0; width: 34px; height: 28px; }
+.roles input { min-width: 0; width: 100%; }
+.form input { min-width: 0; width: 100%; }
+.buttons { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }

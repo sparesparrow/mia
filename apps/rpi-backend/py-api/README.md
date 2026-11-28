@@ -140,7 +140,10 @@ Once the FastAPI server is running:
 and telemetry, the voice machine live (needs `VOICE_CONSOLE=1`), and the voice and audio settings. It only reads
 the car. With no API key configured it answers only on the Pi itself (`http://localhost:8000/console/`); once
 `MIA_API_KEY` is set, a browser on the car's network may open it and types the key into the page.
-`MIA_WEB_CONSOLE=0` turns it off. The JSON stream it reads is described in `spec/interfaces/voice.md`.
+It also shows the three agent roles with the personas of the shape you choose, the handoffs agents report
+(`MIA_CONSOLE_HANDOFFS=1` makes the voice orchestrator's Claude dispatch report its own), and a setup checklist of
+what is still to do on this Pi. `MIA_WEB_CONSOLE=0` turns it off. Routes and formats:
+`spec/interfaces/web-console.md`.
 
 ## Troubleshooting
 

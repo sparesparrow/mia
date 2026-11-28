@@ -5,6 +5,7 @@ existing claudepy-bridge test.
 """
 
 import importlib.util
+import json
 import os
 import sys
 
@@ -101,3 +102,98 @@ def test_no_tool_agent_gets_disallowed_tools_not_omitted(tmp_path, monkeypatch):
     assert "--disallowedTools" in cmd
     idx = cmd.index("--disallowedTools")
     assert "Bash" in cmd[idx + 1]
+
+
+# ── Handoffs for the Pi's web console (ADR-0029, REQ-WEB-007) ─────────────
+
+
+class _Done:
+    def __init__(self, returncode=0, stdout='{"result": "coolant 89 C"}', stderr=""):
+        self.returncode, self.stdout, self.stderr = returncode, stdout, stderr
+
+
+def _reachable_bridge(tmp_path, monkeypatch, on_handoff, completed=None):
+    bridge = ClaudeAgentBridge(state_dir=tmp_path, on_handoff=on_handoff)
+    monkeypatch.setattr(bridge, "is_uplink_reachable", lambda: True)
+    monkeypatch.setattr(_bridge_module.subprocess, "run", lambda cmd, **kw: completed or _Done())
+    return bridge
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_a_dispatch_is_reported_as_two_handoffs(tmp_path, monkeypatch):
+    seen = []
+    bridge = _reachable_bridge(tmp_path, monkeypatch, lambda *a: seen.append(a))
+    result = bridge.dispatch("what is the coolant   temperature\n" + "x" * 300, agent="mia-car")
+    assert result["ok"] is True
+    (out_from, out_to, out_task, out_text), back = seen
+    assert (out_from, out_to, out_task) == ("orchestrator", "executor", "mia-car")
+    assert out_text.startswith("what is the coolant temperature x") and len(out_text) == 140
+    assert back == ("executor", "orchestrator", "mia-car", "coolant 89 C")
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_a_failed_dispatch_is_reported_as_failed(tmp_path, monkeypatch):
+    seen = []
+    bridge = _reachable_bridge(tmp_path, monkeypatch, lambda *a: seen.append(a), _Done(1, "", "boom"))
+    assert bridge.dispatch("status", agent="mia-car")["ok"] is False
+    assert seen[-1] == ("executor", "orchestrator", "mia-car", "failed: boom")
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_nothing_is_reported_when_nothing_is_dispatched(tmp_path, monkeypatch):
+    seen = []
+    bridge = ClaudeAgentBridge(state_dir=tmp_path, on_handoff=lambda *a: seen.append(a))
+    monkeypatch.setattr(bridge, "is_uplink_reachable", lambda: False)
+    bridge.dispatch("status", agent="mia-car")
+    bridge.dispatch("status", agent="not-an-agent")
+    assert seen == []
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_a_failing_report_never_changes_the_dispatch(tmp_path, monkeypatch):
+    def broken(*args):
+        raise RuntimeError("console down")
+
+    bridge = _reachable_bridge(tmp_path, monkeypatch, broken)
+    assert bridge.dispatch("status", agent="mia-car") == {"ok": True, "result": "coolant 89 C", "error": None}
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_the_console_reporter_posts_the_handoff_with_the_key(monkeypatch):
+    import threading
+
+    sent = {}
+    done = threading.Event()
+
+    class _Response:
+        def close(self):
+            pass
+
+    def fake_urlopen(request, timeout):
+        sent.update(url=request.full_url, body=json.loads(request.data), key=request.get_header("X-api-key"),
+                    method=request.get_method(), timeout=timeout)
+        done.set()
+        return _Response()
+
+    monkeypatch.setattr(_bridge_module.urllib.request, "urlopen", fake_urlopen)
+    report = _bridge_module.console_reporter("http://127.0.0.1:8000/", api_key="k")
+    report("orchestrator", "executor", "mia-car", "status")
+    assert done.wait(5)
+    assert sent["url"] == "http://127.0.0.1:8000/console/agents/events" and sent["method"] == "POST"
+    assert sent["body"] == {"from_role": "orchestrator", "to_role": "executor", "task": "mia-car", "summary": "status"}
+    assert sent["key"] == "k" and sent["timeout"] == _bridge_module.CONSOLE_TIMEOUT_S
+
+
+@pytest.mark.req("REQ-WEB-007")
+def test_the_console_reporter_swallows_a_missing_console(monkeypatch):
+    import threading
+
+    tried = threading.Event()
+
+    def refused(request, timeout):
+        tried.set()
+        raise OSError("connection refused")
+
+    monkeypatch.setattr(_bridge_module.urllib.request, "urlopen", refused)
+    _bridge_module.console_reporter("http://127.0.0.1:9", api_key="")("executor", "orchestrator", "mia-car", "x")
+    assert tried.wait(5)
