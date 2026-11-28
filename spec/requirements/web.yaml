@@ -147,8 +147,9 @@ requirements:
   acceptance:
   - /console/ serves one static page with a Content-Security-Policy that allows only the Pi's own origin and no
     inline script, and the page loads nothing from another host
-  - The page script names only /auth/status, /status, /telemetry, /audio/settings, /console/voice/events and
-    /console/voice/settings, and no vehicle, GPIO, LED, OTA or registry route
+  - The page script names only /auth/status, /status, /telemetry, /audio/settings, /console/voice/events,
+    /console/voice/settings, /console/setup, /console/agents/shapes and /console/agents/events, and no vehicle,
+    GPIO, LED, OTA or registry route
   - With no API key configured, only a loopback client whose Host header names loopback is served; with a key, a
     client on a private, link-local or unique-local address is served too; a public address never is
   - Off with MIA_WEB_CONSOLE=0 (404 on every console route)
@@ -172,8 +173,73 @@ requirements:
     (REQ-VOICE-030). The voice routes need VOICE_CONSOLE=1, like /ws/voice. tests/unit/rpi_backend/test_web_console.py
     covers the gate, the headers, the page's API paths, both voice backends and the settings.
   not_proven: The page has not been opened in a browser on a real Pi or in the car; CI checks the page's source and
-    the routes, not how it renders. The agent-handoff view and the onboarding steps (issue 330) are not part of
-    it yet. Nothing limits how many streams one client opens.
+    the routes, not how it renders. Nothing limits how many streams one client opens.
   safety: Read-only toward the vehicle. The console's own routes reach only the voice machine's settings commands,
     and the page calls no route that drives a bus, a pin or the LEDs. The routes it reads (/status, /telemetry) keep
     the API's own authentication.
+- id: REQ-WEB-007
+  title: Agent handoffs live, with user-defined shapes
+  statement: The Pi web console shall show the three agent roles (orchestrator, evaluator, executor) with the personas
+    of the shape the user chose, let the user define and choose shapes, and show live each handoff an agent reports,
+    without letting a handoff reach the vehicle.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - Until the user stores shapes, the shape shipped in agents/AGENTS.md plays the roles; a missing or damaged file
+    gives it back
+  - PUT /console/agents/shapes (write scope) stores up to eight shapes; each names exactly the three roles with a
+    persona, a colour and an optional voice; anything else is refused with 422 and nothing is stored
+  - POST /console/agents/events (write scope) records a handoff between two different parties (the roles or the
+    human) with the personas and colours of the active shape; text over the limits or with control characters is
+    refused
+  - GET /console/agents/events streams the shapes, the recent handoffs (at most 50, in memory) and then new handoffs
+    and shape changes; a watcher that stops reading is dropped without holding up the others
+  - The claude-agent-bridge reports orchestrator to executor before a dispatch and executor to orchestrator after
+    it, only when it dispatches, and a failing report never changes the dispatch
+  implemented_in:
+  - apps/rpi-backend/py-api/api/console_agents.py
+  - apps/rpi-backend/py-api/api/console
+  - orchestration/mcp/modules/claude-agent-bridge/bridge.py
+  - orchestration/mcp/modules/core-orchestrator/enhanced_orchestrator.py
+  services:
+  - mia-api
+  decisions:
+  - ADR-0029
+  - ADR-0022
+  notes: The roles are fixed by function and the personas are a shape (agents/AGENTS.md); the in-car voice personas
+    (ADR-0015) are separate. The bridge reports only with MIA_CONSOLE_HANDOFFS=1, posting on a daemon thread with a
+    2 s timeout and the MIA_API_KEY of its environment. Other agents (a viewer outside this repository) post to the
+    same route. tests/unit/rpi_backend/test_web_console_agents.py and tests/unit/orchestration/test_claude_agent_bridge.py
+    cover it.
+  not_proven: No agent has posted to a running Pi; the bridge's report is tested with a fake HTTP call. Handoffs are
+    lost on restart. The avatars are initials on the role colour; the role images in agents/ are not deployed to the
+    Pi. No evaluator step runs on the Pi yet, so the bridge reports only orchestrator and executor.
+  safety: Handoffs and shapes are text stored in memory and in agent_shapes.json; no route here sends anything to a
+    vehicle bus, a pin or the LEDs, and the bridge's agent stays read-only (ADR-0022).
+- id: REQ-WEB-008
+  title: Setup checklist on the Pi web console
+  statement: The Pi web console shall show which first-run steps are done on this Pi (API key, vehicle identity, an
+    enrolled phone, the voice console, voice, audio and agent personas) and what to do for each that is not, without
+    revealing a setting's value and without changing anything.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - GET /console/setup lists seven steps, each with done (true, false, or null when the Pi cannot tell), a detail and
+    what to do; the steps the page itself can do name that action
+  - A fresh Pi shows every step to do; a configured one shows every step done
+  - The answer holds no VIN, model, key or phone fingerprint, only whether they are set and how many phones are
+    enrolled; an invalid VIN is named as invalid
+  - A phone registry the API cannot read gives null, not false
+  - Reading the checklist writes no file, and the route accepts no other method
+  implemented_in:
+  - apps/rpi-backend/py-api/api/console_setup.py
+  - apps/rpi-backend/py-api/api/console
+  services:
+  - mia-api
+  decisions:
+  - ADR-0029
+  - ADR-0025
+  notes: Enrollment stays with the phone and the server-signed grant (ADR-0025); the API cannot pair a phone or authorize
+    a key (REQ-UPD-004), so the checklist only points to the app for that step. tests/unit/rpi_backend/test_web_console_agents.py
+    covers it.
+  not_proven: On the Pi the registry /var/lib/mia-enroll/phones.json is mode 600, so the phone step is expected to show
+    null for the mia user; not checked on the real Pi.
+  safety: Read-only. It reads environment variables and whether files exist, and writes nothing.
