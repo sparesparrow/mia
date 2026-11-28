@@ -188,6 +188,9 @@ def test_the_page_script_only_reads_the_car():
         "/audio/settings",
         "/console/voice/events",
         "/console/voice/settings",
+        "/console/setup",
+        "/console/agents/shapes",
+        "/console/agents/events",
     }
     for forbidden in ("/command", "/gpio", "/led", "/obd", "/ws", "/registry", "/ota", "/devices"):
         assert forbidden not in paths

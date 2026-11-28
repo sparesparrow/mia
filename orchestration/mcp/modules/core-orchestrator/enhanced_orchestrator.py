@@ -64,6 +64,9 @@ def _load_claude_agent_bridge():
     module = importlib.util.module_from_spec(spec)
     _sys.modules["claude_agent_bridge"] = module
     spec.loader.exec_module(module)
+    # MIA_CONSOLE_HANDOFFS=1 shows each dispatch on the Pi's web console (ADR-0029, REQ-WEB-007).
+    if os.environ.get("MIA_CONSOLE_HANDOFFS") == "1":
+        return module.ClaudeAgentBridge(on_handoff=module.console_reporter())
     return module.ClaudeAgentBridge()
 
 

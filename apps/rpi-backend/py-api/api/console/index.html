@@ -22,6 +22,11 @@
   <p id="auth-note" class="note" hidden></p>
 
   <main class="grid">
+    <section class="card wide" aria-labelledby="setup-h">
+      <h2 id="setup-h">Setup <output id="setup-sum" class="out"></output></h2>
+      <ol id="setup-steps" class="steps"></ol>
+    </section>
+
     <section class="card" aria-labelledby="voice-h">
       <h2 id="voice-h">Voice, live</h2>
       <div class="voice-now">
@@ -69,6 +74,30 @@
         </select>
         <button type="submit">Save audio settings</button>
         <output id="audio-form-out" class="out"></output>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="agents-h">
+      <h2 id="agents-h">Agents, live</h2>
+      <ul id="trio" class="trio"></ul>
+      <p id="agents-note" class="note" hidden></p>
+      <h3>Handoffs</h3>
+      <ol id="handoff-log" class="handoffs" reversed></ol>
+
+      <h3>Shape</h3>
+      <form id="shape-form" class="form">
+        <label for="shape-active">Shape</label>
+        <select id="shape-active"></select>
+        <label for="shape-label">Name</label>
+        <input id="shape-label" maxlength="60">
+        <fieldset class="roles" id="shape-roles"></fieldset>
+        <label for="shape-new">New id</label>
+        <input id="shape-new" maxlength="24" placeholder="e.g. dwarf" pattern="[a-z][a-z0-9_-]{0,23}">
+        <div class="buttons">
+          <button type="submit">Save and use</button>
+          <button type="button" id="shape-copy">Save as new shape</button>
+        </div>
+        <output id="shape-form-out" class="out"></output>
       </form>
     </section>
 
