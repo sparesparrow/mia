@@ -19,11 +19,18 @@ graph LR
 | **EVALUATOR** | The Unhinged Analyst | `#5b8fb9` blue | Daniel / George | Code review, analysis, invented metrics |
 | **EXECUTOR** | The Obsessive Closer | `#00e5ff` cyan | Callum / Liam | Task execution, deployments, bug hunting |
 
+## Roles and shapes
+
+The three roles are fixed by function: the **orchestrator** plans and talks to the user, the **executor** does the work, the **evaluator** judges it. The personality that plays a role is a *shape*. This directory ships one shape, the one described above (Feral Maestro, Obsessive Closer, Unhinged Analyst); another set of personas can take over the same roles without touching the role names.
+
+The avatar images are named after the roles, not the personas: `orchestrator.jpg`, `evaluator.jpg`, `executor.jpg` and `human.png` (the web page `web/agents/` serves identical copies from `web/assets/agents/`). The in-car voice personas Holly, Rimmer and Kryten are a separate, data-driven mechanism (`apps/rpi-backend/py-api/services/voice_fsm/personas/`, ADR-0015).
+
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `SOUL.md` | Shared personality DNA — universal rules, sarcasm calibration |
+| `orchestrator.jpg`, `evaluator.jpg`, `executor.jpg`, `human.png` | Avatar images, named after the roles |
 | `orchestrator/system-prompt.md` | Full system prompt for The Feral Maestro |
 | `orchestrator/SKILL.md` | Capabilities, tools, personality markers |
 | `orchestrator/elevenlabs-config.json` | ElevenLabs API payload (voice, widget, first message) |
