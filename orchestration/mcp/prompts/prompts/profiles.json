@@ -1,0 +1,14 @@
+{
+  "$comment": "Profile for the MIA crew prompts (Holly router, Rimmer approvals, Kryten diagnostics, persona colour, vehicle rules). Selected by tag so new crew prompts join automatically.",
+  "profiles": {
+    "mia-crew": {
+      "description": "The MIA crew (Holly, Rimmer, Kryten): task routing, approval reading, read-only diagnostics, persona colour for chatty mode and the vehicle rules.",
+      "prompts": [
+        "tag:context"
+      ],
+      "templates": [
+        "tag:crew"
+      ]
+    }
+  }
+}
