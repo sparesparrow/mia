@@ -1,7 +1,7 @@
 # Requirements registry: see spec/README.md for fields and evidence states.
 area: web
 title: Web pages
-description: Published static web surfaces.
+description: Published static web surfaces, and the web console the Pi serves itself.
 requirements:
 - id: REQ-WEB-001
   title: Generated segment landing pages
@@ -137,3 +137,43 @@ requirements:
   not_proven: CI checks the generated file, not the live response headers, and no voice conversation has been run
     under the policy.
   safety: n/a. Static pages only; nothing touches a vehicle or hardware.
+- id: REQ-WEB-006
+  title: Pi web console for configuration and a live view
+  statement: The Pi shall serve a web console at /console/ that shows its status, its telemetry and the voice
+    machine live, and changes the voice and audio settings, so MIA can be configured and watched without the
+    Android app. The console shall send nothing to the vehicle, and shall be served only to the Pi itself, or
+    to its local network once an API key is configured.
+  evidence: implemented_and_ci_tested
+  acceptance:
+  - /console/ serves one static page with a Content-Security-Policy that allows only the Pi's own origin and no
+    inline script, and the page loads nothing from another host
+  - The page script names only /auth/status, /status, /telemetry, /audio/settings, /console/voice/events and
+    /console/voice/settings, and no vehicle, GPIO, LED, OTA or registry route
+  - With no API key configured, only a loopback client whose Host header names loopback is served; with a key, a
+    client on a private, link-local or unique-local address is served too; a public address never is
+  - Off with MIA_WEB_CONSOLE=0 (404 on every console route)
+  - /console/voice/events streams the voice machine as JSON lines (hello, the settings snapshot, then state,
+    feedback, speak, transcript and settings events) without sending the machine a command, from the simulated
+    backend and from the voice router over ZeroMQ; it ends with an unavailable line when the console is off or
+    the router goes silent
+  - /console/voice/settings needs the write scope, sends only SetVerbosity, SwitchPersona and SetLanguage, refuses
+    a value that cannot be a setting with 422, and the change is stored and seen by every watcher
+  implemented_in:
+  - apps/rpi-backend/py-api/api/web_console.py
+  - apps/rpi-backend/py-api/api/console
+  - apps/rpi-backend/py-api/api/auth/dependencies.py
+  services:
+  - mia-api
+  decisions:
+  - ADR-0029
+  notes: The page is plain HTML, CSS and JavaScript in apps/rpi-backend/py-api/api/console/, served by mia-api, so it
+    ships with the backend and needs no build step and no internet. The key the user types stays in the tab's
+    sessionStorage and travels only in the X-API-Key header. Audio settings reuse GET and PUT /audio/settings
+    (REQ-VOICE-030). The voice routes need VOICE_CONSOLE=1, like /ws/voice. tests/unit/rpi_backend/test_web_console.py
+    covers the gate, the headers, the page's API paths, both voice backends and the settings.
+  not_proven: The page has not been opened in a browser on a real Pi or in the car; CI checks the page's source and
+    the routes, not how it renders. The agent-handoff view and the onboarding steps (issue 330) are not part of
+    it yet. Nothing limits how many streams one client opens.
+  safety: Read-only toward the vehicle. The console's own routes reach only the voice machine's settings commands,
+    and the page calls no route that drives a bus, a pin or the LEDs. The routes it reads (/status, /telemetry) keep
+    the API's own authentication.

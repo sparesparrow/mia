@@ -34,6 +34,7 @@ beyond their status line.
 | [0026](0026-mqtt-broker-users-and-topic-acl.md) | MQTT broker: one user per client role, with a topic ACL | Proposed |
 | [0027](0027-vercel-is-the-primary-web-address.md) | Vercel is the primary web address; GitHub Pages is a mirror | Accepted |
 | [0028](0028-in-app-ssh-terminal.md) | The app has an SSH terminal to the Pi, separate from the update key | Proposed |
+| [0029](0029-pi-web-console.md) | The Pi serves its own web console, read-only toward the car, local by default | Proposed |
 
 ## Template
 

@@ -243,12 +243,35 @@ A peer silent for 10 s is dropped by the hub. Frames over 64 KiB are dropped. Th
 effect and transcript the bridge produces, whatever caused it, to all open sessions. The snapshot on `Open` is the
 router machine's settings. `PEER_COMMANDS` is the same list as for the simulated backend.
 
+### Web console stream (ADR-0029)
+
+`GET /console/voice/events` gives a browser the machine's events as JSON, one object per line
+(`application/x-ndjson`), because a browser cannot set `X-API-Key` on a WebSocket and has no FlatBuffers decoder.
+The API opens a session of its own (`web-<8 hex>`) on the backend that `/ws/voice` uses, and sends that session no
+command. Every line has a `type`:
+
+| `type` | Fields | When |
+|---|---|---|
+| `hello` | `backend` (`sim` or `router`), `session` | first line |
+| `settings` | `verbosity`, `persona`, `personas`, `language`, `languages` | the snapshot after Open, then every change |
+| `state` | `previous`, `current` | `StateChanged` |
+| `feedback` | `state`, `led`, `tone` | `Feedback` |
+| `speak` | `id`, `phrase`, `params`, `priority`, `text` | `Spoken` |
+| `transcript` | `text`, `utterance_id` | `Transcript` |
+| `keepalive` | none | after 10 s without an event |
+| `unavailable` | `reason` | last line: `VOICE_CONSOLE` is off, the session was refused, or the router was silent for 6 s |
+
+`POST /console/voice/settings` with `{"verbosity"?, "persona"?, "language"?}` sends SetVerbosity, SwitchPersona and
+SetLanguage, in that order, on a short session of its own, and answers with the `settings` line seen afterwards.
+A persona or language is a short lowercase name (`^[a-z][a-z0-9_]{0,23}$`); anything else is refused with 422.
+
 ### Peers
 
 | Peer | Status |
 |---|---|
 | Python voice service (`services/voice_fsm/wire`) | implemented |
 | Android console (`core/voice/console`, tab "Voice") | implemented; connects to `/ws/voice` with OkHttp, shows the LED, tone, machine state, transcript, spoken phrases and the event queue, and sends the button commands and the verbosity setting |
+| Pi web console (`api/web_console.py`, `/console/`) | implemented; JSON lines above, watches only; sends the three settings commands |
 | ESP32 feedback node | planned (REQ-HW-009); it will use `voice_enums.h` and the same envelope |
 
 The Android app compiles the Kotlin bindings that `schemas/generate.py` writes to
