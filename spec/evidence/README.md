@@ -4,7 +4,7 @@ A requirement can claim `bench_tested`, `hardware_tested` or `vehicle_installed`
 record for it exists here, in `spec/evidence/<REQ-ID>/<YYYY-MM-DD>-<state>.md`. CI cannot
 produce this evidence ([ADR-0010](../decisions/0010-evidence-based-requirement-status.md)).
 
-No records exist yet: nothing in MIA has been validated on a bench, on target hardware or in
+Records so far: REQ-DEP-008 (hardware_tested, 2026-11-26). Nothing else in MIA has been validated on a bench, on target hardware or in
 the vehicle.
 
 ## Record template
