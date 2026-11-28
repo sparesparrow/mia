@@ -193,6 +193,10 @@ sudo systemctl edit mia-api
 
 ## Network Configuration
 
+For a phone that supplies the Pi's internet route and microphone over USB, follow
+[Phone USB tether and MIA voice test](phone-usb-tether-voice-test.md). Keep the tether interface on DHCP; use the
+Pi's address on that interface in the Android app. This is separate from the static Wi-Fi example below.
+
 ### Static IP Address (Recommended)
 
 Edit `/etc/dhcpcd.conf`:
