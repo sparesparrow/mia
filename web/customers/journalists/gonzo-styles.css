@@ -1277,6 +1277,16 @@ body.madness-loading { cursor: auto; }
     border-left: 4px solid var(--primary-madness);
 }
 
+/* From 1140px the grid always has exactly four columns (the container is at most 1140px of content,
+   and five 250px columns don't fit). There the four longest quotes take two columns, so the rows
+   tile 4 + 4 + 4 + 4 instead of one long quote stretching a whole row of short ones. Below that
+   every card is one column; a span here would add an implicit column and overflow on phones. */
+@media (min-width: 1140px) {
+    .quote-card--wide {
+        grid-column: span 2;
+    }
+}
+
 .quote-card blockquote {
     margin: 0;
 }
