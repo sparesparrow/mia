@@ -220,10 +220,10 @@ requirements:
   not_proven: Not yet implemented; there is no source of phone messages on the Pi
 - id: REQ-VOICE-019
   title: Personas
-  statement: MIA shall offer the personas Holly and Rimmer as data packages that change tone, voice and warning style but never the content of a warning.
+  statement: MIA shall offer the personas Holly, Kryten and Rimmer as data packages that change tone, voice and warning style but never the content of a warning.
   evidence: implemented_and_ci_tested
   acceptance:
-  - Holly and Rimmer load as data packages beside MIA's own wording, which is code; a package that fails validation is
+  - Holly, Kryten and Rimmer load as data packages beside MIA's own wording, which is code; a package that fails validation is
     logged and left out
   - A package is refused for an unknown phrase key or language, a template that does not format, warning text under
     its phrases, a framing line longer than one sentence or a speed outside 0.5 to 2

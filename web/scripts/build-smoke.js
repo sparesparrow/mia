@@ -88,6 +88,30 @@ function read(relPath) {
     }
 }
 
+// Width and height from a baseline or progressive JPEG's SOF marker; null if the file isn't a JPEG.
+function jpegSize(file) {
+    let buf;
+    try {
+        buf = fs.readFileSync(file);
+    } catch (_err) {
+        return null;
+    }
+    if (buf.readUInt16BE(0) !== 0xffd8) {
+        return null;
+    }
+    for (let i = 2; i + 9 < buf.length;) {
+        if (buf[i] !== 0xff) {
+            return null;
+        }
+        const marker = buf[i + 1];
+        if ([0xc0, 0xc1, 0xc2].includes(marker)) {
+            return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+        }
+        i += 2 + buf.readUInt16BE(i + 2);
+    }
+    return null;
+}
+
 // 9. Landmarks, headings, skip link and Open Graph tags (REQ-WEB-004).
 function checkStructure(rel, html) {
     const mains = html.match(/<main\b[^>]*>/g) || [];
@@ -102,6 +126,11 @@ function checkStructure(rel, html) {
     const image = (html.match(/<meta property="og:image" content="([^"]+)">/) || [])[1] || '';
     check(image.startsWith(SITE_URL) && fs.existsSync(path.join(WEB_ROOT, image.slice(SITE_URL.length))),
         `${rel} og:image points to a published image (${image.slice(SITE_URL.length)})`);
+    const size = jpegSize(path.join(WEB_ROOT, image.slice(SITE_URL.length)));
+    check(size && size.width === 1200 && size.height === 630
+        && html.includes('<meta property="og:image:width" content="1200">')
+        && html.includes('<meta property="og:image:height" content="630">'),
+    `${rel} og:image is a 1200x630 JPEG and says so` + (size ? ` (${size.width}x${size.height})` : ''));
 }
 
 console.log('Smoke test: MIA web build');
@@ -292,9 +321,9 @@ for (const [file, home] of HOMEPAGES) {
             (enMissing.length ? ` (missing: ${enMissing.join(', ')})` : ''));
     // 404.html is served at any depth, so it links with absolute /mia/ paths. Its inline script rewrites each
     // link from data-path to the host's base; without JavaScript, vercel.json maps /mia/... to the root.
-    const notFoundMissing = ['', ...PAGES.map((s) => `${s}/`)]
+    const notFoundMissing = ['', 'en/', ...PAGES.map((s) => `${s}/`)]
         .filter((rel) => !notFound.includes(`data-path="${rel}" href="/mia/${rel}"`));
-    check(notFoundMissing.length === 0, '404.html links to the homepage and every audience page' +
+    check(notFoundMissing.length === 0, '404.html links to both homepages and every audience page' +
         (notFoundMissing.length ? ` (missing: ${notFoundMissing.map((r) => `/mia/${r}`).join(', ')})` : ''));
     const relative = [...notFound.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1])
         .filter((ref) => !/^(\/mia\/|https?:|#|mailto:|data:)/.test(ref));

@@ -73,12 +73,13 @@ class KeystoreKeyWrap(private val alias: String = "mia_update_wrap") : AesGcmWra
 /**
  * The phone's SSH identity for updates (ADR-0023): an EC P-256 pair made on first use, the private half sealed with
  * a [KeyWrap] and kept in [dir]. The key can run the update command on a Pi that paired it, and nothing else.
+ * The terminal (ADR-0028) keeps its own pair under another [name], so an update key never becomes a login key.
  */
-class SshKeyStore(private val dir: File, private val wrap: KeyWrap) {
+class SshKeyStore(private val dir: File, private val wrap: KeyWrap, private val name: String = "update_key") {
 	@Synchronized
 	fun keyPair(): KeyPair {
-		val priv = File(dir, "update_key.enc")
-		val pub = File(dir, "update_key.pub")
+		val priv = File(dir, "$name.enc")
+		val pub = File(dir, "$name.pub")
 		val factory = KeyFactory.getInstance("EC")
 		if (priv.exists() && pub.exists()) {
 			try {
@@ -103,7 +104,7 @@ class SshKeyStore(private val dir: File, private val wrap: KeyWrap) {
 
 	companion object {
 		/** Keystore-backed wrap where the platform allows it, the file wrap on API 22. */
-		fun wrapFor(dir: File): KeyWrap =
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreKeyWrap() else FileKeyWrap(File(dir, "wrap.key"))
+		fun wrapFor(dir: File, alias: String = "mia_update_wrap"): KeyWrap =
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) KeystoreKeyWrap(alias) else FileKeyWrap(File(dir, "wrap.key"))
 	}
 }

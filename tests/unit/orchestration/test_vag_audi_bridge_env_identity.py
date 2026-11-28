@@ -4,6 +4,7 @@ import asyncio
 import importlib.util
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -36,8 +37,8 @@ normalize_vin = bridge_module.normalize_vin
 
 # Syntactically valid ISO 3779 VINs that are obviously made up (no real car).
 TEST_VIN = "ABCDEFGH123456789"
-# Same shape, but contains the forbidden letters I and O.
 OTHER_VIN = "ABCDEFGH987654321"
+# Same shape, but contains the forbidden letters I and O.
 BAD_VIN = "ABCDEFGHIO3456789"
 
 
@@ -131,6 +132,22 @@ def test_invalid_model_year_is_none_with_warning(value, caplog):
     assert "MIA_VEHICLE_MODEL_YEAR" in caplog.text
 
 
+CURRENT_YEAR = datetime.now(timezone.utc).year
+
+
+@pytest.mark.parametrize("value", ["1980", "2004", str(CURRENT_YEAR), str(CURRENT_YEAR + 1)])
+def test_model_year_within_bounds_is_kept(value):
+    assert config_from_env({"MIA_VEHICLE_MODEL_YEAR": value})["model_year"] == int(value)
+
+
+@pytest.mark.parametrize("value", ["-5", "0", "1000", "1979", str(CURRENT_YEAR + 2), "99999"])
+def test_model_year_out_of_bounds_is_none_with_warning(value, caplog):
+    with caplog.at_level(logging.WARNING):
+        config = config_from_env({"MIA_VEHICLE_MODEL_YEAR": value})
+    assert config["model_year"] is None
+    assert "MIA_VEHICLE_MODEL_YEAR" in caplog.text
+
+
 # -- VIN validation ----------------------------------------------------------------------------
 
 
@@ -208,6 +225,66 @@ def test_status_vin_match_none_without_expected_vin():
     assert status["vehicle_info"]["vin_match"] is None
 
 
+def _vin_match_after_read(read_vin, expected=TEST_VIN):
+    bridge = VagAudiBridge(config_from_env({"MIA_VEHICLE_VIN": expected}))
+    run(bridge.ingest_transport_message({"vin": read_vin}))
+    return run(bridge.get_vehicle_status())["vehicle_info"]["vin_match"]
+
+
+def test_status_vin_match_none_for_empty_read():
+    assert _vin_match_after_read("") is None
+
+
+@pytest.mark.parametrize("read_vin", [TEST_VIN.encode("ascii"), bytearray(TEST_VIN.encode("ascii"))])
+def test_status_vin_match_true_for_bytes_read(read_vin):
+    assert _vin_match_after_read(read_vin) is True
+
+
+@pytest.mark.parametrize(
+    "read_vin",
+    [
+        TEST_VIN + "\x00\x00\x00",
+        "\x00" + TEST_VIN + " \x00 ",
+        f"  {TEST_VIN}\r\n",
+        (TEST_VIN + "\x00\x00").encode("ascii"),
+        b" " + TEST_VIN.encode("ascii") + b"\x00 ",
+    ],
+)
+def test_status_vin_match_true_for_padded_read(read_vin):
+    assert _vin_match_after_read(read_vin) is True
+
+
+def test_status_vin_match_false_for_bytes_of_other_car():
+    assert _vin_match_after_read(OTHER_VIN.encode("ascii")) is False
+
+
+@pytest.mark.parametrize(
+    "read_vin",
+    [
+        "   ",
+        "\x00\x00\x00",
+        "garbage",
+        BAD_VIN,
+        TEST_VIN[:-1],
+        TEST_VIN + "1",
+        b"\xff\xfe\x00",
+        12345678901234567,
+        ["not", "a", "vin"],
+        {"vin": TEST_VIN},
+    ],
+)
+def test_status_vin_match_none_for_unusable_read(read_vin):
+    assert _vin_match_after_read(read_vin) is None
+
+
+def test_vin_match_does_not_log_vin_values(caplog):
+    with caplog.at_level(logging.DEBUG):
+        assert _vin_match_after_read(OTHER_VIN.encode("ascii")) is False
+        assert _vin_match_after_read("garbage") is None
+    assert TEST_VIN not in caplog.text
+    assert OTHER_VIN not in caplog.text
+
+
 def test_status_reports_model_from_env():
     bridge = VagAudiBridge(config_from_env({"MIA_VEHICLE_MODEL": "A4 Cabriolet", "MIA_VEHICLE_MODEL_YEAR": "2004"}))
     info = run(bridge.get_vehicle_status())["vehicle_info"]
@@ -272,6 +349,23 @@ def test_read_services_can_only_be_narrowed():
 def test_constructor_limits_read_services_given_directly():
     bridge = VagAudiBridge({"allowed_read_services": ["2E", "31", "19"]})
     assert bridge.config["allowed_read_services"] == ["19"]
+
+
+@pytest.mark.parametrize("value", [None, 22, 1.5, object(), "19,22", b"22", {"19": True}])
+def test_tampered_read_services_fail_closed_to_empty(value, caplog):
+    with caplog.at_level(logging.WARNING):
+        bridge = VagAudiBridge({"allowed_read_services": value})
+    assert bridge.config["allowed_read_services"] == []
+    assert bridge.adapter_capabilities["allowed_read_services"] == []
+    assert "allowed_read_services" in caplog.text
+    dtc = run(bridge.read_dtc_summary())
+    assert dtc["status"] == "disabled"
+
+
+@pytest.mark.parametrize("value", [("19", "22"), {"22"}])
+def test_read_services_accept_tuple_and_set(value):
+    bridge = VagAudiBridge({"allowed_read_services": value})
+    assert sorted(bridge.config["allowed_read_services"]) == sorted(value)
 
 
 def test_uds_enabled_from_env_still_blocked_without_uds_transport():

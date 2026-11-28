@@ -69,6 +69,11 @@ directly (REQ-WEB-003). This is separate from the unpublished `agents/` portal.
 
 ## Content rules
 
+- Images follow the art direction and prompts in [IMAGE-PROMPTS.md](IMAGE-PROMPTS.md): no text in the
+  pixels, only features MIA has, the real car and hardware.
+- Every quote on the homepage is listed with its primary source in [QUOTES.md](QUOTES.md). Add or change a
+  quote only after reading it in that source.
+
 - The product is called **MIA**. The old AI-SERVIS name only appears where the
   press kit explains the rename. Some images still have it in their pixels.
 - No prices and no performance figures (such as "300% productivity") unless the
@@ -180,8 +185,8 @@ the workflow's "Assemble static site" step does, and build the docs with
   the length of the effect, like the menu does: the effect puts a filter on `body`.
 - `customers/journalists/background-music.mp3` (~3.2 MB, 80 kb/s stereo MP3, no cover art or tags) is
   published with the homepage. It is a gonzo brand asset; replace it only with product sign-off.
-  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click, tap or key
-  press. The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
+  `gonzo-app.js` starts it on load; where the browser blocks sound it starts on the first click or tap (never
+  on a key press, so it can't talk over a screen reader). The 🎵/🔊 button pauses it and the choice is kept in `localStorage` (`mia-music`). Touching a voice
   guide pauses it and never starts it. `preload="none"` means nothing is downloaded until it actually plays.
   Re-encode from a source with
   `ffmpeg -i <src> -map 0:a:0 -vn -map_metadata -1 -c:a libmp3lame -b:a 80k -ac 2 -ar 44100 background-music.mp3`.

@@ -43,6 +43,17 @@ describe('Homepage soundtrack', () => {
         cy.get('#audio-toggle').should('have.attr', 'aria-pressed', 'true');
     });
 
+    it('a key press does not start blocked music; the first click does', () => {
+        cy.visit('/', { onBeforeLoad: (win) => stubMedia(win, { blocked: true }) });
+        cy.get('@play').should('have.been.calledOnce');
+        cy.document().trigger('keydown', { key: 'Tab' });
+        cy.get('h1').trigger('keydown', { key: 'Enter', force: true });
+        cy.get('@play').should('have.been.calledOnce');
+        cy.get('#audio-toggle').should('have.attr', 'aria-pressed', 'false');
+        cy.get('h1').click();
+        cy.get('@play').should('have.been.calledTwice');
+    });
+
     it('a crew card pauses the music and never starts it', () => {
         cy.visit('/', { onBeforeLoad: (win) => stubMedia(win, { blocked: true }) });
         cy.get('@play').should('have.been.calledOnce');
