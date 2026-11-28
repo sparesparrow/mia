@@ -1,7 +1,8 @@
 # Quotes on the homepage (`#neposlusnost`)
 
 Every quote in the "Neposlušnost: svoboda zespoda" section of `web/index.html` and `web/en/index.html`,
-with the source it was checked against (27 November 2026). Change a quote only after reading it in a
+with the source it was checked against (1–8: 27 November 2026; 9–12 and the text around the quotes:
+28 November 2026). Page numbers on the site refer to the edition the title links to. Change a quote only after reading it in a
 primary source; libertarian quote collections are full of misattributed and "improved" lines.
 Czech wording is our own translation unless noted.
 
@@ -15,7 +16,7 @@ Czech wording is our own translation unless noted.
 2. **Henry David Thoreau**, *Resistance to Civil Government* / *Civil Disobedience* (1849), paragraph 19
    - Original: "Let your life be a counter friction to stop the machine."
    - Checked in: Project Gutenberg #71 — <https://www.gutenberg.org/files/71/71-h/71-h.htm>
-   - Some reprints hyphenate "counter-friction"; Gutenberg does not.
+   - Some reprints hyphenate "counter-friction"; Gutenberg does not. The site gives "para. 19" (odst. 19).
 
 3. **Frédéric Bastiat**, *L'État* (1848), *Œuvres complètes*, 3rd ed., vol. 4
    - Original: "L'État, c'est la grande fiction à travers laquelle Tout Le Monde s'efforce de vivre aux dépens
@@ -32,7 +33,8 @@ Czech wording is our own translation unless noted.
      state, not anarchy; do not present him as an anarchist.
 
 5. **Murray N. Rothbard**, *For a New Liberty* (1973), ch. 2 "Property and Exchange", "The Nonaggression
-   Axiom" (p. 23 in the Mises Institute edition)
+   Axiom", p. 27 in the Mises Institute 2nd edition (2006; PDF page 38). The earlier note said p. 23, which
+   was wrong.
    - Original: "The libertarian creed rests upon one central axiom: that no man or group of men may aggress
      against the person or property of anyone else."
    - <https://mises.org/online-book/new-liberty-libertarian-manifesto/chapter-2-property-and-exchange/nonaggression-axiom>
@@ -56,6 +58,65 @@ Czech wording is our own translation unless noted.
    - The same page says the aim is to make viewers think, "určitě ne ke slepému následování". #ne_poslušnosti
      is Urza's video series of peaceful, public breaches of laws that punish victimless crimes; MIA is not part
      of it.
+
+9. **Murray N. Rothbard**, *For a New Liberty* (1973), ch. 6 "Personal Liberty", section "Wiretapping",
+   p. 133 (Mises Institute 2nd ed., PDF page 144)
+   - Original: "It may well be true, for example, that if the government employed a ten-million man espionage
+     force to spy upon and tap the wires of the entire population, the total amount of private crime would be
+     reduced—just as it would if all ghetto residents or teenage males were promptly incarcerated. But what
+     would this be compared to the mass crime that would thus be committed, legally and without shame, by the
+     government itself?" The site leaves out the "ghetto residents" comparison with an ellipsis.
+   - <https://mises.org/library/book/new-liberty-libertarian-manifesto>
+   - Context: the section opens "Wiretapping is a contemptible invasion of privacy and of property right". The
+     first sentence of our quote is a concession Rothbard makes in order to reject it, so it must not be cut
+     off before "But what would this be compared to…".
+
+10. **Samuel Edward Konkin III**, *New Libertarian Manifesto* (1st ed. October 1980), ch. III
+    "Counter-Economics: Our Means"
+    - Original: "The actual practice of human actions that evade, avoid, and defy the State is counter-economic
+      activity, but—in the same sloppy way that "economics" refers both to the science and what it studies—
+      "counter-economics" will undoubtedly be used."
+    - Checked in: <https://theanarchistlibrary.org/library/samuel-edward-konkin-iii-new-libertarian-manifesto>
+    - agorism.info, the old home of the text, now serves an unrelated gambling site; do not link it.
+    - Konkin is an anarchist (agorist). The intro's "nechat vyhladovět" / "let the old ones starve" is the
+      agorist position, not Benda's.
+
+11. **Václav Benda**, *Paralelní polis* (written 17 May 1978), part II, p. 45 of the text as published in the
+    disent.usd.cas.cz PDF
+    - Original: "Navrhuji proto, abychom se spojili v úsilí o postupné vytvoření paralelních struktur, schopných
+      alespoň v omezené míře suplovat chybějící obecně prospěšné a nezbytné funkce tam, kde to jde, je třeba
+      využít i existujících struktur a „humanizovat" je." The site ends the quote at "funkce (…)".
+    - Intro phrase, same page: "…jeho i jen částečný úspěch by vystavil oficiální struktury tlaku, pod nímž by se
+      nutně buď rozložily, nebo užitečně zrestaurovaly…"
+    - <https://www.disent.usd.cas.cz/wp-content/uploads/09_Benda1-1.pdf>
+    - EN is ours. A public-domain translation by Mark Qvist is at
+      <https://theanarchistlibrary.org/library/vaclav-benda-parallel-polis>; Paul Wilson's (1991) is in copyright.
+    - Context: Benda was a Catholic philosopher and Charter 77 spokesman, later a Christian Democrat politician,
+      not a libertarian. His plan uses existing structures where it can and "nevede nutně k přímému konfliktu
+      s politickou mocí". Do not describe it as starving the state.
+
+12. **Roman** (Stoky author), „Ochrana osobních dat. Před kým?", Stoky Svobodného přístavu, 24 October 2019
+    - Original (Czech): "Komu svěřuju svá osobní data? Na volném trhu komu chci, zvláště když mi za ně něco
+      nabídne."
+    - <https://stoky.urza.cz/texty/ochrana-osobnich-dat-pred-kym-1367>
+    - Context: the post goes on to contrast this with the 10,000 Kč fine for not filling in the census.
+
+## Facts and paraphrases in the text around the quotes
+
+- **EU event data recorder**: Regulation (EU) 2019/2144, Art. 6(1)(g) lists the "event data recorder";
+  Annex II row E5 marks it "B" for M1 and N1, and note B means type-approval refused from 6 July 2022 and
+  registration prohibited from 7 July 2024. Art. 6(4)(a) limits the data to "the period shortly before, during
+  and immediately after a collision"; 6(4)(b) "they cannot be deactivated"; 6(4)(c)(ii) "the data that they
+  collect is anonymised"; 6(5) forbids storing the last four VIN digits. Checked in the adopted text at
+  <https://www.legislation.gov.uk/eur/2019/2144/article/6/adopted> and
+  <https://www.legislation.gov.uk/eur/2019/2144/annex/II/adopted> (EUR-Lex refuses automated fetches); the
+  site links <https://eur-lex.europa.eu/eli/reg/2019/2144/oj>. Heavier categories (M2, M3, N2, N3) follow later
+  dates set by amendments and are not claimed on the site.
+- **Urza, *Anarchokapitalismus*, ch. 12 "Silnice a dopravní pravidla"**
+  (<https://ankap.urza.cz/silnice-a-dopravni-pravidla/>). Original: "Majitelé ulic mohou prodávat permanentky
+  (něco jako dálniční známky) či majáčky GPS, případně – kdyby někdo nechtěl v autě zařízení, které bude stále
+  zaznamenávat jeho polohu – čipy, jež mohou být snímány čtečkami pouze v relevantních ulicích…" The site quotes
+  only the clause in quotation marks and paraphrases the rest.
 
 ## Removed after checking
 

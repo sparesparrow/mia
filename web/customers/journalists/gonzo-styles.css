@@ -1302,6 +1302,20 @@ body.madness-loading { cursor: auto; }
     text-underline-offset: 6px;
 }
 
+.disobedience-car {
+    max-width: 760px;
+    margin-top: 50px;
+    margin-bottom: 0;
+}
+
+.disobedience-intro a,
+.disobedience-car a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+}
+
 .quote-note {
     margin-top: 40px;
 }
