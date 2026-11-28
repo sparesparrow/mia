@@ -21,6 +21,7 @@ REST/WebSocket API; Android aplikace je jeho společník. Tento web shrnuje inst
 - Raspberry Pi v autě (podporovaná cesta): [instalace](install/pi-gateway.md)
 - Telefon bez Pi (omezený režim): [instalace](install/phone.md)
 - Vývoj bez Pi: [instalace](install/dev-docker.md)
+- USB tethering, telefonní mikrofon a test řeči přes reproduktory Pi: [postup](phone-usb-tether-voice-test.md)
 
 ## Architektura
 - Přehled komponent a datových toků: [System Overview](spec/architecture/overview.md)
